@@ -4,7 +4,7 @@ create table if not exists teams (
   abbreviation  text not null,            -- e.g. ATL
   full_name     text not null,            -- Atlanta Hawks
   name          text not null,            -- Hawks
-  city          text not null,            -- Atlanta
+  city          text,                     -- Some historical teams lack city info
   conference    text,                     -- East / West (nullable)
   division      text,                     -- e.g. Southeast (nullable)
   created_at    timestamptz not null default now(),
