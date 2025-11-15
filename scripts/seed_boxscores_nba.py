@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Production script to seed player game stats (box scores) from NBA Stats API.
+Production script to seed player game stats (box scores) and team stats from NBA Stats API.
 
 This script:
 1. Finds Final games that don't have box scores yet (or updates existing ones)
 2. Gets NBA Stats game IDs from provider_id_map
-3. Fetches box scores using BoxScoreTraditionalV3
-4. Resolves player and team IDs
-5. Inserts/updates player_game_stats table
+3. Fetches player box scores using BoxScoreTraditionalV3
+4. Fetches quarter-by-quarter team totals using BoxScoreSummaryV2
+5. Resolves player and team IDs
+6. Inserts/updates player_game_stats table
+7. Aggregates team stats and inserts/updates team_game_stats table (with quarter data)
 
 Usage:
     python scripts/seed_boxscores_nba.py                    # All Final games without box scores
@@ -25,7 +27,7 @@ from typing import Dict, List, Optional, Tuple
 
 import psycopg
 from dotenv import load_dotenv
-from nba_api.stats.endpoints import BoxScoreTraditionalV3
+from nba_api.stats.endpoints import BoxScoreTraditionalV3, BoxScoreSummaryV2
 
 load_dotenv()
 
@@ -509,6 +511,226 @@ def upsert_player_game_stats(
     return inserted
 
 
+def fetch_quarter_data(nba_game_id: str, retry_count: int = 0) -> Optional[List[dict]]:
+    """Fetch quarter-by-quarter team totals from BoxScoreSummaryV2."""
+    try:
+        logging.debug("Fetching quarter data (SummaryV2) for game %s (attempt %d)...", 
+                     nba_game_id, retry_count + 1)
+        endpoint = BoxScoreSummaryV2(game_id=nba_game_id)
+        data = endpoint.get_normalized_dict()
+        
+        line_score = data.get("LineScore", [])
+        if not line_score:
+            logging.warning("No LineScore data for game %s", nba_game_id)
+            return None
+        
+        return line_score
+        
+    except Exception as exc:
+        if retry_count < MAX_RETRIES:
+            logging.warning("Error fetching quarter data for game %s (attempt %d): %s. Retrying...", 
+                          nba_game_id, retry_count + 1, exc)
+            time.sleep(RETRY_DELAY_MS / 1000)
+            return fetch_quarter_data(nba_game_id, retry_count + 1)
+        else:
+            logging.error("Failed to fetch quarter data for game %s after %d attempts: %s", 
+                         nba_game_id, MAX_RETRIES + 1, exc)
+            return None
+
+
+def aggregate_team_stats_from_players(
+    conn: psycopg.Connection,
+    internal_game_id: str,
+    team_map: Dict[str, str],
+) -> Dict[str, dict]:
+    """
+    Aggregate team totals from player_game_stats for a game.
+    Returns dict keyed by provider team ID (to match with quarter data).
+    """
+    # Create reverse mapping: internal_id -> provider_id
+    reverse_team_map = {v: k for k, v in team_map.items()}
+    
+    rows = conn.execute(
+        """
+        SELECT 
+            team_id,
+            SUM(points) as points,
+            SUM(field_goals_made) as field_goals_made,
+            SUM(field_goals_attempted) as field_goals_attempted,
+            SUM(three_pointers_made) as three_pointers_made,
+            SUM(three_pointers_attempted) as three_pointers_attempted,
+            SUM(free_throws_made) as free_throws_made,
+            SUM(free_throws_attempted) as free_throws_attempted,
+            SUM(rebounds) as rebounds,
+            SUM(assists) as assists,
+            SUM(steals) as steals,
+            SUM(blocks) as blocks,
+            SUM(turnovers) as turnovers,
+            SUM(minutes) as minutes
+        FROM player_game_stats
+        WHERE game_id = %s AND dnp_reason IS NULL
+        GROUP BY team_id
+        """,
+        (internal_game_id,),
+    ).fetchall()
+    
+    team_stats = {}
+    for row in rows:
+        internal_team_id = row[0]
+        # Map back to provider ID
+        provider_team_id = reverse_team_map.get(internal_team_id)
+        if not provider_team_id:
+            logging.warning("No provider mapping for internal team ID %s", internal_team_id)
+            continue
+        
+        team_stats[provider_team_id] = {
+            "internal_team_id": internal_team_id,
+            "points": row[1] or 0,
+            "field_goals_made": row[2] or 0,
+            "field_goals_attempted": row[3] or 0,
+            "three_pointers_made": row[4] or 0,
+            "three_pointers_attempted": row[5] or 0,
+            "free_throws_made": row[6] or 0,
+            "free_throws_attempted": row[7] or 0,
+            "rebounds": row[8] or 0,
+            "assists": row[9] or 0,
+            "steals": row[10] or 0,
+            "blocks": row[11] or 0,
+            "turnovers": row[12] or 0,
+            "minutes": row[13] or 0,
+        }
+    
+    return team_stats
+
+
+def upsert_team_game_stats(
+    conn: psycopg.Connection,
+    internal_game_id: str,
+    team_stats: Dict[str, dict],
+    quarter_data: Optional[List[dict]],
+    team_map: Dict[str, str],
+) -> int:
+    """Insert/update team_game_stats including quarter data."""
+    # Get game info to determine home/away
+    game_info = conn.execute(
+        """
+        SELECT home_team_id, away_team_id
+        FROM games
+        WHERE game_id = %s
+        """,
+        (internal_game_id,),
+    ).fetchone()
+    
+    if not game_info:
+        logging.warning("Game %s not found in games table", internal_game_id)
+        return 0
+    
+    home_team_id, away_team_id = game_info
+    inserted = 0
+    
+    # Process each team
+    for team_provider_id, stats in team_stats.items():
+        team_internal_id = stats.get("internal_team_id")
+        if not team_internal_id:
+            logging.warning("Missing internal team ID for provider ID %s in game %s", 
+                          team_provider_id, internal_game_id)
+            continue
+        
+        is_home = (team_internal_id == home_team_id)
+        
+        # Find quarter data for this team
+        quarter_points = {}
+        if quarter_data:
+            for team_line in quarter_data:
+                if str(team_line.get("TEAM_ID")) == team_provider_id:
+                    quarter_points = {
+                        "q1": to_int(team_line.get("PTS_QTR1")),
+                        "q2": to_int(team_line.get("PTS_QTR2")),
+                        "q3": to_int(team_line.get("PTS_QTR3")),
+                        "q4": to_int(team_line.get("PTS_QTR4")),
+                        "ot": to_int(team_line.get("PTS_OT1")) or to_int(team_line.get("PTS_OT2")) or to_int(team_line.get("PTS_OT3")) or None,
+                    }
+                    break
+        
+        # Calculate possessions: FGA + 0.44 * FTA - (estimated ORB) + TOV
+        # Using 0.3 * total rebounds as rough ORB estimate
+        estimated_orb = int(0.3 * stats["rebounds"]) if stats["rebounds"] else 0
+        possessions = (
+            stats["field_goals_attempted"] +
+            0.44 * stats["free_throws_attempted"] -
+            estimated_orb +
+            stats["turnovers"]
+        )
+        
+        try:
+            conn.execute(
+                """
+                INSERT INTO team_game_stats (
+                    game_id, team_id, points, field_goals_made, field_goals_attempted,
+                    three_pointers_made, three_pointers_attempted, free_throws_made,
+                    free_throws_attempted, rebounds, assists, steals, blocks, turnovers,
+                    minutes, is_home, possessions,
+                    points_q1, points_q2, points_q3, points_q4, points_ot,
+                    created_at, updated_at
+                ) VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s, now(), now()
+                )
+                ON CONFLICT (game_id, team_id) DO UPDATE SET
+                    points = excluded.points,
+                    field_goals_made = excluded.field_goals_made,
+                    field_goals_attempted = excluded.field_goals_attempted,
+                    three_pointers_made = excluded.three_pointers_made,
+                    three_pointers_attempted = excluded.three_pointers_attempted,
+                    free_throws_made = excluded.free_throws_made,
+                    free_throws_attempted = excluded.free_throws_attempted,
+                    rebounds = excluded.rebounds,
+                    assists = excluded.assists,
+                    steals = excluded.steals,
+                    blocks = excluded.blocks,
+                    turnovers = excluded.turnovers,
+                    minutes = excluded.minutes,
+                    possessions = excluded.possessions,
+                    points_q1 = excluded.points_q1,
+                    points_q2 = excluded.points_q2,
+                    points_q3 = excluded.points_q3,
+                    points_q4 = excluded.points_q4,
+                    points_ot = excluded.points_ot,
+                    updated_at = now()
+                """,
+                (
+                    internal_game_id,
+                    team_internal_id,
+                    stats["points"],
+                    stats["field_goals_made"],
+                    stats["field_goals_attempted"],
+                    stats["three_pointers_made"],
+                    stats["three_pointers_attempted"],
+                    stats["free_throws_made"],
+                    stats["free_throws_attempted"],
+                    stats["rebounds"],
+                    stats["assists"],
+                    stats["steals"],
+                    stats["blocks"],
+                    stats["turnovers"],
+                    stats["minutes"],
+                    is_home,
+                    possessions,
+                    quarter_points.get("q1"),
+                    quarter_points.get("q2"),
+                    quarter_points.get("q3"),
+                    quarter_points.get("q4"),
+                    quarter_points.get("ot"),
+                ),
+            )
+            inserted += 1
+        except Exception as exc:
+            logging.error("Failed to insert team stats for team %s in game %s: %s", 
+                         team_internal_id, internal_game_id, exc)
+    
+    return inserted
+
+
 def process_game(
     conn: psycopg.Connection,
     internal_game_id: str,
@@ -517,7 +739,7 @@ def process_game(
 ) -> bool:
     """Process a single game: fetch box scores and insert stats."""
     try:
-        # Fetch box scores
+        # Fetch player box scores
         raw_stats = fetch_boxscore_v3(nba_game_id)
         
         if not raw_stats:
@@ -529,15 +751,30 @@ def process_game(
         for stat in raw_stats:
             stat["GAME_ID"] = internal_game_id
         
-        # Insert stats
+        # Insert player stats
         inserted = upsert_player_game_stats(conn, internal_game_id, raw_stats, team_map)
         
-        if inserted > 0:
-            logging.info("Successfully processed game %s: %d player stats", 
-                        internal_game_id, inserted)
+        if inserted == 0:
+            logging.warning("No stats inserted for game %s", internal_game_id)
+            return False
+        
+        # Fetch quarter data
+        quarter_data = fetch_quarter_data(nba_game_id)
+        
+        # Aggregate team stats from player stats
+        team_stats = aggregate_team_stats_from_players(conn, internal_game_id, team_map)
+        
+        # Insert/update team_game_stats with quarter data
+        team_stats_inserted = upsert_team_game_stats(
+            conn, internal_game_id, team_stats, quarter_data, team_map
+        )
+        
+        if team_stats_inserted > 0:
+            logging.info("Successfully processed game %s: %d player stats, %d team stats", 
+                        internal_game_id, inserted, team_stats_inserted)
             return True
         else:
-            logging.warning("No stats inserted for game %s", internal_game_id)
+            logging.warning("No team stats inserted for game %s", internal_game_id)
             return False
             
     except Exception as exc:

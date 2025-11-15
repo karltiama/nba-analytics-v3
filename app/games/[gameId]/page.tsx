@@ -57,9 +57,10 @@ async function getGameBoxScore(gameId: string) {
 export default async function GameBoxScorePage({
   params,
 }: {
-  params: { gameId: string };
+  params: Promise<{ gameId: string }>;
 }) {
-  const data = await getGameBoxScore(params.gameId);
+  const { gameId } = await params;
+  const data = await getGameBoxScore(gameId);
 
   if (!data) {
     return (
@@ -93,7 +94,19 @@ export default async function GameBoxScorePage({
           </h1>
           <div className="text-lg text-zinc-600 dark:text-zinc-400">
             <p>
-              {game.away_team_name} @ {game.home_team_name}
+              <Link
+                href={`/teams/${game.away_team_id}`}
+                className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+              >
+                {game.away_team_name}
+              </Link>
+              {' @ '}
+              <Link
+                href={`/teams/${game.home_team_id}`}
+                className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+              >
+                {game.home_team_name}
+              </Link>
             </p>
             <p>
               {new Date(game.start_time).toLocaleDateString('en-US', {
@@ -114,7 +127,14 @@ export default async function GameBoxScorePage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Away Team */}
           <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-            <h2 className="text-2xl font-semibold mb-4">{game.away_team_name}</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              <Link
+                href={`/teams/${game.away_team_id}`}
+                className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+              >
+                {game.away_team_name}
+              </Link>
+            </h2>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -132,7 +152,7 @@ export default async function GameBoxScorePage({
                   {awayTeamStats.map((stat: any) => (
                     <TableRow key={`${stat.game_id}-${stat.player_id}`}>
                       <TableCell className="font-medium">{stat.player_name}</TableCell>
-                      <TableCell>{stat.minutes ? stat.minutes.toFixed(1) : '-'}</TableCell>
+                      <TableCell>{stat.minutes ? Number(stat.minutes).toFixed(1) : '-'}</TableCell>
                       <TableCell>{stat.points ?? '-'}</TableCell>
                       <TableCell>{stat.rebounds ?? '-'}</TableCell>
                       <TableCell>{stat.assists ?? '-'}</TableCell>
@@ -147,7 +167,14 @@ export default async function GameBoxScorePage({
 
           {/* Home Team */}
           <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-            <h2 className="text-2xl font-semibold mb-4">{game.home_team_name}</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              <Link
+                href={`/teams/${game.home_team_id}`}
+                className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+              >
+                {game.home_team_name}
+              </Link>
+            </h2>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -165,7 +192,7 @@ export default async function GameBoxScorePage({
                   {homeTeamStats.map((stat: any) => (
                     <TableRow key={`${stat.game_id}-${stat.player_id}`}>
                       <TableCell className="font-medium">{stat.player_name}</TableCell>
-                      <TableCell>{stat.minutes ? stat.minutes.toFixed(1) : '-'}</TableCell>
+                      <TableCell>{stat.minutes ? Number(stat.minutes).toFixed(1) : '-'}</TableCell>
                       <TableCell>{stat.points ?? '-'}</TableCell>
                       <TableCell>{stat.rebounds ?? '-'}</TableCell>
                       <TableCell>{stat.assists ?? '-'}</TableCell>

@@ -154,13 +154,19 @@ export default async function DashboardPage() {
                       </TableCell>
                       <TableCell>{player.games_played}</TableCell>
                       <TableCell>
-                        {player.avg_points ? player.avg_points.toFixed(1) : '-'}
+                        {player.avg_points != null
+                          ? Number(player.avg_points).toFixed(1)
+                          : '-'}
                       </TableCell>
                       <TableCell>
-                        {player.avg_rebounds ? player.avg_rebounds.toFixed(1) : '-'}
+                        {player.avg_rebounds != null
+                          ? Number(player.avg_rebounds).toFixed(1)
+                          : '-'}
                       </TableCell>
                       <TableCell>
-                        {player.avg_assists ? player.avg_assists.toFixed(1) : '-'}
+                        {player.avg_assists != null
+                          ? Number(player.avg_assists).toFixed(1)
+                          : '-'}
                       </TableCell>
                     </TableRow>
                   ))}
