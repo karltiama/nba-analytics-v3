@@ -35,7 +35,23 @@ async function getGameBoxScore(gameId: string) {
     return null;
   }
 
+  // Get box score - check both the game_id directly and any related game IDs from provider mappings
+  // This handles cases where games are stored with BDL IDs but box scores use NBA Stats IDs
   const boxscore = await query(`
+    with related_game_ids as (
+      -- If game_id matches an internal_id, get all provider_ids for that internal_id
+      select distinct provider_id as game_id
+      from provider_id_map
+      where entity_type = 'game' and internal_id = $1
+      union
+      -- If game_id matches a provider_id, get the internal_id
+      select distinct internal_id as game_id
+      from provider_id_map
+      where entity_type = 'game' and provider_id = $1
+      union
+      -- Also include the original game_id itself
+      select $1::text as game_id
+    )
     select 
       pgs.*,
       p.full_name as player_name,
@@ -44,7 +60,7 @@ async function getGameBoxScore(gameId: string) {
     from player_game_stats pgs
     join players p on pgs.player_id = p.player_id
     join teams t on pgs.team_id = t.team_id
-    where pgs.game_id = $1
+    join related_game_ids rgi on pgs.game_id = rgi.game_id
     order by t.team_id, pgs.points desc nulls last
   `, [gameId]);
 

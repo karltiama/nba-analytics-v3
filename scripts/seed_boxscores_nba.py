@@ -358,9 +358,40 @@ def get_games_to_process(
         
         result2 = conn.execute(query2, params2).fetchall()
         
+        # Also include BallDontLie games (184...) matched to NBA Stats games
+        query3 = """
+            select distinct bdl_game.game_id, nba_game.game_id as nba_game_id, bdl_game.start_time
+            from games bdl_game
+            join teams bdl_home on bdl_game.home_team_id = bdl_home.team_id
+            join teams bdl_away on bdl_game.away_team_id = bdl_away.team_id
+            join games nba_game on (
+                (bdl_game.start_time at time zone 'America/New_York')::date = 
+                (nba_game.start_time at time zone 'America/New_York')::date
+            )
+            join teams nba_home on nba_game.home_team_id = nba_home.team_id
+            join teams nba_away on nba_game.away_team_id = nba_away.team_id
+            where bdl_game.status = 'Final'
+              and bdl_game.game_id like '184%%'
+              and nba_game.game_id like '002%%'
+              and nba_home.abbreviation = bdl_home.abbreviation
+              and nba_away.abbreviation = bdl_away.abbreviation
+        """
+        params3 = []
+        
+        if start_date:
+            query3 += " and bdl_game.start_time::date >= %s::date"
+            params3.append(start_date)
+        if end_date:
+            query3 += " and bdl_game.start_time::date <= %s::date"
+            params3.append(end_date)
+        
+        query3 += " order by bdl_game.start_time"
+        
+        result3 = conn.execute(query3, params3).fetchall()
+        
         # Combine and deduplicate (keep first occurrence)
         games = {}
-        for row in sorted(result + result2, key=lambda x: x[2]):  # Sort by start_time
+        for row in sorted(result + result2 + result3, key=lambda x: x[2]):  # Sort by start_time
             if row[0] not in games:
                 games[row[0]] = row[1]
         return list(games.items())
@@ -412,9 +443,43 @@ def get_games_to_process(
         
         result2 = conn.execute(query2, params2).fetchall()
         
+        # Also include BallDontLie games (184...) matched to NBA Stats games without box scores
+        query3 = """
+            select distinct bdl_game.game_id, nba_game.game_id as nba_game_id, bdl_game.start_time
+            from games bdl_game
+            join teams bdl_home on bdl_game.home_team_id = bdl_home.team_id
+            join teams bdl_away on bdl_game.away_team_id = bdl_away.team_id
+            join games nba_game on (
+                (bdl_game.start_time at time zone 'America/New_York')::date = 
+                (nba_game.start_time at time zone 'America/New_York')::date
+            )
+            join teams nba_home on nba_game.home_team_id = nba_home.team_id
+            join teams nba_away on nba_game.away_team_id = nba_away.team_id
+            where bdl_game.status = 'Final'
+              and bdl_game.game_id like '184%%'
+              and nba_game.game_id like '002%%'
+              and nba_home.abbreviation = bdl_home.abbreviation
+              and nba_away.abbreviation = bdl_away.abbreviation
+              and not exists (
+                  select 1 from player_game_stats pgs where pgs.game_id = bdl_game.game_id
+              )
+        """
+        params3 = []
+        
+        if start_date:
+            query3 += " and bdl_game.start_time::date >= %s::date"
+            params3.append(start_date)
+        if end_date:
+            query3 += " and bdl_game.start_time::date <= %s::date"
+            params3.append(end_date)
+        
+        query3 += " order by bdl_game.start_time"
+        
+        result3 = conn.execute(query3, params3).fetchall()
+        
         # Combine and deduplicate (keep first occurrence)
         games = {}
-        for row in sorted(result + result2, key=lambda x: x[2]):  # Sort by start_time
+        for row in sorted(result + result2 + result3, key=lambda x: x[2]):  # Sort by start_time
             if row[0] not in games:
                 games[row[0]] = row[1]
         return list(games.items())
