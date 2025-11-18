@@ -5,6 +5,7 @@ import { HomeAwaySplits } from './components/HomeAwaySplits';
 import { RecentForm } from './components/RecentForm';
 import { QuarterStrengths } from './components/QuarterStrengths';
 import { TeamSchedule } from './components/TeamSchedule';
+import { TeamRoster } from './components/TeamRoster';
 import Link from 'next/link';
 
 export default async function TeamPage({
@@ -42,6 +43,7 @@ export default async function TeamPage({
       <div className="max-w-7xl mx-auto space-y-6">
         <TeamHeader team={team} />
         <TeamSchedule teamId={teamId} />
+        <TeamRoster teamId={teamId} />
         <SeasonStats seasonStats={seasonStats} rankings={rankings} />
         <HomeAwaySplits splits={splits} />
         <RecentForm recentForm={recentForm} />

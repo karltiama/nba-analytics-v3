@@ -74,9 +74,66 @@ async function checkTeamStatsTable(): Promise<boolean> {
 
 // Get season stats from team_game_stats table
 async function getSeasonStatsFromTeamStats(teamId: string, season: string | null) {
+  // Count games_played directly from games table with deduplication
+  // This ensures consistency with the schedule display
+  let gamesPlayedSql = `
+    WITH game_duplicates AS (
+      SELECT 
+        g1.game_id as game1_id,
+        g2.game_id as game2_id,
+        (CASE WHEN g1.status = 'Final' AND g1.home_score IS NOT NULL AND g1.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g1.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g1.game_id LIKE '002%' THEN 2 ELSE 0 END) as score1,
+        (CASE WHEN g2.status = 'Final' AND g2.home_score IS NOT NULL AND g2.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g2.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g2.game_id LIKE '002%' THEN 2 ELSE 0 END) as score2
+      FROM games g1
+      JOIN games g2 ON (
+        g1.home_team_id = g2.home_team_id
+        AND g1.away_team_id = g2.away_team_id
+        AND g1.game_id < g2.game_id
+        AND ABS(EXTRACT(EPOCH FROM (g1.start_time - g2.start_time))) < 172800
+      )
+      WHERE (g1.home_team_id = $1 OR g1.away_team_id = $1)
+  `;
+  const gamesPlayedParams: any[] = [teamId];
+  let gamesPlayedParamCount = 2;
+
+  if (season) {
+    gamesPlayedSql += ` AND g1.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  gamesPlayedSql += `
+    )
+    SELECT COUNT(*) as games_played
+    FROM games g
+    LEFT JOIN game_duplicates gd ON (
+      (g.game_id = gd.game1_id AND gd.score1 < gd.score2) OR
+      (g.game_id = gd.game2_id AND gd.score2 < gd.score1)
+    )
+    WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+      AND g.status = 'Final'
+      AND gd.game1_id IS NULL
+  `;
+
+  if (season) {
+    gamesPlayedSql += ` AND g.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  const gamesPlayedResult = await query(gamesPlayedSql, gamesPlayedParams);
+  const gamesPlayed = gamesPlayedResult[0]?.games_played || 0;
+
+  // Get stats from team_game_stats
   let sql = `
     SELECT 
-      COUNT(DISTINCT tgs.game_id) as games_played,
       AVG(tgs.points) as points_for,
       AVG(
         CASE 
@@ -115,11 +172,69 @@ async function getSeasonStatsFromTeamStats(teamId: string, season: string | null
   }
 
   const result = await query(sql, params);
-  return result[0] || {};
+  return { ...(result[0] || {}), games_played: gamesPlayed };
 }
 
 // Get season stats by aggregating from player_game_stats
 async function getSeasonStatsFromPlayerStats(teamId: string, season: string | null) {
+  // Count games_played directly from games table with deduplication
+  // This ensures consistency with the schedule display
+  let gamesPlayedSql = `
+    WITH game_duplicates AS (
+      SELECT 
+        g1.game_id as game1_id,
+        g2.game_id as game2_id,
+        (CASE WHEN g1.status = 'Final' AND g1.home_score IS NOT NULL AND g1.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g1.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g1.game_id LIKE '002%' THEN 2 ELSE 0 END) as score1,
+        (CASE WHEN g2.status = 'Final' AND g2.home_score IS NOT NULL AND g2.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g2.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g2.game_id LIKE '002%' THEN 2 ELSE 0 END) as score2
+      FROM games g1
+      JOIN games g2 ON (
+        g1.home_team_id = g2.home_team_id
+        AND g1.away_team_id = g2.away_team_id
+        AND g1.game_id < g2.game_id
+        AND ABS(EXTRACT(EPOCH FROM (g1.start_time - g2.start_time))) < 172800
+      )
+      WHERE (g1.home_team_id = $1 OR g1.away_team_id = $1)
+  `;
+  const gamesPlayedParams: any[] = [teamId];
+  let gamesPlayedParamCount = 2;
+
+  if (season) {
+    gamesPlayedSql += ` AND g1.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  gamesPlayedSql += `
+    )
+    SELECT COUNT(*) as games_played
+    FROM games g
+    LEFT JOIN game_duplicates gd ON (
+      (g.game_id = gd.game1_id AND gd.score1 < gd.score2) OR
+      (g.game_id = gd.game2_id AND gd.score2 < gd.score1)
+    )
+    WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+      AND g.status = 'Final'
+      AND gd.game1_id IS NULL
+  `;
+
+  if (season) {
+    gamesPlayedSql += ` AND g.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  const gamesPlayedResult = await query(gamesPlayedSql, gamesPlayedParams);
+  const gamesPlayed = gamesPlayedResult[0]?.games_played || 0;
+
+  // Get stats from player_game_stats
   let sql = `
     WITH team_totals AS (
       SELECT 
@@ -175,7 +290,6 @@ async function getSeasonStatsFromPlayerStats(teamId: string, season: string | nu
   sql += `
     )
     SELECT 
-      COUNT(DISTINCT tt.game_id) as games_played,
       AVG(tt.points) as points_for,
       AVG(os.opponent_points) as points_against,
       AVG(tt.points) - AVG(os.opponent_points) as scoring_differential,
@@ -191,7 +305,7 @@ async function getSeasonStatsFromPlayerStats(teamId: string, season: string | nu
   `;
 
   const result = await query(sql, params);
-  return result[0] || {};
+  return { ...(result[0] || {}), games_played: gamesPlayed };
 }
 
 // Get offensive/defensive rankings
@@ -320,10 +434,71 @@ async function getTeamRankings(teamId: string, season: string | null, useTeamSta
 
 // Get home/away splits
 async function getSplitsFromTeamStats(teamId: string, season: string | null) {
+  // Count games_played directly from games table with deduplication, split by home/away
+  let gamesPlayedSql = `
+    WITH game_duplicates AS (
+      SELECT 
+        g1.game_id as game1_id,
+        g2.game_id as game2_id,
+        (CASE WHEN g1.status = 'Final' AND g1.home_score IS NOT NULL AND g1.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g1.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g1.game_id LIKE '002%' THEN 2 ELSE 0 END) as score1,
+        (CASE WHEN g2.status = 'Final' AND g2.home_score IS NOT NULL AND g2.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g2.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g2.game_id LIKE '002%' THEN 2 ELSE 0 END) as score2
+      FROM games g1
+      JOIN games g2 ON (
+        g1.home_team_id = g2.home_team_id
+        AND g1.away_team_id = g2.away_team_id
+        AND g1.game_id < g2.game_id
+        AND ABS(EXTRACT(EPOCH FROM (g1.start_time - g2.start_time))) < 172800
+      )
+      WHERE (g1.home_team_id = $1 OR g1.away_team_id = $1)
+  `;
+  const gamesPlayedParams: any[] = [teamId];
+  let gamesPlayedParamCount = 2;
+
+  if (season) {
+    gamesPlayedSql += ` AND g1.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  gamesPlayedSql += `
+    )
+    SELECT 
+      (g.home_team_id = $1) as is_home,
+      COUNT(*) as games_played
+    FROM games g
+    LEFT JOIN game_duplicates gd ON (
+      (g.game_id = gd.game1_id AND gd.score1 < gd.score2) OR
+      (g.game_id = gd.game2_id AND gd.score2 < gd.score1)
+    )
+    WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+      AND g.status = 'Final'
+      AND gd.game1_id IS NULL
+  `;
+
+  if (season) {
+    gamesPlayedSql += ` AND g.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  gamesPlayedSql += ` GROUP BY (g.home_team_id = $1)`;
+
+  const gamesPlayedResult = await query(gamesPlayedSql, gamesPlayedParams);
+  const homeGamesPlayed = gamesPlayedResult.find((r: any) => r.is_home)?.games_played || 0;
+  const awayGamesPlayed = gamesPlayedResult.find((r: any) => !r.is_home)?.games_played || 0;
+
+  // Get stats from team_game_stats
   let sql = `
     SELECT 
       tgs.is_home,
-      COUNT(DISTINCT tgs.game_id) as games_played,
       AVG(tgs.points) as points_for,
       AVG(
         CASE 
@@ -362,7 +537,7 @@ async function getSplitsFromTeamStats(teamId: string, season: string | null) {
 
   return {
     home: {
-      games_played: home.games_played || 0,
+      games_played: homeGamesPlayed,
       points_for: home.points_for || 0,
       points_against: home.points_against || 0,
       scoring_differential: home.scoring_differential || 0,
@@ -370,7 +545,7 @@ async function getSplitsFromTeamStats(teamId: string, season: string | null) {
       three_pct: home.three_pct || 0,
     },
     away: {
-      games_played: away.games_played || 0,
+      games_played: awayGamesPlayed,
       points_for: away.points_for || 0,
       points_against: away.points_against || 0,
       scoring_differential: away.scoring_differential || 0,
@@ -381,6 +556,68 @@ async function getSplitsFromTeamStats(teamId: string, season: string | null) {
 }
 
 async function getSplitsFromPlayerStats(teamId: string, season: string | null) {
+  // Count games_played directly from games table with deduplication, split by home/away
+  let gamesPlayedSql = `
+    WITH game_duplicates AS (
+      SELECT 
+        g1.game_id as game1_id,
+        g2.game_id as game2_id,
+        (CASE WHEN g1.status = 'Final' AND g1.home_score IS NOT NULL AND g1.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g1.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g1.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g1.game_id LIKE '002%' THEN 2 ELSE 0 END) as score1,
+        (CASE WHEN g2.status = 'Final' AND g2.home_score IS NOT NULL AND g2.away_score IS NOT NULL THEN 10 ELSE 0 END +
+         CASE WHEN g2.status = 'Final' THEN 5 ELSE 0 END +
+         CASE WHEN EXTRACT(HOUR FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 
+              OR EXTRACT(MINUTE FROM g2.start_time AT TIME ZONE 'America/New_York') != 0 THEN 3 ELSE 0 END +
+         CASE WHEN g2.game_id LIKE '002%' THEN 2 ELSE 0 END) as score2
+      FROM games g1
+      JOIN games g2 ON (
+        g1.home_team_id = g2.home_team_id
+        AND g1.away_team_id = g2.away_team_id
+        AND g1.game_id < g2.game_id
+        AND ABS(EXTRACT(EPOCH FROM (g1.start_time - g2.start_time))) < 172800
+      )
+      WHERE (g1.home_team_id = $1 OR g1.away_team_id = $1)
+  `;
+  const gamesPlayedParams: any[] = [teamId];
+  let gamesPlayedParamCount = 2;
+
+  if (season) {
+    gamesPlayedSql += ` AND g1.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  gamesPlayedSql += `
+    )
+    SELECT 
+      (g.home_team_id = $1) as is_home,
+      COUNT(*) as games_played
+    FROM games g
+    LEFT JOIN game_duplicates gd ON (
+      (g.game_id = gd.game1_id AND gd.score1 < gd.score2) OR
+      (g.game_id = gd.game2_id AND gd.score2 < gd.score1)
+    )
+    WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+      AND g.status = 'Final'
+      AND gd.game1_id IS NULL
+  `;
+
+  if (season) {
+    gamesPlayedSql += ` AND g.season = $${gamesPlayedParamCount}`;
+    gamesPlayedParams.push(season);
+    gamesPlayedParamCount++;
+  }
+
+  gamesPlayedSql += ` GROUP BY (g.home_team_id = $1)`;
+
+  const gamesPlayedResult = await query(gamesPlayedSql, gamesPlayedParams);
+  const homeGamesPlayed = gamesPlayedResult.find((r: any) => r.is_home)?.games_played || 0;
+  const awayGamesPlayed = gamesPlayedResult.find((r: any) => !r.is_home)?.games_played || 0;
+
+  // Get stats from player_game_stats
   let sql = `
     WITH team_totals AS (
       SELECT 
@@ -411,7 +648,6 @@ async function getSplitsFromPlayerStats(teamId: string, season: string | null) {
     )
     SELECT 
       (tt.team_id = g.home_team_id) as is_home,
-      COUNT(DISTINCT tt.game_id) as games_played,
       AVG(tt.points) as points_for,
       AVG(
         CASE 
@@ -439,7 +675,7 @@ async function getSplitsFromPlayerStats(teamId: string, season: string | null) {
 
   return {
     home: {
-      games_played: home.games_played || 0,
+      games_played: homeGamesPlayed,
       points_for: home.points_for || 0,
       points_against: home.points_against || 0,
       scoring_differential: home.scoring_differential || 0,
@@ -447,7 +683,7 @@ async function getSplitsFromPlayerStats(teamId: string, season: string | null) {
       three_pct: home.three_pct || 0,
     },
     away: {
-      games_played: away.games_played || 0,
+      games_played: awayGamesPlayed,
       points_for: away.points_for || 0,
       points_against: away.points_against || 0,
       scoring_differential: away.scoring_differential || 0,

@@ -54,6 +54,7 @@ async function findDuplicateGroups(season?: string): Promise<DuplicateGroup[]> {
         g.status,
         g.home_score,
         g.away_score,
+        g.start_time,
         case when g.game_id like '002%' then 'NBA Stats'
              when g.game_id like '184%' then 'BallDontLie'
              else 'Other' end as source,
@@ -67,31 +68,49 @@ async function findDuplicateGroups(season?: string): Promise<DuplicateGroup[]> {
       from games g
       ${season ? 'where g.season = $1' : ''}
     ),
-    game_groups as (
+    duplicate_pairs as (
+      -- Find games that are duplicates (same teams, within 48 hours)
       select 
-        game_date_et,
-        home_team_id,
-        away_team_id,
-        count(*) as game_count,
-        array_agg(game_id order by score desc, game_id) as game_ids,
-        array_agg(status order by score desc, game_id) as statuses,
-        array_agg(source order by score desc, game_id) as sources,
-        array_agg(has_scores order by score desc, game_id) as has_scores_array,
-        array_agg(has_boxscore order by score desc, game_id) as has_boxscore_array,
-        array_agg(score order by score desc, game_id) as scores,
-        (array_agg(game_id order by score desc, game_id))[1] as canonical_game_id
-      from game_details
-      group by game_date_et, home_team_id, away_team_id
-      having count(*) > 1
+        g1.game_id as game1_id,
+        g2.game_id as game2_id,
+        g1.score as score1,
+        g2.score as score2,
+        case when g1.score >= g2.score then g1.game_id else g2.game_id end as canonical_id,
+        case when g1.score >= g2.score then g2.game_id else g1.game_id end as duplicate_id
+      from game_details g1
+      join game_details g2 on (
+        g1.home_team_id = g2.home_team_id
+        and g1.away_team_id = g2.away_team_id
+        and g1.game_id < g2.game_id
+        and abs(extract(epoch from (g1.start_time - g2.start_time))) < 172800  -- Within 48 hours
+      )
+      ${season ? 'where g1.season = $1' : ''}
+    ),
+    canonical_games as (
+      select distinct canonical_id
+      from duplicate_pairs
     )
     select 
-      gg.*,
+      cg.canonical_id as canonical_game_id,
+      gd.game_date_et,
+      gd.home_team_id,
+      gd.away_team_id,
+      array_agg(gd_all.game_id order by gd_all.score desc, gd_all.game_id) filter (where gd_all.game_id is not null) as game_ids,
+      array_agg(gd_all.status order by gd_all.score desc, gd_all.game_id) filter (where gd_all.status is not null) as statuses,
+      array_agg(gd_all.source order by gd_all.score desc, gd_all.game_id) filter (where gd_all.source is not null) as sources,
+      array_agg(gd_all.has_scores order by gd_all.score desc, gd_all.game_id) filter (where gd_all.has_scores is not null) as has_scores_array,
+      array_agg(gd_all.has_boxscore order by gd_all.score desc, gd_all.game_id) filter (where gd_all.has_boxscore is not null) as has_boxscore_array,
+      array_agg(gd_all.score order by gd_all.score desc, gd_all.game_id) filter (where gd_all.score is not null) as scores,
       ht.abbreviation as home_abbr,
       at.abbreviation as away_abbr
-    from game_groups gg
-    join teams ht on gg.home_team_id = ht.team_id
-    join teams at on gg.away_team_id = at.team_id
-    order by gg.game_date_et desc
+    from canonical_games cg
+    join game_details gd on cg.canonical_id = gd.game_id
+    join duplicate_pairs dp on (dp.canonical_id = cg.canonical_id or dp.duplicate_id = cg.canonical_id)
+    join game_details gd_all on (gd_all.game_id = dp.game1_id or gd_all.game_id = dp.game2_id)
+    join teams ht on gd.home_team_id = ht.team_id
+    join teams at on gd.away_team_id = at.team_id
+    group by cg.canonical_id, gd.game_date_et, gd.home_team_id, gd.away_team_id, ht.abbreviation, at.abbreviation
+    order by gd.game_date_et desc
   `;
 
   const result = await pool.query(query, season ? [season] : []);
@@ -145,6 +164,22 @@ async function migrateBoxScores(fromGameId: string, toGameId: string, client: an
   `, [fromGameId]);
 }
 
+async function copyScores(fromGameId: string, toGameId: string, client: any) {
+  // Copy scores from duplicate game to canonical game if canonical doesn't have scores
+  await client.query(`
+    UPDATE games g1
+    SET 
+      home_score = g2.home_score,
+      away_score = g2.away_score,
+      updated_at = now()
+    FROM games g2
+    WHERE g1.game_id = $1
+      AND g2.game_id = $2
+      AND (g1.home_score IS NULL OR g1.away_score IS NULL)
+      AND (g2.home_score IS NOT NULL AND g2.away_score IS NOT NULL)
+  `, [toGameId, fromGameId]);
+}
+
 async function cleanupDuplicates(dryRun: boolean, season?: string) {
   console.log('\n🔍 Finding duplicate games...');
   const duplicates = await findDuplicateGroups(season);
@@ -187,6 +222,13 @@ async function cleanupDuplicates(dryRun: boolean, season?: string) {
       const duplicatesToRemove = dup.games.slice(1);
       
       for (const dupGame of duplicatesToRemove) {
+        // Copy scores from duplicate to canonical if canonical doesn't have scores
+        const canonicalHasScores = dup.games[0].has_scores;
+        if (!canonicalHasScores && dupGame.has_scores) {
+          console.log(`  Copying scores from ${dupGame.game_id} to ${canonicalId}`);
+          await copyScores(dupGame.game_id, canonicalId, client);
+        }
+        
         // Migrate box scores if the duplicate has them but canonical doesn't
         const canonicalHasBoxscore = dup.games[0].has_boxscore;
         if (dupGame.has_boxscore && !canonicalHasBoxscore) {
