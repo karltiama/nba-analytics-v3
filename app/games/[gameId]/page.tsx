@@ -167,7 +167,14 @@ export default async function GameBoxScorePage({
                 <TableBody>
                   {awayTeamStats.map((stat: any) => (
                     <TableRow key={`${stat.game_id}-${stat.player_id}`}>
-                      <TableCell className="font-medium">{stat.player_name}</TableCell>
+                      <TableCell className="font-medium">
+                        <Link
+                          href={`/players/${stat.player_id}`}
+                          className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                        >
+                          {stat.player_name}
+                        </Link>
+                      </TableCell>
                       <TableCell>{stat.minutes ? Number(stat.minutes).toFixed(1) : '-'}</TableCell>
                       <TableCell>{stat.points ?? '-'}</TableCell>
                       <TableCell>{stat.rebounds ?? '-'}</TableCell>
@@ -207,7 +214,14 @@ export default async function GameBoxScorePage({
                 <TableBody>
                   {homeTeamStats.map((stat: any) => (
                     <TableRow key={`${stat.game_id}-${stat.player_id}`}>
-                      <TableCell className="font-medium">{stat.player_name}</TableCell>
+                      <TableCell className="font-medium">
+                        <Link
+                          href={`/players/${stat.player_id}`}
+                          className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                        >
+                          {stat.player_name}
+                        </Link>
+                      </TableCell>
                       <TableCell>{stat.minutes ? Number(stat.minutes).toFixed(1) : '-'}</TableCell>
                       <TableCell>{stat.points ?? '-'}</TableCell>
                       <TableCell>{stat.rebounds ?? '-'}</TableCell>
