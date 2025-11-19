@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { GameMatchupInfo } from './components/GameMatchupInfo';
 import { query } from '@/lib/db';
 
 async function getGameBoxScore(gameId: string) {
@@ -98,6 +99,7 @@ export default async function GameBoxScorePage({
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
       <div className="max-w-7xl mx-auto space-y-6">
+        <GameMatchupInfo game={game} />
         <div>
           <Link
             href="/games"

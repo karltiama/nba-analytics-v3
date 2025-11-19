@@ -117,6 +117,11 @@ export function PlayerSeasonStats({ seasonStats }: PlayerSeasonStatsProps) {
               {seasonStats.total_fgm}/{seasonStats.total_fga}
             </div>
           )}
+          {seasonStats.efg_pct !== null && seasonStats.efg_pct !== undefined && (
+            <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+              eFG%: {Number(seasonStats.efg_pct).toFixed(1)}%
+            </div>
+          )}
         </div>
         <div>
           <div className="text-sm text-zinc-600 dark:text-zinc-400">3P%</div>

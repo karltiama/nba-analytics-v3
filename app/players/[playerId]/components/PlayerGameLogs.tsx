@@ -31,6 +31,13 @@ interface Game {
   plus_minus: number | null;
   started: boolean | null;
   dnp_reason: string | null;
+  opponent_defensive_rankings?: {
+    points_allowed_rank?: number;
+    rebounds_allowed_rank?: number;
+    assists_allowed_rank?: number;
+    fg_pct_allowed_rank?: number;
+    three_pct_allowed_rank?: number;
+  };
 }
 
 interface PlayerGameLogsProps {
@@ -123,12 +130,29 @@ export function PlayerGameLogs({ games }: PlayerGameLogsProps) {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Link
-                      href={`/teams/${game.opponent_id}`}
-                      className="hover:text-blue-600 dark:hover:text-blue-400"
-                    >
-                      {game.location === 'away' ? '@' : 'vs'} {game.opponent_abbr}
-                    </Link>
+                    <div className="flex flex-col">
+                      <Link
+                        href={`/teams/${game.opponent_id}`}
+                        className="hover:text-blue-600 dark:hover:text-blue-400"
+                      >
+                        {game.location === 'away' ? '@' : 'vs'} {game.opponent_abbr}
+                      </Link>
+                      {game.opponent_defensive_rankings?.points_allowed_rank && (
+                        <div className="text-xs text-zinc-500 mt-1">
+                          Def Rank: #{game.opponent_defensive_rankings.points_allowed_rank}
+                          {game.opponent_defensive_rankings.rebounds_allowed_rank && (
+                            <span className="ml-2">
+                              Reb: #{game.opponent_defensive_rankings.rebounds_allowed_rank}
+                            </span>
+                          )}
+                          {game.opponent_defensive_rankings.assists_allowed_rank && (
+                            <span className="ml-2">
+                              Ast: #{game.opponent_defensive_rankings.assists_allowed_rank}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     {game.result && (

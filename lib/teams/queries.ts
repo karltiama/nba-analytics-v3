@@ -153,8 +153,140 @@ async function getSeasonStatsFromPlayerStats(teamId: string, season: string | nu
 }
 
 async function getTeamRankings(teamId: string, season: string | null, useTeamStats: boolean) {
-  // Simplified ranking - just return null for now, can implement full ranking later
-  return { offensive_rank: null, defensive_rank: null };
+  // Get all teams' offensive and defensive ratings, then rank
+  let sql = useTeamStats
+    ? `
+      WITH team_offensive AS (
+        SELECT 
+          tgs.team_id,
+          AVG(tgs.points) as points_for
+        FROM team_game_stats tgs
+        JOIN games g ON tgs.game_id = g.game_id
+        WHERE g.status = 'Final'
+    `
+    : `
+      WITH team_offensive AS (
+        SELECT 
+          game_id,
+          team_id,
+          SUM(points) as points
+        FROM player_game_stats
+        WHERE dnp_reason IS NULL
+        GROUP BY game_id, team_id
+      ),
+      team_offensive_avg AS (
+        SELECT 
+          tof.team_id,
+          AVG(tof.points) as points_for
+        FROM team_offensive tof
+        JOIN games g ON tof.game_id = g.game_id
+        WHERE g.status = 'Final'
+    `;
+
+  const params: any[] = [];
+  let paramCount = 1;
+
+  if (season) {
+    sql += ` AND g.season = $${paramCount}`;
+    params.push(season);
+    paramCount++;
+  }
+
+  sql += `
+        GROUP BY ${useTeamStats ? 'tgs.team_id' : 'toa.team_id'}
+      ),
+      team_defensive AS (
+  `;
+
+  if (useTeamStats) {
+    sql += `
+        SELECT 
+          tgs.team_id,
+          AVG(
+            CASE 
+              WHEN tgs.is_home THEN g.away_score
+              ELSE g.home_score
+            END
+          ) as points_against
+        FROM team_game_stats tgs
+        JOIN games g ON tgs.game_id = g.game_id
+        WHERE g.status = 'Final'
+    `;
+  } else {
+    sql += `
+        SELECT 
+          team_id,
+          AVG(points_against) as points_against
+        FROM (
+          SELECT 
+            g.home_team_id as team_id,
+            g.away_score as points_against
+          FROM games g
+          WHERE g.status = 'Final'
+    `;
+
+    if (season) {
+      sql += ` AND g.season = $${paramCount}`;
+      params.push(season);
+      paramCount++;
+    }
+
+    sql += `
+          UNION ALL
+          SELECT 
+            g.away_team_id as team_id,
+            g.home_score as points_against
+          FROM games g
+          WHERE g.status = 'Final'
+    `;
+
+    if (season) {
+      sql += ` AND g.season = $${paramCount}`;
+      params.push(season);
+      paramCount++;
+    }
+
+    sql += `
+        ) defensive_data
+        GROUP BY team_id
+    `;
+  }
+
+  if (season && useTeamStats) {
+    sql += ` AND g.season = $${paramCount}`;
+    params.push(season);
+    paramCount++;
+  } else if (!useTeamStats) {
+    if (season) {
+      sql += ` AND g.season = $${paramCount}`;
+      params.push(season);
+      paramCount++;
+    }
+  }
+
+  sql += `
+        GROUP BY ${useTeamStats ? 'tgs.team_id' : 'team_id'}
+      ),
+      rankings AS (
+        SELECT 
+          ${useTeamStats ? 'tof.team_id' : 'toa.team_id'} as team_id,
+          ${useTeamStats ? 'tof.points_for' : 'toa.points_for'} as points_for,
+          tdf.points_against,
+          RANK() OVER (ORDER BY ${useTeamStats ? 'tof.points_for' : 'toa.points_for'} DESC) as offensive_rank,
+          RANK() OVER (ORDER BY tdf.points_against ASC) as defensive_rank
+        FROM ${useTeamStats ? 'team_offensive tof' : 'team_offensive_avg toa'}
+        JOIN team_defensive tdf ON ${useTeamStats ? 'tof.team_id' : 'toa.team_id'} = tdf.team_id
+      )
+      SELECT 
+        offensive_rank,
+        defensive_rank
+      FROM rankings
+      WHERE team_id = $${paramCount}
+    `;
+  params.push(teamId);
+
+  const result = await query(sql, params);
+  return result[0] || { offensive_rank: null, defensive_rank: null };
 }
 
 async function getSplitsFromTeamStats(teamId: string, season: string | null) {

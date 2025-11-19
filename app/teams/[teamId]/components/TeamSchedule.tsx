@@ -8,6 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { query } from '@/lib/db';
+import { getMultipleOpponentDefensiveRankings } from '@/lib/players/queries';
 
 interface TeamScheduleProps {
   teamId: string;
@@ -157,6 +158,16 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
   const pastGames = schedule.filter((game) => new Date(game.start_time) <= now);
   const upcomingGames = schedule.filter((game) => new Date(game.start_time) > now);
 
+  // Get opponent defensive rankings for upcoming games (single query for all opponents)
+  const uniqueOpponentIds = [...new Set(upcomingGames.map((g: any) => g.opponent_id))];
+  const opponentRankings = await getMultipleOpponentDefensiveRankings(uniqueOpponentIds, season || null);
+
+  // Add rankings to upcoming games
+  const upcomingGamesWithRankings = upcomingGames.map((game: any) => ({
+    ...game,
+    opponent_defensive_rankings: opponentRankings[game.opponent_id] || {},
+  }));
+
   // Calculate record
   const wins = pastGames.filter((g) => g.result === 'W').length;
   const losses = pastGames.filter((g) => g.result === 'L').length;
@@ -200,7 +211,7 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {upcomingGames.slice(0, 10).map((game) => {
+                {upcomingGamesWithRankings.slice(0, 10).map((game) => {
                   const gameDate = new Date(game.start_time);
                   const isToday = gameDate.toDateString() === now.toDateString();
                   
@@ -225,12 +236,29 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
                         })}
                       </TableCell>
                       <TableCell>
-                        <Link
-                          href={`/teams/${game.opponent_id}`}
-                          className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline font-medium"
-                        >
-                          {game.is_home === 'home' ? 'vs' : '@'} {game.opponent_abbr}
-                        </Link>
+                        <div className="flex flex-col">
+                          <Link
+                            href={`/teams/${game.opponent_id}`}
+                            className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline font-medium"
+                          >
+                            {game.is_home === 'home' ? 'vs' : '@'} {game.opponent_abbr}
+                          </Link>
+                          {game.opponent_defensive_rankings?.points_allowed_rank && (
+                            <div className="text-xs text-zinc-500 mt-1">
+                              Def Rank: #{game.opponent_defensive_rankings.points_allowed_rank}
+                              {game.opponent_defensive_rankings.rebounds_allowed_rank && (
+                                <span className="ml-2">
+                                  Reb: #{game.opponent_defensive_rankings.rebounds_allowed_rank}
+                                </span>
+                              )}
+                              {game.opponent_defensive_rankings.assists_allowed_rank && (
+                                <span className="ml-2">
+                                  Ast: #{game.opponent_defensive_rankings.assists_allowed_rank}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-zinc-600 dark:text-zinc-400 text-sm">
                         {game.is_home === 'home' ? 'Home' : 'Away'}
@@ -246,9 +274,9 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
               </TableBody>
             </Table>
           </div>
-          {upcomingGames.length > 10 && (
+          {upcomingGamesWithRankings.length > 10 && (
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-              Showing next 10 of {upcomingGames.length} upcoming games
+              Showing next 10 of {upcomingGamesWithRankings.length} upcoming games
             </p>
           )}
         </div>
