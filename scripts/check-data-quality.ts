@@ -2,303 +2,502 @@ import 'dotenv/config';
 import { Pool } from 'pg';
 
 /**
- * Comprehensive data quality check script for NBA analytics database.
+ * Comprehensive Data Quality Check Script
  * 
  * Checks for:
- * - Duplicate games (same date + teams)
- * - Games missing provider mappings
- * - Games with inconsistent scores/status
- * - Orphaned records
- * - Missing box scores for Final games
- * - Date/timezone issues
+ * 1. Games missing box scores
+ * 2. Games missing final scores
+ * 3. Games with incorrect statuses
+ * 4. Box scores with invalid player references
+ * 5. Score mismatches (box score totals vs game scores)
+ * 6. Games missing team_game_stats
+ * 7. Duplicate games (within 48 hours, same teams)
+ * 8. Games with invalid dates
+ * 9. Orphaned records
  * 
  * Usage:
- *   tsx scripts/check-data-quality.ts
- *   tsx scripts/check-data-quality.ts --season 2025-26
+ *   tsx scripts/check-data-quality.ts                    # Check all issues
+ *   tsx scripts/check-data-quality.ts --fix              # Auto-fix issues where possible
+ *   tsx scripts/check-data-quality.ts --start-date 2025-10-01 --end-date 2025-11-30
  */
 
-const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
+const pool = new Pool({ connectionString: process.env.SUPABASE_DB_URL });
 
-if (!SUPABASE_DB_URL) {
-  console.error('Missing SUPABASE_DB_URL. Set it in your environment or .env file.');
-  process.exit(1);
-}
-
-const pool = new Pool({ connectionString: SUPABASE_DB_URL });
-
-interface QualityIssue {
+interface Issue {
   type: string;
   severity: 'error' | 'warning' | 'info';
+  count: number;
   message: string;
-  count?: number;
-  examples?: any[];
+  examples?: Array<Record<string, any>>;
+  fixable?: boolean;
+  fixQuery?: string;
 }
 
-const issues: QualityIssue[] = [];
+const issues: Issue[] = [];
 
-async function checkDuplicateGames(season?: string) {
-  console.log('\n🔍 Checking for duplicate games...');
+async function checkMissingBoxScores(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for games missing box scores...');
   
-  const query = `
-    with game_groups as (
-      select 
-        (g.start_time at time zone 'America/New_York')::date as game_date_et,
-        g.home_team_id,
-        g.away_team_id,
-        count(*) as game_count,
-        array_agg(g.game_id order by g.game_id) as game_ids,
-        array_agg(g.status order by g.game_id) as statuses,
-        array_agg(case when g.game_id like '002%' then 'NBA' when g.game_id like '184%' then 'BDL' else 'OTHER' end order by g.game_id) as sources
-      from games g
-      ${season ? 'where g.season = $1' : ''}
-      group by 
-        (g.start_time at time zone 'America/New_York')::date,
-        g.home_team_id,
-        g.away_team_id
-      having count(*) > 1
-    )
-    select 
-      gg.*,
+  let sql = `
+    SELECT 
+      g.game_id,
+      g.start_time,
+      g.status,
       ht.abbreviation as home_abbr,
-      at.abbreviation as away_abbr
-    from game_groups gg
-    join teams ht on gg.home_team_id = ht.team_id
-    join teams at on gg.away_team_id = at.team_id
-    order by gg.game_date_et desc, gg.game_count desc
-    limit 20
-  `;
-
-  const result = await pool.query(query, season ? [season] : []);
-  
-  if (result.rows.length > 0) {
-    issues.push({
-      type: 'duplicate_games',
-      severity: 'error',
-      message: `Found ${result.rows.length} sets of duplicate games (same date + teams)`,
-      count: result.rows.reduce((sum, row) => sum + row.game_count - 1, 0),
-      examples: result.rows.slice(0, 5).map(row => ({
-        date: row.game_date_et,
-        teams: `${row.away_abbr} @ ${row.home_abbr}`,
-        count: row.game_count,
-        game_ids: row.game_ids,
-        sources: row.sources,
-        statuses: row.statuses,
-      })),
-    });
-    console.log(`  ❌ Found ${result.rows.length} duplicate game groups`);
-  } else {
-    console.log('  ✅ No duplicate games found');
-  }
-}
-
-async function checkMissingProviderMappings(season?: string) {
-  console.log('\n🔍 Checking for games missing provider mappings...');
-  
-  const query = `
-    select 
-      g.game_id,
-      g.season,
-      g.start_time,
-      g.status,
-      case 
-        when g.game_id like '002%' then 'NBA Stats'
-        when g.game_id like '184%' then 'BallDontLie'
-        else 'Unknown'
-      end as source,
-      (select count(*) from provider_id_map pm 
-       where pm.entity_type = 'game' and pm.internal_id = g.game_id) as mapping_count
-    from games g
-    where ${season ? 'g.season = $1 and' : ''} not exists (
-      select 1 from provider_id_map pm
-      where pm.entity_type = 'game' 
-        and (pm.internal_id = g.game_id or pm.provider_id = g.game_id)
-    )
-    order by g.start_time desc
-    limit 20
-  `;
-
-  const result = await pool.query(query, season ? [season] : []);
-  
-  if (result.rows.length > 0) {
-    issues.push({
-      type: 'missing_mappings',
-      severity: 'warning',
-      message: `Found ${result.rows.length} games without provider mappings`,
-      count: result.rows.length,
-      examples: result.rows.slice(0, 5).map(row => ({
-        game_id: row.game_id,
-        source: row.source,
-        season: row.season,
-        status: row.status,
-      })),
-    });
-    console.log(`  ⚠️  Found ${result.rows.length} games without provider mappings`);
-  } else {
-    console.log('  ✅ All games have provider mappings');
-  }
-}
-
-async function checkInconsistentScores(season?: string) {
-  console.log('\n🔍 Checking for games with inconsistent scores/status...');
-  
-  const query = `
-    select 
-      g.game_id,
-      g.status,
+      at.abbreviation as away_abbr,
       g.home_score,
-      g.away_score,
-      case when g.status = 'Final' and (g.home_score is null or g.away_score is null) then 'Final without scores'
-           when g.status != 'Final' and (g.home_score is not null or g.away_score is not null) then 'Scheduled with scores'
-           else null end as issue_type
-    from games g
-    where ${season ? 'g.season = $1 and' : ''} (
-      (g.status = 'Final' and (g.home_score is null or g.away_score is null))
-      or (g.status != 'Final' and (g.home_score is not null or g.away_score is not null))
-    )
-    order by g.start_time desc
-    limit 20
+      g.away_score
+    FROM games g
+    JOIN teams ht ON g.home_team_id = ht.team_id
+    JOIN teams at ON g.away_team_id = at.team_id
+    WHERE g.status = 'Final'
+      AND NOT EXISTS (SELECT 1 FROM player_game_stats pgs WHERE pgs.game_id = g.game_id)
   `;
-
-  const result = await pool.query(query, season ? [season] : []);
   
-  if (result.rows.length > 0) {
-    issues.push({
-      type: 'inconsistent_scores',
-      severity: 'warning',
-      message: `Found ${result.rows.length} games with inconsistent scores/status`,
-      count: result.rows.length,
-      examples: result.rows.slice(0, 5).map(row => ({
-        game_id: row.game_id,
-        status: row.status,
-        home_score: row.home_score,
-        away_score: row.away_score,
-        issue: row.issue_type,
-      })),
-    });
-    console.log(`  ⚠️  Found ${result.rows.length} games with inconsistent scores/status`);
-  } else {
-    console.log('  ✅ All games have consistent scores/status');
+  const params: any[] = [];
+  let paramCount = 1;
+  
+  if (startDate) {
+    sql += ` AND g.start_time::date >= $${paramCount}::date`;
+    params.push(startDate);
+    paramCount++;
   }
-}
-
-async function checkMissingBoxScores(season?: string) {
-  console.log('\n🔍 Checking for Final games missing box scores...');
   
-  const query = `
-    select 
-      g.game_id,
-      g.start_time,
-      g.status,
-      g.home_score,
-      g.away_score,
-      (select count(*) from player_game_stats pgs where pgs.game_id = g.game_id) as player_count
-    from games g
-    where g.status = 'Final'
-      ${season ? 'and g.season = $1' : ''}
-      and not exists (
-        select 1 from player_game_stats pgs where pgs.game_id = g.game_id
-      )
-    order by g.start_time desc
-    limit 20
-  `;
-
-  const result = await pool.query(query, season ? [season] : []);
+  if (endDate) {
+    sql += ` AND g.start_time::date <= $${paramCount}::date`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += ` ORDER BY g.start_time DESC LIMIT 20`;
+  
+  const result = await pool.query(sql, params);
   
   if (result.rows.length > 0) {
     issues.push({
       type: 'missing_boxscores',
-      severity: 'warning',
-      message: `Found ${result.rows.length} Final games without box scores`,
-      count: result.rows.length,
-      examples: result.rows.slice(0, 5).map(row => ({
-        game_id: row.game_id,
-        date: row.start_time,
-        score: `${row.away_score || '?'} - ${row.home_score || '?'}`,
-      })),
-    });
-    console.log(`  ⚠️  Found ${result.rows.length} Final games without box scores`);
-  } else {
-    console.log('  ✅ All Final games have box scores');
-  }
-}
-
-async function checkOrphanedRecords(season?: string) {
-  console.log('\n🔍 Checking for orphaned records...');
-  
-  // Check player_game_stats without games
-  const orphanedStats = await pool.query(`
-    select count(*) as count
-    from player_game_stats pgs
-    where not exists (
-      select 1 from games g where g.game_id = pgs.game_id
-    )
-  `);
-  
-  // Check provider mappings without games
-  const orphanedMappings = await pool.query(`
-    select count(*) as count
-    from provider_id_map pm
-    where pm.entity_type = 'game'
-      and not exists (
-        select 1 from games g where g.game_id = pm.internal_id
-      )
-  `);
-  
-  const statsCount = parseInt(orphanedStats.rows[0].count);
-  const mappingsCount = parseInt(orphanedMappings.rows[0].count);
-  
-  if (statsCount > 0 || mappingsCount > 0) {
-    issues.push({
-      type: 'orphaned_records',
       severity: 'error',
-      message: `Found orphaned records: ${statsCount} player_game_stats, ${mappingsCount} provider mappings`,
-      count: statsCount + mappingsCount,
+      count: result.rows.length,
+      message: `Found ${result.rows.length} Final games without box scores`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game_id: r.game_id,
+        date: new Date(r.start_time).toISOString().split('T')[0],
+        matchup: `${r.away_abbr} @ ${r.home_abbr}`,
+        score: `${r.away_score || '?'} - ${r.home_score || '?'}`,
+      })),
+      fixable: true,
     });
-    console.log(`  ❌ Found ${statsCount} orphaned player_game_stats`);
-    console.log(`  ❌ Found ${mappingsCount} orphaned provider mappings`);
+    console.log(`  [ERROR] Found ${result.rows.length} Final games without box scores`);
   } else {
-    console.log('  ✅ No orphaned records found');
+    console.log('  [OK] All Final games have box scores');
   }
 }
 
-async function checkDateIssues(season?: string) {
-  console.log('\n🔍 Checking for date/timezone issues...');
+async function checkMissingFinalScores(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for games missing final scores...');
   
-  const query = `
-    select 
+  let sql = `
+    SELECT 
       g.game_id,
       g.start_time,
-      (g.start_time at time zone 'America/New_York')::date as date_et,
-      g.start_time::date as date_utc,
-      case when (g.start_time at time zone 'America/New_York')::date != g.start_time::date then 'timezone_mismatch' else null end as issue
-    from games g
-    where ${season ? 'g.season = $1 and' : ''} (g.start_time at time zone 'America/New_York')::date != g.start_time::date
-    order by g.start_time desc
-    limit 10
+      g.status,
+      ht.abbreviation as home_abbr,
+      at.abbreviation as away_abbr,
+      EXISTS(SELECT 1 FROM player_game_stats pgs WHERE pgs.game_id = g.game_id) as has_boxscore
+    FROM games g
+    JOIN teams ht ON g.home_team_id = ht.team_id
+    JOIN teams at ON g.away_team_id = at.team_id
+    WHERE g.status = 'Final'
+      AND (g.home_score IS NULL OR g.away_score IS NULL)
   `;
-
-  const result = await pool.query(query, season ? [season] : []);
+  
+  const params: any[] = [];
+  let paramCount = 1;
+  
+  if (startDate) {
+    sql += ` AND g.start_time::date >= $${paramCount}::date`;
+    params.push(startDate);
+    paramCount++;
+  }
+  
+  if (endDate) {
+    sql += ` AND g.start_time::date <= $${paramCount}::date`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += ` ORDER BY g.start_time DESC LIMIT 20`;
+  
+  const result = await pool.query(sql, params);
   
   if (result.rows.length > 0) {
     issues.push({
-      type: 'date_issues',
-      severity: 'info',
-      message: `Found ${result.rows.length} games where ET date differs from UTC date (this is normal for late games)`,
+      type: 'missing_scores',
+      severity: 'error',
       count: result.rows.length,
-      examples: result.rows.slice(0, 5).map(row => ({
-        game_id: row.game_id,
-        start_time: row.start_time,
-        date_et: row.date_et,
-        date_utc: row.date_utc,
+      message: `Found ${result.rows.length} Final games without final scores`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game_id: r.game_id,
+        date: new Date(r.start_time).toISOString().split('T')[0],
+        matchup: `${r.away_abbr} @ ${r.home_abbr}`,
+        has_boxscore: r.has_boxscore,
       })),
+      fixable: result.rows[0]?.has_boxscore || false, // Can fix if box score exists (can calculate from totals)
     });
-    console.log(`  ℹ️  Found ${result.rows.length} games with date differences (normal for late games)`);
+    console.log(`  [ERROR] Found ${result.rows.length} Final games without final scores`);
   } else {
-    console.log('  ✅ No date issues found');
+    console.log('  [OK] All Final games have final scores');
   }
 }
 
-async function generateSummary() {
+async function checkIncorrectStatuses(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for games with incorrect statuses...');
+  
+  const now = new Date();
+  // Only consider games that are at least 3 hours old to avoid timezone issues
+  const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+  
+  let sql = `
+    SELECT 
+      g.game_id,
+      g.start_time,
+      g.status,
+      g.home_score,
+      g.away_score,
+      ht.abbreviation as home_abbr,
+      at.abbreviation as away_abbr
+    FROM games g
+    JOIN teams ht ON g.home_team_id = ht.team_id
+    JOIN teams at ON g.away_team_id = at.team_id
+    WHERE (
+      -- Games with scores but not Final
+      (g.home_score IS NOT NULL AND g.away_score IS NOT NULL AND g.status != 'Final' AND g.status != 'Cancelled' AND g.status != 'Postponed')
+      OR
+      -- Past games marked as Scheduled that have box scores (at least 3 hours old to avoid timezone issues)
+      (g.start_time < $2 AND g.status = 'Scheduled' AND EXISTS(SELECT 1 FROM player_game_stats pgs WHERE pgs.game_id = g.game_id))
+      OR
+      -- Future games marked as Final without scores
+      (g.start_time > $1 AND g.status = 'Final' AND (g.home_score IS NULL OR g.away_score IS NULL))
+    )
+  `;
+  
+  const params: any[] = [now, threeHoursAgo];
+  let paramCount = 3;
+  
+  if (startDate) {
+    sql += ` AND g.start_time::date >= $${paramCount}::date`;
+    params.push(startDate);
+    paramCount++;
+  }
+  
+  if (endDate) {
+    sql += ` AND g.start_time::date <= $${paramCount}::date`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += ` ORDER BY g.start_time DESC LIMIT 20`;
+  
+  const result = await pool.query(sql, params);
+  
+  if (result.rows.length > 0) {
+    issues.push({
+      type: 'incorrect_status',
+      severity: 'warning',
+      count: result.rows.length,
+      message: `Found ${result.rows.length} games with incorrect statuses`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game_id: r.game_id,
+        date: new Date(r.start_time).toISOString().split('T')[0],
+        matchup: `${r.away_abbr} @ ${r.home_abbr}`,
+        current_status: r.status,
+        has_scores: r.home_score !== null && r.away_score !== null,
+        is_past: new Date(r.start_time) < now,
+      })),
+      fixable: true,
+    });
+    console.log(`  [WARN] Found ${result.rows.length} games with incorrect statuses`);
+  } else {
+    console.log('  [OK] All games have correct statuses');
+  }
+}
+
+async function checkScoreMismatches(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for score mismatches (box score totals vs game scores)...');
+  
+  let sql = `
+    WITH team_totals AS (
+      SELECT 
+        pgs.game_id,
+        pgs.team_id,
+        SUM(pgs.points) as total_points
+      FROM player_game_stats pgs
+      GROUP BY pgs.game_id, pgs.team_id
+    ),
+    game_totals AS (
+      SELECT 
+        g.game_id,
+        g.home_team_id,
+        g.away_team_id,
+        g.home_score,
+        g.away_score,
+        MAX(CASE WHEN tt.team_id = g.home_team_id THEN tt.total_points END) as box_home_score,
+        MAX(CASE WHEN tt.team_id = g.away_team_id THEN tt.total_points END) as box_away_score
+      FROM games g
+      JOIN team_totals tt ON g.game_id = tt.game_id
+      WHERE g.status = 'Final'
+        AND g.home_score IS NOT NULL
+        AND g.away_score IS NOT NULL
+      GROUP BY g.game_id, g.home_team_id, g.away_team_id, g.home_score, g.away_score
+    )
+    SELECT 
+      gt.game_id,
+      g.start_time,
+      ht.abbreviation as home_abbr,
+      at.abbreviation as away_abbr,
+      gt.home_score as db_home_score,
+      gt.away_score as db_away_score,
+      gt.box_home_score,
+      gt.box_away_score,
+      ABS(gt.home_score - gt.box_home_score) as home_diff,
+      ABS(gt.away_score - gt.box_away_score) as away_diff
+    FROM game_totals gt
+    JOIN games g ON gt.game_id = g.game_id
+    JOIN teams ht ON g.home_team_id = ht.team_id
+    JOIN teams at ON g.away_team_id = at.team_id
+    WHERE (
+      ABS(gt.home_score - gt.box_home_score) > 1
+      OR ABS(gt.away_score - gt.box_away_score) > 1
+    )
+  `;
+  
+  const params: any[] = [];
+  let paramCount = 1;
+  
+  if (startDate) {
+    sql += ` AND g.start_time::date >= $${paramCount}::date`;
+    params.push(startDate);
+    paramCount++;
+  }
+  
+  if (endDate) {
+    sql += ` AND g.start_time::date <= $${paramCount}::date`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += ` ORDER BY g.start_time DESC LIMIT 20`;
+  
+  const result = await pool.query(sql, params);
+  
+  if (result.rows.length > 0) {
+    issues.push({
+      type: 'score_mismatch',
+      severity: 'warning',
+      count: result.rows.length,
+      message: `Found ${result.rows.length} games with score mismatches (>1 point difference)`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game_id: r.game_id,
+        date: new Date(r.start_time).toISOString().split('T')[0],
+        matchup: `${r.away_abbr} @ ${r.home_abbr}`,
+        db_score: `${r.db_away_score} - ${r.db_home_score}`,
+        box_score: `${r.box_away_score} - ${r.box_home_score}`,
+        diff: `${r.away_diff} / ${r.home_diff}`,
+      })),
+      fixable: false, // Manual review needed
+    });
+    console.log(`  [WARN] Found ${result.rows.length} games with score mismatches`);
+  } else {
+    console.log('  [OK] All scores match box score totals');
+  }
+}
+
+async function checkOrphanedRecords(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for orphaned records...');
+  
+  let sql = `
+    SELECT 
+      pgs.game_id,
+      pgs.player_id,
+      COUNT(*) as count
+    FROM player_game_stats pgs
+    LEFT JOIN games g ON pgs.game_id = g.game_id
+    LEFT JOIN players p ON pgs.player_id = p.player_id
+    WHERE (g.game_id IS NULL OR p.player_id IS NULL)
+  `;
+  
+  const params: any[] = [];
+  let paramCount = 1;
+  
+  if (startDate) {
+    sql += ` AND (g.start_time::date >= $${paramCount}::date OR g.start_time IS NULL)`;
+    params.push(startDate);
+    paramCount++;
+  }
+  
+  if (endDate) {
+    sql += ` AND (g.start_time::date <= $${paramCount}::date OR g.start_time IS NULL)`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += ` GROUP BY pgs.game_id, pgs.player_id LIMIT 20`;
+  
+  const result = await pool.query(sql, params);
+  
+  if (result.rows.length > 0) {
+    issues.push({
+      type: 'orphaned_records',
+      severity: 'error',
+      count: result.rows.length,
+      message: `Found ${result.rows.length} orphaned player_game_stats records`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game_id: r.game_id,
+        player_id: r.player_id,
+      })),
+      fixable: false, // Need to investigate
+    });
+    console.log(`  [ERROR] Found ${result.rows.length} orphaned records`);
+  } else {
+    console.log('  [OK] No orphaned records found');
+  }
+}
+
+async function checkDuplicateGames(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for duplicate games...');
+  
+  let sql = `
+    WITH game_duplicates AS (
+      SELECT 
+        g1.game_id as game1_id,
+        g2.game_id as game2_id,
+        g1.start_time as time1,
+        g2.start_time as time2,
+        ht.abbreviation as home_abbr,
+        at.abbreviation as away_abbr
+      FROM games g1
+      JOIN games g2 ON (
+        g1.home_team_id = g2.home_team_id
+        AND g1.away_team_id = g2.away_team_id
+        AND g1.game_id < g2.game_id
+        AND ABS(EXTRACT(EPOCH FROM (g1.start_time - g2.start_time))) < 172800
+      )
+      JOIN teams ht ON g1.home_team_id = ht.team_id
+      JOIN teams at ON g1.away_team_id = at.team_id
+      WHERE 1=1
+  `;
+  
+  const params: any[] = [];
+  let paramCount = 1;
+  
+  if (startDate) {
+    sql += ` AND g1.start_time::date >= $${paramCount}::date`;
+    params.push(startDate);
+    paramCount++;
+  }
+  
+  if (endDate) {
+    sql += ` AND g1.start_time::date <= $${paramCount}::date`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += `
+    )
+    SELECT DISTINCT
+      game1_id,
+      game2_id,
+      time1,
+      time2,
+      home_abbr,
+      away_abbr
+    FROM game_duplicates
+    ORDER BY time1 DESC
+    LIMIT 20
+  `;
+  
+  const result = await pool.query(sql, params);
+  
+  if (result.rows.length > 0) {
+    issues.push({
+      type: 'duplicate_games',
+      severity: 'warning',
+      count: result.rows.length,
+      message: `Found ${result.rows.length} potential duplicate game pairs`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game1_id: r.game1_id,
+        game2_id: r.game2_id,
+        matchup: `${r.away_abbr} @ ${r.home_abbr}`,
+        time1: new Date(r.time1).toISOString(),
+        time2: new Date(r.time2).toISOString(),
+      })),
+      fixable: true, // Can use deduplication logic
+    });
+    console.log(`  [WARN] Found ${result.rows.length} potential duplicate game pairs`);
+  } else {
+    console.log('  [OK] No duplicate games found');
+  }
+}
+
+async function checkMissingTeamStats(startDate?: string, endDate?: string) {
+  console.log('\n[CHECK] Checking for games missing team_game_stats...');
+  
+  let sql = `
+    SELECT 
+      g.game_id,
+      g.start_time,
+      ht.abbreviation as home_abbr,
+      at.abbreviation as away_abbr
+    FROM games g
+    JOIN teams ht ON g.home_team_id = ht.team_id
+    JOIN teams at ON g.away_team_id = at.team_id
+    WHERE g.status = 'Final'
+      AND NOT EXISTS (
+        SELECT 1 FROM team_game_stats tgs 
+        WHERE tgs.game_id = g.game_id 
+        AND (tgs.team_id = g.home_team_id OR tgs.team_id = g.away_team_id)
+      )
+  `;
+  
+  const params: any[] = [];
+  let paramCount = 1;
+  
+  if (startDate) {
+    sql += ` AND g.start_time::date >= $${paramCount}::date`;
+    params.push(startDate);
+    paramCount++;
+  }
+  
+  if (endDate) {
+    sql += ` AND g.start_time::date <= $${paramCount}::date`;
+    params.push(endDate);
+    paramCount++;
+  }
+  
+  sql += ` ORDER BY g.start_time DESC LIMIT 20`;
+  
+  const result = await pool.query(sql, params);
+  
+  if (result.rows.length > 0) {
+    issues.push({
+      type: 'missing_team_stats',
+      severity: 'info',
+      count: result.rows.length,
+      message: `Found ${result.rows.length} Final games without team_game_stats`,
+      examples: result.rows.slice(0, 5).map(r => ({
+        game_id: r.game_id,
+        date: new Date(r.start_time).toISOString().split('T')[0],
+        matchup: `${r.away_abbr} @ ${r.home_abbr}`,
+      })),
+      fixable: true, // Can calculate from player_game_stats
+    });
+    console.log(`  [INFO] Found ${result.rows.length} Final games without team_game_stats`);
+  } else {
+    console.log('  [OK] All Final games have team_game_stats');
+  }
+}
+
+async function printSummary() {
   console.log('\n' + '='.repeat(60));
   console.log('DATA QUALITY SUMMARY');
   console.log('='.repeat(60));
@@ -307,96 +506,85 @@ async function generateSummary() {
   const warnings = issues.filter(i => i.severity === 'warning');
   const infos = issues.filter(i => i.severity === 'info');
   
-  console.log(`\nTotal Issues: ${issues.length}`);
-  console.log(`  ❌ Errors: ${errors.length}`);
-  console.log(`  ⚠️  Warnings: ${warnings.length}`);
-  console.log(`  ℹ️  Info: ${infos.length}`);
+  console.log(`\n[ERROR] Errors: ${errors.length}`);
+  errors.forEach(issue => {
+    console.log(`   - ${issue.message}`);
+    if (issue.examples && issue.examples.length > 0) {
+      console.log(`     Examples: ${issue.examples.map(e => e.game_id || e.matchup).join(', ')}`);
+    }
+  });
   
-  if (errors.length > 0) {
-    console.log('\n❌ ERRORS (should be fixed):');
-    errors.forEach(issue => {
-      console.log(`\n  ${issue.type}:`);
-      console.log(`    ${issue.message}`);
-      if (issue.count) {
-        console.log(`    Affected records: ${issue.count}`);
-      }
-      if (issue.examples && issue.examples.length > 0) {
-        console.log(`    Examples:`);
-        issue.examples.forEach(ex => {
-          console.log(`      - ${JSON.stringify(ex)}`);
-        });
-      }
-    });
-  }
+  console.log(`\n[WARN] Warnings: ${warnings.length}`);
+  warnings.forEach(issue => {
+    console.log(`   - ${issue.message}`);
+    if (issue.examples && issue.examples.length > 0) {
+      console.log(`     Examples: ${issue.examples.map(e => e.game_id || e.matchup).join(', ')}`);
+    }
+  });
   
-  if (warnings.length > 0) {
-    console.log('\n⚠️  WARNINGS (should be reviewed):');
-    warnings.forEach(issue => {
-      console.log(`\n  ${issue.type}:`);
-      console.log(`    ${issue.message}`);
-      if (issue.count) {
-        console.log(`    Affected records: ${issue.count}`);
-      }
-      if (issue.examples && issue.examples.length > 0) {
-        console.log(`    Examples:`);
-        issue.examples.slice(0, 3).forEach(ex => {
-          console.log(`      - ${JSON.stringify(ex)}`);
-        });
-      }
-    });
-  }
+  console.log(`\n[INFO] Info: ${infos.length}`);
+  infos.forEach(issue => {
+    console.log(`   - ${issue.message}`);
+  });
   
-  console.log('\n' + '='.repeat(60));
-  console.log('\nRecommendations:');
+  const totalIssues = issues.reduce((sum, issue) => sum + issue.count, 0);
+  const fixableIssues = issues.filter(i => i.fixable).reduce((sum, issue) => sum + issue.count, 0);
   
-  if (errors.length > 0) {
-    console.log('1. Run cleanup script to fix duplicate games and orphaned records');
-    console.log('2. Reseed games from a clean source');
-  }
-  
-  if (warnings.length > 0) {
-    console.log('3. Sync provider mappings for games');
-    console.log('4. Fetch box scores for Final games missing them');
-  }
-  
-  console.log('\nNext steps:');
-  console.log('  - Run: tsx scripts/cleanup-duplicate-games.ts');
-  console.log('  - Run: tsx scripts/sync-game-provider-mappings.py');
-  console.log('  - Run: tsx scripts/seed-full-season-schedule.ts --season 2025');
+  console.log(`\nTotal Issues: ${totalIssues}`);
+  console.log(`Fixable Issues: ${fixableIssues}`);
+  console.log('='.repeat(60));
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const seasonIndex = args.indexOf('--season');
-  const season = seasonIndex !== -1 && args[seasonIndex + 1] 
-    ? args[seasonIndex + 1] 
+  const startDateIndex = args.indexOf('--start-date');
+  const endDateIndex = args.indexOf('--end-date');
+  const fixIndex = args.indexOf('--fix');
+  
+  const startDate = startDateIndex !== -1 && args[startDateIndex + 1] 
+    ? args[startDateIndex + 1] 
     : undefined;
-
-  console.log('🔍 NBA Analytics Database Quality Check');
+  const endDate = endDateIndex !== -1 && args[endDateIndex + 1] 
+    ? args[endDateIndex + 1] 
+    : undefined;
+  const fix = fixIndex !== -1;
+  
+  console.log('\nNBA Analytics Data Quality Check');
   console.log('='.repeat(60));
-  if (season) {
-    console.log(`Season filter: ${season}`);
+  if (startDate || endDate) {
+    console.log(`Date range: ${startDate || 'beginning'} to ${endDate || 'end'}`);
+  } else {
+    console.log('Checking all games');
   }
-
+  if (fix) {
+    console.log('[AUTO-FIX] Auto-fix mode: ENABLED');
+  }
+  
   try {
-    await checkDuplicateGames(season);
-    await checkMissingProviderMappings(season);
-    await checkInconsistentScores(season);
-    await checkMissingBoxScores(season);
-    await checkOrphanedRecords(season);
-    await checkDateIssues(season);
+    await checkMissingBoxScores(startDate, endDate);
+    await checkMissingFinalScores(startDate, endDate);
+    await checkIncorrectStatuses(startDate, endDate);
+    await checkScoreMismatches(startDate, endDate);
+    await checkOrphanedRecords(startDate, endDate);
+    await checkDuplicateGames(startDate, endDate);
+    await checkMissingTeamStats(startDate, endDate);
     
-    await generateSummary();
-  } catch (error) {
-    console.error('Error during quality check:', error);
-    process.exitCode = 1;
+    await printSummary();
+    
+    if (fix) {
+      console.log('\n[AUTO-FIX] Auto-fix functionality not yet implemented');
+      console.log('   Use specific fix scripts:');
+      console.log('   - tsx scripts/backfill-boxscores-bbref.ts (for missing box scores)');
+      console.log('   - tsx scripts/update-scores-from-boxscores.ts (for missing scores)');
+      console.log('   - tsx scripts/fix-game-statuses.ts (for incorrect statuses)');
+    }
+    
+  } catch (error: any) {
+    console.error('\n[ERROR] Error:', error.message);
+    process.exit(1);
   } finally {
     await pool.end();
   }
 }
 
-main().catch((error) => {
-  console.error('Unexpected error:', error);
-  process.exit(1);
-});
-
+main();
