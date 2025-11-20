@@ -559,9 +559,27 @@ async function storeScoreboardGames(games: ReturnType<typeof parseScoreboard>) {
           home_score, away_score, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())
         ON CONFLICT (game_id) DO UPDATE SET
-          status = EXCLUDED.status,
-          home_score = EXCLUDED.home_score,
-          away_score = EXCLUDED.away_score,
+          -- Only update status if existing is NULL/invalid, or new is more complete (Final > Scheduled)
+          status = CASE 
+            WHEN games.status IS NULL OR games.status NOT IN ('Final', 'Scheduled', 'InProgress', 'Postponed', 'Cancelled')
+              THEN EXCLUDED.status
+            WHEN games.status = 'Scheduled' AND EXCLUDED.status = 'Final'
+              THEN EXCLUDED.status
+            WHEN games.status = 'InProgress' AND EXCLUDED.status = 'Final'
+              THEN EXCLUDED.status
+            ELSE games.status
+          END,
+          -- Only update scores if existing is NULL, or new is NOT NULL (don't overwrite with NULL)
+          home_score = CASE 
+            WHEN games.home_score IS NULL THEN EXCLUDED.home_score
+            WHEN EXCLUDED.home_score IS NOT NULL THEN EXCLUDED.home_score
+            ELSE games.home_score
+          END,
+          away_score = CASE 
+            WHEN games.away_score IS NULL THEN EXCLUDED.away_score
+            WHEN EXCLUDED.away_score IS NOT NULL THEN EXCLUDED.away_score
+            ELSE games.away_score
+          END,
           updated_at = now()`,
         [
           game.gameId,

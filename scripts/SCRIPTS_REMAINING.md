@@ -38,17 +38,38 @@
 25. `sync-game-provider-mappings.py` - Sync provider mappings
 26. `backfill_quarter_data.py` - Backfill quarter data for games
 
-## 📚 Documentation (3 files)
+## 📚 Documentation (6 files)
 - `reseed-database.md` - Database maintenance guide
 - `SCRIPT_CLEANUP_FINAL.md` - Script cleanup documentation
 - `SCRIPTS_REMAINING.md` - This file
+- `DATA_INTEGRITY_ANALYSIS.md` - Data integrity analysis and fixes ⭐ NEW
+- `SCRIPT_USAGE_GUIDE.md` - Complete script usage guide ⭐ NEW
+- `CLEANUP_SUMMARY.md` - Cleanup work summary ⭐ NEW
+
+---
+
+## ✅ Data Protection Status
+
+**All scripts now protect scores and statuses from bad overwrites!**
+
+### Fixed Scripts (4):
+- ✅ `seed_games_nba.py` - Now protects scores/statuses
+- ✅ `seed-full-season-schedule.ts` - Now protects scores/statuses
+- ✅ `seed-games-bdl.ts` - Now protects scores/statuses
+- ✅ `scrape-nba-com.ts` - Now protects scores/statuses
+
+### Protection Logic:
+- **Scores**: Never overwrite existing scores with NULL
+- **Status**: Never downgrade status (Final → Scheduled)
+- **UPSERTs**: Smart logic preserves good data
 
 ---
 
 ## Summary
 
-**Total Scripts**: 26 production scripts + 3 docs = 29 files
+**Total Scripts**: 26 production scripts + 6 docs = 32 files
 **Deleted**: ~30 scripts (9 diagnostic + 18 test + 3 migration)
+**Fixed**: 4 scripts with data overwrite issues ✅
 
 All remaining scripts are production-ready and serve a purpose in your ETL/maintenance workflow.
 
@@ -58,4 +79,9 @@ All remaining scripts are production-ready and serve a purpose in your ETL/maint
 - **Score Updates**: 2 scripts
 - **Seeding**: 7 scripts
 - **ETL**: 4 scripts
+
+### Key Improvements:
+- ✅ Data protection in all UPSERTs
+- ✅ Idempotent operations (safe to run multiple times)
+- ✅ Complete documentation and usage guides
 

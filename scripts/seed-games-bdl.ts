@@ -188,11 +188,29 @@ const UPSERT_GAME = `
   on conflict (game_id) do update set
     season = excluded.season,
     start_time = excluded.start_time,
-    status = excluded.status,
+    -- Only update status if existing is NULL/invalid, or new is more complete (Final > Scheduled)
+    status = CASE 
+      WHEN games.status IS NULL OR games.status NOT IN ('Final', 'Scheduled', 'InProgress', 'Postponed', 'Cancelled')
+        THEN excluded.status
+      WHEN games.status = 'Scheduled' AND excluded.status = 'Final'
+        THEN excluded.status
+      WHEN games.status = 'InProgress' AND excluded.status = 'Final'
+        THEN excluded.status
+      ELSE games.status
+    END,
     home_team_id = excluded.home_team_id,
     away_team_id = excluded.away_team_id,
-    home_score = excluded.home_score,
-    away_score = excluded.away_score,
+    -- Only update scores if existing is NULL, or new is NOT NULL (don't overwrite with NULL)
+    home_score = CASE 
+      WHEN games.home_score IS NULL THEN excluded.home_score
+      WHEN excluded.home_score IS NOT NULL THEN excluded.home_score
+      ELSE games.home_score
+    END,
+    away_score = CASE 
+      WHEN games.away_score IS NULL THEN excluded.away_score
+      WHEN excluded.away_score IS NOT NULL THEN excluded.away_score
+      ELSE games.away_score
+    END,
     venue = excluded.venue,
     updated_at = now();
 `;
