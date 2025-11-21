@@ -175,13 +175,36 @@ export const TEAM_CODE_MAP: Record<string, string> = {
 
 /**
  * Get team abbreviations from game ID
+ * Returns the game date in Eastern Time (Basketball Reference uses ET for dates)
+ * Prefers bbref_schedule date if available (more accurate)
  */
-async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string; awayAbbr: string; gameDate: Date } | null> {
+async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string; awayAbbr: string; gameDate: Date | string } | null> {
+  // First try to get date from bbref_schedule (more accurate)
+  const bbrefResult = await pool.query(`
+    SELECT 
+      bs.home_team_abbr as home_abbr,
+      bs.away_team_abbr as away_abbr,
+      bs.game_date::text as game_date_et
+    FROM bbref_schedule bs
+    WHERE bs.canonical_game_id = $1
+    LIMIT 1
+  `, [gameId]);
+
+  if (bbrefResult.rows.length > 0) {
+    return {
+      homeAbbr: bbrefResult.rows[0].home_abbr,
+      awayAbbr: bbrefResult.rows[0].away_abbr,
+      gameDate: bbrefResult.rows[0].game_date_et, // YYYY-MM-DD format string from bbref_schedule
+    };
+  }
+
+  // Fallback to games table
   const result = await pool.query(`
     SELECT 
       ht.abbreviation as home_abbr,
       at.abbreviation as away_abbr,
-      g.start_time
+      g.start_time,
+      DATE((g.start_time AT TIME ZONE 'America/New_York'))::text as game_date_et
     FROM games g
     JOIN teams ht ON g.home_team_id = ht.team_id
     JOIN teams at ON g.away_team_id = at.team_id
@@ -192,10 +215,15 @@ async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string;
     return null;
   }
 
+  // Use the Eastern Time date for Basketball Reference URL
+  // Basketball Reference uses Eastern Time for the date in URLs
+  // Return as string (YYYY-MM-DD) to avoid timezone issues
+  const gameDateET = result.rows[0].game_date_et;
+
   return {
     homeAbbr: result.rows[0].home_abbr,
     awayAbbr: result.rows[0].away_abbr,
-    gameDate: new Date(result.rows[0].start_time),
+    gameDate: gameDateET, // YYYY-MM-DD format string
   };
 }
 
@@ -203,6 +231,8 @@ async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string;
  * Construct Basketball Reference URL
  * Format: https://www.basketball-reference.com/boxscores/YYYYMMDD0TEAM.html
  * Where TEAM is the home team's 3-letter code
+ * 
+ * IMPORTANT: Date should be in Eastern Time (Basketball Reference uses ET for dates)
  */
 function constructBBRefURL(date: Date | string, homeTeamCode: string): string {
   let year: number, month: number, day: number;
@@ -214,7 +244,8 @@ function constructBBRefURL(date: Date | string, homeTeamCode: string): string {
     month = parseInt(parts[1], 10);
     day = parseInt(parts[2], 10);
   } else {
-    // Use date as-is (avoid timezone conversion issues)
+    // Extract year/month/day from date
+    // Date should already be in Eastern Time
     year = date.getFullYear();
     month = date.getMonth() + 1;
     day = date.getDate();
@@ -260,18 +291,20 @@ function parseIntSafe(value: string | null | undefined): number | null {
 
 /**
  * Fetch and parse box score from Basketball Reference
+ * Returns null if game not found (404)
  */
-export async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: string): Promise<any> {
+export async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: string): Promise<any | null> {
   const url = constructBBRefURL(date, homeTeamCode);
   console.log(`🌐 Fetching Basketball Reference: ${url}`);
   
-  const response = await fetchWithRetry(url);
-  const html = await response.text();
+  try {
+    const response = await fetchWithRetry(url);
+    const html = await response.text();
   
-  // Basketball Reference sometimes wraps tables in HTML comments
-  // Remove comment tags to make tables accessible
-  const htmlWithoutComments = html.replace(/<!--/g, '').replace(/-->/g, '');
-  const $ = cheerio.load(htmlWithoutComments);
+    // Basketball Reference sometimes wraps tables in HTML comments
+    // Remove comment tags to make tables accessible
+    const htmlWithoutComments = html.replace(/<!--/g, '').replace(/-->/g, '');
+    const $ = cheerio.load(htmlWithoutComments);
   
   // Find box score tables
   // Basketball Reference uses IDs like "box-{TEAM}-game-basic" for player stats
@@ -431,34 +464,27 @@ export async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: stri
     teamScores[teamCode] += points;
   }
   
-  // Map team codes to home/away scores
-  if (Object.keys(teamScores).length >= 2) {
-    const teams = Object.keys(teamScores);
-    if (teams.includes(homeTeamCode)) {
-      homeScore = teamScores[homeTeamCode];
-      // Find the away team (the other team)
-      const awayTeamCode = teams.find(t => t !== homeTeamCode);
-      if (awayTeamCode) {
-        awayScore = teamScores[awayTeamCode];
-      }
-    } else if (teams.length === 2) {
-      // If home team code doesn't match, use first team as away, second as home
-      awayScore = teamScores[teams[0]];
-      homeScore = teamScores[teams[1]];
+  // Return team scores mapped by team code (not by URL home/away)
+  // The caller will map these to database home/away based on actual team codes
+  const teamCodesFound = Object.keys(teamScores);
+  
+    await sleep(addJitter(BASE_DELAY_MS));
+    
+    return {
+      source: 'basketball_reference',
+      url,
+      playerStats,
+      date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
+      urlHomeTeamCode: homeTeamCode, // Team code used in URL (may not match actual home team)
+      teamScores, // Map of team code -> score
+      teamCodesFound, // Array of team codes found in HTML
+    };
+  } catch (error: any) {
+    if (error.message && error.message.includes('404')) {
+      return null;
     }
+    throw error;
   }
-  
-  await sleep(addJitter(BASE_DELAY_MS));
-  
-  return {
-    source: 'basketball_reference',
-    url,
-    playerStats,
-    date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
-    homeTeamCode,
-    homeScore,
-    awayScore,
-  };
 }
 
 /**
@@ -536,32 +562,52 @@ export async function processBBRefBoxScore(
     
     const { homeAbbr, awayAbbr, gameDate } = gameInfo;
     const homeTeamCode = TEAM_CODE_MAP[homeAbbr];
+    const awayTeamCode = TEAM_CODE_MAP[awayAbbr];
     
-    if (!homeTeamCode) {
-      console.error(`   ❌ Unknown team code for ${homeAbbr}`);
+    if (!homeTeamCode || !awayTeamCode) {
+      console.error(`   ❌ Unknown team code for ${homeAbbr} or ${awayAbbr}`);
       return false;
     }
     
-    console.log(`\n📊 Processing game ${gameId} (${awayAbbr} @ ${homeAbbr}, ${gameDate.toISOString().split('T')[0]})...`);
+    const gameDateStr = typeof gameDate === 'string' ? gameDate : gameDate.toISOString().split('T')[0];
+    console.log(`\n📊 Processing game ${gameId} (${awayAbbr} @ ${homeAbbr}, ${gameDateStr})...`);
     
     if (dryRun) {
       console.log(`   [DRY RUN] Would fetch from Basketball Reference`);
       return true;
     }
     
-    // Fetch box score
-    const boxScoreData = await fetchBBRefBoxScore(gameDate, homeTeamCode);
+    // Fetch box score - try home team first, then away team (for neutral site games)
+    let boxScoreData = await fetchBBRefBoxScore(gameDate, homeTeamCode);
     
-    if (!boxScoreData.playerStats || boxScoreData.playerStats.length === 0) {
-      console.warn(`   ⚠️  No player stats found`);
+    // If not found, try the away team as "home" team (for neutral site/in-season tournament games)
+    if (!boxScoreData) {
+      console.log(`   ⚠️  Game not found with home team, trying away team (neutral site game?)...`);
+      boxScoreData = await fetchBBRefBoxScore(gameDate, awayTeamCode);
+    }
+    
+    if (!boxScoreData || !boxScoreData.playerStats || boxScoreData.playerStats.length === 0) {
+      console.warn(`   ⚠️  No player stats found after trying both teams`);
       return false;
     }
     
     console.log(`   ✅ Found ${boxScoreData.playerStats.length} player stat rows`);
     
-    // Extract scores from box score data
-    const homeScore = boxScoreData.homeScore;
-    const awayScore = boxScoreData.awayScore;
+    // Map team scores from Basketball Reference team codes to our database home/away
+    // Basketball Reference HTML has the actual team codes, regardless of URL
+    const { teamScores, teamCodesFound } = boxScoreData;
+    
+    // Map BBRef team codes to our database team abbreviations
+    const homeTeamCodeBBRef = TEAM_CODE_MAP[homeAbbr];
+    const awayTeamCodeBBRef = TEAM_CODE_MAP[awayAbbr];
+    
+    // Get scores based on actual team codes found in HTML
+    const homeScore = homeTeamCodeBBRef && teamScores[homeTeamCodeBBRef] !== undefined 
+      ? teamScores[homeTeamCodeBBRef] 
+      : null;
+    const awayScore = awayTeamCodeBBRef && teamScores[awayTeamCodeBBRef] !== undefined 
+      ? teamScores[awayTeamCodeBBRef] 
+      : null;
     
     // Store in database
     const client = await pool.connect();
