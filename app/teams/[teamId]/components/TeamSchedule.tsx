@@ -30,45 +30,17 @@ interface ScheduleGame {
 }
 
 export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
-  // Fetch schedule from database
-  // Deduplicate games that match on teams and are within 48 hours of each other
-  // Prefer games with actual scores/data over midnight placeholder timestamps
+  // Fetch BBRef schedule from bbref_games table
   const schedule = await query(`
-    with game_duplicates as (
-      -- Find games that are duplicates (same teams, within 48 hours)
-      -- Score each game and keep the better one
-      select 
-        g1.game_id as game1_id,
-        g2.game_id as game2_id,
-        -- Score game 1: prefer Final with scores, Final, actual times, NBA Stats IDs
-        (case when g1.status = 'Final' and g1.home_score is not null and g1.away_score is not null then 10 else 0 end +
-         case when g1.status = 'Final' then 5 else 0 end +
-         case when extract(hour from g1.start_time at time zone 'America/New_York') != 0 
-              or extract(minute from g1.start_time at time zone 'America/New_York') != 0 then 3 else 0 end +
-         case when g1.game_id like '002%' then 2 else 0 end) as score1,
-        -- Score game 2
-        (case when g2.status = 'Final' and g2.home_score is not null and g2.away_score is not null then 10 else 0 end +
-         case when g2.status = 'Final' then 5 else 0 end +
-         case when extract(hour from g2.start_time at time zone 'America/New_York') != 0 
-              or extract(minute from g2.start_time at time zone 'America/New_York') != 0 then 3 else 0 end +
-         case when g2.game_id like '002%' then 2 else 0 end) as score2
-      from games g1
-      join games g2 on (
-        g1.home_team_id = g2.home_team_id
-        and g1.away_team_id = g2.away_team_id
-        and g1.game_id < g2.game_id
-        and abs(extract(epoch from (g1.start_time - g2.start_time))) < 172800  -- Within 48 hours
-      )
-      where (g1.home_team_id = $1 or g1.away_team_id = $1)
-    )
-    select 
-      g.game_id,
-      g.season,
-      g.start_time,
-      g.status,
-      g.home_score,
-      g.away_score,
-      g.venue,
+    SELECT 
+      bg.bbref_game_id as game_id,
+      bg.season,
+      COALESCE(bg.start_time, bg.game_date::timestamptz) as start_time,
+      bg.status,
+      bg.home_score,
+      bg.away_score,
+      bg.venue,
+      bg.game_date,
       -- Home team info
       ht.team_id as home_team_id,
       ht.abbreviation as home_team_abbr,
@@ -78,72 +50,56 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
       at.abbreviation as away_team_abbr,
       at.full_name as away_team_name,
       -- Determine if this team is home or away
-      case 
-        when g.home_team_id = $1 then 'home'
-        else 'away'
-      end as is_home,
+      CASE 
+        WHEN bg.home_team_id = $1 THEN 'home'
+        ELSE 'away'
+      END as is_home,
       -- Opponent info
-      case 
-        when g.home_team_id = $1 then at.team_id
-        else ht.team_id
-      end as opponent_id,
-      case 
-        when g.home_team_id = $1 then at.abbreviation
-        else ht.abbreviation
-      end as opponent_abbr,
-      case 
-        when g.home_team_id = $1 then at.full_name
-        else ht.full_name
-      end as opponent_name,
+      CASE 
+        WHEN bg.home_team_id = $1 THEN at.team_id
+        ELSE ht.team_id
+      END as opponent_id,
+      CASE 
+        WHEN bg.home_team_id = $1 THEN at.abbreviation
+        ELSE ht.abbreviation
+      END as opponent_abbr,
+      CASE 
+        WHEN bg.home_team_id = $1 THEN at.full_name
+        ELSE ht.full_name
+      END as opponent_name,
       -- Team's score
-      case 
-        when g.home_team_id = $1 then g.home_score
-        else g.away_score
-      end as team_score,
+      CASE 
+        WHEN bg.home_team_id = $1 THEN bg.home_score
+        ELSE bg.away_score
+      END as team_score,
       -- Opponent's score
-      case 
-        when g.home_team_id = $1 then g.away_score
-        else g.home_score
-      end as opponent_score,
+      CASE 
+        WHEN bg.home_team_id = $1 THEN bg.away_score
+        ELSE bg.home_score
+      END as opponent_score,
       -- Win/Loss indicator (null if game not finished)
-      case 
-        when g.status = 'Final' and g.home_team_id = $1 and g.home_score > g.away_score then 'W'
-        when g.status = 'Final' and g.home_team_id = $1 and g.home_score < g.away_score then 'L'
-        when g.status = 'Final' and g.away_team_id = $1 and g.away_score > g.home_score then 'W'
-        when g.status = 'Final' and g.away_team_id = $1 and g.away_score < g.home_score then 'L'
-        else null
-      end as result
-    from games g
-    join teams ht on g.home_team_id = ht.team_id
-    join teams at on g.away_team_id = at.team_id
-    left join game_duplicates gd on (
-      (g.game_id = gd.game1_id and gd.score1 < gd.score2) or
-      (g.game_id = gd.game2_id and gd.score2 < gd.score1)
-    )
-    where (g.home_team_id = $1 or g.away_team_id = $1)
-      ${season ? 'and g.season = $2' : ''}
-      and gd.game1_id is null  -- Exclude lower-scoring duplicates
-    order by 
-      (g.start_time at time zone 'America/New_York')::date,
-      g.home_team_id,
-      g.away_team_id,
-      -- Prefer games with actual times (not midnight)
-      case when extract(hour from g.start_time at time zone 'America/New_York') = 0 
-           and extract(minute from g.start_time at time zone 'America/New_York') = 0 then 1 else 0 end,
-      -- Prefer Final games with scores
-      case when g.status = 'Final' and g.home_score is not null and g.away_score is not null then 0 else 1 end,
-      -- Prefer Final games
-      case when g.status = 'Final' then 0 else 1 end,
-      -- Prefer NBA Stats IDs
-      case when g.game_id like '002%' then 0 else 1 end,
-      g.start_time asc
+      CASE 
+        WHEN bg.status = 'Final' AND bg.home_team_id = $1 AND bg.home_score > bg.away_score THEN 'W'
+        WHEN bg.status = 'Final' AND bg.home_team_id = $1 AND bg.home_score < bg.away_score THEN 'L'
+        WHEN bg.status = 'Final' AND bg.away_team_id = $1 AND bg.away_score > bg.home_score THEN 'W'
+        WHEN bg.status = 'Final' AND bg.away_team_id = $1 AND bg.away_score < bg.home_score THEN 'L'
+        ELSE NULL
+      END as result
+    FROM bbref_games bg
+    JOIN teams ht ON bg.home_team_id = ht.team_id
+    JOIN teams at ON bg.away_team_id = at.team_id
+    WHERE (bg.home_team_id = $1 OR bg.away_team_id = $1)
+      ${season ? 'AND bg.season = $2' : ''}
+    ORDER BY 
+      bg.game_date ASC,
+      COALESCE(bg.start_time, bg.game_date::timestamptz) ASC
   `, season ? [teamId, season] : [teamId]);
 
   if (!schedule || schedule.length === 0) {
     return (
       <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
         <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-          Schedule
+          BBRef Schedule
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400">
           No schedule data available yet.
@@ -165,7 +121,7 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
     <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold text-black dark:text-zinc-50">
-          Schedule
+          BBRef Schedule
         </h2>
         <div className="flex items-center gap-4">
           {pastGames.length > 0 && (

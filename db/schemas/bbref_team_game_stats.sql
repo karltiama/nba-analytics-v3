@@ -2,9 +2,9 @@
 -- Aggregated team-level statistics from Basketball Reference player game stats
 -- This table is separate from team_game_stats to maintain data source integrity
 -- IMPORTANT: This table ONLY contains data from Basketball Reference sources
--- All entries must have source = 'bbref' and game_id must exist in bbref_schedule
+-- All entries must have source = 'bbref' and game_id must exist in bbref_games
 create table if not exists bbref_team_game_stats (
-  game_id                  text not null references games(game_id) on delete cascade,
+  game_id                  text not null references bbref_games(bbref_game_id) on delete cascade,
   team_id                  text not null references teams(team_id),
   -- Scoring
   points                   int,

@@ -96,14 +96,14 @@ async function populatePlayerStats(dryRun: boolean = false): Promise<{ inserted:
         continue;
       }
       
-      // Check if game exists
+      // Check if game exists in bbref_games table
       const gameCheck = await pool.query(
-        `SELECT game_id FROM games WHERE game_id = $1`,
+        `SELECT bbref_game_id FROM bbref_games WHERE bbref_game_id = $1`,
         [row.game_id]
       );
       
       if (gameCheck.rows.length === 0) {
-        console.warn(`   ⚠️  Game ${row.game_id} not found in games table`);
+        console.warn(`   ⚠️  Game ${row.game_id} not found in bbref_games table`);
         skipped++;
         continue;
       }
@@ -232,10 +232,10 @@ async function populateTeamStats(dryRun: boolean = false): Promise<{ inserted: n
     SELECT DISTINCT
       pgs.game_id,
       pgs.team_id,
-      g.home_team_id,
-      g.away_team_id
+      bg.home_team_id,
+      bg.away_team_id
     FROM bbref_player_game_stats pgs
-    JOIN games g ON pgs.game_id = g.game_id
+    JOIN bbref_games bg ON pgs.game_id = bg.bbref_game_id
     ORDER BY pgs.game_id, pgs.team_id
   `);
   

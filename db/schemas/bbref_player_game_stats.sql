@@ -2,9 +2,9 @@
 -- Normalized table for player game statistics from Basketball Reference scraped data
 -- This table is separate from player_game_stats to maintain data source integrity
 -- IMPORTANT: This table ONLY contains data from Basketball Reference sources
--- All entries must have source = 'bbref' and game_id must exist in bbref_schedule
+-- All entries must have source = 'bbref' and game_id must exist in bbref_games
 create table if not exists bbref_player_game_stats (
-  game_id                  text not null references games(game_id) on delete cascade,
+  game_id                  text not null references bbref_games(bbref_game_id) on delete cascade,
   player_id                text not null references players(player_id) on delete cascade,
   team_id                  text not null references teams(team_id),
   minutes                  numeric,

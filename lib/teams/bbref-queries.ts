@@ -2,11 +2,10 @@ import { query } from '@/lib/db';
 
 /**
  * Get BBRef team game stats for a team
- * Uses only BBRef team IDs (from bbref_schedule, no provider_id_map lookups)
+ * Uses standalone bbref_games table (completely independent from canonical games table)
  */
 export async function getBBRefTeamGameStats(teamId: string, limit: number | null = null) {
   // Resolve team_id: if it's an abbreviation, look it up in teams table
-  // Otherwise use it directly (it should be the team_id from bbref_schedule)
   let resolvedTeamId = teamId;
   
   // If it's not numeric, assume it's an abbreviation
@@ -23,11 +22,11 @@ export async function getBBRefTeamGameStats(teamId: string, limit: number | null
   const sql = `
     SELECT 
       btgs.game_id,
-      (g.start_time AT TIME ZONE 'America/New_York')::date as game_date,
-      TO_CHAR((g.start_time AT TIME ZONE 'America/New_York')::date, 'YYYY-MM-DD') as game_date_str,
-      g.start_time,
-      ht.abbreviation as home_team,
-      at.abbreviation as away_team,
+      bg.game_date,
+      TO_CHAR(bg.game_date, 'YYYY-MM-DD') as game_date_str,
+      bg.start_time,
+      bg.home_team_abbr as home_team,
+      bg.away_team_abbr as away_team,
       btgs.is_home,
       btgs.points,
       btgs.field_goals_made as fgm,
@@ -46,31 +45,25 @@ export async function getBBRefTeamGameStats(teamId: string, limit: number | null
       btgs.personal_fouls as pf,
       btgs.possessions,
       CASE 
-        WHEN btgs.is_home AND g.home_score > g.away_score THEN 'W'
-        WHEN btgs.is_home AND g.home_score < g.away_score THEN 'L'
-        WHEN NOT btgs.is_home AND g.away_score > g.home_score THEN 'W'
-        WHEN NOT btgs.is_home AND g.away_score < g.home_score THEN 'L'
+        WHEN btgs.is_home AND bg.home_score > bg.away_score THEN 'W'
+        WHEN btgs.is_home AND bg.home_score < bg.away_score THEN 'L'
+        WHEN NOT btgs.is_home AND bg.away_score > bg.home_score THEN 'W'
+        WHEN NOT btgs.is_home AND bg.away_score < bg.home_score THEN 'L'
         ELSE NULL
       END as result,
       CASE 
-        WHEN btgs.is_home THEN g.home_score
-        ELSE g.away_score
+        WHEN btgs.is_home THEN bg.home_score
+        ELSE bg.away_score
       END as team_score,
       CASE 
-        WHEN btgs.is_home THEN g.away_score
-        ELSE g.home_score
+        WHEN btgs.is_home THEN bg.away_score
+        ELSE bg.home_score
       END as opponent_score
     FROM bbref_team_game_stats btgs
-    JOIN games g ON btgs.game_id = g.game_id
-    JOIN teams ht ON g.home_team_id = ht.team_id
-    JOIN teams at ON g.away_team_id = at.team_id
+    JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
     WHERE btgs.team_id = $1
       AND btgs.source = 'bbref'
-      AND EXISTS (
-        SELECT 1 FROM bbref_schedule bs 
-        WHERE bs.canonical_game_id = btgs.game_id
-      )
-    ORDER BY g.start_time DESC
+    ORDER BY COALESCE(bg.start_time, bg.game_date) DESC
     ${limit !== null ? `LIMIT $2` : ''}
   `;
   
@@ -82,11 +75,10 @@ export async function getBBRefTeamGameStats(teamId: string, limit: number | null
 /**
  * Get aggregated BBRef team season stats
  * Uses materialized view if available, otherwise calculates on-the-fly
- * Uses only BBRef team IDs (from bbref_schedule, no provider_id_map lookups)
+ * Uses standalone bbref_games table (completely independent from canonical games table)
  */
 export async function getBBRefTeamSeasonStats(teamId: string) {
   // Resolve team_id: if it's an abbreviation, look it up in teams table
-  // Otherwise use it directly (it should be the team_id from bbref_schedule)
   let resolvedTeamId = teamId;
   
   // If it's not numeric, assume it's an abbreviation
@@ -159,17 +151,13 @@ export async function getBBRefTeamSeasonStats(teamId: string) {
       SUM(btgs.personal_fouls) as total_pf,
       AVG(btgs.possessions) as avg_possessions,
       SUM(btgs.possessions) as total_possessions,
-      AVG(CASE WHEN btgs.is_home THEN g.away_score ELSE g.home_score END) as avg_points_against,
-      SUM(CASE WHEN btgs.is_home THEN g.away_score ELSE g.home_score END) as total_points_against,
-      AVG(btgs.points) - AVG(CASE WHEN btgs.is_home THEN g.away_score ELSE g.home_score END) as scoring_differential
+      AVG(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as avg_points_against,
+      SUM(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as total_points_against,
+      AVG(btgs.points) - AVG(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as scoring_differential
     FROM bbref_team_game_stats btgs
-    JOIN games g ON btgs.game_id = g.game_id
+    JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
     WHERE btgs.team_id = $1
       AND btgs.source = 'bbref'
-      AND EXISTS (
-        SELECT 1 FROM bbref_schedule bs 
-        WHERE bs.canonical_game_id = btgs.game_id
-      )
   `;
   
   const result = await query(sql, [resolvedTeamId]);
