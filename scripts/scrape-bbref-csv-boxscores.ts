@@ -115,34 +115,58 @@ export const TEAM_CODE_MAP: Record<string, string> = {
 
 /**
  * Get team abbreviations and game date from game ID
+ * Now checks bbref_games first (primary source), then bbref_schedule, then games table
  */
 async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string; awayAbbr: string; gameDate: Date | string; bbrefGameId?: string } | null> {
-  // First try to get from bbref_schedule (primary source)
-  const bbrefResult = await pool.query(`
+  // First try to get from bbref_games (primary source - standalone BBRef games)
+  const bbrefGamesResult = await pool.query(`
+    SELECT 
+      bg.home_team_abbr as home_abbr,
+      bg.away_team_abbr as away_abbr,
+      bg.game_date::text as game_date_et,
+      bg.bbref_game_id
+    FROM bbref_games bg
+    WHERE bg.bbref_game_id = $1
+    LIMIT 1
+  `, [gameId]);
+
+  if (bbrefGamesResult.rows.length > 0) {
+    const result = {
+      homeAbbr: bbrefGamesResult.rows[0].home_abbr,
+      awayAbbr: bbrefGamesResult.rows[0].away_abbr,
+      gameDate: bbrefGamesResult.rows[0].game_date_et,
+      bbrefGameId: bbrefGamesResult.rows[0].bbref_game_id,
+    };
+    console.log(`   ✅ Found game in bbref_games: ${result.awayAbbr} @ ${result.homeAbbr} on ${result.gameDate}`);
+    return result;
+  }
+  
+  // Fallback to bbref_schedule (for backwards compatibility)
+  const bbrefScheduleResult = await pool.query(`
     SELECT 
       bs.home_team_abbr as home_abbr,
       bs.away_team_abbr as away_abbr,
       bs.game_date::text as game_date_et,
       bs.bbref_game_id
     FROM bbref_schedule bs
-    WHERE bs.canonical_game_id = $1
+    WHERE bs.canonical_game_id = $1 OR bs.bbref_game_id = $1
     LIMIT 1
   `, [gameId]);
 
-  if (bbrefResult.rows.length > 0) {
+  if (bbrefScheduleResult.rows.length > 0) {
     const result = {
-      homeAbbr: bbrefResult.rows[0].home_abbr,
-      awayAbbr: bbrefResult.rows[0].away_abbr,
-      gameDate: bbrefResult.rows[0].game_date_et,
-      bbrefGameId: bbrefResult.rows[0].bbref_game_id,
+      homeAbbr: bbrefScheduleResult.rows[0].home_abbr,
+      awayAbbr: bbrefScheduleResult.rows[0].away_abbr,
+      gameDate: bbrefScheduleResult.rows[0].game_date_et,
+      bbrefGameId: bbrefScheduleResult.rows[0].bbref_game_id,
     };
     console.log(`   ✅ Found game in bbref_schedule: ${result.awayAbbr} @ ${result.homeAbbr} on ${result.gameDate}`);
     return result;
   }
   
-  console.log(`   ⚠️  Game not found in bbref_schedule, falling back to games table...`);
+  console.log(`   ⚠️  Game not found in bbref_games or bbref_schedule, falling back to games table...`);
 
-  // Fallback to games table
+  // Final fallback to games table
   const result = await pool.query(`
     SELECT 
       ht.abbreviation as home_abbr,
@@ -728,7 +752,10 @@ export async function processCSVBoxScore(
     
     const { homeAbbr, awayAbbr, gameDate, bbrefGameId } = gameInfo;
     
-    // If we got data from bbref_schedule, the abbreviations are already Basketball Reference codes
+    // Use bbref_game_id if available (from bbref_games or bbref_schedule), otherwise use the provided gameId
+    const gameIdToUse = bbrefGameId || gameId;
+    
+    // If we got data from bbref_games or bbref_schedule, the abbreviations are already Basketball Reference codes
     // If we got data from games table, we need to map NBA abbreviations to BBRef codes
     const homeTeamCode = bbrefGameId ? homeAbbr : (TEAM_CODE_MAP[homeAbbr] || homeAbbr);
     
@@ -738,8 +765,8 @@ export async function processCSVBoxScore(
     }
     
     const gameDateStr = typeof gameDate === 'string' ? gameDate : gameDate.toISOString().split('T')[0];
-    console.log(`\n📊 Processing CSV box score for game ${gameId} (${awayAbbr} @ ${homeAbbr}, ${gameDateStr})...`);
-    console.log(`   Data source: ${bbrefGameId ? 'bbref_schedule ✅' : 'games table (fallback)'}`);
+    console.log(`\n📊 Processing CSV box score for game ${gameIdToUse} (${awayAbbr} @ ${homeAbbr}, ${gameDateStr})...`);
+    console.log(`   Data source: ${bbrefGameId ? 'bbref_games/bbref_schedule ✅' : 'games table (fallback)'}`);
     
     if (dryRun) {
       console.log(`   [DRY RUN] Would fetch CSV data from Basketball Reference`);
@@ -887,7 +914,7 @@ export async function processCSVBoxScore(
               raw_data = EXCLUDED.raw_data,
               updated_at = now()
           `, [
-            gameId,
+            gameIdToUse,
             gameDateStr,
             teamCode,
             playerName.trim(),
