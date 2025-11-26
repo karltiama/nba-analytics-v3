@@ -30,7 +30,8 @@ async function getMissingGames(
   limit?: number,
   status?: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  gameIds?: string[]
 ): Promise<MissingGame[]> {
   let query = `
     SELECT 
@@ -50,6 +51,13 @@ async function getMissingGames(
   
   const params: any[] = [];
   let paramCount = 1;
+  
+  // If specific game IDs provided, filter by those
+  if (gameIds && gameIds.length > 0) {
+    query += ` AND bg.bbref_game_id = ANY($${paramCount}::text[])`;
+    params.push(gameIds);
+    paramCount++;
+  }
   
   if (status) {
     query += ` AND bg.status = $${paramCount}`;
@@ -89,6 +97,7 @@ async function batchScrapeMissingGames(
   status?: string,
   startDate?: string,
   endDate?: string,
+  gameIds?: string[],
   dryRun: boolean = false
 ) {
   console.log('\n🚀 Batch Scraping Missing BBRef Games\n');
@@ -99,7 +108,7 @@ async function batchScrapeMissingGames(
   }
   
   // Get missing games
-  const missingGames = await getMissingGames(limit, status, startDate, endDate);
+  const missingGames = await getMissingGames(limit, status, startDate, endDate, gameIds);
   
   if (missingGames.length === 0) {
     console.log('✅ No missing games found!');
@@ -197,6 +206,7 @@ async function main() {
   const statusIndex = args.indexOf('--status');
   const startDateIndex = args.indexOf('--start-date');
   const endDateIndex = args.indexOf('--end-date');
+  const gameIdsIndex = args.indexOf('--game-ids');
   const dryRun = args.includes('--dry-run');
   
   const limit = limitIndex !== -1 && args[limitIndex + 1] 
@@ -215,8 +225,12 @@ async function main() {
     ? args[endDateIndex + 1]
     : undefined;
   
+  const gameIds = gameIdsIndex !== -1 && args[gameIdsIndex + 1]
+    ? args[gameIdsIndex + 1].split(',').map(id => id.trim())
+    : undefined;
+  
   try {
-    await batchScrapeMissingGames(limit, status, startDate, endDate, dryRun);
+    await batchScrapeMissingGames(limit, status, startDate, endDate, gameIds, dryRun);
   } catch (error: any) {
     console.error('\n❌ Fatal error:', error.message);
     console.error(error.stack);

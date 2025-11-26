@@ -11,6 +11,59 @@ import { GameMatchupInfo } from './components/GameMatchupInfo';
 import { query } from '@/lib/db';
 
 async function getGameBoxScore(gameId: string) {
+  // Check if this is a BBRef game_id first
+  const isBBRefGame = gameId.startsWith('bbref_');
+  
+  if (isBBRefGame) {
+    // Query from bbref_games and bbref_player_game_stats
+    const bbrefGame = await query(`
+      select 
+        bg.bbref_game_id as game_id,
+        bg.season,
+        bg.start_time,
+        bg.status,
+        bg.home_score,
+        bg.away_score,
+        bg.venue,
+        ht.team_id as home_team_id,
+        ht.abbreviation as home_team_abbr,
+        ht.full_name as home_team_name,
+        at.team_id as away_team_id,
+        at.abbreviation as away_team_abbr,
+        at.full_name as away_team_name
+      from bbref_games bg
+      join teams ht on bg.home_team_id = ht.team_id
+      join teams at on bg.away_team_id = at.team_id
+      where bg.bbref_game_id = $1
+    `, [gameId]);
+
+    if (bbrefGame.length === 0) {
+      return null;
+    }
+
+    // Get box score from bbref_player_game_stats
+    const boxscore = await query(`
+      select 
+        bpgs.*,
+        p.full_name as player_name,
+        t.abbreviation as team_abbr,
+        t.team_id
+      from bbref_player_game_stats bpgs
+      join players p on bpgs.player_id = p.player_id
+      join teams t on bpgs.team_id = t.team_id
+      where bpgs.game_id = $1
+        and bpgs.source = 'bbref'
+        and bpgs.dnp_reason is null
+      order by t.team_id, bpgs.points desc nulls last
+    `, [gameId]);
+
+    return {
+      game: bbrefGame[0],
+      boxscore,
+    };
+  }
+
+  // Original logic for non-BBRef games
   const game = await query(`
     select 
       g.game_id,

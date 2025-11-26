@@ -97,10 +97,48 @@ async function populatePlayerStats(dryRun: boolean = false): Promise<{ inserted:
       }
       
       // Check if game exists in bbref_games table
-      const gameCheck = await pool.query(
+      // First try direct match (for bbref_game_id format)
+      let gameCheck = await pool.query(
         `SELECT bbref_game_id FROM bbref_games WHERE bbref_game_id = $1`,
         [row.game_id]
       );
+      
+      // If not found and game_id looks like NBA Stats format (starts with numbers), try to map it
+      if (gameCheck.rows.length === 0 && /^\d+$/.test(row.game_id)) {
+        // Try to find bbref_game_id by looking up the game in games table and matching by date/teams
+        // We'll use scraped_boxscores data to get game_date and team_code, then find matching bbref_game
+        const gameInfo = await pool.query(`
+          SELECT DISTINCT sb.game_date, sb.team_code
+          FROM scraped_boxscores sb
+          WHERE sb.game_id = $1
+          LIMIT 1
+        `, [row.game_id]);
+        
+        if (gameInfo.rows.length > 0) {
+          const { game_date, team_code } = gameInfo.rows[0];
+          // Try to find bbref_game_id by matching date and team
+          const teamId = await resolveTeamId(team_code);
+          if (teamId) {
+            gameCheck = await pool.query(`
+              SELECT bg.bbref_game_id
+              FROM bbref_games bg
+              WHERE bg.game_date = $1
+                AND (bg.home_team_id = $2 OR bg.away_team_id = $2)
+              LIMIT 1
+            `, [game_date, teamId]);
+            
+            if (gameCheck.rows.length > 0) {
+              // Update scraped_boxscores to use the correct bbref_game_id for future runs
+              await pool.query(`
+                UPDATE scraped_boxscores
+                SET game_id = $1
+                WHERE game_id = $2 AND source = 'bbref_csv'
+              `, [gameCheck.rows[0].bbref_game_id, row.game_id]);
+              row.game_id = gameCheck.rows[0].bbref_game_id;
+            }
+          }
+        }
+      }
       
       if (gameCheck.rows.length === 0) {
         console.warn(`   ⚠️  Game ${row.game_id} not found in bbref_games table`);

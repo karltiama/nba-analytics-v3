@@ -43,29 +43,33 @@ async function checkAllTeams() {
     for (const team of teams.rows) {
       const stats = await pool.query(`
         SELECT 
-          -- Total games in bbref_games
+          -- Total games in bbref_games (only up to today's date)
           (SELECT COUNT(*) 
            FROM bbref_games bg
-           WHERE bg.home_team_id = $1 OR bg.away_team_id = $1) as total_games,
+           WHERE (bg.home_team_id = $1 OR bg.away_team_id = $1)
+             AND bg.game_date <= CURRENT_DATE) as total_games,
           
           -- Games with player stats
           (SELECT COUNT(DISTINCT bpgs.game_id)
            FROM bbref_player_game_stats bpgs
            JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
-           WHERE bpgs.team_id = $1) as games_with_player_stats,
+           WHERE bpgs.team_id = $1
+             AND bg.game_date <= CURRENT_DATE) as games_with_player_stats,
           
           -- Games with team stats
           (SELECT COUNT(DISTINCT btgs.game_id)
            FROM bbref_team_game_stats btgs
            JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-           WHERE btgs.team_id = $1) as games_with_team_stats,
+           WHERE btgs.team_id = $1
+             AND bg.game_date <= CURRENT_DATE) as games_with_team_stats,
           
           -- Games with scores
           (SELECT COUNT(*)
            FROM bbref_games bg
            WHERE (bg.home_team_id = $1 OR bg.away_team_id = $1)
              AND bg.home_score IS NOT NULL
-             AND bg.away_score IS NOT NULL) as games_with_scores,
+             AND bg.away_score IS NOT NULL
+             AND bg.game_date <= CURRENT_DATE) as games_with_scores,
           
           -- Earliest game date
           (SELECT MIN(bg.game_date)
@@ -77,17 +81,19 @@ async function checkAllTeams() {
            FROM bbref_games bg
            WHERE bg.home_team_id = $1 OR bg.away_team_id = $1) as latest_game_date,
           
-          -- Total player stats rows
+          -- Total player stats rows (only up to today's date)
           (SELECT COUNT(*)
            FROM bbref_player_game_stats bpgs
            JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
-           WHERE bpgs.team_id = $1) as player_stats_count,
+           WHERE bpgs.team_id = $1
+             AND bg.game_date <= CURRENT_DATE) as player_stats_count,
           
-          -- Total team stats rows
+          -- Total team stats rows (only up to today's date)
           (SELECT COUNT(*)
            FROM bbref_team_game_stats btgs
            JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-           WHERE btgs.team_id = $1) as team_stats_count
+           WHERE btgs.team_id = $1
+             AND bg.game_date <= CURRENT_DATE) as team_stats_count
       `, [team.team_id]);
       
       const data = stats.rows[0];
