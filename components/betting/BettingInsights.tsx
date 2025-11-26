@@ -1,13 +1,13 @@
 'use client';
 
-import { AlertCircle, Zap, Shield, TrendingUp, BarChart2 } from 'lucide-react';
+import { AlertCircle, Zap, Shield, TrendingUp, BarChart2, Activity } from 'lucide-react';
 
 interface InsightWidget {
   id: string;
   title: string;
   value: string;
   description: string;
-  type: 'upset' | 'pace' | 'defense' | 'props' | 'disagreement';
+  type: 'upset' | 'pace' | 'defense' | 'props' | 'disagreement' | 'general';
   change?: string;
   changeDirection?: 'up' | 'down';
 }
@@ -47,6 +47,13 @@ function getWidgetConfig(type: InsightWidget['type']) {
         icon: <BarChart2 className="w-5 h-5" />,
         color: '#bf5af2',
         bgColor: 'rgba(191, 90, 242, 0.1)',
+      };
+    case 'general':
+    default:
+      return {
+        icon: <Activity className="w-5 h-5" />,
+        color: '#8888a0',
+        bgColor: 'rgba(136, 136, 160, 0.1)',
       };
   }
 }

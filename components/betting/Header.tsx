@@ -83,9 +83,9 @@ export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle }
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors min-w-[140px] justify-center"
             >
               <Calendar className="w-4 h-4 text-[#00d4ff]" />
-              <span className="text-sm font-medium">{formatDate(selectedDate)}</span>
+              <span className="text-sm font-medium" suppressHydrationWarning>{formatDate(selectedDate)}</span>
               {isToday && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold">
+                <span className="text-[10px] px-1.5 py-0.5 bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold" suppressHydrationWarning>
                   TODAY
                 </span>
               )}

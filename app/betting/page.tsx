@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Header,
   GameCard,
@@ -14,287 +14,186 @@ import {
   type Insight,
   type SortOption,
 } from '@/components/betting';
+import {
+  GameCardSkeleton,
+  PlayerCardSkeleton,
+  BettingInsightsSkeleton,
+  AIInsightPanelSkeleton,
+} from '@/components/betting/skeletons';
 
 // ================================
-// DUMMY DATA
+// DATA FETCHING
 // ================================
 
-const dummyGames: Game[] = [
-  {
-    id: '1',
-    homeTeam: { name: 'Los Angeles Lakers', abbreviation: 'LAL', record: '12-8' },
-    awayTeam: { name: 'Golden State Warriors', abbreviation: 'GSW', record: '11-9' },
-    startTime: '7:30 PM ET',
-    homeOdds: { moneyline: -145, spread: -3.5, spreadOdds: -110 },
-    awayOdds: { moneyline: +125, spread: +3.5, spreadOdds: -110 },
-    overUnder: 234.5,
+interface ApiGame {
+  id: string;
+  gameDate: string;
+  startTime: string;
+  status: string;
+  homeTeam: {
+    id: string;
+    name: string;
+    abbreviation: string;
+    record: string;
+    offensiveRating: number;
+    defensiveRating: number;
+    pace: number;
+    avgPoints: number;
+    recentForm: Array<{
+      game_id: string;
+      result: 'W' | 'L';
+      team_score: number;
+      opponent_score: number;
+      opponent_abbr: string;
+    }>;
+  };
+  awayTeam: {
+    id: string;
+    name: string;
+    abbreviation: string;
+    record: string;
+    offensiveRating: number;
+    defensiveRating: number;
+    pace: number;
+    avgPoints: number;
+    recentForm: Array<{
+      game_id: string;
+      result: 'W' | 'L';
+      team_score: number;
+      opponent_score: number;
+      opponent_abbr: string;
+    }>;
+  };
+  homeScore: number | null;
+  awayScore: number | null;
+  odds: {
+    home: { moneyline: number; spread: number; spreadOdds: number };
+    away: { moneyline: number; spread: number; spreadOdds: number };
+    overUnder: number;
+    overOdds: number;
+    underOdds: number;
+  };
+}
+
+interface ApiPlayer {
+  id: string;
+  name: string;
+  team: string;
+  teamAbbreviation: string;
+  position: string;
+  opponent: string;
+  opponentAbbreviation: string;
+  props: Array<{
+    type: 'points' | 'rebounds' | 'assists' | 'threes';
+    line: number;
+    trend: 'over' | 'under';
+    confidence: number;
+    recentAvg: number;
+    seasonAvg: number;
+  }>;
+  recentPoints: number[];
+  recentRebounds: number[];
+  recentAssists: number[];
+  whyText: string;
+  trendPercentage: number;
+  trendDirection: 'up' | 'down';
+}
+
+// Transform API game to GameCard format
+function transformGame(apiGame: ApiGame): Game {
+  // Calculate implied probabilities and odds based on team ratings
+  // This is placeholder logic - will be replaced with real odds data
+  const homeRating = apiGame.homeTeam.offensiveRating - apiGame.awayTeam.defensiveRating;
+  const awayRating = apiGame.awayTeam.offensiveRating - apiGame.homeTeam.defensiveRating;
+  const ratingDiff = homeRating - awayRating;
+  
+  // Estimate spread from rating difference (rough approximation)
+  const estimatedSpread = -Math.round(ratingDiff * 0.3 * 2) / 2;
+  
+  // Estimate total from average points
+  const estimatedTotal = Math.round(
+    (apiGame.homeTeam.avgPoints + apiGame.awayTeam.avgPoints) * 2
+  ) / 2;
+  
+  // Calculate implied probabilities (simplified)
+  const homeProb = Math.max(25, Math.min(75, 50 + ratingDiff * 2));
+  const awayProb = 100 - homeProb;
+  
+  // Determine if it's a close matchup
+  const isClose = Math.abs(homeProb - awayProb) < 10;
+  
+  // Determine favorite
+  const isFavorite = homeProb > awayProb ? 'home' : 'away';
+
+  return {
+    id: apiGame.id,
+    homeTeam: {
+      name: apiGame.homeTeam.name,
+      abbreviation: apiGame.homeTeam.abbreviation,
+      record: apiGame.homeTeam.record,
+    },
+    awayTeam: {
+      name: apiGame.awayTeam.name,
+      abbreviation: apiGame.awayTeam.abbreviation,
+      record: apiGame.awayTeam.record,
+    },
+    startTime: new Date(apiGame.startTime).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    }),
+    homeOdds: {
+      moneyline: homeProb > 50 ? Math.round(-100 * homeProb / (100 - homeProb)) : Math.round(100 * (100 - homeProb) / homeProb),
+      spread: estimatedSpread,
+      spreadOdds: -110,
+    },
+    awayOdds: {
+      moneyline: awayProb > 50 ? Math.round(-100 * awayProb / (100 - awayProb)) : Math.round(100 * (100 - awayProb) / awayProb),
+      spread: -estimatedSpread,
+      spreadOdds: -110,
+    },
+    overUnder: estimatedTotal || 220,
     overOdds: -110,
     underOdds: -110,
-    homeImpliedProb: 59,
-    awayImpliedProb: 41,
-    isFavorite: 'home',
-    isClose: false,
-  },
-  {
-    id: '2',
-    homeTeam: { name: 'Boston Celtics', abbreviation: 'BOS', record: '16-4' },
-    awayTeam: { name: 'Milwaukee Bucks', abbreviation: 'MIL', record: '13-7' },
-    startTime: '7:00 PM ET',
-    homeOdds: { moneyline: -180, spread: -4.5, spreadOdds: -110 },
-    awayOdds: { moneyline: +155, spread: +4.5, spreadOdds: -110 },
-    overUnder: 228.5,
-    overOdds: -108,
-    underOdds: -112,
-    homeImpliedProb: 64,
-    awayImpliedProb: 36,
-    isFavorite: 'home',
-    isClose: false,
-  },
-  {
-    id: '3',
-    homeTeam: { name: 'Phoenix Suns', abbreviation: 'PHX', record: '14-6' },
-    awayTeam: { name: 'Denver Nuggets', abbreviation: 'DEN', record: '13-7' },
-    startTime: '9:00 PM ET',
-    homeOdds: { moneyline: +105, spread: +1.5, spreadOdds: -110 },
-    awayOdds: { moneyline: -125, spread: -1.5, spreadOdds: -110 },
-    overUnder: 230.0,
-    overOdds: -105,
-    underOdds: -115,
-    homeImpliedProb: 48,
-    awayImpliedProb: 52,
-    isFavorite: 'away',
-    isClose: true,
-  },
-  {
-    id: '4',
-    homeTeam: { name: 'Miami Heat', abbreviation: 'MIA', record: '10-10' },
-    awayTeam: { name: 'New York Knicks', abbreviation: 'NYK', record: '12-8' },
-    startTime: '7:30 PM ET',
-    homeOdds: { moneyline: +110, spread: +2.0, spreadOdds: -110 },
-    awayOdds: { moneyline: -130, spread: -2.0, spreadOdds: -110 },
-    overUnder: 215.5,
-    overOdds: -110,
-    underOdds: -110,
-    homeImpliedProb: 47,
-    awayImpliedProb: 53,
-    isFavorite: 'away',
-    isClose: true,
-  },
-  {
-    id: '5',
-    homeTeam: { name: 'Dallas Mavericks', abbreviation: 'DAL', record: '13-7' },
-    awayTeam: { name: 'Oklahoma City Thunder', abbreviation: 'OKC', record: '15-5' },
-    startTime: '8:00 PM ET',
-    homeOdds: { moneyline: +140, spread: +4.0, spreadOdds: -110 },
-    awayOdds: { moneyline: -165, spread: -4.0, spreadOdds: -110 },
-    overUnder: 225.0,
-    overOdds: -112,
-    underOdds: -108,
-    homeImpliedProb: 42,
-    awayImpliedProb: 58,
-    isFavorite: 'away',
-    isClose: false,
-  },
-  {
-    id: '6',
-    homeTeam: { name: 'Sacramento Kings', abbreviation: 'SAC', record: '11-9' },
-    awayTeam: { name: 'Minnesota Timberwolves', abbreviation: 'MIN', record: '12-8' },
-    startTime: '10:00 PM ET',
-    homeOdds: { moneyline: -115, spread: -1.5, spreadOdds: -110 },
-    awayOdds: { moneyline: -105, spread: +1.5, spreadOdds: -110 },
-    overUnder: 222.5,
-    overOdds: -110,
-    underOdds: -110,
-    homeImpliedProb: 51,
-    awayImpliedProb: 49,
-    isFavorite: 'home',
-    isClose: true,
-  },
-];
+    homeImpliedProb: Math.round(homeProb),
+    awayImpliedProb: Math.round(awayProb),
+    isFavorite,
+    isClose,
+  };
+}
 
-const dummyPlayers: PlayerData[] = [
-  {
-    id: '1',
-    name: 'Shai Gilgeous-Alexander',
-    team: 'Oklahoma City Thunder',
-    teamAbbreviation: 'OKC',
-    position: 'PG',
-    opponent: 'Dallas Mavericks',
-    opponentAbbreviation: 'DAL',
-    props: [
-      { type: 'points', line: 30.5, trend: 'over', confidence: 78, recentAvg: 33.2, seasonAvg: 31.1 },
-      { type: 'assists', line: 5.5, trend: 'over', confidence: 65, recentAvg: 6.4, seasonAvg: 5.8 },
-    ],
-    recentPoints: [28, 35, 31, 38, 32],
-    recentRebounds: [4, 6, 5, 7, 5],
-    recentAssists: [5, 7, 6, 8, 6],
-    whyText: 'SGA is trending +12% above his projected scoring in the last 5 games. Dallas ranks 25th in perimeter defense and SGA has averaged 35.2 PPG against bottom-10 defensive teams this season.',
-    trendPercentage: 12,
-    trendDirection: 'up',
-  },
-  {
-    id: '2',
-    name: 'Jaylen Brown',
-    team: 'Boston Celtics',
-    teamAbbreviation: 'BOS',
-    position: 'SG',
-    opponent: 'Milwaukee Bucks',
-    opponentAbbreviation: 'MIL',
-    props: [
-      { type: 'points', line: 25.5, trend: 'over', confidence: 82, recentAvg: 28.4, seasonAvg: 25.8 },
-      { type: 'rebounds', line: 5.5, trend: 'under', confidence: 58, recentAvg: 4.8, seasonAvg: 5.3 },
-    ],
-    recentPoints: [26, 29, 31, 27, 29],
-    recentRebounds: [5, 4, 6, 4, 5],
-    recentAssists: [3, 4, 5, 3, 4],
-    whyText: 'Jaylen Brown has exceeded 25.5 points in 6 of his last 7 games. With Tatum drawing defensive attention, Brown has been efficient from mid-range.',
-    trendPercentage: 8,
-    trendDirection: 'up',
-  },
-  {
-    id: '3',
-    name: 'Anthony Davis',
-    team: 'Los Angeles Lakers',
-    teamAbbreviation: 'LAL',
-    position: 'PF',
-    opponent: 'Golden State Warriors',
-    opponentAbbreviation: 'GSW',
-    props: [
-      { type: 'rebounds', line: 12.5, trend: 'over', confidence: 71, recentAvg: 13.8, seasonAvg: 12.4 },
-      { type: 'points', line: 26.5, trend: 'over', confidence: 68, recentAvg: 28.2, seasonAvg: 26.1 },
-    ],
-    recentPoints: [30, 26, 28, 32, 25],
-    recentRebounds: [14, 12, 15, 13, 15],
-    recentAssists: [3, 2, 4, 3, 2],
-    whyText: 'AD dominates on the glass against small-ball lineups. GSW ranks 28th in defensive rebounding, and AD has grabbed 13+ rebounds in 4 of his last 5.',
-    trendPercentage: 6,
-    trendDirection: 'up',
-  },
-  {
-    id: '4',
-    name: 'Nikola Jokic',
-    team: 'Denver Nuggets',
-    teamAbbreviation: 'DEN',
-    position: 'C',
-    opponent: 'Phoenix Suns',
-    opponentAbbreviation: 'PHX',
-    props: [
-      { type: 'assists', line: 9.5, trend: 'over', confidence: 74, recentAvg: 10.8, seasonAvg: 9.2 },
-      { type: 'rebounds', line: 12.5, trend: 'under', confidence: 55, recentAvg: 11.4, seasonAvg: 12.8 },
-    ],
-    recentPoints: [28, 25, 31, 22, 27],
-    recentRebounds: [10, 12, 11, 13, 10],
-    recentAssists: [12, 9, 11, 10, 12],
-    whyText: 'Jokic facilitating at an elite level with Murray back. Phoenix allows 27.3 assists per game (4th worst in NBA), creating passing lanes for Jokic.',
-    trendPercentage: 4,
-    trendDirection: 'up',
-  },
-];
+// Transform API player to PlayerCard format
+function transformPlayer(apiPlayer: ApiPlayer): PlayerData {
+  return {
+    id: apiPlayer.id,
+    name: apiPlayer.name,
+    team: apiPlayer.team,
+    teamAbbreviation: apiPlayer.teamAbbreviation,
+    position: apiPlayer.position,
+    opponent: apiPlayer.opponent,
+    opponentAbbreviation: apiPlayer.opponentAbbreviation,
+    props: apiPlayer.props,
+    recentPoints: apiPlayer.recentPoints,
+    recentRebounds: apiPlayer.recentRebounds,
+    recentAssists: apiPlayer.recentAssists,
+    whyText: apiPlayer.whyText,
+    trendPercentage: Math.round(apiPlayer.trendPercentage),
+    trendDirection: apiPlayer.trendDirection,
+  };
+}
 
-const dummyInsights: Insight[] = [
-  {
-    id: '1',
-    type: 'pace',
-    title: 'Highest-Pace Game Alert',
-    description: 'The Suns–Nuggets matchup is projected to be the highest-pace game today with a combined pace rating of 104.2.',
-    timestamp: '2 minutes ago',
-    importance: 'high',
-  },
-  {
-    id: '2',
-    type: 'trend',
-    title: 'Points Prop Trending',
-    description: 'Jaylen Brown has exceeded 25.5 points in 6 of his last 7 games. Current line: 25.5 points.',
-    timestamp: '5 minutes ago',
-    importance: 'high',
-  },
-  {
-    id: '3',
-    type: 'sharp',
-    title: 'Sharp Money Movement',
-    description: 'Sharp money is moving toward the Celtics -4.5. Line has moved from -3.5 to -4.5 since open.',
-    timestamp: '8 minutes ago',
-    importance: 'medium',
-  },
-  {
-    id: '4',
-    type: 'injury',
-    title: 'Key Injury Update',
-    description: 'Devin Booker (hamstring) upgraded to probable for tonight\'s game vs Denver.',
-    timestamp: '12 minutes ago',
-    importance: 'high',
-  },
-  {
-    id: '5',
-    type: 'value',
-    title: 'Value Bet Detected',
-    description: 'Our model shows 58% win probability for SAC, but books imply only 51%. Potential value on Kings ML.',
-    timestamp: '15 minutes ago',
-    importance: 'medium',
-  },
-  {
-    id: '6',
-    type: 'general',
-    title: 'Total Movement',
-    description: 'Lakers-Warriors total dropped from 237 to 234.5. Under tickets coming in at 68%.',
-    timestamp: '20 minutes ago',
-    importance: 'low',
-  },
-];
-
-const dummyWidgets = [
-  {
-    id: '1',
-    title: 'Upset Probability',
-    value: '3',
-    description: 'Games with >25% upset probability today',
-    type: 'upset' as const,
-    change: '+1',
-    changeDirection: 'up' as const,
-  },
-  {
-    id: '2',
-    title: 'Pace Mismatch',
-    value: 'PHX-DEN',
-    description: 'Highest pace differential matchup',
-    type: 'pace' as const,
-  },
-  {
-    id: '3',
-    title: 'Defense Alert',
-    value: 'BOS',
-    description: 'Top defensive team hosting tonight',
-    type: 'defense' as const,
-  },
-  {
-    id: '4',
-    title: 'Props Hitting',
-    value: '67%',
-    description: 'Over props hitting rate (L7 days)',
-    type: 'props' as const,
-    change: '+5%',
-    changeDirection: 'up' as const,
-  },
-  {
-    id: '5',
-    title: 'Model Disagreement',
-    value: '2',
-    description: 'Games where AI differs from books by >5%',
-    type: 'disagreement' as const,
-  },
-];
-
-const dummyGameDetails = {
+// Dummy game details for modal (will be replaced with API)
+const createGameDetails = (game: Game) => ({
   homeTeamStats: {
-    offensiveRating: 116.2,
+    offensiveRating: 115.2,
     defensiveRating: 112.8,
     pace: 100.4,
     recentForm: [
-      { opponent: 'BKN', result: 'W' as const, score: '118-105', spread: -6.5, covered: true },
-      { opponent: 'CHA', result: 'W' as const, score: '124-112', spread: -8.0, covered: true },
-      { opponent: 'POR', result: 'L' as const, score: '108-115', spread: -5.5, covered: false },
-      { opponent: 'HOU', result: 'W' as const, score: '121-110', spread: -3.5, covered: true },
-      { opponent: 'DAL', result: 'W' as const, score: '117-112', spread: +1.5, covered: true },
+      { opponent: 'OPP', result: 'W' as const, score: '118-105', spread: -6.5, covered: true },
+      { opponent: 'OPP', result: 'W' as const, score: '124-112', spread: -8.0, covered: true },
+      { opponent: 'OPP', result: 'L' as const, score: '108-115', spread: -5.5, covered: false },
+      { opponent: 'OPP', result: 'W' as const, score: '121-110', spread: -3.5, covered: true },
+      { opponent: 'OPP', result: 'W' as const, score: '117-112', spread: +1.5, covered: true },
     ],
   },
   awayTeamStats: {
@@ -302,70 +201,51 @@ const dummyGameDetails = {
     defensiveRating: 110.2,
     pace: 101.2,
     recentForm: [
-      { opponent: 'SAC', result: 'W' as const, score: '122-115', spread: -2.5, covered: true },
-      { opponent: 'LAC', result: 'L' as const, score: '105-112', spread: -4.0, covered: false },
-      { opponent: 'PHX', result: 'W' as const, score: '118-109', spread: +1.5, covered: true },
-      { opponent: 'UTA', result: 'W' as const, score: '130-118', spread: -7.5, covered: true },
-      { opponent: 'MIN', result: 'L' as const, score: '108-115', spread: +2.5, covered: false },
+      { opponent: 'OPP', result: 'W' as const, score: '122-115', spread: -2.5, covered: true },
+      { opponent: 'OPP', result: 'L' as const, score: '105-112', spread: -4.0, covered: false },
+      { opponent: 'OPP', result: 'W' as const, score: '118-109', spread: +1.5, covered: true },
+      { opponent: 'OPP', result: 'W' as const, score: '130-118', spread: -7.5, covered: true },
+      { opponent: 'OPP', result: 'L' as const, score: '108-115', spread: +2.5, covered: false },
     ],
   },
   spreadMovement: [
-    { time: 'Open', value: -2.5 },
-    { time: '10am', value: -3.0 },
-    { time: '12pm', value: -3.0 },
-    { time: '2pm', value: -3.5 },
-    { time: '4pm', value: -3.5 },
-    { time: 'Now', value: -3.5 },
+    { time: 'Open', value: game.homeOdds.spread - 1 },
+    { time: '10am', value: game.homeOdds.spread - 0.5 },
+    { time: '12pm', value: game.homeOdds.spread - 0.5 },
+    { time: '2pm', value: game.homeOdds.spread },
+    { time: '4pm', value: game.homeOdds.spread },
+    { time: 'Now', value: game.homeOdds.spread },
   ],
   totalMovement: [
-    { time: 'Open', value: 237.0 },
-    { time: '10am', value: 236.5 },
-    { time: '12pm', value: 235.5 },
-    { time: '2pm', value: 235.0 },
-    { time: '4pm', value: 234.5 },
-    { time: 'Now', value: 234.5 },
+    { time: 'Open', value: game.overUnder + 2.5 },
+    { time: '10am', value: game.overUnder + 2 },
+    { time: '12pm', value: game.overUnder + 1 },
+    { time: '2pm', value: game.overUnder + 0.5 },
+    { time: '4pm', value: game.overUnder },
+    { time: 'Now', value: game.overUnder },
   ],
-  historicalMatchups: [
-    { date: 'Mar 15, 2024', homeTeam: 'LAL', awayTeam: 'GSW', homeScore: 128, awayScore: 121, totalPoints: 249 },
-    { date: 'Feb 22, 2024', homeTeam: 'GSW', awayTeam: 'LAL', homeScore: 115, awayScore: 109, totalPoints: 224 },
-    { date: 'Jan 27, 2024', homeTeam: 'LAL', awayTeam: 'GSW', homeScore: 145, awayScore: 144, totalPoints: 289 },
-    { date: 'Dec 25, 2023', homeTeam: 'GSW', awayTeam: 'LAL', homeScore: 118, awayScore: 112, totalPoints: 230 },
-  ],
-  injuries: {
-    home: [
-      { player: 'Jarred Vanderbilt', status: 'Out' as const, injury: 'Foot' },
-      { player: 'Christian Wood', status: 'Questionable' as const, injury: 'Knee' },
-    ],
-    away: [
-      { player: 'Andrew Wiggins', status: 'Probable' as const, injury: 'Ankle' },
-    ],
-  },
+  historicalMatchups: [],
+  injuries: { home: [], away: [] },
   aiSuggestions: [
     {
       type: 'Spread' as const,
-      pick: 'Lakers -3.5',
-      confidence: 72,
-      explanation: 'Lakers are 8-3 ATS at home this season. Warriors struggle on the road against elite defenses, going 3-6 ATS.',
+      pick: `${game.homeTeam.abbreviation} ${game.homeOdds.spread}`,
+      confidence: 65,
+      explanation: 'Based on recent form and team ratings analysis.',
     },
     {
       type: 'O/U' as const,
-      pick: 'Under 234.5',
-      confidence: 68,
-      explanation: 'Under has hit in 4 of last 5 LAL-GSW matchups. Both teams playing at slower pace in recent games.',
-    },
-    {
-      type: 'ML' as const,
-      pick: 'Lakers ML',
-      confidence: 65,
-      explanation: 'Home court advantage significant for Lakers (9-3 at home). AD dominates small-ball lineups.',
+      pick: game.overUnder > 220 ? `Under ${game.overUnder}` : `Over ${game.overUnder}`,
+      confidence: 60,
+      explanation: 'Combined pace and efficiency metrics suggest this total.',
     },
   ],
   aiConfidenceScores: {
-    moneyline: 72,
-    spread: 68,
-    total: 65,
+    moneyline: 65,
+    spread: 62,
+    total: 58,
   },
-};
+});
 
 // ================================
 // MAIN COMPONENT
@@ -373,12 +253,31 @@ const dummyGameDetails = {
 
 export default function BettingDashboard() {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [searchValue, setSearchValue] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('time');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showCloseMatchups, setShowCloseMatchups] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Data states
+  const [games, setGames] = useState<Game[]>([]);
+  const [players, setPlayers] = useState<PlayerData[]>([]);
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [widgets, setWidgets] = useState<any[]>([]);
+  
+  // Loading states
+  const [loadingGames, setLoadingGames] = useState(true);
+  const [loadingPlayers, setLoadingPlayers] = useState(true);
+  const [loadingInsights, setLoadingInsights] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Set initial date on mount to avoid hydration mismatch
+  useEffect(() => {
+    setSelectedDate(new Date());
+    setMounted(true);
+  }, []);
 
   // Apply dark mode class to html element
   useEffect(() => {
@@ -389,8 +288,64 @@ export default function BettingDashboard() {
     }
   }, [isDarkMode]);
 
+  // Fetch today's games
+  const fetchGames = useCallback(async () => {
+    setLoadingGames(true);
+    try {
+      const res = await fetch('/api/betting/games');
+      if (!res.ok) throw new Error('Failed to fetch games');
+      const data = await res.json();
+      const transformedGames = data.games.map(transformGame);
+      setGames(transformedGames);
+    } catch (err: any) {
+      console.error('Error fetching games:', err);
+      setError(err.message);
+    } finally {
+      setLoadingGames(false);
+    }
+  }, []);
+
+  // Fetch players
+  const fetchPlayers = useCallback(async () => {
+    setLoadingPlayers(true);
+    try {
+      const res = await fetch('/api/betting/players/trending?limit=8');
+      if (!res.ok) throw new Error('Failed to fetch players');
+      const data = await res.json();
+      const transformedPlayers = data.players.map(transformPlayer);
+      setPlayers(transformedPlayers);
+    } catch (err: any) {
+      console.error('Error fetching players:', err);
+    } finally {
+      setLoadingPlayers(false);
+    }
+  }, []);
+
+  // Fetch insights
+  const fetchInsights = useCallback(async () => {
+    setLoadingInsights(true);
+    try {
+      const res = await fetch('/api/betting/insights');
+      if (!res.ok) throw new Error('Failed to fetch insights');
+      const data = await res.json();
+      setInsights(data.insights || []);
+      setWidgets(data.widgets || []);
+    } catch (err: any) {
+      console.error('Error fetching insights:', err);
+    } finally {
+      setLoadingInsights(false);
+    }
+  }, []);
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchGames();
+    fetchPlayers();
+    fetchInsights();
+  }, [fetchGames, fetchPlayers, fetchInsights]);
+
   // Filter games
-  const filteredGames = dummyGames.filter(game => {
+  const filteredGames = games.filter(game => {
     const matchesSearch = searchValue === '' || 
       game.homeTeam.name.toLowerCase().includes(searchValue.toLowerCase()) ||
       game.awayTeam.name.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -416,12 +371,14 @@ export default function BettingDashboard() {
     }
   });
 
-  const selectedGame = selectedGameId ? dummyGames.find(g => g.id === selectedGameId) : null;
+  const selectedGame = selectedGameId ? games.find(g => g.id === selectedGameId) : null;
+
+  const isLoading = loadingGames || loadingPlayers || loadingInsights;
 
   return (
     <div className="min-h-screen bg-background gradient-mesh">
       <Header
-        selectedDate={selectedDate}
+        selectedDate={selectedDate || new Date()}
         onDateChange={setSelectedDate}
         isDarkMode={isDarkMode}
         onThemeToggle={() => setIsDarkMode(!isDarkMode)}
@@ -443,33 +400,60 @@ export default function BettingDashboard() {
               onCloseMatchupsToggle={() => setShowCloseMatchups(!showCloseMatchups)}
             />
 
+            {/* Error State */}
+            {error && (
+              <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757]">
+                <p className="text-sm text-[#ff4757]">Error loading data: {error}</p>
+                <button 
+                  onClick={() => { setError(null); fetchGames(); }}
+                  className="mt-2 text-xs text-[#00d4ff] hover:underline"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
             {/* Today's Games */}
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white">Today&apos;s Games</h2>
                 <span className="text-xs text-muted-foreground">
-                  {sortedGames.length} games • Data as of {new Date().toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                  })}
+                  {loadingGames ? 'Loading...' : `${sortedGames.length} games scheduled`}
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sortedGames.map((game, index) => (
-                  <div key={game.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                    <GameCard
-                      game={game}
-                      onViewDetails={setSelectedGameId}
-                    />
-                  </div>
-                ))}
-              </div>
+              
+              {loadingGames ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <GameCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : sortedGames.length === 0 ? (
+                <div className="glass-card rounded-xl p-8 text-center">
+                  <p className="text-muted-foreground">No games scheduled for today</p>
+                  <p className="text-xs text-muted-foreground/60 mt-2">Check back later or select a different date</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sortedGames.map((game, index) => (
+                    <div key={game.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
+                      <GameCard
+                        game={game}
+                        onViewDetails={setSelectedGameId}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Betting Insights */}
             <section>
-              <BettingInsights widgets={dummyWidgets} />
+              {loadingInsights ? (
+                <BettingInsightsSkeleton />
+              ) : widgets.length > 0 ? (
+                <BettingInsights widgets={widgets} />
+              ) : null}
             </section>
 
             {/* Players to Watch */}
@@ -477,26 +461,43 @@ export default function BettingDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-lg font-semibold text-white">Players to Watch</h2>
-                  <p className="text-xs text-muted-foreground">AI-derived standout players for betting props</p>
+                  <p className="text-xs text-muted-foreground">Players with significant L5 vs Season trends</p>
                 </div>
                 <span className="text-[10px] px-2 py-1 bg-[#bf5af2]/20 text-[#bf5af2] rounded-full font-medium">
-                  AI POWERED
+                  DATA-DRIVEN
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {dummyPlayers.map((player, index) => (
-                  <div key={player.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                    <PlayerCard player={player} />
-                  </div>
-                ))}
-              </div>
+              
+              {loadingPlayers ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <PlayerCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : players.length === 0 ? (
+                <div className="glass-card rounded-xl p-8 text-center">
+                  <p className="text-muted-foreground">No trending players found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {players.map((player, index) => (
+                    <div key={player.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
+                      <PlayerCard player={player} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
 
           {/* AI Insights Sidebar */}
           <aside className="w-full xl:w-80 shrink-0">
             <div className="sticky top-20">
-              <AIInsightPanel insights={dummyInsights} />
+              {loadingInsights ? (
+                <AIInsightPanelSkeleton />
+              ) : (
+                <AIInsightPanel insights={insights} />
+              )}
             </div>
           </aside>
         </div>
@@ -507,7 +508,7 @@ export default function BettingDashboard() {
         <GameDetailsModal
           data={{
             game: selectedGame,
-            ...dummyGameDetails,
+            ...createGameDetails(selectedGame),
           }}
           onClose={() => setSelectedGameId(null)}
         />
@@ -515,4 +516,3 @@ export default function BettingDashboard() {
     </div>
   );
 }
-

@@ -11,4 +11,11 @@ export { LineMovementChart } from './LineMovementChart';
 export { GameDetailsModal } from './GameDetailsModal';
 export { FilterBar } from './FilterBar';
 export type { SortOption } from './FilterBar';
+export {
+  GameCardSkeleton,
+  PlayerCardSkeleton,
+  InsightWidgetSkeleton,
+  AIInsightPanelSkeleton,
+  BettingInsightsSkeleton,
+} from './skeletons';
 
