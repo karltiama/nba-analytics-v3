@@ -86,3 +86,4 @@ async function compareTeams() {
 
 compareTeams();
 
+
