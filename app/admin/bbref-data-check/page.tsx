@@ -15,32 +15,32 @@ interface TeamData {
   team_id: string;
   abbreviation: string;
   full_name: string;
-  total_games: number;
+  final_games: number;
   games_with_player_stats: number;
   games_with_team_stats: number;
   games_with_scores: number;
+  missing_boxscores: number;
   earliest_game_date: string | null;
   latest_game_date: string | null;
-  player_stats_count: number;
-  team_stats_count: number;
   coverage_pct: number;
-  missing_stats_count: number;
+  wins: number;
+  losses: number;
 }
 
 interface Summary {
   total_teams: number;
-  total_games: number;
-  games_with_player_stats: number;
-  games_with_team_stats: number;
+  total_final_games: number;
   games_with_scores: number;
+  games_with_team_stats: number;
+  missing_boxscores: number;
   average_coverage: number;
-  total_missing_stats: number;
+  data_source: string;
 }
 
 interface Issues {
   teams_with_no_games: number;
   teams_with_low_coverage: number;
-  teams_with_missing_stats: number;
+  teams_with_missing_boxscores: number;
 }
 
 export default function BBRefDataCheckPage() {
@@ -79,7 +79,7 @@ export default function BBRefDataCheckPage() {
     if (sortBy === 'coverage') {
       comparison = a.coverage_pct - b.coverage_pct;
     } else if (sortBy === 'missing') {
-      comparison = a.missing_stats_count - b.missing_stats_count;
+      comparison = a.missing_boxscores - b.missing_boxscores;
     } else {
       comparison = a.abbreviation.localeCompare(b.abbreviation);
     }
@@ -147,7 +147,7 @@ export default function BBRefDataCheckPage() {
 
         {/* Summary Cards */}
         {summary && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
               <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Total Teams</div>
               <div className="text-3xl font-bold text-black dark:text-zinc-50">
@@ -155,18 +155,24 @@ export default function BBRefDataCheckPage() {
               </div>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Total Games</div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Final Games</div>
               <div className="text-3xl font-bold text-black dark:text-zinc-50">
-                {summary.total_games.toLocaleString()}
+                {summary.total_final_games.toLocaleString()}
+              </div>
+              <div className="text-xs text-green-600 mt-1">
+                {summary.games_with_scores} with scores
               </div>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Games with Stats</div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">With Boxscores</div>
               <div className="text-3xl font-bold text-black dark:text-zinc-50">
                 {summary.games_with_team_stats.toLocaleString()}
               </div>
-              <div className="text-sm text-zinc-500 mt-1">
-                {summary.total_missing_stats.toLocaleString()} missing
+            </div>
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Missing Boxscores</div>
+              <div className={`text-3xl font-bold ${summary.missing_boxscores > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {summary.missing_boxscores.toLocaleString()}
               </div>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
@@ -174,12 +180,15 @@ export default function BBRefDataCheckPage() {
               <div className={`text-3xl font-bold ${getCoverageColor(summary.average_coverage)}`}>
                 {summary.average_coverage}%
               </div>
+              <div className="text-xs text-blue-600 mt-1">
+                Source: {summary.data_source}
+              </div>
             </div>
           </div>
         )}
 
         {/* Issues Alert */}
-        {issues && (
+        {issues && (issues.teams_with_no_games > 0 || issues.teams_with_low_coverage > 0 || issues.teams_with_missing_boxscores > 0) && (
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
               ⚠️ Data Issues Detected
@@ -196,9 +205,9 @@ export default function BBRefDataCheckPage() {
                 </span>
               </div>
               <div>
-                <span className="font-medium">Teams with missing stats:</span>{' '}
+                <span className="font-medium">Teams with missing boxscores:</span>{' '}
                 <span className="text-yellow-600 dark:text-yellow-400">
-                  {issues.teams_with_missing_stats}
+                  {issues.teams_with_missing_boxscores}
                 </span>
               </div>
             </div>
@@ -234,12 +243,11 @@ export default function BBRefDataCheckPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Team</TableHead>
-                  <TableHead className="text-right">Total Games</TableHead>
-                  <TableHead className="text-right">Player Stats</TableHead>
-                  <TableHead className="text-right">Team Stats</TableHead>
+                  <TableHead className="text-right">Record</TableHead>
+                  <TableHead className="text-right">Final Games</TableHead>
+                  <TableHead className="text-right">Boxscores</TableHead>
                   <TableHead className="text-right">Coverage</TableHead>
                   <TableHead className="text-right">Missing</TableHead>
-                  <TableHead className="text-right">Scores</TableHead>
                   <TableHead>Date Range</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -255,8 +263,12 @@ export default function BBRefDataCheckPage() {
                         {team.abbreviation}
                       </Link>
                     </TableCell>
-                    <TableCell className="text-right">{team.total_games}</TableCell>
-                    <TableCell className="text-right">{team.games_with_player_stats}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      <span className="text-green-600">{team.wins}</span>
+                      <span className="text-zinc-400">-</span>
+                      <span className="text-red-600">{team.losses}</span>
+                    </TableCell>
+                    <TableCell className="text-right">{team.final_games}</TableCell>
                     <TableCell className="text-right">{team.games_with_team_stats}</TableCell>
                     <TableCell className="text-right">
                       <span
@@ -268,15 +280,14 @@ export default function BBRefDataCheckPage() {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      {team.missing_stats_count > 0 ? (
+                      {team.missing_boxscores > 0 ? (
                         <span className="text-red-600 dark:text-red-400 font-medium">
-                          {team.missing_stats_count}
+                          {team.missing_boxscores}
                         </span>
                       ) : (
-                        <span className="text-zinc-400">0</span>
+                        <span className="text-green-600">✓</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">{team.games_with_scores}</TableCell>
                     <TableCell className="text-sm text-zinc-600 dark:text-zinc-400">
                       {team.earliest_game_date && team.latest_game_date ? (
                         <>
@@ -309,5 +320,6 @@ export default function BBRefDataCheckPage() {
     </div>
   );
 }
+
 
 

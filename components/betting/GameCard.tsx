@@ -189,3 +189,6 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
   );
 }
 
+
+
+

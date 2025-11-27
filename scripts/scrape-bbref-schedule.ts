@@ -134,6 +134,50 @@ function parseDate(dateStr: string): Date | null {
   return null;
 }
 
+/**
+ * Parse start time from BBRef format (e.g., "7:00p", "7:30p ET", "8:00p")
+ * Returns Date object in ET timezone (stored as UTC in database)
+ */
+function parseStartTime(gameDate: Date, timeStr: string): Date | null {
+  if (!timeStr || timeStr.trim() === '') return null;
+  
+  // Remove "ET" or other timezone indicators
+  const cleaned = timeStr.replace(/ET|PT|CT|MT|EST|PST|CST|MST/gi, '').trim();
+  
+  // Match patterns like "7:00p", "7:30p", "8:00p", "12:30p", "7:00pm"
+  const match = cleaned.match(/(\d{1,2}):(\d{2})([ap]m?)/i);
+  if (!match) return null;
+  
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const ampm = match[3].toLowerCase().replace('m', '');
+  
+  // Convert to 24-hour format
+  if (ampm === 'p' && hours !== 12) {
+    hours += 12;
+  } else if (ampm === 'a' && hours === 12) {
+    hours = 0;
+  }
+  
+  // Create date string in ET timezone format
+  // Format: YYYY-MM-DDTHH:MM:SS-05:00 (ET is UTC-5)
+  const year = gameDate.getFullYear();
+  const month = String(gameDate.getMonth() + 1).padStart(2, '0');
+  const day = String(gameDate.getDate()).padStart(2, '0');
+  const hoursStr = String(hours).padStart(2, '0');
+  const minutesStr = String(minutes).padStart(2, '0');
+  
+  // Create ISO string with ET timezone offset
+  const dateStr = `${year}-${month}-${day}T${hoursStr}:${minutesStr}:00-05:00`;
+  const date = new Date(dateStr);
+  
+  if (isNaN(date.getTime())) {
+    return null;
+  }
+  
+  return date;
+}
+
 function generateBbrefGameId(date: Date, awayAbbr: string, homeAbbr: string): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -194,8 +238,9 @@ async function scrapeSchedulePage(season: number, month?: string, startDate?: Da
     const dateIdx = headers.findIndex(h => h.toLowerCase().includes('date'));
     const visitorIdx = headers.findIndex(h => h.toLowerCase().includes('visitor'));
     const homeIdx = headers.findIndex(h => h.toLowerCase().includes('home'));
+    const timeIdx = headers.findIndex(h => h.toLowerCase().includes('time') || h.toLowerCase().includes('start'));
     
-    console.log(`Column indices - Date: ${dateIdx}, Visitor: ${visitorIdx}, Home: ${homeIdx}`);
+    console.log(`Column indices - Date: ${dateIdx}, Visitor: ${visitorIdx}, Home: ${homeIdx}, Time: ${timeIdx}`);
     
     if (dateIdx === -1 || visitorIdx === -1 || homeIdx === -1) {
       console.log('Could not find required columns in schedule table');
@@ -219,6 +264,7 @@ async function scrapeSchedulePage(season: number, month?: string, startDate?: Da
       const dateCell = $(cells[dateIdx]).text().trim();
       const visitorCell = $(cells[visitorIdx]).text().trim();
       const homeCell = $(cells[homeIdx]).text().trim();
+      const timeCell = timeIdx !== -1 ? $(cells[timeIdx]).text().trim() : '';
       
       // Skip empty rows
       if (!dateCell || !visitorCell || !homeCell) {
@@ -279,6 +325,12 @@ async function scrapeSchedulePage(season: number, month?: string, startDate?: Da
         return;
       }
       
+      // Parse start time if available
+      let startTime: Date | null = null;
+      if (timeCell && timeIdx !== -1) {
+        startTime = parseStartTime(gameDate, timeCell);
+      }
+      
       // Filter by date range if provided
       if (startDate && gameDate < startDate) {
         return;
@@ -291,6 +343,7 @@ async function scrapeSchedulePage(season: number, month?: string, startDate?: Da
         date: gameDate,
         visitorAbbr,
         homeAbbr,
+        startTime,
       });
       
       parsedCount++;
@@ -330,18 +383,23 @@ async function storeSchedule(games: any[], season: string): Promise<void> {
         
         const bbrefGameId = generateBbrefGameId(gameDate, game.visitorAbbr, game.homeAbbr);
         
+        // Prepare start_time
+        const startTimeISO = game.startTime ? game.startTime.toISOString() : null;
+        
         const result = await client.query(`
           INSERT INTO bbref_schedule (
             bbref_game_id,
             game_date,
+            start_time,
             home_team_abbr,
             away_team_abbr,
             home_team_id,
             away_team_id,
             season
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
           ON CONFLICT (bbref_game_id) DO UPDATE SET
             game_date = excluded.game_date,
+            start_time = COALESCE(bbref_schedule.start_time, excluded.start_time),
             home_team_abbr = excluded.home_team_abbr,
             away_team_abbr = excluded.away_team_abbr,
             home_team_id = excluded.home_team_id,
@@ -352,6 +410,7 @@ async function storeSchedule(games: any[], season: string): Promise<void> {
         `, [
           bbrefGameId,
           dateStr,
+          startTimeISO,
           game.homeAbbr,
           game.visitorAbbr,
           homeTeamId,

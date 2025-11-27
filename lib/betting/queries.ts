@@ -43,11 +43,12 @@ export interface TeamRatings {
 export async function getGamesForDate(date: string) {
   // Get games scheduled for this date from bbref_schedule
   // Left join with bbref_games to get status/scores if the game has been played
+  // Use start_time from bbref_schedule first, then bbref_games, then default to 7 PM ET
   const gamesResult = await query(`
     SELECT 
       bs.bbref_game_id as game_id,
       bs.game_date,
-      COALESCE(bg.start_time, bs.game_date::timestamptz + interval '19 hours') as start_time,
+      COALESCE(bs.start_time, bg.start_time, bs.game_date::timestamptz + interval '19 hours') as start_time,
       bs.home_team_id,
       bs.away_team_id,
       ht.full_name as home_team_name,
@@ -62,7 +63,7 @@ export async function getGamesForDate(date: string) {
     JOIN teams at ON bs.away_team_id = at.team_id
     LEFT JOIN bbref_games bg ON bs.bbref_game_id = bg.bbref_game_id
     WHERE bs.game_date = $1::date
-    ORDER BY COALESCE(bg.start_time, bs.game_date::timestamptz) ASC
+    ORDER BY COALESCE(bs.start_time, bg.start_time, bs.game_date::timestamptz) ASC
   `, [date]);
 
   return gamesResult;
@@ -133,23 +134,32 @@ export async function getAllTeamRatings(): Promise<Record<string, TeamRatings>> 
         AND btgs.source = 'bbref'
       GROUP BY btgs.team_id
     ),
+    -- Calculate records directly from bbref_games (not from team_game_stats)
+    -- This ensures we only count Final games with actual scores
     team_records AS (
       SELECT 
         team_id,
         SUM(CASE WHEN won THEN 1 ELSE 0 END) as wins,
         SUM(CASE WHEN NOT won THEN 1 ELSE 0 END) as losses
       FROM (
+        -- Home team results
         SELECT 
-          btgs.team_id,
-          CASE 
-            WHEN btgs.is_home AND bg.home_score > bg.away_score THEN true
-            WHEN NOT btgs.is_home AND bg.away_score > bg.home_score THEN true
-            ELSE false
-          END as won
-        FROM bbref_team_game_stats btgs
-        JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-        WHERE bg.status = 'Final'
-      ) wins_losses
+          home_team_id as team_id,
+          home_score > away_score as won
+        FROM bbref_games
+        WHERE status = 'Final'
+          AND home_score IS NOT NULL 
+          AND away_score IS NOT NULL
+        UNION ALL
+        -- Away team results
+        SELECT 
+          away_team_id as team_id,
+          away_score > home_score as won
+        FROM bbref_games
+        WHERE status = 'Final'
+          AND home_score IS NOT NULL 
+          AND away_score IS NOT NULL
+      ) game_results
       GROUP BY team_id
     )
     SELECT 
