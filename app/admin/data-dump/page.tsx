@@ -163,12 +163,20 @@ export default async function DataDumpPage() {
               Visual overview of your NBA analytics database
             </p>
           </div>
-          <Link
-            href="/dashboard"
-            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-50"
-          >
-            ← Back to Dashboard
-          </Link>
+          <div className="flex gap-4">
+            <Link
+              href="/admin/odds-debug"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-50"
+            >
+              Odds Debug
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-50"
+            >
+              ← Back to Dashboard
+            </Link>
+          </div>
         </div>
 
         {/* Overview Cards */}

@@ -72,6 +72,7 @@ interface ApiGame {
     overUnder: number;
     overOdds: number;
     underOdds: number;
+    bookmaker?: string | null; // Which bookmaker these odds are from
   };
 }
 
@@ -101,23 +102,20 @@ interface ApiPlayer {
 
 // Transform API game to GameCard format
 function transformGame(apiGame: ApiGame): Game {
-  // Calculate implied probabilities and odds based on team ratings
-  // This is placeholder logic - will be replaced with real odds data
-  const homeRating = apiGame.homeTeam.offensiveRating - apiGame.awayTeam.defensiveRating;
-  const awayRating = apiGame.awayTeam.offensiveRating - apiGame.homeTeam.defensiveRating;
-  const ratingDiff = homeRating - awayRating;
+  // Use real odds from API (from markets table)
+  const odds = apiGame.odds;
   
-  // Estimate spread from rating difference (rough approximation)
-  const estimatedSpread = -Math.round(ratingDiff * 0.3 * 2) / 2;
-  
-  // Estimate total from average points
-  const estimatedTotal = Math.round(
-    (apiGame.homeTeam.avgPoints + apiGame.awayTeam.avgPoints) * 2
-  ) / 2;
-  
-  // Calculate implied probabilities (simplified)
-  const homeProb = Math.max(25, Math.min(75, 50 + ratingDiff * 2));
-  const awayProb = 100 - homeProb;
+  // Calculate implied probabilities from real moneyline odds
+  const homeProb = odds.home.moneyline 
+    ? odds.home.moneyline > 0 
+      ? 100 / (odds.home.moneyline + 100) * 100
+      : Math.abs(odds.home.moneyline) / (Math.abs(odds.home.moneyline) + 100) * 100
+    : 50;
+  const awayProb = odds.away.moneyline
+    ? odds.away.moneyline > 0
+      ? 100 / (odds.away.moneyline + 100) * 100
+      : Math.abs(odds.away.moneyline) / (Math.abs(odds.away.moneyline) + 100) * 100
+    : 50;
   
   // Determine if it's a close matchup
   const isClose = Math.abs(homeProb - awayProb) < 10;
@@ -143,18 +141,18 @@ function transformGame(apiGame: ApiGame): Game {
       timeZoneName: 'short',
     }),
     homeOdds: {
-      moneyline: homeProb > 50 ? Math.round(-100 * homeProb / (100 - homeProb)) : Math.round(100 * (100 - homeProb) / homeProb),
-      spread: estimatedSpread,
-      spreadOdds: -110,
+      moneyline: odds.home.moneyline || 0,
+      spread: odds.home.spread || 0,
+      spreadOdds: odds.home.spreadOdds || -110,
     },
     awayOdds: {
-      moneyline: awayProb > 50 ? Math.round(-100 * awayProb / (100 - awayProb)) : Math.round(100 * (100 - awayProb) / awayProb),
-      spread: -estimatedSpread,
-      spreadOdds: -110,
+      moneyline: odds.away.moneyline || 0,
+      spread: odds.away.spread || 0,
+      spreadOdds: odds.away.spreadOdds || -110,
     },
-    overUnder: estimatedTotal || 220,
-    overOdds: -110,
-    underOdds: -110,
+    overUnder: odds.overUnder || 220,
+    overOdds: odds.overOdds || -110,
+    underOdds: odds.underOdds || -110,
     homeImpliedProb: Math.round(homeProb),
     awayImpliedProb: Math.round(awayProb),
     isFavorite,

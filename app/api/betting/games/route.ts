@@ -4,7 +4,8 @@ import {
   getTodaysGames,
   getRecentGames, 
   getAllTeamRatings,
-  getTeamRecentForm 
+  getTeamRecentForm,
+  getGamesOdds
 } from '@/lib/betting/queries';
 
 /**
@@ -61,7 +62,12 @@ export async function GET(request: NextRequest) {
       recentFormMap[teamId] = form;
     });
 
-    // Enrich games with team stats
+    // Get odds for all games (defaults to DraftKings, falls back to any available bookmaker)
+    // Use game_id (canonical_game_id or bbref_game_id) for odds lookup
+    const gameIds = games.map((g: any) => g.game_id);
+    const oddsMap = await getGamesOdds(gameIds, 'draftkings'); // Default bookmaker: DraftKings
+
+    // Enrich games with team stats and odds
     const enrichedGames = games.map((game: any) => {
       const homeRatings = teamRatings[game.home_team_id] || {};
       const awayRatings = teamRatings[game.away_team_id] || {};
@@ -69,7 +75,7 @@ export async function GET(request: NextRequest) {
       const awayForm = recentFormMap[game.away_team_id] || [];
 
       return {
-        id: game.game_id,
+        id: game.bbref_game_id || game.game_id, // Use bbref_game_id for unique React key (always unique)
         gameDate: game.game_date,
         startTime: game.start_time,
         status: game.status,
@@ -97,22 +103,35 @@ export async function GET(request: NextRequest) {
         },
         homeScore: game.home_score,
         awayScore: game.away_score,
-        // Placeholder odds (will be populated from odds API later)
-        odds: {
-          home: {
-            moneyline: 0,
-            spread: 0,
-            spreadOdds: -110,
-          },
-          away: {
-            moneyline: 0,
-            spread: 0,
-            spreadOdds: -110,
-          },
-          overUnder: 0,
-          overOdds: -110,
-          underOdds: -110,
-        },
+        // Real odds from markets table (use game_id for lookup, which is canonical_game_id or bbref_game_id)
+        odds: (() => {
+          const gameOdds = oddsMap[game.game_id] || {
+            home: { moneyline: null, spread: null, spreadOdds: null },
+            away: { moneyline: null, spread: null, spreadOdds: null },
+            overUnder: null,
+            overOdds: null,
+            underOdds: null,
+            bookmaker: null,
+          };
+
+          // Return with fallback values if odds are missing
+          return {
+            home: {
+              moneyline: gameOdds.home.moneyline ?? 0,
+              spread: gameOdds.home.spread ?? 0,
+              spreadOdds: gameOdds.home.spreadOdds ?? -110,
+            },
+            away: {
+              moneyline: gameOdds.away.moneyline ?? 0,
+              spread: gameOdds.away.spread ?? 0,
+              spreadOdds: gameOdds.away.spreadOdds ?? -110,
+            },
+            overUnder: gameOdds.overUnder ?? 0,
+            overOdds: gameOdds.overOdds ?? -110,
+            underOdds: gameOdds.underOdds ?? -110,
+            bookmaker: gameOdds.bookmaker, // Include bookmaker for reference
+          };
+        })(),
       };
     });
 
