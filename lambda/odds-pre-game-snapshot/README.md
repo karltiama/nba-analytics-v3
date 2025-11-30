@@ -1,6 +1,13 @@
 # Pre-Game Odds Snapshot Lambda
 
-Fetches and stores pre-game odds for all scheduled NBA games daily at 09:05 ET.
+Fetches and stores pre-game odds (team + player props) for all scheduled NBA games daily at 09:05 ET.
+
+**Features:**
+- ✅ Team odds: Moneyline, Spread, Total
+- ✅ Player props: Points, Rebounds, Assists
+- ✅ Single API call per day (efficient credit usage)
+- ✅ Automatic player name → player_id resolution
+- ✅ Idempotent UPSERTs (safe to re-run)
 
 ## Setup
 
@@ -96,7 +103,8 @@ Check CloudWatch Logs:
   "body": {
     "success": true,
     "date": "2025-11-28",
-    "eventsFetched": 11,
+    "totalEventsFetched": 11,
+    "todayEventsFound": 11,
     "marketsProcessed": 594,
     "eventsSkipped": 0,
     "errors": 0,
@@ -104,4 +112,26 @@ Check CloudWatch Logs:
   }
 }
 ```
+
+**Credit Usage:**
+- 1 API call per day = 30 calls/month
+- Estimated: 3-5 credits per call = **90-150 credits/month**
+- Well within 500 credit quota! ✅
+
+## What Gets Stored
+
+**Team Markets (per game):**
+- Moneyline (home/away)
+- Spread (home/away)
+- Total (over/under)
+
+**Player Props (per game, per player):**
+- Points (over/under)
+- Rebounds (over/under)
+- Assists (over/under)
+
+**Storage:**
+- Raw payloads: `staging_events` table
+- Normalized odds: `markets` table
+- Snapshot type: `pre_game`
 

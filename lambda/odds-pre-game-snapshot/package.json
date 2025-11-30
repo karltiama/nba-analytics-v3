@@ -14,8 +14,8 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/pg": "^8.15.6",
+    "dotenv": "^17.2.3",
     "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
-

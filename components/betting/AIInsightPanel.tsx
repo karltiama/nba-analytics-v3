@@ -107,3 +107,5 @@ export function AIInsightPanel({ insights }: AIInsightPanelProps) {
 
 
 
+
+

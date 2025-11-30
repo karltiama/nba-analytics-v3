@@ -53,8 +53,10 @@ create table if not exists markets (
   
   -- For player props only (market_type = 'player_prop'):
   --   player_id: Links to players table
-  --   stat_type: 'points' | 'rebounds' | 'assists' | etc.
-  --   stat_line: Over/under line (e.g., 25.5 points)
+  --   stat_type: Over/Under props: 'points', 'rebounds', 'assists', 'threes', 'blocks'
+  --              Yes/No props: 'double_double', 'triple_double', 'first_basket'
+  --   stat_line: Over/under line (e.g., 25.5 points) or NULL for Yes/No bets
+  --   side: 'over'/'under' for Over/Under props, 'yes'/'no' for Yes/No props
   -- Note: For player props, line is stored in stat_line, not line field
   player_id         text references players(player_id),
   stat_type         text,                             -- 'points' | 'rebounds' | 'assists' | etc.
@@ -79,7 +81,7 @@ create table if not exists markets (
   constraint markets_side_check check (
     (market_type in ('moneyline', 'spread') and side in ('home', 'away')) or
     (market_type = 'total' and side in ('over', 'under')) or
-    (market_type = 'player_prop' and side in ('over', 'under')) or
+    (market_type = 'player_prop' and side in ('over', 'under', 'yes', 'no')) or
     side is null
   ),
   constraint markets_player_prop_check check (
