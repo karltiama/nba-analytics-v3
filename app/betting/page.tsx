@@ -126,11 +126,13 @@ function transformGame(apiGame: ApiGame): Game {
   return {
     id: apiGame.id,
     homeTeam: {
+      id: apiGame.homeTeam.id,
       name: apiGame.homeTeam.name,
       abbreviation: apiGame.homeTeam.abbreviation,
       record: apiGame.homeTeam.record,
     },
     awayTeam: {
+      id: apiGame.awayTeam.id,
       name: apiGame.awayTeam.name,
       abbreviation: apiGame.awayTeam.abbreviation,
       record: apiGame.awayTeam.record,

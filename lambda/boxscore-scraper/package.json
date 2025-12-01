@@ -1,0 +1,22 @@
+{
+  "name": "boxscore-scraper",
+  "version": "1.0.0",
+  "description": "Lambda function to scrape box scores from Basketball Reference daily",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "tsx index.ts"
+  },
+  "dependencies": {
+    "pg": "^8.13.1",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/pg": "^8.15.6",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5"
+  }
+}
+

@@ -1,5 +1,6 @@
 -- TEAM GAME STATS
 -- Stores team-level aggregated statistics per game.
+-- Source: Basketball Reference only (aggregated from player_game_stats)
 -- This table is populated by aggregating player_game_stats, ensuring we own the calculation.
 create table if not exists team_game_stats (
   game_id                  text not null references games(game_id) on delete cascade,
@@ -14,27 +15,25 @@ create table if not exists team_game_stats (
   free_throws_attempted    int,
   -- Other stats
   rebounds                 int,
-  offensive_rebounds       int,  -- Needed for Pace calculation
-  defensive_rebounds       int,  -- Needed for Pace calculation
+  offensive_rebounds       int,  -- Needed for Pace calculation (from Basketball Reference)
+  defensive_rebounds       int,  -- Needed for Pace calculation (from Basketball Reference)
   assists                  int,
   steals                   int,
   blocks                   int,
   turnovers                int,
-  personal_fouls           int,
-  -- Quarter-by-quarter scoring (from NBA API)
-  points_q1                int,
-  points_q2                int,
-  points_q3                int,
-  points_q4                int,
-  points_ot                int,  -- Overtime points (if any)
+  personal_fouls           int,  -- From Basketball Reference
   -- Calculated fields
   possessions              numeric,  -- Calculated: FGA + 0.44 * FTA - ORB + TOV
   minutes                  numeric,  -- Team total minutes (sum of player minutes)
   -- Metadata
   is_home                  boolean,  -- True if this team is home_team_id in games table
+  -- Source tracking (Basketball Reference only)
+  source                   text not null default 'bbref',
   created_at               timestamptz not null default now(),
   updated_at               timestamptz not null default now(),
-  primary key (game_id, team_id)
+  primary key (game_id, team_id),
+  -- Ensure all data is from Basketball Reference
+  constraint team_game_stats_source_check check (source = 'bbref')
 );
 
 -- Indexes for common queries

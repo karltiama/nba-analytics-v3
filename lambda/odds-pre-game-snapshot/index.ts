@@ -308,6 +308,32 @@ async function findGameIdFromSchedule(
 // ============================================
 
 /**
+ * Normalize player name for matching (handles suffixes, special chars, etc.)
+ */
+function normalizePlayerName(name: string): string {
+  return name
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\./g, '')
+    .replace(/'/g, '')
+    // Remove common suffixes
+    .replace(/\s+Sr\.?$/i, '')
+    .replace(/\s+Jr\.?$/i, '')
+    .replace(/\s+II$/i, '')
+    .replace(/\s+III$/i, '')
+    .replace(/\s+IV$/i, '')
+    // Normalize special characters
+    .replace(/[áàâä]/g, 'a')
+    .replace(/[éèêë]/g, 'e')
+    .replace(/[íìîï]/g, 'i')
+    .replace(/[óòôö]/g, 'o')
+    .replace(/[úùûü]/g, 'u')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ñ]/g, 'n')
+    .toLowerCase();
+}
+
+/**
  * Resolve player_id from player name, using game context (home/away teams)
  * Uses fuzzy matching strategies similar to other scripts in the codebase
  */
@@ -320,11 +346,7 @@ async function resolvePlayerId(
   const firstName = nameParts[0] || '';
   const lastName = nameParts[nameParts.length - 1] || '';
   
-  // Normalize name (remove special characters for matching)
-  const normalizedName = playerName
-    .replace(/\./g, '')
-    .replace(/'/g, '')
-    .toLowerCase();
+  const normalizedName = normalizePlayerName(playerName);
   
   // Strategy 1: Exact match with team context (most accurate)
   // Try home team first, then away team
@@ -344,7 +366,34 @@ async function resolvePlayerId(
     }
   }
   
-  // Strategy 2: Normalized match (handles "J.R. Smith" vs "JR Smith")
+  // Strategy 2: Remove suffixes and match (handles "LeBron James Jr" vs "LeBron James")
+  const nameWithoutSuffix = playerName
+    .replace(/\s+Sr\.?$/i, '')
+    .replace(/\s+Jr\.?$/i, '')
+    .replace(/\s+II$/i, '')
+    .replace(/\s+III$/i, '')
+    .replace(/\s+IV$/i, '')
+    .trim();
+  
+  if (nameWithoutSuffix !== playerName) {
+    for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
+      const suffixMatch = await pool.query(`
+        SELECT p.player_id
+        FROM players p
+        JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+        JOIN teams t ON ptr.team_id = t.team_id
+        WHERE LOWER(p.full_name) = LOWER($1)
+          AND t.abbreviation = $2
+        LIMIT 1
+      `, [nameWithoutSuffix, teamAbbr]);
+      
+      if (suffixMatch.rows.length > 0) {
+        return suffixMatch.rows[0].player_id;
+      }
+    }
+  }
+  
+  // Strategy 3: Normalized match (handles "J.R. Smith" vs "JR Smith")
   for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
     const normalizedMatch = await pool.query(`
       SELECT p.player_id
@@ -361,7 +410,7 @@ async function resolvePlayerId(
     }
   }
   
-  // Strategy 3: First + Last name match
+  // Strategy 4: First + Last name match
   if (firstName && lastName && nameParts.length >= 2) {
     for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
       const firstLastMatch = await pool.query(`
@@ -381,7 +430,7 @@ async function resolvePlayerId(
     }
   }
   
-  // Strategy 4: Last name only (less accurate, but sometimes needed)
+  // Strategy 5: Last name only (less accurate, but sometimes needed)
   if (lastName) {
     for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
       const lastNameMatch = await pool.query(`
@@ -400,16 +449,68 @@ async function resolvePlayerId(
     }
   }
   
-  // Strategy 5: Try without team filter (player might be in database but not in current roster)
-  const noTeamMatch = await pool.query(`
+  // Strategy 6: Try exact match without team filter (player might not be in roster yet)
+  const noTeamExact = await pool.query(`
     SELECT p.player_id
     FROM players p
     WHERE LOWER(p.full_name) = LOWER($1)
     LIMIT 1
   `, [playerName]);
   
-  if (noTeamMatch.rows.length > 0) {
-    return noTeamMatch.rows[0].player_id;
+  if (noTeamExact.rows.length > 0) {
+    return noTeamExact.rows[0].player_id;
+  }
+  
+  // Strategy 7: Try normalized match without team filter
+  const noTeamNormalized = await pool.query(`
+    SELECT p.player_id
+    FROM players p
+    WHERE LOWER(REPLACE(REPLACE(p.full_name, '.', ''), '''', '')) = $1
+    LIMIT 1
+  `, [normalizedName]);
+  
+  if (noTeamNormalized.rows.length > 0) {
+    return noTeamNormalized.rows[0].player_id;
+  }
+  
+  // Strategy 8: Try first + last name without team filter
+  if (firstName && lastName && nameParts.length >= 2) {
+    const noTeamFirstLast = await pool.query(`
+      SELECT p.player_id
+      FROM players p
+      WHERE LOWER(p.first_name) = LOWER($1)
+        AND LOWER(p.last_name) = LOWER($2)
+      LIMIT 1
+    `, [firstName, lastName]);
+    
+    if (noTeamFirstLast.rows.length > 0) {
+      return noTeamFirstLast.rows[0].player_id;
+    }
+  }
+  
+  // Strategy 9: Check if player has played in recent games for these teams
+  // This helps catch players who might not be in rosters but have game stats
+  for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
+    const recentGameMatch = await pool.query(`
+      SELECT DISTINCT pgs.player_id
+      FROM player_game_stats pgs
+      JOIN players p ON pgs.player_id = p.player_id
+      JOIN teams t ON pgs.team_id = t.team_id
+      WHERE LOWER(p.full_name) = LOWER($1)
+        AND t.abbreviation = $2
+        AND pgs.game_id IN (
+          SELECT game_id 
+          FROM games 
+          WHERE start_time > NOW() - INTERVAL '30 days'
+          ORDER BY start_time DESC
+          LIMIT 50
+        )
+      LIMIT 1
+    `, [playerName, teamAbbr]);
+    
+    if (recentGameMatch.rows.length > 0) {
+      return recentGameMatch.rows[0].player_id;
+    }
   }
   
   // Player not found
@@ -648,22 +749,26 @@ async function processPlayerProps(
           let statLine: number | null = null;
           let playerId: string | null = null;
 
-          // Determine side and stat line
-          const desc = (outcome.description || outcome.name || '').toLowerCase();
+          // IMPORTANT: For player props, the API structure is:
+          // - outcome.name = "Over" or "Under" (the side)
+          // - outcome.description = Player name (e.g., "LeBron James")
+          const playerName = outcome.description || outcome.name;
+          const sideName = (outcome.name || '').toLowerCase();
           
           // Handle Yes/No bets (double_double, triple_double, first_basket)
           if (market.key.includes('double_double') || market.key.includes('triple_double') || market.key.includes('first_basket')) {
-            side = desc.includes('yes') || !desc.includes('no') ? 'yes' : 'no';
+            // For Yes/No props, check if name contains "yes" or "no"
+            // Some bookmakers might have different structures
+            side = sideName.includes('yes') || (!sideName.includes('no') && !outcome.point) ? 'yes' : 'no';
             statLine = null; // Yes/No bets don't have a line
           } else {
-            // Over/Under bets
-            side = desc.includes('over') ? 'over' : 'under';
+            // Over/Under bets - name is "Over" or "Under"
+            side = sideName.includes('over') ? 'over' : 'under';
             statLine = outcome.point || null;
           }
 
-          // Resolve player_id from player name
-          // For player props, outcome.name is the player name
-          playerId = await resolvePlayerId(outcome.name, homeAbbr, awayAbbr);
+          // Resolve player_id from player name (use description, not name)
+          playerId = await resolvePlayerId(playerName, homeAbbr, awayAbbr);
 
           if (!playerId) {
             console.warn(`Skipping player prop: Could not resolve player "${outcome.name}" for ${statType}`);

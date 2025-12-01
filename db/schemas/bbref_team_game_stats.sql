@@ -1,8 +1,7 @@
 -- BBREF TEAM GAME STATS
--- Aggregated team-level statistics from Basketball Reference player game stats
--- This table is separate from team_game_stats to maintain data source integrity
--- IMPORTANT: This table ONLY contains data from Basketball Reference sources
--- All entries must have source = 'bbref' and game_id must exist in bbref_games
+-- Authoritative table for team-level aggregated statistics from Basketball Reference
+-- This is the PRIMARY source of truth for all BBRef team game stats
+-- Populated by aggregating from bbref_player_game_stats
 create table if not exists bbref_team_game_stats (
   game_id                  text not null references bbref_games(bbref_game_id) on delete cascade,
   team_id                  text not null references teams(team_id),
@@ -28,13 +27,13 @@ create table if not exists bbref_team_game_stats (
   possessions              numeric,  -- Calculated: FGA + 0.44 * FTA - ORB + TOV
   minutes                  numeric,  -- Team total minutes (sum of player minutes)
   -- Metadata
-  is_home                  boolean,  -- True if this team is home_team_id in games table
-  -- Source tracking
+  is_home                  boolean,  -- True if this team is home_team_id in bbref_games
+  -- Source tracking (always 'bbref' for this table)
   source                   text not null default 'bbref',
   created_at               timestamptz not null default now(),
   updated_at               timestamptz not null default now(),
   primary key (game_id, team_id),
-  -- Ensure source is always 'bbref' to prevent data mixing
+  -- Ensure source is always 'bbref' to maintain data integrity
   constraint bbref_team_game_stats_source_check check (source = 'bbref')
 );
 
@@ -44,5 +43,4 @@ create index if not exists bbref_team_game_stats_game_idx on bbref_team_game_sta
 create index if not exists bbref_team_game_stats_team_season_idx on bbref_team_game_stats (team_id, game_id);
 create index if not exists bbref_team_game_stats_home_idx on bbref_team_game_stats (team_id, is_home);
 create index if not exists bbref_team_game_stats_source_idx on bbref_team_game_stats (source);
-
 

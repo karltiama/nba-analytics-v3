@@ -16,9 +16,11 @@ interface HeaderProps {
   onDateChange: (date: Date) => void;
   isDarkMode: boolean;
   onThemeToggle: () => void;
+  teamName?: string;
+  teamAbbr?: string;
 }
 
-export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle }: HeaderProps) {
+export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const formatDate = (date: Date) => {
@@ -61,53 +63,66 @@ export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle }
             </div>
             <div>
               <h1 className="text-lg font-bold tracking-tight">
-                <span className="neon-text-cyan">NBA</span>
-                <span className="text-white ml-1">Betting Dashboard</span>
+                {teamName ? (
+                  <>
+                    <span className="neon-text-cyan">{teamAbbr || 'TEAM'}</span>
+                    <span className="text-white ml-1">{teamName}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="neon-text-cyan">NBA</span>
+                    <span className="text-white ml-1">Betting Dashboard</span>
+                  </>
+                )}
               </h1>
-              <p className="text-xs text-muted-foreground -mt-0.5">Live odds & AI insights</p>
+              <p className="text-xs text-muted-foreground -mt-0.5">
+                {teamName ? 'Team analytics & AI insights' : 'Live odds & AI insights'}
+              </p>
             </div>
           </div>
 
-          {/* Date Selector */}
-          <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-1">
-            <button
-              onClick={goToPreviousDay}
-              className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-              aria-label="Previous day"
-            >
-              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
-            
-            <button
-              onClick={() => setShowDatePicker(!showDatePicker)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors min-w-[140px] justify-center"
-            >
-              <Calendar className="w-4 h-4 text-[#00d4ff]" />
-              <span className="text-sm font-medium" suppressHydrationWarning>{formatDate(selectedDate)}</span>
-              {isToday && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold" suppressHydrationWarning>
-                  TODAY
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={goToNextDay}
-              className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-              aria-label="Next day"
-            >
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </button>
-
-            {!isToday && (
+          {/* Date Selector - Only show on betting dashboard */}
+          {!teamName && (
+            <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-1">
               <button
-                onClick={goToToday}
-                className="px-3 py-1.5 text-xs font-medium text-[#00d4ff] hover:bg-[#00d4ff]/10 rounded-lg transition-colors"
+                onClick={goToPreviousDay}
+                className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                aria-label="Previous day"
               >
-                Today
+                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
               </button>
-            )}
-          </div>
+              
+              <button
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors min-w-[140px] justify-center"
+              >
+                <Calendar className="w-4 h-4 text-[#00d4ff]" />
+                <span className="text-sm font-medium" suppressHydrationWarning>{formatDate(selectedDate)}</span>
+                {isToday && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold" suppressHydrationWarning>
+                    TODAY
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={goToNextDay}
+                className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                aria-label="Next day"
+              >
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+
+              {!isToday && (
+                <button
+                  onClick={goToToday}
+                  className="px-3 py-1.5 text-xs font-medium text-[#00d4ff] hover:bg-[#00d4ff]/10 rounded-lg transition-colors"
+                >
+                  Today
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">

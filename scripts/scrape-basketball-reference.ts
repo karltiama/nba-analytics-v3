@@ -174,27 +174,90 @@ export const TEAM_CODE_MAP: Record<string, string> = {
 };
 
 /**
- * Get team abbreviations from game ID
- * Returns the game date in Eastern Time (Basketball Reference uses ET for dates)
- * Prefers bbref_schedule date if available (more accurate)
+ * Generate bbref_game_id from date and team abbreviations
+ * Format: bbref_YYYYMMDDHHMM_AWAY_HOME
  */
-async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string; awayAbbr: string; gameDate: Date | string } | null> {
-  // First try to get date from bbref_schedule (more accurate)
-  const bbrefResult = await pool.query(`
+function generateBbrefGameId(date: Date | string, awayAbbr: string, homeAbbr: string): string {
+  let year: number, month: number, day: number;
+  
+  if (typeof date === 'string') {
+    const parts = date.split('-');
+    year = parseInt(parts[0], 10);
+    month = parseInt(parts[1], 10);
+    day = parseInt(parts[2], 10);
+  } else {
+    year = date.getFullYear();
+    month = date.getMonth() + 1;
+    day = date.getDate();
+  }
+  
+  const dateStr = `${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+  const timeStr = '0000'; // Default to midnight if time not available
+  return `bbref_${dateStr}${timeStr}_${awayAbbr}_${homeAbbr}`;
+}
+
+/**
+ * Get team abbreviations, game date, and bbref_game_id
+ * Returns the game date in Eastern Time (Basketball Reference uses ET for dates)
+ * Tries bbref_schedule first, then bbref_games, then games table
+ */
+async function getTeamAbbreviations(gameId: string): Promise<{ 
+  homeAbbr: string; 
+  awayAbbr: string; 
+  gameDate: Date | string;
+  bbrefGameId: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
+} | null> {
+  // First try bbref_schedule (has canonical_game_id link)
+  const bbrefScheduleResult = await pool.query(`
     SELECT 
       bs.home_team_abbr as home_abbr,
       bs.away_team_abbr as away_abbr,
-      bs.game_date::text as game_date_et
+      bs.game_date::text as game_date_et,
+      bs.bbref_game_id,
+      bs.home_team_id,
+      bs.away_team_id
     FROM bbref_schedule bs
-    WHERE bs.canonical_game_id = $1
+    WHERE bs.canonical_game_id = $1 OR bs.bbref_game_id = $1
     LIMIT 1
   `, [gameId]);
 
-  if (bbrefResult.rows.length > 0) {
+  if (bbrefScheduleResult.rows.length > 0) {
+    const row = bbrefScheduleResult.rows[0];
     return {
-      homeAbbr: bbrefResult.rows[0].home_abbr,
-      awayAbbr: bbrefResult.rows[0].away_abbr,
-      gameDate: bbrefResult.rows[0].game_date_et, // YYYY-MM-DD format string from bbref_schedule
+      homeAbbr: row.home_abbr,
+      awayAbbr: row.away_abbr,
+      gameDate: row.game_date_et,
+      bbrefGameId: row.bbref_game_id,
+      homeTeamId: row.home_team_id,
+      awayTeamId: row.away_team_id,
+    };
+  }
+
+  // Try bbref_games directly
+  const bbrefGamesResult = await pool.query(`
+    SELECT 
+      bg.home_team_abbr as home_abbr,
+      bg.away_team_abbr as away_abbr,
+      bg.game_date::text as game_date_et,
+      bg.bbref_game_id,
+      bg.home_team_id,
+      bg.away_team_id
+    FROM bbref_games bg
+    WHERE bg.bbref_game_id = $1
+    LIMIT 1
+  `, [gameId]);
+
+  if (bbrefGamesResult.rows.length > 0) {
+    const row = bbrefGamesResult.rows[0];
+    return {
+      homeAbbr: row.home_abbr,
+      awayAbbr: row.away_abbr,
+      gameDate: row.game_date_et,
+      bbrefGameId: row.bbref_game_id,
+      homeTeamId: row.home_team_id,
+      awayTeamId: row.away_team_id,
     };
   }
 
@@ -204,7 +267,9 @@ async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string;
       ht.abbreviation as home_abbr,
       at.abbreviation as away_abbr,
       g.start_time,
-      DATE((g.start_time AT TIME ZONE 'America/New_York'))::text as game_date_et
+      DATE((g.start_time AT TIME ZONE 'America/New_York'))::text as game_date_et,
+      g.home_team_id,
+      g.away_team_id
     FROM games g
     JOIN teams ht ON g.home_team_id = ht.team_id
     JOIN teams at ON g.away_team_id = at.team_id
@@ -215,15 +280,26 @@ async function getTeamAbbreviations(gameId: string): Promise<{ homeAbbr: string;
     return null;
   }
 
-  // Use the Eastern Time date for Basketball Reference URL
-  // Basketball Reference uses Eastern Time for the date in URLs
-  // Return as string (YYYY-MM-DD) to avoid timezone issues
-  const gameDateET = result.rows[0].game_date_et;
+  const row = result.rows[0];
+  const gameDateET = row.game_date_et;
+  
+  // Generate bbref_game_id from date and team abbreviations
+  const homeTeamCode = TEAM_CODE_MAP[row.home_abbr];
+  const awayTeamCode = TEAM_CODE_MAP[row.away_abbr];
+  
+  if (!homeTeamCode || !awayTeamCode) {
+    return null;
+  }
+  
+  const bbrefGameId = generateBbrefGameId(gameDateET, awayTeamCode, homeTeamCode);
 
   return {
-    homeAbbr: result.rows[0].home_abbr,
-    awayAbbr: result.rows[0].away_abbr,
-    gameDate: gameDateET, // YYYY-MM-DD format string
+    homeAbbr: row.home_abbr,
+    awayAbbr: row.away_abbr,
+    gameDate: gameDateET,
+    bbrefGameId,
+    homeTeamId: row.home_team_id,
+    awayTeamId: row.away_team_id,
   };
 }
 
@@ -420,9 +496,9 @@ export async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: stri
         } else if (headerLower === 'fta') {
           playerData.free_throws_attempted = parseIntSafe(value);
         } else if (headerLower === 'orb') {
-          // Offensive rebounds (we might not store separately)
+          playerData.offensive_rebounds = parseIntSafe(value);
         } else if (headerLower === 'drb') {
-          // Defensive rebounds (we might not store separately)
+          playerData.defensive_rebounds = parseIntSafe(value);
         } else if (headerLower === 'trb' || headerLower === 'reb') {
           playerData.rebounds = parseIntSafe(value);
         } else if (headerLower === 'ast') {
@@ -433,6 +509,8 @@ export async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: stri
           playerData.blocks = parseIntSafe(value);
         } else if (headerLower === 'tov') {
           playerData.turnovers = parseIntSafe(value);
+        } else if (headerLower === 'pf') {
+          playerData.personal_fouls = parseIntSafe(value);
         } else if (headerLower === 'pts') {
           playerData.points = parseIntSafe(value);
         } else if (headerLower === '+/-' || headerLower === 'plus/minus') {
@@ -548,21 +626,74 @@ async function resolveTeamId(teamCode: string): Promise<string | null> {
 /**
  * Process and store box score from Basketball Reference
  */
+/**
+ * Ensure bbref_games entry exists, create if it doesn't
+ */
+async function ensureBbrefGameExists(
+  bbrefGameId: string,
+  gameDate: string,
+  homeAbbr: string,
+  awayAbbr: string,
+  homeTeamId: string | undefined,
+  awayTeamId: string | undefined,
+  homeScore: number | null = null,
+  awayScore: number | null = null
+): Promise<void> {
+  // Check if bbref_game exists
+  const existing = await pool.query(`
+    SELECT bbref_game_id FROM bbref_games WHERE bbref_game_id = $1
+  `, [bbrefGameId]);
+  
+  if (existing.rows.length === 0) {
+    // Create bbref_game entry
+    await pool.query(`
+      INSERT INTO bbref_games (
+        bbref_game_id, game_date, home_team_abbr, away_team_abbr,
+        home_team_id, away_team_id, home_score, away_score, status,
+        created_at, updated_at
+      ) VALUES ($1, $2::date, $3, $4, $5, $6, $7, $8, 
+        CASE WHEN $7 IS NOT NULL AND $8 IS NOT NULL THEN 'Final' ELSE 'Scheduled' END,
+        now(), now())
+      ON CONFLICT (bbref_game_id) DO UPDATE SET
+        home_score = COALESCE(EXCLUDED.home_score, bbref_games.home_score),
+        away_score = COALESCE(EXCLUDED.away_score, bbref_games.away_score),
+        status = CASE WHEN EXCLUDED.home_score IS NOT NULL AND EXCLUDED.away_score IS NOT NULL THEN 'Final' ELSE bbref_games.status END,
+        updated_at = now()
+    `, [bbrefGameId, gameDate, homeAbbr, awayAbbr, homeTeamId, awayTeamId, homeScore, awayScore]);
+  } else if (homeScore !== null && awayScore !== null) {
+    // Update scores if we have them
+    await pool.query(`
+      UPDATE bbref_games 
+      SET home_score = $1, away_score = $2, status = 'Final', updated_at = now()
+      WHERE bbref_game_id = $3
+        AND (home_score IS NULL OR away_score IS NULL)
+    `, [homeScore, awayScore, bbrefGameId]);
+  }
+}
+
 export async function processBBRefBoxScore(
   gameId: string,
   dryRun: boolean = false
 ): Promise<boolean> {
   try {
-    // Get game info
+    // Get game info (now includes bbrefGameId)
     const gameInfo = await getTeamAbbreviations(gameId);
     if (!gameInfo) {
       console.error(`   ❌ Could not find game ${gameId} in database`);
       return false;
     }
     
-    const { homeAbbr, awayAbbr, gameDate } = gameInfo;
-    const homeTeamCode = TEAM_CODE_MAP[homeAbbr];
-    const awayTeamCode = TEAM_CODE_MAP[awayAbbr];
+    const { homeAbbr, awayAbbr, gameDate, bbrefGameId, homeTeamId, awayTeamId } = gameInfo;
+    
+    // homeAbbr and awayAbbr from bbref_schedule/bbref_games are already BBRef codes
+    // If they came from games table, we need to map them
+    // Check if they're already BBRef codes (3 letters, might be CHO, BRK, etc.)
+    const homeTeamCode = homeAbbr.length === 3 && (homeAbbr === 'CHO' || homeAbbr === 'BRK' || homeAbbr === 'PHO' || homeAbbr === 'NOP') 
+      ? homeAbbr 
+      : TEAM_CODE_MAP[homeAbbr] || homeAbbr;
+    const awayTeamCode = awayAbbr.length === 3 && (awayAbbr === 'CHO' || awayAbbr === 'BRK' || awayAbbr === 'PHO' || awayAbbr === 'NOP')
+      ? awayAbbr
+      : TEAM_CODE_MAP[awayAbbr] || awayAbbr;
     
     if (!homeTeamCode || !awayTeamCode) {
       console.error(`   ❌ Unknown team code for ${homeAbbr} or ${awayAbbr}`);
@@ -597,9 +728,9 @@ export async function processBBRefBoxScore(
     // Basketball Reference HTML has the actual team codes, regardless of URL
     const { teamScores, teamCodesFound } = boxScoreData;
     
-    // Map BBRef team codes to our database team abbreviations
-    const homeTeamCodeBBRef = TEAM_CODE_MAP[homeAbbr];
-    const awayTeamCodeBBRef = TEAM_CODE_MAP[awayAbbr];
+    // homeTeamCode and awayTeamCode are already BBRef codes at this point
+    const homeTeamCodeBBRef = homeTeamCode;
+    const awayTeamCodeBBRef = awayTeamCode;
     
     // Get scores based on actual team codes found in HTML
     const homeScore = homeTeamCodeBBRef && teamScores[homeTeamCodeBBRef] !== undefined 
@@ -614,7 +745,19 @@ export async function processBBRefBoxScore(
     try {
       await client.query('BEGIN');
       
-      // Update game scores if we have them and they're missing/null in DB
+      // Ensure bbref_games entry exists
+      await ensureBbrefGameExists(
+        bbrefGameId,
+        gameDateStr,
+        homeTeamCode,
+        awayTeamCode,
+        homeTeamId || null,
+        awayTeamId || null,
+        homeScore,
+        awayScore
+      );
+      
+      // Also update canonical games table scores if we have them
       if (homeScore !== null && awayScore !== null) {
         const currentGame = await client.query(
           `SELECT home_score, away_score FROM games WHERE game_id = $1`,
@@ -628,7 +771,7 @@ export async function processBBRefBoxScore(
               `UPDATE games SET home_score = $1, away_score = $2, updated_at = now() WHERE game_id = $3`,
               [homeScore, awayScore, gameId]
             );
-            console.log(`   ✅ Updated game scores: ${awayScore} - ${homeScore}`);
+            console.log(`   ✅ Updated canonical game scores: ${awayScore} - ${homeScore}`);
           }
         }
       }
@@ -650,23 +793,27 @@ export async function processBBRefBoxScore(
           continue;
         }
         
-        // Insert player game stats
+        // Insert player game stats into BBRef table (PRIMARY source)
+        // Note: source, created_at, updated_at have defaults, so we don't include them
         await client.query(`
-          INSERT INTO player_game_stats (
-            game_id, player_id, team_id, minutes, points, rebounds, assists,
-            steals, blocks, turnovers, field_goals_made, field_goals_attempted,
+          INSERT INTO bbref_player_game_stats (
+            game_id, player_id, team_id, minutes, points, rebounds, offensive_rebounds, defensive_rebounds,
+            assists, steals, blocks, turnovers, personal_fouls,
+            field_goals_made, field_goals_attempted,
             three_pointers_made, three_pointers_attempted, free_throws_made,
-            free_throws_attempted, plus_minus, started,
-            created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, now(), now())
+            free_throws_attempted, plus_minus, started, dnp_reason
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
           ON CONFLICT (game_id, player_id) DO UPDATE SET
             minutes = EXCLUDED.minutes,
             points = EXCLUDED.points,
             rebounds = EXCLUDED.rebounds,
+            offensive_rebounds = EXCLUDED.offensive_rebounds,
+            defensive_rebounds = EXCLUDED.defensive_rebounds,
             assists = EXCLUDED.assists,
             steals = EXCLUDED.steals,
             blocks = EXCLUDED.blocks,
             turnovers = EXCLUDED.turnovers,
+            personal_fouls = EXCLUDED.personal_fouls,
             field_goals_made = EXCLUDED.field_goals_made,
             field_goals_attempted = EXCLUDED.field_goals_attempted,
             three_pointers_made = EXCLUDED.three_pointers_made,
@@ -675,18 +822,23 @@ export async function processBBRefBoxScore(
             free_throws_attempted = EXCLUDED.free_throws_attempted,
             plus_minus = EXCLUDED.plus_minus,
             started = EXCLUDED.started,
+            dnp_reason = EXCLUDED.dnp_reason,
+            source = EXCLUDED.source,
             updated_at = now()
         `, [
-          gameId,
+          bbrefGameId,  // Use bbref_game_id instead of canonical game_id
           playerId,
           teamId,
           playerStat.minutes ?? null,
           playerStat.points ?? null,
           playerStat.rebounds ?? null,
+          playerStat.offensive_rebounds ?? null,
+          playerStat.defensive_rebounds ?? null,
           playerStat.assists ?? null,
           playerStat.steals ?? null,
           playerStat.blocks ?? null,
           playerStat.turnovers ?? null,
+          playerStat.personal_fouls ?? null,
           playerStat.field_goals_made ?? null,
           playerStat.field_goals_attempted ?? null,
           playerStat.three_pointers_made ?? null,
@@ -695,6 +847,7 @@ export async function processBBRefBoxScore(
           playerStat.free_throws_attempted ?? null,
           playerStat.plus_minus ?? null,
           playerStat.started ?? false,
+          null, // dnp_reason
         ]);
         
         inserted++;

@@ -365,6 +365,7 @@ async function getRecentFormFromTeamStats(teamId: string, season: string | null)
       CASE WHEN tgs.is_home THEN g.away_score ELSE g.home_score END as points_against,
       tgs.points - CASE WHEN tgs.is_home THEN g.away_score ELSE g.home_score END as margin,
       CASE WHEN tgs.points > CASE WHEN tgs.is_home THEN g.away_score ELSE g.home_score END THEN 'W' ELSE 'L' END as result,
+      tgs.is_home,
       CASE WHEN tgs.is_home THEN g.away_team_id ELSE g.home_team_id END as opponent_team_id,
       CASE WHEN tgs.is_home THEN away_team.abbreviation ELSE home_team.abbreviation END as opponent_abbr,
       CASE WHEN tgs.is_home THEN away_team.full_name ELSE home_team.full_name END as opponent_name
@@ -426,6 +427,7 @@ async function getRecentFormFromPlayerStats(teamId: string, season: string | nul
       CASE WHEN g.home_team_id = $1 THEN g.away_score ELSE g.home_score END as points_against,
       tt.points - CASE WHEN g.home_team_id = $1 THEN g.away_score ELSE g.home_score END as margin,
       CASE WHEN tt.points > CASE WHEN g.home_team_id = $1 THEN g.away_score ELSE g.home_score END THEN 'W' ELSE 'L' END as result,
+      (g.home_team_id = $1) as is_home,
       CASE WHEN g.home_team_id = $1 THEN g.away_team_id ELSE g.home_team_id END as opponent_team_id,
       CASE WHEN g.home_team_id = $1 THEN away_team.abbreviation ELSE home_team.abbreviation END as opponent_abbr,
       CASE WHEN g.home_team_id = $1 THEN away_team.full_name ELSE home_team.full_name END as opponent_name

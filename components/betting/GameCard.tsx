@@ -3,6 +3,7 @@
 import { Clock, TrendingUp, ChevronRight } from 'lucide-react';
 
 interface TeamInfo {
+  id: string;
   name: string;
   abbreviation: string;
   logo?: string;

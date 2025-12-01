@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { X, TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Target, Users } from 'lucide-react';
 import { LineMovementChart } from './LineMovementChart';
 import type { Game } from './GameCard';
@@ -165,7 +166,19 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-white">
-                {game.awayTeam.name} @ {game.homeTeam.name}
+                <Link 
+                  href={`/teams/${game.awayTeam.id}`}
+                  className="hover:text-[#00d4ff] transition-colors"
+                >
+                  {game.awayTeam.name}
+                </Link>
+                {' @ '}
+                <Link 
+                  href={`/teams/${game.homeTeam.id}`}
+                  className="hover:text-[#00d4ff] transition-colors"
+                >
+                  {game.homeTeam.name}
+                </Link>
               </h2>
               <p className="text-xs text-muted-foreground">{game.startTime}</p>
             </div>
@@ -200,7 +213,12 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
                   <span className="text-xs font-bold">{game.awayTeam.abbreviation}</span>
                 </div>
-                <h3 className="text-sm font-semibold text-white">{game.awayTeam.name}</h3>
+                <Link 
+                  href={`/teams/${game.awayTeam.id}`}
+                  className="text-sm font-semibold text-white hover:text-[#00d4ff] transition-colors cursor-pointer"
+                >
+                  {game.awayTeam.name}
+                </Link>
               </div>
               
               <div className="grid grid-cols-3 gap-3 mb-4">
@@ -241,7 +259,12 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
                   <span className="text-xs font-bold">{game.homeTeam.abbreviation}</span>
                 </div>
-                <h3 className="text-sm font-semibold text-white">{game.homeTeam.name}</h3>
+                <Link 
+                  href={`/teams/${game.homeTeam.id}`}
+                  className="text-sm font-semibold text-white hover:text-[#00d4ff] transition-colors cursor-pointer"
+                >
+                  {game.homeTeam.name}
+                </Link>
               </div>
               
               <div className="grid grid-cols-3 gap-3 mb-4">
@@ -299,7 +322,12 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
             <div className="glass-card rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-4 h-4 text-[#ff6b35]" />
-                <h3 className="text-sm font-semibold text-white">{game.awayTeam.name} Injuries</h3>
+                <Link 
+                  href={`/teams/${game.awayTeam.id}`}
+                  className="text-sm font-semibold text-white hover:text-[#00d4ff] transition-colors cursor-pointer"
+                >
+                  {game.awayTeam.name} Injuries
+                </Link>
               </div>
               {injuries.away.length > 0 ? (
                 injuries.away.map((injury, i) => <InjuryRow key={i} injury={injury} />)
@@ -310,7 +338,12 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
             <div className="glass-card rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-4 h-4 text-[#ff6b35]" />
-                <h3 className="text-sm font-semibold text-white">{game.homeTeam.name} Injuries</h3>
+                <Link 
+                  href={`/teams/${game.homeTeam.id}`}
+                  className="text-sm font-semibold text-white hover:text-[#00d4ff] transition-colors cursor-pointer"
+                >
+                  {game.homeTeam.name} Injuries
+                </Link>
               </div>
               {injuries.home.length > 0 ? (
                 injuries.home.map((injury, i) => <InjuryRow key={i} injury={injury} />)
