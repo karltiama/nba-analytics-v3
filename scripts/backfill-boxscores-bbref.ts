@@ -20,7 +20,9 @@ import { processBBRefBoxScore } from './scrape-basketball-reference';
  * Usage:
  *   tsx scripts/backfill-boxscores-bbref.ts                    # Backfill all missing games up to yesterday
  *   tsx scripts/backfill-boxscores-bbref.ts --max-games 50      # Limit to 50 games
+ *   tsx scripts/backfill-boxscores-bbref.ts --team CLE          # Backfill only Cleveland games
  *   tsx scripts/backfill-boxscores-bbref.ts --start-date 2025-10-21 --end-date 2025-11-17
+ *   tsx scripts/backfill-boxscores-bbref.ts --team CLE --start-date 2025-10-21  # Team + date range
  *   tsx scripts/backfill-boxscores-bbref.ts --dry-run           # Test without making changes
  */
 
@@ -42,7 +44,8 @@ const pool = new Pool({ connectionString: SUPABASE_DB_URL });
 async function getGamesMissingBoxScores(
   startDate?: string,
   endDate?: string,
-  maxGames: number = 100
+  maxGames: number = 100,
+  teamAbbr?: string
 ): Promise<Array<{
   game_id: string;
   season: string;
@@ -79,7 +82,8 @@ async function getGamesMissingBoxScores(
         )
         THEN true
         ELSE false
-      END as needs_status_update
+      END as needs_status_update,
+      CASE WHEN g.status = 'Final' THEN 0 ELSE 1 END as priority
     FROM games g
     JOIN teams ht ON g.home_team_id = ht.team_id
     JOIN teams at ON g.away_team_id = at.team_id
@@ -111,6 +115,13 @@ async function getGamesMissingBoxScores(
   const params: any[] = [endDateParam, now];
   let paramCount = 3;
   
+  // Filter by team abbreviation (home or away)
+  if (teamAbbr) {
+    sql += ` AND (ht.abbreviation = $${paramCount} OR at.abbreviation = $${paramCount})`;
+    params.push(teamAbbr.toUpperCase());
+    paramCount++;
+  }
+  
   if (startDate) {
     sql += ` AND g.start_time::date >= $${paramCount}::date`;
     params.push(startDate);
@@ -118,7 +129,7 @@ async function getGamesMissingBoxScores(
   }
   
   sql += `
-    ORDER BY g.start_time ASC
+    ORDER BY priority, g.start_time ASC
     LIMIT $${paramCount}
   `;
   params.push(maxGames);
@@ -132,6 +143,7 @@ async function main() {
   const startDateIndex = args.indexOf('--start-date');
   const endDateIndex = args.indexOf('--end-date');
   const maxGamesIndex = args.indexOf('--max-games');
+  const teamIndex = args.indexOf('--team');
   const dryRunIndex = args.indexOf('--dry-run');
   
   const startDate = startDateIndex !== -1 && args[startDateIndex + 1] 
@@ -143,6 +155,9 @@ async function main() {
   const maxGames = maxGamesIndex !== -1 && args[maxGamesIndex + 1]
     ? Number.parseInt(args[maxGamesIndex + 1], 10)
     : 100;
+  const teamAbbr = teamIndex !== -1 && args[teamIndex + 1]
+    ? args[teamIndex + 1].toUpperCase()
+    : undefined;
   const dryRun = dryRunIndex !== -1;
   
   try {
@@ -153,6 +168,10 @@ async function main() {
       console.log('🔍 DRY RUN MODE - No changes will be made\n');
     }
     
+    if (teamAbbr) {
+      console.log(`🎯 Filtering for team: ${teamAbbr}\n`);
+    }
+    
     if (startDate || endDate) {
       console.log(`📅 Date range: ${startDate || 'beginning'} to ${endDate || 'yesterday'}`);
     } else {
@@ -161,7 +180,7 @@ async function main() {
     console.log(`📊 Max games: ${maxGames}`);
     console.log(`⏱️  Rate limit: 15 requests/minute (Basketball Reference policy)\n`);
     
-    const games = await getGamesMissingBoxScores(startDate, endDate, maxGames);
+    const games = await getGamesMissingBoxScores(startDate, endDate, maxGames, teamAbbr);
     
     if (games.length === 0) {
       console.log('✅ No games found missing box scores!');
@@ -213,17 +232,25 @@ async function main() {
         if (success) {
           successCount++;
         } else {
+          // Check if it's a 404 (game not found) - this is expected for some games
           skippedCount++;
+          console.log(`   ⏭️  Skipped (game may not exist on Basketball Reference yet)`);
         }
       } catch (error: any) {
-        console.error(`   ❌ Error: ${error.message}`);
-        failCount++;
-        
-        // If we hit rate limit, stop processing
-        if (error.message.includes('rate limit') || error.message.includes('429')) {
-          console.error('\n⚠️  Rate limit hit! Stopping to avoid being blocked.');
-          console.error('   Wait a few minutes and run again to continue.');
-          break;
+        // Handle 404 errors gracefully - these are expected for games that don't exist yet
+        if (error.message && (error.message.includes('404') || error.message.includes('Game not found'))) {
+          console.log(`   ⏭️  Game not found on Basketball Reference (may not exist yet)`);
+          skippedCount++;
+        } else {
+          console.error(`   ❌ Error: ${error.message}`);
+          failCount++;
+          
+          // If we hit rate limit, stop processing
+          if (error.message.includes('rate limit') || error.message.includes('429')) {
+            console.error('\n⚠️  Rate limit hit! Stopping to avoid being blocked.');
+            console.error('   Wait a few minutes and run again to continue.');
+            break;
+          }
         }
       }
       

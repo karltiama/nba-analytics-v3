@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
-import { processCSVBoxScore } from './scrape-bbref-csv-boxscores';
+import { processBBRefBoxScore } from './scrape-basketball-reference';
 
 /**
  * Batch scrape missing BBRef games
@@ -12,6 +12,8 @@ import { processCSVBoxScore } from './scrape-bbref-csv-boxscores';
  *   tsx scripts/batch-scrape-missing-bbref-games.ts --limit 10 --dry-run
  *   tsx scripts/batch-scrape-missing-bbref-games.ts --limit 50 --status Final
  *   tsx scripts/batch-scrape-missing-bbref-games.ts --start-date 2025-10-22 --end-date 2025-11-01
+ *   tsx scripts/batch-scrape-missing-bbref-games.ts --team CLE  # Scrape only Cleveland games
+ *   tsx scripts/batch-scrape-missing-bbref-games.ts --only-final  # Only scrape games marked Final
  */
 
 const pool = new Pool({ connectionString: process.env.SUPABASE_DB_URL });
@@ -31,8 +33,16 @@ async function getMissingGames(
   status?: string,
   startDate?: string,
   endDate?: string,
-  gameIds?: string[]
+  gameIds?: string[],
+  teamAbbr?: string,
+  includeLikelyFinal: boolean = true
 ): Promise<MissingGame[]> {
+  // Default end date to yesterday to avoid scraping today's games that might not be Final yet
+  // Use local date, not UTC, to match user's timezone
+  const now = new Date();
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const defaultEndDate = endDate || `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+  
   let query = `
     SELECT 
       bg.bbref_game_id,
@@ -47,10 +57,19 @@ async function getMissingGames(
       SELECT 1 FROM bbref_player_game_stats bpgs 
       WHERE bpgs.game_id = bg.bbref_game_id
     )
+    -- Always filter by date up to yesterday (or specified end date)
+    AND bg.game_date <= $1::date
   `;
   
-  const params: any[] = [];
-  let paramCount = 1;
+  const params: any[] = [defaultEndDate];
+  let paramCount = 2;
+  
+  // Filter by team abbreviation (home or away)
+  if (teamAbbr) {
+    query += ` AND (bg.home_team_abbr = $${paramCount} OR bg.away_team_abbr = $${paramCount})`;
+    params.push(teamAbbr);
+    paramCount++;
+  }
   
   // If specific game IDs provided, filter by those
   if (gameIds && gameIds.length > 0) {
@@ -63,6 +82,18 @@ async function getMissingGames(
     query += ` AND bg.status = $${paramCount}`;
     params.push(status);
     paramCount++;
+  } else {
+    // By default, exclude Scheduled games UNLESS they're from yesterday or earlier
+    // (games from yesterday should be Final by now, even if status hasn't been updated)
+    // Only exclude Scheduled games that are today or in the future
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    query += ` AND (
+      bg.status != 'Scheduled' 
+      OR (bg.status = 'Scheduled' AND bg.game_date < $${paramCount}::date)
+    )`;
+    params.push(todayStr);
+    paramCount++;
   }
   
   if (startDate) {
@@ -71,15 +102,10 @@ async function getMissingGames(
     paramCount++;
   }
   
-  if (endDate) {
-    query += ` AND bg.game_date <= $${paramCount}`;
-    params.push(endDate);
-    paramCount++;
-  }
-  
-  // Prioritize Final games, then by date (oldest first)
+  // Prioritize Final games, then games with scores, then by date (oldest first)
   query += ` ORDER BY 
     CASE WHEN bg.status = 'Final' THEN 0 ELSE 1 END,
+    CASE WHEN bg.home_score IS NOT NULL AND bg.away_score IS NOT NULL THEN 0 ELSE 1 END,
     bg.game_date ASC
   `;
   
@@ -98,17 +124,36 @@ async function batchScrapeMissingGames(
   startDate?: string,
   endDate?: string,
   gameIds?: string[],
+  teamAbbr?: string,
+  includeLikelyFinal: boolean = true,
   dryRun: boolean = false
 ) {
   console.log('\n🚀 Batch Scraping Missing BBRef Games\n');
   console.log('='.repeat(100));
   
+  if (teamAbbr) {
+    console.log(`🎯 Filtering for team: ${teamAbbr}\n`);
+  }
+  
+  // Always use yesterday as the maximum date (never scrape today's games)
+  // Use local date, not UTC, to match user's timezone
+  const now = new Date();
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+  
+  // Cap endDate at yesterday if provided, otherwise use yesterday
+  const endDateToUse = endDate 
+    ? (endDate <= yesterdayStr ? endDate : yesterdayStr)
+    : yesterdayStr;
+  
+  console.log(`📅 Scraping all games up to: ${endDateToUse} (yesterday - never scrapes today's games)\n`);
+  
   if (dryRun) {
     console.log('🔍 DRY RUN MODE - No scraping will be performed\n');
   }
   
-  // Get missing games
-  const missingGames = await getMissingGames(limit, status, startDate, endDate, gameIds);
+  // Get missing games - pass the capped endDate
+  const missingGames = await getMissingGames(limit, status, startDate, endDateToUse, gameIds, teamAbbr, includeLikelyFinal);
   
   if (missingGames.length === 0) {
     console.log('✅ No missing games found!');
@@ -160,12 +205,10 @@ async function batchScrapeMissingGames(
     console.log(`   Status: ${game.status || 'Unknown'}`);
     
     try {
-      // Use bbref_game_id directly since processCSVBoxScore needs to be updated
-      // For now, we'll need to update the scraping function to work with bbref_games
-      // But let's try using the bbref_game_id as the game_id parameter
-      const success = await processCSVBoxScore(game.bbref_game_id, false);
+      // Use processBBRefBoxScore which writes directly to bbref_player_game_stats
+      const result = await processBBRefBoxScore(game.bbref_game_id, false);
       
-      if (success) {
+      if (result) {
         successCount++;
         console.log(`   ✅ Successfully scraped`);
       } else {
@@ -207,6 +250,8 @@ async function main() {
   const startDateIndex = args.indexOf('--start-date');
   const endDateIndex = args.indexOf('--end-date');
   const gameIdsIndex = args.indexOf('--game-ids');
+  const teamIndex = args.indexOf('--team');
+  const onlyFinal = args.includes('--only-final');
   const dryRun = args.includes('--dry-run');
   
   const limit = limitIndex !== -1 && args[limitIndex + 1] 
@@ -229,8 +274,16 @@ async function main() {
     ? args[gameIdsIndex + 1].split(',').map(id => id.trim())
     : undefined;
   
+  const teamAbbr = teamIndex !== -1 && args[teamIndex + 1]
+    ? args[teamIndex + 1].toUpperCase()
+    : undefined;
+  
+  // By default, include games that are likely Final (have scores or are in the past)
+  // Use --only-final to only scrape games explicitly marked Final
+  const includeLikelyFinal = !onlyFinal;
+  
   try {
-    await batchScrapeMissingGames(limit, status, startDate, endDate, gameIds, dryRun);
+    await batchScrapeMissingGames(limit, status, startDate, endDate, gameIds, teamAbbr, includeLikelyFinal, dryRun);
   } catch (error: any) {
     console.error('\n❌ Fatal error:', error.message);
     console.error(error.stack);

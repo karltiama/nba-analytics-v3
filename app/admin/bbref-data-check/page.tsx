@@ -22,9 +22,14 @@ interface TeamData {
   missing_boxscores: number;
   earliest_game_date: string | null;
   latest_game_date: string | null;
+  most_recent_game_date: string | null;
+  most_recent_game_has_stats: boolean;
+  most_recent_game_id: string | null;
   coverage_pct: number;
   wins: number;
   losses: number;
+  roster_issues: number;
+  active_roster_count: number;
 }
 
 interface Summary {
@@ -35,12 +40,20 @@ interface Summary {
   missing_boxscores: number;
   average_coverage: number;
   data_source: string;
+  date_range?: {
+    earliest: string | null;
+    latest: string | null;
+    filtered_to: string | null;
+    note: string;
+  };
 }
 
 interface Issues {
   teams_with_no_games: number;
   teams_with_low_coverage: number;
   teams_with_missing_boxscores: number;
+  teams_with_outdated_recent_game: number;
+  teams_with_roster_issues: number;
 }
 
 export default function BBRefDataCheckPage() {
@@ -51,15 +64,19 @@ export default function BBRefDataCheckPage() {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'coverage' | 'missing' | 'team'>('coverage');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showAllGames, setShowAllGames] = useState(false); // Default: filter to yesterday
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [showAllGames]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/bbref-data-check');
+      const url = showAllGames 
+        ? '/api/admin/bbref-data-check?show-all=true'
+        : '/api/admin/bbref-data-check'; // Default: filters to yesterday
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -137,12 +154,23 @@ export default function BBRefDataCheckPage() {
               Diagnose missing BBRef data across all teams
             </p>
           </div>
-          <button
-            onClick={fetchData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Refresh Data
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={showAllGames}
+                onChange={(e) => setShowAllGames(e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span className="text-zinc-600 dark:text-zinc-400">Show all games (including today)</span>
+            </label>
+            <button
+              onClick={fetchData}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Refresh Data
+            </button>
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -187,13 +215,44 @@ export default function BBRefDataCheckPage() {
           </div>
         )}
 
+        {/* Date Range Info */}
+        {summary && summary.date_range && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-1">
+                  📅 Date Range
+                </h3>
+                <div className="text-sm text-blue-700 dark:text-blue-300">
+                  {summary.date_range.earliest && summary.date_range.latest ? (
+                    <>
+                      <span className="font-medium">{summary.date_range.earliest}</span> to{' '}
+                      <span className="font-medium">{summary.date_range.latest}</span>
+                    </>
+                  ) : (
+                    'No games found'
+                  )}
+                </div>
+                {summary.date_range.filtered_to && (
+                  <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    ⚠️ Filtered to: {summary.date_range.filtered_to}
+                  </div>
+                )}
+              </div>
+              <div className="text-xs text-blue-600 dark:text-blue-400">
+                {summary.date_range.note}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Issues Alert */}
-        {issues && (issues.teams_with_no_games > 0 || issues.teams_with_low_coverage > 0 || issues.teams_with_missing_boxscores > 0) && (
+        {issues && (issues.teams_with_no_games > 0 || issues.teams_with_low_coverage > 0 || issues.teams_with_missing_boxscores > 0 || issues.teams_with_outdated_recent_game > 0 || issues.teams_with_roster_issues > 0) && (
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
               ⚠️ Data Issues Detected
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 text-sm">
               <div>
                 <span className="font-medium">Teams with no games:</span>{' '}
                 <span className="text-red-600 dark:text-red-400">{issues.teams_with_no_games}</span>
@@ -208,6 +267,18 @@ export default function BBRefDataCheckPage() {
                 <span className="font-medium">Teams with missing boxscores:</span>{' '}
                 <span className="text-yellow-600 dark:text-yellow-400">
                   {issues.teams_with_missing_boxscores}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium">Most recent game outdated:</span>{' '}
+                <span className="text-red-600 dark:text-red-400">
+                  {issues.teams_with_outdated_recent_game}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium">Teams with roster issues:</span>{' '}
+                <span className="text-purple-600 dark:text-purple-400">
+                  {issues.teams_with_roster_issues}
                 </span>
               </div>
             </div>
@@ -248,6 +319,8 @@ export default function BBRefDataCheckPage() {
                   <TableHead className="text-right">Boxscores</TableHead>
                   <TableHead className="text-right">Coverage</TableHead>
                   <TableHead className="text-right">Missing</TableHead>
+                  <TableHead className="text-right">Roster</TableHead>
+                  <TableHead>Most Recent</TableHead>
                   <TableHead>Date Range</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -286,6 +359,43 @@ export default function BBRefDataCheckPage() {
                         </span>
                       ) : (
                         <span className="text-green-600">✓</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right text-sm">
+                      {team.roster_issues > 0 ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-purple-600 dark:text-purple-400 font-medium">
+                            {team.roster_issues} issues
+                          </span>
+                          <span className="text-xs text-zinc-500">
+                            {team.active_roster_count} active
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-green-600">✓</span>
+                          <span className="text-xs text-zinc-500">
+                            {team.active_roster_count} active
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {team.most_recent_game_date ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-zinc-600 dark:text-zinc-400">
+                            {team.most_recent_game_date}
+                          </span>
+                          {team.most_recent_game_has_stats ? (
+                            <span className="text-green-600 text-xs">✓ Up to date</span>
+                          ) : (
+                            <span className="text-red-600 dark:text-red-400 text-xs font-medium">
+                              ⚠️ Missing stats
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-zinc-400">No games</span>
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-zinc-600 dark:text-zinc-400">

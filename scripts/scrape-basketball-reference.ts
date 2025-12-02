@@ -117,47 +117,89 @@ async function fetchWithRetry(
   checkRateLimit();
   
   for (let attempt = 0; attempt <= retries; attempt++) {
+    let timeoutId: NodeJS.Timeout | null = null;
     try {
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(url, {
         ...options,
         headers: {
           ...BBREF_HEADERS,
           ...(options.headers || {}),
         },
+        signal: controller.signal,
       });
+      
+      if (timeoutId) clearTimeout(timeoutId);
 
       if (response.ok) {
         return response;
       }
 
       if (response.status === 404) {
-        throw new Error('Game not found (404)');
+        throw new Error(`Game not found (404): ${url}`);
       }
 
       if (response.status === 429 || response.status === 503) {
         const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
-        console.warn(`⚠️  Rate limited/service unavailable. Waiting ${Math.ceil(delay / 1000)}s before retry ${attempt + 1}/${retries}`);
+        console.warn(`⚠️  Rate limited/service unavailable (${response.status}). Waiting ${Math.ceil(delay / 1000)}s before retry ${attempt + 1}/${retries}`);
+        console.warn(`   URL: ${url}`);
+        await sleep(addJitter(delay));
+        continue;
+      }
+
+      if (response.status === 403) {
+        throw new Error(`Access forbidden (403): Basketball Reference may be blocking requests. URL: ${url}`);
+      }
+
+      if (attempt === retries) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText} - URL: ${url}`);
+      }
+
+      const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
+      console.warn(`⚠️  HTTP ${response.status} error. Waiting ${Math.ceil(delay / 1000)}s before retry ${attempt + 1}/${retries}`);
+      await sleep(addJitter(delay));
+    } catch (error: any) {
+      // Always clear timeout on error
+      if (timeoutId) clearTimeout(timeoutId);
+      // Handle timeout errors (AbortController abort)
+      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+        if (attempt === retries) {
+          throw new Error(`Request timeout after 30s: ${url}. This may indicate network issues or Basketball Reference is slow to respond.`);
+        }
+        console.warn(`⚠️  Request timeout (attempt ${attempt + 1}/${retries}): ${url}`);
+        const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
+        await sleep(addJitter(delay));
+        continue;
+      }
+
+      // Handle network errors (DNS, connection refused, etc.)
+      if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+        if (attempt === retries) {
+          throw new Error(`Network error (${error.code}): ${error.message}. URL: ${url}. Check your internet connection.`);
+        }
+        console.warn(`⚠️  Network error (attempt ${attempt + 1}/${retries}): ${error.code} - ${error.message}`);
+        console.warn(`   URL: ${url}`);
+        const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
         await sleep(addJitter(delay));
         continue;
       }
 
       if (attempt === retries) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // Provide detailed error message on final attempt
+        const errorMsg = error.message || String(error);
+        throw new Error(`Request failed after ${retries + 1} attempts: ${errorMsg}. URL: ${url}`);
       }
-
-      const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
-      await sleep(addJitter(delay));
-    } catch (error: any) {
-      if (attempt === retries) {
-        throw error;
-      }
-      console.warn(`⚠️  Request failed (attempt ${attempt + 1}/${retries}):`, error.message);
+      console.warn(`⚠️  Request failed (attempt ${attempt + 1}/${retries}): ${error.message || error}`);
+      console.warn(`   URL: ${url}`);
       const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
       await sleep(addJitter(delay));
     }
   }
 
-  throw new Error('Max retries exceeded');
+  throw new Error(`Max retries exceeded for URL: ${url}`);
 }
 
 /**
@@ -566,9 +608,24 @@ export async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: stri
 }
 
 /**
+ * Normalize player name by removing accents and special characters for matching
+ */
+function normalizePlayerNameForMatching(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD') // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .replace(/[^a-z0-9\s]/g, '') // Remove special characters except spaces
+    .trim();
+}
+
+/**
  * Resolve player ID from name (fuzzy matching)
  */
 async function resolvePlayerId(playerName: string, teamCode: string): Promise<string | null> {
+  // Map BBRef code to NBA abbreviation
+  const nbaAbbr = Object.entries(TEAM_CODE_MAP).find(([_, code]) => code === teamCode)?.[0] || teamCode;
+  
   // Try exact match first
   const exactMatch = await pool.query(`
     SELECT p.player_id
@@ -578,10 +635,94 @@ async function resolvePlayerId(playerName: string, teamCode: string): Promise<st
     WHERE LOWER(p.full_name) = LOWER($1)
       AND t.abbreviation = $2
     LIMIT 1
-  `, [playerName, teamCode]);
+  `, [playerName, nbaAbbr]);
   
   if (exactMatch.rows.length > 0) {
     return exactMatch.rows[0].player_id;
+  }
+  
+  // Try normalized match (handles accents: García vs Garcia, Şengün vs Sengun)
+  // Normalize both the input and database names by removing accents
+  // Includes Turkish characters: ş, ğ
+  const normalizedMatch = await pool.query(`
+    SELECT p.player_id
+    FROM players p
+    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+    JOIN teams t ON ptr.team_id = t.team_id
+    WHERE LOWER(TRANSLATE(p.full_name, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg')) = 
+          LOWER(TRANSLATE($1, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg'))
+      AND t.abbreviation = $2
+    LIMIT 1
+  `, [playerName, nbaAbbr]);
+  
+  if (normalizedMatch.rows.length > 0) {
+    return normalizedMatch.rows[0].player_id;
+  }
+  
+  // Try matching with name suffixes stripped (Jimmy Butler III vs Jimmy Butler, Walter Clayton Jr. vs Walter Clayton)
+  // Case 1: Scraped name has suffix, database name doesn't
+  const nameWithoutSuffix = playerName.replace(/\s+(III|II|IV|Jr\.?|Sr\.?|IIIrd|IInd)$/i, '').trim();
+  if (nameWithoutSuffix !== playerName) {
+    const suffixMatch = await pool.query(`
+      SELECT p.player_id
+      FROM players p
+      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+      JOIN teams t ON ptr.team_id = t.team_id
+      WHERE LOWER(p.full_name) = LOWER($1)
+        AND t.abbreviation = $2
+      LIMIT 1
+    `, [nameWithoutSuffix, nbaAbbr]);
+    
+    if (suffixMatch.rows.length > 0) {
+      return suffixMatch.rows[0].player_id;
+    }
+    
+    // Also try normalized version of name without suffix
+    const normalizedSuffixMatch = await pool.query(`
+      SELECT p.player_id
+      FROM players p
+      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+      JOIN teams t ON ptr.team_id = t.team_id
+      WHERE LOWER(TRANSLATE(p.full_name, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg')) = 
+            LOWER(TRANSLATE($1, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg'))
+        AND t.abbreviation = $2
+      LIMIT 1
+    `, [nameWithoutSuffix, nbaAbbr]);
+    
+    if (normalizedSuffixMatch.rows.length > 0) {
+      return normalizedSuffixMatch.rows[0].player_id;
+    }
+  }
+  
+  // Case 2: Database name has suffix, scraped name doesn't (e.g., "Robert Williams" vs "Robert Williams III")
+  const dbSuffixMatch = await pool.query(`
+    SELECT p.player_id
+    FROM players p
+    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+    JOIN teams t ON ptr.team_id = t.team_id
+    WHERE LOWER(REGEXP_REPLACE(p.full_name, '\\s+(III|II|IV|Jr\\.?|Sr\\.?|IIIrd|IInd)$', '', 'i')) = LOWER($1)
+      AND t.abbreviation = $2
+    LIMIT 1
+  `, [playerName, nbaAbbr]);
+  
+  if (dbSuffixMatch.rows.length > 0) {
+    return dbSuffixMatch.rows[0].player_id;
+  }
+  
+  // Also try normalized version
+  const normalizedDbSuffixMatch = await pool.query(`
+    SELECT p.player_id
+    FROM players p
+    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+    JOIN teams t ON ptr.team_id = t.team_id
+    WHERE LOWER(TRANSLATE(REGEXP_REPLACE(p.full_name, '\\s+(III|II|IV|Jr\\.?|Sr\\.?|IIIrd|IInd)$', '', 'i'), 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg')) = 
+          LOWER(TRANSLATE($1, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg'))
+      AND t.abbreviation = $2
+    LIMIT 1
+  `, [playerName, nbaAbbr]);
+  
+  if (normalizedDbSuffixMatch.rows.length > 0) {
+    return normalizedDbSuffixMatch.rows[0].player_id;
   }
   
   // Try fuzzy matching (last name match)
@@ -595,7 +736,7 @@ async function resolvePlayerId(playerName: string, teamCode: string): Promise<st
       WHERE LOWER(p.last_name) = LOWER($1)
         AND t.abbreviation = $2
       LIMIT 1
-    `, [lastName, teamCode]);
+    `, [lastName, nbaAbbr]);
     
     if (fuzzyMatch.rows.length > 0) {
       return fuzzyMatch.rows[0].player_id;

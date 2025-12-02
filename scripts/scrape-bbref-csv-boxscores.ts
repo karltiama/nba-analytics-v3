@@ -958,6 +958,35 @@ export async function processCSVBoxScore(
         }
       }
       
+      // Update game status to Final if we successfully scraped stats and game has scores
+      if (totalInserted > 0) {
+        const gameStatusCheck = await client.query(`
+          SELECT status, home_score, away_score 
+          FROM bbref_games 
+          WHERE bbref_game_id = $1
+        `, [gameIdToUse]);
+        
+        if (gameStatusCheck.rows.length > 0) {
+          const game = gameStatusCheck.rows[0];
+          // Update to Final if:
+          // 1. Has scores, OR
+          // 2. Game date is in the past
+          const gameDateObj = typeof gameDate === 'string' ? new Date(gameDate) : gameDate;
+          const isPast = gameDateObj < new Date();
+          
+          if ((game.home_score !== null && game.away_score !== null) || isPast) {
+            if (game.status !== 'Final') {
+              await client.query(`
+                UPDATE bbref_games 
+                SET status = 'Final', updated_at = now()
+                WHERE bbref_game_id = $1
+              `, [gameIdToUse]);
+              console.log(`   ✅ Updated game status to Final`);
+            }
+          }
+        }
+      }
+      
       await client.query('COMMIT');
       
       // Summary report

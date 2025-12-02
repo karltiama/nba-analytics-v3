@@ -29,6 +29,15 @@ interface TeamInfo {
 
 interface TeamStats {
   season_stats: any;
+  season_record?: {
+    games_played: number | string;
+    wins: number | string;
+    losses: number | string;
+    home_wins: number | string;
+    home_losses: number | string;
+    away_wins: number | string;
+    away_losses: number | string;
+  };
   rankings: any;
   splits: any;
   recent_form: any;
@@ -236,12 +245,16 @@ export default function TeamPage() {
                 </div>
               </div>
             ) : teamStats ? (() => {
-              // Calculate overall record from recent form (last 10) or season stats
-              const last10 = teamStats.recent_form?.last_10;
-              const totalWins = last10?.wins || 0;
-              const totalLosses = last10?.losses || 0;
-              const totalGames = totalWins + totalLosses;
+              // Use full season record from bbref_games (Basketball Reference source)
+              const seasonRecord = teamStats.season_record;
+              // Convert string values to numbers (PostgreSQL returns numeric types as strings)
+              const totalWins = Number(seasonRecord?.wins) || 0;
+              const totalLosses = Number(seasonRecord?.losses) || 0;
+              const totalGames = Number(seasonRecord?.games_played) || 0;
               const winPct = totalGames > 0 ? ((totalWins / totalGames) * 100).toFixed(1) : '0.0';
+              
+              // Get recent form for streak calculation
+              const last10 = teamStats.recent_form?.last_10;
               
               // Calculate streak from recent games
               const recentGames = last10?.games || [];
@@ -258,13 +271,15 @@ export default function TeamPage() {
                 }
               }
               
-              // Get home/away records
+              // Get home/away records from season record (Basketball Reference source)
+              const homeWins = Number(seasonRecord?.home_wins) || 0;
+              const homeLosses = Number(seasonRecord?.home_losses) || 0;
+              const awayWins = Number(seasonRecord?.away_wins) || 0;
+              const awayLosses = Number(seasonRecord?.away_losses) || 0;
+              
+              // Get home/away splits for PPG display
               const homeRecord = teamStats.splits?.home;
               const awayRecord = teamStats.splits?.away;
-              const homeWins = homeRecord?.games_played ? Math.round((homeRecord.games_played || 0) * 0.5) : 0; // Approximate
-              const homeLosses = homeRecord?.games_played ? Math.round((homeRecord.games_played || 0) * 0.5) : 0;
-              const awayWins = awayRecord?.games_played ? Math.round((awayRecord.games_played || 0) * 0.5) : 0;
-              const awayLosses = awayRecord?.games_played ? Math.round((awayRecord.games_played || 0) * 0.5) : 0;
 
               return (
                 <section>

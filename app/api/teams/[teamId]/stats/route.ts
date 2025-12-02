@@ -5,6 +5,7 @@ import {
   getBBRefSplits,
   getBBRefRecentForm,
   getBBRefQuarterStrengths,
+  getBBRefSeasonRecord,
 } from '@/lib/teams/bbref-queries';
 
 export async function GET(
@@ -17,18 +18,20 @@ export async function GET(
     const season = searchParams.get('season') || null;
 
     // Get all stats from BBRef tables
-    const [seasonStats, rankings, splits, recentForm, quarterStrengths] = await Promise.all([
+    const [seasonStats, rankings, splits, recentForm, quarterStrengths, seasonRecord] = await Promise.all([
       getBBRefSeasonStats(teamId, season),
       getBBRefTeamRankings(teamId, season),
       getBBRefSplits(teamId, season),
       getBBRefRecentForm(teamId, season),
       getBBRefQuarterStrengths(teamId, season),
+      getBBRefSeasonRecord(teamId, season),
     ]);
 
     return NextResponse.json({
       team_id: teamId,
       season: season || 'all',
       season_stats: seasonStats,
+      season_record: seasonRecord,
       rankings,
       splits,
       recent_form: recentForm,

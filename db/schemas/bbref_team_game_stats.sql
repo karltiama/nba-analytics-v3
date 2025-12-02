@@ -44,3 +44,7 @@ create index if not exists bbref_team_game_stats_team_season_idx on bbref_team_g
 create index if not exists bbref_team_game_stats_home_idx on bbref_team_game_stats (team_id, is_home);
 create index if not exists bbref_team_game_stats_source_idx on bbref_team_game_stats (source);
 
+
+
+
+

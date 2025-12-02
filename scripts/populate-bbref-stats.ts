@@ -83,8 +83,14 @@ async function populatePlayerStats(dryRun: boolean = false): Promise<{ inserted:
   
   // Process in batches
   const batchSize = 100;
+  console.log(`Processing ${scrapedStats.rows.length} records in batches of ${batchSize}...\n`);
+  
   for (let i = 0; i < scrapedStats.rows.length; i += batchSize) {
     const batch = scrapedStats.rows.slice(i, i + batchSize);
+    const batchNum = Math.floor(i / batchSize) + 1;
+    const totalBatches = Math.ceil(scrapedStats.rows.length / batchSize);
+    
+    console.log(`Processing batch ${batchNum}/${totalBatches} (${batch.length} records)...`);
     
     for (const row of batch) {
       // Resolve team_id from team_code
@@ -141,7 +147,7 @@ async function populatePlayerStats(dryRun: boolean = false): Promise<{ inserted:
       }
       
       if (gameCheck.rows.length === 0) {
-        console.warn(`   ⚠️  Game ${row.game_id} not found in bbref_games table`);
+        // Skip warning for now - too verbose
         skipped++;
         continue;
       }
@@ -153,7 +159,7 @@ async function populatePlayerStats(dryRun: boolean = false): Promise<{ inserted:
       );
       
       if (playerCheck.rows.length === 0) {
-        console.warn(`   ⚠️  Player ${row.player_id} not found in players table`);
+        // Skip warning for now - too verbose
         skipped++;
         continue;
       }

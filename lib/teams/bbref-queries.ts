@@ -396,50 +396,89 @@ export async function getBBRefUpcomingGames(teamId: string, limit: number = 5) {
 
 /**
  * Get BBRef team quarter strengths
+ * Note: Quarter data is not currently stored in bbref_team_game_stats
+ * This function returns null values until quarter data is added to the schema
  */
 export async function getBBRefQuarterStrengths(teamId: string, season: string | null) {
-  try {
-    // Check if quarter data exists in bbref_team_game_stats
-    const hasQuarterData = await query(`
-      SELECT COUNT(*)::int as count 
-      FROM bbref_team_game_stats btgs
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE btgs.team_id = $1 
-        AND bg.status = 'Final'
-        AND btgs.source = 'bbref'
-        AND (btgs.points_q1 IS NOT NULL OR btgs.points_q2 IS NOT NULL OR btgs.points_q3 IS NOT NULL OR btgs.points_q4 IS NOT NULL)
-    `, [teamId]);
+  // Quarter columns (points_q1, points_q2, etc.) don't exist in bbref_team_game_stats
+  // Return null values until quarter data is added to the schema
+  return { 
+    q1: { avg_ppg: null, rank: null }, 
+    q2: { avg_ppg: null, rank: null }, 
+    q3: { avg_ppg: null, rank: null }, 
+    q4: { avg_ppg: null, rank: null } 
+  };
+}
+
+/**
+ * Get full season record from bbref_games (Basketball Reference source)
+ * Returns wins, losses, and home/away breakdown
+ */
+export async function getBBRefSeasonRecord(teamId: string, season: string | null) {
+  // Resolve team_id: if it's an abbreviation, look it up in teams table
+  let resolvedTeamId = teamId;
+  
+  // If it's not numeric, assume it's an abbreviation
+  if (isNaN(Number(teamId))) {
+    const teamLookup = await query(`
+      SELECT team_id FROM teams WHERE abbreviation = $1 LIMIT 1
+    `, [teamId.toUpperCase()]);
     
-    const count = Number(hasQuarterData[0]?.count || 0);
-    if (count === 0) {
-      return { q1: { avg_ppg: null, rank: null }, q2: { avg_ppg: null, rank: null }, q3: { avg_ppg: null, rank: null }, q4: { avg_ppg: null, rank: null } };
+    if (teamLookup.length > 0) {
+      resolvedTeamId = teamLookup[0].team_id;
     }
-    
-    let sql = `
-      SELECT 
-        AVG(btgs.points_q1) as q1_ppg,
-        AVG(btgs.points_q2) as q2_ppg,
-        AVG(btgs.points_q3) as q3_ppg,
-        AVG(btgs.points_q4) as q4_ppg
-      FROM bbref_team_game_stats btgs
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE btgs.team_id = $1 AND bg.status = 'Final' AND btgs.source = 'bbref' AND btgs.points_q1 IS NOT NULL
-    `;
-    const params: any[] = [teamId];
-    if (season) {
-      sql += ` AND bg.season = $2`;
-      params.push(season);
-    }
-    const result = await query(sql, params);
-    const data = result[0] || {};
-    return {
-      q1: { avg_ppg: data.q1_ppg != null ? Number(data.q1_ppg) : null, rank: null },
-      q2: { avg_ppg: data.q2_ppg != null ? Number(data.q2_ppg) : null, rank: null },
-      q3: { avg_ppg: data.q3_ppg != null ? Number(data.q3_ppg) : null, rank: null },
-      q4: { avg_ppg: data.q4_ppg != null ? Number(data.q4_ppg) : null, rank: null },
-    };
-  } catch (error) {
-    console.error('Error fetching quarter strengths:', error);
-    return { q1: { avg_ppg: null, rank: null }, q2: { avg_ppg: null, rank: null }, q3: { avg_ppg: null, rank: null }, q4: { avg_ppg: null, rank: null } };
   }
+  
+  let sql = `
+    SELECT 
+      COUNT(DISTINCT game_id) as games_played,
+      SUM(CASE WHEN won THEN 1 ELSE 0 END) as wins,
+      SUM(CASE WHEN NOT won THEN 1 ELSE 0 END) as losses,
+      SUM(CASE WHEN is_home AND won THEN 1 ELSE 0 END) as home_wins,
+      SUM(CASE WHEN is_home AND NOT won THEN 1 ELSE 0 END) as home_losses,
+      SUM(CASE WHEN NOT is_home AND won THEN 1 ELSE 0 END) as away_wins,
+      SUM(CASE WHEN NOT is_home AND NOT won THEN 1 ELSE 0 END) as away_losses
+    FROM (
+      SELECT 
+        bg.bbref_game_id as game_id,
+        bg.home_team_id = $1 as is_home,
+        bg.home_score > bg.away_score as won
+      FROM bbref_games bg
+      WHERE bg.status = 'Final'
+        AND bg.home_score IS NOT NULL 
+        AND bg.away_score IS NOT NULL
+        AND bg.home_team_id = $1
+  `;
+  const params: any[] = [resolvedTeamId];
+  let paramCount = 2;
+  
+  if (season) {
+    sql += ` AND bg.season = $${paramCount}`;
+    params.push(season);
+    paramCount++;
+  }
+  
+  sql += `
+      UNION ALL
+      SELECT 
+        bg.bbref_game_id as game_id,
+        false as is_home,
+        bg.away_score > bg.home_score as won
+      FROM bbref_games bg
+      WHERE bg.status = 'Final'
+        AND bg.home_score IS NOT NULL 
+        AND bg.away_score IS NOT NULL
+        AND bg.away_team_id = $1
+  `;
+  
+  if (season) {
+    sql += ` AND bg.season = $${paramCount}`;
+    params.push(season);
+    paramCount++;
+  }
+  
+  sql += `) game_results`;
+  
+  const result = await query(sql, params);
+  return result[0] || { games_played: 0, wins: 0, losses: 0, home_wins: 0, home_losses: 0, away_wins: 0, away_losses: 0 };
 }
