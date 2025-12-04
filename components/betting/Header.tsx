@@ -71,12 +71,12 @@ export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle, 
                 ) : (
                   <>
                     <span className="neon-text-cyan">NBA</span>
-                    <span className="text-white ml-1">Betting Dashboard</span>
+                    <span className="text-white ml-1">Analytics</span>
                   </>
                 )}
               </h1>
               <p className="text-xs text-muted-foreground -mt-0.5">
-                {teamName ? 'Team analytics & AI insights' : 'Live odds & AI insights'}
+                {teamName ? 'Analytics' : 'Betting Dashboard'}
               </p>
             </div>
           </div>

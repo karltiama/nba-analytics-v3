@@ -182,70 +182,6 @@ function transformPlayer(apiPlayer: ApiPlayer): PlayerData {
   };
 }
 
-// Dummy game details for modal (will be replaced with API)
-const createGameDetails = (game: Game) => ({
-  homeTeamStats: {
-    offensiveRating: 115.2,
-    defensiveRating: 112.8,
-    pace: 100.4,
-    recentForm: [
-      { opponent: 'OPP', result: 'W' as const, score: '118-105', spread: -6.5, covered: true },
-      { opponent: 'OPP', result: 'W' as const, score: '124-112', spread: -8.0, covered: true },
-      { opponent: 'OPP', result: 'L' as const, score: '108-115', spread: -5.5, covered: false },
-      { opponent: 'OPP', result: 'W' as const, score: '121-110', spread: -3.5, covered: true },
-      { opponent: 'OPP', result: 'W' as const, score: '117-112', spread: +1.5, covered: true },
-    ],
-  },
-  awayTeamStats: {
-    offensiveRating: 114.8,
-    defensiveRating: 110.2,
-    pace: 101.2,
-    recentForm: [
-      { opponent: 'OPP', result: 'W' as const, score: '122-115', spread: -2.5, covered: true },
-      { opponent: 'OPP', result: 'L' as const, score: '105-112', spread: -4.0, covered: false },
-      { opponent: 'OPP', result: 'W' as const, score: '118-109', spread: +1.5, covered: true },
-      { opponent: 'OPP', result: 'W' as const, score: '130-118', spread: -7.5, covered: true },
-      { opponent: 'OPP', result: 'L' as const, score: '108-115', spread: +2.5, covered: false },
-    ],
-  },
-  spreadMovement: [
-    { time: 'Open', value: game.homeOdds.spread - 1 },
-    { time: '10am', value: game.homeOdds.spread - 0.5 },
-    { time: '12pm', value: game.homeOdds.spread - 0.5 },
-    { time: '2pm', value: game.homeOdds.spread },
-    { time: '4pm', value: game.homeOdds.spread },
-    { time: 'Now', value: game.homeOdds.spread },
-  ],
-  totalMovement: [
-    { time: 'Open', value: game.overUnder + 2.5 },
-    { time: '10am', value: game.overUnder + 2 },
-    { time: '12pm', value: game.overUnder + 1 },
-    { time: '2pm', value: game.overUnder + 0.5 },
-    { time: '4pm', value: game.overUnder },
-    { time: 'Now', value: game.overUnder },
-  ],
-  historicalMatchups: [],
-  injuries: { home: [], away: [] },
-  aiSuggestions: [
-    {
-      type: 'Spread' as const,
-      pick: `${game.homeTeam.abbreviation} ${game.homeOdds.spread}`,
-      confidence: 65,
-      explanation: 'Based on recent form and team ratings analysis.',
-    },
-    {
-      type: 'O/U' as const,
-      pick: game.overUnder > 220 ? `Under ${game.overUnder}` : `Over ${game.overUnder}`,
-      confidence: 60,
-      explanation: 'Combined pace and efficiency metrics suggest this total.',
-    },
-  ],
-  aiConfidenceScores: {
-    moneyline: 65,
-    spread: 62,
-    total: 58,
-  },
-});
 
 // ================================
 // MAIN COMPONENT
@@ -266,11 +202,13 @@ export default function BettingDashboard() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [widgets, setWidgets] = useState<any[]>([]);
+  const [gameDetails, setGameDetails] = useState<any>(null);
   
   // Loading states
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
+  const [loadingGameDetails, setLoadingGameDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Set initial date on mount to avoid hydration mismatch
@@ -336,6 +274,42 @@ export default function BettingDashboard() {
       setLoadingInsights(false);
     }
   }, []);
+
+  // Fetch game details when a game is selected
+  const fetchGameDetails = useCallback(async (gameId: string) => {
+    setLoadingGameDetails(true);
+    try {
+      const [detailsRes, matchupRes] = await Promise.all([
+        fetch(`/api/betting/games/${gameId}/details`),
+        fetch(`/api/betting/games/${gameId}/matchup-analysis`).catch(() => null), // Optional, don't fail if missing
+      ]);
+      
+      if (!detailsRes.ok) throw new Error('Failed to fetch game details');
+      const data = await detailsRes.json();
+      
+      // Add matchup analysis if available
+      if (matchupRes && matchupRes.ok) {
+        const matchupData = await matchupRes.json();
+        data.matchupAnalysis = matchupData;
+      }
+      
+      setGameDetails(data);
+    } catch (err: any) {
+      console.error('Error fetching game details:', err);
+      setError(err.message);
+    } finally {
+      setLoadingGameDetails(false);
+    }
+  }, []);
+
+  // Fetch game details when a game is selected
+  useEffect(() => {
+    if (selectedGameId) {
+      fetchGameDetails(selectedGameId);
+    } else {
+      setGameDetails(null);
+    }
+  }, [selectedGameId, fetchGameDetails]);
 
   // Initial data fetch
   useEffect(() => {
@@ -504,14 +478,25 @@ export default function BettingDashboard() {
       </main>
 
       {/* Game Details Modal */}
-      {selectedGame && (
+      {selectedGame && gameDetails && !loadingGameDetails && (
         <GameDetailsModal
           data={{
             game: selectedGame,
-            ...createGameDetails(selectedGame),
+            ...gameDetails,
           }}
-          onClose={() => setSelectedGameId(null)}
+          onClose={() => {
+            setSelectedGameId(null);
+            setGameDetails(null);
+          }}
         />
+      )}
+      {selectedGame && loadingGameDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative glass-card rounded-2xl p-8">
+            <p className="text-white">Loading game details...</p>
+          </div>
+        </div>
       )}
     </div>
   );

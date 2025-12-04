@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { X, TrendingUp, TrendingDown, Shield, Zap, AlertTriangle, Target, Users } from 'lucide-react';
 import { LineMovementChart } from './LineMovementChart';
+import { MatchupAnalysis } from './MatchupAnalysis';
 import type { Game } from './GameCard';
 
 interface RecentGameResult {
@@ -42,6 +43,22 @@ interface AIBetSuggestion {
   explanation: string;
 }
 
+interface MatchupAnalysisData {
+  game_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  home_offense: any;
+  away_offense: any;
+  home_defense: any;
+  away_defense: any;
+  pace_analysis: any;
+  key_players: any[];
+  starting_lineups: {
+    home: any;
+    away: any;
+  };
+}
+
 interface GameDetailsData {
   game: Game;
   homeTeamStats: TeamStats;
@@ -56,6 +73,7 @@ interface GameDetailsData {
     spread: number;
     total: number;
   };
+  matchupAnalysis?: MatchupAnalysisData;
 }
 
 interface GameDetailsModalProps {
@@ -140,7 +158,7 @@ function AIConfidenceGauge({ label, value, color }: { label: string; value: numb
 }
 
 export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
-  const { game, homeTeamStats, awayTeamStats, spreadMovement, totalMovement, historicalMatchups, injuries, aiSuggestions, aiConfidenceScores } = data;
+  const { game, homeTeamStats, awayTeamStats, spreadMovement, totalMovement, historicalMatchups, injuries, aiSuggestions, aiConfidenceScores, matchupAnalysis } = data;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -227,21 +245,21 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
                     <Zap className="w-3 h-3 text-[#00d4ff]" />
                     <span className="text-[10px] text-muted-foreground">ORTG</span>
                   </div>
-                  <span className="text-lg font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating}</span>
+                  <span className="text-lg font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating.toFixed(1)}</span>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-white/5">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Shield className="w-3 h-3 text-[#39ff14]" />
                     <span className="text-[10px] text-muted-foreground">DRTG</span>
                   </div>
-                  <span className="text-lg font-bold text-[#39ff14]">{awayTeamStats.defensiveRating}</span>
+                  <span className="text-lg font-bold text-[#39ff14]">{awayTeamStats.defensiveRating.toFixed(1)}</span>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-white/5">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <TrendingUp className="w-3 h-3 text-[#ff6b35]" />
                     <span className="text-[10px] text-muted-foreground">PACE</span>
                   </div>
-                  <span className="text-lg font-bold text-[#ff6b35]">{awayTeamStats.pace}</span>
+                  <span className="text-lg font-bold text-[#ff6b35]">{awayTeamStats.pace.toFixed(1)}</span>
                 </div>
               </div>
 
@@ -273,21 +291,21 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
                     <Zap className="w-3 h-3 text-[#00d4ff]" />
                     <span className="text-[10px] text-muted-foreground">ORTG</span>
                   </div>
-                  <span className="text-lg font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating}</span>
+                  <span className="text-lg font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating.toFixed(1)}</span>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-white/5">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Shield className="w-3 h-3 text-[#39ff14]" />
                     <span className="text-[10px] text-muted-foreground">DRTG</span>
                   </div>
-                  <span className="text-lg font-bold text-[#39ff14]">{homeTeamStats.defensiveRating}</span>
+                  <span className="text-lg font-bold text-[#39ff14]">{homeTeamStats.defensiveRating.toFixed(1)}</span>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-white/5">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <TrendingUp className="w-3 h-3 text-[#ff6b35]" />
                     <span className="text-[10px] text-muted-foreground">PACE</span>
                   </div>
-                  <span className="text-lg font-bold text-[#ff6b35]">{homeTeamStats.pace}</span>
+                  <span className="text-lg font-bold text-[#ff6b35]">{homeTeamStats.pace.toFixed(1)}</span>
                 </div>
               </div>
 
@@ -299,6 +317,17 @@ export function GameDetailsModal({ data, onClose }: GameDetailsModalProps) {
               </div>
             </div>
           </div>
+
+          {/* Matchup Analysis */}
+          {matchupAnalysis && (
+            <div className="glass-card rounded-xl p-4">
+              <MatchupAnalysis 
+                data={matchupAnalysis}
+                homeTeamAbbr={game.homeTeam.abbreviation}
+                awayTeamAbbr={game.awayTeam.abbreviation}
+              />
+            </div>
+          )}
 
           {/* Line Movement Charts */}
           <div>

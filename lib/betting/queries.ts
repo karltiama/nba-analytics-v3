@@ -784,3 +784,806 @@ export async function getGamesOdds(gameIds: string[], preferredBookmaker: string
   return oddsMap;
 }
 
+/**
+ * Get historical matchups between two teams (last 10 games)
+ */
+export async function getHistoricalMatchups(homeTeamId: string, awayTeamId: string, limit: number = 10) {
+  const result = await query(`
+    SELECT 
+      bg.bbref_game_id as game_id,
+      bg.game_date,
+      TO_CHAR(bg.game_date, 'MM/DD/YYYY') as date,
+      bg.home_team_id,
+      bg.away_team_id,
+      ht.abbreviation as home_team_abbr,
+      ht.full_name as home_team_name,
+      at.abbreviation as away_team_abbr,
+      at.full_name as away_team_name,
+      bg.home_score,
+      bg.away_score,
+      (bg.home_score + bg.away_score) as total_points
+    FROM bbref_games bg
+    JOIN teams ht ON bg.home_team_id = ht.team_id
+    JOIN teams at ON bg.away_team_id = at.team_id
+    WHERE bg.status = 'Final'
+      AND (
+        (bg.home_team_id = $1 AND bg.away_team_id = $2) OR
+        (bg.home_team_id = $2 AND bg.away_team_id = $1)
+      )
+    ORDER BY bg.game_date DESC
+    LIMIT $3
+  `, [homeTeamId, awayTeamId, limit]);
+
+  return result.map((row: any) => ({
+    date: row.date,
+    homeTeam: row.home_team_name,
+    awayTeam: row.away_team_name,
+    homeScore: row.home_score,
+    awayScore: row.away_score,
+    totalPoints: row.total_points,
+  }));
+}
+
+/**
+ * Get line movement data for a game
+ * Returns spread and total movement over time from markets table
+ * Note: gameId can be either canonical_game_id or bbref_game_id
+ */
+export async function getLineMovement(gameId: string, preferredBookmaker: string = 'draftkings') {
+  // First, try to get all snapshots for this game from the preferred bookmaker
+  // Check both the game_id directly and any related IDs
+  let result = await query(`
+    SELECT 
+      m.market_type,
+      m.side,
+      m.line,
+      m.odds,
+      m.snapshot_type,
+      m.fetched_at,
+      m.bookmaker
+    FROM markets m
+    WHERE m.game_id = $1
+      AND m.bookmaker = $2
+      AND m.market_type IN ('spread', 'total')
+      AND m.snapshot_type IN ('pre_game', 'closing', 'live', 'mid_game')
+    ORDER BY m.fetched_at ASC
+  `, [gameId, preferredBookmaker]);
+
+  // If no results, check if gameId is a bbref_game_id and look for canonical_game_id
+  if (result.length === 0) {
+    const canonicalLookup = await query(`
+      SELECT canonical_game_id 
+      FROM bbref_schedule 
+      WHERE bbref_game_id = $1 
+      LIMIT 1
+    `, [gameId]);
+    
+    if (canonicalLookup.length > 0 && canonicalLookup[0].canonical_game_id) {
+      result = await query(`
+        SELECT 
+          m.market_type,
+          m.side,
+          m.line,
+          m.odds,
+          m.snapshot_type,
+          m.fetched_at,
+          m.bookmaker
+        FROM markets m
+        WHERE m.game_id = $1
+          AND m.bookmaker = $2
+          AND m.market_type IN ('spread', 'total')
+          AND m.snapshot_type IN ('pre_game', 'closing', 'live', 'mid_game')
+        ORDER BY m.fetched_at ASC
+      `, [canonicalLookup[0].canonical_game_id, preferredBookmaker]);
+    }
+  }
+
+  // If still no results from preferred bookmaker, try any bookmaker
+  if (result.length === 0) {
+    const fallbackResult = await query(`
+      SELECT 
+        m.market_type,
+        m.side,
+        m.line,
+        m.odds,
+        m.snapshot_type,
+        m.fetched_at,
+        m.bookmaker
+      FROM markets m
+      WHERE m.game_id = $1
+        AND m.market_type IN ('spread', 'total')
+        AND m.snapshot_type IN ('pre_game', 'closing')
+      ORDER BY m.fetched_at ASC
+      LIMIT 20
+    `, [gameId]);
+
+    if (fallbackResult.length > 0) {
+      // Group by bookmaker and use the one with most data
+      const bookmakerCounts: Record<string, number> = {};
+      fallbackResult.forEach((row: any) => {
+        bookmakerCounts[row.bookmaker] = (bookmakerCounts[row.bookmaker] || 0) + 1;
+      });
+      const bestBookmaker = Object.entries(bookmakerCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+      
+      if (bestBookmaker) {
+        result = fallbackResult.filter((r: any) => r.bookmaker === bestBookmaker);
+      }
+    }
+  }
+
+  if (result.length === 0) {
+    return {
+      spreadMovement: [],
+      totalMovement: [],
+    };
+  }
+
+  return formatLineMovement(result);
+}
+
+/**
+ * Format line movement data for charts
+ */
+function formatLineMovement(data: any[]) {
+  const spreadData: { time: string; value: number }[] = [];
+  const totalData: { time: string; value: number }[] = [];
+
+  // Group by market type and side
+  const spreadHome: any[] = [];
+  const totalOver: any[] = [];
+
+  data.forEach((row) => {
+    if (row.market_type === 'spread' && row.side === 'home') {
+      spreadHome.push(row);
+    } else if (row.market_type === 'total' && row.side === 'over') {
+      totalOver.push(row);
+    }
+  });
+
+  // Format spread movement
+  if (spreadHome.length > 0) {
+    spreadHome.forEach((row, index) => {
+      const timeLabel = index === 0 ? 'Open' : 
+                       index === spreadHome.length - 1 ? 'Now' :
+                       new Date(row.fetched_at).toLocaleTimeString('en-US', { 
+                         hour: 'numeric', 
+                         minute: '2-digit',
+                         hour12: true 
+                       });
+      spreadData.push({
+        time: timeLabel,
+        value: parseFloat(row.line) || 0,
+      });
+    });
+  }
+
+  // Format total movement
+  if (totalOver.length > 0) {
+    totalOver.forEach((row, index) => {
+      const timeLabel = index === 0 ? 'Open' : 
+                       index === totalOver.length - 1 ? 'Now' :
+                       new Date(row.fetched_at).toLocaleTimeString('en-US', { 
+                         hour: 'numeric', 
+                         minute: '2-digit',
+                         hour12: true 
+                       });
+      totalData.push({
+        time: timeLabel,
+        value: parseFloat(row.line) || 0,
+      });
+    });
+  }
+
+  return {
+    spreadMovement: spreadData,
+    totalMovement: totalData,
+  };
+}
+
+// ============================================
+// MATCHUP ANALYSIS QUERIES
+// ============================================
+
+export interface OpponentDefensiveRankings {
+  team_id: string;
+  points_allowed_rank: number;
+  rebounds_allowed_rank: number;
+  assists_allowed_rank: number;
+  threes_allowed_rank: number;
+  points_allowed_per_game: number;
+  rebounds_allowed_per_game: number;
+  assists_allowed_per_game: number;
+  threes_allowed_per_game: number;
+  defensive_rating: number;
+}
+
+export interface TeamOffensiveRankings {
+  team_id: string;
+  points_rank: number;
+  rebounds_rank: number;
+  assists_rank: number;
+  threes_rank: number;
+  points_per_game: number;
+  rebounds_per_game: number;
+  assists_per_game: number;
+  threes_per_game: number;
+  offensive_rating: number;
+}
+
+/**
+ * Get opponent defensive rankings for a specific team
+ * Returns where the team ranks in allowing various stats
+ */
+export async function getOpponentDefensiveRankings(teamId: string): Promise<OpponentDefensiveRankings | null> {
+  const result = await query(`
+    WITH team_defensive_stats AS (
+      SELECT 
+        btgs.team_id,
+        AVG(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as points_allowed_per_game,
+        AVG(opp_tgs.rebounds) as rebounds_allowed_per_game,
+        AVG(opp_tgs.assists) as assists_allowed_per_game,
+        AVG(opp_tgs.three_pointers_made) as threes_allowed_per_game,
+        AVG(
+          CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END::numeric / 
+          NULLIF(btgs.possessions, 0)
+        ) * 100 as defensive_rating
+      FROM bbref_team_game_stats btgs
+      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
+      JOIN bbref_team_game_stats opp_tgs ON bg.bbref_game_id = opp_tgs.game_id 
+        AND opp_tgs.team_id != btgs.team_id
+        AND opp_tgs.source = 'bbref'
+      WHERE bg.status = 'Final'
+        AND btgs.source = 'bbref'
+      GROUP BY btgs.team_id
+    ),
+    rankings AS (
+      SELECT 
+        team_id,
+        points_allowed_per_game,
+        rebounds_allowed_per_game,
+        assists_allowed_per_game,
+        threes_allowed_per_game,
+        defensive_rating,
+        RANK() OVER (ORDER BY points_allowed_per_game DESC) as points_allowed_rank,
+        RANK() OVER (ORDER BY rebounds_allowed_per_game DESC) as rebounds_allowed_rank,
+        RANK() OVER (ORDER BY assists_allowed_per_game DESC) as assists_allowed_rank,
+        RANK() OVER (ORDER BY threes_allowed_per_game DESC) as threes_allowed_rank
+      FROM team_defensive_stats
+    )
+    SELECT 
+      team_id,
+      points_allowed_rank,
+      rebounds_allowed_rank,
+      assists_allowed_rank,
+      threes_allowed_rank,
+      points_allowed_per_game,
+      rebounds_allowed_per_game,
+      assists_allowed_per_game,
+      threes_allowed_per_game,
+      defensive_rating
+    FROM rankings
+    WHERE team_id = $1
+  `, [teamId]);
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  const row = result[0];
+  return {
+    team_id: row.team_id,
+    points_allowed_rank: parseInt(row.points_allowed_rank) || 0,
+    rebounds_allowed_rank: parseInt(row.rebounds_allowed_rank) || 0,
+    assists_allowed_rank: parseInt(row.assists_allowed_rank) || 0,
+    threes_allowed_rank: parseInt(row.threes_allowed_rank) || 0,
+    points_allowed_per_game: parseFloat(row.points_allowed_per_game) || 0,
+    rebounds_allowed_per_game: parseFloat(row.rebounds_allowed_per_game) || 0,
+    assists_allowed_per_game: parseFloat(row.assists_allowed_per_game) || 0,
+    threes_allowed_per_game: parseFloat(row.threes_allowed_per_game) || 0,
+    defensive_rating: parseFloat(row.defensive_rating) || 0,
+  };
+}
+
+/**
+ * Get offensive rankings for a specific team
+ * Returns where the team ranks in producing various stats
+ */
+export async function getTeamOffensiveRankings(teamId: string): Promise<TeamOffensiveRankings | null> {
+  const result = await query(`
+    WITH team_offensive_stats AS (
+      SELECT 
+        btgs.team_id,
+        AVG(btgs.points) as points_per_game,
+        AVG(btgs.rebounds) as rebounds_per_game,
+        AVG(btgs.assists) as assists_per_game,
+        AVG(btgs.three_pointers_made) as threes_per_game,
+        AVG(btgs.points::numeric / NULLIF(btgs.possessions, 0)) * 100 as offensive_rating
+      FROM bbref_team_game_stats btgs
+      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
+      WHERE bg.status = 'Final'
+        AND btgs.source = 'bbref'
+      GROUP BY btgs.team_id
+    ),
+    rankings AS (
+      SELECT 
+        team_id,
+        points_per_game,
+        rebounds_per_game,
+        assists_per_game,
+        threes_per_game,
+        offensive_rating,
+        RANK() OVER (ORDER BY points_per_game DESC) as points_rank,
+        RANK() OVER (ORDER BY rebounds_per_game DESC) as rebounds_rank,
+        RANK() OVER (ORDER BY assists_per_game DESC) as assists_rank,
+        RANK() OVER (ORDER BY threes_per_game DESC) as threes_rank
+      FROM team_offensive_stats
+    )
+    SELECT 
+      team_id,
+      points_rank,
+      rebounds_rank,
+      assists_rank,
+      threes_rank,
+      points_per_game,
+      rebounds_per_game,
+      assists_per_game,
+      threes_per_game,
+      offensive_rating
+    FROM rankings
+    WHERE team_id = $1
+  `, [teamId]);
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  const row = result[0];
+  return {
+    team_id: row.team_id,
+    points_rank: parseInt(row.points_rank) || 0,
+    rebounds_rank: parseInt(row.rebounds_rank) || 0,
+    assists_rank: parseInt(row.assists_rank) || 0,
+    threes_rank: parseInt(row.threes_rank) || 0,
+    points_per_game: parseFloat(row.points_per_game) || 0,
+    rebounds_per_game: parseFloat(row.rebounds_per_game) || 0,
+    assists_per_game: parseFloat(row.assists_per_game) || 0,
+    threes_per_game: parseFloat(row.threes_per_game) || 0,
+    offensive_rating: parseFloat(row.offensive_rating) || 0,
+  };
+}
+
+export interface PlayerVsOpponentStats {
+  player_id: string;
+  player_name: string;
+  team_id: string;
+  games_played: number;
+  avg_points: number;
+  avg_rebounds: number;
+  avg_assists: number;
+  avg_threes: number;
+  season_avg_points: number;
+  season_avg_rebounds: number;
+  season_avg_assists: number;
+  season_avg_threes: number;
+  points_diff: number;
+  rebounds_diff: number;
+  assists_diff: number;
+  threes_diff: number;
+}
+
+/**
+ * Get a player's historical stats vs a specific opponent
+ * Compares their performance vs this opponent to their season average
+ */
+export async function getPlayerVsOpponentStats(
+  playerId: string,
+  opponentTeamId: string
+): Promise<PlayerVsOpponentStats | null> {
+  // Get player stats vs this opponent
+  const vsOpponentResult = await query(`
+    SELECT 
+      bpgs.player_id,
+      p.full_name as player_name,
+      bpgs.team_id,
+      COUNT(DISTINCT bpgs.game_id) as games_played,
+      AVG(bpgs.points) as avg_points,
+      AVG(bpgs.rebounds) as avg_rebounds,
+      AVG(bpgs.assists) as avg_assists,
+      AVG(bpgs.three_pointers_made) as avg_threes
+    FROM bbref_player_game_stats bpgs
+    JOIN players p ON bpgs.player_id = p.player_id
+    JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
+    WHERE bpgs.player_id = $1
+      AND bg.status = 'Final'
+      AND bpgs.dnp_reason IS NULL
+      AND bpgs.minutes > 10
+      AND (
+        (bg.home_team_id = $2 AND bpgs.team_id = bg.away_team_id) OR
+        (bg.away_team_id = $2 AND bpgs.team_id = bg.home_team_id)
+      )
+    GROUP BY bpgs.player_id, p.full_name, bpgs.team_id
+  `, [playerId, opponentTeamId]);
+
+  if (vsOpponentResult.length === 0) {
+    return null;
+  }
+
+  // Get player season averages
+  const seasonResult = await query(`
+    SELECT 
+      AVG(bpgs.points) as season_avg_points,
+      AVG(bpgs.rebounds) as season_avg_rebounds,
+      AVG(bpgs.assists) as season_avg_assists,
+      AVG(bpgs.three_pointers_made) as season_avg_threes
+    FROM bbref_player_game_stats bpgs
+    JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
+    WHERE bpgs.player_id = $1
+      AND bg.status = 'Final'
+      AND bpgs.dnp_reason IS NULL
+      AND bpgs.minutes > 10
+  `, [playerId]);
+
+  const vsOpponent = vsOpponentResult[0];
+  const season = seasonResult[0] || {};
+
+  const avgPoints = parseFloat(vsOpponent.avg_points) || 0;
+  const avgRebounds = parseFloat(vsOpponent.avg_rebounds) || 0;
+  const avgAssists = parseFloat(vsOpponent.avg_assists) || 0;
+  const avgThrees = parseFloat(vsOpponent.avg_threes) || 0;
+  const seasonAvgPoints = parseFloat(season.season_avg_points) || 0;
+  const seasonAvgRebounds = parseFloat(season.season_avg_rebounds) || 0;
+  const seasonAvgAssists = parseFloat(season.season_avg_assists) || 0;
+  const seasonAvgThrees = parseFloat(season.season_avg_threes) || 0;
+
+  return {
+    player_id: vsOpponent.player_id,
+    player_name: vsOpponent.player_name,
+    team_id: vsOpponent.team_id,
+    games_played: parseInt(vsOpponent.games_played) || 0,
+    avg_points: avgPoints,
+    avg_rebounds: avgRebounds,
+    avg_assists: avgAssists,
+    avg_threes: avgThrees,
+    season_avg_points: seasonAvgPoints,
+    season_avg_rebounds: seasonAvgRebounds,
+    season_avg_assists: seasonAvgAssists,
+    season_avg_threes: seasonAvgThrees,
+    points_diff: avgPoints - seasonAvgPoints,
+    rebounds_diff: avgRebounds - seasonAvgRebounds,
+    assists_diff: avgAssists - seasonAvgAssists,
+    threes_diff: avgThrees - seasonAvgThrees,
+  };
+}
+
+export interface PaceAnalysis {
+  home_team_pace: number;
+  away_team_pace: number;
+  projected_pace: number;
+  pace_advantage: 'home' | 'away' | 'neutral';
+  pace_impact: 'fast' | 'average' | 'slow';
+}
+
+/**
+ * Analyze pace for a matchup
+ * Projects the game pace based on both teams' average pace
+ */
+export async function getPaceAnalysis(
+  homeTeamId: string,
+  awayTeamId: string
+): Promise<PaceAnalysis> {
+  const result = await query(`
+    WITH team_pace AS (
+      SELECT 
+        btgs.team_id,
+        AVG(btgs.possessions) * 48.0 / NULLIF(AVG(btgs.minutes), 0) * 5 as pace
+      FROM bbref_team_game_stats btgs
+      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
+      WHERE bg.status = 'Final'
+        AND btgs.source = 'bbref'
+        AND btgs.team_id IN ($1, $2)
+      GROUP BY btgs.team_id
+    )
+    SELECT 
+      MAX(CASE WHEN team_id = $1 THEN pace END) as home_team_pace,
+      MAX(CASE WHEN team_id = $2 THEN pace END) as away_team_pace
+    FROM team_pace
+  `, [homeTeamId, awayTeamId]);
+
+  const row = result[0] || {};
+  const homePace = parseFloat(row.home_team_pace) || 100;
+  const awayPace = parseFloat(row.away_team_pace) || 100;
+  const projectedPace = (homePace + awayPace) / 2;
+
+  let paceAdvantage: 'home' | 'away' | 'neutral' = 'neutral';
+  if (homePace > awayPace + 2) {
+    paceAdvantage = 'home';
+  } else if (awayPace > homePace + 2) {
+    paceAdvantage = 'away';
+  }
+
+  let paceImpact: 'fast' | 'average' | 'slow' = 'average';
+  if (projectedPace >= 102) {
+    paceImpact = 'fast';
+  } else if (projectedPace <= 98) {
+    paceImpact = 'slow';
+  }
+
+  return {
+    home_team_pace: homePace,
+    away_team_pace: awayPace,
+    projected_pace: projectedPace,
+    pace_advantage: paceAdvantage,
+    pace_impact: paceImpact,
+  };
+}
+
+export interface StartingLineupPlayer {
+  player_id: string;
+  full_name: string;
+  position: string;
+  games_started: number;
+  avg_points: number;
+  avg_minutes: number;
+}
+
+export interface StartingLineup {
+  team_id: string;
+  players: StartingLineupPlayer[];
+}
+
+export interface MatchupAnalysis {
+  game_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  home_offense: TeamOffensiveRankings | null;
+  away_offense: TeamOffensiveRankings | null;
+  home_defense: OpponentDefensiveRankings | null;
+  away_defense: OpponentDefensiveRankings | null;
+  pace_analysis: PaceAnalysis;
+  key_players: PlayerVsOpponentStats[];
+  starting_lineups: {
+    home: StartingLineup | null;
+    away: StartingLineup | null;
+  };
+}
+
+/**
+ * Get projected starting lineup for a team based on recent games
+ * Uses multiple heuristics to determine starters:
+ * 1. Players marked as started (if available)
+ * 2. Players with high minutes (25+ min typically indicates starter)
+ * 3. Players who appear early in box score order (starters listed first)
+ * 4. Most common player at each position in recent games
+ */
+export async function getProjectedStartingLineup(teamId: string): Promise<StartingLineup | null> {
+  const result = await query(`
+    WITH recent_games AS (
+      SELECT DISTINCT bg.bbref_game_id, bg.game_date
+      FROM bbref_games bg
+      WHERE bg.status = 'Final'
+        AND (bg.home_team_id = $1 OR bg.away_team_id = $1)
+      ORDER BY bg.game_date DESC
+      LIMIT 10
+    ),
+    player_game_data AS (
+      SELECT 
+        bpgs.player_id,
+        p.full_name,
+        p.position,
+        bpgs.game_id,
+        bpgs.minutes,
+        bpgs.points,
+        bpgs.started,
+        bpgs.dnp_reason,
+        -- Calculate starter score: higher = more likely to be starter
+        CASE 
+          WHEN bpgs.started = true THEN 10  -- Explicit starter flag
+          WHEN bpgs.minutes >= 30 THEN 8     -- High minutes = likely starter
+          WHEN bpgs.minutes >= 25 THEN 6     -- Good minutes = probably starter
+          WHEN bpgs.minutes >= 20 THEN 4     -- Decent minutes = maybe starter
+          ELSE 2                              -- Low minutes = unlikely starter
+        END as starter_score,
+        -- Get player order in game (starters usually appear first)
+        ROW_NUMBER() OVER (
+          PARTITION BY bpgs.game_id, bpgs.team_id 
+          ORDER BY 
+            CASE WHEN bpgs.started = true THEN 0 ELSE 1 END,
+            bpgs.minutes DESC NULLS LAST,
+            bpgs.points DESC
+        ) as player_order
+      FROM bbref_player_game_stats bpgs
+      JOIN players p ON bpgs.player_id = p.player_id
+      JOIN recent_games rg ON bpgs.game_id = rg.bbref_game_id
+      WHERE bpgs.team_id = $1
+        AND bpgs.dnp_reason IS NULL
+        AND bpgs.minutes > 0
+    ),
+    player_aggregates AS (
+      SELECT 
+        player_id,
+        MAX(full_name) as full_name,
+        MAX(position) as position,
+        COUNT(*) as games_played,
+        SUM(CASE WHEN started = true THEN 1 ELSE 0 END) as explicit_starts,
+        SUM(CASE WHEN minutes >= 25 THEN 1 ELSE 0 END) as high_minute_games,
+        SUM(CASE WHEN player_order <= 5 THEN 1 ELSE 0 END) as early_appearance_games,
+        AVG(starter_score) as avg_starter_score,
+        AVG(points) as avg_points,
+        AVG(minutes) as avg_minutes
+      FROM player_game_data
+      GROUP BY player_id
+      HAVING COUNT(*) >= 3  -- Must have played in at least 3 recent games
+    ),
+    position_candidates AS (
+      SELECT 
+        player_id,
+        full_name,
+        position,
+        games_played,
+        explicit_starts,
+        high_minute_games,
+        early_appearance_games,
+        avg_starter_score,
+        avg_points,
+        avg_minutes,
+        -- Combined starter likelihood score
+        (explicit_starts * 3 + high_minute_games * 2 + early_appearance_games * 1.5 + avg_starter_score) as starter_likelihood
+      FROM player_aggregates
+    ),
+    position_rankings AS (
+      SELECT 
+        player_id,
+        full_name,
+        position,
+        games_played,
+        explicit_starts,
+        avg_points,
+        avg_minutes,
+        ROW_NUMBER() OVER (
+          PARTITION BY position 
+          ORDER BY starter_likelihood DESC, avg_minutes DESC, avg_points DESC
+        ) as position_rank
+      FROM position_candidates
+    )
+    SELECT 
+      player_id,
+      full_name,
+      position,
+      games_played as games_started,
+      avg_points,
+      avg_minutes
+    FROM position_rankings
+    WHERE position_rank = 1
+      AND position IS NOT NULL
+    ORDER BY 
+      CASE position
+        WHEN 'PG' THEN 1
+        WHEN 'SG' THEN 2
+        WHEN 'SF' THEN 3
+        WHEN 'PF' THEN 4
+        WHEN 'C' THEN 5
+        ELSE 6
+      END,
+      position,
+      full_name
+    LIMIT 5
+  `, [teamId]);
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  return {
+    team_id: teamId,
+    players: result.map((row: any) => ({
+      player_id: row.player_id,
+      full_name: row.full_name,
+      position: row.position || 'N/A',
+      games_started: parseInt(row.games_started) || 0,
+      avg_points: parseFloat(row.avg_points) || 0,
+      avg_minutes: parseFloat(row.avg_minutes) || 0,
+    })),
+  };
+}
+
+/**
+ * Get projected starting lineups for both teams in a game
+ */
+export async function getGameStartingLineups(
+  homeTeamId: string,
+  awayTeamId: string
+): Promise<{ home: StartingLineup | null; away: StartingLineup | null }> {
+  const [homeLineup, awayLineup] = await Promise.all([
+    getProjectedStartingLineup(homeTeamId),
+    getProjectedStartingLineup(awayTeamId),
+  ]);
+
+  return {
+    home: homeLineup,
+    away: awayLineup,
+  };
+}
+
+/**
+ * Get comprehensive matchup analysis for a game
+ * Includes opponent defensive rankings, pace analysis, and key player matchups
+ */
+export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysis | null> {
+  // Get game info
+  const gameResult = await query(`
+    SELECT 
+      COALESCE(bs.canonical_game_id, bs.bbref_game_id) as game_id,
+      bs.home_team_id,
+      bs.away_team_id
+    FROM bbref_schedule bs
+    WHERE bs.bbref_game_id = $1 
+       OR bs.canonical_game_id = $1
+    LIMIT 1
+  `, [gameId]);
+
+  if (gameResult.length === 0) {
+    return null;
+  }
+
+  const game = gameResult[0];
+  const homeTeamId = game.home_team_id;
+  const awayTeamId = game.away_team_id;
+
+  // Get offensive and defensive rankings for both teams
+  const [homeOffense, awayOffense, homeDefense, awayDefense, paceAnalysis] = await Promise.all([
+    getTeamOffensiveRankings(homeTeamId),
+    getTeamOffensiveRankings(awayTeamId),
+    getOpponentDefensiveRankings(homeTeamId),
+    getOpponentDefensiveRankings(awayTeamId),
+    getPaceAnalysis(homeTeamId, awayTeamId),
+  ]);
+
+  // Get key players (top 3 scorers from each team) and their stats vs opponent
+  const keyPlayersResult = await query(`
+    WITH top_scorers AS (
+      SELECT 
+        bpgs.player_id,
+        bpgs.team_id,
+        AVG(bpgs.points) as avg_points,
+        ROW_NUMBER() OVER (PARTITION BY bpgs.team_id ORDER BY AVG(bpgs.points) DESC) as rn
+      FROM bbref_player_game_stats bpgs
+      JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
+      WHERE bpgs.team_id IN ($1, $2)
+        AND bg.status = 'Final'
+        AND bpgs.dnp_reason IS NULL
+        AND bpgs.minutes > 10
+      GROUP BY bpgs.player_id, bpgs.team_id
+      HAVING COUNT(DISTINCT bpgs.game_id) >= 5
+    )
+    SELECT player_id, team_id
+    FROM top_scorers
+    WHERE rn <= 3
+  `, [homeTeamId, awayTeamId]);
+
+  // Get player vs opponent stats for key players
+  const keyPlayers: PlayerVsOpponentStats[] = [];
+  for (const player of keyPlayersResult) {
+    const opponentId = player.team_id === homeTeamId ? awayTeamId : homeTeamId;
+    const playerStats = await getPlayerVsOpponentStats(player.player_id, opponentId);
+    if (playerStats) {
+      keyPlayers.push(playerStats);
+    }
+  }
+
+  // Get projected starting lineups
+  const startingLineups = await getGameStartingLineups(homeTeamId, awayTeamId);
+
+  return {
+    game_id: game.game_id,
+    home_team_id: homeTeamId,
+    away_team_id: awayTeamId,
+    home_offense: homeOffense,
+    away_offense: awayOffense,
+    home_defense: homeDefense,
+    away_defense: awayDefense,
+    pace_analysis: paceAnalysis,
+    key_players: keyPlayers,
+    starting_lineups: startingLineups,
+  };
+}
+
