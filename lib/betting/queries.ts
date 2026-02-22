@@ -1586,4 +1586,3 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
     starting_lineups: startingLineups,
   };
 }
-

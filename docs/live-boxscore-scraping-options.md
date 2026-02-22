@@ -134,3 +134,14 @@ const html = await page.content();
 - Consider rate limiting and respectful scraping practices
 - May need to handle CAPTCHAs or bot detection
 
+
+
+
+
+
+
+
+
+
+
+
