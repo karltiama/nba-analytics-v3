@@ -228,7 +228,9 @@ const UPSERT_PROVIDER_MAP_GAME = `
 
 const processDate = async (targetDate: Date, teamMap: Map<string, string>, client: any) => {
   const dateStr = targetDate.toISOString().split('T')[0];
-  const season = targetDate.getFullYear() >= 10 ? targetDate.getFullYear() : targetDate.getFullYear() - 1;
+  const month = targetDate.getMonth(); // 0-indexed: 0=Jan, 9=Oct
+  const year = targetDate.getFullYear();
+  const season = month <= 5 ? year - 1 : year; // Jan-Jun → previous year's season
 
   console.log(`Processing ${dateStr}...`);
 

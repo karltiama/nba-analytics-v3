@@ -252,11 +252,15 @@ async function getTeamAbbreviations(gameId: string): Promise<{
   awayTeamId?: string;
 } | null> {
   // First try bbref_schedule (has canonical_game_id link)
+  // Extract date from bbref_game_id (format: bbref_YYYYMMDDHHMM_AWAY_HOME)
+  // because game_date column can be off by one due to timezone storage issues
   const bbrefScheduleResult = await pool.query(`
     SELECT 
       bs.home_team_abbr as home_abbr,
       bs.away_team_abbr as away_abbr,
-      bs.game_date::text as game_date_et,
+      SUBSTRING(bs.bbref_game_id FROM 7 FOR 4) || '-' || 
+        SUBSTRING(bs.bbref_game_id FROM 11 FOR 2) || '-' || 
+        SUBSTRING(bs.bbref_game_id FROM 13 FOR 2) as game_date_et,
       bs.bbref_game_id,
       bs.home_team_id,
       bs.away_team_id
@@ -282,7 +286,9 @@ async function getTeamAbbreviations(gameId: string): Promise<{
     SELECT 
       bg.home_team_abbr as home_abbr,
       bg.away_team_abbr as away_abbr,
-      bg.game_date::text as game_date_et,
+      SUBSTRING(bg.bbref_game_id FROM 7 FOR 4) || '-' || 
+        SUBSTRING(bg.bbref_game_id FROM 11 FOR 2) || '-' || 
+        SUBSTRING(bg.bbref_game_id FROM 13 FOR 2) as game_date_et,
       bg.bbref_game_id,
       bg.home_team_id,
       bg.away_team_id
@@ -309,7 +315,11 @@ async function getTeamAbbreviations(gameId: string): Promise<{
       ht.abbreviation as home_abbr,
       at.abbreviation as away_abbr,
       g.start_time,
-      DATE((g.start_time AT TIME ZONE 'America/New_York'))::text as game_date_et,
+      CASE 
+        WHEN (g.start_time AT TIME ZONE 'UTC')::time = '00:00:00'::time 
+        THEN g.start_time::date::text
+        ELSE DATE((g.start_time AT TIME ZONE 'America/New_York'))::text
+      END as game_date_et,
       g.home_team_id,
       g.away_team_id
     FROM games g
@@ -792,8 +802,8 @@ async function ensureBbrefGameExists(
         bbref_game_id, game_date, home_team_abbr, away_team_abbr,
         home_team_id, away_team_id, home_score, away_score, status,
         created_at, updated_at
-      ) VALUES ($1, $2::date, $3, $4, $5, $6, $7, $8, 
-        CASE WHEN $7 IS NOT NULL AND $8 IS NOT NULL THEN 'Final' ELSE 'Scheduled' END,
+      ) VALUES ($1, $2::date, $3, $4, $5, $6, $7::int, $8::int, 
+        CASE WHEN $7::int IS NOT NULL AND $8::int IS NOT NULL THEN 'Final' ELSE 'Scheduled' END,
         now(), now())
       ON CONFLICT (bbref_game_id) DO UPDATE SET
         home_score = COALESCE(EXCLUDED.home_score, bbref_games.home_score),

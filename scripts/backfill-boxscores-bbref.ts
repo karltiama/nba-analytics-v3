@@ -66,70 +66,78 @@ async function getGamesMissingBoxScores(
   const now = new Date();
   
   let sql = `
-    SELECT DISTINCT
-      g.game_id,
-      g.season,
-      g.start_time,
-      g.home_team_id,
-      g.away_team_id,
-      g.status,
-      ht.abbreviation as home_abbr,
-      at.abbreviation as away_abbr,
-      CASE 
-        WHEN g.status != 'Final' AND (
-          (g.home_score IS NOT NULL AND g.away_score IS NOT NULL) OR
-          (g.start_time < $2 AND g.status != 'Cancelled' AND g.status != 'Postponed')
+    WITH deduped AS (
+      SELECT DISTINCT ON (g.home_team_id, g.away_team_id, g.start_time::date)
+        g.game_id,
+        g.season,
+        g.start_time,
+        g.home_team_id,
+        g.away_team_id,
+        g.status,
+        ht.abbreviation as home_abbr,
+        at.abbreviation as away_abbr,
+        CASE 
+          WHEN g.status != 'Final' AND (
+            (g.home_score IS NOT NULL AND g.away_score IS NOT NULL) OR
+            (g.start_time < $2 AND g.status != 'Cancelled' AND g.status != 'Postponed')
+          )
+          THEN true
+          ELSE false
+        END as needs_status_update,
+        CASE WHEN g.status = 'Final' THEN 0 ELSE 1 END as priority
+      FROM games g
+      JOIN teams ht ON g.home_team_id = ht.team_id
+      JOIN teams at ON g.away_team_id = at.team_id
+      LEFT JOIN player_game_stats pgs ON g.game_id = pgs.game_id
+      WHERE pgs.game_id IS NULL
+        AND NOT EXISTS (
+          SELECT 1 FROM bbref_games bg
+          JOIN bbref_player_game_stats bps ON bg.bbref_game_id = bps.game_id
+          WHERE bg.home_team_id = g.home_team_id
+            AND bg.away_team_id = g.away_team_id
+            AND bg.game_date BETWEEN (g.start_time::date - interval '1 day')::date 
+                                  AND (g.start_time::date + interval '1 day')::date
         )
-        THEN true
-        ELSE false
-      END as needs_status_update,
-      CASE WHEN g.status = 'Final' THEN 0 ELSE 1 END as priority
-    FROM games g
-    JOIN teams ht ON g.home_team_id = ht.team_id
-    JOIN teams at ON g.away_team_id = at.team_id
-    LEFT JOIN player_game_stats pgs ON g.game_id = pgs.game_id
-    WHERE (
-      -- Games marked as Final without box scores
-      (g.status = 'Final' AND pgs.game_id IS NULL)
-      OR
-      -- Games with scores that should be Final but aren't marked as such
-      (g.status != 'Final' 
-       AND g.home_score IS NOT NULL 
-       AND g.away_score IS NOT NULL 
-       AND g.start_time < $2
-       AND pgs.game_id IS NULL
-       AND g.status != 'Cancelled'
-       AND g.status != 'Postponed')
-      OR
-      -- Games in the past without box scores (even if no scores in DB yet)
-      -- Basketball Reference might have them
-      (g.start_time < $2
-       AND g.start_time::date <= $1::date
-       AND pgs.game_id IS NULL
-       AND g.status != 'Cancelled'
-       AND g.status != 'Postponed'
-       AND g.status != 'Final')
+        AND (
+          g.status = 'Final'
+          OR
+          (g.status != 'Final' 
+           AND g.home_score IS NOT NULL 
+           AND g.away_score IS NOT NULL 
+           AND g.start_time < $2
+           AND g.status != 'Cancelled'
+           AND g.status != 'Postponed')
+          OR
+          (g.start_time < $2
+           AND g.start_time::date <= $1::date
+           AND g.status != 'Cancelled'
+           AND g.status != 'Postponed'
+           AND g.status != 'Final')
+        )
+      ORDER BY g.home_team_id, g.away_team_id, g.start_time::date,
+        CASE WHEN LENGTH(g.game_id) <= 8 THEN 0 ELSE 1 END,
+        g.game_id
     )
+    SELECT * FROM deduped WHERE 1=1
   `;
   
   const params: any[] = [endDateParam, now];
   let paramCount = 3;
   
-  // Filter by team abbreviation (home or away)
   if (teamAbbr) {
-    sql += ` AND (ht.abbreviation = $${paramCount} OR at.abbreviation = $${paramCount})`;
+    sql += ` AND (home_abbr = $${paramCount} OR away_abbr = $${paramCount})`;
     params.push(teamAbbr.toUpperCase());
     paramCount++;
   }
   
   if (startDate) {
-    sql += ` AND g.start_time::date >= $${paramCount}::date`;
+    sql += ` AND start_time::date >= $${paramCount}::date`;
     params.push(startDate);
     paramCount++;
   }
   
   sql += `
-    ORDER BY priority, g.start_time ASC
+    ORDER BY priority, start_time ASC
     LIMIT $${paramCount}
   `;
   params.push(maxGames);
