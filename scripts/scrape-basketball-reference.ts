@@ -630,129 +630,101 @@ function normalizePlayerNameForMatching(name: string): string {
 }
 
 /**
- * Resolve player ID from name (fuzzy matching)
+ * Canonicalize a player name for matching: lowercase, strip periods, normalize accents
+ */
+function canonicalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\./g, '')        // A.J. → AJ
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (ü → u, ş → s)
+    .replace(/['']/g, "'")     // Normalize smart quotes
+    .trim();
+}
+
+const SUFFIX_RE = /\s+(III|II|IV|V|Jr\.?|Sr\.?|IIIrd|IInd)$/i;
+
+/**
+ * Try to match a player name in the DB.
+ * When teamAbbr is provided, requires a player_team_rosters match.
+ * When teamAbbr is null, searches across all teams (fallback for trades).
+ */
+async function tryResolvePlayer(playerName: string, teamAbbr: string | null): Promise<string | null> {
+  const teamJoin = teamAbbr
+    ? `JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
+       JOIN teams t ON ptr.team_id = t.team_id`
+    : '';
+  const teamWhere = teamAbbr ? `AND t.abbreviation = $2` : '';
+  const params = teamAbbr ? [playerName, teamAbbr] : [playerName];
+  const canon = canonicalizeName(playerName);
+  const canonParams = teamAbbr ? [canon, teamAbbr] : [canon];
+
+  // 1. Exact name match
+  const exact = await pool.query(`
+    SELECT p.player_id FROM players p ${teamJoin}
+    WHERE LOWER(p.full_name) = LOWER($1) ${teamWhere} LIMIT 1
+  `, params);
+  if (exact.rows.length > 0) return exact.rows[0].player_id;
+
+  // 2. Canonicalized match (strips periods, accents, diacritics)
+  const canonMatch = await pool.query(`
+    SELECT p.player_id FROM players p ${teamJoin}
+    WHERE LOWER(TRANSLATE(REPLACE(p.full_name, '.', ''), 'áàâäéèêëíìîïóòôöúùûüçñşğёÁÀÂÄÉÈÊËÍÌÎÏÓÒÔÖÚÙÛÜÇÑŞĞ', 'aaaeeeeiiiioooouuuucnsgeaaaeeeeiiiioooouuuucnsg'))
+          = $1 ${teamWhere} LIMIT 1
+  `, canonParams);
+  if (canonMatch.rows.length > 0) return canonMatch.rows[0].player_id;
+
+  // 3. Suffix variations (scraped has suffix, DB doesn't or vice versa)
+  const nameWithoutSuffix = playerName.replace(SUFFIX_RE, '').trim();
+  if (nameWithoutSuffix !== playerName) {
+    const canonNoSuffix = canonicalizeName(nameWithoutSuffix);
+    const noSuffixParams = teamAbbr ? [canonNoSuffix, teamAbbr] : [canonNoSuffix];
+    const sfx = await pool.query(`
+      SELECT p.player_id FROM players p ${teamJoin}
+      WHERE LOWER(TRANSLATE(REPLACE(p.full_name, '.', ''), 'áàâäéèêëíìîïóòôöúùûüçñşğёÁÀÂÄÉÈÊËÍÌÎÏÓÒÔÖÚÙÛÜÇÑŞĞ', 'aaaeeeeiiiioooouuuucnsgeaaaeeeeiiiioooouuuucnsg'))
+            = $1 ${teamWhere} LIMIT 1
+    `, noSuffixParams);
+    if (sfx.rows.length > 0) return sfx.rows[0].player_id;
+  }
+
+  // DB name has suffix, scraped name doesn't
+  const dbSfx = await pool.query(`
+    SELECT p.player_id FROM players p ${teamJoin}
+    WHERE LOWER(TRANSLATE(REPLACE(REGEXP_REPLACE(p.full_name, '\\s+(III|II|IV|V|Jr\\.?|Sr\\.?|IIIrd|IInd)$', '', 'i'), '.', ''),
+          'áàâäéèêëíìîïóòôöúùûüçñşğёÁÀÂÄÉÈÊËÍÌÎÏÓÒÔÖÚÙÛÜÇÑŞĞ', 'aaaeeeeiiiioooouuuucnsgeaaaeeeeiiiioooouuuucnsg'))
+          = $1 ${teamWhere} LIMIT 1
+  `, canonParams);
+  if (dbSfx.rows.length > 0) return dbSfx.rows[0].player_id;
+
+  // 4. Last-name-only match (only with team filter to avoid ambiguity)
+  if (teamAbbr) {
+    const lastName = playerName.split(' ').pop();
+    if (lastName && lastName.length > 2) {
+      const lastNameMatch = await pool.query(`
+        SELECT p.player_id FROM players p ${teamJoin}
+        WHERE LOWER(p.last_name) = LOWER($1) ${teamWhere} LIMIT 1
+      `, [lastName, teamAbbr]);
+      if (lastNameMatch.rows.length > 0) return lastNameMatch.rows[0].player_id;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Resolve player ID from name (fuzzy matching with cross-team fallback)
  */
 async function resolvePlayerId(playerName: string, teamCode: string): Promise<string | null> {
-  // Map BBRef code to NBA abbreviation
   const nbaAbbr = Object.entries(TEAM_CODE_MAP).find(([_, code]) => code === teamCode)?.[0] || teamCode;
-  
-  // Try exact match first
-  const exactMatch = await pool.query(`
-    SELECT p.player_id
-    FROM players p
-    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-    JOIN teams t ON ptr.team_id = t.team_id
-    WHERE LOWER(p.full_name) = LOWER($1)
-      AND t.abbreviation = $2
-    LIMIT 1
-  `, [playerName, nbaAbbr]);
-  
-  if (exactMatch.rows.length > 0) {
-    return exactMatch.rows[0].player_id;
-  }
-  
-  // Try normalized match (handles accents: García vs Garcia, Şengün vs Sengun)
-  // Normalize both the input and database names by removing accents
-  // Includes Turkish characters: ş, ğ
-  const normalizedMatch = await pool.query(`
-    SELECT p.player_id
-    FROM players p
-    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-    JOIN teams t ON ptr.team_id = t.team_id
-    WHERE LOWER(TRANSLATE(p.full_name, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg')) = 
-          LOWER(TRANSLATE($1, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg'))
-      AND t.abbreviation = $2
-    LIMIT 1
-  `, [playerName, nbaAbbr]);
-  
-  if (normalizedMatch.rows.length > 0) {
-    return normalizedMatch.rows[0].player_id;
-  }
-  
-  // Try matching with name suffixes stripped (Jimmy Butler III vs Jimmy Butler, Walter Clayton Jr. vs Walter Clayton)
-  // Case 1: Scraped name has suffix, database name doesn't
-  const nameWithoutSuffix = playerName.replace(/\s+(III|II|IV|Jr\.?|Sr\.?|IIIrd|IInd)$/i, '').trim();
-  if (nameWithoutSuffix !== playerName) {
-    const suffixMatch = await pool.query(`
-      SELECT p.player_id
-      FROM players p
-      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-      JOIN teams t ON ptr.team_id = t.team_id
-      WHERE LOWER(p.full_name) = LOWER($1)
-        AND t.abbreviation = $2
-      LIMIT 1
-    `, [nameWithoutSuffix, nbaAbbr]);
-    
-    if (suffixMatch.rows.length > 0) {
-      return suffixMatch.rows[0].player_id;
-    }
-    
-    // Also try normalized version of name without suffix
-    const normalizedSuffixMatch = await pool.query(`
-      SELECT p.player_id
-      FROM players p
-      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-      JOIN teams t ON ptr.team_id = t.team_id
-      WHERE LOWER(TRANSLATE(p.full_name, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg')) = 
-            LOWER(TRANSLATE($1, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg'))
-        AND t.abbreviation = $2
-      LIMIT 1
-    `, [nameWithoutSuffix, nbaAbbr]);
-    
-    if (normalizedSuffixMatch.rows.length > 0) {
-      return normalizedSuffixMatch.rows[0].player_id;
-    }
-  }
-  
-  // Case 2: Database name has suffix, scraped name doesn't (e.g., "Robert Williams" vs "Robert Williams III")
-  const dbSuffixMatch = await pool.query(`
-    SELECT p.player_id
-    FROM players p
-    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-    JOIN teams t ON ptr.team_id = t.team_id
-    WHERE LOWER(REGEXP_REPLACE(p.full_name, '\\s+(III|II|IV|Jr\\.?|Sr\\.?|IIIrd|IInd)$', '', 'i')) = LOWER($1)
-      AND t.abbreviation = $2
-    LIMIT 1
-  `, [playerName, nbaAbbr]);
-  
-  if (dbSuffixMatch.rows.length > 0) {
-    return dbSuffixMatch.rows[0].player_id;
-  }
-  
-  // Also try normalized version
-  const normalizedDbSuffixMatch = await pool.query(`
-    SELECT p.player_id
-    FROM players p
-    JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-    JOIN teams t ON ptr.team_id = t.team_id
-    WHERE LOWER(TRANSLATE(REGEXP_REPLACE(p.full_name, '\\s+(III|II|IV|Jr\\.?|Sr\\.?|IIIrd|IInd)$', '', 'i'), 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg')) = 
-          LOWER(TRANSLATE($1, 'áàâäéèêëíìîïóòôöúùûüçñşğ', 'aaaeeeeiiiioooouuuucnsg'))
-      AND t.abbreviation = $2
-    LIMIT 1
-  `, [playerName, nbaAbbr]);
-  
-  if (normalizedDbSuffixMatch.rows.length > 0) {
-    return normalizedDbSuffixMatch.rows[0].player_id;
-  }
-  
-  // Try fuzzy matching (last name match)
-  const lastName = playerName.split(' ').pop();
-  if (lastName) {
-    const fuzzyMatch = await pool.query(`
-      SELECT p.player_id
-      FROM players p
-      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-      JOIN teams t ON ptr.team_id = t.team_id
-      WHERE LOWER(p.last_name) = LOWER($1)
-        AND t.abbreviation = $2
-      LIMIT 1
-    `, [lastName, nbaAbbr]);
-    
-    if (fuzzyMatch.rows.length > 0) {
-      return fuzzyMatch.rows[0].player_id;
-    }
-  }
-  
+
+  // Phase 1: Try with team roster filter (high confidence)
+  const withTeam = await tryResolvePlayer(playerName, nbaAbbr);
+  if (withTeam) return withTeam;
+
+  // Phase 2: Cross-team fallback for traded/waived players
+  const crossTeam = await tryResolvePlayer(playerName, null);
+  if (crossTeam) return crossTeam;
+
   return null;
 }
 
@@ -1004,6 +976,81 @@ export async function processBBRefBoxScore(
         inserted++;
       }
       
+      // Auto-aggregate team stats into bbref_team_game_stats
+      if (inserted > 0) {
+        const teamIds = new Set<string>();
+        for (const playerStat of boxScoreData.playerStats) {
+          const tid = await resolveTeamId(playerStat.team_code);
+          if (tid) teamIds.add(tid);
+        }
+
+        for (const tid of teamIds) {
+          const isHome = tid === (homeTeamId || await resolveTeamId(homeTeamCode));
+          const agg = await client.query(`
+            SELECT
+              SUM(points) as points,
+              SUM(field_goals_made) as field_goals_made,
+              SUM(field_goals_attempted) as field_goals_attempted,
+              SUM(three_pointers_made) as three_pointers_made,
+              SUM(three_pointers_attempted) as three_pointers_attempted,
+              SUM(free_throws_made) as free_throws_made,
+              SUM(free_throws_attempted) as free_throws_attempted,
+              SUM(rebounds) as rebounds,
+              SUM(offensive_rebounds) as offensive_rebounds,
+              SUM(defensive_rebounds) as defensive_rebounds,
+              SUM(assists) as assists,
+              SUM(steals) as steals,
+              SUM(blocks) as blocks,
+              SUM(turnovers) as turnovers,
+              SUM(personal_fouls) as personal_fouls,
+              SUM(plus_minus) as plus_minus,
+              SUM(minutes) as minutes,
+              SUM(field_goals_attempted) +
+                0.44 * SUM(free_throws_attempted) -
+                COALESCE(SUM(offensive_rebounds), 0) +
+                SUM(turnovers) as possessions
+            FROM bbref_player_game_stats
+            WHERE game_id = $1 AND team_id = $2 AND dnp_reason IS NULL
+          `, [bbrefGameId, tid]);
+
+          const s = agg.rows[0];
+          await client.query(`
+            INSERT INTO bbref_team_game_stats (
+              game_id, team_id, points, field_goals_made, field_goals_attempted,
+              three_pointers_made, three_pointers_attempted,
+              free_throws_made, free_throws_attempted,
+              rebounds, offensive_rebounds, defensive_rebounds,
+              assists, steals, blocks, turnovers, personal_fouls, plus_minus,
+              possessions, minutes, is_home, source
+            ) VALUES (
+              $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,'bbref'
+            )
+            ON CONFLICT (game_id, team_id) DO UPDATE SET
+              points=EXCLUDED.points, field_goals_made=EXCLUDED.field_goals_made,
+              field_goals_attempted=EXCLUDED.field_goals_attempted,
+              three_pointers_made=EXCLUDED.three_pointers_made,
+              three_pointers_attempted=EXCLUDED.three_pointers_attempted,
+              free_throws_made=EXCLUDED.free_throws_made,
+              free_throws_attempted=EXCLUDED.free_throws_attempted,
+              rebounds=EXCLUDED.rebounds, offensive_rebounds=EXCLUDED.offensive_rebounds,
+              defensive_rebounds=EXCLUDED.defensive_rebounds,
+              assists=EXCLUDED.assists, steals=EXCLUDED.steals, blocks=EXCLUDED.blocks,
+              turnovers=EXCLUDED.turnovers, personal_fouls=EXCLUDED.personal_fouls,
+              plus_minus=EXCLUDED.plus_minus, possessions=EXCLUDED.possessions,
+              minutes=EXCLUDED.minutes, is_home=EXCLUDED.is_home, updated_at=now()
+          `, [
+            bbrefGameId, tid,
+            s.points, s.field_goals_made, s.field_goals_attempted,
+            s.three_pointers_made, s.three_pointers_attempted,
+            s.free_throws_made, s.free_throws_attempted,
+            s.rebounds, s.offensive_rebounds, s.defensive_rebounds,
+            s.assists, s.steals, s.blocks, s.turnovers, s.personal_fouls, s.plus_minus,
+            s.possessions, s.minutes, isHome,
+          ]);
+        }
+        console.log(`   ✅ Aggregated team stats for ${teamIds.size} teams`);
+      }
+
       await client.query('COMMIT');
       console.log(`   ✅ Inserted ${inserted} player stats${skipped > 0 ? `, skipped ${skipped}` : ''}`);
       return inserted > 0;

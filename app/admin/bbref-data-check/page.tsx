@@ -30,12 +30,15 @@ interface TeamData {
   losses: number;
   roster_issues: number;
   active_roster_count: number;
+  validated_games: number;
+  validation_failures: number;
 }
 
 interface Summary {
   total_teams: number;
   total_final_games: number;
   games_with_scores: number;
+  games_with_player_stats?: number;
   games_with_team_stats: number;
   missing_boxscores: number;
   average_coverage: number;
@@ -56,10 +59,19 @@ interface Issues {
   teams_with_roster_issues: number;
 }
 
+interface Validation {
+  total_validated: number;
+  games_with_failures: number;
+  checks_passed: number;
+  checks_failed: number;
+  checks_warned: number;
+}
+
 export default function BBRefDataCheckPage() {
   const [teams, setTeams] = useState<TeamData[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [issues, setIssues] = useState<Issues | null>(null);
+  const [validation, setValidation] = useState<Validation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'coverage' | 'missing' | 'team'>('coverage');
@@ -84,6 +96,7 @@ export default function BBRefDataCheckPage() {
       setTeams(data.teams);
       setSummary(data.summary);
       setIssues(data.issues);
+      setValidation(data.validation || null);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -194,8 +207,13 @@ export default function BBRefDataCheckPage() {
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
               <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">With Boxscores</div>
               <div className="text-3xl font-bold text-black dark:text-zinc-50">
-                {summary.games_with_team_stats.toLocaleString()}
+                {summary.games_with_player_stats?.toLocaleString() ?? summary.games_with_team_stats.toLocaleString()}
               </div>
+              {summary.games_with_team_stats < (summary.games_with_player_stats ?? summary.games_with_team_stats) && (
+                <div className="text-xs text-yellow-600 mt-1">
+                  {summary.games_with_team_stats} with team stats
+                </div>
+              )}
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
               <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Missing Boxscores</div>
@@ -211,6 +229,46 @@ export default function BBRefDataCheckPage() {
               <div className="text-xs text-blue-600 mt-1">
                 Source: {summary.data_source}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Validation Summary */}
+        {validation && validation.total_validated > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Games Validated</div>
+              <div className="text-3xl font-bold text-black dark:text-zinc-50">
+                {validation.total_validated.toLocaleString()}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Checks Passed</div>
+              <div className="text-3xl font-bold text-green-600">
+                {validation.checks_passed.toLocaleString()}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Checks Failed</div>
+              <div className={`text-3xl font-bold ${validation.checks_failed > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {validation.checks_failed.toLocaleString()}
+              </div>
+              {validation.checks_warned > 0 && (
+                <div className="text-xs text-yellow-600 mt-1">
+                  {validation.checks_warned} warnings
+                </div>
+              )}
+            </div>
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Games with Issues</div>
+              <div className={`text-3xl font-bold ${validation.games_with_failures > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {validation.games_with_failures}
+              </div>
+              {validation.total_validated > 0 && (
+                <div className="text-xs text-zinc-500 mt-1">
+                  {Math.round(((validation.total_validated - validation.games_with_failures) / validation.total_validated) * 100)}% clean
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -316,9 +374,11 @@ export default function BBRefDataCheckPage() {
                   <TableHead>Team</TableHead>
                   <TableHead className="text-right">Record</TableHead>
                   <TableHead className="text-right">Final Games</TableHead>
-                  <TableHead className="text-right">Boxscores</TableHead>
+                  <TableHead className="text-right">Player Stats</TableHead>
+                  <TableHead className="text-right">Team Stats</TableHead>
                   <TableHead className="text-right">Coverage</TableHead>
                   <TableHead className="text-right">Missing</TableHead>
+                  <TableHead className="text-right">Validated</TableHead>
                   <TableHead className="text-right">Roster</TableHead>
                   <TableHead>Most Recent</TableHead>
                   <TableHead>Date Range</TableHead>
@@ -342,7 +402,15 @@ export default function BBRefDataCheckPage() {
                       <span className="text-red-600">{team.losses}</span>
                     </TableCell>
                     <TableCell className="text-right">{team.final_games}</TableCell>
-                    <TableCell className="text-right">{team.games_with_team_stats}</TableCell>
+                    <TableCell className="text-right">{team.games_with_player_stats}</TableCell>
+                    <TableCell className="text-right">
+                      {team.games_with_team_stats}
+                      {team.games_with_player_stats > 0 && team.games_with_team_stats < team.games_with_player_stats && (
+                        <span className="text-xs text-yellow-600 dark:text-yellow-400 ml-1" title="Run populate-bbref-stats.ts --teams-only to aggregate">
+                          ⚠
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${getCoverageBg(
@@ -359,6 +427,24 @@ export default function BBRefDataCheckPage() {
                         </span>
                       ) : (
                         <span className="text-green-600">✓</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right text-sm">
+                      {team.validated_games > 0 ? (
+                        <div className="flex flex-col gap-0.5 items-end">
+                          <span className="text-zinc-600 dark:text-zinc-400">
+                            {team.validated_games}
+                          </span>
+                          {team.validation_failures > 0 ? (
+                            <span className="text-red-600 dark:text-red-400 text-xs font-medium">
+                              {team.validation_failures} issues
+                            </span>
+                          ) : (
+                            <span className="text-green-600 text-xs">All clean</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-zinc-400 text-xs">Not run</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right text-sm">

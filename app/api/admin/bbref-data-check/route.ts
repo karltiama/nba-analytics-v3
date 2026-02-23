@@ -7,11 +7,11 @@ interface TeamData {
   team_id: string;
   abbreviation: string;
   full_name: string;
-  final_games: number;           // Games with status='Final' (completed)
-  games_with_scores: number;     // Final games with scores
+  final_games: number;
+  games_with_scores: number;
   games_with_player_stats: number;
   games_with_team_stats: number;
-  missing_boxscores: number;     // Final games without boxscores
+  missing_boxscores: number;
   earliest_game_date: string | null;
   latest_game_date: string | null;
   most_recent_game_date: string | null;
@@ -20,8 +20,10 @@ interface TeamData {
   coverage_pct: number;
   wins: number;
   losses: number;
-  roster_issues: number;         // Players in box scores not on active roster
-  active_roster_count: number;   // Number of active players on roster
+  roster_issues: number;
+  active_roster_count: number;
+  validated_games: number;
+  validation_failures: number;
 }
 
 export async function GET(request: Request) {
@@ -68,7 +70,7 @@ export async function GET(request: Request) {
         GROUP BY t.team_id, t.abbreviation, t.full_name
       ),
       team_player_stats AS (
-        -- Count games with player stats from bbref_player_game_stats only
+        -- Count games with player stats from bbref_player_game_stats
         SELECT 
           bpgs.team_id,
           COUNT(DISTINCT bpgs.game_id) as games_with_player_stats
@@ -79,7 +81,7 @@ export async function GET(request: Request) {
         GROUP BY bpgs.team_id
       ),
       team_game_stats AS (
-        -- Count games with team stats from bbref_team_game_stats only (source='bbref')
+        -- Count games with team stats from bbref_team_game_stats (source='bbref')
         SELECT 
           btgs.team_id,
           COUNT(DISTINCT btgs.game_id) as games_with_team_stats
@@ -125,6 +127,10 @@ export async function GET(request: Request) {
           latest_game.bbref_game_id as most_recent_game_id,
           latest_game.game_date as most_recent_game_date,
           CASE WHEN EXISTS (
+            SELECT 1 FROM bbref_player_game_stats bpgs 
+            WHERE bpgs.game_id = latest_game.bbref_game_id 
+              AND bpgs.team_id = t.team_id
+          ) OR EXISTS (
             SELECT 1 FROM bbref_team_game_stats btgs 
             WHERE btgs.game_id = latest_game.bbref_game_id 
               AND btgs.team_id = t.team_id
@@ -187,6 +193,19 @@ export async function GET(request: Request) {
         WHERE bg.status = 'Final'
           ${endDate ? `AND bg.game_date <= $1::date` : ''}
         GROUP BY bpgs.team_id
+      ),
+      team_validation AS (
+        -- Count validated games and failures per team
+        SELECT
+          t.team_id,
+          COUNT(DISTINCT gvr.game_id) FILTER (WHERE gvr.game_id IS NOT NULL) as validated_games,
+          COUNT(DISTINCT gvr.game_id) FILTER (WHERE gvr.status = 'fail') as validation_failures
+        FROM teams t
+        LEFT JOIN bbref_games bg ON (bg.home_team_id = t.team_id OR bg.away_team_id = t.team_id)
+          AND bg.status = 'Final'
+          ${endDate ? `AND bg.game_date <= $1::date` : ''}
+        LEFT JOIN game_validation_results gvr ON gvr.game_id = bg.bbref_game_id
+        GROUP BY t.team_id
       )
       SELECT 
         tfg.team_id,
@@ -196,7 +215,7 @@ export async function GET(request: Request) {
         COALESCE(tfg.games_with_scores, 0) as games_with_scores,
         COALESCE(tps.games_with_player_stats, 0) as games_with_player_stats,
         COALESCE(tgs.games_with_team_stats, 0) as games_with_team_stats,
-        COALESCE(tfg.final_games, 0) - COALESCE(tgs.games_with_team_stats, 0) as missing_boxscores,
+        COALESCE(tfg.final_games, 0) - GREATEST(COALESCE(tps.games_with_player_stats, 0), COALESCE(tgs.games_with_team_stats, 0)) as missing_boxscores,
         tfg.earliest_game_date,
         tfg.latest_game_date,
         mrg.most_recent_game_date,
@@ -204,19 +223,22 @@ export async function GET(request: Request) {
         mrg.most_recent_game_id,
         CASE 
           WHEN COALESCE(tfg.final_games, 0) > 0 
-          THEN ROUND((COALESCE(tgs.games_with_team_stats, 0)::numeric / tfg.final_games) * 100)
+          THEN ROUND((GREATEST(COALESCE(tps.games_with_player_stats, 0), COALESCE(tgs.games_with_team_stats, 0))::numeric / tfg.final_games) * 100)
           ELSE 0 
         END as coverage_pct,
         COALESCE(tr.wins, 0) as wins,
         COALESCE(tr.losses, 0) as losses,
         COALESCE(rc.roster_issues, 0) as roster_issues,
-        COALESCE(rc.active_roster_count, 0) as active_roster_count
+        COALESCE(rc.active_roster_count, 0) as active_roster_count,
+        COALESCE(tv.validated_games, 0) as validated_games,
+        COALESCE(tv.validation_failures, 0) as validation_failures
       FROM team_final_games tfg
       LEFT JOIN team_player_stats tps ON tfg.team_id = tps.team_id
       LEFT JOIN team_game_stats tgs ON tfg.team_id = tgs.team_id
       LEFT JOIN team_records tr ON tfg.team_id = tr.team_id
       LEFT JOIN most_recent_games mrg ON tfg.team_id = mrg.team_id
       LEFT JOIN roster_check rc ON tfg.team_id = rc.team_id
+      LEFT JOIN team_validation tv ON tfg.team_id = tv.team_id
       ORDER BY tfg.abbreviation
     `, endDate ? [endDate, yesterdayStr] : [yesterdayStr, yesterdayStr]);
 
@@ -245,11 +267,14 @@ export async function GET(request: Request) {
       losses: parseInt(row.losses) || 0,
       roster_issues: parseInt(row.roster_issues) || 0,
       active_roster_count: parseInt(row.active_roster_count) || 0,
+      validated_games: parseInt(row.validated_games) || 0,
+      validation_failures: parseInt(row.validation_failures) || 0,
     }));
 
     // Calculate summary statistics
     const totalFinalGames = teamData.reduce((sum, t) => sum + t.final_games, 0) / 2; // Each game counts twice
     const totalWithScores = teamData.reduce((sum, t) => sum + t.games_with_scores, 0) / 2;
+    const totalWithPlayerStats = teamData.reduce((sum, t) => sum + t.games_with_player_stats, 0) / 2;
     const totalWithTeamStats = teamData.reduce((sum, t) => sum + t.games_with_team_stats, 0) / 2;
     const totalMissingBoxscores = teamData.reduce((sum, t) => sum + t.missing_boxscores, 0) / 2;
     const avgCoverage = teamData.length > 0
@@ -264,6 +289,18 @@ export async function GET(request: Request) {
       t.most_recent_game_date && !t.most_recent_game_has_stats
     );
     const teamsWithRosterIssues = teamData.filter(t => t.roster_issues > 0);
+
+    // Validation summary (global, not per-team)
+    const validationSummary = await pool.query(`
+      SELECT
+        COUNT(DISTINCT game_id) as total_validated,
+        COUNT(DISTINCT game_id) FILTER (WHERE status = 'fail') as games_with_failures,
+        COUNT(*) FILTER (WHERE status = 'pass') as checks_passed,
+        COUNT(*) FILTER (WHERE status = 'fail') as checks_failed,
+        COUNT(*) FILTER (WHERE status = 'warn') as checks_warned
+      FROM game_validation_results
+    `);
+    const vs = validationSummary.rows[0] || {};
 
     // Calculate overall date range from the data
     const allDates = teamData
@@ -283,6 +320,7 @@ export async function GET(request: Request) {
         total_teams: teamData.length,
         total_final_games: Math.round(totalFinalGames),
         games_with_scores: Math.round(totalWithScores),
+        games_with_player_stats: Math.round(totalWithPlayerStats),
         games_with_team_stats: Math.round(totalWithTeamStats),
         missing_boxscores: Math.round(totalMissingBoxscores),
         average_coverage: avgCoverage,
@@ -300,6 +338,13 @@ export async function GET(request: Request) {
         teams_with_missing_boxscores: teamsWithMissingBoxscores.length,
         teams_with_outdated_recent_game: teamsWithOutdatedRecentGame.length,
         teams_with_roster_issues: teamsWithRosterIssues.length
+      },
+      validation: {
+        total_validated: parseInt(vs.total_validated) || 0,
+        games_with_failures: parseInt(vs.games_with_failures) || 0,
+        checks_passed: parseInt(vs.checks_passed) || 0,
+        checks_failed: parseInt(vs.checks_failed) || 0,
+        checks_warned: parseInt(vs.checks_warned) || 0,
       }
     });
   } catch (error: any) {
