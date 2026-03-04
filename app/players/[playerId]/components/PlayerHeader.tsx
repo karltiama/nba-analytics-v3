@@ -21,7 +21,7 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
         href="/dashboard"
         className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block"
       >
-        ← Back to Dashboard
+        &larr; Back to Dashboard
       </Link>
       <div className="flex items-start justify-between">
         <div>
@@ -52,4 +52,3 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
     </div>
   );
 }
-

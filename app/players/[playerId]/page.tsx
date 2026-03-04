@@ -56,7 +56,7 @@ export default async function PlayerPage({
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-4">Player not found</h1>
           <Link href="/dashboard" className="text-blue-600 dark:text-blue-400 hover:underline">
-            ← Back to Dashboard
+            &larr; Back to Dashboard
           </Link>
         </div>
       </div>
@@ -82,4 +82,3 @@ export default async function PlayerPage({
     </div>
   );
 }
-
