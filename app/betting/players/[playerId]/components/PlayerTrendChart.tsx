@@ -11,7 +11,10 @@ interface PlayerTrendChartProps {
 }
 
 const CHART_HEIGHT = 220;
-const PADDING = { top: 24, right: 24, bottom: 44, left: 48 };
+const PADDING = { top: 24, right: 48, bottom: 44, left: 48 };
+const PX_PER_POINT = 36;
+const MIN_SVG_WIDTH = 400;
+const MAX_SVG_WIDTH = 1200;
 
 export function PlayerTrendChart({
   data,
@@ -23,19 +26,24 @@ export function PlayerTrendChart({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
+  const svgWidth = Math.min(
+    MAX_SVG_WIDTH,
+    Math.max(MIN_SVG_WIDTH, PADDING.left + PADDING.right + Math.max(data.length - 1, 1) * PX_PER_POINT)
+  );
+  const chartWidth = svgWidth - PADDING.left - PADDING.right;
+
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       const svg = svgRef.current;
       if (!svg || data.length === 0) return;
       const rect = svg.getBoundingClientRect();
-      const svgWidth = rect.width;
-      const chartWidth = svgWidth - PADDING.left - PADDING.right;
-      const mouseX = e.clientX - rect.left - PADDING.left;
+      const scaleX = svgWidth / rect.width;
+      const mouseX = (e.clientX - rect.left) * scaleX - PADDING.left;
       const step = chartWidth / Math.max(data.length - 1, 1);
       const idx = Math.round(mouseX / step);
       setHoveredIndex(Math.max(0, Math.min(idx, data.length - 1)));
     },
-    [data.length]
+    [data.length, svgWidth, chartWidth]
   );
 
   if (data.length === 0) {
@@ -56,6 +64,8 @@ export function PlayerTrendChart({
   const yRange = yMax - yMin;
 
   const toY = (v: number) => PADDING.top + ((yMax - v) / yRange) * (CHART_HEIGHT - PADDING.top - PADDING.bottom);
+  const step = chartWidth / Math.max(data.length - 1, 1);
+  const toX = (i: number) => PADDING.left + i * step;
 
   const gridLines = 5;
   const yTicks: number[] = [];
@@ -63,15 +73,36 @@ export function PlayerTrendChart({
     yTicks.push(yMin + (yRange * i) / gridLines);
   }
 
+  const showEveryNthLabel = data.length <= 15 ? 1 : Math.ceil(data.length / 15);
+
   return (
-    <div className="glass-card rounded-xl p-5">
+    <div className="glass-card rounded-xl overflow-hidden">
+      <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Trend Chart
+        </h3>
+        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-0.5 bg-[#bf5af2] rounded-full inline-block" />
+            Season Avg
+          </span>
+          {bettingLine != null && (
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-0.5 bg-[#ff6b35] rounded-full inline-block" />
+              Line {bettingLine}
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="p-5 overflow-x-auto">
       <svg
         ref={svgRef}
         width="100%"
         height={CHART_HEIGHT}
-        viewBox={`0 0 800 ${CHART_HEIGHT}`}
-        preserveAspectRatio="none"
+        viewBox={`0 0 ${svgWidth} ${CHART_HEIGHT}`}
+        preserveAspectRatio="xMidYMid meet"
         className="overflow-visible cursor-crosshair"
+        style={{ minWidth: svgWidth }}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoveredIndex(null)}
       >
@@ -90,7 +121,7 @@ export function PlayerTrendChart({
               <line
                 x1={PADDING.left}
                 y1={y}
-                x2={800 - PADDING.right}
+                x2={svgWidth - PADDING.right}
                 y2={y}
                 stroke="white"
                 strokeOpacity={0.06}
@@ -115,7 +146,7 @@ export function PlayerTrendChart({
         <line
           x1={PADDING.left}
           y1={toY(seasonAvg)}
-          x2={800 - PADDING.right}
+          x2={svgWidth - PADDING.right}
           y2={toY(seasonAvg)}
           stroke="#bf5af2"
           strokeWidth={1.5}
@@ -123,7 +154,7 @@ export function PlayerTrendChart({
           strokeOpacity={0.7}
         />
         <text
-          x={800 - PADDING.right + 4}
+          x={svgWidth - PADDING.right + 4}
           y={toY(seasonAvg) + 4}
           fill="#bf5af2"
           fontSize={10}
@@ -138,7 +169,7 @@ export function PlayerTrendChart({
             <line
               x1={PADDING.left}
               y1={toY(bettingLine)}
-              x2={800 - PADDING.right}
+              x2={svgWidth - PADDING.right}
               y2={toY(bettingLine)}
               stroke="#ff6b35"
               strokeWidth={1.5}
@@ -158,53 +189,33 @@ export function PlayerTrendChart({
 
         {/* Area fill */}
         {data.length > 1 && (() => {
-          const chartWidth = 800 - PADDING.left - PADDING.right;
-          const step = chartWidth / (data.length - 1);
           const areaPath = data
-            .map((v, i) => {
-              const x = PADDING.left + i * step;
-              const y = toY(v);
-              return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-            })
+            .map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`)
             .join(' ');
-          const lastX = PADDING.left + (data.length - 1) * step;
           const bottomY = CHART_HEIGHT - PADDING.bottom;
           return (
             <path
-              d={`${areaPath} L ${lastX} ${bottomY} L ${PADDING.left} ${bottomY} Z`}
+              d={`${areaPath} L ${toX(data.length - 1)} ${bottomY} L ${PADDING.left} ${bottomY} Z`}
               fill="url(#betting-trend-fill)"
             />
           );
         })()}
 
         {/* Main line */}
-        {data.length > 1 && (() => {
-          const chartWidth = 800 - PADDING.left - PADDING.right;
-          const step = chartWidth / (data.length - 1);
-          const pathD = data
-            .map((v, i) => {
-              const x = PADDING.left + i * step;
-              const y = toY(v);
-              return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-            })
-            .join(' ');
-          return (
-            <path
-              d={pathD}
-              fill="none"
-              stroke="#00d4ff"
-              strokeWidth={2.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          );
-        })()}
+        {data.length > 1 && (
+          <path
+            d={data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`).join(' ')}
+            fill="none"
+            stroke="#00d4ff"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
 
         {/* Data points */}
         {data.map((v, i) => {
-          const chartWidth = 800 - PADDING.left - PADDING.right;
-          const step = chartWidth / Math.max(data.length - 1, 1);
-          const x = PADDING.left + i * step;
+          const x = toX(i);
           const y = toY(v);
           const isHovered = hoveredIndex === i;
           const overLine = bettingLine != null && v > bettingLine;
@@ -222,11 +233,8 @@ export function PlayerTrendChart({
 
         {/* X-axis labels */}
         {labels.map((label, i) => {
-          const chartWidth = 800 - PADDING.left - PADDING.right;
-          const step = chartWidth / Math.max(data.length - 1, 1);
-          const x = PADDING.left + i * step;
-          const showLabel = data.length <= 10 || i % Math.ceil(data.length / 10) === 0 || i === data.length - 1;
-          if (!showLabel) return null;
+          const x = toX(i);
+          if (i % showEveryNthLabel !== 0 && i !== data.length - 1) return null;
           return (
             <text
               key={i}
@@ -244,22 +252,17 @@ export function PlayerTrendChart({
         })}
 
         {/* Hover vertical line */}
-        {hoveredIndex !== null && (() => {
-          const chartWidth = 800 - PADDING.left - PADDING.right;
-          const step = chartWidth / Math.max(data.length - 1, 1);
-          const x = PADDING.left + hoveredIndex * step;
-          return (
-            <line
-              x1={x}
-              y1={PADDING.top}
-              x2={x}
-              y2={CHART_HEIGHT - PADDING.bottom}
-              stroke="white"
-              strokeOpacity={0.12}
-              strokeDasharray="3 3"
-            />
-          );
-        })()}
+        {hoveredIndex !== null && (
+          <line
+            x1={toX(hoveredIndex)}
+            y1={PADDING.top}
+            x2={toX(hoveredIndex)}
+            y2={CHART_HEIGHT - PADDING.bottom}
+            stroke="white"
+            strokeOpacity={0.12}
+            strokeDasharray="3 3"
+          />
+        )}
       </svg>
 
       {/* Tooltip */}
@@ -273,6 +276,7 @@ export function PlayerTrendChart({
           <span className="text-xs text-muted-foreground/60">(Game {hoveredIndex + 1} of {data.length})</span>
         </div>
       )}
+      </div>
     </div>
   );
 }

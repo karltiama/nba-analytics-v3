@@ -1,0 +1,56 @@
+# Timeframe Selector + Chart Stretch Fix
+
+## Context
+The player analysis page showed a fixed 20-game window with no way to adjust the timeframe. The SVG chart used `preserveAspectRatio="none"` with a fixed 800px viewBox, causing data points to stretch across the full container width — particularly bad with few data points (e.g. 5 games across a wide screen).
+
+## Goal
+1. Add L5 / L10 / L20 / Season timeframe selector that filters all downstream data (chart, summary, line analysis, game log)
+2. Fix the chart so data points maintain consistent spacing regardless of container width
+
+## Files Changed
+- `app/betting/players/[playerId]/page.tsx` — changed server fetch limit from 20 → 82 (full season)
+- `app/betting/players/[playerId]/components/PlayerAnalysisClient.tsx` — added `Timeframe` state, timeframe buttons, sliced games/values/labels through `filteredGames`
+- `app/betting/players/[playerId]/components/PlayerTrendChart.tsx` — dynamic viewBox width based on data count, `preserveAspectRatio="xMidYMid meet"`, horizontal scroll for season view
+
+## Implementation Notes (key logic explained)
+- **Dynamic SVG width**: `svgWidth = clamp(MIN, PADDING.left + PADDING.right + (n-1) * PX_PER_POINT, MAX)` where `PX_PER_POINT = 36`. For 5 games this gives ~240px chart area (compact), for 82 games ~2900px (scrollable).
+- **`preserveAspectRatio="xMidYMid meet"`**: Maintains the SVG's internal coordinate space ratio instead of stretching. Combined with `style={{ minWidth: svgWidth }}` to prevent squishing below the computed width.
+- **`overflow-x-auto`** on the chart container: When the SVG exceeds container width (Season mode with 60+ games), horizontal scrolling kicks in.
+- **Shared `toX`/`toY` helpers**: Eliminated repeated `chartWidth / (data.length - 1)` calculations. Single `step` and `toX(i)` used everywhere.
+- **Timeframe slicing**: `filteredGames = timeframe === 'season' ? games : games.slice(0, timeframe)`. All derived values (`values`, `chartLabels`, `summary`) flow from `filteredGames`.
+- **GameLogTable** also receives `filteredGames` so the table matches the chart window.
+
+## Key Decisions (and alternatives considered)
+| Decision | Alternative | Why |
+|----------|-------------|-----|
+| 36px per data point | Fixed viewBox 800px | Consistent visual density at every timeframe; 800px stretched badly for L5 |
+| `xMidYMid meet` | Keep `none` and calculate programmatically | `meet` is the correct SVG behavior — maintain aspect ratio, fit inside container |
+| Horizontal scroll for Season | Pagination or virtualization | Scroll is the simplest UX; chart stays interactive, user can drag/scroll |
+| Fetch 82 games server-side | Fetch on-demand per timeframe | Single fetch is simpler; 82 rows is small; avoids loading states on tab switch |
+| Purple timeframe buttons | Same cyan as metric tabs | Visual distinction — metric is "what" (cyan), timeframe is "when" (purple) |
+
+## Assumptions
+- 82 games covers a full NBA season (players typically play 70-82 regular season games)
+- The performance impact of fetching 82 games + defensive rankings is acceptable (batched query already optimized)
+- Games are already sorted DESC by date from the server query
+
+## Failure Modes
+- Season mode with 80+ games: SVG width exceeds container → horizontal scroll handles this
+- Player with < 5 games: L5 shows all available, L10/L20/Season also show all (slice just returns what's there)
+- Mouse hover math: `scaleX` factor accounts for the SVG being rendered smaller than its viewBox width
+
+## How to Test (commands + steps)
+1. `npm run dev` → navigate to any player page
+2. Default should show L20 — verify chart has ~20 evenly spaced points
+3. Click L5 — chart should shrink to ~5 points with tighter spacing (not stretched)
+4. Click L10 — 10 points, moderate width
+5. Click Season — shows all games, may need horizontal scroll on narrow viewports
+6. Verify game log table changes row count when switching timeframes
+7. Verify summary stats recalculate per timeframe
+8. Verify line analysis hit rates recalculate per timeframe
+9. Test hover tooltip still works at all timeframes
+
+## Next Steps
+- Consider a "Custom" timeframe option for arbitrary date ranges
+- Add a visual indicator on the timeframe buttons showing how many games each contains
+- Consider saving timeframe preference to localStorage

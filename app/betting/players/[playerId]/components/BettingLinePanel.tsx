@@ -25,16 +25,17 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey 
   const stk = bettingLine !== null ? streak(values, bettingLine) : null;
 
   return (
-    <div className="glass-card rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="glass-card rounded-xl border-l-4 border-l-[#ff6b35] overflow-hidden">
+      <div className="px-5 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Line Analysis
         </h3>
-        <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-medium">
+        <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
           MANUAL
         </span>
       </div>
 
+      <div className="p-5">
       <div className="flex flex-wrap items-center gap-3 mb-5">
         <label className="text-sm text-muted-foreground">
           {METRIC_LABELS[metricKey]} Line:
@@ -97,6 +98,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey 
           Enter a line above to see hit rate, margin, and streak analysis.
         </p>
       )}
+      </div>
     </div>
   );
 }

@@ -26,15 +26,16 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
   }
 
   return (
-    <div className="glass-card rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="glass-card rounded-xl border-l-4 border-l-[#39ff14] overflow-hidden">
+      <div className="px-5 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Game Log
         </h3>
-        <span className="text-xs text-muted-foreground/60">
-          Last {games.length} games
+        <span className="text-[10px] px-2 py-0.5 bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold">
+          LAST {games.length}
         </span>
       </div>
+      <div className="p-5">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -150,6 +151,7 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
             })}
           </TableBody>
         </Table>
+      </div>
       </div>
     </div>
   );
