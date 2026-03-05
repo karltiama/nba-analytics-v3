@@ -8,6 +8,7 @@ import {
 } from '@/components/betting';
 import { RecentGamesTable } from './RecentGamesTimeline';
 import { UpcomingGames } from './UpcomingGames';
+import { TeamTrendChart, type Timeframe, type LocationFilter, type TeamTrendMetric } from './TeamTrendChart';
 
 function getInsightIcon(type: Insight['type']) {
   const iconMap = {
@@ -82,6 +83,9 @@ export function TeamPageContent({ teamId, rosterSlot }: TeamPageContentProps) {
   const [loadingInsights, setLoadingInsights] = useState(true);
   const [loadingUpcoming, setLoadingUpcoming] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trendTimeframe, setTrendTimeframe] = useState<Timeframe>(20);
+  const [trendLocation, setTrendLocation] = useState<LocationFilter>('all');
+  const [trendMetric, setTrendMetric] = useState<TeamTrendMetric>('team_total');
 
   useEffect(() => {
     setSelectedDate(new Date());
@@ -324,6 +328,64 @@ export function TeamPageContent({ teamId, rosterSlot }: TeamPageContentProps) {
                 </button>
               </div>
             )}
+
+            {(() => {
+              const recentForm = teamStats?.recent_form;
+              const allGames = (recentForm?.last_20?.games ?? recentForm?.last_10?.games ?? []) as Array<{
+                points_for: number;
+                points_against?: number;
+                margin?: number;
+                opponent_abbr?: string;
+                is_home?: boolean;
+              }>;
+              const byLocation =
+                trendLocation === 'all'
+                  ? allGames
+                  : allGames.filter((g) => (trendLocation === 'home' ? g.is_home : !g.is_home));
+              const filteredGames =
+                trendTimeframe === 'season' ? byLocation : byLocation.slice(0, trendTimeframe);
+
+              const teamPpg = teamStats?.season_stats?.points_for != null
+                ? Number(teamStats.season_stats.points_for)
+                : 0;
+              const oppPpg = teamStats?.season_stats?.points_against != null
+                ? Number(teamStats.season_stats.points_against)
+                : 0;
+
+              let trendData: number[];
+              let seasonAvg: number;
+              if (trendMetric === 'team_total') {
+                trendData = filteredGames.map((g) => g.points_for ?? 0);
+                seasonAvg = teamPpg || (trendData.length > 0 ? trendData.reduce((a, b) => a + b, 0) / trendData.length : 0);
+              } else if (trendMetric === 'game_total') {
+                trendData = filteredGames.map((g) => (g.points_for ?? 0) + (g.points_against ?? 0));
+                seasonAvg = teamPpg + oppPpg || (trendData.length > 0 ? trendData.reduce((a, b) => a + b, 0) / trendData.length : 0);
+              } else if (trendMetric === 'spread') {
+                trendData = filteredGames.map((g) => g.margin ?? (g.points_for ?? 0) - (g.points_against ?? 0));
+                seasonAvg = trendData.length > 0 ? trendData.reduce((a, b) => a + b, 0) / trendData.length : 0;
+              } else {
+                trendData = filteredGames.map((g) => g.points_for ?? 0);
+                seasonAvg = teamPpg || 0;
+              }
+
+              const trendLabels = filteredGames.map((g) => g.opponent_abbr ?? '—');
+              if (trendData.length === 0) return null;
+              return (
+                <section>
+                  <TeamTrendChart
+                    data={trendData}
+                    seasonAvg={seasonAvg}
+                    labels={trendLabels}
+                    metric={trendMetric}
+                    onMetricChange={setTrendMetric}
+                    timeframe={trendTimeframe}
+                    onTimeframeChange={setTrendTimeframe}
+                    locationFilter={trendLocation}
+                    onLocationFilterChange={setTrendLocation}
+                  />
+                </section>
+              );
+            })()}
 
             {teamStats?.recent_form?.last_5?.games && (
               <section>

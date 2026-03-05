@@ -316,25 +316,24 @@ export async function getBBRefRecentForm(teamId: string, season: string | null) 
     sql += ` AND bg.season = $2`;
     params.push(season);
   }
-  sql += ` ORDER BY COALESCE(bg.start_time, bg.game_date) DESC LIMIT 10`;
+  sql += ` ORDER BY COALESCE(bg.start_time, bg.game_date) DESC LIMIT 20`;
   const result = await query(sql, params);
+  const last20 = result.slice(0, 20);
   const last10 = result.slice(0, 10);
   const last5 = result.slice(0, 5);
+
+  const toSummary = (arr: any[]) => ({
+    games: arr,
+    wins: arr.filter((g: any) => g.result === 'W').length,
+    losses: arr.filter((g: any) => g.result === 'L').length,
+    avg_points_for: arr.length > 0 ? arr.reduce((sum: number, g: any) => sum + (g.points_for || 0), 0) / arr.length : 0,
+    avg_points_against: arr.length > 0 ? arr.reduce((sum: number, g: any) => sum + (g.points_against || 0), 0) / arr.length : 0,
+  });
+
   return {
-    last_5: {
-      games: last5,
-      wins: last5.filter((g: any) => g.result === 'W').length,
-      losses: last5.filter((g: any) => g.result === 'L').length,
-      avg_points_for: last5.length > 0 ? last5.reduce((sum: number, g: any) => sum + (g.points_for || 0), 0) / last5.length : 0,
-      avg_points_against: last5.length > 0 ? last5.reduce((sum: number, g: any) => sum + (g.points_against || 0), 0) / last5.length : 0,
-    },
-    last_10: {
-      games: last10,
-      wins: last10.filter((g: any) => g.result === 'W').length,
-      losses: last10.filter((g: any) => g.result === 'L').length,
-      avg_points_for: last10.length > 0 ? last10.reduce((sum: number, g: any) => sum + (g.points_for || 0), 0) / last10.length : 0,
-      avg_points_against: last10.length > 0 ? last10.reduce((sum: number, g: any) => sum + (g.points_against || 0), 0) / last10.length : 0,
-    },
+    last_5: toSummary(last5),
+    last_10: toSummary(last10),
+    last_20: toSummary(last20),
   };
 }
 

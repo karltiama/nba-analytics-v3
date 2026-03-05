@@ -12,7 +12,7 @@ interface PlayerTrendChartProps {
 }
 
 const CHART_HEIGHT = 220;
-const PADDING = { top: 24, right: 48, bottom: 44, left: 48 };
+const PADDING = { top: 24, right: 56, bottom: 44, left: 56 };
 const SVG_WIDTH = 540;
 
 export function PlayerTrendChart({
@@ -24,24 +24,44 @@ export function PlayerTrendChart({
   children,
 }: PlayerTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const svgWidth = SVG_WIDTH;
   const chartWidth = svgWidth - PADDING.left - PADDING.right;
 
-  const handleMouseMove = useCallback(
+  const getIndexFromEvent = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       const svg = svgRef.current;
-      if (!svg || data.length === 0) return;
+      if (!svg || data.length === 0) return null;
       const rect = svg.getBoundingClientRect();
       const scaleX = svgWidth / rect.width;
       const mouseX = (e.clientX - rect.left) * scaleX - PADDING.left;
       const step = chartWidth / Math.max(data.length - 1, 1);
       const idx = Math.round(mouseX / step);
-      setHoveredIndex(Math.max(0, Math.min(idx, data.length - 1)));
+      return Math.max(0, Math.min(idx, data.length - 1));
     },
     [data.length, svgWidth, chartWidth]
   );
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      const idx = getIndexFromEvent(e);
+      if (idx !== null) setHoveredIndex(idx);
+    },
+    [getIndexFromEvent]
+  );
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      const idx = getIndexFromEvent(e);
+      if (idx === null) return;
+      setPinnedIndex((prev) => (prev === idx ? null : idx));
+    },
+    [getIndexFromEvent]
+  );
+
+  const displayIndex = pinnedIndex ?? hoveredIndex;
 
   if (data.length === 0) {
     return (
@@ -100,9 +120,10 @@ export function PlayerTrendChart({
             height={CHART_HEIGHT}
             viewBox={`0 0 ${svgWidth} ${CHART_HEIGHT}`}
             preserveAspectRatio="xMidYMid meet"
-            className="cursor-crosshair block max-w-full"
+            className="cursor-pointer block max-w-full"
             onMouseMove={handleMouseMove}
             onMouseLeave={() => setHoveredIndex(null)}
+            onClick={handleClick}
           >
           <defs>
             <linearGradient id="betting-trend-fill" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -132,7 +153,7 @@ export function PlayerTrendChart({
                   textAnchor="end"
                   fill="white"
                   fillOpacity={0.35}
-                  fontSize={11}
+                  fontSize={12}
                   fontFamily="var(--font-geist-mono)"
                 >
                   {tick.toFixed(tick % 1 === 0 ? 0 : 1)}
@@ -152,10 +173,11 @@ export function PlayerTrendChart({
             strokeOpacity={0.7}
           />
           <text
-            x={svgWidth - PADDING.right + 4}
+            x={svgWidth - 8}
             y={toY(seasonAvg) + 4}
+            textAnchor="end"
             fill="#bf5af2"
-            fontSize={10}
+            fontSize={11}
             fontFamily="var(--font-geist-mono)"
           >
             Avg {seasonAvg.toFixed(1)}
@@ -176,7 +198,7 @@ export function PlayerTrendChart({
                 x={PADDING.left + 4}
                 y={toY(bettingLine) - 6}
                 fill="#ff6b35"
-                fontSize={10}
+                fontSize={11}
                 fontFamily="var(--font-geist-mono)"
               >
                 Line {bettingLine}
@@ -211,14 +233,14 @@ export function PlayerTrendChart({
           {data.map((v, i) => {
             const x = toX(i);
             const y = toY(v);
-            const isHovered = hoveredIndex === i;
+            const isHighlighted = displayIndex === i;
             const overLine = bettingLine != null && v > bettingLine;
             const dotColor = bettingLine != null ? (overLine ? '#39ff14' : '#ff4757') : '#00d4ff';
 
             return (
               <g key={i}>
-                <circle cx={x} cy={y} r={isHovered ? 6 : 3.5} fill={dotColor} opacity={isHovered ? 1 : 0.85} />
-                {isHovered && (
+                <circle cx={x} cy={y} r={isHighlighted ? 6 : 3.5} fill={dotColor} opacity={isHighlighted ? 1 : 0.85} />
+                {isHighlighted && (
                   <circle cx={x} cy={y} r={10} fill={dotColor} opacity={0.2} />
                 )}
               </g>
@@ -234,21 +256,21 @@ export function PlayerTrendChart({
                 x={x}
                 y={CHART_HEIGHT - 8}
                 textAnchor="middle"
-                fill="white"
-                fillOpacity={0.3}
-                fontSize={10}
-                fontFamily="var(--font-geist-mono)"
-              >
-                {label}
-              </text>
-            );
-          })}
+              fill="white"
+              fillOpacity={0.3}
+              fontSize={11}
+              fontFamily="var(--font-geist-mono)"
+            >
+              {label}
+            </text>
+          );
+        })}
 
-          {hoveredIndex !== null && (
+          {displayIndex !== null && (
             <line
-              x1={toX(hoveredIndex)}
+              x1={toX(displayIndex)}
               y1={PADDING.top}
-              x2={toX(hoveredIndex)}
+              x2={toX(displayIndex)}
               y2={CHART_HEIGHT - PADDING.bottom}
               stroke="white"
               strokeOpacity={0.12}
@@ -257,14 +279,14 @@ export function PlayerTrendChart({
           )}
           </svg>
 
-          {/* Hover tooltip — below chart on small screens */}
+          {/* Game details — below chart on small screens */}
           <div className="xl:hidden mt-2 min-h-[28px]">
-            {hoveredIndex !== null && (
+            {displayIndex !== null && (
               <div className="flex items-center gap-3 text-sm font-mono">
-                <span className="font-bold text-[#00d4ff] text-lg">{data[hoveredIndex]}</span>
+                <span className="font-bold text-[#00d4ff] text-lg">{data[displayIndex]}</span>
                 <span className="text-muted-foreground">{metricLabel}</span>
-                <span className="text-muted-foreground">vs {labels[hoveredIndex] ?? '—'}</span>
-                <span className="text-xs text-muted-foreground/60">(Game {hoveredIndex + 1}/{data.length})</span>
+                <span className="text-muted-foreground">vs {labels[displayIndex] ?? '—'}</span>
+                <span className="text-xs text-muted-foreground/60">(Game {displayIndex + 1}/{data.length})</span>
               </div>
             )}
           </div>
@@ -272,16 +294,25 @@ export function PlayerTrendChart({
 
         {/* Right panel — hover info + children (line analysis) on xl+ */}
         <div className="flex-1 min-w-0 flex flex-col gap-4">
-          {/* Hover tooltip — right of chart on xl+, fixed height so value + opponent + game all visible */}
+          {/* Game details — right of chart on xl+, fixed height; click point to pin */}
           <div className="hidden xl:block h-20">
-            {hoveredIndex !== null ? (
-              <div className="p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
-                <div className="text-xl font-bold text-[#00d4ff] leading-tight">{data[hoveredIndex]} {metricLabel}</div>
+            {displayIndex !== null ? (
+              <div className="relative p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
+                {pinnedIndex !== null && (
+                  <button
+                    type="button"
+                    onClick={() => setPinnedIndex(null)}
+                    className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground/60 hover:text-white transition-colors"
+                  >
+                    Unpin
+                  </button>
+                )}
+                <div className="text-xl font-bold text-[#00d4ff] leading-tight">{data[displayIndex]} {metricLabel}</div>
                 <div className="text-sm text-muted-foreground w-full">
-                  Opponent: {labels[hoveredIndex] ?? '—'}
+                  Opponent: {labels[displayIndex] ?? '—'}
                 </div>
                 <div className="text-xs text-muted-foreground/60">
-                  Game {hoveredIndex + 1} of {data.length}
+                  Game {displayIndex + 1} of {data.length}
                 </div>
               </div>
             ) : (
