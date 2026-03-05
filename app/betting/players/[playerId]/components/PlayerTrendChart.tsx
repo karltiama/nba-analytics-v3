@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, type ReactNode } from 'react';
 
 interface PlayerTrendChartProps {
   data: number[];
@@ -8,13 +8,12 @@ interface PlayerTrendChartProps {
   labels: string[];
   bettingLine?: number | null;
   metricLabel: string;
+  children?: ReactNode;
 }
 
 const CHART_HEIGHT = 220;
 const PADDING = { top: 24, right: 48, bottom: 44, left: 48 };
-const PX_PER_POINT = 36;
-const MIN_SVG_WIDTH = 400;
-const MAX_SVG_WIDTH = 1200;
+const SVG_WIDTH = 540;
 
 export function PlayerTrendChart({
   data,
@@ -22,14 +21,12 @@ export function PlayerTrendChart({
   labels,
   bettingLine,
   metricLabel,
+  children,
 }: PlayerTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const svgWidth = Math.min(
-    MAX_SVG_WIDTH,
-    Math.max(MIN_SVG_WIDTH, PADDING.left + PADDING.right + Math.max(data.length - 1, 1) * PX_PER_POINT)
-  );
+  const svgWidth = SVG_WIDTH;
   const chartWidth = svgWidth - PADDING.left - PADDING.right;
 
   const handleMouseMove = useCallback(
@@ -94,188 +91,210 @@ export function PlayerTrendChart({
           )}
         </div>
       </div>
-      <div className="p-5 overflow-x-auto">
-      <svg
-        ref={svgRef}
-        width="100%"
-        height={CHART_HEIGHT}
-        viewBox={`0 0 ${svgWidth} ${CHART_HEIGHT}`}
-        preserveAspectRatio="xMidYMid meet"
-        className="overflow-visible cursor-crosshair"
-        style={{ minWidth: svgWidth }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setHoveredIndex(null)}
-      >
-        <defs>
-          <linearGradient id="betting-trend-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#00d4ff" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#00d4ff" stopOpacity="0.02" />
-          </linearGradient>
-        </defs>
+      <div className="p-4 flex flex-col xl:flex-row xl:items-start gap-4">
+        {/* Chart SVG — fixed width, shrinks on small screens */}
+        <div className="shrink-0">
+          <svg
+            ref={svgRef}
+            width={svgWidth}
+            height={CHART_HEIGHT}
+            viewBox={`0 0 ${svgWidth} ${CHART_HEIGHT}`}
+            preserveAspectRatio="xMidYMid meet"
+            className="cursor-crosshair block max-w-full"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+          <defs>
+            <linearGradient id="betting-trend-fill" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#00d4ff" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#00d4ff" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
 
-        {/* Y-axis grid lines */}
-        {yTicks.map((tick, i) => {
-          const y = toY(tick);
-          return (
-            <g key={i}>
+          <rect x={0} y={0} width={svgWidth} height={CHART_HEIGHT} fill="transparent" />
+
+          {yTicks.map((tick, i) => {
+            const y = toY(tick);
+            return (
+              <g key={i}>
+                <line
+                  x1={PADDING.left}
+                  y1={y}
+                  x2={svgWidth - PADDING.right}
+                  y2={y}
+                  stroke="white"
+                  strokeOpacity={0.06}
+                  strokeDasharray="4 4"
+                />
+                <text
+                  x={PADDING.left - 8}
+                  y={y + 4}
+                  textAnchor="end"
+                  fill="white"
+                  fillOpacity={0.35}
+                  fontSize={11}
+                  fontFamily="var(--font-geist-mono)"
+                >
+                  {tick.toFixed(tick % 1 === 0 ? 0 : 1)}
+                </text>
+              </g>
+            );
+          })}
+
+          <line
+            x1={PADDING.left}
+            y1={toY(seasonAvg)}
+            x2={svgWidth - PADDING.right}
+            y2={toY(seasonAvg)}
+            stroke="#bf5af2"
+            strokeWidth={1.5}
+            strokeDasharray="6 4"
+            strokeOpacity={0.7}
+          />
+          <text
+            x={svgWidth - PADDING.right + 4}
+            y={toY(seasonAvg) + 4}
+            fill="#bf5af2"
+            fontSize={10}
+            fontFamily="var(--font-geist-mono)"
+          >
+            Avg {seasonAvg.toFixed(1)}
+          </text>
+
+          {bettingLine != null && (
+            <>
               <line
                 x1={PADDING.left}
-                y1={y}
+                y1={toY(bettingLine)}
                 x2={svgWidth - PADDING.right}
-                y2={y}
-                stroke="white"
-                strokeOpacity={0.06}
-                strokeDasharray="4 4"
+                y2={toY(bettingLine)}
+                stroke="#ff6b35"
+                strokeWidth={1.5}
+                strokeDasharray="3 3"
               />
               <text
-                x={PADDING.left - 8}
-                y={y + 4}
-                textAnchor="end"
-                fill="white"
-                fillOpacity={0.35}
-                fontSize={11}
+                x={PADDING.left + 4}
+                y={toY(bettingLine) - 6}
+                fill="#ff6b35"
+                fontSize={10}
                 fontFamily="var(--font-geist-mono)"
               >
-                {tick.toFixed(tick % 1 === 0 ? 0 : 1)}
+                Line {bettingLine}
               </text>
-            </g>
-          );
-        })}
+            </>
+          )}
 
-        {/* Season average reference line */}
-        <line
-          x1={PADDING.left}
-          y1={toY(seasonAvg)}
-          x2={svgWidth - PADDING.right}
-          y2={toY(seasonAvg)}
-          stroke="#bf5af2"
-          strokeWidth={1.5}
-          strokeDasharray="6 4"
-          strokeOpacity={0.7}
-        />
-        <text
-          x={svgWidth - PADDING.right + 4}
-          y={toY(seasonAvg) + 4}
-          fill="#bf5af2"
-          fontSize={10}
-          fontFamily="var(--font-geist-mono)"
-        >
-          Avg {seasonAvg.toFixed(1)}
-        </text>
+          {data.length > 1 && (() => {
+            const areaPath = data
+              .map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`)
+              .join(' ');
+            const bottomY = CHART_HEIGHT - PADDING.bottom;
+            return (
+              <path
+                d={`${areaPath} L ${toX(data.length - 1)} ${bottomY} L ${PADDING.left} ${bottomY} Z`}
+                fill="url(#betting-trend-fill)"
+              />
+            );
+          })()}
 
-        {/* Betting line reference */}
-        {bettingLine != null && (
-          <>
+          {data.length > 1 && (
+            <path
+              d={data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`).join(' ')}
+              fill="none"
+              stroke="#00d4ff"
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+
+          {data.map((v, i) => {
+            const x = toX(i);
+            const y = toY(v);
+            const isHovered = hoveredIndex === i;
+            const overLine = bettingLine != null && v > bettingLine;
+            const dotColor = bettingLine != null ? (overLine ? '#39ff14' : '#ff4757') : '#00d4ff';
+
+            return (
+              <g key={i}>
+                <circle cx={x} cy={y} r={isHovered ? 6 : 3.5} fill={dotColor} opacity={isHovered ? 1 : 0.85} />
+                {isHovered && (
+                  <circle cx={x} cy={y} r={10} fill={dotColor} opacity={0.2} />
+                )}
+              </g>
+            );
+          })}
+
+          {labels.map((label, i) => {
+            const x = toX(i);
+            if (i % showEveryNthLabel !== 0 && i !== data.length - 1) return null;
+            return (
+              <text
+                key={i}
+                x={x}
+                y={CHART_HEIGHT - 8}
+                textAnchor="middle"
+                fill="white"
+                fillOpacity={0.3}
+                fontSize={10}
+                fontFamily="var(--font-geist-mono)"
+              >
+                {label}
+              </text>
+            );
+          })}
+
+          {hoveredIndex !== null && (
             <line
-              x1={PADDING.left}
-              y1={toY(bettingLine)}
-              x2={svgWidth - PADDING.right}
-              y2={toY(bettingLine)}
-              stroke="#ff6b35"
-              strokeWidth={1.5}
+              x1={toX(hoveredIndex)}
+              y1={PADDING.top}
+              x2={toX(hoveredIndex)}
+              y2={CHART_HEIGHT - PADDING.bottom}
+              stroke="white"
+              strokeOpacity={0.12}
               strokeDasharray="3 3"
             />
-            <text
-              x={PADDING.left + 4}
-              y={toY(bettingLine) - 6}
-              fill="#ff6b35"
-              fontSize={10}
-              fontFamily="var(--font-geist-mono)"
-            >
-              Line {bettingLine}
-            </text>
-          </>
-        )}
+          )}
+          </svg>
 
-        {/* Area fill */}
-        {data.length > 1 && (() => {
-          const areaPath = data
-            .map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`)
-            .join(' ');
-          const bottomY = CHART_HEIGHT - PADDING.bottom;
-          return (
-            <path
-              d={`${areaPath} L ${toX(data.length - 1)} ${bottomY} L ${PADDING.left} ${bottomY} Z`}
-              fill="url(#betting-trend-fill)"
-            />
-          );
-        })()}
-
-        {/* Main line */}
-        {data.length > 1 && (
-          <path
-            d={data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`).join(' ')}
-            fill="none"
-            stroke="#00d4ff"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        )}
-
-        {/* Data points */}
-        {data.map((v, i) => {
-          const x = toX(i);
-          const y = toY(v);
-          const isHovered = hoveredIndex === i;
-          const overLine = bettingLine != null && v > bettingLine;
-          const dotColor = bettingLine != null ? (overLine ? '#39ff14' : '#ff4757') : '#00d4ff';
-
-          return (
-            <g key={i}>
-              <circle cx={x} cy={y} r={isHovered ? 6 : 3.5} fill={dotColor} opacity={isHovered ? 1 : 0.85} />
-              {isHovered && (
-                <circle cx={x} cy={y} r={10} fill={dotColor} opacity={0.2} />
-              )}
-            </g>
-          );
-        })}
-
-        {/* X-axis labels */}
-        {labels.map((label, i) => {
-          const x = toX(i);
-          if (i % showEveryNthLabel !== 0 && i !== data.length - 1) return null;
-          return (
-            <text
-              key={i}
-              x={x}
-              y={CHART_HEIGHT - 8}
-              textAnchor="middle"
-              fill="white"
-              fillOpacity={0.3}
-              fontSize={10}
-              fontFamily="var(--font-geist-mono)"
-            >
-              {label}
-            </text>
-          );
-        })}
-
-        {/* Hover vertical line */}
-        {hoveredIndex !== null && (
-          <line
-            x1={toX(hoveredIndex)}
-            y1={PADDING.top}
-            x2={toX(hoveredIndex)}
-            y2={CHART_HEIGHT - PADDING.bottom}
-            stroke="white"
-            strokeOpacity={0.12}
-            strokeDasharray="3 3"
-          />
-        )}
-      </svg>
-
-      {/* Tooltip */}
-      {hoveredIndex !== null && (
-        <div className="flex items-center gap-4 mt-3 px-1 text-sm font-mono">
-          <span className="font-bold text-[#00d4ff] text-lg">
-            {data[hoveredIndex]}
-          </span>
-          <span className="text-muted-foreground">{metricLabel}</span>
-          <span className="text-muted-foreground">vs {labels[hoveredIndex] ?? '—'}</span>
-          <span className="text-xs text-muted-foreground/60">(Game {hoveredIndex + 1} of {data.length})</span>
+          {/* Hover tooltip — below chart on small screens */}
+          <div className="xl:hidden mt-2 min-h-[28px]">
+            {hoveredIndex !== null && (
+              <div className="flex items-center gap-3 text-sm font-mono">
+                <span className="font-bold text-[#00d4ff] text-lg">{data[hoveredIndex]}</span>
+                <span className="text-muted-foreground">{metricLabel}</span>
+                <span className="text-muted-foreground">vs {labels[hoveredIndex] ?? '—'}</span>
+                <span className="text-xs text-muted-foreground/60">(Game {hoveredIndex + 1}/{data.length})</span>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Right panel — hover info + children (line analysis) on xl+ */}
+        <div className="flex-1 min-w-0 flex flex-col gap-4">
+          {/* Hover tooltip — right of chart on xl+, fixed height so value + opponent + game all visible */}
+          <div className="hidden xl:block h-20">
+            {hoveredIndex !== null ? (
+              <div className="p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
+                <div className="text-xl font-bold text-[#00d4ff] leading-tight">{data[hoveredIndex]} {metricLabel}</div>
+                <div className="text-sm text-muted-foreground w-full">
+                  Opponent: {labels[hoveredIndex] ?? '—'}
+                </div>
+                <div className="text-xs text-muted-foreground/60">
+                  Game {hoveredIndex + 1} of {data.length}
+                </div>
+              </div>
+            ) : (
+              <div className="p-2 rounded-lg bg-white/5 h-full flex items-center justify-center">
+                <span className="text-base text-muted-foreground/50">
+                  Hover to see {metricLabel} value, opponent and game number
+                </span>
+              </div>
+            )}
+          </div>
+
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -17,26 +17,17 @@ interface BettingLinePanelProps {
   bettingLine: number | null;
   onLineChange: (line: number | null) => void;
   metricKey: MetricKey;
+  embedded?: boolean;
 }
 
-export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey }: BettingLinePanelProps) {
+export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey, embedded }: BettingLinePanelProps) {
   const hr = bettingLine !== null ? hitRate(values, bettingLine) : null;
   const margin = bettingLine !== null ? avgMargin(values, bettingLine) : null;
   const stk = bettingLine !== null ? streak(values, bettingLine) : null;
 
-  return (
-    <div className="glass-card rounded-xl border-l-4 border-l-[#ff6b35] overflow-hidden">
-      <div className="px-5 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Line Analysis
-        </h3>
-        <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
-          MANUAL
-        </span>
-      </div>
-
-      <div className="p-5">
-      <div className="flex flex-wrap items-center gap-3 mb-5">
+  const content = (
+    <>
+      <div className="flex flex-wrap items-center gap-3 mb-4">
         <label className="text-sm text-muted-foreground">
           {METRIC_LABELS[metricKey]} Line:
         </label>
@@ -49,7 +40,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey 
             const val = e.target.value;
             onLineChange(val === '' ? null : parseFloat(val));
           }}
-          placeholder="e.g. 24.5"
+          placeholder="24.5"
           className={cn(
             'w-28 px-3 py-1.5 rounded-lg text-sm font-mono',
             'bg-white/5 border border-white/10 text-white placeholder:text-muted-foreground/50',
@@ -67,7 +58,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey 
       </div>
 
       {bettingLine !== null && hr && margin !== null && stk ? (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className={cn('grid gap-3', embedded ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4')}>
           <StatCell
             label="Hit Rate L10"
             value={`${hr.last10.toFixed(0)}%`}
@@ -98,7 +89,36 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey 
           Enter a line above to see hit rate, margin, and streak analysis.
         </p>
       )}
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <div className="border-l-2 border-l-[#ff6b35] pl-4 flex flex-col items-center text-center">
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Line Analysis
+          </h4>
+          <span className="text-[9px] px-1.5 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
+            MANUAL
+          </span>
+        </div>
+        {content}
       </div>
+    );
+  }
+
+  return (
+    <div className="glass-card rounded-xl border-l-4 border-l-[#ff6b35] overflow-hidden">
+      <div className="px-5 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Line Analysis
+        </h3>
+        <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
+          MANUAL
+        </span>
+      </div>
+      <div className="p-5">{content}</div>
     </div>
   );
 }

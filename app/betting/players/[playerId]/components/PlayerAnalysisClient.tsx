@@ -78,7 +78,7 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
           </div>
         </section>
 
-        {/* Chart */}
+        {/* Chart + Line Analysis (side-by-side on xl+, stacked on smaller) */}
         <section className="slide-up" style={{ animationDelay: '50ms' }}>
           <PlayerTrendChart
             data={values}
@@ -86,17 +86,15 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
             labels={chartLabels}
             bettingLine={bettingLine}
             metricLabel={METRIC_LABELS[activeMetric]}
-          />
-        </section>
-
-        {/* Line Analysis — directly under chart for easy interaction */}
-        <section className="slide-up" style={{ animationDelay: '100ms' }}>
-          <BettingLinePanel
-            values={values}
-            bettingLine={bettingLine}
-            onLineChange={setBettingLine}
-            metricKey={activeMetric}
-          />
+          >
+            <BettingLinePanel
+              values={values}
+              bettingLine={bettingLine}
+              onLineChange={setBettingLine}
+              metricKey={activeMetric}
+              embedded
+            />
+          </PlayerTrendChart>
         </section>
 
         {/* Game Log */}

@@ -1,13 +1,5 @@
 import Link from 'next/link';
 import { query } from '@/lib/db';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 
 interface TeamRosterProps {
   teamId: string;
@@ -20,16 +12,13 @@ interface RosterPlayer {
   first_name: string | null;
   last_name: string | null;
   position: string | null;
-  height: string | null;
-  weight: string | null;
   jersey: string | null;
   active: boolean | null;
 }
 
 export async function TeamRoster({ teamId, season }: TeamRosterProps) {
-  // If season not provided, find the most recent season available for this team
   let currentSeason = season;
-  
+
   if (!currentSeason) {
     const seasonResult = await query<{ season: string }>(`
       SELECT season
@@ -38,11 +27,10 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
       ORDER BY season DESC
       LIMIT 1
     `, [teamId]);
-    
+
     if (seasonResult.length > 0) {
       currentSeason = seasonResult[0].season;
     } else {
-      // Fallback to common season formats
       currentSeason = '2025';
     }
   }
@@ -54,8 +42,6 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
       p.first_name,
       p.last_name,
       p.position,
-      p.height,
-      p.weight,
       ptr.jersey,
       ptr.active
     FROM player_team_rosters ptr
@@ -73,97 +59,62 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
 
   if (!roster || roster.length === 0) {
     return (
-      <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-        <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-          Roster
-        </h2>
-        <p className="text-zinc-600 dark:text-zinc-400">
-          No roster data available for this season.
-        </p>
+      <div className="glass-card rounded-xl p-4 text-center">
+        <p className="text-xs text-muted-foreground">No roster data available.</p>
       </div>
     );
   }
 
-  // Group players by position
   const guards = roster.filter(p => p.position && ['G', 'PG', 'SG'].includes(p.position));
   const forwards = roster.filter(p => p.position && ['F', 'PF', 'SF'].includes(p.position));
   const centers = roster.filter(p => p.position && ['C'].includes(p.position));
   const others = roster.filter(p => !p.position || (!['G', 'PG', 'SG', 'F', 'PF', 'SF', 'C'].includes(p.position)));
 
   const positionGroups = [
-    { name: 'Guards', players: guards, abbr: 'G' },
-    { name: 'Forwards', players: forwards, abbr: 'F' },
-    { name: 'Centers', players: centers, abbr: 'C' },
-    { name: 'Others', players: others, abbr: null },
+    { name: 'Guards', players: guards },
+    { name: 'Forwards', players: forwards },
+    { name: 'Centers', players: centers },
+    { name: 'Other', players: others },
   ].filter(group => group.players.length > 0);
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-      <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-        Roster ({roster.length} players)
-      </h2>
-
-      <div className="space-y-6">
+    <div className="glass-card rounded-xl overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]">
+      <div className="px-4 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02] shrink-0">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Roster
+        </h3>
+        <span className="text-[10px] px-2 py-0.5 bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium">
+          {roster.length}
+        </span>
+      </div>
+      <div className="flex-1 min-h-0">
         {positionGroups.map((group) => (
           <div key={group.name}>
-            <h3 className="text-lg font-semibold text-black dark:text-zinc-50 mb-3">
-              {group.name} ({group.players.length})
-            </h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>#</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Position</TableHead>
-                  <TableHead>Height</TableHead>
-                  <TableHead>Weight</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {group.players.map((player) => (
-                  <TableRow key={player.player_id}>
-                    <TableCell className="font-medium">
-                      {player.jersey || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/players/${player.player_id}`}
-                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                      >
-                        {player.full_name}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-zinc-600 dark:text-zinc-400">
-                      {player.position || '-'}
-                    </TableCell>
-                    <TableCell className="text-zinc-600 dark:text-zinc-400">
-                      {player.height || '-'}
-                    </TableCell>
-                    <TableCell className="text-zinc-600 dark:text-zinc-400">
-                      {player.weight ? `${player.weight} lbs` : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {player.active !== null && (
-                        <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            player.active
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                          }`}
-                        >
-                          {player.active ? 'Active' : 'Inactive'}
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="px-4 py-1.5 bg-white/[0.03] border-b border-white/5">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                {group.name}
+              </span>
+            </div>
+            {group.players.map((player) => (
+              <Link
+                key={player.player_id}
+                href={`/betting/players/${player.player_id}`}
+                className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors border-b border-white/[0.03] group"
+              >
+                <span className="w-6 text-center text-xs font-mono text-muted-foreground">
+                  {player.jersey || '-'}
+                </span>
+                <span className="flex-1 text-sm text-white group-hover:text-[#00d4ff] transition-colors truncate">
+                  {player.full_name}
+                </span>
+                <span className="text-[10px] text-muted-foreground/60 font-medium">
+                  {player.position || ''}
+                </span>
+              </Link>
+            ))}
           </div>
         ))}
       </div>
     </div>
   );
 }
-
