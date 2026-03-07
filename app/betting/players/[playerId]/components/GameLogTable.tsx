@@ -16,6 +16,11 @@ function metricValue(game: GameLog, key: MetricKey): number {
   return extractMetric([game], key)[0];
 }
 
+function formatGameDate(isoOrDateStr: string): string {
+  const date = new Date(isoOrDateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
 export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableProps) {
   if (games.length === 0) {
     return (
@@ -57,7 +62,7 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
           </TableHeader>
           <TableBody>
             {games.map((game) => {
-              const gameDate = new Date(game.start_time);
+              const dateStr = formatGameDate(game.start_time || game.game_date || '');
               const mv = metricValue(game, activeMetric);
               const isOver = bettingLine !== null && mv > bettingLine;
               const isUnder = bettingLine !== null && mv <= bettingLine;
@@ -72,7 +77,7 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
                   <TableRow key={game.game_id} className="border-white/5">
                     <TableCell>
                       <Link href={`/games/${game.game_id}`} className="text-[#00d4ff] hover:underline text-sm">
-                        {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        {dateStr}
                       </Link>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -103,7 +108,7 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
                 >
                   <TableCell>
                     <Link href={`/games/${game.game_id}`} className="text-[#00d4ff] hover:underline text-sm">
-                      {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {dateStr}
                     </Link>
                   </TableCell>
                   <TableCell>

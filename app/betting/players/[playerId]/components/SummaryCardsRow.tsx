@@ -1,23 +1,45 @@
 import { cn } from '@/lib/utils';
 import type { SummaryResult } from '@/lib/players/types';
 
+type TimeframeKey = 5 | 10 | 20 | 'season';
+
 interface SummaryCardsRowProps {
   summary: SummaryResult;
   metricLabel: string;
+  timeframe?: TimeframeKey;
 }
 
-const CARDS: { key: keyof SummaryResult; label: string; accent?: string }[] = [
-  { key: 'avg', label: 'Season Avg' },
-  { key: 'last10', label: 'Last 10' },
-  { key: 'last5', label: 'Last 5' },
-  { key: 'high', label: 'Season High', accent: 'text-[#39ff14]' },
-  { key: 'low', label: 'Season Low', accent: 'text-[#ff4757]' },
+const CARD_KEYS: { key: keyof SummaryResult; accent?: string }[] = [
+  { key: 'avg' },
+  { key: 'last10' },
+  { key: 'last5' },
+  { key: 'high', accent: 'text-[#39ff14]' },
+  { key: 'low', accent: 'text-[#ff4757]' },
 ];
 
-export function SummaryCardsRow({ summary, metricLabel }: SummaryCardsRowProps) {
+function getCardLabel(key: keyof SummaryResult, timeframe: TimeframeKey): string {
+  const periodLabel = timeframe === 'season' ? 'Season' : `L${timeframe}`;
+  switch (key) {
+    case 'avg':
+      return `${periodLabel} Avg`;
+    case 'last10':
+      return 'Last 10';
+    case 'last5':
+      return 'Last 5';
+    case 'high':
+      return `${periodLabel} High`;
+    case 'low':
+      return `${periodLabel} Low`;
+    default:
+      return String(key);
+  }
+}
+
+export function SummaryCardsRow({ summary, metricLabel, timeframe = 'season' }: SummaryCardsRowProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-      {CARDS.map(({ key, label, accent }, index) => {
+      {CARD_KEYS.map(({ key, accent }, index) => {
+        const label = getCardLabel(key, timeframe);
         const val = summary[key];
         const diff = key !== 'avg' && key !== 'high' && key !== 'low'
           ? val - summary.avg

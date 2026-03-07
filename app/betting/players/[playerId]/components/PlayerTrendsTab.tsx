@@ -9,7 +9,6 @@ import { StatTabs } from './StatTabs';
 import { PlayerTrendChart } from './PlayerTrendChart';
 import { SummaryCardsRow } from './SummaryCardsRow';
 import { BettingLinePanel } from './BettingLinePanel';
-import { GameLogTable } from './GameLogTable';
 
 type Timeframe = 5 | 10 | 20 | 'season';
 type LocationFilter = 'all' | 'home' | 'away';
@@ -26,12 +25,12 @@ const LOCATION_OPTIONS: { value: LocationFilter; label: string }[] = [
   { value: 'away', label: 'Away' },
 ];
 
-interface PlayerAnalysisClientProps {
+export interface PlayerTrendsTabProps {
   games: GameLog[];
   seasonAverages: SeasonAverages;
 }
 
-export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisClientProps) {
+export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps) {
   const [activeMetric, setActiveMetric] = useState<MetricKey>('pts');
   const [bettingLine, setBettingLine] = useState<number | null>(null);
   const [timeframe, setTimeframe] = useState<Timeframe>(20);
@@ -73,7 +72,6 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Player Trends: filters + summary (same section) */}
       <section className="space-y-4">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -85,7 +83,13 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <StatTabs activeMetric={activeMetric} onMetricChange={(key) => { setActiveMetric(key); setBettingLine(null); }} />
+          <StatTabs
+            activeMetric={activeMetric}
+            onMetricChange={(key) => {
+              setActiveMetric(key);
+              setBettingLine(null);
+            }}
+          />
           <div className="h-6 w-px bg-white/10 hidden sm:block" />
           <div className="flex gap-1.5">
             {TIMEFRAMES.map(({ value, label }) => (
@@ -121,10 +125,9 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
             ))}
           </div>
         </div>
-        <SummaryCardsRow summary={summary} metricLabel={METRIC_LABELS[activeMetric]} />
+        <SummaryCardsRow summary={summary} metricLabel={METRIC_LABELS[activeMetric]} timeframe={timeframe} />
       </section>
 
-      {/* Chart + Line Analysis (side-by-side on xl+, stacked on smaller) */}
       <section className="slide-up" style={{ animationDelay: '50ms' }}>
         <PlayerTrendChart
           data={chartDataChronological}
@@ -141,11 +144,6 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
             embedded
           />
         </PlayerTrendChart>
-      </section>
-
-      {/* Game Log */}
-      <section className="slide-up" style={{ animationDelay: '150ms' }}>
-        <GameLogTable games={filteredGames} activeMetric={activeMetric} bettingLine={bettingLine} />
       </section>
     </div>
   );

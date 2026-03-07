@@ -1,11 +1,12 @@
 import { PlayerHeader } from './components/PlayerHeader';
-import { PlayerAnalysisClient } from './components/PlayerAnalysisClient';
+import { PlayerPageTabs } from './components/PlayerPageTabs';
 import {
   resolveAnalyticsPlayerId,
   getAnalyticsPlayerInfo,
   getAnalyticsPlayerSeasonStats,
   getAnalyticsPlayerGames,
 } from '@/lib/players/analytics-queries';
+import { getNextGameForPlayer } from '@/lib/analytics/games-queries';
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
@@ -13,18 +14,20 @@ import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types
 async function loadPlayerAnalysis(playerId: string, season: string | null) {
   const analyticsPlayerId = await resolveAnalyticsPlayerId(playerId);
   if (!analyticsPlayerId) {
-    return { player: null, seasonAverages: {}, games: [] };
+    return { player: null, seasonAverages: {}, games: [], nextGame: null };
   }
-  const [player, seasonStats, gamesData] = await Promise.all([
+  const [player, seasonStats, gamesData, nextGame] = await Promise.all([
     getAnalyticsPlayerInfo(analyticsPlayerId),
     getAnalyticsPlayerSeasonStats(analyticsPlayerId, season),
     getAnalyticsPlayerGames(analyticsPlayerId, season, 82),
+    getNextGameForPlayer(analyticsPlayerId),
   ]);
 
   return {
     player: player as PlayerProfile | null,
     seasonAverages: seasonStats as SeasonAverages,
     games: (gamesData.games ?? []) as GameLog[],
+    nextGame,
   };
 }
 
@@ -37,7 +40,7 @@ export default async function BettingPlayerPage({
 }) {
   const { playerId } = await params;
   const { season } = await searchParams;
-  const { player, seasonAverages, games } = await loadPlayerAnalysis(playerId, season || null);
+  const { player, seasonAverages, games, nextGame } = await loadPlayerAnalysis(playerId, season || null);
 
   if (!player) {
     return (
@@ -119,7 +122,7 @@ export default async function BettingPlayerPage({
             seasonAverages={seasonAverages}
             team={currentTeam}
           />
-          <PlayerAnalysisClient games={games} seasonAverages={seasonAverages} />
+          <PlayerPageTabs games={games} seasonAverages={seasonAverages} nextGame={nextGame} />
         </div>
       </main>
     </div>

@@ -1,0 +1,70 @@
+# Player Page Tab Refactor (Analytics Schema Only)
+
+## Context
+
+The betting player page was a single scrollable view with Player Trends (stat tabs, timeframe/location, summary cards, chart, betting line) and a Game Log table. The plan was to refactor into a tabbed layout (Trends / Matchup / Game Log) using only the analytics schema, with next-game and schedule data derived from `analytics.games` (no legacy scraped tables).
+
+## Goal
+
+- Tabbed Player Page: Trends (default), Matchup, Game Log.
+- Preserve existing Trends behavior inside the Trends tab.
+- Matchup tab: next game info, recent form, vs opponent summary, placeholder for future analytics/odds.
+- Game Log tab: full game log table with column highlight selector.
+- All data from analytics schema only; next game = earliest future game by `start_time` ASC.
+
+## Files Changed
+
+- **New:** `lib/analytics/games-queries.ts` – Schema doc comment, `TeamMatchupGame` type, `getNextGameForTeam`, `getNextGameForPlayer`, `getUpcomingGamesForTeam`, `getRecentGamesForTeam`.
+- **New:** `app/betting/players/[playerId]/components/PlayerPageTabs.tsx` – Tab shell (shadcn Tabs, neon styling).
+- **New:** `app/betting/players/[playerId]/components/PlayerTrendsTab.tsx` – Extracted trends content (stat tabs, timeframe/location, summary cards, chart, betting line panel).
+- **New:** `app/betting/players/[playerId]/components/PlayerGameLogTab.tsx` – Game log table + StatTabs for column highlight.
+- **New:** `app/betting/players/[playerId]/components/PlayerMatchupTab.tsx` – Next game card, recent form L5, vs opponent this season, “Matchup Analytics — Coming Soon” placeholder.
+- **Updated:** `app/betting/players/[playerId]/page.tsx` – Fetches `nextGame` via `getNextGameForPlayer(analyticsPlayerId)`, renders `PlayerPageTabs` instead of `PlayerAnalysisClient`.
+- **Removed:** `app/betting/players/[playerId]/components/PlayerAnalysisClient.tsx`.
+
+## Implementation Notes
+
+- **analytics.games:** No `game_date` column; use `start_time` for date/datetime and for “next game” ordering. Future games: `start_time > now()` and `status IS DISTINCT FROM 'Final'`.
+- **getNextGameForPlayer:** Current team is derived from the player’s most recent row in `analytics.player_game_logs` (ORDER BY game_date DESC, start_time DESC LIMIT 1 → `team_id`), then `getNextGameForTeam(teamId)`.
+- **TeamMatchupGame:** Includes `game_id`, `season`, `start_time`, `opponent_team_id`, `opponent_abbr`, `opponent_name`, `is_home`, `team_abbr`, `team_name` for UI.
+- **Game Log tab:** Own `activeMetric` state and `StatTabs`; `bettingLine` is always `null` in that tab (no over/under highlighting there).
+
+## Key Decisions
+
+- **Analytics-only schedule:** All schedule/next-game logic uses `analytics.games` + `analytics.teams` + `analytics.player_game_logs`. No `bbref_schedule` or other legacy tables.
+- **shadcn Tabs:** Installed `npx shadcn@latest add tabs`; tab triggers styled with existing neon/glass (cyan active state).
+- **PlayerTrendsTab:** Pure extraction from `PlayerAnalysisClient` minus the Game Log section; no behavior change.
+- **Matchup “vs opponent”:** Filter `games` by `opponent_abbr === nextGame.opponent_abbr`; show count and averages (PTS, REB, AST, 3PM, PRA). Fallback copy when no next game or no matchups.
+
+## Assumptions
+
+- `analytics.games` has rows with `start_time > now()` and non-Final status for upcoming games when schedule data exists.
+- Current team from latest game log is correct for “next game” (no `analytics.players.team_id` in schema).
+- Game Log tab shows full season games (same `games` array as passed from page); no extra timeframe filter in that tab.
+
+## Failure Modes
+
+- No upcoming games in `analytics.games`: Matchup tab shows “No upcoming game scheduled” and “No next game to compare” for vs opponent.
+- Player has no game logs: `getNextGameForPlayer` returns `null` (no team to look up).
+- Tabs/radix: If `radix-ui` package API differs (e.g. `TabsPrimitive.Root`), tabs component may need import or API adjustment.
+
+## How to Test
+
+1. Open a player page (e.g. `/betting/players/<analyticsPlayerId>`) – default tab is Trends; same behavior as before (stat tabs, L5/L10/L20/Season, Home/Away, summary cards, chart, line panel).
+2. Switch to **Game Log** – table shows with “Highlight column” StatTabs; all season games; no betting line coloring.
+3. Switch to **Matchup** – if next game exists: next game card (opponent, date/time, home/away), Recent Form L5 (PTS/REB/AST/3PM), “Vs OPP (this season)” count and averages, and “Matchup Analytics — Coming Soon” placeholder. If no next game: appropriate fallback copy.
+4. Confirm no use of legacy scraped tables (only analytics schema in `lib/analytics/games-queries.ts` and existing analytics-queries).
+
+## Verification Checklist
+
+- [ ] Trends tab is default and matches previous page behavior (stat category, timeline, chart, summary cards).
+- [ ] Game Log tab shows full game log with column highlight selector; table columns (date, opponent, home/away, MIN, PTS, REB, AST, 3PM, PRA) present.
+- [ ] Matchup tab shows next game card (or “No upcoming game”), recent form L5, vs opponent section (or fallback), and “Coming Soon” placeholder.
+- [ ] No runtime errors when switching tabs; data loads from server (no React Query added).
+- [ ] `getNextGameForPlayer` and other schedule helpers are used only with analytics schema (no bbref/legacy imports in new code).
+
+## Next Steps
+
+- Populate `analytics.games` with upcoming schedule if next-game is empty in production.
+- Optionally add `analytics.players.team_id` and migrate to it in `getNextGameForPlayer` for a single source of truth.
+- When adding odds: use the “Matchup Analytics — Coming Soon” section and existing analytics-backed matchup data.
