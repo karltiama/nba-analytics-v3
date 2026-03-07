@@ -20,7 +20,7 @@ All scripts are run with `npx tsx scripts/<script>.ts`.
 
 | Source | What it provides | Rate limit |
 |--------|-----------------|------------|
-| **BallDontLie API** | Teams, game schedule, scores, statuses | 5 req/min (free tier, 12s delay) |
+| **BallDontLie API** | Teams, game schedule, scores, statuses | 5 req/min (free tier, 12s delay) — [OpenAPI spec](api/balldontlie-openapi.yaml) |
 | **API-Sports** | Player rosters | ~1 req/sec |
 | **Basketball Reference** | Box scores, detailed player stats | 15 req/min (4s delay) |
 

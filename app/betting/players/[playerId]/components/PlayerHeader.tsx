@@ -1,13 +1,24 @@
 import Link from 'next/link';
 import type { PlayerProfile, SeasonAverages } from '@/lib/players/types';
 
+export interface PlayerTeamInfo {
+  team_id: string;
+  abbreviation: string;
+  full_name: string;
+}
+
 interface PlayerHeaderProps {
   player: PlayerProfile;
   seasonAverages?: SeasonAverages;
+  /** Current team (e.g. from most recent game). When set, shows team logo and link to team page. */
+  team?: PlayerTeamInfo | null;
+  /** Optional player headshot URL. When missing, initials are shown. */
+  headshotUrl?: string | null;
 }
 
-export function PlayerHeader({ player, seasonAverages }: PlayerHeaderProps) {
+export function PlayerHeader({ player, seasonAverages, team, headshotUrl }: PlayerHeaderProps) {
   const gp = seasonAverages?.games_active ?? seasonAverages?.games_played;
+  const initials = player.full_name.split(' ').map(n => n[0]).join('');
 
   return (
     <div className="glass-card rounded-xl border-l-4 border-l-[#00d4ff] card-hover overflow-hidden">
@@ -38,12 +49,20 @@ export function PlayerHeader({ player, seasonAverages }: PlayerHeaderProps) {
       <div className="p-5">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
-              <span className="text-lg font-bold text-white/50">
-                {player.full_name.split(' ').map(n => n[0]).join('')}
-              </span>
+            {/* Player headshot or initials */}
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 overflow-hidden flex-shrink-0">
+              {headshotUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={headshotUrl}
+                  alt={player.full_name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-lg font-bold text-white/50">{initials}</span>
+              )}
             </div>
-            <div>
+            <div className="min-w-0">
               <h1 className="text-2xl font-bold text-white">
                 {player.full_name}
               </h1>
@@ -52,6 +71,18 @@ export function PlayerHeader({ player, seasonAverages }: PlayerHeaderProps) {
                 {player.height && player.weight && <span className="text-white/20">•</span>}
                 {player.weight && <span>{player.weight} lbs</span>}
               </div>
+              {/* Team logo + link to team page */}
+              {team && (
+                <Link
+                  href={`/teams/${team.team_id}`}
+                  className="inline-flex items-center gap-2 mt-2 text-xs text-muted-foreground hover:text-[#00d4ff] transition-colors"
+                >
+                  <span className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/80">
+                    {team.abbreviation}
+                  </span>
+                  <span>{team.full_name}</span>
+                </Link>
+              )}
             </div>
           </div>
 

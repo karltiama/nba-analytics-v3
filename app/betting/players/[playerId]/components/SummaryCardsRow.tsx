@@ -16,7 +16,7 @@ const CARDS: { key: keyof SummaryResult; label: string; accent?: string }[] = [
 
 export function SummaryCardsRow({ summary, metricLabel }: SummaryCardsRowProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-1 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-1 gap-3">
       {CARDS.map(({ key, label, accent }, index) => {
         const val = summary[key];
         const diff = key !== 'avg' && key !== 'high' && key !== 'low'

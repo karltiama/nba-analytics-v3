@@ -42,7 +42,7 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
   const timeframeLabel = timeframe === 'season' ? `${games.length} games` : `last ${timeframe} games`;
 
   return (
-    <div className="flex flex-col xl:flex-row gap-6">
+    <div className="flex flex-col 2xl:flex-row gap-6">
       {/* Main Content */}
       <div className="flex-1 space-y-6 min-w-0">
         {/* Metric Selector + Timeframe */}
@@ -104,7 +104,7 @@ export function PlayerAnalysisClient({ games, seasonAverages }: PlayerAnalysisCl
       </div>
 
       {/* Sidebar */}
-      <aside className="w-full xl:w-80 shrink-0">
+      <aside className="w-full 2xl:w-80 shrink-0">
         <div className="sticky top-20 space-y-6">
           {/* Statistical Summary */}
           <section className="slide-up" style={{ animationDelay: '100ms' }}>

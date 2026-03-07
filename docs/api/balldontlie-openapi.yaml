@@ -1,0 +1,137 @@
+# BallDontLie API - OpenAPI spec (endpoints used in this repo)
+# Full official spec: https://www.balldontlie.io/openapi.yml
+openapi: 3.0.3
+info:
+  title: BallDontLie API (NBA usage)
+  description: |
+    Endpoints and shapes used by nba-analytics-v3 scripts.
+    Full API docs: https://www.balldontlie.io/docs/
+  version: "1.0.0"
+
+servers:
+  - url: https://api.balldontlie.io/v1
+    description: Production
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key (or Bearer <key>; scripts use raw key in header)
+
+  schemas:
+    Team:
+      type: object
+      properties:
+        id: { type: integer }
+        abbreviation: { type: string }
+        city: { type: string, nullable: true }
+        conference: { type: string, nullable: true }
+        division: { type: string, nullable: true }
+        full_name: { type: string }
+        name: { type: string }
+
+    TeamsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/Team" }
+        meta:
+          type: object
+          properties:
+            next_page: { type: integer, nullable: true }
+            current_page: { type: integer }
+            total_pages: { type: integer }
+
+    TeamRef:
+      type: object
+      properties:
+        id: { type: integer }
+        abbreviation: { type: string }
+        city: { type: string, nullable: true }
+        conference: { type: string, nullable: true }
+        division: { type: string, nullable: true }
+        full_name: { type: string }
+        name: { type: string }
+
+    Game:
+      type: object
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date }
+        season: { type: integer }
+        status: { type: string }
+        home_team: { $ref: "#/components/schemas/TeamRef" }
+        visitor_team: { $ref: "#/components/schemas/TeamRef" }
+        home_team_score: { type: integer, nullable: true }
+        visitor_team_score: { type: integer, nullable: true }
+        time: { type: string, nullable: true }
+        postseason: { type: boolean }
+
+    GamesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/Game" }
+        meta:
+          type: object
+          properties:
+            next_cursor: { type: integer, nullable: true }
+            per_page: { type: integer }
+
+paths:
+  /teams:
+    get:
+      summary: List all teams
+      description: Used by seed-teams.ts. Paginated via page.
+      operationId: getTeams
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+          description: Page number
+      responses:
+        "200":
+          description: List of teams
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TeamsResponse" }
+
+  /games:
+    get:
+      summary: List games by date range and season
+      description: Used by seed-full-season-schedule.ts and seed-games-bdl.ts. Cursor-based pagination.
+      operationId: getGames
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: "seasons[]"
+          in: query
+          required: true
+          schema: { type: integer }
+          description: Season year (e.g. 2025)
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 100 }
+        - name: cursor
+          in: query
+          schema: { type: integer }
+          description: Pagination cursor from meta.next_cursor
+      responses:
+        "200":
+          description: List of games
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GamesResponse" }

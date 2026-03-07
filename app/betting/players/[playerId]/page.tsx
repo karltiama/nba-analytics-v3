@@ -67,6 +67,16 @@ export default async function BettingPlayerPage({
     );
   }
 
+  // Current team from most recent game (games are ordered by date DESC)
+  const currentTeam =
+    games.length > 0 && games[0]
+      ? {
+          team_id: games[0].team_id,
+          abbreviation: games[0].team_abbr,
+          full_name: games[0].team_name,
+        }
+      : null;
+
   return (
     <div className="min-h-screen bg-background gradient-mesh">
       {/* Mini header matching betting dashboard nav */}
@@ -99,7 +109,11 @@ export default async function BettingPlayerPage({
 
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
         <div className="space-y-6 fade-in">
-          <PlayerHeader player={player} seasonAverages={seasonAverages} />
+          <PlayerHeader
+            player={player}
+            seasonAverages={seasonAverages}
+            team={currentTeam}
+          />
           <PlayerAnalysisClient games={games} seasonAverages={seasonAverages} />
         </div>
       </main>

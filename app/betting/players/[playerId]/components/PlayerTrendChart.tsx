@@ -111,9 +111,9 @@ export function PlayerTrendChart({
           )}
         </div>
       </div>
-      <div className="p-4 flex flex-col xl:flex-row xl:items-start gap-4">
+      <div className="p-4 flex flex-col 2xl:flex-row 2xl:items-start gap-4">
         {/* Chart SVG — fixed width, shrinks on small screens */}
-        <div className="shrink-0">
+        <div className="w-full min-w-0 2xl:w-auto 2xl:shrink-0">
           <svg
             ref={svgRef}
             width={svgWidth}
@@ -279,8 +279,8 @@ export function PlayerTrendChart({
           )}
           </svg>
 
-          {/* Game details — below chart on small screens */}
-          <div className="xl:hidden mt-2 min-h-[28px]">
+          {/* Game details — below chart on small/medium screens */}
+          <div className="2xl:hidden mt-2 min-h-[28px]">
             {displayIndex !== null && (
               <div className="flex items-center gap-3 text-sm font-mono">
                 <span className="font-bold text-[#00d4ff] text-lg">{data[displayIndex]}</span>
@@ -292,10 +292,10 @@ export function PlayerTrendChart({
           </div>
         </div>
 
-        {/* Right panel — hover info + children (line analysis) on xl+ */}
+        {/* Right panel — hover info + children (line analysis) on 2xl+ */}
         <div className="flex-1 min-w-0 flex flex-col gap-4">
-          {/* Game details — right of chart on xl+, fixed height; click point to pin */}
-          <div className="hidden xl:block h-20">
+          {/* Game details — right of chart on 2xl+, fixed height; click point to pin */}
+          <div className="hidden 2xl:block h-20">
             {displayIndex !== null ? (
               <div className="relative p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
                 {pinnedIndex !== null && (

@@ -41,6 +41,8 @@
 ### BallDontLie API
 **Purpose:** NBA game stats and boxscores
 
+**OpenAPI spec (in-repo):** [docs/api/balldontlie-openapi.yaml](api/balldontlie-openapi.yaml) — endpoints used by our scripts. Full official spec: <https://www.balldontlie.io/openapi.yml>
+
 **Data Provided:**
 - ✅ Games: Schedule, scores, status
 - ✅ Boxscores: Player game stats

@@ -1,0 +1,57 @@
+# BallDontLie OpenAPI Spec in Repo
+
+## Context
+
+The codebase already uses the BallDontLie API in `scripts/seed-teams.ts`, `scripts/seed-full-season-schedule.ts`, and `scripts/seed-games-bdl.ts` with hardcoded base URL, query params, and headers. There was no OpenAPI spec in the repo. The user had an OpenAPI specification for BallDontLie and asked whether to include it.
+
+## Goal
+
+- Add a BallDontLie OpenAPI spec to the repo for documentation and optional future codegen.
+- Keep it simple: no codegen or script refactors; spec is documentation only.
+- Make the spec discoverable from existing BallDontLie-related docs.
+
+## Files Changed
+
+- **Added:** `docs/api/balldontlie-openapi.yaml` — minimal OpenAPI 3 spec for the endpoints we use (`GET /teams`, `GET /games`) with request/response shapes aligned to the Zod schemas in the scripts.
+- **Updated:** `docs/api-comparison-odds-vs-balldontlie.md` — added one line under "BallDontLie API" linking to the in-repo spec and the official full spec URL.
+- **Updated:** `docs/data-seeding-guide.md` — added link to the spec in the BallDontLie row of the Data Sources table.
+
+## Implementation Notes
+
+- **Minimal spec vs full official:** The official BallDontLie OpenAPI spec at https://www.balldontlie.io/openapi.yml is large (~27k lines). We added a small, in-repo spec that documents only the endpoints and shapes used by our scripts (teams list with `page`, games list with `start_date`, `end_date`, `seasons[]`, `per_page`, `cursor`). The top of the YAML links to the full official spec for reference.
+- **Security:** `ApiKeyAuth` is declared (header `Authorization`); scripts use the raw API key in that header (some use `Bearer <key>`). No runtime behavior changed.
+- **Paths:** Base URL in spec is `https://api.balldontlie.io/v1` to match the scripts.
+
+## Key Decisions
+
+- **Minimal in-repo spec:** Keeps the repo lean and aligned with our actual usage; full spec remains external. Alternative considered: committing the full official openapi.yml — rejected due to size and potential drift.
+- **Location:** `docs/api/` so it lives with other API/docs artifacts. Alternative: `specs/` — fine if more API specs are added later.
+- **Doc links:** One line in each of the two BallDontLie-related docs so the spec is discoverable without changing script behavior.
+
+## Assumptions
+
+- BallDontLie API base path stays at `/v1`.
+- We do not add OpenAPI-based codegen or refactor scripts to consume the spec at runtime unless requested later.
+
+## Failure Modes
+
+- Official API adds or changes params; our minimal spec would need a manual update to stay accurate.
+- Links in docs assume readers open from repo root or from the same `docs/` context; relative path `api/balldontlie-openapi.yaml` is correct from `docs/*.md`.
+
+## How to Test
+
+- No automated tests required (docs + one YAML file).
+- **Manual:** Open `docs/api/balldontlie-openapi.yaml` and confirm paths `/teams` and `/games` and parameters match `scripts/seed-teams.ts` and `scripts/seed-full-season-schedule.ts` / `scripts/seed-games-bdl.ts`.
+- **Manual:** From repo root, open `docs/api-comparison-odds-vs-balldontlie.md` and `docs/data-seeding-guide.md` and click the new links; they should resolve to the spec file.
+
+## Next Steps
+
+- If you obtain or prefer the full official OpenAPI file, you can replace `docs/api/balldontlie-openapi.yaml` with it and keep the doc links as-is.
+- Optional: add more endpoints to the minimal spec if new scripts call other BallDontLie endpoints.
+
+## Verification Checklist
+
+- [ ] `docs/api/balldontlie-openapi.yaml` exists and describes `GET /teams` and `GET /games` with the query params used in the scripts.
+- [ ] `docs/api-comparison-odds-vs-balldontlie.md` contains a line linking to the spec and to the official openapi.yml URL.
+- [ ] `docs/data-seeding-guide.md` Data Sources table BallDontLie row includes the spec link.
+- [ ] No changes were made to any script or runtime code; only docs and one new YAML file.

@@ -1,0 +1,56 @@
+# Trend chart and line analysis layout at 1280px viewport
+
+## Context
+
+On the betting player page, the trend chart and line analysis sit in the main content area. At `xl` (1280px) the layout switched to side-by-side: main content (chart + line analysis) and a 320px sidebar. Inside the chart card, the trend chart (540px) and line analysis panel were also side-by-side at `xl`. At 1280px this left very little width for the line analysis and felt cramped.
+
+## Goal
+
+Make the trend chart and line analysis fit well on 1280px viewports by avoiding the double side-by-side squeeze at that width.
+
+## Files Changed
+
+- `app/betting/players/[playerId]/components/PlayerAnalysisClient.tsx` – Main layout: `xl` → `2xl` for flex-row (main + sidebar) and sidebar width.
+- `app/betting/players/[playerId]/components/PlayerTrendChart.tsx` – Chart card: `xl` → `2xl` for chart + line analysis row; chart wrapper uses full width when stacked and fixed width when side-by-side.
+- `app/betting/players/[playerId]/components/SummaryCardsRow.tsx` – Sidebar summary grid: `xl:grid-cols-1` → `2xl:grid-cols-1` so it matches when the sidebar is shown.
+
+## Implementation Notes (key logic explained)
+
+- **Tailwind breakpoints**: `xl` = 1280px, `2xl` = 1536px. Using `2xl` for “side-by-side” means at 1280px the layout stays stacked.
+- **PlayerAnalysisClient**: `flex flex-col 2xl:flex-row` and `w-full 2xl:w-80` on the sidebar. Below 1536px: main content is full width, then sidebar full width below. At 1536px+: main and sidebar sit in a row.
+- **PlayerTrendChart**: `flex flex-col 2xl:flex-row 2xl:items-start`; game-details “below chart” block uses `2xl:hidden`, “right of chart” block uses `hidden 2xl:block`. Chart wrapper: `w-full min-w-0 2xl:w-auto 2xl:shrink-0` so when stacked it can use full width (and the SVG’s `max-w-full` scales it), and when side-by-side the chart keeps its intrinsic width and the line analysis panel gets the rest.
+- **SummaryCardsRow**: Single-column summary in the sidebar only when the sidebar is in row layout, so `2xl:grid-cols-1` keeps behavior aligned with the new breakpoint.
+
+## Key Decisions (and alternatives considered)
+
+- **Raise breakpoint vs reduce widths**: Chose to raise the side-by-side breakpoint to `2xl` so 1280px gets a comfortable stacked layout. Alternative: keep `xl` and shrink chart or sidebar at 1280px, which would still feel tight.
+- **One breakpoint for both**: Same `2xl` for “main vs sidebar” and “chart vs line analysis” so behavior is consistent and 1280px is always “all stacked.”
+
+## Assumptions
+
+- 1280px is the main viewport to fix; 1536px+ is acceptable for side-by-side.
+- No need to change the SVG’s intrinsic size; scaling via `max-w-full` when the wrapper is full width is enough.
+
+## Failure Modes
+
+- Very narrow viewports: chart wrapper is `w-full` with `min-w-0`, so the SVG can scale down; no overflow expected.
+- If someone needs side-by-side at 1280px: would require a different strategy (e.g. narrower sidebar or chart).
+
+## How to Test (commands + steps)
+
+1. Open a player page (e.g. `/betting/players/<playerId>`).
+2. Set viewport to 1280px width: trend chart should be full width, line analysis full width below it, then Statistical Summary full width below that.
+3. Set viewport to 1536px or wider: main content (chart + line analysis side-by-side) on the left, sidebar on the right; summary in sidebar as a single column.
+4. Resize between 1280 and 1536 and confirm the transition at 2xl.
+
+## Verification Checklist
+
+- [ ] At 1280px width, trend chart uses full content width and does not feel cramped.
+- [ ] At 1280px width, line analysis section is full width below the chart and readable.
+- [ ] At 1536px+ width, chart and line analysis are side-by-side; sidebar is on the right.
+- [ ] Summary cards in the sidebar show as one column when sidebar is side-by-side (2xl+).
+- [ ] No horizontal scroll or overflow at 1280px.
+
+## Next Steps
+
+- None required. If designs add a “medium” layout (e.g. chart + line analysis side-by-side but no sidebar until 2xl), the same breakpoints can be refined further.

@@ -1,0 +1,63 @@
+# Player header: headshot, team logo, team link
+
+## Context
+
+The betting player page header (`PlayerHeader`) showed player name, height/weight, and season quick stats (PPG, RPG, APG, GP) in a single content block. There was no player headshot, team branding, or way to navigate to the player’s team page.
+
+## Goal
+
+Add to the `p-5` content area of the player header:
+
+1. **Player headshot** – Image when a URL is provided; otherwise keep the existing initials placeholder.
+2. **Team logo** – Visual team identifier (abbreviation in a small box, consistent with `GameCard`’s `TeamLogo` placeholder).
+3. **Clickable link** – Navigate to the player’s current team page (`/teams/[teamId]`).
+
+## Files Changed
+
+- `app/betting/players/[playerId]/components/PlayerHeader.tsx` – New optional props `team`, `headshotUrl`; headshot area (img or initials); team logo + `Link` to team page.
+- `app/betting/players/[playerId]/page.tsx` – Derive `currentTeam` from `games[0]` (most recent game) and pass `team={currentTeam}` to `PlayerHeader`.
+
+## Implementation Notes (key logic explained)
+
+- **Headshot**: Optional `headshotUrl`. When set, a plain `<img>` is used (no `next/image`) to support arbitrary external URLs without `next.config` image domains. When missing, the existing initials block is shown.
+- **Team**: Optional `team` with `team_id`, `abbreviation`, `full_name`. Rendered only when `team` is passed. The page derives it from the first game in `games` (games are ordered by date DESC from `getBBRefPlayerGames`), so that is the player’s current team for the selected season.
+- **Team link**: `Link` to `/teams/${team.team_id}` with a small logo box (abbreviation) and team full name; hover uses `text-[#00d4ff]` for consistency with the app’s accent.
+
+## Key Decisions (and alternatives considered)
+
+- **`<img>` vs `next/image`**: Chose `<img>` for headshot so any future headshot URL (e.g. CDN or stored `photo_url`) works without configuring `images.remotePatterns`. Alternative: add `cdn.nba.com` (or similar) to Next config when a single source is fixed.
+- **Team from `games[0]`**: Current team is inferred from the most recent game in the already-fetched list. Alternative: add `current_team_id` (or similar) to `PlayerProfile` and a join in `getBBRefPlayerInfo`; would require schema/query change.
+- **Team logo**: Reused the same “abbreviation in a box” style as `GameCard`’s `TeamLogo` (no image asset). Alternative: use team logo images when/if the app has a logo URL per team.
+
+## Assumptions
+
+- `games` is non-empty when the player has played in the selected season; otherwise no team block is shown.
+- `GameLog`’s `team_id`, `team_abbr`, `team_name` are present and correct for each game.
+- Team route is `/teams/[teamId]` and accepts the same `team_id` used in game data.
+
+## Failure Modes
+
+- No games for the season → `currentTeam` is `null` → no team logo/link (graceful).
+- Invalid or broken `headshotUrl` → broken image; consider `onError` fallback to initials in a follow-up if needed.
+- Missing or wrong `team_id` in game data → link could 404; ensure game data uses canonical team IDs.
+
+## How to Test (commands + steps)
+
+1. Run the app and open a player page that has games (e.g. `/betting/players/<playerId>?season=2024-25`).
+2. Confirm the header shows: headshot area (initials if no `headshotUrl`), name, height/weight, then team abbreviation + full name as a link.
+3. Click the team link and confirm navigation to `/teams/<teamId>`.
+4. Open a player with no games for the selected season and confirm no team block is shown and no errors.
+
+## Verification Checklist
+
+- [ ] Player page loads without errors for a player with games in the selected season.
+- [ ] Header shows the team abbreviation box and full team name below height/weight.
+- [ ] Clicking the team name/logo navigates to `/teams/[teamId]` and the team page loads.
+- [ ] For a player with no games in the season (or no season), no team block is shown and layout is unchanged.
+- [ ] Headshot area still shows initials when `headshotUrl` is not passed (current behavior).
+
+## Next Steps
+
+- Add `photo_url` (or equivalent) to player data and pass it as `headshotUrl` when available (see `docs/data-filling-action-plan.md`).
+- Optionally add `onError` on the headshot `<img>` to fall back to initials on load failure.
+- If team logo images are added to the app, replace the abbreviation box with an image in this header.
