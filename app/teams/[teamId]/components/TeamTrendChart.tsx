@@ -1,39 +1,30 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
-import { cn } from '@/lib/utils';
+import { useState, useRef, useCallback, type ReactNode } from 'react';
 
 export type Timeframe = 5 | 10 | 20 | 'season';
 export type LocationFilter = 'all' | 'home' | 'away';
 export type TeamTrendMetric = 'team_total' | 'game_total' | 'spread' | 'moneyline';
 
-const TIMEFRAME_OPTIONS: { value: Timeframe; label: string }[] = [
+export const TIMEFRAME_OPTIONS: { value: Timeframe; label: string }[] = [
   { value: 5, label: 'L5' },
   { value: 10, label: 'L10' },
   { value: 20, label: 'L20' },
   { value: 'season', label: 'Season' },
 ];
-const LOCATION_OPTIONS: { value: LocationFilter; label: string }[] = [
+export const LOCATION_OPTIONS: { value: LocationFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'home', label: 'Home' },
   { value: 'away', label: 'Away' },
 ];
-
-const METRIC_BUTTONS: { value: TeamTrendMetric; label: string; disabled?: boolean }[] = [
+export const METRIC_BUTTONS: { value: TeamTrendMetric; label: string; disabled?: boolean }[] = [
   { value: 'team_total', label: 'Team total' },
   { value: 'game_total', label: 'Game total' },
   { value: 'spread', label: 'Spread', disabled: true },
   { value: 'moneyline', label: 'Money line', disabled: true },
 ];
 
-const selectClass =
-  'rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white focus:border-[#00d4ff]/50 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]/30 min-w-0';
-
-const CHART_HEIGHT = 220;
-const PADDING = { top: 24, right: 72, bottom: 44, left: 56 };
-const SVG_WIDTH = 540;
-
-function getMetricLabel(metric: TeamTrendMetric): string {
+export function getMetricLabel(metric: TeamTrendMetric): string {
   switch (metric) {
     case 'team_total': return 'pts';
     case 'game_total': return 'total pts';
@@ -43,28 +34,26 @@ function getMetricLabel(metric: TeamTrendMetric): string {
   }
 }
 
+const CHART_HEIGHT = 220;
+const PADDING = { top: 24, right: 56, bottom: 44, left: 56 };
+const SVG_WIDTH = 540;
+
 interface TeamTrendChartProps {
   data: number[];
   seasonAvg: number;
   labels: string[];
-  metric: TeamTrendMetric;
-  onMetricChange: (v: TeamTrendMetric) => void;
-  timeframe: Timeframe;
-  onTimeframeChange: (v: Timeframe) => void;
-  locationFilter: LocationFilter;
-  onLocationFilterChange: (v: LocationFilter) => void;
+  metricLabel: string;
+  bettingLine?: number | null;
+  children?: ReactNode;
 }
 
 export function TeamTrendChart({
   data,
   seasonAvg,
   labels,
-  metric,
-  onMetricChange,
-  timeframe,
-  onTimeframeChange,
-  locationFilter,
-  onLocationFilterChange,
+  metricLabel,
+  bettingLine,
+  children,
 }: TeamTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
@@ -114,7 +103,7 @@ export function TeamTrendChart({
     );
   }
 
-  const allValues = [...data, seasonAvg];
+  const allValues = [...data, seasonAvg, ...(bettingLine != null ? [bettingLine] : [])];
   const minVal = Math.min(...allValues);
   const maxVal = Math.max(...allValues);
   const range = maxVal - minVal || 1;
@@ -138,69 +127,25 @@ export function TeamTrendChart({
 
   return (
     <div className="glass-card rounded-xl overflow-hidden">
-      <div className="px-5 py-3 border-b border-white/5 space-y-3 bg-white/[0.02]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
-            Trend
-          </h3>
-          <div className="flex items-center gap-2">
-            <select
-              value={String(timeframe)}
-              onChange={(e) => {
-                const v = e.target.value;
-                onTimeframeChange(v === 'season' ? 'season' : (Number(v) as 5 | 10 | 20));
-              }}
-              className={selectClass}
-            >
-              {TIMEFRAME_OPTIONS.map(({ value, label }) => (
-                <option key={String(value)} value={String(value)} className="bg-background text-white">
-                  {label}
-                </option>
-              ))}
-            </select>
-            <select
-              value={locationFilter}
-              onChange={(e) => onLocationFilterChange(e.target.value as LocationFilter)}
-              className={selectClass}
-            >
-              {LOCATION_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value} className="bg-background text-white">
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-3 text-[10px] text-muted-foreground shrink-0">
+      <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Trend Chart
+        </h3>
+        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-0.5 bg-[#bf5af2] rounded-full inline-block" />
+            Season Avg
+          </span>
+          {bettingLine != null && (
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-0.5 bg-[#bf5af2] rounded-full inline-block" />
-              Avg {seasonAvg.toFixed(1)}
+              <span className="w-3 h-0.5 bg-[#ff6b35] rounded-full inline-block" />
+              Line {bettingLine}
             </span>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {METRIC_BUTTONS.map(({ value, label, disabled }) => (
-            <button
-              key={value}
-              type="button"
-              disabled={disabled}
-              onClick={() => !disabled && onMetricChange(value)}
-              title={disabled ? 'Coming soon' : undefined}
-              className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                disabled && 'opacity-50 cursor-not-allowed',
-                !disabled && metric === value
-                  ? 'bg-[#00d4ff] text-black shadow-[0_0_16px_rgba(0,212,255,0.5)] font-semibold'
-                  : !disabled && 'glass-card text-muted-foreground hover:text-white hover:bg-white/10'
-              )}
-            >
-              {label}
-            </button>
-          ))}
+          )}
         </div>
       </div>
-
-      <div className="p-4 flex flex-col items-center">
-        <div className="w-full min-w-0 flex flex-col items-center max-w-full">
+      <div className="p-4 flex flex-col lg:flex-row lg:items-start gap-4">
+        <div className="w-full min-w-0 lg:w-auto lg:shrink-0 flex flex-col items-center lg:items-start">
           <svg
             ref={svgRef}
             width={svgWidth}
@@ -270,6 +215,29 @@ export function TeamTrendChart({
               Avg {seasonAvg.toFixed(1)}
             </text>
 
+            {bettingLine != null && (
+              <>
+                <line
+                  x1={PADDING.left}
+                  y1={toY(bettingLine)}
+                  x2={svgWidth - PADDING.right}
+                  y2={toY(bettingLine)}
+                  stroke="#ff6b35"
+                  strokeWidth={1.5}
+                  strokeDasharray="3 3"
+                />
+                <text
+                  x={PADDING.left + 4}
+                  y={toY(bettingLine) - 6}
+                  fill="#ff6b35"
+                  fontSize={11}
+                  fontFamily="var(--font-geist-mono)"
+                >
+                  Line {bettingLine}
+                </text>
+              </>
+            )}
+
             {data.length > 1 && (() => {
               const areaPath = data
                 .map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i)} ${toY(v)}`)
@@ -298,17 +266,19 @@ export function TeamTrendChart({
               const x = toX(i);
               const y = toY(v);
               const isHighlighted = displayIndex === i;
+              const overLine = bettingLine != null && v > bettingLine;
+              const dotColor = bettingLine != null ? (overLine ? '#39ff14' : '#ff4757') : '#00d4ff';
               return (
                 <g key={i}>
                   <circle
                     cx={x}
                     cy={y}
                     r={isHighlighted ? 6 : 3.5}
-                    fill="#00d4ff"
+                    fill={dotColor}
                     opacity={isHighlighted ? 1 : 0.85}
                   />
                   {isHighlighted && (
-                    <circle cx={x} cy={y} r={10} fill="#00d4ff" opacity={0.2} />
+                    <circle cx={x} cy={y} r={10} fill={dotColor} opacity={0.2} />
                   )}
                 </g>
               );
@@ -346,22 +316,53 @@ export function TeamTrendChart({
             )}
           </svg>
 
-          <div className="mt-2 min-h-[28px] w-full flex justify-center">
-            {displayIndex !== null ? (
+          <div className="lg:hidden mt-2 min-h-[28px]">
+            {displayIndex !== null && (
               <div className="flex items-center gap-3 text-sm font-mono flex-wrap justify-center">
                 <span className="font-bold text-[#00d4ff] text-lg">{data[displayIndex]}</span>
-                <span className="text-muted-foreground">{getMetricLabel(metric)}</span>
+                <span className="text-muted-foreground">{metricLabel}</span>
                 <span className="text-muted-foreground">vs {labels[displayIndex] ?? '—'}</span>
                 <span className="text-xs text-muted-foreground/60">
                   (Game {displayIndex + 1}/{data.length})
                 </span>
               </div>
-            ) : (
-              <span className="text-sm text-muted-foreground/50">
-                Hover or click a point for game details
-              </span>
             )}
           </div>
+        </div>
+
+        <div className="flex-1 min-w-0 flex flex-col gap-4">
+          <div className="hidden lg:block h-20">
+            {displayIndex !== null ? (
+              <div className="relative p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
+                {pinnedIndex !== null && (
+                  <button
+                    type="button"
+                    onClick={() => setPinnedIndex(null)}
+                    className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground/60 hover:text-white transition-colors"
+                  >
+                    Unpin
+                  </button>
+                )}
+                <div className="text-xl font-bold text-[#00d4ff] leading-tight">
+                  {data[displayIndex]} {metricLabel}
+                </div>
+                <div className="text-sm text-muted-foreground w-full">
+                  Opponent: {labels[displayIndex] ?? '—'}
+                </div>
+                <div className="text-xs text-muted-foreground/60">
+                  Game {displayIndex + 1} of {data.length}
+                </div>
+              </div>
+            ) : (
+              <div className="p-2 rounded-lg bg-white/5 h-full flex items-center justify-center">
+                <span className="text-base text-muted-foreground/50">
+                  Hover to see {metricLabel} value, opponent and game number
+                </span>
+              </div>
+            )}
+          </div>
+
+          {children}
         </div>
       </div>
     </div>

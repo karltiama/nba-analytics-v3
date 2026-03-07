@@ -9,52 +9,25 @@ interface TeamRosterProps {
 interface RosterPlayer {
   player_id: string;
   full_name: string;
-  first_name: string | null;
-  last_name: string | null;
   position: string | null;
-  jersey: string | null;
-  active: boolean | null;
+  games_played: number;
 }
 
 export async function TeamRoster({ teamId, season }: TeamRosterProps) {
-  let currentSeason = season;
-
-  if (!currentSeason) {
-    const seasonResult = await query<{ season: string }>(`
-      SELECT season
-      FROM player_team_rosters
-      WHERE team_id = $1
-      ORDER BY season DESC
-      LIMIT 1
-    `, [teamId]);
-
-    if (seasonResult.length > 0) {
-      currentSeason = seasonResult[0].season;
-    } else {
-      currentSeason = '2025';
-    }
-  }
+  const currentSeason = season || '2025';
 
   const roster = await query<RosterPlayer>(`
-    SELECT 
+    SELECT
       p.player_id,
       p.full_name,
-      p.first_name,
-      p.last_name,
       p.position,
-      ptr.jersey,
-      ptr.active
-    FROM player_team_rosters ptr
-    JOIN players p ON ptr.player_id = p.player_id
-    WHERE ptr.team_id = $1
-      AND ptr.season = $2
-    ORDER BY 
-      CASE 
-        WHEN ptr.jersey ~ '^[0-9]+$' THEN ptr.jersey::integer
-        ELSE 999
-      END ASC,
-      p.last_name ASC NULLS LAST,
-      p.first_name ASC NULLS LAST
+      count(*)::int as games_played
+    FROM analytics.player_game_logs pgl
+    JOIN analytics.players p ON p.player_id = pgl.player_id
+    WHERE pgl.team_id = $1
+      AND pgl.season = $2
+    GROUP BY p.player_id, p.full_name, p.position
+    ORDER BY count(*) DESC, p.full_name ASC
   `, [teamId, currentSeason]);
 
   if (!roster || roster.length === 0) {
@@ -68,7 +41,7 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
   const guards = roster.filter(p => p.position && ['G', 'PG', 'SG'].includes(p.position));
   const forwards = roster.filter(p => p.position && ['F', 'PF', 'SF'].includes(p.position));
   const centers = roster.filter(p => p.position && ['C'].includes(p.position));
-  const others = roster.filter(p => !p.position || (!['G', 'PG', 'SG', 'F', 'PF', 'SF', 'C'].includes(p.position)));
+  const others = roster.filter(p => !p.position || !['G', 'PG', 'SG', 'F', 'PF', 'SF', 'C'].includes(p.position));
 
   const positionGroups = [
     { name: 'Guards', players: guards },
@@ -102,7 +75,7 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
                 className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors border-b border-white/[0.03] group"
               >
                 <span className="w-6 text-center text-xs font-mono text-muted-foreground">
-                  {player.jersey || '-'}
+                  {player.games_played}g
                 </span>
                 <span className="flex-1 text-sm text-white group-hover:text-[#00d4ff] transition-colors truncate">
                   {player.full_name}

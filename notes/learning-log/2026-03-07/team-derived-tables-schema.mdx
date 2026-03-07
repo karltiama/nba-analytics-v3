@@ -1,0 +1,35 @@
+## Context
+Adding team-level derived analytics to the existing analytics schema. The app previously had no team queries against `analytics.*` — all team pages used legacy `public.teams` + `bbref_*` tables.
+
+## Goal
+Define two new derived tables (`analytics.team_game_stats`, `analytics.team_season_averages`) that will be populated from existing `analytics.player_game_logs` and `analytics.games`.
+
+## Files Changed
+- `db/schemas/analytics_team_stats.sql` — **new** DDL for both tables
+
+## Implementation Notes
+- `team_game_stats` has a composite PK `(team_id, game_id)` — two rows per game (one per team).
+- `points_allowed` and `result` are nullable because they depend on both teams' data being present.
+- All stat columns default to 0 so aggregation from player logs with missing values still produces valid rows.
+- Indexes on `(team_id, season)` and `game_date` support the main query patterns: recent games, trend data, season averages.
+
+## Key Decisions
+- **Separate file** rather than appending to `analytics_schema.sql` — keeps migrations modular and re-runnable. Alternative was adding to the migration file but that would mix player and team concerns.
+- **`points_allowed` from `analytics.games` scores** rather than re-aggregating opponent player logs — games table has authoritative final scores, player logs may be incomplete.
+- **`result` stored as 'W'/'L' text** rather than boolean — more readable in queries and UI code.
+
+## Assumptions
+- `analytics.games` has reliable `home_score` / `away_score` for completed games.
+- The compute script (next step) will handle the join logic.
+
+## Failure Modes
+- Running DDL before `analytics_schema.sql` will fail on FK references.
+- If `analytics.games` has null scores for a game, `points_allowed` and `result` will be null for that game.
+
+## How to Test
+1. Run the DDL against your Supabase DB: `psql $SUPABASE_DB_URL -f db/schemas/analytics_team_stats.sql`
+2. Verify tables exist: `\dt analytics.team_*`
+3. Check indexes: `\di analytics_tgs_*` and `\di analytics_tsa_*`
+
+## Next Steps
+- Create `scripts/compute-team-stats.ts` to populate both tables.

@@ -159,6 +159,9 @@ export async function getAnalyticsPlayerGames(
     JOIN analytics.teams t_team ON l.team_id = t_team.team_id
     JOIN analytics.teams t_opp ON l.opponent_team_id = t_opp.team_id
     WHERE l.player_id = $1
+      AND g.status = 'Final'
+      AND g.home_score IS NOT NULL
+      AND g.away_score IS NOT NULL
   `;
   const params: (string | number | null)[] = [playerId];
   let nextParam = 2;

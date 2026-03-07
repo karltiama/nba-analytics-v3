@@ -58,7 +58,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
       </div>
 
       {bettingLine !== null && hr && margin !== null && stk ? (
-        <div className={cn('grid gap-3', embedded ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4')}>
+        <div className={cn('grid gap-3', 'grid-cols-4')}>
           <StatCell
             label="Hit Rate L10"
             value={`${hr.last10.toFixed(0)}%`}
