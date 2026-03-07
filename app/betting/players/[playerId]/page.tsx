@@ -1,19 +1,24 @@
 import { PlayerHeader } from './components/PlayerHeader';
 import { PlayerAnalysisClient } from './components/PlayerAnalysisClient';
 import {
-  getBBRefPlayerInfo,
-  getBBRefPlayerSeasonStats,
-  getBBRefPlayerGames,
-} from '@/lib/players/bbref-queries';
+  resolveAnalyticsPlayerId,
+  getAnalyticsPlayerInfo,
+  getAnalyticsPlayerSeasonStats,
+  getAnalyticsPlayerGames,
+} from '@/lib/players/analytics-queries';
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 
 async function loadPlayerAnalysis(playerId: string, season: string | null) {
+  const analyticsPlayerId = await resolveAnalyticsPlayerId(playerId);
+  if (!analyticsPlayerId) {
+    return { player: null, seasonAverages: {}, games: [] };
+  }
   const [player, seasonStats, gamesData] = await Promise.all([
-    getBBRefPlayerInfo(playerId),
-    getBBRefPlayerSeasonStats(playerId, season),
-    getBBRefPlayerGames(playerId, season, 82),
+    getAnalyticsPlayerInfo(analyticsPlayerId),
+    getAnalyticsPlayerSeasonStats(analyticsPlayerId, season),
+    getAnalyticsPlayerGames(analyticsPlayerId, season, 82),
   ]);
 
   return {

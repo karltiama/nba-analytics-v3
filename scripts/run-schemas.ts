@@ -20,7 +20,7 @@ if (!SUPABASE_DB_URL) {
 
 const SCHEMAS_DIR = join(process.cwd(), 'db', 'schemas');
 
-const defaultFiles = ['raw_schema.sql', 'analytics_schema.sql'];
+const defaultFiles = ['raw_schema.sql', 'analytics_schema.sql', 'analytics_schema_migration.sql'];
 
 async function main() {
   const args = process.argv.slice(2);

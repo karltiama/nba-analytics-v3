@@ -10,6 +10,8 @@
  *   npx tsx scripts/seed-raw-balldontlie.ts --start 2025-10-01 --end 2025-11-01
  *   npx tsx scripts/seed-raw-balldontlie.ts --stats              # also fetch player_game_stats for games in raw.games
  *   npx tsx scripts/seed-raw-balldontlie.ts --season-averages --season 2025  # also fetch season_averages for players in raw.players
+ *
+ * Env: BALLDONTLIE_REQUEST_DELAY_MS — delay between API calls (ms). Default 200 (GOAT 600/min). Free tier: set to 12000.
  */
 
 import 'dotenv/config';
@@ -18,7 +20,8 @@ import { Pool } from 'pg';
 const BDL_BASE = 'https://api.balldontlie.io/v1';
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 const BALLDONTLIE_API_KEY = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;
-const REQUEST_DELAY_MS = Number.parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '12000', 10);
+// Default 200ms ≈ 300 req/min (GOAT 600/min). Free tier (5 req/min): set BALLDONTLIE_REQUEST_DELAY_MS=12000
+const REQUEST_DELAY_MS = Number.parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '200', 10);
 const MAX_RETRIES = 3;
 const RETRY_BASE_DELAY_MS = 60000;
 

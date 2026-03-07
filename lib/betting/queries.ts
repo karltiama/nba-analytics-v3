@@ -399,6 +399,142 @@ export async function getTrendingPlayers(limit: number = 10): Promise<TrendingPl
   });
 }
 
+/** Current NBA season start year (e.g. 2025 for 2025-26). */
+const CURRENT_ANALYTICS_SEASON = '2025';
+
+/**
+ * Get trending players from analytics schema (same shape as getTrendingPlayers).
+ * Uses analytics.player_season_averages, analytics.player_game_logs, analytics.players, analytics.teams.
+ * Returns analytics player_id so dashboard links work with the player page.
+ */
+export async function getTrendingPlayersFromAnalytics(limit: number = 10): Promise<TrendingPlayer[]> {
+  const result = await query(
+    `
+    WITH player_team AS (
+      SELECT DISTINCT ON (player_id) player_id, team_id
+      FROM analytics.player_game_logs
+      WHERE season = $1 AND game_date IS NOT NULL
+      ORDER BY player_id, game_date DESC NULLS LAST
+    ),
+    player_l5 AS (
+      SELECT 
+        pgl.player_id,
+        AVG(pgl.points)::numeric as l5_avg_points,
+        AVG(pgl.rebounds)::numeric as l5_avg_rebounds,
+        AVG(pgl.assists)::numeric as l5_avg_assists
+      FROM (
+        SELECT 
+          pgl.player_id,
+          pgl.points,
+          pgl.rebounds,
+          pgl.assists,
+          ROW_NUMBER() OVER (PARTITION BY pgl.player_id ORDER BY pgl.game_date DESC NULLS LAST) as rn
+        FROM analytics.player_game_logs pgl
+        JOIN analytics.games g ON pgl.game_id = g.game_id
+        WHERE g.status = 'Final'
+          AND pgl.points IS NOT NULL
+      ) pgl
+      WHERE rn <= 5
+      GROUP BY player_id
+    )
+    SELECT 
+      p.player_id,
+      p.full_name,
+      pt.team_id,
+      t.abbreviation as team_abbr,
+      COALESCE(p.position, 'N/A') as position,
+      psa.games_played,
+      psa.pts_avg as season_avg_points,
+      psa.reb_avg as season_avg_rebounds,
+      psa.ast_avg as season_avg_assists,
+      pl5.l5_avg_points,
+      pl5.l5_avg_rebounds,
+      pl5.l5_avg_assists,
+      CASE 
+        WHEN psa.pts_avg > 0 THEN 
+          ((pl5.l5_avg_points - psa.pts_avg) / psa.pts_avg) * 100
+        ELSE 0
+      END as points_trend_pct
+    FROM analytics.player_season_averages psa
+    JOIN analytics.players p ON p.player_id = psa.player_id
+    JOIN player_team pt ON pt.player_id = psa.player_id
+    JOIN analytics.teams t ON t.team_id = pt.team_id
+    JOIN player_l5 pl5 ON pl5.player_id = psa.player_id
+    WHERE psa.season = $1
+      AND psa.games_played >= 5
+      AND psa.pts_avg >= 10
+    ORDER BY ABS(((pl5.l5_avg_points - psa.pts_avg) / NULLIF(psa.pts_avg, 0)) * 100) DESC
+    LIMIT $2
+    `,
+    [CURRENT_ANALYTICS_SEASON, limit]
+  );
+
+  const playerIds = result.map((r: any) => r.player_id);
+  if (playerIds.length === 0) return [];
+
+  const recentGamesResult = await query(
+    `
+    SELECT 
+      player_id,
+      points,
+      rebounds,
+      assists,
+      game_date
+    FROM (
+      SELECT 
+        pgl.player_id,
+        pgl.points,
+        pgl.rebounds,
+        pgl.assists,
+        pgl.game_date,
+        ROW_NUMBER() OVER (PARTITION BY pgl.player_id ORDER BY pgl.game_date DESC NULLS LAST) as rn
+      FROM analytics.player_game_logs pgl
+      JOIN analytics.games g ON pgl.game_id = g.game_id
+      WHERE pgl.player_id = ANY($1)
+        AND g.status = 'Final'
+        AND pgl.points IS NOT NULL
+    ) recent
+    WHERE rn <= 5
+    ORDER BY player_id, game_date ASC
+    `,
+    [playerIds]
+  );
+
+  const recentGamesMap: Record<string, { points: number[]; rebounds: number[]; assists: number[] }> = {};
+  recentGamesResult.forEach((row: any) => {
+    if (!recentGamesMap[row.player_id]) {
+      recentGamesMap[row.player_id] = { points: [], rebounds: [], assists: [] };
+    }
+    recentGamesMap[row.player_id].points.push(row.points);
+    recentGamesMap[row.player_id].rebounds.push(row.rebounds);
+    recentGamesMap[row.player_id].assists.push(row.assists);
+  });
+
+  return result.map((row: any) => {
+    const recentGames = recentGamesMap[row.player_id] || { points: [], rebounds: [], assists: [] };
+    const trendPct = parseFloat(row.points_trend_pct) || 0;
+    return {
+      player_id: row.player_id,
+      full_name: row.full_name,
+      team_id: row.team_id,
+      team_abbr: row.team_abbr,
+      position: row.position || 'N/A',
+      games_played: parseInt(row.games_played) || 0,
+      season_avg_points: parseFloat(row.season_avg_points) || 0,
+      season_avg_rebounds: parseFloat(row.season_avg_rebounds) || 0,
+      season_avg_assists: parseFloat(row.season_avg_assists) || 0,
+      l5_avg_points: parseFloat(row.l5_avg_points) || 0,
+      l5_avg_rebounds: parseFloat(row.l5_avg_rebounds) || 0,
+      l5_avg_assists: parseFloat(row.l5_avg_assists) || 0,
+      recent_points: recentGames.points,
+      recent_rebounds: recentGames.rebounds,
+      recent_assists: recentGames.assists,
+      points_trend_pct: trendPct,
+      trend_direction: trendPct >= 0 ? 'up' : 'down',
+    };
+  });
+}
+
 /**
  * Get player's upcoming opponent info
  */

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTrendingPlayers } from '@/lib/betting/queries';
+import { getTrendingPlayersFromAnalytics } from '@/lib/betting/queries';
 
 /**
  * GET /api/betting/players/trending
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '10');
 
-    const trendingPlayers = await getTrendingPlayers(limit);
+    const trendingPlayers = await getTrendingPlayersFromAnalytics(limit);
 
     // Transform to match the PlayerCard component format
     const players = trendingPlayers.map((player) => {
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       players,
       meta: {
         count: players.length,
-        dataSource: 'bbref',
+        dataSource: 'analytics',
         description: 'Players with significant performance trends (L5 vs Season)',
       },
     });
