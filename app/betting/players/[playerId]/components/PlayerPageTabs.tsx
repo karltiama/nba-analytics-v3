@@ -2,8 +2,9 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import type { GameLog, SeasonAverages } from '@/lib/players/types';
+import type { GameLog, SeasonAverages, PlayerRecentForm, PlayerVsOpponentHistory } from '@/lib/players/types';
 import type { TeamMatchupGame } from '@/lib/analytics/games-queries';
+import type { OpponentContext } from '@/lib/analytics/matchup-queries';
 import { PlayerTrendsTab } from './PlayerTrendsTab';
 import { PlayerMatchupTab } from './PlayerMatchupTab';
 import { PlayerGameLogTab } from './PlayerGameLogTab';
@@ -12,9 +13,19 @@ export interface PlayerPageTabsProps {
   games: GameLog[];
   seasonAverages: SeasonAverages;
   nextGame: TeamMatchupGame | null;
+  opponentContext: OpponentContext | null;
+  recentForm: PlayerRecentForm | null;
+  vsOpponentHistory: PlayerVsOpponentHistory | null;
 }
 
-export function PlayerPageTabs({ games, seasonAverages, nextGame }: PlayerPageTabsProps) {
+export function PlayerPageTabs({
+  games,
+  seasonAverages,
+  nextGame,
+  opponentContext,
+  recentForm,
+  vsOpponentHistory,
+}: PlayerPageTabsProps) {
   return (
     <Tabs defaultValue="trends" className="w-full">
       <TabsList
@@ -67,6 +78,9 @@ export function PlayerPageTabs({ games, seasonAverages, nextGame }: PlayerPageTa
             games={games}
             seasonAverages={seasonAverages}
             nextGame={nextGame}
+            opponentContext={opponentContext}
+            recentForm={recentForm}
+            vsOpponentHistory={vsOpponentHistory}
           />
         </TabsContent>
         <TabsContent value="gamelog" className="mt-0 outline-none">

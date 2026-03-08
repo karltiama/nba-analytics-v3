@@ -5,29 +5,55 @@ import {
   getAnalyticsPlayerInfo,
   getAnalyticsPlayerSeasonStats,
   getAnalyticsPlayerGames,
+  getPlayerRecentForm,
+  getPlayerVsOpponentHistory,
 } from '@/lib/players/analytics-queries';
 import { getNextGameForPlayer } from '@/lib/analytics/games-queries';
+import { getOpponentContextForGame } from '@/lib/analytics/matchup-queries';
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
+import type { OpponentContext } from '@/lib/analytics/matchup-queries';
+import type { PlayerRecentForm, PlayerVsOpponentHistory } from '@/lib/players/types';
 
 async function loadPlayerAnalysis(playerId: string, season: string | null) {
   const analyticsPlayerId = await resolveAnalyticsPlayerId(playerId);
   if (!analyticsPlayerId) {
-    return { player: null, seasonAverages: {}, games: [], nextGame: null };
+    return {
+      player: null,
+      seasonAverages: {},
+      games: [],
+      nextGame: null,
+      opponentContext: null as OpponentContext | null,
+      recentForm: null as PlayerRecentForm | null,
+      vsOpponentHistory: null as PlayerVsOpponentHistory | null,
+    };
   }
-  const [player, seasonStats, gamesData, nextGame] = await Promise.all([
+  const [player, seasonStats, gamesData, nextGame, recentForm] = await Promise.all([
     getAnalyticsPlayerInfo(analyticsPlayerId),
     getAnalyticsPlayerSeasonStats(analyticsPlayerId, season),
     getAnalyticsPlayerGames(analyticsPlayerId, season, 82),
     getNextGameForPlayer(analyticsPlayerId),
+    getPlayerRecentForm(analyticsPlayerId, 5),
   ]);
+
+  let opponentContext: OpponentContext | null = null;
+  let vsOpponentHistory: PlayerVsOpponentHistory | null = null;
+  if (nextGame) {
+    [opponentContext, vsOpponentHistory] = await Promise.all([
+      getOpponentContextForGame(nextGame.opponent_team_id, nextGame.season),
+      getPlayerVsOpponentHistory(analyticsPlayerId, nextGame.opponent_team_id, nextGame.season),
+    ]);
+  }
 
   return {
     player: player as PlayerProfile | null,
     seasonAverages: seasonStats as SeasonAverages,
     games: (gamesData.games ?? []) as GameLog[],
     nextGame,
+    opponentContext,
+    recentForm,
+    vsOpponentHistory,
   };
 }
 
@@ -40,7 +66,8 @@ export default async function BettingPlayerPage({
 }) {
   const { playerId } = await params;
   const { season } = await searchParams;
-  const { player, seasonAverages, games, nextGame } = await loadPlayerAnalysis(playerId, season || null);
+  const { player, seasonAverages, games, nextGame, opponentContext, recentForm, vsOpponentHistory } =
+    await loadPlayerAnalysis(playerId, season || null);
 
   if (!player) {
     return (
@@ -122,7 +149,14 @@ export default async function BettingPlayerPage({
             seasonAverages={seasonAverages}
             team={currentTeam}
           />
-          <PlayerPageTabs games={games} seasonAverages={seasonAverages} nextGame={nextGame} />
+          <PlayerPageTabs
+            games={games}
+            seasonAverages={seasonAverages}
+            nextGame={nextGame}
+            opponentContext={opponentContext}
+            recentForm={recentForm}
+            vsOpponentHistory={vsOpponentHistory}
+          />
         </div>
       </main>
     </div>

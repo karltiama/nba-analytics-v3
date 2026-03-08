@@ -1,0 +1,20 @@
+{
+  "name": "nightly-bdl-updater",
+  "version": "1.0.0",
+  "description": "Lambda function to fetch nightly NBA game stats from BallDontLie API and update raw + analytics tables",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "tsx index.ts"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/pg": "^8.15.6",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5"
+  }
+}

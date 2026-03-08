@@ -4,7 +4,7 @@
  */
 
 import { query, queryOne } from '@/lib/db';
-import type { TeamInfo, TeamGameStats, TeamSeasonAverages, TeamTrendPoint } from './types';
+import type { TeamInfo, TeamGameStats, TeamSeasonAverages, TeamAdvancedMetrics, TeamTrendPoint } from './types';
 
 /**
  * Resolve a team identifier (team_id or abbreviation) to an analytics team_id.
@@ -55,7 +55,9 @@ export async function getTeamSeasonAverages(
     SELECT team_id, season, games_played,
            avg_points, avg_rebounds, avg_assists, avg_steals, avg_blocks, avg_turnovers,
            avg_fgm, avg_fga, avg_3pm, avg_3pa, avg_ftm, avg_fta,
-           avg_points_allowed, wins, losses, win_pct
+           avg_points_allowed, wins, losses, win_pct,
+           home_wins, home_losses, away_wins, away_losses,
+           avg_offensive_rating, avg_defensive_rating, avg_pace, avg_efg_pct, avg_tov_pct, avg_orb_pct
     FROM analytics.team_season_averages
     WHERE team_id = $1
   `;
@@ -88,6 +90,53 @@ export async function getTeamSeasonAverages(
     wins: Number(row.wins),
     losses: Number(row.losses),
     win_pct: row.win_pct != null ? Number(row.win_pct) : null,
+    home_wins: Number(row.home_wins ?? 0),
+    home_losses: Number(row.home_losses ?? 0),
+    away_wins: Number(row.away_wins ?? 0),
+    away_losses: Number(row.away_losses ?? 0),
+    avg_offensive_rating: row.avg_offensive_rating != null ? Number(row.avg_offensive_rating) : null,
+    avg_defensive_rating: row.avg_defensive_rating != null ? Number(row.avg_defensive_rating) : null,
+    avg_pace: row.avg_pace != null ? Number(row.avg_pace) : null,
+    avg_efg_pct: row.avg_efg_pct != null ? Number(row.avg_efg_pct) : null,
+    avg_tov_pct: row.avg_tov_pct != null ? Number(row.avg_tov_pct) : null,
+    avg_orb_pct: row.avg_orb_pct != null ? Number(row.avg_orb_pct) : null,
+  };
+}
+
+/**
+ * Advanced metrics for a team (from analytics.team_season_averages).
+ */
+export async function getTeamAdvancedMetrics(
+  teamId: string,
+  season?: string
+): Promise<TeamAdvancedMetrics | null> {
+  let sql = `
+    SELECT team_id, season, games_played, wins, losses,
+           avg_offensive_rating, avg_defensive_rating, avg_pace, avg_efg_pct, avg_tov_pct, avg_orb_pct
+    FROM analytics.team_season_averages
+    WHERE team_id = $1
+  `;
+  const params: string[] = [teamId];
+  if (season) {
+    sql += ` AND season = $2`;
+    params.push(season);
+  }
+  sql += ` ORDER BY season DESC LIMIT 1`;
+
+  const row = await queryOne(sql, params);
+  if (!row) return null;
+  return {
+    team_id: row.team_id,
+    season: row.season,
+    games_played: Number(row.games_played),
+    wins: Number(row.wins),
+    losses: Number(row.losses),
+    avg_offensive_rating: row.avg_offensive_rating != null ? Number(row.avg_offensive_rating) : null,
+    avg_defensive_rating: row.avg_defensive_rating != null ? Number(row.avg_defensive_rating) : null,
+    avg_pace: row.avg_pace != null ? Number(row.avg_pace) : null,
+    avg_efg_pct: row.avg_efg_pct != null ? Number(row.avg_efg_pct) : null,
+    avg_tov_pct: row.avg_tov_pct != null ? Number(row.avg_tov_pct) : null,
+    avg_orb_pct: row.avg_orb_pct != null ? Number(row.avg_orb_pct) : null,
   };
 }
 

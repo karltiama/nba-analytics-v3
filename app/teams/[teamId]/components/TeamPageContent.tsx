@@ -132,6 +132,19 @@ export function TeamPageClient({ team, seasonAverages, recentGames, trendData }:
               />
               {ppg && <StatPill label="PPG" value={ppg} />}
               {oppPpg && <StatPill label="Opp PPG" value={oppPpg} />}
+              {seasonAverages.avg_rebounds != null && (
+                <StatPill label="RPG" value={seasonAverages.avg_rebounds.toFixed(1)} />
+              )}
+              {seasonAverages.avg_assists != null && (
+                <StatPill label="APG" value={seasonAverages.avg_assists.toFixed(1)} />
+              )}
+              {(seasonAverages.home_wins > 0 || seasonAverages.home_losses > 0 || seasonAverages.away_wins > 0 || seasonAverages.away_losses > 0) && (
+                <span className="text-[10px] text-muted-foreground">
+                  Home: {seasonAverages.home_wins}-{seasonAverages.home_losses}
+                  <span className="mx-1">·</span>
+                  Away: {seasonAverages.away_wins}-{seasonAverages.away_losses}
+                </span>
+              )}
               {streakCount > 0 && streakType && (
                 <span
                   className={`text-xs font-semibold px-2 py-1 rounded ${
@@ -253,6 +266,70 @@ export function TeamPageClient({ team, seasonAverages, recentGames, trendData }:
             teamId={team.team_id}
             title={gameLogTitle}
           />
+        </section>
+      )}
+
+      {/* Advanced metrics */}
+      {seasonAverages && (
+        <section className="slide-up" style={{ animationDelay: '100ms' }}>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-white">Advanced metrics</h2>
+            <p className="text-xs text-muted-foreground">
+              Season averages (Offensive/Defensive Rating, Pace, eFG%, TOV%, ORB%)
+            </p>
+          </div>
+          <div className="glass-card rounded-xl p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase">Off. rating</div>
+                <div className="text-lg font-bold font-mono text-white">
+                  {seasonAverages.avg_offensive_rating != null
+                    ? seasonAverages.avg_offensive_rating.toFixed(1)
+                    : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase">Def. rating</div>
+                <div className="text-lg font-bold font-mono text-white">
+                  {seasonAverages.avg_defensive_rating != null
+                    ? seasonAverages.avg_defensive_rating.toFixed(1)
+                    : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase">Pace</div>
+                <div className="text-lg font-bold font-mono text-white">
+                  {seasonAverages.avg_pace != null
+                    ? seasonAverages.avg_pace.toFixed(1)
+                    : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase">eFG%</div>
+                <div className="text-lg font-bold font-mono text-white">
+                  {seasonAverages.avg_efg_pct != null
+                    ? (seasonAverages.avg_efg_pct * 100).toFixed(1) + '%'
+                    : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase">TOV%</div>
+                <div className="text-lg font-bold font-mono text-white">
+                  {seasonAverages.avg_tov_pct != null
+                    ? (seasonAverages.avg_tov_pct * 100).toFixed(1) + '%'
+                    : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase">ORB%</div>
+                <div className="text-lg font-bold font-mono text-white">
+                  {seasonAverages.avg_orb_pct != null
+                    ? (seasonAverages.avg_orb_pct * 100).toFixed(1) + '%'
+                    : '—'}
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       )}
 

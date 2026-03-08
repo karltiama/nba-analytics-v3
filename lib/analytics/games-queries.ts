@@ -149,3 +149,78 @@ export async function getRecentGamesForTeam(
   );
   return rows.map((r) => rowToMatchup(r as Record<string, unknown>, teamId));
 }
+
+export interface ScheduleGameRow {
+  game_id: string;
+  season: string;
+  start_time: string | null;
+  status: string | null;
+  is_home: 'home' | 'away';
+  opponent_id: string;
+  opponent_abbr: string;
+  opponent_name: string;
+  team_score: number | null;
+  opponent_score: number | null;
+  result: 'W' | 'L' | null;
+  venue: string | null;
+}
+
+/**
+ * Full schedule for a team from analytics.games (past + upcoming), ordered by start_time ASC.
+ */
+export async function getScheduleForTeam(
+  teamId: string,
+  season?: string
+): Promise<ScheduleGameRow[]> {
+  let sql = `
+    SELECT
+      g.game_id,
+      g.season,
+      g.start_time,
+      g.status,
+      g.home_score,
+      g.away_score,
+      g.venue,
+      t_home.team_id as home_team_id,
+      t_home.abbreviation as home_abbr,
+      t_away.team_id as away_team_id,
+      t_away.abbreviation as away_abbr,
+      t_away.full_name as away_name,
+      t_home.full_name as home_name
+    FROM analytics.games g
+    JOIN analytics.teams t_home ON g.home_team_id = t_home.team_id
+    JOIN analytics.teams t_away ON g.away_team_id = t_away.team_id
+    WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+  `;
+  const params: (string | number)[] = [teamId];
+  if (season) {
+    sql += ` AND g.season = $2`;
+    params.push(season);
+  }
+  sql += ` ORDER BY g.start_time ASC NULLS LAST`;
+
+  const rows = await query(sql, params);
+  return rows.map((r: Record<string, unknown>) => {
+    const isHome = r.home_team_id === teamId;
+    const teamScore = isHome ? r.home_score : r.away_score;
+    const oppScore = isHome ? r.away_score : r.home_score;
+    let result: 'W' | 'L' | null = null;
+    if (r.status === 'Final' && teamScore != null && oppScore != null) {
+      result = Number(teamScore) > Number(oppScore) ? 'W' : 'L';
+    }
+    return {
+      game_id: String(r.game_id),
+      season: String(r.season ?? ''),
+      start_time: r.start_time ? new Date(r.start_time as string).toISOString() : null,
+      status: r.status != null ? String(r.status) : null,
+      is_home: isHome ? 'home' : 'away',
+      opponent_id: String(isHome ? r.away_team_id : r.home_team_id),
+      opponent_abbr: String(isHome ? r.away_abbr : r.home_abbr),
+      opponent_name: String(isHome ? r.away_name : r.home_name),
+      team_score: teamScore != null ? Number(teamScore) : null,
+      opponent_score: oppScore != null ? Number(oppScore) : null,
+      result,
+      venue: r.venue != null ? String(r.venue) : null,
+    };
+  });
+}

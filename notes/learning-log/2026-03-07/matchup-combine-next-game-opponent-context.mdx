@@ -1,0 +1,47 @@
+# Combine Next Game Overview and Opponent Context into One Section
+
+## Context
+
+The Matchup tab had two separate sections: **Next Game Overview** (next game vs/@, date/time, home/away, days rest, opponent name) and **Opponent Context** (Def. rating, Pace, Pts allowed, Reb allowed, Ast allowed for the opponent). The user requested combining them into a single section.
+
+## Goal
+
+- One card that shows both next-game details and opponent context (metrics grid).
+- Remove the standalone Opponent Context section and its component.
+
+## Files Changed
+
+- `app/betting/players/[playerId]/components/matchup/NextGameOverviewCard.tsx` — Added `opponentContext` prop; inlined opponent metrics grid and "Opponent X (season)" label; title set to "Next Game & Opponent Context".
+- `app/betting/players/[playerId]/components/PlayerMatchupTab.tsx` — Passes `opponentContext` into `NextGameOverviewCard`; removed `OpponentContextCards` import and usage.
+- `app/betting/players/[playerId]/components/matchup/OpponentContextCards.tsx` — **Deleted** (logic moved into `NextGameOverviewCard`).
+
+## Implementation Notes
+
+- `NextGameOverviewCard` now accepts `opponentContext: OpponentContext | null` and, when `nextGame` exists, renders a `border-t border-white/10` divider and the same 5-metric grid (Def. rating, Pace, Pts allowed, Reb allowed, Ast allowed) that was in `OpponentContextCards`. The `fmt()` helper was copied into the card.
+- When there is no next game, opponent context is not shown. When there is a next game but no `opponentContext`, the card shows "Opponent team stats not available." below the next-game block.
+- Grid changed from `grid-cols-2 sm:grid-cols-4` to `grid-cols-2 sm:grid-cols-5` so all five metrics fit in one row on larger screens.
+
+## Key Decisions
+
+- **Single card, not two:** Merged content into `NextGameOverviewCard` and removed `OpponentContextCards` to avoid two cards and duplicated "opponent" context.
+- **Section title:** "Next Game & Opponent Context" so the combined purpose is clear.
+- **Sub-label:** "Opponent {abbr} (season)" above the metrics to clarify they are season-level opponent stats.
+
+## Assumptions
+
+- No other code imports or references `OpponentContextCards` (only `PlayerMatchupTab` did).
+
+## Failure Modes
+
+- If `opponentContext` is passed when there is no `nextGame`, it is ignored (we only pass `nextGame ? opponentContext : null` from the tab).
+
+## How to Test
+
+1. Open a player page, go to the **Matchup** tab.
+2. Confirm one section shows: next game (vs/@, date, home/away, rest, matchup line, opponent name) and below a divider the opponent metrics (Def. rating, Pace, Pts allowed, Reb allowed, Ast allowed).
+3. Confirm there is no second "Opponent Context" card.
+4. For a player with no next game, confirm only "No upcoming game scheduled." and no opponent grid.
+
+## Next Steps
+
+- None for this change. Future: add "Ast allowed" to analytics if desired and wire it in the same card.

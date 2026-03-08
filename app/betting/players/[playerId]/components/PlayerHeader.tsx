@@ -47,8 +47,8 @@ export function PlayerHeader({ player, seasonAverages, team, headshotUrl }: Play
 
       {/* Main content */}
       <div className="p-5">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col items-center md:flex-row md:items-center gap-4">
             {/* Player headshot or initials */}
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 overflow-hidden flex-shrink-0">
               {headshotUrl ? (
@@ -62,11 +62,11 @@ export function PlayerHeader({ player, seasonAverages, team, headshotUrl }: Play
                 <span className="text-lg font-bold text-white/50">{initials}</span>
               )}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 text-center md:text-left">
               <h1 className="text-2xl font-bold text-white">
                 {player.full_name}
               </h1>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-0.5">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs text-muted-foreground mt-0.5">
                 {player.height && <span>{player.height}</span>}
                 {player.height && player.weight && <span className="text-white/20">•</span>}
                 {player.weight && <span>{player.weight} lbs</span>}
@@ -75,7 +75,7 @@ export function PlayerHeader({ player, seasonAverages, team, headshotUrl }: Play
               {team && (
                 <Link
                   href={`/teams/${team.team_id}`}
-                  className="inline-flex items-center gap-2 mt-2 text-xs text-muted-foreground hover:text-[#00d4ff] transition-colors"
+                  className="inline-flex items-center justify-center md:justify-start gap-2 mt-2 text-xs text-muted-foreground hover:text-[#00d4ff] transition-colors"
                 >
                   <span className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/80">
                     {team.abbreviation}

@@ -118,3 +118,21 @@ export interface StreakResult {
   count: number;
   type: 'over' | 'under';
 }
+
+export interface PlayerRecentForm {
+  games_played: number;
+  avg_pts: number;
+  avg_reb: number;
+  avg_ast: number;
+  avg_pra: number;
+  avg_minutes: number | null;
+}
+
+export interface PlayerVsOpponentHistory {
+  games_played: number;
+  avg_pts: number;
+  avg_reb: number;
+  avg_ast: number;
+  avg_pra: number;
+  games: GameLog[];
+}

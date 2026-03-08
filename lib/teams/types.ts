@@ -53,6 +53,30 @@ export interface TeamSeasonAverages {
   wins: number;
   losses: number;
   win_pct: number | null;
+  home_wins: number;
+  home_losses: number;
+  away_wins: number;
+  away_losses: number;
+  avg_offensive_rating: number | null;
+  avg_defensive_rating: number | null;
+  avg_pace: number | null;
+  avg_efg_pct: number | null;
+  avg_tov_pct: number | null;
+  avg_orb_pct: number | null;
+}
+
+export interface TeamAdvancedMetrics {
+  team_id: string;
+  season: string;
+  games_played: number;
+  wins: number;
+  losses: number;
+  avg_offensive_rating: number | null;
+  avg_defensive_rating: number | null;
+  avg_pace: number | null;
+  avg_efg_pct: number | null;
+  avg_tov_pct: number | null;
+  avg_orb_pct: number | null;
 }
 
 export interface TeamTrendPoint {

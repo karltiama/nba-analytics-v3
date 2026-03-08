@@ -4,7 +4,7 @@
  */
 
 import { query, queryOne } from '@/lib/db';
-import type { PlayerProfile, SeasonAverages, GameLog } from './types';
+import type { PlayerProfile, SeasonAverages, GameLog, PlayerRecentForm, PlayerVsOpponentHistory } from './types';
 
 /**
  * Resolve a URL playerId to analytics player_id.
@@ -210,4 +210,179 @@ export async function getAnalyticsPlayerGames(
     personal_fouls: r.personal_fouls != null ? Number(r.personal_fouls) : null,
   }));
   return { games };
+}
+
+function mapRowToGameLog(r: Record<string, unknown>): GameLog {
+  return {
+    game_id: String(r.game_id),
+    game_date: r.game_date ? String(r.game_date) : '',
+    start_time: r.start_time ? new Date(r.start_time as string).toISOString() : '',
+    season: String(r.season ?? ''),
+    team_id: String(r.team_id),
+    team_abbr: String(r.team_abbr ?? ''),
+    team_name: String(r.team_name ?? ''),
+    opponent_id: String(r.opponent_id ?? ''),
+    opponent_abbr: String(r.opponent_abbr ?? '???'),
+    opponent_name: String(r.opponent_name ?? ''),
+    location: (r.location === 'home' ? 'home' : 'away') as 'home' | 'away',
+    result: (r.result as 'W' | 'L' | null) ?? null,
+    team_score: r.team_score != null ? Number(r.team_score) : null,
+    opponent_score: r.opponent_score != null ? Number(r.opponent_score) : null,
+    minutes: r.minutes != null ? (typeof r.minutes === 'string' ? parseFloat(r.minutes) : Number(r.minutes)) : null,
+    points: r.points != null ? Number(r.points) : null,
+    rebounds: r.rebounds != null ? Number(r.rebounds) : null,
+    assists: r.assists != null ? Number(r.assists) : null,
+    steals: r.steals != null ? Number(r.steals) : null,
+    blocks: r.blocks != null ? Number(r.blocks) : null,
+    turnovers: r.turnovers != null ? Number(r.turnovers) : null,
+    field_goals_made: r.field_goals_made != null ? Number(r.field_goals_made) : null,
+    field_goals_attempted: r.field_goals_attempted != null ? Number(r.field_goals_attempted) : null,
+    three_pointers_made: r.three_pointers_made != null ? Number(r.three_pointers_made) : null,
+    three_pointers_attempted: r.three_pointers_attempted != null ? Number(r.three_pointers_attempted) : null,
+    free_throws_made: r.free_throws_made != null ? Number(r.free_throws_made) : null,
+    free_throws_attempted: r.free_throws_attempted != null ? Number(r.free_throws_attempted) : null,
+    plus_minus: r.plus_minus != null ? Number(r.plus_minus) : null,
+    started: r.started ?? null,
+    dnp_reason: r.dnp_reason ?? null,
+    offensive_rebounds: r.offensive_rebounds != null ? Number(r.offensive_rebounds) : null,
+    defensive_rebounds: r.defensive_rebounds != null ? Number(r.defensive_rebounds) : null,
+    personal_fouls: r.personal_fouls != null ? Number(r.personal_fouls) : null,
+  };
+}
+
+const GAME_LOG_SELECT = `
+  SELECT 
+    l.game_id,
+    l.game_date::text as game_date,
+    COALESCE(g.start_time, l.game_date::timestamptz) as start_time,
+    l.season,
+    l.team_id,
+    t_team.abbreviation as team_abbr,
+    t_team.full_name as team_name,
+    l.opponent_team_id as opponent_id,
+    t_opp.abbreviation as opponent_abbr,
+    t_opp.full_name as opponent_name,
+    CASE WHEN l.is_home THEN 'home' ELSE 'away' END as location,
+    CASE WHEN l.is_home THEN g.home_score ELSE g.away_score END as team_score,
+    CASE WHEN l.is_home THEN g.away_score ELSE g.home_score END as opponent_score,
+    CASE 
+      WHEN g.status IS DISTINCT FROM 'Final' THEN NULL
+      WHEN l.is_home AND g.home_score > g.away_score THEN 'W'
+      WHEN l.is_home AND g.home_score < g.away_score THEN 'L'
+      WHEN NOT l.is_home AND g.away_score > g.home_score THEN 'W'
+      WHEN NOT l.is_home AND g.away_score < g.home_score THEN 'L'
+      ELSE NULL
+    END as result,
+    l.minutes,
+    l.points,
+    l.rebounds,
+    l.assists,
+    l.steals,
+    l.blocks,
+    l.turnovers,
+    l.field_goals_made,
+    l.field_goals_attempted,
+    l.three_pointers_made,
+    l.three_pointers_attempted,
+    l.free_throws_made,
+    l.free_throws_attempted,
+    l.plus_minus,
+    NULL::boolean as started,
+    NULL::text as dnp_reason,
+    l.offensive_rebounds,
+    l.defensive_rebounds,
+    l.personal_fouls
+  FROM analytics.player_game_logs l
+  JOIN analytics.games g ON l.game_id = g.game_id
+  JOIN analytics.teams t_team ON l.team_id = t_team.team_id
+  JOIN analytics.teams t_opp ON l.opponent_team_id = t_opp.team_id
+  WHERE l.player_id = $1
+    AND g.status = 'Final'
+    AND g.home_score IS NOT NULL
+    AND g.away_score IS NOT NULL
+`;
+
+/**
+ * Last N games aggregated (pts, reb, ast, pra, minutes) for matchup "Recent Form".
+ */
+export async function getPlayerRecentForm(
+  playerId: string,
+  limit: number = 5
+): Promise<PlayerRecentForm> {
+  const sql = `
+    WITH last_n AS (
+      ${GAME_LOG_SELECT}
+      ORDER BY l.game_date DESC, g.start_time DESC NULLS LAST
+      LIMIT $2
+    )
+    SELECT
+      COUNT(*)::int as games_played,
+      AVG(points)::numeric as avg_pts,
+      AVG(rebounds)::numeric as avg_reb,
+      AVG(assists)::numeric as avg_ast,
+      AVG((COALESCE(points,0) + COALESCE(rebounds,0) + COALESCE(assists,0)))::numeric as avg_pra,
+      AVG(CASE WHEN minutes IS NOT NULL AND minutes ~ '^[0-9]+\.?[0-9]*$' THEN minutes::numeric ELSE NULL END)::numeric as avg_minutes
+    FROM last_n
+  `;
+  const row = await queryOne(sql, [playerId, limit]);
+  if (!row || Number(row.games_played) === 0) {
+    return {
+      games_played: 0,
+      avg_pts: 0,
+      avg_reb: 0,
+      avg_ast: 0,
+      avg_pra: 0,
+      avg_minutes: null,
+    };
+  }
+  const avgMin = row.avg_minutes != null ? Number(row.avg_minutes) : null;
+  return {
+    games_played: Number(row.games_played),
+    avg_pts: Number(row.avg_pts ?? 0),
+    avg_reb: Number(row.avg_reb ?? 0),
+    avg_ast: Number(row.avg_ast ?? 0),
+    avg_pra: Number(row.avg_pra ?? 0),
+    avg_minutes: avgMin,
+  };
+}
+
+/**
+ * Player's stats vs a specific opponent (for "Vs Opponent History").
+ */
+export async function getPlayerVsOpponentHistory(
+  playerId: string,
+  opponentTeamId: string,
+  season?: string | null
+): Promise<PlayerVsOpponentHistory> {
+  let sql = GAME_LOG_SELECT + ` AND l.opponent_team_id = $2 `;
+  const params: (string | number | null)[] = [playerId, opponentTeamId];
+  let nextParam = 3;
+  if (season) {
+    sql += ` AND l.season = $${nextParam}`;
+    params.push(season);
+    nextParam++;
+  }
+  sql += ` ORDER BY l.game_date ASC, g.start_time ASC NULLS LAST`;
+
+  const rows = await query(sql, params);
+  const games: GameLog[] = rows.map((r) => mapRowToGameLog(r as Record<string, unknown>));
+
+  if (games.length === 0) {
+    return { games_played: 0, avg_pts: 0, avg_reb: 0, avg_ast: 0, avg_pra: 0, games: [] };
+  }
+
+  const sumPts = games.reduce((a, g) => a + (g.points ?? 0), 0);
+  const sumReb = games.reduce((a, g) => a + (g.rebounds ?? 0), 0);
+  const sumAst = games.reduce((a, g) => a + (g.assists ?? 0), 0);
+  const sumPra = games.reduce((a, g) => a + (g.points ?? 0) + (g.rebounds ?? 0) + (g.assists ?? 0), 0);
+  const n = games.length;
+
+  return {
+    games_played: n,
+    avg_pts: sumPts / n,
+    avg_reb: sumReb / n,
+    avg_ast: sumAst / n,
+    avg_pra: sumPra / n,
+    games,
+  };
 }

@@ -1,0 +1,121 @@
+## Context
+
+The NBA analytics app has a manual pipeline: `seed-raw-balldontlie.ts` → `transform-raw-to-analytics.ts` → `compute-team-stats.ts` + `compute-player-season-averages.ts`. Running these scripts manually each day is error-prone and delays data freshness. We need an automated nightly job.
+
+## Goal
+
+Create an AWS Lambda function triggered by EventBridge on a nightly schedule that:
+1. Fetches yesterday's and today's Final games from BallDontLie API
+2. Upserts raw tables (games, player_game_stats, players)
+3. Transforms affected data into analytics tables
+4. Recomputes season averages for affected teams and players
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `lambda/nightly-bdl-updater/index.ts` | New — Lambda handler with full pipeline |
+| `lambda/nightly-bdl-updater/package.json` | New — Dependencies (pg only) |
+| `lambda/nightly-bdl-updater/tsconfig.json` | New — TypeScript config matching existing Lambdas |
+| `lambda/nightly-bdl-updater/README.md` | New — Deployment, EventBridge, and testing docs |
+
+## Implementation Notes
+
+### Pipeline Steps (9 sequential steps)
+
+1. **Fetch games** — `GET /games?start_date=yesterday&end_date=today&seasons[]=current` with cursor pagination
+2. **Filter Final** — Only process games where `status === "Final"`
+3. **Upsert raw.games** — Same SQL as `seed-raw-balldontlie.ts` (`ON CONFLICT (id) DO UPDATE`)
+4. **Fetch box scores** — `GET /stats?game_ids[]=...` in batches of 25
+5. **Upsert raw.player_game_stats** — Same SQL pattern
+6. **Upsert raw.players** — Extract unique players from stats response for new player tracking
+7. **Transform analytics.players + analytics.games** — Scoped to fetched game IDs
+8. **Transform analytics.player_game_logs** — Join `raw.player_game_stats` + `raw.games` for derived fields (opponent_team_id, is_home, pra)
+9. **Compute team_game_stats** — CTE with advanced metrics (ORtg, DRtg, pace, eFG%, TOV%, ORB%)
+10. **Recompute team_season_averages** — Full season recompute from `analytics.team_game_stats` for affected seasons
+11. **Recompute player_season_averages** — From `analytics.player_game_logs` for affected player IDs
+
+### Team ID Mapping
+
+The raw BDL data has duplicate team IDs (e.g., multiple IDs for the same franchise). The existing `transform-raw-to-analytics.ts` deduplicates by abbreviation, keeping the lowest ID. The Lambda builds the same mapping by querying `raw.teams` before the transform step.
+
+### Scoped Processing
+
+Unlike the full-table scripts, the Lambda scopes every query to only affected game IDs, seasons, or player IDs. This keeps execution time under 60s for a typical night (5-15 games, ~150-400 stat lines).
+
+## Key Decisions
+
+| Decision | Chosen | Alternative | Why |
+|----------|--------|-------------|-----|
+| Single-file handler | Inline all SQL | Import from shared lib | Lambda needs to be self-contained for deployment; avoids monorepo build complexity |
+| Scope transforms to affected IDs | `WHERE game_id IN (...)` | Reprocess entire season | Performance: ~400 rows vs ~40,000 rows |
+| Recompute season averages fully | Full season `GROUP BY` | Incremental running average | Correctness: avoids drift from stat corrections |
+| 03:00 ET schedule | `cron(0 8 * * ? *)` | Multiple runs per day | All games finish by 1 AM ET; BDL API needs ~1-2 hours to ingest |
+| Fetch yesterday + today | 2-day window | Yesterday only | Catches late-finishing games and timezone edge cases |
+
+## Assumptions
+
+- BallDontLie API has ingested all Final games by 03:00 ET (typically 1-2 hours after game end)
+- `raw.teams` is already seeded (the Lambda doesn't fetch teams from the API)
+- The Lambda has network access to both BDL API and Supabase Postgres
+- GOAT tier API key (600 req/min) — adjust `BALLDONTLIE_REQUEST_DELAY_MS` for free tier
+
+## Failure Modes
+
+| Failure | Impact | Mitigation |
+|---------|--------|------------|
+| BDL API down / 5xx | No data ingested | Retry with exponential backoff (3 attempts, starting at 60s) |
+| Rate limited (429) | Delayed ingestion | Exponential backoff, configurable delay |
+| Partial game data (game Final but no stats yet) | Missing box scores | Next night's run will pick up any missing data (idempotent) |
+| DB connection failure | Rollback, no partial writes | Transactions per step; pool with 15s timeout |
+| Lambda timeout (15 min) | Incomplete run | Scoped queries keep typical run under 60s; 300s timeout configured |
+| No Final games (off-season, All-Star break) | Early exit, no-op | Handler logs "No Final games" and returns 200 |
+
+## How to Test
+
+### Local execution
+```bash
+cd lambda/nightly-bdl-updater
+npm install
+npx tsx index.ts
+```
+
+### Verify results
+```sql
+-- Check raw.games were updated
+SELECT id, date, status, home_team_score, visitor_team_score
+FROM raw.games
+WHERE date >= CURRENT_DATE - 1
+ORDER BY date DESC;
+
+-- Check raw.player_game_stats
+SELECT COUNT(*) FROM raw.player_game_stats
+WHERE game_id IN (SELECT id FROM raw.games WHERE date >= CURRENT_DATE - 1);
+
+-- Check analytics.games
+SELECT game_id, status, home_score, away_score
+FROM analytics.games
+WHERE start_time >= CURRENT_DATE - 1
+ORDER BY start_time DESC;
+
+-- Check analytics.player_game_logs
+SELECT COUNT(*) FROM analytics.player_game_logs
+WHERE game_date >= (CURRENT_DATE - 1)::text;
+
+-- Check team_game_stats
+SELECT team_id, game_id, team_points, offensive_rating, defensive_rating
+FROM analytics.team_game_stats
+WHERE game_date >= CURRENT_DATE - 1;
+
+-- Check season averages were recomputed
+SELECT * FROM analytics.team_season_averages WHERE season = '2025' LIMIT 5;
+SELECT * FROM analytics.player_season_averages WHERE season = '2025' LIMIT 5;
+```
+
+## Next Steps
+
+- Add CloudWatch alarm for Lambda errors / timeouts
+- Add SNS notification on failure (email/Slack)
+- Consider adding a "catch-up" mode that processes a date range for backfills
+- Add `.gitignore` for `node_modules/` and `dist/` in the Lambda directory
+- Wire up to CI/CD for automated deployment on push
