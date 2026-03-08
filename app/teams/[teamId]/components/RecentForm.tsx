@@ -89,6 +89,7 @@ export function RecentForm({ recentForm }: RecentFormProps) {
                   {new Date(game.start_time).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
+                    timeZone: 'America/New_York',
                   })}
                 </TableCell>
                 <TableCell>

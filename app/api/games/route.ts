@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '50');
     const date = searchParams.get('date');
-    const status = searchParams.get('status'); // 'Final', 'Scheduled', etc.
+    const status = searchParams.get('status');
 
     let sql = `
       select 
@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
         ht.full_name as home_team_name,
         at.abbreviation as away_team_abbr,
         at.full_name as away_team_name
-      from games g
-      join teams ht on g.home_team_id = ht.team_id
-      join teams at on g.away_team_id = at.team_id
+      from analytics.games g
+      join analytics.teams ht on g.home_team_id = ht.team_id
+      join analytics.teams at on g.away_team_id = at.team_id
       where 1=1
     `;
     const params: any[] = [];
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
       paramCount++;
     }
 
-    sql += ` order by g.start_time desc limit $${paramCount}`;
+    sql += ` order by g.start_time desc nulls last limit $${paramCount}`;
     params.push(limit);
 
     const games = await query(sql, params);

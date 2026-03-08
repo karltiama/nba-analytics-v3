@@ -7,33 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { query } from '@/lib/db';
-
-async function getGames() {
-  return await query(`
-    select 
-      g.game_id,
-      g.season,
-      g.start_time,
-      g.status,
-      g.home_score,
-      g.away_score,
-      g.venue,
-      ht.abbreviation as home_team_abbr,
-      ht.full_name as home_team_name,
-      at.abbreviation as away_team_abbr,
-      at.full_name as away_team_name
-    from games g
-    join teams ht on g.home_team_id = ht.team_id
-    join teams at on g.away_team_id = at.team_id
-    where g.status = 'Final'
-    order by g.start_time desc
-    limit 100
-  `);
-}
+import { getRecentGamesList } from '@/lib/analytics/games-queries';
 
 export default async function GamesPage() {
-  const games = await getGames();
+  const games = await getRecentGamesList(100);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">

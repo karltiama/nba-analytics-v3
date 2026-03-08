@@ -8,29 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { query } from '@/lib/db';
-
-async function getRecentGames() {
-  return await query(`
-    select 
-      g.game_id,
-      g.season,
-      g.start_time,
-      g.status,
-      g.home_score,
-      g.away_score,
-      g.venue,
-      ht.abbreviation as home_team_abbr,
-      ht.full_name as home_team_name,
-      at.abbreviation as away_team_abbr,
-      at.full_name as away_team_name
-    from games g
-    join teams ht on g.home_team_id = ht.team_id
-    join teams at on g.away_team_id = at.team_id
-    where g.status = 'Final'
-    order by g.start_time desc
-    limit 10
-  `);
-}
+import { getRecentGamesList } from '@/lib/analytics/games-queries';
 
 async function getTopPlayers() {
   return await query(`
@@ -39,15 +17,15 @@ async function getTopPlayers() {
       p.full_name,
       p.first_name,
       p.last_name,
-      count(distinct pgs.game_id) as games_played,
-      avg(pgs.points) as avg_points,
-      avg(pgs.rebounds) as avg_rebounds,
-      avg(pgs.assists) as avg_assists
-    from players p
-    join player_game_stats pgs on p.player_id = pgs.player_id
-    join games g on pgs.game_id = g.game_id
+      count(distinct pgl.game_id) as games_played,
+      avg(pgl.points)::numeric(10,2) as avg_points,
+      avg(pgl.rebounds)::numeric(10,2) as avg_rebounds,
+      avg(pgl.assists)::numeric(10,2) as avg_assists
+    from analytics.players p
+    join analytics.player_game_logs pgl on p.player_id = pgl.player_id
+    join analytics.games g on pgl.game_id = g.game_id
     group by p.player_id, p.full_name, p.first_name, p.last_name
-    having count(distinct pgs.game_id) >= 3
+    having count(distinct pgl.game_id) >= 3
     order by avg_points desc nulls last
     limit 10
   `);
@@ -55,7 +33,7 @@ async function getTopPlayers() {
 
 export default async function DashboardPage() {
   const [games, players] = await Promise.all([
-    getRecentGames(),
+    getRecentGamesList(10),
     getTopPlayers(),
   ]);
 

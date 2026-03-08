@@ -224,3 +224,106 @@ export async function getScheduleForTeam(
     };
   });
 }
+
+export interface GameListRow {
+  game_id: string;
+  season: string;
+  start_time: string | null;
+  status: string | null;
+  home_score: number | null;
+  away_score: number | null;
+  venue: string | null;
+  home_team_abbr: string;
+  home_team_name: string;
+  away_team_abbr: string;
+  away_team_name: string;
+}
+
+/**
+ * Recent Final games from analytics.games for list/dashboard (BDL source).
+ */
+/**
+ * Single game by id from analytics.games (BDL source).
+ */
+export async function getGameById(gameId: string): Promise<{
+  game_id: string;
+  season: string;
+  start_time: string | null;
+  status: string | null;
+  home_score: number | null;
+  away_score: number | null;
+  venue: string | null;
+  home_team_id: string;
+  home_team_abbr: string;
+  home_team_name: string;
+  away_team_id: string;
+  away_team_abbr: string;
+  away_team_name: string;
+} | null> {
+  const row = await queryOne(
+    `${TEAM_GAME_SELECT} WHERE g.game_id = $1`,
+    [gameId]
+  );
+  if (!row) return null;
+  const r = row as Record<string, unknown>;
+  return {
+    game_id: String(r.game_id),
+    season: String(r.season ?? ''),
+    start_time: r.start_time ? new Date(r.start_time as string).toISOString() : null,
+    status: r.status != null ? String(r.status) : null,
+    home_score: r.home_score != null ? Number(r.home_score) : null,
+    away_score: r.away_score != null ? Number(r.away_score) : null,
+    venue: r.venue != null ? String(r.venue) : null,
+    home_team_id: String(r.home_team_id),
+    home_team_abbr: String(r.home_abbr),
+    home_team_name: String(r.home_name),
+    away_team_id: String(r.away_team_id),
+    away_team_abbr: String(r.away_abbr),
+    away_team_name: String(r.away_name),
+  };
+}
+
+/**
+ * Box score for a game from analytics.player_game_logs (BDL source).
+ * Returns null if game not in analytics.
+ */
+export async function getGameBoxScoreFromAnalytics(gameId: string): Promise<{
+  game: Awaited<ReturnType<typeof getGameById>>;
+  boxscore: Array<Record<string, unknown>>;
+} | null> {
+  const game = await getGameById(gameId);
+  if (!game) return null;
+  const logs = await query(
+    `SELECT pgl.*, p.full_name as player_name, t.abbreviation as team_abbr
+     FROM analytics.player_game_logs pgl
+     JOIN analytics.players p ON pgl.player_id = p.player_id
+     JOIN analytics.teams t ON pgl.team_id = t.team_id
+     WHERE pgl.game_id = $1
+     ORDER BY pgl.team_id, pgl.points DESC NULLS LAST`,
+    [gameId]
+  );
+  return { game, boxscore: logs as Array<Record<string, unknown>> };
+}
+
+export async function getRecentGamesList(limit: number = 100): Promise<GameListRow[]> {
+  const rows = await query(
+    `${TEAM_GAME_SELECT}
+     WHERE g.status = 'Final'
+     ORDER BY g.start_time DESC NULLS LAST
+     LIMIT $1`,
+    [limit]
+  );
+  return rows.map((r: Record<string, unknown>) => ({
+    game_id: String(r.game_id),
+    season: String(r.season ?? ''),
+    start_time: r.start_time ? new Date(r.start_time as string).toISOString() : null,
+    status: r.status != null ? String(r.status) : null,
+    home_score: r.home_score != null ? Number(r.home_score) : null,
+    away_score: r.away_score != null ? Number(r.away_score) : null,
+    venue: r.venue != null ? String(r.venue) : null,
+    home_team_abbr: String(r.home_abbr),
+    home_team_name: String(r.home_name),
+    away_team_abbr: String(r.away_abbr),
+    away_team_name: String(r.away_name),
+  }));
+}

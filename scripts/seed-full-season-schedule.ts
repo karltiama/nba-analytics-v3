@@ -80,12 +80,10 @@ const normalizeSeason = (season: number): string => {
   return `${season}-${String(season + 1).slice(-2)}`;
 };
 
-const parseGameDate = (dateStr: string, timeStr?: string | null): Date => {
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new Error(`Invalid date: ${dateStr}`);
-  }
-  // Return as UTC (you may want to adjust timezone handling)
+/** BDL returns date as game calendar day (Eastern). Use noon UTC so displayed day in ET is correct. */
+const parseGameDate = (dateStr: string, _timeStr?: string | null): Date => {
+  const date = new Date(dateStr + 'T12:00:00.000Z');
+  if (isNaN(date.getTime())) throw new Error(`Invalid date: ${dateStr}`);
   return date;
 };
 

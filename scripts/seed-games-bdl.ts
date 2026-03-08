@@ -1,3 +1,7 @@
+/**
+ * Seed raw.games from BallDontLie API (no public schema).
+ * After running: npx tsx scripts/transform-raw-to-analytics.ts to populate analytics.games.
+ */
 import 'dotenv/config';
 import { Pool } from 'pg';
 import { z } from 'zod';
@@ -69,13 +73,10 @@ const normalizeSeason = (season: number): string => {
   return `${season}-${String(season + 1).slice(-2)}`;
 };
 
-const parseGameDate = (dateStr: string, timeStr?: string | null): Date => {
-  const date = new Date(dateStr);
-  // Assume Eastern timezone if no timezone info
-  if (isNaN(date.getTime())) {
-    throw new Error(`Invalid date: ${dateStr}`);
-  }
-  // Return as UTC (you may want to adjust timezone handling)
+/** BDL returns date as game calendar day (Eastern). Use noon UTC so displayed day in ET is correct. */
+const parseGameDate = (dateStr: string, _timeStr?: string | null): Date => {
+  const date = new Date(dateStr + 'T12:00:00.000Z');
+  if (isNaN(date.getTime())) throw new Error(`Invalid date: ${dateStr}`);
   return date;
 };
 
@@ -157,80 +158,30 @@ const fetchGames = async (startDate: string, endDate: string, season: number) =>
 };
 
 
-const resolveTeamMapping = async (client: any): Promise<Map<string, string>> => {
-  const result = await client.query(
-    `
-    select provider_id, internal_id
-    from provider_id_map
-    where entity_type = 'team'
-      and provider = 'balldontlie'
-    `,
-  );
-
-  const mapping = new Map<string, string>();
-  for (const row of result.rows) {
-    mapping.set(row.provider_id, row.internal_id);
-  }
-
-  if (mapping.size === 0) {
-    throw new Error("No team mappings found for provider='balldontlie'. Seed teams first.");
-  }
-
-  return mapping;
-};
-
-
-const UPSERT_GAME = `
-  insert into games (
-    game_id, season, start_time, status, home_team_id, away_team_id,
-    home_score, away_score, venue, created_at, updated_at
-  ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), now())
-  on conflict (game_id) do update set
+/** Upsert into raw.games only (BDL source). Run transform-raw-to-analytics to populate analytics.games. */
+const UPSERT_RAW_GAME = `
+  insert into raw.games (id, date, season, status, period, time, period_detail, datetime, postseason, home_team_score, visitor_team_score, home_team, visitor_team)
+  values ($1, $2::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb)
+  on conflict (id) do update set
+    date = excluded.date,
     season = excluded.season,
-    start_time = excluded.start_time,
-    -- Only update status if existing is NULL/invalid, or new is more complete (Final > Scheduled)
-    status = CASE 
-      WHEN games.status IS NULL OR games.status NOT IN ('Final', 'Scheduled', 'InProgress', 'Postponed', 'Cancelled')
-        THEN excluded.status
-      WHEN games.status = 'Scheduled' AND excluded.status = 'Final'
-        THEN excluded.status
-      WHEN games.status = 'InProgress' AND excluded.status = 'Final'
-        THEN excluded.status
-      ELSE games.status
-    END,
-    home_team_id = excluded.home_team_id,
-    away_team_id = excluded.away_team_id,
-    -- Only update scores if existing is NULL, or new is NOT NULL (don't overwrite with NULL)
-    home_score = CASE 
-      WHEN games.home_score IS NULL THEN excluded.home_score
-      WHEN excluded.home_score IS NOT NULL THEN excluded.home_score
-      ELSE games.home_score
-    END,
-    away_score = CASE 
-      WHEN games.away_score IS NULL THEN excluded.away_score
-      WHEN excluded.away_score IS NOT NULL THEN excluded.away_score
-      ELSE games.away_score
-    END,
-    venue = excluded.venue,
-    updated_at = now();
+    status = excluded.status,
+    period = excluded.period,
+    time = excluded.time,
+    period_detail = excluded.period_detail,
+    datetime = excluded.datetime,
+    postseason = excluded.postseason,
+    home_team_score = excluded.home_team_score,
+    visitor_team_score = excluded.visitor_team_score,
+    home_team = excluded.home_team,
+    visitor_team = excluded.visitor_team;
 `;
 
-const UPSERT_PROVIDER_MAP_GAME = `
-  insert into provider_id_map (
-    entity_type, internal_id, provider, provider_id, metadata, fetched_at, created_at, updated_at
-  ) values ('game', $1, 'balldontlie', $2, $3::jsonb, now(), now(), now())
-  on conflict (entity_type, provider, provider_id) do update set
-    internal_id = excluded.internal_id,
-    metadata = excluded.metadata,
-    fetched_at = excluded.fetched_at,
-    updated_at = now();
-`;
-
-const processDate = async (targetDate: Date, teamMap: Map<string, string>, client: any) => {
+const processDate = async (targetDate: Date, _teamMap: Map<string, string>, client: any) => {
   const dateStr = targetDate.toISOString().split('T')[0];
-  const month = targetDate.getMonth(); // 0-indexed: 0=Jan, 9=Oct
+  const month = targetDate.getMonth();
   const year = targetDate.getFullYear();
-  const season = month <= 5 ? year - 1 : year; // Jan-Jun → previous year's season
+  const season = month <= 5 ? year - 1 : year;
 
   console.log(`Processing ${dateStr}...`);
 
@@ -244,97 +195,24 @@ const processDate = async (targetDate: Date, teamMap: Map<string, string>, clien
 
   for (const game of games) {
     try {
-      await client.query('begin');
-
-      const homeTeamId = String(game.home_team.id);
-      const awayTeamId = String(game.visitor_team.id);
-
-      const homeInternalId = teamMap.get(homeTeamId);
-      const awayInternalId = teamMap.get(awayTeamId);
-
-      if (!homeInternalId || !awayInternalId) {
-        console.warn(
-          `Missing team mapping for game ${game.id}: home=${homeTeamId}, away=${awayTeamId}`,
-        );
-        await client.query('rollback');
-        continue;
-      }
-
-      const internalGameId = String(game.id);
-      const startTime = parseGameDate(game.date, game.time);
-      const seasonStr = normalizeSeason(game.season);
-
-      const insertValues = [
-        internalGameId,
-        seasonStr,
-        startTime,
+      const datetime = game.datetime ? new Date(game.datetime) : (game.date ? new Date(game.date + 'T12:00:00.000Z') : null);
+      await client.query(UPSERT_RAW_GAME, [
+        game.id,
+        game.date,
+        game.season,
         game.status,
-        homeInternalId,
-        awayInternalId,
-        game.home_team_score,
-        game.visitor_team_score,
-        null, // venue
-      ];
-
-      await client.query(UPSERT_GAME, insertValues);
-
-      await client.query(UPSERT_PROVIDER_MAP_GAME, [
-        internalGameId,
-        String(game.id),
-        JSON.stringify({ source: 'balldontlie', postseason: game.postseason }),
+        game.period ?? null,
+        game.time ?? null,
+        game.period_detail ?? null,
+        datetime,
+        game.postseason ?? false,
+        game.home_team_score ?? null,
+        game.visitor_team_score ?? null,
+        JSON.stringify(game.home_team ?? null),
+        JSON.stringify(game.visitor_team ?? null),
       ]);
-
-      // Also update NBA Stats games (002...) with scores if they exist
-      // Match by ET date (not UTC) and team abbreviations to handle games that cross midnight ET
-      // BallDontLie date is already in ET date format (YYYY-MM-DD)
-      if (game.home_team_score !== null && game.visitor_team_score !== null) {
-        // Check both the current date and previous day (games starting late can finish after midnight ET)
-        const prevDate = new Date(dateStr);
-        prevDate.setDate(prevDate.getDate() - 1);
-        const prevDateStr = prevDate.toISOString().split('T')[0];
-        
-        const updateResult = await client.query(
-          `
-          update games
-          set home_score = $1,
-              away_score = $2,
-              status = $3,
-              updated_at = now()
-          from teams as home_team, teams as away_team
-          where (
-            (games.start_time at time zone 'America/New_York')::date = $4::date
-            or (games.start_time at time zone 'America/New_York')::date = $5::date
-          )
-            and games.home_team_id = home_team.team_id
-            and games.away_team_id = away_team.team_id
-            and home_team.abbreviation = $6
-            and away_team.abbreviation = $7
-            and (games.home_score is null or games.away_score is null)
-            and games.game_id like '002%'
-          returning games.game_id, games.status as old_status
-          `,
-          [
-            game.home_team_score,
-            game.visitor_team_score,
-            game.status,
-            dateStr,
-            prevDateStr,
-            game.home_team.abbreviation,
-            game.visitor_team.abbreviation,
-          ],
-        );
-        
-        if (updateResult.rows.length > 0) {
-          console.log(
-            `  Updated ${updateResult.rows.length} NBA Stats game(s) with scores - old status: ${updateResult.rows.map((r: any) => r.old_status).join(', ')}`,
-          );
-        }
-      }
-
-      await client.query('commit');
-      console.log(`Inserted game ${internalGameId} (${game.home_team.abbreviation} vs ${game.visitor_team.abbreviation})`);
+      console.log(`Upserted raw game ${game.id} (${game.home_team?.abbreviation} vs ${game.visitor_team?.abbreviation})`);
     } catch (error) {
-      await client.query('rollback');
       console.error(`Failed to process game ${game.id}:`, error);
     }
   }
@@ -398,10 +276,8 @@ const main = async () => {
   const client = await pool.connect();
 
   try {
-    const teamMap = await resolveTeamMapping(client);
-
     for (let i = 0; i < dates.length; i++) {
-      await processDate(dates[i], teamMap, client);
+      await processDate(dates[i], new Map(), client);
       // Rate limit delay between dates (each date is a separate API call)
       if (i < dates.length - 1) {
         await sleep(REQUEST_DELAY_MS);

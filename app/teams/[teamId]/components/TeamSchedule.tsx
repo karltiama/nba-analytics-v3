@@ -15,10 +15,12 @@ interface TeamScheduleProps {
   season?: string | null;
 }
 
+const GAME_DISPLAY_TZ = 'America/New_York';
+
 function toDisplayTime(startTime: string | null): string {
   if (!startTime) return 'TBD';
   const d = new Date(startTime);
-  return isNaN(d.getTime()) ? 'TBD' : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  return isNaN(d.getTime()) ? 'TBD' : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: GAME_DISPLAY_TZ });
 }
 
 function toDisplayDate(startTime: string | null, now: Date): string {
@@ -29,6 +31,7 @@ function toDisplayDate(startTime: string | null, now: Date): string {
     month: 'short',
     day: 'numeric',
     ...(d.getFullYear() !== now.getFullYear() && { year: 'numeric' }),
+    timeZone: GAME_DISPLAY_TZ,
   });
 }
 
@@ -99,7 +102,8 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
               <TableBody>
                 {upcomingGames.slice(0, 10).map((game) => {
                   const gameDate = game.start_time ? new Date(game.start_time) : null;
-                  const isToday = gameDate && gameDate.toDateString() === now.toDateString();
+                  const todayET = now.toLocaleDateString('en-CA', { timeZone: GAME_DISPLAY_TZ });
+                  const isToday = gameDate && gameDate.toLocaleDateString('en-CA', { timeZone: GAME_DISPLAY_TZ }) === todayET;
                   return (
                     <TableRow key={game.game_id}>
                       <TableCell>

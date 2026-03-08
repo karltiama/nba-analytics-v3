@@ -126,7 +126,7 @@ async function fetchGames(startDate: string, endDate: string, season: number): P
     if (cursor != null) params.set('cursor', String(cursor));
     const res = await fetchWithRetry(`${BDL_BASE}/games?${params.toString()}`);
     if (!res.ok) throw new Error(`Games API returned ${res.status}`);
-    const json = await res.json();
+    const json: any = await res.json();
     out.push(...(json.data || []));
     cursor = json.meta?.next_cursor ?? null;
     if (cursor == null) break;
@@ -146,7 +146,7 @@ async function fetchStatsByGameIds(gameIds: number[]): Promise<any[]> {
     const url = cursor == null ? base : `${base}&cursor=${cursor}`;
     const res = await fetchWithRetry(url);
     if (!res.ok) throw new Error(`Stats API returned ${res.status}`);
-    const json = await res.json();
+    const json: any = await res.json();
     out.push(...(json.data || []));
     cursor = json.meta?.next_cursor ?? null;
     if (cursor == null) break;
@@ -630,7 +630,12 @@ async function runPipeline(): Promise<PipelineResult> {
         console.warn(`  Skipping game ${g.id}: missing home or visitor team id`);
         continue;
       }
-      const startTime = g.datetime ?? (g.date ? new Date(g.date + 'T00:00:00Z') : null);
+      // BDL "date" is calendar day in Eastern; avoid midnight UTC (shows as previous day in ET)
+      const startTime = g.datetime
+        ? new Date(g.datetime)
+        : g.date
+          ? new Date(g.date + 'T12:00:00.000Z') // noon UTC so ET calendar day is correct
+          : null;
       await client.query(upsertAnalyticsGame, [
         sid(g.id),
         g.season != null ? String(g.season) : null,

@@ -1,0 +1,62 @@
+# BDL Schedule Date Fix (Knicks vs Denver Wrong Day)
+
+## Context
+
+The team schedule page shows games from **analytics.games**, which is populated by the BDL pipeline (nightly Lambda and/or `transform-raw-to-analytics`). Users reported the New York Knicks vs Denver game appearing on the wrong day. BDL returns a `date` field (YYYY-MM-DD) representing the game’s **calendar day in Eastern**. We were parsing it as UTC midnight, which in Eastern is the **previous evening**, so the displayed date was one day early.
+
+## Goal
+
+- Fix the displayed game date so it matches the BDL calendar day (e.g. Knicks vs Denver on the correct day).
+- Ensure schedule data is derived only from the BDL API (team schedule page already uses **analytics.games**, which is BDL-only).
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `lambda/nightly-bdl-updater/index.ts` | Use noon UTC for BDL `date` fallback so ET calendar day is correct; use `datetime` when present. |
+| `scripts/seed-games-bdl.ts` | `parseGameDate`: use `dateStr + 'T12:00:00.000Z'` instead of `new Date(dateStr)` (midnight UTC). |
+| `scripts/seed-full-season-schedule.ts` | Same `parseGameDate` fix as above. |
+
+## Implementation Notes
+
+- **Root cause**: `new Date("2025-03-09")` in JS is **2025-03-09T00:00:00.000Z** (midnight UTC). In Eastern that is **March 8, 7:00 PM**. So the game showed as March 8 instead of March 9.
+- **Fix**: For BDL’s date-only value, use **noon UTC**: `new Date(dateStr + 'T12:00:00.000Z')`. Then in Eastern the calendar day is always correct (e.g. March 9 12:00 UTC = March 9 07:00 ET).
+- **Lambda**: Prefer `g.datetime` when the API provides it (ISO with timezone); otherwise fall back to `g.date` with noon UTC.
+- **Schedule source**: The team schedule page uses `getScheduleForTeam()` in `lib/analytics/games-queries.ts`, which reads **analytics.games** only. That table is written only by the BDL Lambda and `transform-raw-to-analytics` (from raw BDL data). So the schedule is already BDL-only; no change to data source was required.
+
+## Key Decisions
+
+| Decision | Chosen | Alternative | Why |
+|----------|--------|-------------|-----|
+| Noon UTC for date-only | Use `T12:00:00.000Z` | Parse as 7 PM Eastern | No TZ library; noon UTC keeps the correct calendar day in ET for display. |
+| Keep schedule from analytics.games | No new API/source | Switch to public `games` | Schedule page already uses BDL-derived analytics.games; public `games` can be mixed (bbref sync). |
+
+## Assumptions
+
+- BDL’s `date` is the game’s calendar date in Eastern (or at least US-friendly).
+- Displaying the date in the user’s locale (e.g. ET) is the main requirement; exact tip-off time can be refined later (e.g. with `datetime` or 7 PM ET) if needed.
+
+## Failure Modes
+
+- **Existing rows**: Already-stored `start_time` in analytics.games/public games may still be wrong. Re-seed or run a one-off update for affected games if needed.
+- **datetime in API**: If BDL returns `datetime` in a different timezone or format, prefer validating/parsing it before using it.
+
+## How to Test
+
+1. **Unit check**: In Node, `new Date('2025-03-09T12:00:00.000Z').toLocaleDateString('en-US', { timeZone: 'America/New_York' })` should be March 9.
+2. **Lambda**: Run the nightly BDL updater for a date that has a game; confirm `analytics.games.start_time` for that game has the correct calendar day in ET.
+3. **Schedule page**: Open team schedule for Knicks (or Nuggets), find the NYK vs DEN game and confirm the date shown matches the actual game day.
+4. **Re-seed (optional)**: For a specific date: `tsx scripts/seed-games-bdl.ts --date YYYY-MM-DD` and confirm new/updated rows have the correct day when viewed in ET.
+
+## Next Steps
+
+- If needed, run a one-off SQL update to set `start_time` for existing analytics.games rows using the same noon-UTC rule from the `date` column in `raw.games`.
+- Optionally add a small shared util (e.g. `bdlDateToStartTime(dateStr)`) used by Lambda and seed scripts to avoid drift.
+
+## Verification Checklist
+
+- [ ] In Node/REPL: `new Date('2025-03-09T12:00:00.000Z').toLocaleDateString('en-US', { timeZone: 'America/New_York' })` returns a string containing "Mar 9" (or March 9).
+- [ ] Team schedule page: Open `/teams/NYK/schedule` (or Nuggets) and confirm the Knicks vs Denver game shows the correct calendar day.
+- [ ] After next Lambda run (or manual seed): Check one game row in `analytics.games` and verify `start_time` in ET is on the expected date.
+- [ ] No schedule data is read from `bbref_schedule` for the team schedule page (it uses `getScheduleForTeam` → analytics.games only).
+- [ ] If you re-seed with `seed-games-bdl.ts --date YYYY-MM-DD`, confirm no errors and that new games show the right day.
