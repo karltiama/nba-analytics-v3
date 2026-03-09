@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
     let paramCount = 1;
 
     if (date) {
-      sql += ` and g.start_time::date = $${paramCount}::date`;
+      sql += ` and g.start_time >= ($${paramCount}::timestamp AT TIME ZONE 'America/New_York')`;
+      params.push(date);
+      paramCount++;
+      sql += ` and g.start_time < (($${paramCount}::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')`;
       params.push(date);
       paramCount++;
     }

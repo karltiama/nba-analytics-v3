@@ -3,7 +3,9 @@ import { query } from '@/lib/db';
 /**
  * Betting Dashboard Query Functions
  * 
- * Fetches data for the betting dashboard using BBRef tables
+ * Schedule/games sourced from analytics.games (BDL).
+ * Team stats sourced from bbref_team_game_stats.
+ * Odds sourced from analytics.game_odds_current.
  */
 
 // ============================================
@@ -37,73 +39,68 @@ export interface TeamRatings {
 }
 
 /**
- * Get games for a specific date from bbref_schedule
- * Joins with bbref_games to get status/scores if available
+ * Get games for a specific date from analytics.games (BDL-sourced).
+ * Game IDs match analytics.game_odds_current for odds lookups.
  */
 export async function getGamesForDate(date: string) {
-  // Get games scheduled for this date from bbref_schedule
-  // Left join with bbref_games to get status/scores if the game has been played
-  // Use start_time from bbref_schedule first, then bbref_games, then default to 7 PM ET
-  // Use canonical_game_id if available (for odds matching), otherwise bbref_game_id
+  // Use ET timezone range so late-night ET games (stored as next-day UTC) are included
+  // and early-morning UTC games from the prior ET day are excluded.
   const gamesResult = await query(`
-    SELECT 
-      COALESCE(bs.canonical_game_id, bs.bbref_game_id) as game_id,
-      bs.bbref_game_id,
-      bs.canonical_game_id,
-      bs.game_date,
-      COALESCE(bs.start_time, bg.start_time, bs.game_date::timestamptz + interval '19 hours') as start_time,
-      bs.home_team_id,
-      bs.away_team_id,
-      ht.full_name as home_team_name,
-      at.full_name as away_team_name,
-      bs.home_team_abbr,
-      bs.away_team_abbr,
-      bg.home_score,
-      bg.away_score,
-      COALESCE(bg.status, 'Scheduled') as status
-    FROM bbref_schedule bs
-    JOIN teams ht ON bs.home_team_id = ht.team_id
-    JOIN teams at ON bs.away_team_id = at.team_id
-    LEFT JOIN bbref_games bg ON bs.bbref_game_id = bg.bbref_game_id
-    WHERE bs.game_date = $1::date
-    ORDER BY COALESCE(bs.start_time, bg.start_time, bs.game_date::timestamptz) ASC
+    SELECT
+      g.game_id,
+      (g.start_time AT TIME ZONE 'America/New_York')::date AS game_date,
+      g.start_time,
+      g.home_team_id,
+      g.away_team_id,
+      ht.full_name AS home_team_name,
+      at.full_name AS away_team_name,
+      ht.abbreviation AS home_team_abbr,
+      at.abbreviation AS away_team_abbr,
+      g.home_score,
+      g.away_score,
+      g.status
+    FROM analytics.games g
+    JOIN analytics.teams ht ON g.home_team_id = ht.team_id
+    JOIN analytics.teams at ON g.away_team_id = at.team_id
+    WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
+      AND g.start_time <  (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')
+    ORDER BY g.start_time ASC
   `, [date]);
 
   return gamesResult;
 }
 
 /**
- * Get today's games from bbref_schedule
+ * Get today's games (ET timezone)
  */
 export async function getTodaysGames() {
-  // Get today's date in ET timezone (NBA uses ET)
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
   return getGamesForDate(today);
 }
 
 /**
- * Get recent games (last N games) for the dashboard
+ * Get recent completed games for the dashboard
  */
 export async function getRecentGames(limit: number = 10) {
   const result = await query(`
-    SELECT 
-      bg.bbref_game_id as game_id,
-      bg.game_date,
-      COALESCE(bg.start_time, bg.game_date::timestamptz) as start_time,
-      bg.home_team_id,
-      bg.away_team_id,
-      ht.full_name as home_team_name,
-      at.full_name as away_team_name,
-      ht.abbreviation as home_team_abbr,
-      at.abbreviation as away_team_abbr,
-      bg.home_score,
-      bg.away_score,
-      bg.status
-    FROM bbref_games bg
-    JOIN teams ht ON bg.home_team_id = ht.team_id
-    JOIN teams at ON bg.away_team_id = at.team_id
-    WHERE bg.status = 'Final'
-    ORDER BY bg.game_date DESC, bg.start_time DESC
+    SELECT
+      g.game_id,
+      g.start_time::date AS game_date,
+      g.start_time,
+      g.home_team_id,
+      g.away_team_id,
+      ht.full_name AS home_team_name,
+      at.full_name AS away_team_name,
+      ht.abbreviation AS home_team_abbr,
+      at.abbreviation AS away_team_abbr,
+      g.home_score,
+      g.away_score,
+      g.status
+    FROM analytics.games g
+    JOIN analytics.teams ht ON g.home_team_id = ht.team_id
+    JOIN analytics.teams at ON g.away_team_id = at.team_id
+    WHERE g.status = 'Final'
+    ORDER BY g.start_time DESC
     LIMIT $1
   `, [limit]);
 
@@ -841,18 +838,42 @@ export interface GameOdds {
 }
 
 /**
- * Get latest pre-game odds for a game
- * Returns odds from a single bookmaker (DraftKings by default) for consistency
+ * Get latest odds for a game from analytics.game_odds_current.
+ * Falls back to public.markets if analytics table has no data yet.
  */
 export async function getGameOdds(gameId: string, preferredBookmaker: string = 'draftkings'): Promise<GameOdds> {
-  // First try to get all odds from preferred bookmaker
+  // Try analytics.game_odds_current first (single row per game, flat)
+  const analyticsResult = await query(`
+    SELECT home_moneyline, away_moneyline,
+           home_spread, home_spread_odds, away_spread, away_spread_odds,
+           total, over_odds, under_odds, vendor
+    FROM analytics.game_odds_current
+    WHERE game_id = $1
+  `, [gameId]);
+
+  if (analyticsResult.length > 0) {
+    const r = analyticsResult[0];
+    return {
+      home: { moneyline: r.home_moneyline, spread: parseFloat(r.home_spread), spreadOdds: r.home_spread_odds },
+      away: { moneyline: r.away_moneyline, spread: parseFloat(r.away_spread), spreadOdds: r.away_spread_odds },
+      overUnder: parseFloat(r.total),
+      overOdds: r.over_odds,
+      underOdds: r.under_odds,
+      bookmaker: r.vendor,
+    };
+  }
+
+  // Fallback: read from public.markets (legacy data)
+  return getGameOddsFromMarkets(gameId, preferredBookmaker);
+}
+
+/**
+ * Legacy fallback: read odds from public.markets table.
+ * Used during transition while analytics tables are being populated.
+ */
+async function getGameOddsFromMarkets(gameId: string, preferredBookmaker: string): Promise<GameOdds> {
   let result = await query(`
-    SELECT 
-      m.market_type,
-      m.side,
-      m.line,
-      m.odds,
-      m.bookmaker
+    SELECT m.market_type, m.side, m.line, m.odds, m.bookmaker
     FROM markets m
     WHERE m.game_id = $1
       AND m.snapshot_type = 'pre_game'
@@ -860,92 +881,44 @@ export async function getGameOdds(gameId: string, preferredBookmaker: string = '
       AND m.bookmaker = $2
   `, [gameId, preferredBookmaker]);
 
-  // If preferred bookmaker doesn't have all markets, fall back to any bookmaker
-  if (result.length < 6) { // Need at least 6 markets (2 moneyline + 2 spread + 2 total)
+  if (result.length < 6) {
     const fallbackResult = await query(`
-      WITH bookmaker_counts AS (
-        SELECT 
-          m.bookmaker,
-          COUNT(DISTINCT m.market_type || '_' || m.side) as market_count
-        FROM markets m
-        WHERE m.game_id = $1
-          AND m.snapshot_type = 'pre_game'
-          AND m.market_type IN ('moneyline', 'spread', 'total')
-        GROUP BY m.bookmaker
-      ),
-      best_bookmaker AS (
+      WITH best_bookmaker AS (
         SELECT bookmaker
-        FROM bookmaker_counts
-        ORDER BY market_count DESC, bookmaker
+        FROM markets
+        WHERE game_id = $1 AND snapshot_type = 'pre_game'
+          AND market_type IN ('moneyline', 'spread', 'total')
+        GROUP BY bookmaker
+        ORDER BY COUNT(DISTINCT market_type || '_' || side) DESC, bookmaker
         LIMIT 1
       )
-      SELECT 
-        m.market_type,
-        m.side,
-        m.line,
-        m.odds,
-        m.bookmaker
-      FROM markets m
-      CROSS JOIN best_bookmaker bb
-      WHERE m.game_id = $1
-        AND m.snapshot_type = 'pre_game'
+      SELECT m.market_type, m.side, m.line, m.odds, m.bookmaker
+      FROM markets m CROSS JOIN best_bookmaker bb
+      WHERE m.game_id = $1 AND m.snapshot_type = 'pre_game'
         AND m.market_type IN ('moneyline', 'spread', 'total')
         AND m.bookmaker = bb.bookmaker
-      ORDER BY m.fetched_at DESC
     `, [gameId]);
-    
-    if (fallbackResult.length > 0) {
-      result = fallbackResult;
-    }
+    if (fallbackResult.length > 0) result = fallbackResult;
   }
 
-  // Initialize default structure
   const odds: GameOdds = {
-    home: {
-      moneyline: null,
-      spread: null,
-      spreadOdds: null,
-    },
-    away: {
-      moneyline: null,
-      spread: null,
-      spreadOdds: null,
-    },
-    overUnder: null,
-    overOdds: null,
-    underOdds: null,
-    bookmaker: null,
+    home: { moneyline: null, spread: null, spreadOdds: null },
+    away: { moneyline: null, spread: null, spreadOdds: null },
+    overUnder: null, overOdds: null, underOdds: null, bookmaker: null,
   };
 
-  // Process results
   result.forEach((row: any) => {
-    const bookmaker = row.bookmaker;
-    if (!odds.bookmaker) {
-      odds.bookmaker = bookmaker;
-    }
-
+    if (!odds.bookmaker) odds.bookmaker = row.bookmaker;
     if (row.market_type === 'moneyline') {
-      if (row.side === 'home') {
-        odds.home.moneyline = row.odds;
-      } else if (row.side === 'away') {
-        odds.away.moneyline = row.odds;
-      }
+      if (row.side === 'home') odds.home.moneyline = row.odds;
+      else if (row.side === 'away') odds.away.moneyline = row.odds;
     } else if (row.market_type === 'spread') {
-      if (row.side === 'home') {
-        odds.home.spread = row.line;
-        odds.home.spreadOdds = row.odds;
-      } else if (row.side === 'away') {
-        odds.away.spread = row.line;
-        odds.away.spreadOdds = row.odds;
-      }
+      if (row.side === 'home') { odds.home.spread = row.line; odds.home.spreadOdds = row.odds; }
+      else if (row.side === 'away') { odds.away.spread = row.line; odds.away.spreadOdds = row.odds; }
     } else if (row.market_type === 'total') {
-      if (row.side === 'over') {
-        odds.overUnder = row.line;
-        odds.overOdds = row.odds;
-      } else if (row.side === 'under') {
-        odds.overUnder = row.line; // Same line for both
-        odds.underOdds = row.odds;
-      }
+      odds.overUnder = row.line;
+      if (row.side === 'over') odds.overOdds = row.odds;
+      else if (row.side === 'under') odds.underOdds = row.odds;
     }
   });
 
@@ -953,138 +926,50 @@ export async function getGameOdds(gameId: string, preferredBookmaker: string = '
 }
 
 /**
- * Get odds for multiple games at once
- * Uses a single default bookmaker (DraftKings) for consistency
- * Falls back to any available bookmaker if DraftKings doesn't have the game
+ * Get odds for multiple games at once from analytics.game_odds_current.
+ * Falls back to public.markets for games not yet in analytics.
  */
 export async function getGamesOdds(gameIds: string[], preferredBookmaker: string = 'draftkings'): Promise<Record<string, GameOdds>> {
-  if (gameIds.length === 0) {
-    return {};
-  }
+  if (gameIds.length === 0) return {};
 
-  // Get odds from preferred bookmaker (DraftKings) first
-  let result = await query(`
-    SELECT 
-      m.game_id,
-      m.market_type,
-      m.side,
-      m.line,
-      m.odds,
-      m.bookmaker
-    FROM markets m
-    WHERE m.game_id = ANY($1)
-      AND m.snapshot_type = 'pre_game'
-      AND m.market_type IN ('moneyline', 'spread', 'total')
-      AND m.bookmaker = $2
-    ORDER BY m.game_id, m.market_type, m.side
-  `, [gameIds, preferredBookmaker]);
-
-  // Find games that don't have DraftKings odds
-  const gamesWithOdds = new Set(result.map((r: any) => r.game_id));
-  const gamesWithoutOdds = gameIds.filter(id => !gamesWithOdds.has(id));
-
-  // For games without DraftKings, get any available bookmaker
-  if (gamesWithoutOdds.length > 0) {
-    const fallbackResult = await query(`
-      WITH game_bookmakers AS (
-        SELECT DISTINCT
-          m.game_id,
-          m.bookmaker,
-          COUNT(DISTINCT m.market_type || '_' || m.side) as market_count
-        FROM markets m
-        WHERE m.game_id = ANY($1)
-          AND m.snapshot_type = 'pre_game'
-          AND m.market_type IN ('moneyline', 'spread', 'total')
-        GROUP BY m.game_id, m.bookmaker
-      ),
-      best_bookmaker_per_game AS (
-        SELECT 
-          game_id,
-          bookmaker,
-          ROW_NUMBER() OVER (
-            PARTITION BY game_id 
-            ORDER BY market_count DESC, bookmaker
-          ) as rn
-        FROM game_bookmakers
-      )
-      SELECT 
-        m.game_id,
-        m.market_type,
-        m.side,
-        m.line,
-        m.odds,
-        m.bookmaker
-      FROM markets m
-      INNER JOIN best_bookmaker_per_game bb ON m.game_id = bb.game_id AND m.bookmaker = bb.bookmaker
-      WHERE m.game_id = ANY($1)
-        AND m.snapshot_type = 'pre_game'
-        AND m.market_type IN ('moneyline', 'spread', 'total')
-        AND bb.rn = 1
-      ORDER BY m.game_id, m.market_type, m.side
-    `, [gamesWithoutOdds]);
-
-    // Combine results
-    result = [...result, ...fallbackResult];
-  }
-
-  // Group by game_id
   const oddsMap: Record<string, GameOdds> = {};
+  const defaultOdds = (): GameOdds => ({
+    home: { moneyline: null, spread: null, spreadOdds: null },
+    away: { moneyline: null, spread: null, spreadOdds: null },
+    overUnder: null, overOdds: null, underOdds: null, bookmaker: null,
+  });
 
-  // Initialize all games with default structure
-  gameIds.forEach((gameId) => {
-    oddsMap[gameId] = {
-      home: { moneyline: null, spread: null, spreadOdds: null },
-      away: { moneyline: null, spread: null, spreadOdds: null },
-      overUnder: null,
-      overOdds: null,
-      underOdds: null,
-      bookmaker: null,
+  gameIds.forEach((id) => { oddsMap[id] = defaultOdds(); });
+
+  // Try analytics.game_odds_current first (single row per game)
+  const analyticsResult = await query(`
+    SELECT game_id, home_moneyline, away_moneyline,
+           home_spread, home_spread_odds, away_spread, away_spread_odds,
+           total, over_odds, under_odds, vendor
+    FROM analytics.game_odds_current
+    WHERE game_id = ANY($1)
+  `, [gameIds]);
+
+  const foundInAnalytics = new Set<string>();
+  analyticsResult.forEach((r: any) => {
+    foundInAnalytics.add(r.game_id);
+    oddsMap[r.game_id] = {
+      home: { moneyline: r.home_moneyline, spread: parseFloat(r.home_spread), spreadOdds: r.home_spread_odds },
+      away: { moneyline: r.away_moneyline, spread: parseFloat(r.away_spread), spreadOdds: r.away_spread_odds },
+      overUnder: parseFloat(r.total),
+      overOdds: r.over_odds,
+      underOdds: r.under_odds,
+      bookmaker: r.vendor,
     };
   });
 
-  // Process results
-  result.forEach((row: any) => {
-    const gameId = row.game_id;
-    if (!oddsMap[gameId]) {
-      oddsMap[gameId] = {
-        home: { moneyline: null, spread: null, spreadOdds: null },
-        away: { moneyline: null, spread: null, spreadOdds: null },
-        overUnder: null,
-        overOdds: null,
-        underOdds: null,
-        bookmaker: null,
-      };
+  // Fallback: for games not in analytics, read from public.markets
+  const missingIds = gameIds.filter(id => !foundInAnalytics.has(id));
+  if (missingIds.length > 0) {
+    for (const gid of missingIds) {
+      oddsMap[gid] = await getGameOddsFromMarkets(gid, preferredBookmaker);
     }
-
-    const odds = oddsMap[gameId];
-    if (!odds.bookmaker) {
-      odds.bookmaker = row.bookmaker;
-    }
-
-    if (row.market_type === 'moneyline') {
-      if (row.side === 'home') {
-        odds.home.moneyline = row.odds;
-      } else if (row.side === 'away') {
-        odds.away.moneyline = row.odds;
-      }
-    } else if (row.market_type === 'spread') {
-      if (row.side === 'home') {
-        odds.home.spread = row.line;
-        odds.home.spreadOdds = row.odds;
-      } else if (row.side === 'away') {
-        odds.away.spread = row.line;
-        odds.away.spreadOdds = row.odds;
-      }
-    } else if (row.market_type === 'total') {
-      if (row.side === 'over') {
-        odds.overUnder = row.line;
-        odds.overOdds = row.odds;
-      } else if (row.side === 'under') {
-        odds.overUnder = row.line;
-        odds.underOdds = row.odds;
-      }
-    }
-  });
+  }
 
   return oddsMap;
 }

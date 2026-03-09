@@ -1,34 +1,37 @@
 /**
  * Lambda Function: Pre-Game Odds Snapshot
- * 
- * Scheduled: Daily at 09:05 ET via EventBridge
- * Purpose: Fetch and store pre-game odds for all scheduled games
- * 
+ *
+ * Scheduled: Every 30 min from 10am–12pm ET via EventBridge
+ * Purpose: Fetch today's NBA game odds from BallDontLie /v2/odds,
+ *          store raw snapshots, and transform into analytics tables.
+ *
+ * Prerequisite: nightly-bdl-updater must have run so today's games
+ *               exist in analytics.games (runs at 03:00 ET).
+ *
+ * Pipeline: BDL /v2/odds -> raw.odds_pull_runs + raw.odds_snapshots
+ *           -> analytics.game_odds_current + analytics.game_odds_history
+ *           -> analytics.game_line_movement_summary
+ *
  * Environment Variables:
  * - SUPABASE_DB_URL (required)
- * - ODDS_API_KEY (required)
- * - ODDS_API_BASE (optional, defaults to https://api.the-odds-api.com/v4)
- * - PREFERRED_BOOKMAKER (optional, defaults to 'draftkings')
+ * - BALLDONTLIE_API_KEY (required)
+ * - PREFERRED_VENDOR (optional, defaults to 'draftkings')
  */
 
-// Load .env file for local testing (not needed in Lambda)
-// Try to load from parent directory (project root) or current directory
 try {
   const path = require('path');
   const fs = require('fs');
   const rootEnv = path.join(__dirname, '../../.env');
   const localEnv = path.join(__dirname, '.env');
-  
   if (fs.existsSync(rootEnv)) {
     require('dotenv').config({ path: rootEnv });
   } else if (fs.existsSync(localEnv)) {
     require('dotenv').config({ path: localEnv });
   } else {
-    // Try default dotenv behavior
     require('dotenv').config();
   }
 } catch {
-  // dotenv not available, assume running in Lambda with env vars set
+  // dotenv not available in Lambda — env vars set via configuration
 }
 
 import { Pool } from 'pg';
@@ -39,768 +42,341 @@ import { z } from 'zod';
 // ============================================
 
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
-const ODDS_API_KEY_ENV = process.env.ODDS_API_KEY;
-const ODDS_API_BASE = process.env.ODDS_API_BASE || 'https://api.the-odds-api.com/v4';
-const PREFERRED_BOOKMAKER = process.env.PREFERRED_BOOKMAKER || 'draftkings';
+const BALLDONTLIE_API_KEY = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;
+const BDL_BASE = 'https://api.balldontlie.io/v2';
+const PREFERRED_VENDOR = process.env.PREFERRED_VENDOR || 'draftkings';
 
 if (!SUPABASE_DB_URL) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
 }
-
-if (!ODDS_API_KEY_ENV) {
-  throw new Error('Missing ODDS_API_KEY environment variable');
+if (!BALLDONTLIE_API_KEY) {
+  throw new Error('Missing BALLDONTLIE_API_KEY environment variable');
 }
 
-// After validation, TypeScript knows these are strings
-const ODDS_API_KEY: string = ODDS_API_KEY_ENV;
-
-// Clean and validate connection string
 let cleanedDbUrl = SUPABASE_DB_URL.trim();
-// Remove any trailing whitespace or newlines that might have been added
-cleanedDbUrl = cleanedDbUrl.replace(/\s+$/, '').replace(/^\s+/, '');
-
-// Validate connection string format
 if (!cleanedDbUrl.startsWith('postgresql://') && !cleanedDbUrl.startsWith('postgres://')) {
-  throw new Error(`Invalid connection string format. Must start with postgresql:// or postgres://. Got: ${cleanedDbUrl.substring(0, 20)}...`);
+  throw new Error(`Invalid connection string format: ${cleanedDbUrl.substring(0, 20)}...`);
 }
 
-// Parse connection string to extract components for better error handling
-let poolConfig: any = {
+const pool = new Pool({
   connectionString: cleanedDbUrl,
-  // Connection timeout settings
-  connectionTimeoutMillis: 15000, // 15 seconds to establish connection (increased)
-  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  max: 1, // Only 1 connection for Lambda (pooling handled by Supabase)
-  // SSL is required for Supabase
-  ssl: {
-    rejectUnauthorized: false // Supabase uses valid SSL certs, but this prevents cert validation issues
-  }
-};
-
-// Try to parse the connection string to validate it
-try {
-  const url = new URL(cleanedDbUrl);
-  console.log('Parsed connection URL:');
-  console.log('  Protocol:', url.protocol);
-  console.log('  Hostname:', url.hostname);
-  console.log('  Port:', url.port);
-  console.log('  Database:', url.pathname);
-  
-  // If hostname is empty or invalid, throw error
-  if (!url.hostname || url.hostname.length === 0) {
-    throw new Error(`Invalid hostname in connection string: "${url.hostname}"`);
-  }
-} catch (parseError: any) {
-  console.error('Failed to parse connection string:', parseError.message);
-  throw new Error(`Invalid connection string format: ${parseError.message}`);
-}
-
-// Configure pool with connection timeouts and retry settings
-const pool = new Pool(poolConfig);
-
-// ============================================
-// ZOD SCHEMAS (same as test script)
-// ============================================
-
-const OutcomeSchema = z.object({
-  name: z.string(),
-  price: z.number().int(),
-  point: z.number().optional(),
-  description: z.string().optional(),
+  connectionTimeoutMillis: 15000,
+  idleTimeoutMillis: 30000,
+  max: 1,
+  ssl: { rejectUnauthorized: false },
 });
 
-const MarketSchema = z.object({
-  key: z.string(),
-  last_update: z.string().optional(),
-  outcomes: z.array(OutcomeSchema),
+// ============================================
+// ZOD SCHEMAS
+// ============================================
+
+const BdlOddsRowSchema = z.object({
+  id: z.number(),
+  game_id: z.number(),
+  vendor: z.string(),
+  spread_home_value: z.string().nullable().optional(),
+  spread_home_odds: z.number().nullable().optional(),
+  spread_away_value: z.string().nullable().optional(),
+  spread_away_odds: z.number().nullable().optional(),
+  moneyline_home_odds: z.number().nullable().optional(),
+  moneyline_away_odds: z.number().nullable().optional(),
+  total_value: z.string().nullable().optional(),
+  total_over_odds: z.number().nullable().optional(),
+  total_under_odds: z.number().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
 });
 
-const BookmakerSchema = z.object({
-  key: z.string(),
-  title: z.string(),
-  last_update: z.string().optional(),
-  markets: z.array(MarketSchema),
+const BdlOddsResponseSchema = z.object({
+  data: z.array(BdlOddsRowSchema),
+  meta: z.object({
+    next_cursor: z.number().nullable().optional(),
+    per_page: z.number().optional(),
+  }).optional(),
 });
 
-const OddsEventSchema = z.object({
-  id: z.string(),
-  sport_key: z.string(),
-  sport_title: z.string(),
-  commence_time: z.string(),
-  home_team: z.string(),
-  away_team: z.string(),
-  bookmakers: z.array(BookmakerSchema).optional(),
-});
-
-const OddsApiResponseSchema = z.array(OddsEventSchema);
+type BdlOddsRow = z.infer<typeof BdlOddsRowSchema>;
 
 // ============================================
-// TEAM NAME MAPPING (same as test script)
+// HELPERS
 // ============================================
 
-const ODDS_API_TEAM_TO_ABBR: Record<string, string> = {
-  'Atlanta Hawks': 'ATL',
-  'Boston Celtics': 'BOS',
-  'Brooklyn Nets': 'BRK',
-  'Charlotte Hornets': 'CHO',
-  'Chicago Bulls': 'CHI',
-  'Cleveland Cavaliers': 'CLE',
-  'Dallas Mavericks': 'DAL',
-  'Denver Nuggets': 'DEN',
-  'Detroit Pistons': 'DET',
-  'Golden State Warriors': 'GSW',
-  'Houston Rockets': 'HOU',
-  'Indiana Pacers': 'IND',
-  'Los Angeles Clippers': 'LAC',
-  'LA Clippers': 'LAC',
-  'Los Angeles Lakers': 'LAL',
-  'Memphis Grizzlies': 'MEM',
-  'Miami Heat': 'MIA',
-  'Milwaukee Bucks': 'MIL',
-  'Minnesota Timberwolves': 'MIN',
-  'New Orleans Pelicans': 'NOP',
-  'New York Knicks': 'NYK',
-  'Oklahoma City Thunder': 'OKC',
-  'Orlando Magic': 'ORL',
-  'Philadelphia 76ers': 'PHI',
-  'Phoenix Suns': 'PHO',
-  'Portland Trail Blazers': 'POR',
-  'Sacramento Kings': 'SAC',
-  'San Antonio Spurs': 'SAS',
-  'Toronto Raptors': 'TOR',
-  'Utah Jazz': 'UTA',
-  'Washington Wizards': 'WAS',
-};
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-function getTeamAbbr(teamName: string): string | null {
-  return ODDS_API_TEAM_TO_ABBR[teamName] || null;
+function parseNumeric(val: string | null | undefined): number | null {
+  if (val == null || val === '') return null;
+  const n = parseFloat(val);
+  return isNaN(n) ? null : n;
 }
 
 // ============================================
-// MARKET TYPE MAPPING
+// FETCH ODDS FROM BDL
 // ============================================
 
-function mapMarketKeyToType(marketKey: string): 'moneyline' | 'spread' | 'total' | 'player_prop' | null {
-  const mapping: Record<string, 'moneyline' | 'spread' | 'total' | 'player_prop'> = {
-    'h2h': 'moneyline',
-    'spreads': 'spread',
-    'totals': 'total',
-    'player_points': 'player_prop',
-    'player_rebounds': 'player_prop',
-    'player_assists': 'player_prop',
-  };
-  return mapping[marketKey] || null;
-}
+async function fetchOddsForDate(dateStr: string): Promise<BdlOddsRow[]> {
+  const allRows: BdlOddsRow[] = [];
+  let cursor: number | null = null;
 
-/**
- * Extract stat type from market key
- * Example: 'player_points' -> 'points'
- */
-function getStatTypeFromMarketKey(marketKey: string): string | null {
-  if (marketKey.startsWith('player_')) {
-    return marketKey.replace('player_', '');
-  }
-  return null;
-}
+  while (true) {
+    const url = new URL(`${BDL_BASE}/odds`);
+    url.searchParams.set('dates[]', dateStr);
+    url.searchParams.set('per_page', '100');
+    if (cursor != null) {
+      url.searchParams.set('cursor', String(cursor));
+    }
 
-// ============================================
-// GET TODAY'S GAMES FROM BBREF_SCHEDULE
-// ============================================
+    console.log(`Fetching odds: ${url.toString().replace(/Authorization=[^&]+/, 'Authorization=***')}`);
 
-async function getTodaysGamesFromSchedule(): Promise<Array<{
-  game_id: string;
-  home_team_abbr: string;
-  away_team_abbr: string;
-  game_date: string;
-}>> {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-  
-  const result = await pool.query(`
-    SELECT 
-      COALESCE(canonical_game_id, bbref_game_id) as game_id,
-      home_team_abbr,
-      away_team_abbr,
-      game_date::text as game_date
-    FROM bbref_schedule
-    WHERE game_date = $1::date
-    ORDER BY COALESCE(start_time, game_date::timestamptz) ASC
-  `, [today]);
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: BALLDONTLIE_API_KEY as string },
+    });
 
-  return result.rows;
-}
+    if (res.status === 429) {
+      console.warn('Rate limited, waiting 60s...');
+      await sleep(60000);
+      continue;
+    }
 
-// ============================================
-// FETCH TEAM ODDS FROM API
-// ============================================
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`BDL API error: ${res.status} ${res.statusText} — ${body}`);
+    }
 
-async function fetchTeamOdds(): Promise<z.infer<typeof OddsApiResponseSchema>> {
-  // Validate ODDS_API_BASE
-  if (!ODDS_API_BASE || !ODDS_API_BASE.startsWith('http')) {
-    throw new Error(`Invalid ODDS_API_BASE: "${ODDS_API_BASE}". Must be a valid URL starting with http:// or https://`);
-  }
-  
-  // Validate ODDS_API_KEY
-  if (!ODDS_API_KEY) {
-    throw new Error('ODDS_API_KEY is not set');
-  }
-  
-  const apiUrl = `${ODDS_API_BASE}/sports/basketball_nba/odds`;
-  console.log('Fetching odds from:', apiUrl.replace(/apiKey=[^&]+/, 'apiKey=***'));
-  
-  const url = new URL(apiUrl);
-  url.searchParams.set('apiKey', ODDS_API_KEY);
-  url.searchParams.set('regions', 'us');
-  // Only fetch team odds here (player props require separate per-event calls)
-  url.searchParams.set('markets', 'h2h,spreads,totals');
-  url.searchParams.set('oddsFormat', 'american');
-  url.searchParams.set('dateFormat', 'iso');
+    const json = await res.json();
+    const parsed = BdlOddsResponseSchema.parse(json);
+    allRows.push(...parsed.data);
 
-  console.log('Full URL (hidden key):', url.toString().replace(/apiKey=[^&]+/, 'apiKey=***'));
-  const response = await fetch(url.toString());
+    cursor = parsed.meta?.next_cursor ?? null;
+    if (cursor == null) break;
 
-  if (!response.ok) {
-    throw new Error(`Odds API error: ${response.status} ${response.statusText}`);
+    await sleep(200);
   }
 
-  const data = await response.json();
-  return OddsApiResponseSchema.parse(data);
+  return allRows;
 }
 
 // ============================================
-// MAP EVENT TO GAME ID
+// RAW STORAGE
 // ============================================
 
-async function findGameIdFromSchedule(
-  homeTeamAbbr: string,
-  awayTeamAbbr: string,
-  gameDate: string
-): Promise<string | null> {
-  const dateObj = new Date(gameDate);
-  const utcDateStr = dateObj.toISOString().split('T')[0];
-  const etDateStr = new Date(dateObj.toLocaleString('en-US', { timeZone: 'America/New_York' }))
-    .toISOString()
-    .split('T')[0];
-
+async function createPullRun(dateQueried: string): Promise<number> {
   const result = await pool.query(
-    `SELECT bbref_game_id, canonical_game_id, game_date
-     FROM bbref_schedule
-     WHERE (
-       game_date = $1::date 
-       OR game_date = $2::date
-       OR game_date BETWEEN $1::date - INTERVAL '1 day' AND $1::date + INTERVAL '1 day'
-     )
-       AND home_team_abbr = $3
-       AND away_team_abbr = $4
-     ORDER BY ABS(EXTRACT(EPOCH FROM (COALESCE(start_time, game_date::timestamptz) - $5::timestamptz)))
-     LIMIT 1`,
-    [utcDateStr, etDateStr, homeTeamAbbr, awayTeamAbbr, gameDate]
+    `INSERT INTO raw.odds_pull_runs (pulled_at, provider, date_queried, status)
+     VALUES (now(), 'balldontlie', $1, 'started')
+     RETURNING pull_run_id`,
+    [dateQueried]
+  );
+  return result.rows[0].pull_run_id;
+}
+
+async function completePullRun(
+  pullRunId: number,
+  rowsReturned: number,
+  rowsStored: number,
+  status: 'success' | 'error',
+  metadata?: Record<string, unknown>,
+  errorMessage?: string
+): Promise<void> {
+  await pool.query(
+    `UPDATE raw.odds_pull_runs
+     SET rows_returned = $2, rows_stored = $3, status = $4,
+         metadata = $5, error_message = $6, completed_at = now()
+     WHERE pull_run_id = $1`,
+    [pullRunId, rowsReturned, rowsStored, status, metadata ? JSON.stringify(metadata) : null, errorMessage || null]
+  );
+}
+
+async function insertRawSnapshot(pullRunId: number, row: BdlOddsRow): Promise<void> {
+  await pool.query(
+    `INSERT INTO raw.odds_snapshots (
+       pull_run_id, bdl_odds_id, bdl_game_id, game_id, vendor,
+       spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
+       moneyline_home_odds, moneyline_away_odds,
+       total_value, total_over_odds, total_under_odds,
+       provider_updated_at, raw_payload
+     ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+    [
+      pullRunId,
+      row.id,
+      row.game_id,
+      String(row.game_id),
+      row.vendor,
+      parseNumeric(row.spread_home_value),
+      row.spread_home_odds ?? null,
+      parseNumeric(row.spread_away_value),
+      row.spread_away_odds ?? null,
+      row.moneyline_home_odds ?? null,
+      row.moneyline_away_odds ?? null,
+      parseNumeric(row.total_value),
+      row.total_over_odds ?? null,
+      row.total_under_odds ?? null,
+      row.updated_at ? new Date(row.updated_at) : null,
+      JSON.stringify(row),
+    ]
+  );
+}
+
+// ============================================
+// ANALYTICS TRANSFORM (inline)
+// ============================================
+
+async function transformToAnalytics(pullRunId: number): Promise<{ current: number; history: number; movement: number }> {
+  let currentCount = 0;
+  let historyCount = 0;
+
+  // Get the latest snapshot per game+vendor from this pull run,
+  // filtering to preferred vendor for current odds.
+  const latestRows = await pool.query(
+    `SELECT DISTINCT ON (game_id)
+       game_id, vendor,
+       spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
+       moneyline_home_odds, moneyline_away_odds,
+       total_value, total_over_odds, total_under_odds,
+       provider_updated_at, pull_run_id
+     FROM raw.odds_snapshots
+     WHERE pull_run_id = $1
+       AND vendor = $2
+       AND game_id IN (SELECT game_id FROM analytics.games)
+     ORDER BY game_id, provider_updated_at DESC NULLS LAST`,
+    [pullRunId, PREFERRED_VENDOR]
   );
 
-  if (result.rows.length === 0) {
-    return null;
-  }
-
-  return result.rows[0].canonical_game_id || result.rows[0].bbref_game_id;
-}
-
-// ============================================
-// RESOLVE PLAYER ID FROM NAME
-// ============================================
-
-/**
- * Normalize player name for matching (handles suffixes, special chars, etc.)
- */
-function normalizePlayerName(name: string): string {
-  return name
-    .trim()
-    .replace(/\s+/g, ' ')
-    .replace(/\./g, '')
-    .replace(/'/g, '')
-    // Remove common suffixes
-    .replace(/\s+Sr\.?$/i, '')
-    .replace(/\s+Jr\.?$/i, '')
-    .replace(/\s+II$/i, '')
-    .replace(/\s+III$/i, '')
-    .replace(/\s+IV$/i, '')
-    // Normalize special characters
-    .replace(/[áàâä]/g, 'a')
-    .replace(/[éèêë]/g, 'e')
-    .replace(/[íìîï]/g, 'i')
-    .replace(/[óòôö]/g, 'o')
-    .replace(/[úùûü]/g, 'u')
-    .replace(/[ç]/g, 'c')
-    .replace(/[ñ]/g, 'n')
-    .toLowerCase();
-}
-
-/**
- * Resolve player_id from player name, using game context (home/away teams)
- * Uses fuzzy matching strategies similar to other scripts in the codebase
- */
-async function resolvePlayerId(
-  playerName: string,
-  homeTeamAbbr: string,
-  awayTeamAbbr: string
-): Promise<string | null> {
-  const nameParts = playerName.trim().split(/\s+/);
-  const firstName = nameParts[0] || '';
-  const lastName = nameParts[nameParts.length - 1] || '';
-  
-  const normalizedName = normalizePlayerName(playerName);
-  
-  // Strategy 1: Exact match with team context (most accurate)
-  // Try home team first, then away team
-  for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
-    const exactMatch = await pool.query(`
-      SELECT p.player_id
-      FROM players p
-      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-      JOIN teams t ON ptr.team_id = t.team_id
-      WHERE LOWER(p.full_name) = LOWER($1)
-        AND t.abbreviation = $2
-      LIMIT 1
-    `, [playerName, teamAbbr]);
-    
-    if (exactMatch.rows.length > 0) {
-      return exactMatch.rows[0].player_id;
-    }
-  }
-  
-  // Strategy 2: Remove suffixes and match (handles "LeBron James Jr" vs "LeBron James")
-  const nameWithoutSuffix = playerName
-    .replace(/\s+Sr\.?$/i, '')
-    .replace(/\s+Jr\.?$/i, '')
-    .replace(/\s+II$/i, '')
-    .replace(/\s+III$/i, '')
-    .replace(/\s+IV$/i, '')
-    .trim();
-  
-  if (nameWithoutSuffix !== playerName) {
-    for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
-      const suffixMatch = await pool.query(`
-        SELECT p.player_id
-        FROM players p
-        JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-        JOIN teams t ON ptr.team_id = t.team_id
-        WHERE LOWER(p.full_name) = LOWER($1)
-          AND t.abbreviation = $2
-        LIMIT 1
-      `, [nameWithoutSuffix, teamAbbr]);
-      
-      if (suffixMatch.rows.length > 0) {
-        return suffixMatch.rows[0].player_id;
-      }
-    }
-  }
-  
-  // Strategy 3: Normalized match (handles "J.R. Smith" vs "JR Smith")
-  for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
-    const normalizedMatch = await pool.query(`
-      SELECT p.player_id
-      FROM players p
-      JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-      JOIN teams t ON ptr.team_id = t.team_id
-      WHERE LOWER(REPLACE(REPLACE(p.full_name, '.', ''), '''', '')) = $1
-        AND t.abbreviation = $2
-      LIMIT 1
-    `, [normalizedName, teamAbbr]);
-    
-    if (normalizedMatch.rows.length > 0) {
-      return normalizedMatch.rows[0].player_id;
-    }
-  }
-  
-  // Strategy 4: First + Last name match
-  if (firstName && lastName && nameParts.length >= 2) {
-    for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
-      const firstLastMatch = await pool.query(`
-        SELECT p.player_id
-        FROM players p
-        JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-        JOIN teams t ON ptr.team_id = t.team_id
-        WHERE LOWER(p.first_name) = LOWER($1)
-          AND LOWER(p.last_name) = LOWER($2)
-          AND t.abbreviation = $3
-        LIMIT 1
-      `, [firstName, lastName, teamAbbr]);
-      
-      if (firstLastMatch.rows.length > 0) {
-        return firstLastMatch.rows[0].player_id;
-      }
-    }
-  }
-  
-  // Strategy 5: Last name only (less accurate, but sometimes needed)
-  if (lastName) {
-    for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
-      const lastNameMatch = await pool.query(`
-        SELECT p.player_id
-        FROM players p
-        JOIN player_team_rosters ptr ON p.player_id = ptr.player_id
-        JOIN teams t ON ptr.team_id = t.team_id
-        WHERE LOWER(p.last_name) = LOWER($1)
-          AND t.abbreviation = $2
-        LIMIT 1
-      `, [lastName, teamAbbr]);
-      
-      if (lastNameMatch.rows.length > 0) {
-        return lastNameMatch.rows[0].player_id;
-      }
-    }
-  }
-  
-  // Strategy 6: Try exact match without team filter (player might not be in roster yet)
-  const noTeamExact = await pool.query(`
-    SELECT p.player_id
-    FROM players p
-    WHERE LOWER(p.full_name) = LOWER($1)
-    LIMIT 1
-  `, [playerName]);
-  
-  if (noTeamExact.rows.length > 0) {
-    return noTeamExact.rows[0].player_id;
-  }
-  
-  // Strategy 7: Try normalized match without team filter
-  const noTeamNormalized = await pool.query(`
-    SELECT p.player_id
-    FROM players p
-    WHERE LOWER(REPLACE(REPLACE(p.full_name, '.', ''), '''', '')) = $1
-    LIMIT 1
-  `, [normalizedName]);
-  
-  if (noTeamNormalized.rows.length > 0) {
-    return noTeamNormalized.rows[0].player_id;
-  }
-  
-  // Strategy 8: Try first + last name without team filter
-  if (firstName && lastName && nameParts.length >= 2) {
-    const noTeamFirstLast = await pool.query(`
-      SELECT p.player_id
-      FROM players p
-      WHERE LOWER(p.first_name) = LOWER($1)
-        AND LOWER(p.last_name) = LOWER($2)
-      LIMIT 1
-    `, [firstName, lastName]);
-    
-    if (noTeamFirstLast.rows.length > 0) {
-      return noTeamFirstLast.rows[0].player_id;
-    }
-  }
-  
-  // Strategy 9: Check if player has played in recent games for these teams
-  // This helps catch players who might not be in rosters but have game stats
-  for (const teamAbbr of [homeTeamAbbr, awayTeamAbbr]) {
-    const recentGameMatch = await pool.query(`
-      SELECT DISTINCT pgs.player_id
-      FROM player_game_stats pgs
-      JOIN players p ON pgs.player_id = p.player_id
-      JOIN teams t ON pgs.team_id = t.team_id
-      WHERE LOWER(p.full_name) = LOWER($1)
-        AND t.abbreviation = $2
-        AND pgs.game_id IN (
-          SELECT game_id 
-          FROM games 
-          WHERE start_time > NOW() - INTERVAL '30 days'
-          ORDER BY start_time DESC
-          LIMIT 50
-        )
-      LIMIT 1
-    `, [playerName, teamAbbr]);
-    
-    if (recentGameMatch.rows.length > 0) {
-      return recentGameMatch.rows[0].player_id;
-    }
-  }
-  
-  // Player not found
-  console.warn(`⚠️  Could not resolve player: "${playerName}" (teams: ${awayTeamAbbr} @ ${homeTeamAbbr})`);
-  return null;
-}
-
-// ============================================
-// STORE RAW PAYLOAD
-// ============================================
-
-async function storeStagingEvent(
-  event: z.infer<typeof OddsEventSchema>,
-  cursor: string
-): Promise<number> {
-  // Test connection first with a simple query
-  try {
-    await pool.query('SELECT 1');
-  } catch (connError: any) {
-    console.error('Database connection test failed:', connError.message);
-    console.error('Connection error code:', connError.code);
-    // Log connection string (masked) for debugging
-    const maskedUrl = SUPABASE_DB_URL ? SUPABASE_DB_URL.replace(/:[^:@]+@/, ':****@').replace(/@[^:]+:/, '@****:') : 'NOT SET';
-    console.error('Connection string (masked):', maskedUrl);
-    throw new Error(`Database connection failed: ${connError.message || connError.code || 'Unknown error'}`);
-  }
-  
-  const result = await pool.query(
-    `INSERT INTO staging_events (source, kind, cursor, payload, fetched_at)
-     VALUES ($1, $2, $3, $4, NOW())
-     RETURNING id`,
-    ['oddsapi', 'odds', cursor, JSON.stringify(event)]
-  );
-
-  return result.rows[0].id;
-}
-
-// ============================================
-// INSERT MARKETS
-// ============================================
-
-async function insertMarket(params: {
-  gameId: string;
-  marketType: 'moneyline' | 'spread' | 'total' | 'player_prop';
-  bookmaker: string;
-  snapshotType: string;
-  side: string | null;
-  line: number | null;
-  odds: number;
-  providerId: string;
-  rawData?: any;
-  playerId?: string | null;
-  statType?: string | null;
-  statLine?: number | null;
-}): Promise<void> {
-  const { gameId, marketType, bookmaker, snapshotType, side, line, odds, providerId, rawData, playerId, statType, statLine } = params;
-
-  if (snapshotType === 'pre_game' || snapshotType === 'closing') {
-    // Check for existing market (handles both team markets and player props)
-    const existing = await pool.query(
-      `SELECT id FROM markets
-       WHERE game_id = $1
-         AND market_type = $2
-         AND bookmaker = $3
-         AND snapshot_type = $4
-         AND COALESCE(side, '') = COALESCE($5, '')
-         AND COALESCE(player_id, '') = COALESCE($6, '')
-         AND COALESCE(stat_type, '') = COALESCE($7, '')`,
-      [gameId, marketType, bookmaker, snapshotType, side, playerId || null, statType || null]
-    );
-
-    if (existing.rows.length > 0) {
-      // Update existing market
-      await pool.query(
-        `UPDATE markets
-         SET odds = $1,
-             line = $2,
-             stat_line = $3,
-             updated_at = NOW(),
-             fetched_at = NOW()
-         WHERE id = $4`,
-        [odds, line, statLine, existing.rows[0].id]
-      );
-    } else {
-      // Insert new market
-      await pool.query(
-        `INSERT INTO markets (
-          game_id, market_type, bookmaker, snapshot_type, side, line, odds,
-          player_id, stat_type, stat_line,
-          provider_id, raw_data, fetched_at
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())`,
-        [
-          gameId, marketType, bookmaker, snapshotType, side || null, line || null, odds,
-          playerId || null, statType || null, statLine || null,
-          providerId, rawData ? JSON.stringify(rawData) : null
-        ]
-      );
-    }
-  } else {
-    // For live/mid_game snapshots, always insert (no unique constraint)
-    await pool.query(
-      `INSERT INTO markets (
-        game_id, market_type, bookmaker, snapshot_type, side, line, odds,
-        player_id, stat_type, stat_line,
-        provider_id, raw_data, fetched_at
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())`,
+  for (const row of latestRows.rows) {
+    // Upsert current odds
+    const upsertResult = await pool.query(
+      `INSERT INTO analytics.game_odds_current (
+         game_id, home_moneyline, away_moneyline,
+         home_spread, home_spread_odds, away_spread, away_spread_odds,
+         total, over_odds, under_odds,
+         vendor, snapshot_at, pull_run_id, updated_at
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,now())
+       ON CONFLICT (game_id) DO UPDATE SET
+         home_moneyline = excluded.home_moneyline,
+         away_moneyline = excluded.away_moneyline,
+         home_spread = excluded.home_spread,
+         home_spread_odds = excluded.home_spread_odds,
+         away_spread = excluded.away_spread,
+         away_spread_odds = excluded.away_spread_odds,
+         total = excluded.total,
+         over_odds = excluded.over_odds,
+         under_odds = excluded.under_odds,
+         vendor = excluded.vendor,
+         snapshot_at = excluded.snapshot_at,
+         pull_run_id = excluded.pull_run_id,
+         updated_at = now()`,
       [
-        gameId, marketType, bookmaker, snapshotType, side || null, line || null, odds,
-        playerId || null, statType || null, statLine || null,
-        providerId, rawData ? JSON.stringify(rawData) : null
+        row.game_id,
+        row.moneyline_home_odds, row.moneyline_away_odds,
+        row.spread_home_value, row.spread_home_odds,
+        row.spread_away_value, row.spread_away_odds,
+        row.total_value, row.total_over_odds, row.total_under_odds,
+        row.vendor,
+        row.provider_updated_at || new Date(),
+        row.pull_run_id,
       ]
     );
-  }
-}
-
-// ============================================
-// PROCESS EVENT
-// ============================================
-
-async function processEvent(
-  event: z.infer<typeof OddsEventSchema>,
-  stagingEventId: number,
-  gameId: string
-): Promise<{ processed: number; skipped: number; errors: number }> {
-  let processed = 0;
-  let skipped = 0;
-  let errors = 0;
-
-  if (!event.bookmakers || event.bookmakers.length === 0) {
-    console.warn(`No bookmakers for event ${event.id}`);
-    skipped++;
-    return { processed, skipped, errors };
+    currentCount += upsertResult.rowCount ?? 0;
   }
 
-  // Process preferred bookmaker first, then others if needed
-  const preferredBookmaker = event.bookmakers.find(b => b.key === PREFERRED_BOOKMAKER);
-  const bookmakersToProcess = preferredBookmaker 
-    ? [preferredBookmaker, ...event.bookmakers.filter(b => b.key !== PREFERRED_BOOKMAKER)]
-    : event.bookmakers;
-
-  for (const bookmaker of bookmakersToProcess) {
-      for (const market of bookmaker.markets) {
-      const marketType = mapMarketKeyToType(market.key);
-
-      // Only process team markets (player props handled separately)
-      if (!marketType || marketType === 'player_prop') {
-        continue;
-      }
-
-      for (const outcome of market.outcomes) {
-        try {
-          let side: string | null = null;
-          let line: number | null = null;
-
-          if (marketType === 'moneyline' || marketType === 'spread') {
-            // Team markets: moneyline or spread
-            side = outcome.name === event.home_team ? 'home' : 'away';
-            line = marketType === 'spread' ? outcome.point || null : null;
-          } else if (marketType === 'total') {
-            // Total (over/under)
-            side = outcome.name.toLowerCase().includes('over') ? 'over' : 'under';
-            line = outcome.point || null;
-          }
-
-          await insertMarket({
-            gameId,
-            marketType,
-            bookmaker: bookmaker.key,
-            snapshotType: 'pre_game',
-            side,
-            line,
-            odds: outcome.price,
-            providerId: event.id,
-            rawData: market,
-          });
-
-          processed++;
-        } catch (error) {
-          console.error(`Error processing outcome:`, error);
-          errors++;
-        }
-      }
-    }
-  }
-
-  await pool.query(
-    `UPDATE staging_events SET processed = true, processed_at = NOW() WHERE id = $1`,
-    [stagingEventId]
+  // Append all vendor rows from this run to history (deduped by unique constraint)
+  const allRows = await pool.query(
+    `SELECT game_id, vendor,
+       spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
+       moneyline_home_odds, moneyline_away_odds,
+       total_value, total_over_odds, total_under_odds,
+       provider_updated_at, pull_run_id
+     FROM raw.odds_snapshots
+     WHERE pull_run_id = $1
+       AND game_id IN (SELECT game_id FROM analytics.games)`,
+    [pullRunId]
   );
 
-  return { processed, skipped, errors };
+  for (const row of allRows.rows) {
+    const snapshotAt = row.provider_updated_at || new Date();
+    const insertResult = await pool.query(
+      `INSERT INTO analytics.game_odds_history (
+         game_id, home_moneyline, away_moneyline,
+         home_spread, home_spread_odds, away_spread, away_spread_odds,
+         total, over_odds, under_odds,
+         vendor, snapshot_at, pull_run_id
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       ON CONFLICT (game_id, vendor, snapshot_at) DO NOTHING`,
+      [
+        row.game_id,
+        row.moneyline_home_odds, row.moneyline_away_odds,
+        row.spread_home_value, row.spread_home_odds,
+        row.spread_away_value, row.spread_away_odds,
+        row.total_value, row.total_over_odds, row.total_under_odds,
+        row.vendor, snapshotAt, row.pull_run_id,
+      ]
+    );
+    historyCount += insertResult.rowCount ?? 0;
+  }
+
+  // Refresh line movement summary for affected games
+  const affectedGameIds = [...new Set(allRows.rows.map((r: any) => r.game_id))];
+  const movementCount = await refreshLineMovementSummary(affectedGameIds);
+
+  return { current: currentCount, history: historyCount, movement: movementCount };
 }
 
-// ============================================
-// PROCESS PLAYER PROPS
-// ============================================
+async function refreshLineMovementSummary(gameIds: string[]): Promise<number> {
+  if (gameIds.length === 0) return 0;
+  let count = 0;
 
-async function processPlayerProps(
-  playerPropsData: any,
-  gameId: string,
-  eventId: string,
-  homeAbbr: string,
-  awayAbbr: string
-): Promise<{ processed: number; skipped: number; errors: number }> {
-  let processed = 0;
-  let skipped = 0;
-  let errors = 0;
-
-  if (!playerPropsData.bookmakers || playerPropsData.bookmakers.length === 0) {
-    return { processed, skipped, errors };
+  for (const gameId of gameIds) {
+    const result = await pool.query(
+      `INSERT INTO analytics.game_line_movement_summary (
+         game_id,
+         open_home_spread, open_total, open_home_ml,
+         current_home_spread, current_total, current_home_ml,
+         spread_movement, total_movement,
+         snapshots_count, first_seen_at, last_seen_at, updated_at
+       )
+       SELECT
+         $1,
+         first_snap.home_spread, first_snap.total, first_snap.home_moneyline,
+         last_snap.home_spread, last_snap.total, last_snap.home_moneyline,
+         last_snap.home_spread - first_snap.home_spread,
+         last_snap.total - first_snap.total,
+         stats.cnt, stats.first_at, stats.last_at, now()
+       FROM (
+         SELECT home_spread, total, home_moneyline
+         FROM analytics.game_odds_history
+         WHERE game_id = $1 AND vendor = $2
+         ORDER BY snapshot_at ASC
+         LIMIT 1
+       ) first_snap,
+       (
+         SELECT home_spread, total, home_moneyline
+         FROM analytics.game_odds_history
+         WHERE game_id = $1 AND vendor = $2
+         ORDER BY snapshot_at DESC
+         LIMIT 1
+       ) last_snap,
+       (
+         SELECT count(*)::int as cnt, min(snapshot_at) as first_at, max(snapshot_at) as last_at
+         FROM analytics.game_odds_history
+         WHERE game_id = $1 AND vendor = $2
+       ) stats
+       ON CONFLICT (game_id) DO UPDATE SET
+         open_home_spread = excluded.open_home_spread,
+         open_total = excluded.open_total,
+         open_home_ml = excluded.open_home_ml,
+         current_home_spread = excluded.current_home_spread,
+         current_total = excluded.current_total,
+         current_home_ml = excluded.current_home_ml,
+         spread_movement = excluded.spread_movement,
+         total_movement = excluded.total_movement,
+         snapshots_count = excluded.snapshots_count,
+         first_seen_at = excluded.first_seen_at,
+         last_seen_at = excluded.last_seen_at,
+         updated_at = now()`,
+      [gameId, PREFERRED_VENDOR]
+    );
+    count += result.rowCount ?? 0;
   }
 
-  // Process preferred bookmaker first, then others if needed
-  const preferredBookmaker = playerPropsData.bookmakers.find((b: any) => b.key === PREFERRED_BOOKMAKER);
-  const bookmakersToProcess = preferredBookmaker 
-    ? [preferredBookmaker, ...playerPropsData.bookmakers.filter((b: any) => b.key !== PREFERRED_BOOKMAKER)]
-    : playerPropsData.bookmakers;
-
-  for (const bookmaker of bookmakersToProcess) {
-    for (const market of bookmaker.markets || []) {
-      // Only process player prop markets
-      if (!market.key.startsWith('player_')) {
-        continue;
-      }
-
-      const statType = getStatTypeFromMarketKey(market.key);
-      if (!statType) {
-        continue;
-      }
-
-      for (const outcome of market.outcomes || []) {
-        try {
-          let side: string | null = null;
-          let statLine: number | null = null;
-          let playerId: string | null = null;
-
-          // IMPORTANT: For player props, the API structure is:
-          // - outcome.name = "Over" or "Under" (the side)
-          // - outcome.description = Player name (e.g., "LeBron James")
-          const playerName = outcome.description || outcome.name;
-          const sideName = (outcome.name || '').toLowerCase();
-          
-          // Handle Yes/No bets (double_double, triple_double, first_basket)
-          if (market.key.includes('double_double') || market.key.includes('triple_double') || market.key.includes('first_basket')) {
-            // For Yes/No props, check if name contains "yes" or "no"
-            // Some bookmakers might have different structures
-            side = sideName.includes('yes') || (!sideName.includes('no') && !outcome.point) ? 'yes' : 'no';
-            statLine = null; // Yes/No bets don't have a line
-          } else {
-            // Over/Under bets - name is "Over" or "Under"
-            side = sideName.includes('over') ? 'over' : 'under';
-            statLine = outcome.point || null;
-          }
-
-          // Resolve player_id from player name (use description, not name)
-          playerId = await resolvePlayerId(playerName, homeAbbr, awayAbbr);
-
-          if (!playerId) {
-            console.warn(`Skipping player prop: Could not resolve player "${outcome.name}" for ${statType}`);
-            skipped++;
-            continue;
-          }
-
-          await insertMarket({
-            gameId,
-            marketType: 'player_prop',
-            bookmaker: bookmaker.key,
-            snapshotType: 'pre_game',
-            side,
-            line: null, // Player props use stat_line, not line
-            odds: outcome.price,
-            providerId: eventId,
-            rawData: market,
-            playerId,
-            statType,
-            statLine,
-          });
-
-          processed++;
-        } catch (error) {
-          console.error(`Error processing player prop outcome:`, error);
-          errors++;
-        }
-      }
-    }
-  }
-
-  return { processed, skipped, errors };
+  return count;
 }
 
 // ============================================
@@ -811,207 +387,115 @@ interface LambdaEvent {
   source?: string;
   'detail-type'?: string;
   time?: string;
+  date?: string;     // single date override
+  dates?: string[];  // multiple dates override
+}
+
+function getTodayET(): string[] {
+  return [new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })];
+}
+
+async function processDate(dateStr: string): Promise<{
+  date: string;
+  pullRunId: number;
+  rowsFetched: number;
+  rowsStored: number;
+  uniqueGames: number;
+  uniqueVendors: number;
+  transform: { current: number; history: number; movement: number };
+}> {
+  const pullRunId = await createPullRun(dateStr);
+  console.log(`[${dateStr}] Created pull run: ${pullRunId}`);
+
+  const oddsRows = await fetchOddsForDate(dateStr);
+  console.log(`[${dateStr}] Fetched ${oddsRows.length} odds rows from BDL`);
+
+  if (oddsRows.length === 0) {
+    await completePullRun(pullRunId, 0, 0, 'success', { message: 'No odds returned' });
+    return { date: dateStr, pullRunId, rowsFetched: 0, rowsStored: 0, uniqueGames: 0, uniqueVendors: 0, transform: { current: 0, history: 0, movement: 0 } };
+  }
+
+  let stored = 0;
+  for (const row of oddsRows) {
+    try {
+      await insertRawSnapshot(pullRunId, row);
+      stored++;
+    } catch (err: any) {
+      console.error(`[${dateStr}] Error storing snapshot for game ${row.game_id} vendor ${row.vendor}:`, err.message);
+    }
+  }
+  console.log(`[${dateStr}] Stored ${stored}/${oddsRows.length} raw snapshots`);
+
+  const transformResult = await transformToAnalytics(pullRunId);
+  console.log(`[${dateStr}] Transform — current: ${transformResult.current}, history: ${transformResult.history}, movement: ${transformResult.movement}`);
+
+  const vendors = [...new Set(oddsRows.map(r => r.vendor))];
+  const games = [...new Set(oddsRows.map(r => r.game_id))];
+  await completePullRun(pullRunId, oddsRows.length, stored, 'success', {
+    vendors,
+    gamesCount: games.length,
+    transform: transformResult,
+  });
+
+  return { date: dateStr, pullRunId, rowsFetched: oddsRows.length, rowsStored: stored, uniqueGames: games.length, uniqueVendors: vendors.length, transform: transformResult };
 }
 
 export const handler = async (event: LambdaEvent) => {
   try {
-    console.log('Starting pre-game odds snapshot...');
+    console.log('Starting pre-game odds snapshot (BallDontLie /v2/odds)...');
     console.log('Event:', JSON.stringify(event));
-    
-    // Verify environment variables are set (for debugging)
-    console.log('Environment check:');
-    console.log('- SUPABASE_DB_URL:', SUPABASE_DB_URL ? 'SET (length: ' + SUPABASE_DB_URL.length + ')' : 'MISSING');
-    if (SUPABASE_DB_URL) {
-      // Log connection string format (masked) to help debug
-      const maskedUrl = SUPABASE_DB_URL.replace(/:[^:@]+@/, ':****@').replace(/@([^:]+):/, '@****:');
-      console.log('  Connection string (masked):', maskedUrl);
-      console.log('  Raw first 50 chars:', SUPABASE_DB_URL.substring(0, 50));
-      console.log('  Raw last 20 chars:', SUPABASE_DB_URL.substring(Math.max(0, SUPABASE_DB_URL.length - 20)));
-      // Check if it starts with postgresql://
-      if (!SUPABASE_DB_URL.trim().startsWith('postgresql://') && !SUPABASE_DB_URL.trim().startsWith('postgres://')) {
-        console.error('  ⚠️  WARNING: Connection string does not start with postgresql:// or postgres://');
-        console.error('  Actual start:', JSON.stringify(SUPABASE_DB_URL.substring(0, 20)));
-      } else {
-        console.log('  ✅ Starts with postgresql:// or postgres://');
-      }
-      // Check for db. prefix
-      if (SUPABASE_DB_URL.includes('@db.')) {
-        console.log('  ✅ Has db. prefix (correct format)');
-      } else if (SUPABASE_DB_URL.includes('@mbubzxjglvhaxikdghqb.')) {
-        console.log('  ⚠️  Missing db. prefix - should be @db.mbubzxjglvhaxikdghqb.supabase.co');
-      }
-      // Check for hidden characters
-      const hasNewlines = SUPABASE_DB_URL.includes('\n') || SUPABASE_DB_URL.includes('\r');
-      if (hasNewlines) {
-        console.error('  ⚠️  WARNING: Connection string contains newline characters!');
-      }
-    }
-    console.log('- ODDS_API_KEY:', ODDS_API_KEY ? 'SET (length: ' + ODDS_API_KEY.length + ')' : 'MISSING');
-    console.log('- ODDS_API_BASE:', ODDS_API_BASE || 'NOT SET (using default)');
-    console.log('- PREFERRED_BOOKMAKER:', PREFERRED_BOOKMAKER);
-    
-    // Validate ODDS_API_BASE format
-    if (ODDS_API_BASE && !ODDS_API_BASE.startsWith('http')) {
-      throw new Error(`Invalid ODDS_API_BASE format: "${ODDS_API_BASE}". Must start with http:// or https://`);
-    }
+    console.log(`Preferred vendor: ${PREFERRED_VENDOR}`);
 
-    // Get today's date in ET timezone
-    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-    console.log(`Fetching odds for: ${today}`);
+    const dates = event.dates
+      || (event.date ? [event.date] : getTodayET());
+    console.log(`Fetching odds for dates: ${dates.join(', ')}`);
 
-    // Step 1: Get today's games from bbref_schedule (source of truth)
-    const scheduledGames = await getTodaysGamesFromSchedule();
-    console.log(`Found ${scheduledGames.length} games scheduled for today in bbref_schedule`);
-
-    if (scheduledGames.length === 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'No games scheduled for today',
-          date: today,
-          processed: 0,
-        }),
-      };
-    }
-
-    // Step 2: Fetch team odds from API (returns all upcoming games)
-    const allEvents = await fetchTeamOdds();
-    console.log(`Fetched ${allEvents.length} total events from Odds API`);
-
-    // Step 3: Match API events to bbref_schedule games
-    // Only process events that match games in our schedule
-    const matchedEvents: Array<{ event: z.infer<typeof OddsEventSchema>; gameId: string }> = [];
-    
-    for (const scheduledGame of scheduledGames) {
-      const homeAbbr = scheduledGame.home_team_abbr;
-      const awayAbbr = scheduledGame.away_team_abbr;
-      
-      // Find matching event from API
-      const matchingEvent = allEvents.find(event => {
-        const eventHomeAbbr = getTeamAbbr(event.home_team);
-        const eventAwayAbbr = getTeamAbbr(event.away_team);
-        return eventHomeAbbr === homeAbbr && eventAwayAbbr === awayAbbr;
-      });
-
-      if (matchingEvent) {
-        matchedEvents.push({
-          event: matchingEvent,
-          gameId: scheduledGame.game_id,
-        });
-      } else {
-        console.warn(`No matching Odds API event found for: ${awayAbbr} @ ${homeAbbr}`);
+    const results = [];
+    for (const dateStr of dates) {
+      try {
+        const result = await processDate(dateStr);
+        results.push(result);
+      } catch (err: any) {
+        console.error(`Error processing ${dateStr}:`, err.message);
+        results.push({ date: dateStr, error: err.message });
       }
     }
 
-    console.log(`Matched ${matchedEvents.length} events to scheduled games`);
-    console.log(`Skipped ${scheduledGames.length - matchedEvents.length} games without Odds API data`);
+    const totalFetched = results.reduce((s, r) => s + ((r as any).rowsFetched || 0), 0);
+    const totalStored = results.reduce((s, r) => s + ((r as any).rowsStored || 0), 0);
 
-    // Step 4: Process team odds for matched events
-    let totalProcessed = 0;
-    let totalSkipped = 0;
-    let totalErrors = 0;
-    let playerPropsProcessed = 0;
-    let playerPropsSkipped = 0;
-
-    for (const { event: oddsEvent, gameId } of matchedEvents) {
-      // Store raw team odds payload
-      const stagingEventId = await storeStagingEvent(oddsEvent, today);
-      
-      // Process team odds (moneyline, spread, total)
-      const result = await processEvent(oddsEvent, stagingEventId, gameId);
-      totalProcessed += result.processed;
-      totalSkipped += result.skipped;
-      totalErrors += result.errors;
-
-      // Step 5: Fetch and process player props for this event
-      console.log(`Fetching player props for event: ${oddsEvent.id} (${getTeamAbbr(oddsEvent.away_team)} @ ${getTeamAbbr(oddsEvent.home_team)})`);
-      const playerPropsData = await fetchPlayerPropsForEvent(oddsEvent.id);
-      
-      if (playerPropsData && playerPropsData.bookmakers) {
-        // Process player props similar to team odds
-        const propsResult = await processPlayerProps(playerPropsData, gameId, oddsEvent.id, getTeamAbbr(oddsEvent.home_team), getTeamAbbr(oddsEvent.away_team));
-        playerPropsProcessed += propsResult.processed;
-        playerPropsSkipped += propsResult.skipped;
-        totalErrors += propsResult.errors;
-      } else {
-        console.log(`  No player props available for this event`);
-        playerPropsSkipped++;
-      }
-    }
-
-    const summary = {
-      date: today,
-      scheduledGames: scheduledGames.length,
-      matchedEvents: matchedEvents.length,
-      teamMarketsProcessed: totalProcessed,
-      playerPropsProcessed: playerPropsProcessed,
-      eventsSkipped: totalSkipped,
-      playerPropsSkipped: playerPropsSkipped,
-      errors: totalErrors,
-      timestamp: new Date().toISOString(),
-    };
-
+    const summary = { dates, results, totalFetched, totalStored, timestamp: new Date().toISOString() };
     console.log('Summary:', JSON.stringify(summary, null, 2));
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        ...summary,
-      }),
-    };
+    return { statusCode: 200, body: JSON.stringify({ success: true, ...summary }) };
   } catch (error: any) {
     console.error('Error in pre-game odds snapshot:', error);
-    console.error('Error stack:', error?.stack);
-    console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-    
-    // Handle errors that might not have a message property
-    const errorMessage = error?.message || error?.toString() || 'Unknown error occurred';
-    const errorDetails = {
-      message: errorMessage,
-      name: error?.name,
-      code: error?.code,
-    };
-    
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        error: errorMessage,
-        errorDetails: errorDetails,
-        timestamp: new Date().toISOString(),
-      }),
+      body: JSON.stringify({ success: false, error: error.message || 'Unknown error', timestamp: new Date().toISOString() }),
     };
-  } finally {
-    // Note: In Lambda, we don't close the pool to allow connection reuse
-    // For local testing, we'll close it in the test runner
   }
 };
 
-// For local testing - run if executed directly
+// For local testing — run if executed directly
 const isMainModule = process.argv[1] && (
-  process.argv[1].endsWith('index.ts') || 
+  process.argv[1].endsWith('index.ts') ||
   process.argv[1].endsWith('index.js') ||
   process.argv[1].includes('odds-pre-game-snapshot')
 );
 
 if (isMainModule) {
-  handler({}).then((result) => {
+  const dateArgs = process.argv.filter(a => a.match(/^\d{4}-\d{2}-\d{2}$/));
+  const event = dateArgs.length > 0 ? { dates: dateArgs } : {};
+  handler(event).then((result) => {
     console.log('\n=== Lambda Response ===');
-    console.log(JSON.stringify(result, null, 2));
-    // Close pool for local testing
+    console.log(JSON.stringify(JSON.parse(result.body), null, 2));
     pool.end().then(() => {
-      console.log('\n✅ Test completed successfully');
+      console.log('\nDone.');
       process.exit(0);
-    }).catch((err) => {
-      console.error('Error closing pool:', err);
-      process.exit(1);
     });
   }).catch((error) => {
     console.error('Error:', error);
-    pool.end().finally(() => {
-      process.exit(1);
-    });
+    pool.end().finally(() => process.exit(1));
   });
 }
-

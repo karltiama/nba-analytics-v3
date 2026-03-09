@@ -1,0 +1,161 @@
+## Context
+
+The app already ingests NBA game odds from BallDontLie (BDL) `/v2/odds` into `raw.odds_*` and `analytics.game_odds_*` tables using an append-only raw -> analytics transform pattern. Player props are a separate BDL endpoint (`/v2/odds/player_props`) that returns per-player betting markets (points, rebounds, assists, threes, PRA, etc.) with two market shapes: over_under and milestone. BDL does not provide historical prop data — once a game completes, props are removed. We need to build our own historical record via periodic snapshots.
+
+## Goal
+
+Implement a player props ingestion pipeline that:
+1. Fetches live player props from BDL `/v2/odds/player_props` per game
+2. Stores raw snapshots in append-only `raw.*` tables (preserving every pull)
+3. Transforms into clean `analytics.*` tables for frontend consumption
+4. Supports current prop display and future line movement analysis
+
+## Files Changed
+
+| File | Action | Purpose |
+|---|---|---|
+| `db/schemas/raw_player_props_schema.sql` | Created | DDL for `raw.player_prop_pull_runs`, `raw.player_prop_snapshots`, `raw.player_prop_market_outcomes` |
+| `db/schemas/analytics_player_props_schema.sql` | Created | DDL for `analytics.player_prop_current`, `analytics.player_prop_history`, `analytics.player_prop_movement_summary` |
+| `lambda/player-props-snapshot/index.ts` | Created | Lambda fetches BDL props per game, stores raw, runs inline transform |
+| `lambda/player-props-snapshot/package.json` | Created | Dependencies: pg, zod |
+| `lambda/player-props-snapshot/tsconfig.json` | Created | TypeScript config matching odds lambda |
+| `lambda/player-props-snapshot/README.md` | Created | Deployment guide, scheduling, API considerations |
+| `scripts/transform-raw-player-props-to-analytics.ts` | Created | Standalone idempotent raw->analytics transform |
+
+## Implementation Notes
+
+### Data Source: BDL `/v2/odds/player_props`
+
+Unlike the odds endpoint (which accepts `dates[]`), player props requires a `game_id` parameter. This means:
+- We first query `analytics.games` for today's non-Final games
+- Then make one API call per game
+- ~8-15 calls per run vs 1 for odds
+- 200ms delay between calls to stay within rate limits
+
+Each BDL response row contains: `id`, `game_id`, `player_id`, `vendor`, `prop_type`, `line_value`, and a polymorphic `market` object.
+
+### Two Market Types
+
+**over_under**: `{ type: "over_under", over_odds: -111, under_odds: -115 }` — standard O/U prop where you bet over or under the line.
+
+**milestone**: `{ type: "milestone", odds: -1960 }` — threshold bet (e.g., "will player score 18+ points?"). Single side with one odds value.
+
+Both are stored with flattened fields (`over_odds`, `under_odds`, `milestone_odds`) in the snapshot row. The `market_type` column distinguishes them. Zod's `discriminatedUnion` validates the polymorphic shape at parse time.
+
+### Raw Schema (3 tables)
+
+- `raw.player_prop_pull_runs`: one row per Lambda invocation, tracks `game_ids_queried` (text array), status, timing, metadata
+- `raw.player_prop_snapshots`: one row per BDL response row (game + player + vendor + prop market), mirrors API shape with flattened market fields. Stores both BDL integer IDs and canonical text IDs.
+- `raw.player_prop_market_outcomes`: normalized one-row-per-side (over/under/milestone), linked to snapshot_id. Useful for future queries like "show me all over lines with odds > +120".
+
+All three are append-only — no unique constraints, no updates, no deletes.
+
+### Analytics Schema (3 tables)
+
+- `analytics.player_prop_current`: latest state per prop market. Unique on `(game_id, player_id, vendor, prop_type, market_type, line_value)`. Denormalizes `player_name` for fast frontend queries. Delete+insert per game to handle O/U line movement (avoids stale lines).
+- `analytics.player_prop_history`: append-only timeline. Unique on `(game_id, player_id, vendor, prop_type, market_type, line_value, snapshot_at)` with ON CONFLICT DO NOTHING for idempotent re-runs.
+- `analytics.player_prop_movement_summary`: one row per `(game_id, player_id, vendor, prop_type)` for over_under markets. Shows opening line vs current line, computed from first/last history snapshots using CROSS JOIN LATERAL.
+
+### Transform Flow
+
+The Lambda runs the transform inline after storing raw data (same as odds). The standalone script handles re-runs and backfills.
+
+1. **Current**: For each affected game, DELETE existing rows for preferred vendor, then INSERT latest snapshot per unique (game, player, prop_type, market_type, line_value). This avoids stale lines when O/U values move.
+2. **History**: INSERT all vendor rows with ON CONFLICT DO NOTHING
+3. **Movement**: For each distinct (game, player, prop_type) with O/U history, UPSERT open vs current line comparison
+
+### ID Mapping
+
+BDL returns `game_id` (int) and `player_id` (int). Both map directly to `analytics.games.game_id` and `analytics.players.player_id` via `String()` cast — same pattern as odds. No provider_id_map lookup needed.
+
+The transform filters with `player_id IN (SELECT player_id FROM analytics.players)` to skip any props for players not yet in analytics (e.g., newly signed players who haven't had a game yet). This is a graceful degradation — those props are still preserved in raw for future backfill.
+
+## Key Decisions (and alternatives considered)
+
+| Decision | Why | Alternative |
+|---|---|---|
+| 3 raw tables (pull_runs + snapshots + market_outcomes) | Snapshots mirror BDL shape; outcomes normalize for flexible querying | 2 tables with market embedded in JSONB — harder to query |
+| Flattened market fields (over_odds, under_odds, milestone_odds) | Simpler SQL, no JSONB extraction needed | Nested market JSONB — requires `->` operators in every query |
+| Delete+insert for current (instead of upsert) | Cleanly handles O/U line movement without stale rows | Upsert on composite key — works but leaves stale rows when lines move |
+| `game_ids_queried text[]` on pull_runs | Tracks exactly which games we fetched, unlike odds which uses `date_queried` | JSONB metadata — less queryable |
+| Unique on 6 columns for history | Prevents duplicate inserts while allowing line_value changes to create new history rows | Unique on BDL prop_id + snapshot_at — fragile if BDL reuses IDs |
+| Zod discriminatedUnion for market parsing | Type-safe at parse time, catches unexpected market types early | Manual if/else — no compile-time safety |
+
+## Assumptions
+
+- BDL player_id integers map to analytics.players.player_id (text) via `String()` — confirmed by existing nightly-bdl-updater which uses the same pattern
+- BDL returns all props for a game in a single response (no pagination needed) — per API docs
+- Props for players not in analytics.players are skipped in transform but preserved in raw
+- The preferred vendor (DraftKings by default) has the most consistent prop coverage
+- O/U markets have exactly one line per (game, player, vendor, prop_type) at a time
+
+## Failure Modes
+
+| Scenario | Impact | Mitigation |
+|---|---|---|
+| BDL returns 429 rate limit | Fetch delayed | 60s wait + retry loop (same as odds) |
+| Player not in analytics.players | Props stored in raw but skipped in analytics | Run nightly-bdl-updater first; raw data available for backfill |
+| Game not in analytics.games | Game skipped entirely | nightly-bdl-updater is prerequisite; logged as 0 games found |
+| BDL returns empty props for a game | No rows inserted for that game | Logged; other games unaffected |
+| Duplicate Lambda invocations | Extra raw rows (append-only); analytics deduped | History unique constraint prevents dupes; current is delete+insert |
+| Network timeout mid-fetch | Partial raw data stored | Pull run marked as error; next run adds fresh data |
+| Market type not over_under or milestone | Zod parse error for that row | Row skipped with error log; other rows unaffected |
+
+## How to Test
+
+### Apply schemas
+```bash
+# Run these in order against your Supabase DB
+psql $SUPABASE_DB_URL -f db/schemas/raw_player_props_schema.sql
+psql $SUPABASE_DB_URL -f db/schemas/analytics_player_props_schema.sql
+```
+
+### Run Lambda locally
+```bash
+cd lambda/player-props-snapshot
+npm install
+npx tsx index.ts                 # Today's games
+npx tsx index.ts 2026-03-09      # Specific date
+```
+
+### Run standalone transform
+```bash
+npx tsx scripts/transform-raw-player-props-to-analytics.ts
+npx tsx scripts/transform-raw-player-props-to-analytics.ts --pull-run-id 1
+npx tsx scripts/transform-raw-player-props-to-analytics.ts --vendor fanduel
+```
+
+### Verify data
+```sql
+-- Check pull run
+SELECT * FROM raw.player_prop_pull_runs ORDER BY pulled_at DESC LIMIT 5;
+
+-- Check raw snapshots
+SELECT game_id, player_id, vendor, prop_type, line_value, market_type, count(*)
+FROM raw.player_prop_snapshots
+GROUP BY 1,2,3,4,5,6 ORDER BY count(*) DESC LIMIT 20;
+
+-- Check analytics current
+SELECT game_id, player_id, player_name, prop_type, line_value, market_type, over_odds, under_odds
+FROM analytics.player_prop_current
+ORDER BY game_id, player_name, prop_type LIMIT 30;
+
+-- Check history growth
+SELECT count(*) as total, count(DISTINCT game_id) as games, count(DISTINCT player_id) as players
+FROM analytics.player_prop_history;
+
+-- Check movement summary
+SELECT player_name, prop_type, open_line, current_line, line_movement, snapshots_count
+FROM analytics.player_prop_movement_summary
+WHERE line_movement != 0 ORDER BY abs(line_movement) DESC LIMIT 20;
+```
+
+## Next Steps
+
+1. Apply schemas to Supabase and test locally with real BDL data
+2. Deploy Lambda to AWS and configure EventBridge schedule (offset 5 min from odds)
+3. Build frontend player props display component reading from `analytics.player_prop_current`
+4. Add player props to the betting page game detail modal
+5. Build line movement visualization using `analytics.player_prop_history`
+6. Consider adding prop-based alerts (e.g., line moved > 1 point)
+7. Consider co-scheduling with odds Lambda via shared EventBridge rule

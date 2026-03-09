@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       const awayForm = recentFormMap[game.away_team_id] || [];
 
       return {
-        id: game.bbref_game_id || game.game_id, // Use bbref_game_id for unique React key (always unique)
+        id: game.game_id,
         gameDate: game.game_date,
         startTime: game.start_time,
         status: game.status,
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
         },
         homeScore: game.home_score,
         awayScore: game.away_score,
-        // Real odds from markets table (use game_id for lookup, which is canonical_game_id or bbref_game_id)
+        // Odds from analytics.game_odds_current (matched by BDL game_id)
         odds: (() => {
           const gameOdds = oddsMap[game.game_id] || {
             home: { moneyline: null, spread: null, spreadOdds: null },
@@ -135,13 +135,20 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    enrichedGames.sort((a: any, b: any) => {
+      const aFinal = a.status === 'Final' ? 1 : 0;
+      const bFinal = b.status === 'Final' ? 1 : 0;
+      if (aFinal !== bFinal) return aFinal - bFinal;
+      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+    });
+
     return NextResponse.json({
       games: enrichedGames,
       meta: {
         count: enrichedGames.length,
         date: displayDate,
         mode: mode,
-        dataSource: 'bbref_schedule',
+        dataSource: 'analytics.games',
       },
     });
   } catch (error: any) {
