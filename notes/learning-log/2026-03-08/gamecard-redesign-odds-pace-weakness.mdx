@@ -1,0 +1,47 @@
+## Context
+The GameCard component on the /betting dashboard was showing moneyline and spread inline next to each team row, with O/U and implied probability in a bottom bar. The layout needed to be reorganized for better scanability, and two new analytical signals (game pace and defensive weakness) needed to be surfaced.
+
+## Goal
+Redesign the GameCard layout with: (1) a dedicated 3-column odds row (Spread | Total | ML), (2) a pace signal badge computed from real team pace data, and (3) a largest-weakness indicator derived from defensive ratings.
+
+## Files Changed
+- `components/betting/GameCard.tsx` -- extended `Game` interface with optional `paceSignal` and `weakness` fields; rewrote card body with simplified team rows, 3-column odds grid, signals row, and repositioned probability bar
+- `app/betting/page.tsx` -- updated `transformGame` to compute `paceSignal` from existing `apiGame.homeTeam.pace` / `apiGame.awayTeam.pace`, and generate a `weakness` indicator from `defensiveRating`
+- `components/betting/skeletons.tsx` -- updated `GameCardSkeleton` to match the new card structure
+
+## Implementation Notes
+- **3-column odds grid**: uses `grid grid-cols-3` with each cell showing both teams. Favorite is highlighted in green (`#39ff14`).
+- **Pace signal**: projected pace = `(homePace + awayPace) / 2`. Labeled FAST (>=102), AVG (98-102), SLOW (<=98). Color-coded: green/cyan/orange.
+- **Weakness indicator**: picks whichever team has the worse `defensiveRating` (higher = worse). Estimates a rank from the rating value using `(rating - 105) * 2.5 + 15` as a rough approximation. This is a placeholder formula -- real positional weakness rankings should replace it later.
+- Team rows were simplified: logo + name + record only, with a "FAV" badge on the favored team. Odds removed from team rows since they now live in the dedicated grid.
+
+## Key Decisions (and alternatives considered)
+- **3-column grid vs inline per team**: chose grid for better visual scanability and comparison. Alternative was keeping odds per-row but adding a third column, which cluttered the team rows.
+- **Pace from real data vs sample**: used real pace values already available in the API response. No hardcoding needed.
+- **Weakness as estimated rank vs raw rating**: showing rank (e.g. "28th") is more intuitive than raw defensive rating (e.g. "112.5"). Used a rough formula as a bridge until real league-wide rankings are computed server-side.
+- **Optional fields**: `paceSignal` and `weakness` are optional on the `Game` interface so the card gracefully omits those sections when data is unavailable.
+
+## Assumptions
+- The API already returns `pace`, `offensiveRating`, and `defensiveRating` per team in the game response.
+- The weakness rank formula is approximate -- it will be replaced by a real SQL-based league ranking later.
+- Existing CSS classes (`glass-card`, `card-hover`, neon color tokens) are reused without modification.
+
+## Failure Modes
+- If pace values are 0 or missing, `paceSignal` is `undefined` and the badge is simply not rendered.
+- If defensive ratings are both 0, `weakness` is `undefined` and that badge is omitted.
+- If odds are all 0 (no market data), the odds grid still renders with 0 values rather than hiding -- this matches existing behavior.
+
+## How to Test
+1. `npm run dev`, navigate to `/betting`
+2. Verify each game card shows the 3-column odds row (Spread | Total | ML)
+3. Check that the favored team's odds are highlighted green
+4. Verify pace badge appears with FAST/AVG/SLOW label and projected value
+5. Verify weakness badge appears with team abbreviation, "Def Rtg", and a rank
+6. Check the implied probability bar still renders correctly below the signals row
+7. Check the loading skeleton matches the new layout structure
+
+## Next Steps
+- Replace weakness rank formula with real league-wide defensive ranking query
+- Add specific weakness categories (3PT Defense, Paint Defense, Transition Defense) instead of generic "Def Rtg"
+- Consider adding offensive weakness for the opposing team as a complementary signal
+- Wire in real-time odds updates when live game data is available

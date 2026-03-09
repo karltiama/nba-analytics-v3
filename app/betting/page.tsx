@@ -9,6 +9,7 @@ import {
   BettingInsights,
   FilterBar,
   GameDetailsModal,
+  TrendingPlayerStrip,
   type Game,
   type PlayerData,
   type Insight,
@@ -123,6 +124,32 @@ function transformGame(apiGame: ApiGame): Game {
   // Determine favorite
   const isFavorite = homeProb > awayProb ? 'home' : 'away';
 
+  // Pace signal (computed from real team pace values when available)
+  const homePace = apiGame.homeTeam.pace || 0;
+  const awayPace = apiGame.awayTeam.pace || 0;
+  const projectedPace = homePace && awayPace ? (homePace + awayPace) / 2 : 0;
+  const paceSignal = projectedPace > 0
+    ? {
+        label: projectedPace >= 102 ? 'FAST' : projectedPace <= 98 ? 'SLOW' : 'AVG',
+        projected: projectedPace,
+      }
+    : undefined;
+
+  // Weakness indicator (sample: pick whichever team has worse defensive rating)
+  const homeDef = apiGame.homeTeam.defensiveRating || 0;
+  const awayDef = apiGame.awayTeam.defensiveRating || 0;
+  let weakness: Game['weakness'] | undefined;
+  if (homeDef > 0 && awayDef > 0) {
+    const worseTeam = homeDef > awayDef ? apiGame.homeTeam : apiGame.awayTeam;
+    const worseRating = Math.max(homeDef, awayDef);
+    const estimatedRank = Math.min(30, Math.max(1, Math.round((worseRating - 105) * 2.5 + 15)));
+    weakness = {
+      label: 'Def Rtg',
+      team: worseTeam.abbreviation,
+      rank: estimatedRank,
+    };
+  }
+
   return {
     id: apiGame.id,
     homeTeam: {
@@ -159,6 +186,8 @@ function transformGame(apiGame: ApiGame): Game {
     awayImpliedProb: Math.round(awayProb),
     isFavorite,
     isClose,
+    paceSignal,
+    weakness,
   };
 }
 
@@ -358,10 +387,10 @@ export default function BettingDashboard() {
         onThemeToggle={() => setIsDarkMode(!isDarkMode)}
       />
 
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
+      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 overflow-hidden">
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Main Content */}
-          <div className="flex-1 space-y-6">
+          <div className="flex-1 min-w-0 space-y-6">
             {/* Filter Bar */}
             <FilterBar
               searchValue={searchValue}
@@ -386,6 +415,9 @@ export default function BettingDashboard() {
                 </button>
               </div>
             )}
+
+            {/* Trending Players Strip */}
+            <TrendingPlayerStrip />
 
             {/* Today's Games */}
             <section>

@@ -11,6 +11,7 @@ export { LineMovementChart } from './LineMovementChart';
 export { GameDetailsModal } from './GameDetailsModal';
 export { FilterBar } from './FilterBar';
 export type { SortOption } from './FilterBar';
+export { TrendingPlayerStrip } from './TrendingPlayerStrip';
 export {
   GameCardSkeleton,
   PlayerCardSkeleton,

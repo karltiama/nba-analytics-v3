@@ -545,6 +545,175 @@ export async function getPlayerNextOpponent(playerId: string) {
 }
 
 // ============================================
+// TRENDING STRIP QUERIES
+// ============================================
+
+export type TrendingStat = 'pts' | 'reb' | 'ast' | '3pm' | 'pra';
+
+export interface TrendingStripPlayer {
+  player_id: string;
+  full_name: string;
+  team_abbr: string;
+  next_opponent_abbr: string | null;
+  /** L5 average for the selected stat */
+  l5_avg: number;
+  /** Season average for the selected stat */
+  season_avg: number;
+  /** trend_score = l5_avg - season_avg */
+  trend_score: number;
+  /** All trend scores for badge logic */
+  trends: {
+    pts: number;
+    reb: number;
+    ast: number;
+    threePM: number;
+    pra: number;
+  };
+}
+
+/**
+ * Get trending players for the horizontal strip.
+ * Computes trend_score = L5_avg - season_avg for all 5 stat categories,
+ * then sorts by ABS(trend_score) of the requested stat.
+ *
+ * Only returns players trending UPWARD (positive trend_score) for the selected stat.
+ */
+export async function getTrendingPlayersStrip(
+  stat: TrendingStat = 'pts',
+  limit: number = 15,
+): Promise<TrendingStripPlayer[]> {
+  // Map stat param → SQL expressions for L5 and season columns
+  const statCol: Record<TrendingStat, { l5: string; season: string }> = {
+    pts:  { l5: 'pl5.l5_pts',  season: 'season_src.s_pts'  },
+    reb:  { l5: 'pl5.l5_reb',  season: 'season_src.s_reb'  },
+    ast:  { l5: 'pl5.l5_ast',  season: 'season_src.s_ast'  },
+    '3pm': { l5: 'pl5.l5_3pm', season: 'season_src.s_3pm'  },
+    pra:  { l5: 'pl5.l5_pra',  season: 'season_src.s_pra'  },
+  };
+  const col = statCol[stat] ?? statCol.pts;
+
+  const result = await query(
+    `
+    WITH player_team AS (
+      SELECT DISTINCT ON (player_id) player_id, team_id
+      FROM analytics.player_game_logs
+      WHERE season = $1 AND game_date IS NOT NULL
+      ORDER BY player_id, game_date DESC NULLS LAST
+    ),
+
+    -- L5 averages for all stats
+    player_l5 AS (
+      SELECT
+        sub.player_id,
+        AVG(sub.points)::numeric             AS l5_pts,
+        AVG(sub.rebounds)::numeric            AS l5_reb,
+        AVG(sub.assists)::numeric             AS l5_ast,
+        AVG(sub.three_pointers_made)::numeric AS l5_3pm,
+        AVG(sub.pra)::numeric                 AS l5_pra
+      FROM (
+        SELECT
+          pgl.player_id, pgl.points, pgl.rebounds, pgl.assists,
+          pgl.three_pointers_made, pgl.pra,
+          ROW_NUMBER() OVER (PARTITION BY pgl.player_id ORDER BY pgl.game_date DESC NULLS LAST) AS rn
+        FROM analytics.player_game_logs pgl
+        JOIN analytics.games g ON pgl.game_id = g.game_id
+        WHERE g.status = 'Final' AND pgl.points IS NOT NULL
+      ) sub
+      WHERE sub.rn <= 5
+      GROUP BY sub.player_id
+    ),
+
+    -- Season averages: use player_season_averages for pts/reb/ast/pra,
+    -- compute 3pm season avg from game logs (no column in season averages table)
+    season_3pm AS (
+      SELECT
+        pgl.player_id,
+        AVG(pgl.three_pointers_made)::numeric AS s_3pm
+      FROM analytics.player_game_logs pgl
+      JOIN analytics.games g ON pgl.game_id = g.game_id
+      WHERE g.status = 'Final' AND pgl.season = $1 AND pgl.points IS NOT NULL
+      GROUP BY pgl.player_id
+    ),
+
+    season_src AS (
+      SELECT
+        psa.player_id,
+        psa.pts_avg  AS s_pts,
+        psa.reb_avg  AS s_reb,
+        psa.ast_avg  AS s_ast,
+        psa.pra_avg  AS s_pra,
+        COALESCE(s3.s_3pm, 0) AS s_3pm,
+        psa.games_played
+      FROM analytics.player_season_averages psa
+      LEFT JOIN season_3pm s3 ON s3.player_id = psa.player_id
+      WHERE psa.season = $1
+    ),
+
+    -- Next opponent from schedule (today or nearest future game)
+    next_game AS (
+      SELECT DISTINCT ON (pt.player_id)
+        pt.player_id,
+        CASE
+          WHEN bs.home_team_id = pt.team_id THEN at_t.abbreviation
+          ELSE ht_t.abbreviation
+        END AS opp_abbr
+      FROM player_team pt
+      JOIN bbref_schedule bs
+        ON (bs.home_team_id = pt.team_id OR bs.away_team_id = pt.team_id)
+      JOIN teams ht_t ON bs.home_team_id = ht_t.team_id
+      JOIN teams at_t ON bs.away_team_id = at_t.team_id
+      WHERE bs.game_date >= CURRENT_DATE
+      ORDER BY pt.player_id, bs.game_date ASC
+    )
+
+    SELECT
+      p.player_id,
+      p.full_name,
+      t.abbreviation AS team_abbr,
+      ng.opp_abbr    AS next_opponent_abbr,
+      -- Selected stat L5 & season
+      ${col.l5}      AS l5_avg,
+      ${col.season}  AS season_avg,
+      -- All trend scores
+      (pl5.l5_pts  - season_src.s_pts)  AS trend_pts,
+      (pl5.l5_reb  - season_src.s_reb)  AS trend_reb,
+      (pl5.l5_ast  - season_src.s_ast)  AS trend_ast,
+      (pl5.l5_3pm  - season_src.s_3pm)  AS trend_3pm,
+      (pl5.l5_pra  - season_src.s_pra)  AS trend_pra
+    FROM season_src
+    JOIN analytics.players p  ON p.player_id  = season_src.player_id
+    JOIN player_team pt        ON pt.player_id = season_src.player_id
+    JOIN analytics.teams t     ON t.team_id    = pt.team_id
+    JOIN player_l5 pl5         ON pl5.player_id = season_src.player_id
+    LEFT JOIN next_game ng     ON ng.player_id  = season_src.player_id
+    WHERE season_src.games_played >= 5
+      AND season_src.s_pts >= 10
+      AND (${col.l5} - ${col.season}) > 0
+    ORDER BY ABS(${col.l5} - ${col.season}) DESC
+    LIMIT $2
+    `,
+    [CURRENT_ANALYTICS_SEASON, limit],
+  );
+
+  return result.map((row: any) => ({
+    player_id: row.player_id,
+    full_name: row.full_name,
+    team_abbr: row.team_abbr,
+    next_opponent_abbr: row.next_opponent_abbr ?? null,
+    l5_avg: parseFloat(row.l5_avg) || 0,
+    season_avg: parseFloat(row.season_avg) || 0,
+    trend_score: parseFloat(row.l5_avg) - parseFloat(row.season_avg) || 0,
+    trends: {
+      pts: parseFloat(row.trend_pts) || 0,
+      reb: parseFloat(row.trend_reb) || 0,
+      ast: parseFloat(row.trend_ast) || 0,
+      threePM: parseFloat(row.trend_3pm) || 0,
+      pra: parseFloat(row.trend_pra) || 0,
+    },
+  }));
+}
+
+// ============================================
 // INSIGHTS QUERIES
 // ============================================
 

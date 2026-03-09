@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, TrendingUp, ChevronRight } from 'lucide-react';
+import { Clock, TrendingUp, ChevronRight, Gauge, ShieldAlert } from 'lucide-react';
 
 interface TeamInfo {
   id: string;
@@ -30,6 +30,15 @@ export interface Game {
   awayImpliedProb: number;
   isFavorite: 'home' | 'away';
   isClose: boolean;
+  paceSignal?: {
+    label: string;
+    projected: number;
+  };
+  weakness?: {
+    label: string;
+    team: string;
+    rank: number;
+  };
 }
 
 interface GameCardProps {
@@ -47,132 +56,167 @@ function formatSpread(spread: number): string {
 }
 
 function TeamLogo({ team }: { team: TeamInfo }) {
-  // Placeholder logo with team abbreviation
   return (
-    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
-      <span className="text-sm font-bold text-white/80">{team.abbreviation}</span>
+    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
+      <span className="text-xs font-bold text-white/80">{team.abbreviation}</span>
     </div>
   );
 }
 
+const PACE_COLORS: Record<string, string> = {
+  FAST: '#39ff14',
+  AVG: '#00d4ff',
+  SLOW: '#ff6b35',
+};
+
 export function GameCard({ game, onViewDetails }: GameCardProps) {
-  const borderClass = game.isClose 
-    ? 'border-l-[#ff6b35]' 
-    : game.isFavorite === 'home' 
-      ? 'border-l-[#39ff14]' 
-      : 'border-l-[#39ff14]';
+  const borderClass = game.isClose
+    ? 'border-l-[#ff6b35]'
+    : 'border-l-[#39ff14]';
+
+  const awayIsFav = game.isFavorite === 'away';
+  const homeIsFav = game.isFavorite === 'home';
 
   return (
-    <div 
-      className={`glass-card rounded-xl border-l-4 ${borderClass} card-hover overflow-hidden`}
-    >
-      {/* Header with time */}
-      <div className="px-4 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+    <div className={`glass-card rounded-xl border-l-4 ${borderClass} card-hover overflow-hidden`}>
+      {/* Header */}
+      <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
         <div className="flex items-center gap-2">
           <Clock className="w-3.5 h-3.5 text-[#00d4ff]" />
           <span className="text-xs font-medium text-muted-foreground">{game.startTime}</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          {game.isClose && (
-            <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
-              CLOSE MATCHUP
+        {game.isClose && (
+          <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
+            CLOSE
+          </span>
+        )}
+      </div>
+
+      {/* Teams */}
+      <div className="px-4 pt-3 pb-2 space-y-2">
+        {/* Away */}
+        <div className="flex items-center gap-3">
+          <TeamLogo team={game.awayTeam} />
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-white text-sm truncate">{game.awayTeam.name}</div>
+            <div className="text-[11px] text-muted-foreground">{game.awayTeam.record}</div>
+          </div>
+          {awayIsFav && (
+            <span className="text-[9px] px-1.5 py-0.5 bg-[#39ff14]/15 text-[#39ff14] rounded font-bold shrink-0">
+              FAV
+            </span>
+          )}
+        </div>
+
+        {/* VS */}
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-[10px] text-muted-foreground/60 font-medium">VS</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        {/* Home */}
+        <div className="flex items-center gap-3">
+          <TeamLogo team={game.homeTeam} />
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-white text-sm truncate">{game.homeTeam.name}</div>
+            <div className="text-[11px] text-muted-foreground">{game.homeTeam.record}</div>
+          </div>
+          {homeIsFav && (
+            <span className="text-[9px] px-1.5 py-0.5 bg-[#39ff14]/15 text-[#39ff14] rounded font-bold shrink-0">
+              FAV
             </span>
           )}
         </div>
       </div>
 
-      {/* Teams Section */}
-      <div className="p-4 space-y-3">
-        {/* Away Team */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <TeamLogo team={game.awayTeam} />
-            <div>
-              <div className="font-semibold text-white">{game.awayTeam.name}</div>
-              <div className="text-xs text-muted-foreground">{game.awayTeam.record}</div>
-            </div>
+      {/* 3-Column Odds Row */}
+      <div className="mx-4 mb-3 grid grid-cols-3 rounded-lg border border-white/5 overflow-hidden bg-white/[0.02]">
+        {/* Spread */}
+        <div className="px-2 py-2 text-center border-r border-white/5">
+          <div className="text-[10px] text-muted-foreground mb-1 font-medium">SPREAD</div>
+          <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+            {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
           </div>
-          <div className="flex items-center gap-4 text-right">
-            <div>
-              <div className={`text-sm font-mono font-semibold ${game.awayOdds.moneyline < game.homeOdds.moneyline ? 'text-[#39ff14]' : 'text-white'}`}>
-                {formatOdds(game.awayOdds.moneyline)}
-              </div>
-              <div className="text-[10px] text-muted-foreground">ML</div>
-            </div>
-            <div>
-              <div className="text-sm font-mono font-medium text-white">
-                {formatSpread(game.awayOdds.spread)}
-              </div>
-              <div className="text-[10px] text-muted-foreground">{formatOdds(game.awayOdds.spreadOdds)}</div>
-            </div>
+          <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+            {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
           </div>
         </div>
 
-        {/* VS Divider */}
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-[10px] text-muted-foreground font-medium">VS</span>
-          <div className="flex-1 h-px bg-white/10" />
+        {/* Total */}
+        <div className="px-2 py-2 text-center border-r border-white/5">
+          <div className="text-[10px] text-muted-foreground mb-1 font-medium">TOTAL</div>
+          <div className="text-xs font-mono font-semibold text-[#00d4ff]">
+            O/U {game.overUnder}
+          </div>
+          <div className="text-[10px] font-mono text-muted-foreground">
+            O {formatOdds(game.overOdds)} / U {formatOdds(game.underOdds)}
+          </div>
         </div>
 
-        {/* Home Team */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <TeamLogo team={game.homeTeam} />
-            <div>
-              <div className="font-semibold text-white">{game.homeTeam.name}</div>
-              <div className="text-xs text-muted-foreground">{game.homeTeam.record}</div>
-            </div>
+        {/* Moneyline */}
+        <div className="px-2 py-2 text-center">
+          <div className="text-[10px] text-muted-foreground mb-1 font-medium">ML</div>
+          <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+            {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
           </div>
-          <div className="flex items-center gap-4 text-right">
-            <div>
-              <div className={`text-sm font-mono font-semibold ${game.homeOdds.moneyline < game.awayOdds.moneyline ? 'text-[#39ff14]' : 'text-white'}`}>
-                {formatOdds(game.homeOdds.moneyline)}
-              </div>
-              <div className="text-[10px] text-muted-foreground">ML</div>
-            </div>
-            <div>
-              <div className="text-sm font-mono font-medium text-white">
-                {formatSpread(game.homeOdds.spread)}
-              </div>
-              <div className="text-[10px] text-muted-foreground">{formatOdds(game.homeOdds.spreadOdds)}</div>
-            </div>
+          <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+            {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
           </div>
         </div>
       </div>
 
-      {/* Over/Under & Probabilities */}
-      <div className="px-4 py-3 border-t border-white/5 bg-white/[0.02]">
-        <div className="flex items-center justify-between">
-          {/* O/U */}
-          <div className="flex items-center gap-3">
-            <div className="text-center">
-              <div className="text-[10px] text-muted-foreground mb-0.5">O/U</div>
-              <div className="text-sm font-mono font-semibold text-[#00d4ff]">{game.overUnder}</div>
+      {/* Signals Row: Pace + Weakness */}
+      {(game.paceSignal || game.weakness) && (
+        <div className="mx-4 mb-3 flex items-stretch gap-2">
+          {game.paceSignal && (
+            <div className="flex-1 flex items-center gap-2 rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-1.5">
+              <Gauge className="w-3.5 h-3.5 shrink-0" style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }} />
+              <div className="min-w-0">
+                <span
+                  className="text-[10px] font-bold"
+                  style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }}
+                >
+                  {game.paceSignal.label} PACE
+                </span>
+                <div className="text-[10px] text-muted-foreground font-mono">
+                  Proj: {game.paceSignal.projected.toFixed(1)}
+                </div>
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              <span className="text-white/60">O {formatOdds(game.overOdds)}</span>
-              <span className="mx-1.5">/</span>
-              <span className="text-white/60">U {formatOdds(game.underOdds)}</span>
+          )}
+          {game.weakness && (
+            <div className="flex-1 flex items-center gap-2 rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-1.5">
+              <ShieldAlert className="w-3.5 h-3.5 text-[#ff4757] shrink-0" />
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold text-[#ff4757]">
+                  {game.weakness.team} {game.weakness.label}
+                </span>
+                <div className="text-[10px] text-muted-foreground font-mono">
+                  Rank: {game.weakness.rank}th
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+      )}
 
-          {/* Implied Probabilities */}
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <div className="text-[10px] text-muted-foreground mb-0.5">{game.awayTeam.abbreviation}</div>
-              <div className="text-xs font-medium text-white">{game.awayImpliedProb}%</div>
-            </div>
-            <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-[#00d4ff] to-[#39ff14] rounded-full transition-all duration-500"
-                style={{ width: `${game.homeImpliedProb}%` }}
-              />
-            </div>
-            <div className="text-center">
-              <div className="text-[10px] text-muted-foreground mb-0.5">{game.homeTeam.abbreviation}</div>
-              <div className="text-xs font-medium text-white">{game.homeImpliedProb}%</div>
-            </div>
+      {/* Implied Probabilities */}
+      <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
+        <div className="flex items-center gap-3">
+          <div className="text-center">
+            <div className="text-[10px] text-muted-foreground">{game.awayTeam.abbreviation}</div>
+            <div className="text-xs font-semibold text-white">{game.awayImpliedProb}%</div>
+          </div>
+          <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#00d4ff] to-[#39ff14] rounded-full transition-all duration-500"
+              style={{ width: `${game.homeImpliedProb}%` }}
+            />
+          </div>
+          <div className="text-center">
+            <div className="text-[10px] text-muted-foreground">{game.homeTeam.abbreviation}</div>
+            <div className="text-xs font-semibold text-white">{game.homeImpliedProb}%</div>
           </div>
         </div>
       </div>
@@ -180,7 +224,7 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
       {/* Action Button */}
       <button
         onClick={() => onViewDetails(game.id)}
-        className="w-full px-4 py-2.5 flex items-center justify-center gap-2 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 transition-colors group"
+        className="w-full px-4 py-2 flex items-center justify-center gap-2 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 transition-colors group"
       >
         <TrendingUp className="w-3.5 h-3.5 text-[#00d4ff]" />
         <span className="text-xs font-medium text-[#00d4ff]">View Game Details</span>
@@ -189,11 +233,3 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
