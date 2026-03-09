@@ -11,11 +11,14 @@ interface RecentGamesTableProps {
   loading?: boolean;
 }
 
+const GAME_DISPLAY_TZ = 'America/New_York';
+
 function formatDate(dateString: string) {
-  const date = new Date(dateString + 'T00:00:00');
+  const date = new Date(dateString + 'T12:00:00.000Z'); // noon UTC so calendar day is correct in ET
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
+    timeZone: GAME_DISPLAY_TZ,
   });
 }
 

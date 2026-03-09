@@ -1,0 +1,61 @@
+# Team Page Date/Score Fix (NYK Wrong Date)
+
+## Context
+
+The team schedule page (`/teams/[teamId]/schedule`) showed correct dates and scores for games (e.g. NYK vs DEN). The team profile page (`/teams/[teamId]`) showed wrong dates and sometimes wrong scores for the same games. Both pages use analytics data but different tables.
+
+## Goal
+
+- Align the team page's recent games display with the schedule page: correct date (ET calendar day) and score.
+- Root cause: `analytics.team_game_stats.game_date` was derived using UTC, not Eastern time.
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `scripts/compute-team-stats.ts` | Use `(g.start_time AT TIME ZONE 'America/New_York')::date` for game_date instead of `g.start_time::date` (UTC). |
+| `lambda/nightly-bdl-updater/index.ts` | Same game_date fix in the team_game_stats CTE. |
+| `app/teams/[teamId]/components/RecentGamesTimeline.tsx` | `formatDate`: use noon UTC for date-only strings and `timeZone: 'America/New_York'` for display. |
+
+## Implementation Notes
+
+- **Schedule page** uses `getScheduleForTeam` → `analytics.games` with `start_time` (timestamptz). It formats with `toDisplayDate(..., timeZone: 'America/New_York')` → correct ET date.
+- **Team page** uses `getTeamRecentGames` → `analytics.team_game_stats` with `game_date` (date). That column was set via `g.start_time::date`, which in PostgreSQL uses the session timezone (default UTC).
+- A game at 7:30 PM ET on March 7 = 12:30 AM UTC on March 8 → `game_date` was March 8 instead of March 7.
+- **Fix**: Cast `start_time` to date in ET: `(g.start_time AT TIME ZONE 'America/New_York')::date`.
+- **formatDate**: For date-only strings like "2025-03-07", `new Date("2025-03-07T00:00:00")` is midnight local. Using `T12:00:00.000Z` (noon UTC) ensures the calendar day is correct in ET, and `timeZone: 'America/New_York'` keeps display consistent with the schedule page.
+
+## Key Decisions
+
+| Decision | Chosen | Alternative | Why |
+|----------|--------|-------------|-----|
+| Fix at source (team_game_stats) | Yes | Fix only in UI | DB is source of truth; other consumers get correct dates. |
+| Use ET for game_date | Yes | Keep UTC | NBA games are scheduled in ET; schedule page already uses ET. |
+
+## Assumptions
+
+- `analytics.games.start_time` is stored correctly (per bdl-schedule-date-fix).
+- Scores in team_game_stats come from analytics.games (home_score/away_score); any score mismatch is from stale data or sync lag.
+
+## Failure Modes
+
+- **Existing rows**: Run `npx tsx scripts/compute-team-stats.ts` to recompute and update game_date for all team_game_stats rows.
+- **Lambda**: Next nightly run will use the new logic for newly processed games.
+
+## How to Test
+
+1. Run `npx tsx scripts/compute-team-stats.ts` to recompute team_game_stats.
+2. Open `/teams/NYK` and verify the most recent game shows the correct date (e.g. March 7 for NYK vs DEN).
+3. Compare with `/teams/NYK/schedule` — dates and scores should match.
+4. Check `SELECT game_date, team_points, points_allowed FROM analytics.team_game_stats WHERE team_id = '...' ORDER BY game_date DESC LIMIT 5` — game_date should be ET calendar day.
+
+## Next Steps
+
+- If scores still differ between pages, investigate sync order (games → team_game_stats) and whether team_game_stats is recomputed after games are updated.
+
+## Verification Checklist
+
+- [ ] Run `npx tsx scripts/compute-team-stats.ts` and confirm no errors.
+- [ ] Open `/teams/NYK` — most recent game date matches schedule page.
+- [ ] Open `/teams/NYK/schedule` — past games section shows same dates/scores.
+- [ ] Spot-check one game in DB: `game_date` in team_game_stats matches ET calendar day of `start_time` in games.

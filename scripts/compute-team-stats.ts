@@ -28,7 +28,7 @@ const aggregateTeamGameStats = `
       pgl.team_id,
       pgl.game_id,
       g.season,
-      g.start_time::date as game_date,
+      (g.start_time AT TIME ZONE 'America/New_York')::date as game_date,
       case when pgl.team_id = g.home_team_id then g.away_team_id else g.home_team_id end as opponent_team_id,
       (pgl.team_id = g.home_team_id) as is_home,
       coalesce(sum(pgl.points), 0)::int as team_points,
