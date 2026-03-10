@@ -950,15 +950,19 @@ export async function handler(event?: any): Promise<{ statusCode: number; body: 
       }),
     };
   } finally {
-    await pool.end().catch(() => {});
+    // Do not pool.end() in Lambda: container reuse would then break on warm invocations.
+    if (require.main === module) {
+      await pool.end().catch(() => {});
+    }
   }
 }
 
 // Allow local execution: npx tsx index.ts
 if (require.main === module) {
   handler()
-    .then((res) => {
+    .then(async (res) => {
       console.log(`Exit: ${res.statusCode}`);
+      await pool.end().catch(() => {});
       process.exit(res.statusCode === 200 ? 0 : 1);
     })
     .catch((err) => {

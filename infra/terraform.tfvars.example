@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars and set real values. Do not commit terraform.tfvars.
+# Or pass via environment: export TF_VAR_aws_region=us-east-1
+
+aws_region          = "us-east-1"
+lambda_function_name = "nightly-bdl-updater"
+lambda_timeout      = 300
+lambda_memory_size  = 512
+
+# Set to true to run the Lambda daily on schedule (e.g. 08:00 UTC).
+enable_schedule = false
+schedule_cron   = "cron(0 8 * * ? *)"
+
+# Required for nightly-bdl-updater. Use real values in terraform.tfvars or TF_VAR_lambda_env.
+lambda_env = {
+  SUPABASE_DB_URL       = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+  BALLDONTLIE_API_KEY   = "your_balldontlie_api_key"
+  # Optional:
+  # BALLDONTLIE_REQUEST_DELAY_MS = "200"
+  # MAX_RETRIES                  = "3"
+}
