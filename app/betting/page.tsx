@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   GameCard,
   PlayerCard,
   AIInsightPanel,
   BettingInsights,
   FilterBar,
+  getTodayET,
+  getDateLabel,
   TrendingPlayerStrip,
   type Game,
   type PlayerData,
@@ -192,6 +195,9 @@ function transformGame(apiGame: ApiGame): Game {
     isClose,
     paceSignal,
     weakness,
+    status: apiGame.status || undefined,
+    homeScore: apiGame.homeScore ?? undefined,
+    awayScore: apiGame.awayScore ?? undefined,
   };
 }
 
@@ -221,10 +227,19 @@ function transformPlayer(apiPlayer: ApiPlayer): PlayerData {
 // ================================
 
 export default function BettingDashboard() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('time');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showCloseMatchups, setShowCloseMatchups] = useState(false);
+
+  // Selected date from URL (ET, YYYY-MM-DD); default today
+  const selectedDate = useMemo(() => {
+    const date = searchParams.get('date');
+    if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+    return getTodayET();
+  }, [searchParams]);
 
   // Data states
   const [games, setGames] = useState<Game[]>([]);
@@ -238,11 +253,12 @@ export default function BettingDashboard() {
   const [loadingInsights, setLoadingInsights] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch today's games
-  const fetchGames = useCallback(async () => {
+  // Fetch games for a given date
+  const fetchGames = useCallback(async (date: string) => {
     setLoadingGames(true);
+    setError(null);
     try {
-      const res = await fetch('/api/betting/games');
+      const res = await fetch(`/api/betting/games?date=${encodeURIComponent(date)}`);
       if (!res.ok) throw new Error('Failed to fetch games');
       const data = await res.json();
       const transformedGames = data.games.map(transformGame);
@@ -254,6 +270,30 @@ export default function BettingDashboard() {
       setLoadingGames(false);
     }
   }, []);
+
+  // Update URL when date changes (shareable link)
+  const handleDateChange = useCallback(
+    (date: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('date', date);
+      router.replace(`/betting?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
+
+  // Optional: sync URL to today when no date param (so default view is shareable)
+  useEffect(() => {
+    if (!searchParams.get('date')) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('date', getTodayET());
+      router.replace(`/betting?${params.toString()}`, { scroll: false });
+    }
+  }, []); // run once on mount
+
+  // Refetch games when selected date changes
+  useEffect(() => {
+    fetchGames(selectedDate);
+  }, [selectedDate, fetchGames]);
 
   // Fetch players
   const fetchPlayers = useCallback(async () => {
@@ -287,12 +327,11 @@ export default function BettingDashboard() {
     }
   }, []);
 
-  // Initial data fetch
+  // Initial fetch for players and insights (games are fetched when selectedDate changes)
   useEffect(() => {
-    fetchGames();
     fetchPlayers();
     fetchInsights();
-  }, [fetchGames, fetchPlayers, fetchInsights]);
+  }, [fetchPlayers, fetchInsights]);
 
   // Filter games
   const filteredGames = games.filter(game => {
@@ -323,12 +362,27 @@ export default function BettingDashboard() {
 
   const isLoading = loadingGames || loadingPlayers || loadingInsights;
 
+  const dateLabel = getDateLabel(selectedDate);
+  const gamesSectionTitle =
+    dateLabel === 'Today'
+      ? "Today's Games"
+      : dateLabel === 'Yesterday'
+        ? "Yesterday's Games"
+        : `Games for ${dateLabel}`;
+
+  const emptyGamesMessage =
+    dateLabel === 'Today'
+      ? 'No games scheduled for today'
+      : dateLabel === 'Yesterday'
+        ? 'No games yesterday'
+        : `No games on ${dateLabel}`;
+
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 overflow-hidden">
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Main Content */}
           <div className="flex-1 min-w-0 space-y-6">
-            {/* Filter Bar */}
+            {/* Date + Filters (single bar) */}
             <FilterBar
               searchValue={searchValue}
               onSearchChange={setSearchValue}
@@ -338,6 +392,8 @@ export default function BettingDashboard() {
               onFavoritesToggle={() => setShowFavoritesOnly(!showFavoritesOnly)}
               showCloseMatchups={showCloseMatchups}
               onCloseMatchupsToggle={() => setShowCloseMatchups(!showCloseMatchups)}
+              selectedDate={selectedDate}
+              onDateChange={handleDateChange}
             />
 
             {/* Error State */}
@@ -345,7 +401,7 @@ export default function BettingDashboard() {
               <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757]">
                 <p className="text-sm text-[#ff4757]">Error loading data: {error}</p>
                 <button 
-                  onClick={() => { setError(null); fetchGames(); }}
+                  onClick={() => { setError(null); fetchGames(selectedDate); }}
                   className="mt-2 text-xs text-[#00d4ff] hover:underline"
                 >
                   Retry
@@ -356,12 +412,12 @@ export default function BettingDashboard() {
             {/* Trending Players Strip */}
             <TrendingPlayerStrip />
 
-            {/* Today's Games */}
+            {/* Games for selected date */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Today&apos;s Games</h2>
+                <h2 className="text-lg font-semibold text-white">{gamesSectionTitle}</h2>
                 <span className="text-xs text-muted-foreground">
-                  {loadingGames ? 'Loading...' : `${sortedGames.length} games scheduled`}
+                  {loadingGames ? 'Loading...' : `${sortedGames.length} games`}
                 </span>
               </div>
               
@@ -373,8 +429,10 @@ export default function BettingDashboard() {
                 </div>
               ) : sortedGames.length === 0 ? (
                 <div className="glass-card rounded-xl p-8 text-center">
-                  <p className="text-muted-foreground">No games scheduled for today</p>
-                  <p className="text-xs text-muted-foreground/60 mt-2">Check back later or select a different date</p>
+                  <p className="text-muted-foreground">{emptyGamesMessage}</p>
+                  {dateLabel === 'Today' && (
+                    <p className="text-xs text-muted-foreground/60 mt-2">Check back later or select a different date</p>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

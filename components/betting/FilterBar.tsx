@@ -1,7 +1,8 @@
 'use client';
 
-import { Search, SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { getTodayET, addDaysET, getDateLabel } from './DateNav';
 
 export type SortOption = 'time' | 'spread' | 'total' | 'probability';
 
@@ -14,6 +15,9 @@ interface FilterBarProps {
   onFavoritesToggle: () => void;
   showCloseMatchups: boolean;
   onCloseMatchupsToggle: () => void;
+  /** When provided, show date nav (prev/next + quick dates) in the same bar */
+  selectedDate?: string;
+  onDateChange?: (date: string) => void;
 }
 
 export function FilterBar({
@@ -24,7 +28,9 @@ export function FilterBar({
   showFavoritesOnly,
   onFavoritesToggle,
   showCloseMatchups,
-  onCloseMatchupsToggle
+  onCloseMatchupsToggle,
+  selectedDate,
+  onDateChange,
 }: FilterBarProps) {
   const [showSortMenu, setShowSortMenu] = useState(false);
 
@@ -35,8 +41,62 @@ export function FilterBar({
     { value: 'probability', label: 'Win Probability' }
   ];
 
+  const showDateNav = selectedDate != null && onDateChange != null;
+  const today = showDateNav ? getTodayET() : '';
+
   return (
     <div className="glass-card rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      {/* Date nav (when props provided) */}
+      {showDateNav && (
+        <>
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => onDateChange(addDaysET(selectedDate, -1))}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
+              aria-label="Previous day"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-sm font-medium text-white min-w-[100px] sm:min-w-[120px] text-center">
+              {getDateLabel(selectedDate)}
+            </span>
+            <button
+              type="button"
+              onClick={() => onDateChange(addDaysET(selectedDate, 1))}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
+              aria-label="Next day"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <div className="hidden sm:flex items-center gap-1 ml-1">
+              <button
+                type="button"
+                onClick={() => onDateChange(addDaysET(today, -1))}
+                className="px-2 py-1 rounded text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white"
+              >
+                Yesterday
+              </button>
+              <button
+                type="button"
+                onClick={() => onDateChange(today)}
+                className="px-2 py-1 rounded text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white"
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={() => onDateChange(addDaysET(today, 1))}
+                className="px-2 py-1 rounded text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white"
+              >
+                Tomorrow
+              </button>
+            </div>
+          </div>
+          <div className="h-px sm:h-6 sm:w-px sm:min-h-0 bg-white/10 shrink-0" aria-hidden />
+        </>
+      )}
+
       {/* Search */}
       <div className="relative flex-1 min-w-0">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

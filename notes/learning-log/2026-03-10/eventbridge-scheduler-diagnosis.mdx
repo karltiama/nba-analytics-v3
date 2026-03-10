@@ -1,0 +1,52 @@
+## Context
+
+The project uses AWS to run two Lambdas on a schedule: `odds-pre-game-snapshot` (odds every 30 min 10:00–12:00 ET) and `player-props-snapshot` (player props every 30 min 10:05–12:05 ET). The user reported that "neither Amazon EventBridge Scheduler is working" and suspected a legacy pattern.
+
+## Goal
+
+Diagnose why scheduled Lambda invocations are not running and document how to fix both the legacy EventBridge Rules approach and the newer EventBridge Scheduler approach.
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `docs/eventbridge-scheduler-diagnosis.md` | New — Diagnosis guide: Rules vs Scheduler, CLI checks, fix steps, cron reference |
+| `lambda/odds-pre-game-snapshot/README.md` | Added "If the Lambda never runs on schedule" with link to diagnosis doc |
+| `lambda/player-props-snapshot/README.md` | Same link to diagnosis doc |
+
+## Implementation Notes (key logic explained)
+
+- **Two services:** "EventBridge Rules" (event bus + schedule rule, `events.amazonaws.com`, `put-rule` / `put-targets`) vs "EventBridge Scheduler" (Schedules in the console, uses an execution role or `scheduler.amazonaws.com`). Mixing them causes confusion: creating a Schedule in Scheduler does not use the same permissions or targets as a Rule.
+- **Rules path:** For a Rule to invoke Lambda you need: (1) Rule with `State=ENABLED` and correct cron, (2) Target attached via `put-targets` (Lambda ARN), (3) Lambda resource policy allowing `events.amazonaws.com` with `SourceArn` = rule ARN. Missing (2) or (3) means the rule fires but Lambda is never invoked (or returns 403).
+- **Scheduler path:** Scheduler needs a schedule with Lambda as target and an execution role that can call `lambda:InvokeFunction`; Lambda may also need a resource policy for `scheduler.amazonaws.com` if not set by the console.
+- **Cron:** Used `0/30` for "every 30 minutes" in the diagnosis doc to match AWS preference; READMEs already used `*/30` in the console instructions (both valid in practice).
+
+## Key Decisions (and alternatives considered)
+
+- **Single diagnosis doc** covering both Rules and Scheduler so the user can identify which they have and fix it, rather than two separate guides.
+- **CLI-first verification** so they can run `list-rules`, `list-targets-by-rule`, and check Lambda resource policy without guessing in the console.
+- **Explicit Lambda permission commands** for both Rules (`events.amazonaws.com`) and Scheduler (`scheduler.amazonaws.com`) so the most common failure (missing invoke permission) is fixable by copy-paste.
+
+## Assumptions
+
+- Lambdas are deployed and work when invoked manually; the issue is only the trigger (Rule/Scheduler or permissions).
+- Region is typically `us-east-1`; user can substitute.
+- Default event bus for Rules.
+
+## Failure Modes
+
+- User created Schedules in EventBridge Scheduler but never set target or execution role → no invocations.
+- User created Rules but forgot `put-targets` or `add-permission` → rule fires, Lambda not invoked or 403.
+- Wrong cron (e.g. UTC vs ET) → runs at wrong time; doc uses UTC and notes ET equivalence.
+
+## How to Test (commands + steps)
+
+1. **Identify which service:** `aws events list-rules`; if rule names like `odds-snapshot-schedule` appear, you use Rules. If not, check EventBridge → Schedules in console.
+2. **Rules: check target:** `aws events list-targets-by-rule --rule odds-snapshot-schedule`. Must show Lambda ARN.
+3. **Rules: check permission:** Lambda console → Configuration → Permissions → Resource-based policy; must have `events.amazonaws.com` and the rule ARN.
+4. **Fix and re-check:** Run the `put-rule`, `put-targets`, and `add-permission` from the diagnosis doc; wait for next cron or trigger manually; check CloudWatch log group for new streams.
+
+## Next Steps
+
+- Optionally add EventBridge Scheduler–specific setup to the READMEs (with execution role and target) if the user prefers Scheduler over Rules.
+- Consider IaC (e.g. CDK/CloudFormation) for rule + target + Lambda permission so they stay in sync.

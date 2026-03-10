@@ -8,12 +8,7 @@ export default function BettingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
-
-  useEffect(() => {
-    setSelectedDate(new Date());
-  }, []);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -26,8 +21,6 @@ export default function BettingLayout({
   return (
     <div className="min-h-screen bg-background gradient-mesh">
       <Header
-        selectedDate={selectedDate ?? new Date()}
-        onDateChange={setSelectedDate}
         isDarkMode={isDarkMode}
         onThemeToggle={() => setIsDarkMode(!isDarkMode)}
       />

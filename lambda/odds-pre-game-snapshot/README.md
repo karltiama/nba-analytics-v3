@@ -145,6 +145,10 @@ This produces `lambda/odds-pre-game-snapshot/odds-pre-game-snapshot.zip` ready f
 1. Confirm `odds-snapshot-schedule` shows **Status: Enabled**
 2. Use the **Test** button to run manually, or wait for the next trigger
 
+### If the Lambda never runs on schedule
+
+EventBridge **Rules** (used above) are different from **EventBridge Scheduler**. If you created a "schedule" under Scheduler instead of a Rule, or if the rule has no target / Lambda permission, the function won’t run. See **[EventBridge Scheduler / Rules diagnosis](../../docs/eventbridge-scheduler-diagnosis.md)** for how to check and fix.
+
 ## Monitoring
 
 - **CloudWatch Logs:** `/aws/lambda/odds-pre-game-snapshot`

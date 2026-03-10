@@ -12,6 +12,7 @@ export { MatchupPageLayout } from './MatchupPageLayout';
 export type { GameDetailsData } from './MatchupPageLayout';
 export { FilterBar } from './FilterBar';
 export type { SortOption } from './FilterBar';
+export { DateNav, getTodayET, addDaysET, getDateLabel } from './DateNav';
 export { TrendingPlayerStrip } from './TrendingPlayerStrip';
 export {
   GameCardSkeleton,

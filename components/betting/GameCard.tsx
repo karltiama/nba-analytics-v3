@@ -40,6 +40,11 @@ export interface Game {
     team: string;
     rank: number;
   };
+  /** Game status: Final, Scheduled, Live, etc. */
+  status?: string;
+  /** Final score when status === 'Final' */
+  homeScore?: number | null;
+  awayScore?: number | null;
 }
 
 interface GameCardProps {
@@ -73,6 +78,15 @@ const PACE_COLORS: Record<string, string> = {
   SLOW: '#ff6b35',
 };
 
+function getStatusBadge(status: string | undefined): { label: string; className: string } | null {
+  if (!status) return null;
+  const s = status.toLowerCase();
+  if (s === 'final') return { label: 'FINAL', className: 'bg-white/20 text-white rounded-full font-semibold' };
+  if (s === 'scheduled') return { label: 'Scheduled', className: 'bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium' };
+  if (s === 'live' || s.includes('live')) return { label: 'Live', className: 'bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold' };
+  return { label: status, className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+}
+
 export function GameCard({ game, onViewDetails }: GameCardProps) {
   const gameHref = `/betting/games/${game.id}`;
   const borderClass = game.isClose
@@ -82,6 +96,8 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
   const hasOdds = game.homeOdds.moneyline !== 0 || game.awayOdds.moneyline !== 0;
   const awayIsFav = game.isFavorite === 'away';
   const homeIsFav = game.isFavorite === 'home';
+  const isFinal = game.status === 'Final' && game.homeScore != null && game.awayScore != null;
+  const statusBadge = getStatusBadge(game.status);
 
   return (
     <div className={`glass-card rounded-xl border-l-4 ${borderClass} card-hover overflow-hidden`}>
@@ -91,15 +107,33 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
           <Clock className="w-3.5 h-3.5 text-[#00d4ff]" />
           <span className="text-xs font-medium text-muted-foreground">{game.startTime}</span>
         </div>
-        {game.isClose && (
+        {statusBadge ? (
+          <span className={`text-[10px] px-2 py-0.5 ${statusBadge.className}`}>
+            {statusBadge.label}
+          </span>
+        ) : game.isClose ? (
           <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
             CLOSE
           </span>
-        )}
+        ) : null}
       </div>
 
+      {/* Final score (past games) */}
+      {isFinal && (
+        <div className="px-4 pt-3 pb-1">
+          <div className="text-center py-2 rounded-lg bg-white/[0.04] border border-white/5">
+            <div className="text-2xl font-bold text-white tabular-nums">
+              {game.awayScore} – {game.homeScore}
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">
+              {game.awayTeam.abbreviation} – {game.homeTeam.abbreviation}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Teams */}
-      <div className="px-4 pt-3 pb-2 space-y-2">
+      <div className={`px-4 space-y-2 ${isFinal ? 'pt-2 pb-2' : 'pt-3 pb-2'}`}>
         {/* Away */}
         <div className="flex items-center gap-3">
           <TeamLogo team={game.awayTeam} />

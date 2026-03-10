@@ -1,0 +1,66 @@
+# Date-based games browsing on betting dashboard
+
+## Context
+
+The betting dashboard at `/betting` showed only "today's games" with no way to view past or future dates. The API already supported `GET /api/betting/games?date=YYYY-MM-DD` and `getGamesForDate(date)` in `lib/betting/queries.ts` (analytics.games, ET date range). GameCard did not display game status or final scores.
+
+## Goal
+
+Allow users to select a date and view games for that date (past, today, future) with URL-driven state, a compact date navigation UI, and card behavior that adapts to past (Final + score) vs today/upcoming (odds, matchup).
+
+## Files Changed
+
+- **New:** `components/betting/DateNav.tsx` – prev/next arrows, date label, Today/Yesterday/Tomorrow buttons; exports `getTodayET`, `addDaysET`, `getDateLabel`.
+- **Updated:** `components/betting/index.ts` – export DateNav and date helpers.
+- **Updated:** `components/betting/GameCard.tsx` – extended `Game` with optional `status`, `homeScore`, `awayScore`; header status badge (Final/Scheduled/Live); prominent final score block when `status === 'Final'`.
+- **Updated:** `app/betting/page.tsx` – URL state via `useSearchParams`/`useRouter`; `selectedDate` from `?date=` (default today ET); `fetchGames(date)`; DateNav; dynamic section title and empty state; `transformGame` passes status/scores.
+
+## Implementation Notes (key logic explained)
+
+- **Date in URL:** `selectedDate` is derived from `searchParams.get('date')`. If missing or invalid, `getTodayET()` is used. On first load without `date`, a one-time effect runs `router.replace('/betting?date=' + today)` so the default view is shareable.
+- **Refetch:** `useEffect(() => fetchGames(selectedDate), [selectedDate, fetchGames])` so changing the date (nav or back/forward) refetches games.
+- **DateNav:** Receives `selectedDate` and `onDateChange(date)`. Parent updates URL via `router.replace('/betting?date=' + date)`; the effect then runs and refetches.
+- **GameCard:** When `status === 'Final'` and `homeScore`/`awayScore` are present, a score block is rendered above the teams; the header shows a "FINAL" badge. For non-Final, "Scheduled" or "Live" badges use the same helper; otherwise the existing "CLOSE" badge remains for pregame.
+
+## Key Decisions (and alternatives considered)
+
+- **URL as source of truth:** Chosen so links are shareable and back/forward work. Alternative: local state only would not support sharing a specific date.
+- **Single GameCard with conditionals:** Kept one component with conditional Final block and status badge instead of separate PastGameCard/PregameCard to avoid duplication.
+- **Sync URL on first load:** When no `date` param exists, we replace with `?date=today` so "today" is shareable. Alternative: leave URL without param and only add when user changes date; then sharing would show today by default anyway when opened.
+
+## Assumptions
+
+- API continues to return `status`, `homeScore`, `awayScore` for all games; ET date boundaries match backend (`getGamesForDate`).
+- No need to disable "Next day" when no future games exist (v1); empty state is sufficient.
+
+## Failure Modes
+
+- Invalid `?date=` value: we validate with `/^\d{4}-\d{2}-\d{2}$/` and fall back to today.
+- API error: existing error state and Retry button; Retry now passes `selectedDate` so it refetches for the current date.
+
+## How to Test (commands + steps)
+
+1. **Default and URL:** Open `/betting` – should show today’s games (ET) and URL should gain `?date=YYYY-MM-DD`. Refresh – same date and games.
+2. **Date nav:** Click "Yesterday" – URL updates, games refetch for yesterday. Click "Today" – back to today. Use prev/next arrows – date and list update.
+3. **Share link:** Copy URL with `?date=2026-03-09`, open in new tab – that date’s games load.
+4. **Past date:** Select a date with completed games – cards show "FINAL" badge and prominent score; "View Game Details" still works.
+5. **Empty date:** Pick a date with no games – message "No games on [date]" (or "No games today"/"No games yesterday" when applicable).
+6. **Section title:** Verify "Today's Games", "Yesterday's Games", and "Games for Mon, Mar 9, 2026" for the corresponding selected date.
+
+## Next Steps
+
+- Optional: disable or grey out "Next day" when selected date is in the future and API indicates no more games.
+- Optional: add a simple date picker (e.g. `<input type="date">`) that sets the same `date` param.
+
+---
+
+## Verification Checklist
+
+- [ ] On `/betting`, default view shows today’s games (ET) and URL shows `?date=<today>` (or gains it on load).
+- [ ] Changing date via prev/next or Today/Yesterday/Tomorrow updates the URL and game list.
+- [ ] Sharing a link with `?date=YYYY-MM-DD` opens that date’s games.
+- [ ] Past date: cards show "Final" and final score prominently; "View Game Details" works.
+- [ ] Today/upcoming: cards show current design with optional Scheduled/Live badge.
+- [ ] Empty state shows "No games on [date]" (or today/yesterday wording when applicable).
+- [ ] Section title is "Today’s Games" / "Yesterday’s Games" / "Games for …" as specified.
+- [ ] Mobile: date nav is usable (tap targets, readable label).

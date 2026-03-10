@@ -151,6 +151,10 @@ This produces `lambda/player-props-snapshot/player-props-snapshot.zip` ready for
 1. Confirm `player-props-snapshot-schedule` shows **Status: Enabled**
 2. Use the **Test** button to run manually, or wait for the next trigger
 
+### If the Lambda never runs on schedule
+
+EventBridge **Rules** (used above) are different from **EventBridge Scheduler**. If you created a "schedule" under Scheduler instead of a Rule, or if the rule has no target / Lambda permission, the function won’t run. See **[EventBridge Scheduler / Rules diagnosis](../../docs/eventbridge-scheduler-diagnosis.md)** for how to check and fix.
+
 ## Monitoring
 
 - **CloudWatch Logs:** `/aws/lambda/player-props-snapshot`

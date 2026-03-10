@@ -1,57 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { 
-  Sun, 
-  Moon, 
-  Calendar, 
-  User, 
-  ChevronLeft, 
-  ChevronRight,
-  Zap
-} from 'lucide-react';
+import { Sun, Moon, User, Zap } from 'lucide-react';
 
 interface HeaderProps {
-  selectedDate: Date;
-  onDateChange: (date: Date) => void;
   isDarkMode: boolean;
   onThemeToggle: () => void;
   teamName?: string;
   teamAbbr?: string;
 }
 
-export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
-  const pathname = usePathname();
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const showDateSelector = !teamName && pathname === '/betting';
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  };
-
-  const goToPreviousDay = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() - 1);
-    onDateChange(newDate);
-  };
-
-  const goToNextDay = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + 1);
-    onDateChange(newDate);
-  };
-
-  const goToToday = () => {
-    onDateChange(new Date());
-  };
-
-  const isToday = selectedDate.toDateString() === new Date().toDateString();
-
+export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 glass-card border-b border-white/5">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,49 +41,6 @@ export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle, 
               </p>
             </div>
           </div>
-
-          {/* Date Selector - Only on main betting dashboard (/betting) */}
-          {showDateSelector && (
-            <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-1">
-              <button
-                onClick={goToPreviousDay}
-                className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-                aria-label="Previous day"
-              >
-                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-              </button>
-              
-              <button
-                onClick={() => setShowDatePicker(!showDatePicker)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors min-w-[140px] justify-center"
-              >
-                <Calendar className="w-4 h-4 text-[#00d4ff]" />
-                <span className="text-sm font-medium" suppressHydrationWarning>{formatDate(selectedDate)}</span>
-                {isToday && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold" suppressHydrationWarning>
-                    TODAY
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={goToNextDay}
-                className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-                aria-label="Next day"
-              >
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </button>
-
-              {!isToday && (
-                <button
-                  onClick={goToToday}
-                  className="px-3 py-1.5 text-xs font-medium text-[#00d4ff] hover:bg-[#00d4ff]/10 rounded-lg transition-colors"
-                >
-                  Today
-                </button>
-              )}
-            </div>
-          )}
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
