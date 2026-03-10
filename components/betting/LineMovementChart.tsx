@@ -10,13 +10,18 @@ interface LineMovementChartProps {
   label: string;
   color?: string;
   height?: number;
+  width?: number;
+  /** When true, skip outer card wrapper (for use inside another card). */
+  embedded?: boolean;
 }
 
 export function LineMovementChart({ 
   data, 
   label, 
   color = '#00d4ff',
-  height = 120 
+  height = 120,
+  width = 400,
+  embedded = false,
 }: LineMovementChartProps) {
   if (data.length < 2) return null;
 
@@ -25,8 +30,7 @@ export function LineMovementChart({
   const max = Math.max(...values) + 0.5;
   const range = max - min || 1;
 
-  const padding = { top: 20, right: 40, bottom: 30, left: 10 };
-  const width = 280;
+  const padding = { top: 12, right: 36, bottom: 24, left: 8 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
@@ -40,27 +44,27 @@ export function LineMovementChart({
     .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
     .join(' ');
 
-  // Calculate opening vs current change
   const openingValue = data[0].value;
   const currentValue = data[data.length - 1].value;
   const change = currentValue - openingValue;
   const changeColor = change > 0 ? '#39ff14' : change < 0 ? '#ff4757' : '#8888a0';
 
-  return (
-    <div className="glass-card rounded-xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-medium text-white">{label}</h4>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
+  const content = (
+    <>
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-xs font-medium text-white">{label}</h4>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-muted-foreground">
             Open: <span className="text-white font-mono">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
           </span>
-          <span className="text-xs" style={{ color: changeColor }}>
+          <span className="text-[10px]" style={{ color: changeColor }}>
             {change > 0 ? '+' : ''}{change.toFixed(1)}
           </span>
         </div>
       </div>
 
-      <svg width={width} height={height} className="overflow-visible">
+      <div className="flex justify-center">
+        <svg width={width} height={height} className="overflow-visible">
         <defs>
           <linearGradient id={`line-gradient-${label.replace(/\s/g, '')}`} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor={color} stopOpacity="0.3" />
@@ -140,16 +144,20 @@ export function LineMovementChart({
           </text>
         ))}
       </svg>
+      </div>
 
       {/* Current Value */}
-      <div className="mt-2 flex items-center justify-center gap-2">
-        <span className="text-xs text-muted-foreground">Current:</span>
-        <span className="text-lg font-mono font-bold" style={{ color }}>
+      <div className="mt-1.5 flex items-center justify-center gap-1.5">
+        <span className="text-[10px] text-muted-foreground">Current:</span>
+        <span className="text-sm font-mono font-bold" style={{ color }}>
           {currentValue > 0 ? `+${currentValue}` : currentValue}
         </span>
       </div>
-    </div>
+    </>
   );
+
+  if (embedded) return content;
+  return <div className="glass-card rounded-xl p-4">{content}</div>;
 }
 
 

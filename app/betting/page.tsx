@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Header,
   GameCard,
   PlayerCard,
   AIInsightPanel,
   BettingInsights,
   FilterBar,
-  GameDetailsModal,
   TrendingPlayerStrip,
   type Game,
   type PlayerData,
@@ -38,6 +36,7 @@ interface ApiGame {
     record: string;
     offensiveRating: number;
     defensiveRating: number;
+    defensiveRank: number;
     pace: number;
     avgPoints: number;
     recentForm: Array<{
@@ -55,6 +54,7 @@ interface ApiGame {
     record: string;
     offensiveRating: number;
     defensiveRating: number;
+    defensiveRank: number;
     pace: number;
     avgPoints: number;
     recentForm: Array<{
@@ -135,19 +135,23 @@ function transformGame(apiGame: ApiGame): Game {
       }
     : undefined;
 
-  // Weakness indicator (sample: pick whichever team has worse defensive rating)
+  // Weakness indicator: pick whichever team has worse defensive rating (higher = worse)
+  // Uses real league-wide RANK from the API (1 = best, 30 = worst)
   const homeDef = apiGame.homeTeam.defensiveRating || 0;
   const awayDef = apiGame.awayTeam.defensiveRating || 0;
   let weakness: Game['weakness'] | undefined;
   if (homeDef > 0 && awayDef > 0) {
     const worseTeam = homeDef > awayDef ? apiGame.homeTeam : apiGame.awayTeam;
-    const worseRating = Math.max(homeDef, awayDef);
-    const estimatedRank = Math.min(30, Math.max(1, Math.round((worseRating - 105) * 2.5 + 15)));
-    weakness = {
-      label: 'Def Rtg',
-      team: worseTeam.abbreviation,
-      rank: estimatedRank,
-    };
+    const worseRank = homeDef > awayDef
+      ? apiGame.homeTeam.defensiveRank
+      : apiGame.awayTeam.defensiveRank;
+    if (worseRank > 0) {
+      weakness = {
+        label: 'Def Rtg',
+        team: worseTeam.abbreviation,
+        rank: worseRank,
+      };
+    }
   }
 
   return {
@@ -217,43 +221,22 @@ function transformPlayer(apiPlayer: ApiPlayer): PlayerData {
 // ================================
 
 export default function BettingDashboard() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [searchValue, setSearchValue] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('time');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showCloseMatchups, setShowCloseMatchups] = useState(false);
-  const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   // Data states
   const [games, setGames] = useState<Game[]>([]);
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [widgets, setWidgets] = useState<any[]>([]);
-  const [gameDetails, setGameDetails] = useState<any>(null);
-  
+
   // Loading states
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
-  const [loadingGameDetails, setLoadingGameDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Set initial date on mount to avoid hydration mismatch
-  useEffect(() => {
-    setSelectedDate(new Date());
-    setMounted(true);
-  }, []);
-
-  // Apply dark mode class to html element
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   // Fetch today's games
   const fetchGames = useCallback(async () => {
@@ -304,42 +287,6 @@ export default function BettingDashboard() {
     }
   }, []);
 
-  // Fetch game details when a game is selected
-  const fetchGameDetails = useCallback(async (gameId: string) => {
-    setLoadingGameDetails(true);
-    try {
-      const [detailsRes, matchupRes] = await Promise.all([
-        fetch(`/api/betting/games/${gameId}/details`),
-        fetch(`/api/betting/games/${gameId}/matchup-analysis`).catch(() => null), // Optional, don't fail if missing
-      ]);
-      
-      if (!detailsRes.ok) throw new Error('Failed to fetch game details');
-      const data = await detailsRes.json();
-      
-      // Add matchup analysis if available
-      if (matchupRes && matchupRes.ok) {
-        const matchupData = await matchupRes.json();
-        data.matchupAnalysis = matchupData;
-      }
-      
-      setGameDetails(data);
-    } catch (err: any) {
-      console.error('Error fetching game details:', err);
-      setError(err.message);
-    } finally {
-      setLoadingGameDetails(false);
-    }
-  }, []);
-
-  // Fetch game details when a game is selected
-  useEffect(() => {
-    if (selectedGameId) {
-      fetchGameDetails(selectedGameId);
-    } else {
-      setGameDetails(null);
-    }
-  }, [selectedGameId, fetchGameDetails]);
-
   // Initial data fetch
   useEffect(() => {
     fetchGames();
@@ -374,20 +321,10 @@ export default function BettingDashboard() {
     }
   });
 
-  const selectedGame = selectedGameId ? games.find(g => g.id === selectedGameId) : null;
-
   const isLoading = loadingGames || loadingPlayers || loadingInsights;
 
   return (
-    <div className="min-h-screen bg-background gradient-mesh">
-      <Header
-        selectedDate={selectedDate || new Date()}
-        onDateChange={setSelectedDate}
-        isDarkMode={isDarkMode}
-        onThemeToggle={() => setIsDarkMode(!isDarkMode)}
-      />
-
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 overflow-hidden">
+    <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 overflow-hidden">
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Main Content */}
           <div className="flex-1 min-w-0 space-y-6">
@@ -443,10 +380,7 @@ export default function BettingDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {sortedGames.map((game, index) => (
                     <div key={game.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                      <GameCard
-                        game={game}
-                        onViewDetails={setSelectedGameId}
-                      />
+                      <GameCard game={game} />
                     </div>
                   ))}
                 </div>
@@ -507,29 +441,6 @@ export default function BettingDashboard() {
             </div>
           </aside>
         </div>
-      </main>
-
-      {/* Game Details Modal */}
-      {selectedGame && gameDetails && !loadingGameDetails && (
-        <GameDetailsModal
-          data={{
-            game: selectedGame,
-            ...gameDetails,
-          }}
-          onClose={() => {
-            setSelectedGameId(null);
-            setGameDetails(null);
-          }}
-        />
-      )}
-      {selectedGame && loadingGameDetails && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-          <div className="relative glass-card rounded-2xl p-8">
-            <p className="text-white">Loading game details...</p>
-          </div>
-        </div>
-      )}
-    </div>
+    </main>
   );
 }

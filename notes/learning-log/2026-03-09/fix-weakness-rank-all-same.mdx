@@ -1,0 +1,46 @@
+# Fix: Team Weakness Showing Same Rank for All Games
+
+## Context
+The GameCard component displays a "weakness" signal showing the team with the worse defensive rating in each matchup. Users reported that every card displayed "Rank: 30th" regardless of team.
+
+## Goal
+Replace the hardcoded rank estimation formula with real league-wide defensive rankings from the database.
+
+## Files Changed
+- `app/api/betting/games/route.ts` — Added `getTeamDefensiveRankings()` call and included `defensiveRank` on each team object in the API response.
+- `app/betting/page.tsx` — Added `defensiveRank` to `ApiGame` interface for both home/away teams; replaced the estimation formula with the real rank.
+
+## Implementation Notes
+The original code estimated rank from the raw defensive rating using a linear formula:
+```
+estimatedRank = Math.min(30, Math.max(1, Math.round((worseRating - 105) * 2.5 + 15)))
+```
+For a defensive rating of ~111 (league average): `(111 - 105) * 2.5 + 15 = 30`. Any rating above ~111 gets clamped to 30, which is why every card showed the same value.
+
+The fix uses `getTeamDefensiveRankings()` — already present in `lib/betting/queries.ts` — which computes `RANK() OVER (ORDER BY defensive_rating ASC)` across all teams. The API route now fetches this alongside team ratings (in parallel via `Promise.all`), builds a `defRankMap`, and attaches `defensiveRank` to each team object.
+
+## Key Decisions (and alternatives considered)
+- **Used existing `getTeamDefensiveRankings()` query** rather than adding rank computation to `getAllTeamRatings()`. This avoids modifying the heavily-used team ratings query.
+- **Parallel fetch** with `Promise.all` so the new query doesn't add latency.
+- **Kept weakness display logic client-side** (picking the worse team per matchup) — only the rank source changed.
+
+## Assumptions
+- `getTeamDefensiveRankings()` uses bbref data, matching `getAllTeamRatings()` data source.
+- Lower defensive rating = better defense (rank 1), higher = worse (rank 30).
+- If `defensiveRank` is 0 (missing data), the weakness badge is hidden entirely.
+
+## Failure Modes
+- If `getTeamDefensiveRankings()` fails, the `defRankMap` will be empty and all ranks will be 0, so weakness badges won't render (graceful degradation).
+- If bbref data is stale or incomplete, some teams may be missing from rankings.
+
+## How to Test
+1. Start the dev server: `npm run dev`
+2. Navigate to the betting dashboard
+3. Look at the GameCards — each should show a **different** defensive ranking per matchup (not all "30th")
+4. Verify the rank matches the team with the worse defensive rating in each game
+5. Check the API response at `/api/betting/games` — each team object should have a `defensiveRank` field
+
+## Next Steps
+- Consider showing both teams' defensive ranks (not just the worse one)
+- Add offensive rating weakness signal as a companion badge
+- Consider caching the defensive rankings since they change infrequently

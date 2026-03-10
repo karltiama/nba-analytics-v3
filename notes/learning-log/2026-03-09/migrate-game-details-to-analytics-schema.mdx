@@ -1,0 +1,74 @@
+## Context
+The GameDetailsModal data pipeline was pulling from a mix of `bbref_*` tables (public schema) and
+`analytics.*` tables. The game list already uses `analytics.games` for IDs, so the details modal
+needed to be migrated to use only the analytics schema for consistency and correctness.
+
+## Goal
+Ensure every query powering the GameDetailsModal pulls exclusively from `analytics.*` tables.
+Remove all `bbref_*` table references and legacy `public.markets` fallbacks from the details data path.
+
+## Files Changed
+- `lib/betting/queries.ts` — rewrote 5 functions + removed 1 dead function
+- `app/api/betting/games/[gameId]/details/route.ts` — removed stale comment
+
+## Implementation Notes
+
+### Functions migrated (all in `lib/betting/queries.ts`):
+
+| Function | Before (bbref) | After (analytics) |
+|---|---|---|
+| `getAllTeamRatings()` | Computed ORTG/DRTG/PACE from `bbref_team_game_stats` + `bbref_games` | Single query on `analytics.team_season_averages` |
+| `getTeamRecentForm()` | `bbref_team_game_stats` + `bbref_games` + `teams` | `analytics.team_game_stats` + `analytics.teams` |
+| `getHistoricalMatchups()` | `bbref_games` + `teams` | `analytics.games` + `analytics.teams` |
+| `getLineMovement()` | `markets` + `bbref_schedule` canonical_game_id fallback | `markets` only (bbref fallback removed) |
+| `getGameOdds()` | `analytics.game_odds_current` → `getGameOddsFromMarkets` fallback | `analytics.game_odds_current` only |
+| `getGamesOdds()` (bulk) | Analytics first → `getGameOddsFromMarkets` per missing ID | Analytics only, no fallback |
+
+### Deleted:
+- `getGameOddsFromMarkets()` — entire legacy function removed (~50 lines)
+
+### Key analytics tables used:
+- `analytics.team_season_averages` — pre-computed ORTG, DRTG, pace, W-L record
+- `analytics.team_game_stats` — per-game team stats with `opponent_team_id`, `result`, `team_points`, `points_allowed`
+- `analytics.games` — game records with scores, team IDs, status
+- `analytics.teams` — team info (full_name, abbreviation)
+- `analytics.game_odds_current` — latest odds per game
+
+## Key Decisions (and alternatives considered)
+- **`markets` table kept for line movement**: The `markets` table (public schema, not bbref) is the only source
+  for historical odds snapshots needed for line movement charts. No analytics equivalent exists.
+  Removed the `bbref_schedule` canonical_game_id fallback within that function.
+- **`getAllTeamRatings` simplified**: Was a ~60-line CTE computing ORTG/DRTG/pace from raw box scores.
+  Now a simple SELECT from `analytics.team_season_averages` which has all these pre-computed.
+- **No fallbacks**: User explicitly requested analytics-only. If analytics tables are empty for a
+  team/game, the modal shows defaults (0s) rather than falling back to bbref.
+
+## Assumptions
+- `analytics.team_season_averages` has `avg_offensive_rating`, `avg_defensive_rating`, `avg_pace`,
+  `avg_points`, `avg_points_allowed`, `wins`, `losses` columns.
+- `analytics.team_game_stats` has `team_points`, `points_allowed`, `result` ('W'/'L'),
+  `opponent_team_id`, `is_home`, `game_date` columns.
+- Team IDs are consistent across `analytics.*` and `markets` tables.
+
+## Failure Modes
+- If `analytics.team_season_averages` is empty or missing a team → ORTG/DRTG/PACE/W-L show as 0.
+- If `analytics.team_game_stats` has no completed games for a team → Recent Form section is empty.
+- If `analytics.games` has no historical matchups between two teams → Historical Matchups table is empty.
+- If `analytics.game_odds_current` has no row for a game → odds return all nulls (no fallback).
+
+## How to Test
+1. `npm run dev`
+2. Go to `/betting`
+3. Click "View Game Details" on any game card
+4. Verify modal opens (no error)
+5. Check these sections render with real data:
+   - ORTG / DRTG / PACE stats for both teams
+   - Recent Form (L5) showing W/L, scores, opponent abbreviations
+   - Historical Matchups table
+   - Line Movement charts (may be empty if no `markets` data for analytics game IDs)
+   - AI Confidence Scores (expected 0% — not yet implemented)
+
+## Next Steps
+- Consider migrating line movement data to an analytics table if a historical odds table is added
+- The `getMatchupAnalysis` function's sub-queries (`getTeamOffensiveRankings`, `getOpponentDefensiveRankings`, etc.)
+  still use bbref tables — should be migrated next

@@ -20,30 +20,24 @@ export async function GET(
   try {
     const { gameId } = await params;
 
-    // Get game info (check both bbref_games and bbref_schedule)
     const gameResult = await query(`
-      SELECT 
-        COALESCE(bs.canonical_game_id, bs.bbref_game_id, bg.bbref_game_id) as game_id,
-        bs.bbref_game_id,
-        bs.canonical_game_id,
-        COALESCE(bs.start_time, bg.start_time, bs.game_date::timestamptz + interval '19 hours') as start_time,
-        bs.game_date,
-        bg.status,
-        bg.home_score,
-        bg.away_score,
-        bs.home_team_id,
-        bs.away_team_id,
+      SELECT
+        g.game_id,
+        g.start_time,
+        g.start_time::date as game_date,
+        g.status,
+        g.home_score,
+        g.away_score,
+        g.home_team_id,
+        g.away_team_id,
         ht.full_name as home_team_name,
         ht.abbreviation as home_team_abbr,
         at.full_name as away_team_name,
         at.abbreviation as away_team_abbr
-      FROM bbref_schedule bs
-      JOIN teams ht ON bs.home_team_id = ht.team_id
-      JOIN teams at ON bs.away_team_id = at.team_id
-      LEFT JOIN bbref_games bg ON bs.bbref_game_id = bg.bbref_game_id
-      WHERE bs.bbref_game_id = $1 
-         OR bs.canonical_game_id = $1
-         OR bg.bbref_game_id = $1
+      FROM analytics.games g
+      JOIN analytics.teams ht ON g.home_team_id = ht.team_id
+      JOIN analytics.teams at ON g.away_team_id = at.team_id
+      WHERE g.game_id = $1
       LIMIT 1
     `, [gameId]);
 
@@ -55,7 +49,7 @@ export async function GET(
     }
 
     const game = gameResult[0];
-    const resolvedGameId = game.game_id; // Use canonical_game_id if available, otherwise bbref_game_id
+    const resolvedGameId = game.game_id;
 
     // Get team ratings
     const teamRatings = await getAllTeamRatings();
@@ -94,8 +88,32 @@ export async function GET(
       return Math.round(num * 10) / 10; // Round to 1 decimal place
     };
 
-    // Build response
+    const startTimeFormatted = game.start_time
+      ? new Date(game.start_time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short',
+        })
+      : '';
+
+    // Build response (include game for page/modal header)
     const response = {
+      game: {
+        id: resolvedGameId,
+        homeTeam: {
+          id: game.home_team_id,
+          name: game.home_team_name,
+          abbreviation: game.home_team_abbr,
+          record: `${homeRatings.wins ?? 0}-${homeRatings.losses ?? 0}`,
+        },
+        awayTeam: {
+          id: game.away_team_id,
+          name: game.away_team_name,
+          abbreviation: game.away_team_abbr,
+          record: `${awayRatings.wins ?? 0}-${awayRatings.losses ?? 0}`,
+        },
+        startTime: startTimeFormatted,
+      },
       homeTeamStats: {
         offensiveRating: formatStat(homeRatings.offensive_rating),
         defensiveRating: formatStat(homeRatings.defensive_rating),
@@ -128,6 +146,17 @@ export async function GET(
         awayScore: m.awayScore,
         totalPoints: m.totalPoints,
       })),
+      currentOdds: {
+        spread: odds.home.spread != null ? odds.home.spread : null,
+        spreadOddsHome: odds.home.spreadOdds != null ? odds.home.spreadOdds : null,
+        spreadOddsAway: odds.away.spreadOdds != null ? odds.away.spreadOdds : null,
+        moneylineHome: odds.home.moneyline != null ? odds.home.moneyline : null,
+        moneylineAway: odds.away.moneyline != null ? odds.away.moneyline : null,
+        overUnder: odds.overUnder != null ? odds.overUnder : null,
+        overOdds: odds.overOdds != null ? odds.overOdds : null,
+        underOdds: odds.underOdds != null ? odds.underOdds : null,
+        bookmaker: odds.bookmaker ?? null,
+      },
       injuries: {
         home: [], // Not available in MVP
         away: [], // Not available in MVP

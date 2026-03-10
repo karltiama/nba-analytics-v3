@@ -112,67 +112,17 @@ export async function getRecentGames(limit: number = 10) {
  */
 export async function getAllTeamRatings(): Promise<Record<string, TeamRatings>> {
   const result = await query(`
-    WITH team_stats AS (
-      SELECT 
-        btgs.team_id,
-        COUNT(DISTINCT btgs.game_id) as games_played,
-        AVG(btgs.points) as avg_points,
-        AVG(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as avg_points_against,
-        AVG(btgs.possessions) as avg_possessions,
-        -- Offensive Rating: Points per 100 possessions
-        AVG(btgs.points::numeric / NULLIF(btgs.possessions, 0)) * 100 as offensive_rating,
-        -- Defensive Rating: Points allowed per 100 possessions
-        AVG(
-          CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END::numeric / 
-          NULLIF(btgs.possessions, 0)
-        ) * 100 as defensive_rating,
-        -- Pace: Possessions per 48 minutes (approximated)
-        AVG(btgs.possessions) * 48.0 / NULLIF(AVG(btgs.minutes), 0) * 5 as pace
-      FROM bbref_team_game_stats btgs
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE bg.status = 'Final'
-        AND btgs.source = 'bbref'
-      GROUP BY btgs.team_id
-    ),
-    -- Calculate records directly from bbref_games (not from team_game_stats)
-    -- This ensures we only count Final games with actual scores
-    team_records AS (
-      SELECT 
-        team_id,
-        SUM(CASE WHEN won THEN 1 ELSE 0 END) as wins,
-        SUM(CASE WHEN NOT won THEN 1 ELSE 0 END) as losses
-      FROM (
-        -- Home team results
-        SELECT 
-          home_team_id as team_id,
-          home_score > away_score as won
-        FROM bbref_games
-        WHERE status = 'Final'
-          AND home_score IS NOT NULL 
-          AND away_score IS NOT NULL
-        UNION ALL
-        -- Away team results
-        SELECT 
-          away_team_id as team_id,
-          away_score > home_score as won
-        FROM bbref_games
-        WHERE status = 'Final'
-          AND home_score IS NOT NULL 
-          AND away_score IS NOT NULL
-      ) game_results
-      GROUP BY team_id
-    )
-    SELECT 
-      ts.team_id,
-      ts.offensive_rating,
-      ts.defensive_rating,
-      ts.pace,
-      ts.avg_points,
-      ts.avg_points_against,
-      COALESCE(tr.wins, 0) as wins,
-      COALESCE(tr.losses, 0) as losses
-    FROM team_stats ts
-    LEFT JOIN team_records tr ON ts.team_id = tr.team_id
+    SELECT
+      team_id,
+      avg_offensive_rating as offensive_rating,
+      avg_defensive_rating as defensive_rating,
+      avg_pace as pace,
+      avg_points,
+      avg_points_allowed as avg_points_against,
+      wins,
+      losses
+    FROM analytics.team_season_averages
+    ORDER BY team_id
   `);
 
   const ratingsMap: Record<string, TeamRatings> = {};
@@ -197,26 +147,20 @@ export async function getAllTeamRatings(): Promise<Record<string, TeamRatings>> 
  */
 export async function getTeamRecentForm(teamId: string, limit: number = 5) {
   const result = await query(`
-    SELECT 
-      bg.bbref_game_id as game_id,
-      bg.game_date,
-      btgs.is_home,
-      btgs.points as team_score,
-      CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END as opponent_score,
-      CASE 
-        WHEN btgs.is_home AND bg.home_score > bg.away_score THEN 'W'
-        WHEN NOT btgs.is_home AND bg.away_score > bg.home_score THEN 'W'
-        ELSE 'L'
-      END as result,
-      CASE WHEN btgs.is_home THEN at.abbreviation ELSE ht.abbreviation END as opponent_abbr
-    FROM bbref_team_game_stats btgs
-    JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-    JOIN teams ht ON bg.home_team_id = ht.team_id
-    JOIN teams at ON bg.away_team_id = at.team_id
-    WHERE btgs.team_id = $1
-      AND bg.status = 'Final'
-      AND btgs.source = 'bbref'
-    ORDER BY bg.game_date DESC
+    SELECT
+      tgs.game_id,
+      tgs.game_date,
+      tgs.is_home,
+      tgs.team_points as team_score,
+      tgs.points_allowed as opponent_score,
+      tgs.result,
+      opp.abbreviation as opponent_abbr
+    FROM analytics.team_game_stats tgs
+    JOIN analytics.teams opp ON opp.team_id = tgs.opponent_team_id
+    WHERE tgs.team_id = $1
+      AND tgs.result IS NOT NULL
+      AND tgs.points_allowed IS NOT NULL
+    ORDER BY tgs.game_date DESC NULLS LAST
     LIMIT $2
   `, [teamId, limit]);
 
@@ -839,10 +783,8 @@ export interface GameOdds {
 
 /**
  * Get latest odds for a game from analytics.game_odds_current.
- * Falls back to public.markets if analytics table has no data yet.
  */
 export async function getGameOdds(gameId: string, preferredBookmaker: string = 'draftkings'): Promise<GameOdds> {
-  // Try analytics.game_odds_current first (single row per game, flat)
   const analyticsResult = await query(`
     SELECT home_moneyline, away_moneyline,
            home_spread, home_spread_odds, away_spread, away_spread_odds,
@@ -863,66 +805,11 @@ export async function getGameOdds(gameId: string, preferredBookmaker: string = '
     };
   }
 
-  // Fallback: read from public.markets (legacy data)
-  return getGameOddsFromMarkets(gameId, preferredBookmaker);
-}
-
-/**
- * Legacy fallback: read odds from public.markets table.
- * Used during transition while analytics tables are being populated.
- */
-async function getGameOddsFromMarkets(gameId: string, preferredBookmaker: string): Promise<GameOdds> {
-  let result = await query(`
-    SELECT m.market_type, m.side, m.line, m.odds, m.bookmaker
-    FROM markets m
-    WHERE m.game_id = $1
-      AND m.snapshot_type = 'pre_game'
-      AND m.market_type IN ('moneyline', 'spread', 'total')
-      AND m.bookmaker = $2
-  `, [gameId, preferredBookmaker]);
-
-  if (result.length < 6) {
-    const fallbackResult = await query(`
-      WITH best_bookmaker AS (
-        SELECT bookmaker
-        FROM markets
-        WHERE game_id = $1 AND snapshot_type = 'pre_game'
-          AND market_type IN ('moneyline', 'spread', 'total')
-        GROUP BY bookmaker
-        ORDER BY COUNT(DISTINCT market_type || '_' || side) DESC, bookmaker
-        LIMIT 1
-      )
-      SELECT m.market_type, m.side, m.line, m.odds, m.bookmaker
-      FROM markets m CROSS JOIN best_bookmaker bb
-      WHERE m.game_id = $1 AND m.snapshot_type = 'pre_game'
-        AND m.market_type IN ('moneyline', 'spread', 'total')
-        AND m.bookmaker = bb.bookmaker
-    `, [gameId]);
-    if (fallbackResult.length > 0) result = fallbackResult;
-  }
-
-  const odds: GameOdds = {
+  return {
     home: { moneyline: null, spread: null, spreadOdds: null },
     away: { moneyline: null, spread: null, spreadOdds: null },
     overUnder: null, overOdds: null, underOdds: null, bookmaker: null,
   };
-
-  result.forEach((row: any) => {
-    if (!odds.bookmaker) odds.bookmaker = row.bookmaker;
-    if (row.market_type === 'moneyline') {
-      if (row.side === 'home') odds.home.moneyline = row.odds;
-      else if (row.side === 'away') odds.away.moneyline = row.odds;
-    } else if (row.market_type === 'spread') {
-      if (row.side === 'home') { odds.home.spread = row.line; odds.home.spreadOdds = row.odds; }
-      else if (row.side === 'away') { odds.away.spread = row.line; odds.away.spreadOdds = row.odds; }
-    } else if (row.market_type === 'total') {
-      odds.overUnder = row.line;
-      if (row.side === 'over') odds.overOdds = row.odds;
-      else if (row.side === 'under') odds.underOdds = row.odds;
-    }
-  });
-
-  return odds;
 }
 
 /**
@@ -963,14 +850,6 @@ export async function getGamesOdds(gameIds: string[], preferredBookmaker: string
     };
   });
 
-  // Fallback: for games not in analytics, read from public.markets
-  const missingIds = gameIds.filter(id => !foundInAnalytics.has(id));
-  if (missingIds.length > 0) {
-    for (const gid of missingIds) {
-      oddsMap[gid] = await getGameOddsFromMarkets(gid, preferredBookmaker);
-    }
-  }
-
   return oddsMap;
 }
 
@@ -979,28 +858,28 @@ export async function getGamesOdds(gameIds: string[], preferredBookmaker: string
  */
 export async function getHistoricalMatchups(homeTeamId: string, awayTeamId: string, limit: number = 10) {
   const result = await query(`
-    SELECT 
-      bg.bbref_game_id as game_id,
-      bg.game_date,
-      TO_CHAR(bg.game_date, 'MM/DD/YYYY') as date,
-      bg.home_team_id,
-      bg.away_team_id,
-      ht.abbreviation as home_team_abbr,
+    SELECT
+      g.game_id,
+      g.start_time::date as game_date,
+      TO_CHAR(g.start_time::date, 'MM/DD/YYYY') as date,
+      g.home_team_id,
+      g.away_team_id,
       ht.full_name as home_team_name,
-      at.abbreviation as away_team_abbr,
       at.full_name as away_team_name,
-      bg.home_score,
-      bg.away_score,
-      (bg.home_score + bg.away_score) as total_points
-    FROM bbref_games bg
-    JOIN teams ht ON bg.home_team_id = ht.team_id
-    JOIN teams at ON bg.away_team_id = at.team_id
-    WHERE bg.status = 'Final'
+      g.home_score,
+      g.away_score,
+      (g.home_score + g.away_score) as total_points
+    FROM analytics.games g
+    JOIN analytics.teams ht ON g.home_team_id = ht.team_id
+    JOIN analytics.teams at ON g.away_team_id = at.team_id
+    WHERE g.status = 'Final'
+      AND g.home_score IS NOT NULL
+      AND g.away_score IS NOT NULL
       AND (
-        (bg.home_team_id = $1 AND bg.away_team_id = $2) OR
-        (bg.home_team_id = $2 AND bg.away_team_id = $1)
+        (g.home_team_id = $1 AND g.away_team_id = $2) OR
+        (g.home_team_id = $2 AND g.away_team_id = $1)
       )
-    ORDER BY bg.game_date DESC
+    ORDER BY g.start_time DESC
     LIMIT $3
   `, [homeTeamId, awayTeamId, limit]);
 
@@ -1015,13 +894,26 @@ export async function getHistoricalMatchups(homeTeamId: string, awayTeamId: stri
 }
 
 /**
- * Get line movement data for a game
- * Returns spread and total movement over time from markets table
- * Note: gameId can be either canonical_game_id or bbref_game_id
+ * Get line movement data for a game.
+ * Reads from analytics.game_odds_history first (BDL pipeline), then falls back to public.markets.
+ * Expects an analytics game_id (BDL game_id).
  */
 export async function getLineMovement(gameId: string, preferredBookmaker: string = 'draftkings') {
-  // First, try to get all snapshots for this game from the preferred bookmaker
-  // Check both the game_id directly and any related IDs
+  const vendor = preferredBookmaker.toLowerCase();
+
+  // 1. Try analytics.game_odds_history (from BDL odds Lambda)
+  const analyticsRows = await query<{ snapshot_at: string; home_spread: number | null; total: number | null }>(`
+    SELECT snapshot_at, home_spread, total
+    FROM analytics.game_odds_history
+    WHERE game_id = $1 AND vendor = $2
+    ORDER BY snapshot_at ASC
+  `, [gameId, vendor]);
+
+  if (analyticsRows.length > 0) {
+    return formatLineMovementFromAnalytics(analyticsRows);
+  }
+
+  // 2. Fallback: legacy public.markets
   let result = await query(`
     SELECT 
       m.market_type,
@@ -1039,36 +931,6 @@ export async function getLineMovement(gameId: string, preferredBookmaker: string
     ORDER BY m.fetched_at ASC
   `, [gameId, preferredBookmaker]);
 
-  // If no results, check if gameId is a bbref_game_id and look for canonical_game_id
-  if (result.length === 0) {
-    const canonicalLookup = await query(`
-      SELECT canonical_game_id 
-      FROM bbref_schedule 
-      WHERE bbref_game_id = $1 
-      LIMIT 1
-    `, [gameId]);
-    
-    if (canonicalLookup.length > 0 && canonicalLookup[0].canonical_game_id) {
-      result = await query(`
-        SELECT 
-          m.market_type,
-          m.side,
-          m.line,
-          m.odds,
-          m.snapshot_type,
-          m.fetched_at,
-          m.bookmaker
-        FROM markets m
-        WHERE m.game_id = $1
-          AND m.bookmaker = $2
-          AND m.market_type IN ('spread', 'total')
-          AND m.snapshot_type IN ('pre_game', 'closing', 'live', 'mid_game')
-        ORDER BY m.fetched_at ASC
-      `, [canonicalLookup[0].canonical_game_id, preferredBookmaker]);
-    }
-  }
-
-  // If still no results from preferred bookmaker, try any bookmaker
   if (result.length === 0) {
     const fallbackResult = await query(`
       SELECT 
@@ -1088,13 +950,11 @@ export async function getLineMovement(gameId: string, preferredBookmaker: string
     `, [gameId]);
 
     if (fallbackResult.length > 0) {
-      // Group by bookmaker and use the one with most data
       const bookmakerCounts: Record<string, number> = {};
       fallbackResult.forEach((row: any) => {
         bookmakerCounts[row.bookmaker] = (bookmakerCounts[row.bookmaker] || 0) + 1;
       });
       const bestBookmaker = Object.entries(bookmakerCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
-      
       if (bestBookmaker) {
         result = fallbackResult.filter((r: any) => r.bookmaker === bestBookmaker);
       }
@@ -1102,13 +962,35 @@ export async function getLineMovement(gameId: string, preferredBookmaker: string
   }
 
   if (result.length === 0) {
-    return {
-      spreadMovement: [],
-      totalMovement: [],
-    };
+    return { spreadMovement: [], totalMovement: [] };
   }
 
   return formatLineMovement(result);
+}
+
+/**
+ * Format analytics.game_odds_history rows into chart-ready spread/total movement.
+ */
+function formatLineMovementFromAnalytics(
+  rows: { snapshot_at: string; home_spread: number | null; total: number | null }[]
+): { spreadMovement: { time: string; value: number }[]; totalMovement: { time: string; value: number }[] } {
+  const spreadMovement: { time: string; value: number }[] = [];
+  const totalMovement: { time: string; value: number }[] = [];
+
+  rows.forEach((row, index) => {
+    const timeLabel =
+      index === 0 ? 'Open' :
+      index === rows.length - 1 ? 'Now' :
+      new Date(row.snapshot_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+    const spreadVal = row.home_spread != null ? parseFloat(String(row.home_spread)) : 0;
+    const totalVal = row.total != null ? parseFloat(String(row.total)) : 0;
+
+    spreadMovement.push({ time: timeLabel, value: spreadVal });
+    totalMovement.push({ time: timeLabel, value: totalVal });
+  });
+
+  return { spreadMovement, totalMovement };
 }
 
 /**
@@ -1699,15 +1581,10 @@ export async function getGameStartingLineups(
  * Includes opponent defensive rankings, pace analysis, and key player matchups
  */
 export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysis | null> {
-  // Get game info
   const gameResult = await query(`
-    SELECT 
-      COALESCE(bs.canonical_game_id, bs.bbref_game_id) as game_id,
-      bs.home_team_id,
-      bs.away_team_id
-    FROM bbref_schedule bs
-    WHERE bs.bbref_game_id = $1 
-       OR bs.canonical_game_id = $1
+    SELECT g.game_id, g.home_team_id, g.away_team_id
+    FROM analytics.games g
+    WHERE g.game_id = $1
     LIMIT 1
   `, [gameId]);
 

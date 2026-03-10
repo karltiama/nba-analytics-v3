@@ -1,0 +1,46 @@
+## Context
+Clicking "View Game Details" on the betting dashboard triggered a 404 error.
+The game list API (`/api/betting/games`) returns game IDs from `analytics.games` (BDL format like `18447749`),
+but the details and matchup-analysis routes were looking up games exclusively in `bbref_schedule`/`bbref_games`
+tables using `bbref_game_id` or `canonical_game_id` — a completely different ID namespace.
+
+## Goal
+Make game details and matchup-analysis routes resolve game IDs from `analytics.games`, matching
+the ID system used by the game list API. Remove all bbref fallback lookups for game resolution.
+
+## Files Changed
+- `app/api/betting/games/[gameId]/details/route.ts` — replaced bbref lookup with `analytics.games` query
+- `lib/betting/queries.ts` — `getMatchupAnalysis()`: same change, analytics-only game lookup
+
+## Implementation Notes
+- The game list route (`/api/betting/games/route.ts`) already used `analytics.games` for IDs (`g.game_id`).
+- The details route joined `bbref_schedule` + `teams` (public schema); now joins `analytics.games` + `analytics.teams`.
+- `getMatchupAnalysis()` only needs `game_id`, `home_team_id`, `away_team_id` — all available in `analytics.games`.
+- Downstream functions (`getAllTeamRatings`, `getTeamRecentForm`, `getHistoricalMatchups`) still use bbref
+  data for stats, keyed by `team_id`. Team IDs are consistent across schemas, so no changes needed there.
+
+## Key Decisions (and alternatives considered)
+- **Analytics-only lookups**: User explicitly requested no bbref fallback. This simplifies the code
+  and ensures a single source of truth for game identity.
+- **Alternative**: Could have kept bbref fallback for backward compat with old bookmarked URLs —
+  decided against it per user direction.
+
+## Assumptions
+- `analytics.games.home_team_id` / `away_team_id` use the same team IDs as public `teams` and
+  `bbref_team_game_stats` tables (confirmed by existing games route working correctly).
+- `analytics.teams` has `full_name` and `abbreviation` columns matching the public `teams` table.
+
+## Failure Modes
+- If a game ID doesn't exist in `analytics.games`, the route now returns 404 with no fallback.
+- If `analytics.teams` is missing entries that `analytics.games` references, the JOIN will return 0 rows → 404.
+
+## How to Test
+1. Start dev server: `npm run dev`
+2. Go to `/betting`
+3. Click "View Game Details" on any game card
+4. Modal should open with team stats, line movement, and matchup data
+5. Check terminal — both `/api/betting/games/<id>/details` and `/matchup-analysis` should return 200
+
+## Next Steps
+- Verify odds and line movement still resolve correctly (they use the same `game_id` for `analytics.game_odds_current` and `markets` tables)
+- Consider migrating `getHistoricalMatchups` and `getLineMovement` to analytics schema if available

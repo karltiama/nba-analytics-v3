@@ -1,0 +1,53 @@
+# Game Details Page: Player Props Section
+
+## Context
+
+The betting game details page (`/betting/games/[gameId]`) shows matchup data, line movement, team comparison, injuries, and AI suggestions. There was no display of player props. The codebase already has `analytics.player_prop_current` populated by the player-props snapshot pipeline (BallDontLie or transform scripts).
+
+## Goal
+
+Display current player props for the game in a dedicated section on the game details page.
+
+## Files Changed
+
+- **New:** `app/api/betting/games/[gameId]/player-props/route.ts` — GET endpoint that reads from `analytics.player_prop_current` for the game and preferred vendor.
+- `app/betting/games/[gameId]/GameDetailsPageClient.tsx` — Fetches player props in parallel with details and matchup, merges `playerProps` into `data`.
+- `components/betting/MatchupPageLayout.tsx` — Added `PlayerPropItem` type, optional `playerProps` on `GameDetailsData`, and a "Player props" section (table: Player, Prop, Line, Over, Under) when props exist.
+
+## Implementation Notes
+
+- **API:** Queries `analytics.player_prop_current` filtered by `game_id` and `vendor = 'draftkings'` to avoid duplicate lines across books. Returns `{ playerProps: [{ playerId, playerName, propType, lineValue, overOdds, underOdds, vendor }] }`. Uses `@/lib/db` `query()`.
+- **Client:** `Promise.all` now includes `fetch(/api/betting/games/${gameId}/player-props)`. On success, `details.playerProps = playerProps`; on failure or non-OK, `details.playerProps = []` so the section simply doesn’t render.
+- **Layout:** Section only renders when `playerProps.length > 0`. Table columns: Player (link to `/players/[playerId]`), Prop (prop_type, e.g. points/rebounds), Line, Over odds, Under odds. Footer note: "Odds from {vendor} · American format".
+
+## Key Decisions
+
+- **Single vendor (draftkings):** Keeps one line per (player, prop_type, line). Alternative: show multiple vendors or a vendor selector; deferred for now.
+- **Section visibility:** If no props in DB or API fails, section is hidden (no empty state). Keeps the page usable when props pipeline hasn’t run.
+- **Table over cards:** Simple table for "for now" display; can later switch to grouped-by-player cards or filters.
+
+## Assumptions
+
+- `analytics.player_prop_current` exists and is populated for some games (same schema as in `db/schemas/analytics_player_props_schema.sql`).
+- `analytics.players` is referenced by `player_id`; player links use `/players/[playerId]` (analytics player_id).
+- No new env vars; uses existing DB connection.
+
+## Failure Modes
+
+- Game has no props in DB → API returns `{ playerProps: [] }` → section not shown.
+- API 500 or network error → client sets `playerProps = []` → section not shown.
+- Different vendor in DB (e.g. fanduel only) → no rows for draftkings → empty list; could add fallback to first available vendor later.
+
+## How to Test
+
+1. Ensure `analytics.player_prop_current` has rows for at least one game (run player-props snapshot/transform if needed).
+2. `npm run dev`, open `/betting`, click a game that has props.
+3. Confirm a "Player props" section appears with table: Player (clickable), Prop, Line, Over, Under.
+4. Open a game with no props in DB; confirm the section does not appear.
+5. Optional: temporarily break the player-props API (e.g. wrong table name); confirm page still loads and section is absent.
+
+## Next Steps
+
+- Add vendor dropdown or fallback vendor if draftkings has no data.
+- Optionally group rows by player for readability.
+- Add prop-type filter (e.g. Points, Rebounds, Assists).

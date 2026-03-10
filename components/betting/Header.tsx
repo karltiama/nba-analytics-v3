@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { 
   Sun, 
   Moon, 
@@ -21,7 +22,9 @@ interface HeaderProps {
 }
 
 export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
+  const pathname = usePathname();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const showDateSelector = !teamName && pathname === '/betting';
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { 
@@ -81,8 +84,8 @@ export function Header({ selectedDate, onDateChange, isDarkMode, onThemeToggle, 
             </div>
           </div>
 
-          {/* Date Selector - Only show on betting dashboard */}
-          {!teamName && (
+          {/* Date Selector - Only on main betting dashboard (/betting) */}
+          {showDateSelector && (
             <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-1">
               <button
                 onClick={goToPreviousDay}

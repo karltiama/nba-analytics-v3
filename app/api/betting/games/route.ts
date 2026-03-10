@@ -5,7 +5,8 @@ import {
   getRecentGames, 
   getAllTeamRatings,
   getTeamRecentForm,
-  getGamesOdds
+  getGamesOdds,
+  getTeamDefensiveRankings
 } from '@/lib/betting/queries';
 
 /**
@@ -41,8 +42,14 @@ export async function GET(request: NextRequest) {
       displayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
     }
 
-    // Get team ratings for all teams
-    const teamRatings = await getAllTeamRatings();
+    // Get team ratings and defensive rankings for all teams
+    const [teamRatings, defRankings] = await Promise.all([
+      getAllTeamRatings(),
+      getTeamDefensiveRankings(),
+    ]);
+
+    const defRankMap: Record<string, number> = {};
+    defRankings.forEach((r) => { defRankMap[r.team_id] = r.defensive_rank; });
 
     // Get recent form for each team involved
     const teamIds = new Set<string>();
@@ -86,6 +93,7 @@ export async function GET(request: NextRequest) {
           record: `${homeRatings.wins || 0}-${homeRatings.losses || 0}`,
           offensiveRating: homeRatings.offensive_rating || 0,
           defensiveRating: homeRatings.defensive_rating || 0,
+          defensiveRank: defRankMap[game.home_team_id] || 0,
           pace: homeRatings.pace || 0,
           avgPoints: homeRatings.avg_points || 0,
           recentForm: homeForm,
@@ -97,6 +105,7 @@ export async function GET(request: NextRequest) {
           record: `${awayRatings.wins || 0}-${awayRatings.losses || 0}`,
           offensiveRating: awayRatings.offensive_rating || 0,
           defensiveRating: awayRatings.defensive_rating || 0,
+          defensiveRank: defRankMap[game.away_team_id] || 0,
           pace: awayRatings.pace || 0,
           avgPoints: awayRatings.avg_points || 0,
           recentForm: awayForm,

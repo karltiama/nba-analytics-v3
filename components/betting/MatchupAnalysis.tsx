@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { TrendingUp, TrendingDown, Shield, Zap, Target, BarChart3, ArrowLeftRight, Users } from 'lucide-react';
 
-interface OpponentDefensiveRankings {
+export interface OpponentDefensiveRankings {
   team_id: string;
   points_allowed_rank: number;
   rebounds_allowed_rank: number;
@@ -17,7 +17,7 @@ interface OpponentDefensiveRankings {
   defensive_rating: number;
 }
 
-interface TeamOffensiveRankings {
+export interface TeamOffensiveRankings {
   team_id: string;
   points_rank: number;
   rebounds_rank: number;
@@ -30,7 +30,7 @@ interface TeamOffensiveRankings {
   offensive_rating: number;
 }
 
-interface PlayerVsOpponentStats {
+export interface PlayerVsOpponentStats {
   player_id: string;
   player_name: string;
   team_id: string;
@@ -49,7 +49,7 @@ interface PlayerVsOpponentStats {
   threes_diff: number;
 }
 
-interface PaceAnalysis {
+export interface PaceAnalysis {
   home_team_pace: number;
   away_team_pace: number;
   projected_pace: number;
@@ -57,7 +57,7 @@ interface PaceAnalysis {
   pace_impact: 'fast' | 'average' | 'slow';
 }
 
-interface StartingLineupPlayer {
+export interface StartingLineupPlayer {
   player_id: string;
   full_name: string;
   position: string;
@@ -66,7 +66,7 @@ interface StartingLineupPlayer {
   avg_minutes: number;
 }
 
-interface StartingLineup {
+export interface StartingLineup {
   team_id: string;
   players: StartingLineupPlayer[];
 }
@@ -235,7 +235,7 @@ function StatComparisonRow({ label, offenseRank, offenseValue, defenseRank, defe
   );
 }
 
-function OffenseVsDefenseComparison({ 
+export function OffenseVsDefenseComparison({ 
   offenseTeam, 
   defenseTeam, 
   offenseAbbr, 
@@ -323,7 +323,7 @@ function OffenseVsDefenseComparison({
   );
 }
 
-function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis }) {
+export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis }) {
   const { home_team_pace, away_team_pace, projected_pace, pace_advantage, pace_impact } = paceAnalysis;
   
   const paceColor = pace_impact === 'fast' 
@@ -374,7 +374,7 @@ function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis }) {
   );
 }
 
-function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOpponentStats; opponentAbbr: string }) {
+export function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOpponentStats; opponentAbbr: string }) {
   return (
     <div className="glass-card rounded-xl p-3">
       <div className="flex items-center justify-between mb-2">
@@ -578,7 +578,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
   );
 }
 
-function StartingLineupCard({ lineup, teamAbbr }: { lineup: StartingLineup; teamAbbr: string }) {
+export function StartingLineupCard({ lineup, teamAbbr }: { lineup: StartingLineup; teamAbbr: string }) {
   return (
     <div className="glass-card rounded-xl p-4">
       <div className="flex items-center gap-2 mb-3">

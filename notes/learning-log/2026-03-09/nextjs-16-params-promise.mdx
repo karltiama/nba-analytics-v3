@@ -1,0 +1,26 @@
+## Context
+Console error in Next.js 16.0.1: "params are being enumerated. `params` is a Promise and must be unwrapped with `React.use()` before accessing its properties."
+
+## Goal
+Fix the error by using the async params API everywhere.
+
+## Files Changed
+- `app/api/players/[playerId]/games/route.ts`
+
+## Implementation Notes
+In Next.js 15+, dynamic route **params** (and **searchParams** in pages) are Promises. Route handlers must:
+- Type as `{ params }: { params: Promise<{ playerId: string }> }`
+- Use `const { playerId } = await params;` before reading.
+
+The players games route was still using the old sync API: `params: { playerId: string }` and `const { playerId } = params`, which caused Next/React to treat params as a normal object; when something enumerated it (e.g. serialization), it saw a Promise and threw.
+
+## Key Decisions
+- Only one route in the repo had the old signature; all other dynamic API routes already used `Promise<>` and `await params`.
+
+## How to Test
+1. Restart dev server: `npm run dev`
+2. Visit a dynamic route that hits the players games API (e.g. betting player page or any page that fetches `/api/players/[playerId]/games`)
+3. Confirm the console error is gone
+
+## Next Steps
+- If you add new dynamic routes, always type params as `Promise<{ ... }>` and `await params` in route handlers; in client components use `React.use(params)` if you need params there.

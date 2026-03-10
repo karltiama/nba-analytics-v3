@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Clock, TrendingUp, ChevronRight, Gauge, ShieldAlert } from 'lucide-react';
 
 interface TeamInfo {
@@ -43,7 +44,8 @@ export interface Game {
 
 interface GameCardProps {
   game: Game;
-  onViewDetails: (gameId: string) => void;
+  /** Optional: if not provided, card links to /betting/games/[gameId] */
+  onViewDetails?: (gameId: string) => void;
 }
 
 function formatOdds(odds: number): string {
@@ -72,6 +74,7 @@ const PACE_COLORS: Record<string, string> = {
 };
 
 export function GameCard({ game, onViewDetails }: GameCardProps) {
+  const gameHref = `/betting/games/${game.id}`;
   const borderClass = game.isClose
     ? 'border-l-[#ff6b35]'
     : 'border-l-[#39ff14]';
@@ -227,14 +230,15 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
       )}
 
       {/* Action Button */}
-      <button
-        onClick={() => onViewDetails(game.id)}
+      <Link
+        href={gameHref}
+        onClick={() => onViewDetails?.(game.id)}
         className="w-full px-4 py-2 flex items-center justify-center gap-2 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 transition-colors group"
       >
         <TrendingUp className="w-3.5 h-3.5 text-[#00d4ff]" />
         <span className="text-xs font-medium text-[#00d4ff]">View Game Details</span>
         <ChevronRight className="w-3.5 h-3.5 text-[#00d4ff] group-hover:translate-x-0.5 transition-transform" />
-      </button>
+      </Link>
     </div>
   );
 }

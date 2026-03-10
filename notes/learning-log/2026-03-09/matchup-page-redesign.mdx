@@ -1,0 +1,68 @@
+# Matchup Page Redesign
+
+## Context
+
+The betting game details page (`/betting/games/[gameId]`) was a single long scroll with equal-weight sections: AI Confidence, full team stats, one large Matchup Analysis block, line movement, injuries, history, AI bets. Market info appeared after team/matchup content, and there was no clear "story" order. The view was implemented as `GameDetailsModal` with `variant="page"`.
+
+## Goal
+
+- Reorder content into a story-driven flow: Game → Market → Team environment → Key players → Starters → Injuries → History.
+- Reduce top-heavy density; add a compact game summary and move market (current odds + charts) up.
+- Use one canonical full-page layout; remove the modal entirely.
+
+## Files Changed
+
+- `app/api/betting/games/[gameId]/details/route.ts` — Added `currentOdds` to the response (spread, moneylineHome, moneylineAway, overUnder, bookmaker).
+- `components/betting/MatchupAnalysis.tsx` — Exported `PaceAnalysisCard`, `OffenseVsDefenseComparison`, `PlayerMatchupCard`, `StartingLineupCard` and their types (`PaceAnalysis`, `TeamOffensiveRankings`, `OpponentDefensiveRankings`, `PlayerVsOpponentStats`, `StartingLineup`, `StartingLineupPlayer`).
+- **New:** `components/betting/MatchupPageLayout.tsx` — Layout with sections A→G, migrated types/helpers from the modal, and `getGameSummaryBullets` for 2–4 summary bullets.
+- `app/betting/games/[gameId]/GameDetailsPageClient.tsx` — Renders `MatchupPageLayout` instead of `GameDetailsModal`.
+- `components/betting/GameDetailsModal.tsx` — **Deleted.**
+- `components/betting/index.ts` — Removed `GameDetailsModal` export; added `MatchupPageLayout` and `GameDetailsData` export.
+
+## Implementation Notes
+
+- **currentOdds:** Populated from existing `getGameOdds()` in the details route; no new DB/API calls.
+- **Summary bullets:** `getGameSummaryBullets(data)` derives 2–4 bullets from `matchupAnalysis.pace_analysis`, offense/defense matchup, `spreadMovement` (open vs last), and `injuries` count. No new API.
+- **Key players:** `matchupAnalysis.key_players.slice(0, 4)` for top 4; opponent abbr for `PlayerMatchupCard` is chosen by comparing `player.team_id` to `game.homeTeam.id` / `game.awayTeam.id`.
+- **Team comparison (C):** Single side-by-side card with ORTG/DRTG/PACE and compact L5 (first 3 games), then `PaceAnalysisCard` and two `OffenseVsDefenseComparison` blocks (Away O vs Home D, Home O vs Away D).
+- **Hierarchy:** Section titles use h2 for Market/Team comparison, h3 for Key players, Starters, Injuries, Historical matchups; spacing is `space-y-8` between major sections with slightly tighter styling for injuries and history.
+
+## Key Decisions
+
+- **Dedicated layout component:** MatchupPageLayout owns the full page structure so the page client stays thin and we have one place for the new information architecture.
+- **Types in layout:** `GameDetailsData`, `CurrentOdds`, and row/gauge helpers live in MatchupPageLayout (not a separate types file) to avoid extra files; types are exported for consumers.
+- **Optional currentOdds:** Response type and UI handle missing `currentOdds` (e.g. older clients or failed odds fetch); Market section still shows line movement charts and can show a short “from line movement below” note.
+- **AI confidence and AI suggestions:** Left as placeholders (“coming soon” / existing 0% gauges and empty list) with a clear slot for future implementation.
+
+## Assumptions
+
+- Details and matchup-analysis APIs are called as today; no change to fetch URLs or response shape beyond adding `currentOdds`.
+- `game.homeTeam.id` / `game.awayTeam.id` are string; `key_players[].team_id` may be number — comparison works with strict equality for current API responses.
+- No other code imported `GameDetailsModal` (only GameDetailsPageClient did; now using MatchupPageLayout).
+
+## Failure Modes
+
+- If `getGameOdds()` returns null/undefined for a field, we use `!= null` checks and omit that currentOdds key or show fallback; moneyline can be missing and Market still shows spread/O/U from movement.
+- If matchup-analysis fails, `matchupAnalysis` is undefined; sections C (offense/defense + pace), D, E are skipped; summary bullets still use team stats for pace if available.
+- If `key_players` is empty or missing, Key Player Matchups section is not rendered.
+
+## How to Test
+
+1. **API:**  
+   `GET /api/betting/games/<gameId>/details` — Response must include `currentOdds: { spread, moneylineHome, moneylineAway, overUnder, bookmaker }` when odds exist.
+
+2. **Page:**  
+   - Open `/betting`, click a game to go to `/betting/games/[gameId]`.  
+   - Confirm: Back link; header (Away @ Home, time, records); 2–4 summary bullets; AI placeholder; Market (current odds if present + two line movement charts); Team comparison (side-by-side ORTG/DRTG/PACE + L5, then pace + offense vs defense); Key player matchups (up to 4); Projected starters; Injuries; Historical matchups table; AI Suggested Bets block.
+
+3. **No modal:**  
+   - Search codebase for `GameDetailsModal` — no source imports (only .next cache may still reference it until rebuild).
+
+4. **Build:**  
+   `npm run build` (or `pnpm build`) — no errors.
+
+## Next Steps
+
+- Wire real AI confidence and summary when backend is ready; keep the same layout slots.
+- Optionally derive “current” spread/total from last point of movement when `currentOdds` is missing.
+- Consider sorting key_players (e.g. by avg_points or games_played) before slicing to top 4.

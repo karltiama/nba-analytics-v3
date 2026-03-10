@@ -16,12 +16,9 @@ import { query } from '@/lib/db';
  *   GET /api/players/[playerId]/games?season=2025&limit=20
  */
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { playerId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ playerId: string }> }) {
+  const { playerId } = await props.params;
   try {
-    const { playerId } = params;
     const searchParams = request.nextUrl.searchParams;
     const season = searchParams.get('season') || null;
     const limit = parseInt(searchParams.get('limit') || '50', 10);
