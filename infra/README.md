@@ -1,25 +1,28 @@
-# Terraform – AWS Lambda (nightly-bdl-updater)
+# Terraform – AWS Lambdas (nightly-bdl-updater, odds-pre-game-snapshot)
 
-Minimal Terraform setup to manage the **nightly-bdl-updater** Lambda and optional EventBridge schedule.
+Terraform setup to manage the **nightly-bdl-updater** and **odds-pre-game-snapshot** Lambdas and their optional EventBridge schedules.
 
 ## Prerequisites
 
 - **AWS CLI** configured (credentials and region).
 - **Terraform** installed (>= 1.0).
-- **Node.js 20** for building the Lambda (in `lambda/nightly-bdl-updater`).
+- **Node.js 20** for building the Lambdas.
 
-## Build the Lambda before apply
+## Build the Lambdas before apply
 
-Terraform packages the Lambda from the existing source tree. You must build it first:
+Terraform packages each Lambda from the existing source tree. You must build both before apply:
 
 ```bash
 cd lambda/nightly-bdl-updater
 npm install
 npm run build
+cd ../odds-pre-game-snapshot
+npm install
+npm run build
 cd ../..
 ```
 
-If you skip this step, the zip may be missing or outdated and the deployed function may fail.
+If you skip this step, the zips may be missing or outdated and the deployed functions may fail. Apply will package and deploy both Lambdas.
 
 ## Run Terraform
 
@@ -36,35 +39,32 @@ If you don’t use a `terraform.tfvars` file, set variables via `-var` or `TF_VA
 
 ## Variables
 
-- **aws_region** – Region for all resources (default: `us-east-1`).
-- **lambda_function_name** – Lambda name (default: `nightly-bdl-updater`).
-- **lambda_timeout** / **lambda_memory_size** – Function config.
-- **lambda_env** – Map of environment variables (e.g. `SUPABASE_DB_URL`, `BALLDONTLIE_API_KEY`). Set in tfvars or via env; don’t commit secrets.
-- **enable_schedule** – Set to `true` to create the EventBridge rule (default: `false`).
-- **schedule_cron** – Cron expression in UTC (default: daily at 08:00 UTC).
+**Shared:** **aws_region** – Region for all resources (default: `us-east-1`).
 
-## Optional: enable EventBridge schedule
+**nightly-bdl-updater:** **lambda_function_name**, **lambda_timeout**, **lambda_memory_size**, **lambda_env** (sensitive), **enable_schedule**, **schedule_cron**.
 
-Set in your tfvars:
+**odds-pre-game-snapshot:** **odds_lambda_function_name**, **odds_lambda_timeout**, **odds_lambda_memory_size**, **odds_lambda_env** (sensitive), **odds_enable_schedule**, **odds_schedule_cron**. Set odds env (e.g. `SUPABASE_DB_URL`, `BALLDONTLIE_API_KEY`, optional `PREFERRED_VENDOR`) in tfvars; don’t commit secrets.
 
-```hcl
-enable_schedule = true
-schedule_cron   = "cron(0 8 * * ? *)"
-```
+## Optional: enable EventBridge schedules
 
-Then run `terraform apply` again. The rule will invoke the Lambda on the given schedule.
+**nightly-bdl-updater:** Set `enable_schedule = true` and `schedule_cron = "cron(0 8 * * ? *)"` (or your desired UTC cron).
+
+**odds-pre-game-snapshot:** Set `odds_enable_schedule = true` and `odds_schedule_cron` (e.g. `"cron(0 14 * * ? *)"` for 09:00 ET). For every 30 min 10am–12pm ET you’d add multiple rules or use a rate expression.
+
+Then run `terraform apply` again.
 
 ## Outputs
 
 After apply:
 
-- **lambda_function_name** – Deployed function name.
-- **lambda_function_arn** – Function ARN.
+- **lambda_function_name** / **lambda_function_arn** – nightly-bdl-updater.
 - **schedule_rule_name** / **schedule_rule_arn** – Set when `enable_schedule` is true.
+- **odds_lambda_function_name** / **odds_lambda_function_arn** – odds-pre-game-snapshot.
+- **odds_schedule_rule_name** / **odds_schedule_rule_arn** – Set when `odds_enable_schedule` is true.
 
 ## Extending to more Lambdas
 
-To add **odds**, **boxscore**, **player-props**, or **injuries** Lambdas:
+To add **boxscore**, **player-props**, or **injuries** Lambdas:
 
 1. Add a new `archive_file` data source pointing at `../lambda/<name>`.
 2. Add a new `aws_lambda_function` (and optionally a dedicated IAM role or reuse with a broader policy).

@@ -1,0 +1,1 @@
+{"statusCode":200,"body":"{\"success\":true,\"dates\":[\"2026-03-10\"],\"results\":[{\"date\":\"2026-03-10\",\"pullRunId\":\"18\",\"rowsFetched\":127,\"rowsStored\":127,\"uniqueGames\":11,\"uniqueVendors\":12,\"transform\":{\"current\":11,\"history\":126,\"movement\":11}}],\"totalFetched\":127,\"totalStored\":127,\"timestamp\":\"2026-03-10T22:13:31.319Z\"}"}

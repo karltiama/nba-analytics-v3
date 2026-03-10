@@ -18,3 +18,21 @@ lambda_env = {
   # BALLDONTLIE_REQUEST_DELAY_MS = "200"
   # MAX_RETRIES                  = "3"
 }
+
+# -----------------------------------------------------------------------------
+# Odds pre-game snapshot Lambda
+# -----------------------------------------------------------------------------
+odds_lambda_function_name = "odds-pre-game-snapshot"
+odds_lambda_timeout        = 300
+odds_lambda_memory_size   = 512
+odds_enable_schedule      = false
+# Example: 09:00 ET = 14:00 UTC (EST) or 13:00 UTC (EDT). For every 30 min 10am-12pm ET use separate rules.
+odds_schedule_cron = "cron(0 14 * * ? *)"
+
+# Required for odds-pre-game-snapshot. Use real values in terraform.tfvars.
+odds_lambda_env = {
+  SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+  BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
+  # Optional:
+  # PREFERRED_VENDOR = "draftkings"
+}
