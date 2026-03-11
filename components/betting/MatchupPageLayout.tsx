@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar } from 'lucide-react';
+import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Game } from './GameCard';
 import { LineMovementChart } from './LineMovementChart';
@@ -19,6 +19,8 @@ interface RecentGameResult {
   score: string;
   spread: number;
   covered: boolean;
+  /** YYYY-MM-DD for B2B detection */
+  game_date?: string | null;
 }
 
 interface TeamStats {
@@ -98,6 +100,17 @@ export interface GameDetailsData {
   aiConfidenceScores: { moneyline: number; spread: number; total: number };
   matchupAnalysis?: MatchupAnalysisData | null;
   playerProps?: PlayerPropItem[];
+}
+
+/** True if team's most recent game was the day before this game (back-to-back). */
+function isBackToBack(gameDate: string | undefined, recentForm: RecentGameResult[]): boolean {
+  if (!gameDate || !recentForm.length) return false;
+  const lastGameDate = recentForm[0]?.game_date;
+  if (!lastGameDate) return false;
+  const game = new Date(gameDate);
+  const last = new Date(lastGameDate);
+  const diffDays = Math.round((game.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
+  return diffDays === 1;
 }
 
 // --- Row / gauge helpers (migrated from modal) ---
@@ -247,96 +260,94 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
       </div>
 
       <div className="space-y-6">
-        {/* A. Game Header — compact, GameCard-like on small screens */}
+        {/* A. Game Header — larger bar with game context on same row; frees space for AI projection */}
         <section className="space-y-6">
           <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-            {/* Single compact bar: same feel as GameCard header — time · away @ home · records */}
-            <div className="px-4 py-2 flex items-center justify-between gap-3 min-w-0 bg-white/[0.02]">
-              <div className="flex items-center gap-2 min-w-0 shrink-0">
-                <Calendar className="w-3.5 h-3.5 text-[#00d4ff] shrink-0" />
-                <span className="text-xs font-medium text-muted-foreground truncate">{game.startTime}</span>
+            <div className="px-5 py-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 min-w-0 bg-white/[0.02]">
+              <div className="flex items-center gap-3 min-w-0 shrink-0">
+                <Calendar className="w-4 h-4 text-[#00d4ff] shrink-0" />
+                <span className="text-sm font-medium text-muted-foreground truncate">{game.startTime}</span>
+                <span className="text-white/30 hidden sm:inline">·</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link href={`/teams/${game.awayTeam.id}`} className="text-base font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</Link>
+                  <span className="text-xs text-muted-foreground">@</span>
+                  <Link href={`/teams/${game.homeTeam.id}`} className="text-base font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</Link>
+                </div>
+                <span className="text-white/30 hidden sm:inline">·</span>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground shrink-0">
+                  <span>{game.awayTeam.record}</span>
+                  <span className="text-white/40">·</span>
+                  <span>{game.homeTeam.record}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</Link>
-                <span className="text-[10px] text-muted-foreground">@</span>
-                <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</Link>
-              </div>
-              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground shrink-0">
-                <span>{game.awayTeam.record}</span>
-                <span className="text-white/40">·</span>
-                <span>{game.homeTeam.record}</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {summaryBullets.slice(0, 4).map((label, i) => {
+                  const isPace = /pace|fast|slow|avg/i.test(label);
+                  const isLine = /line|moved/i.test(label);
+                  const isInjury = /injur|listed/i.test(label);
+                  const Icon = isPace ? Zap : isLine ? TrendingUp : isInjury ? AlertTriangle : TrendingUp;
+                  return (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-white/10 text-muted-foreground border border-white/5"
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      {label}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Quick Betting + Insight badges */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="glass-card rounded-xl p-4 flex items-center">
-              <div className="flex items-center justify-between gap-4 w-full">
-                <div className="text-center flex-1">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Spread</p>
-                  <p className="text-lg font-bold text-white">
-                    {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
-                  </p>
-                  {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
-                    <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-                      {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
-                    </p>
-                  )}
-                </div>
-                <div className="w-px h-10 bg-white/10 shrink-0" />
-                <div className="text-center flex-1">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Moneyline</p>
-                  <p className="text-sm font-bold text-white leading-tight">
-                    {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
-                      <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
-                    ) : currentOdds?.moneylineHome != null ? (
-                      <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
-                    ) : currentOdds?.moneylineAway != null ? (
-                      <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
-                    ) : (
-                      '—'
-                    )}
-                  </p>
-                </div>
-                <div className="w-px h-10 bg-white/10 shrink-0" />
-                <div className="text-center flex-1">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Total</p>
-                  <p className="text-lg font-bold text-white">{currentOdds?.overUnder ?? '—'}</p>
-                  {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
-                    <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-                      O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {summaryBullets.slice(0, 4).map((label, i) => {
-                const isPace = /pace|fast|slow|avg/i.test(label);
-                const isLine = /line|moved/i.test(label);
-                const isInjury = /injur|listed/i.test(label);
-                const Icon = isPace ? Zap : isLine ? TrendingUp : isInjury ? AlertTriangle : TrendingUp;
-                return (
-                  <span
-                    key={i}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-white/10 text-muted-foreground border border-white/5"
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    {label}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* AI Projection placeholder */}
-          <div className="glass-card rounded-xl p-4 border border-dashed border-[#bf5af2]/40 bg-[#bf5af2]/5">
+          {/* AI Projection — above odds */}
+          <div className="glass-card rounded-xl p-6 min-h-[120px] border border-dashed border-[#bf5af2]/40 bg-[#bf5af2]/5">
             <div className="flex items-center justify-center">
               <div className="text-center">
                 <p className="text-sm text-white font-medium">AI Projection Summary</p>
                 <p className="text-xs text-muted-foreground mt-1">Coming Soon</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Betting — full width */}
+          <div className="glass-card rounded-xl p-4 flex items-center">
+            <div className="flex items-center justify-between gap-4 w-full">
+              <div className="text-center flex-1">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Spread</p>
+                <p className="text-lg font-bold text-white">
+                  {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
+                </p>
+                {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
+                  <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
+                    {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
+                  </p>
+                )}
+              </div>
+              <div className="w-px h-10 bg-white/10 shrink-0" />
+              <div className="text-center flex-1">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Moneyline</p>
+                <p className="text-sm font-bold text-white leading-tight">
+                  {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
+                    <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                  ) : currentOdds?.moneylineHome != null ? (
+                    <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                  ) : currentOdds?.moneylineAway != null ? (
+                    <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
+                  ) : (
+                    '—'
+                  )}
+                </p>
+              </div>
+              <div className="w-px h-10 bg-white/10 shrink-0" />
+              <div className="text-center flex-1">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Total</p>
+                <p className="text-lg font-bold text-white">{currentOdds?.overUnder ?? '—'}</p>
+                {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
+                  <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
+                    O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -394,69 +405,109 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           </div>
         </section>
 
-        {/* C. Team comparison — no outer card, grid of team cards + pace + O vs D */}
+        {/* C. Team comparison — single tabbed card + B2B indicator */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-4">Team comparison</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="glass-card rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                  <span className="text-xs font-bold">{game.awayTeam.abbreviation}</span>
-                </div>
-                <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.awayTeam.name}</Link>
+          {(() => {
+            const awayB2B = isBackToBack(game.gameDate, awayTeamStats.recentForm);
+            const homeB2B = isBackToBack(game.gameDate, homeTeamStats.recentForm);
+            return (
+              <div className="glass-card rounded-xl p-4 mb-4">
+                <Tabs defaultValue="away" className="w-full">
+                  <TabsList className="w-full grid grid-cols-2 mb-4 bg-white/10 p-1 rounded-lg h-10">
+                    <TabsTrigger value="away" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded-md text-sm font-medium flex items-center justify-center gap-2">
+                      <span>{game.awayTeam.abbreviation}</span>
+                      {awayB2B && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
+                          <CalendarDays className="w-3 h-3" />
+                          B2B
+                        </span>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="home" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded-md text-sm font-medium flex items-center justify-center gap-2">
+                      <span>{game.homeTeam.abbreviation}</span>
+                      {homeB2B && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
+                          <CalendarDays className="w-3 h-3" />
+                          B2B
+                        </span>
+                      )}
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="away" className="mt-0 outline-none">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                        <span className="text-xs font-bold">{game.awayTeam.abbreviation}</span>
+                      </div>
+                      <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.awayTeam.name}</Link>
+                      {awayB2B && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
+                          <CalendarDays className="w-3 h-3" />
+                          Back-to-back
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
+                        <span className="text-sm font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating.toFixed(1)}</span>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
+                        <span className="text-sm font-bold text-[#39ff14]">{awayTeamStats.defensiveRating.toFixed(1)}</span>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
+                        <span className="text-sm font-bold text-[#ff6b35]">{awayTeamStats.pace.toFixed(1)}</span>
+                      </div>
+                    </div>
+                    <div className="border-t border-white/5 pt-2">
+                      <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
+                      {awayTeamStats.recentForm.slice(0, 3).map((g, i) => (
+                        <RecentFormRow key={i} game={g} teamAbbr={game.awayTeam.abbreviation} />
+                      ))}
+                      {awayTeamStats.recentForm.length === 0 && <p className="text-[10px] text-muted-foreground">—</p>}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="home" className="mt-0 outline-none">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                        <span className="text-xs font-bold">{game.homeTeam.abbreviation}</span>
+                      </div>
+                      <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.homeTeam.name}</Link>
+                      {homeB2B && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
+                          <CalendarDays className="w-3 h-3" />
+                          Back-to-back
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
+                        <span className="text-sm font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating.toFixed(1)}</span>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
+                        <span className="text-sm font-bold text-[#39ff14]">{homeTeamStats.defensiveRating.toFixed(1)}</span>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
+                        <span className="text-sm font-bold text-[#ff6b35]">{homeTeamStats.pace.toFixed(1)}</span>
+                      </div>
+                    </div>
+                    <div className="border-t border-white/5 pt-2">
+                      <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
+                      {homeTeamStats.recentForm.slice(0, 3).map((g, i) => (
+                        <RecentFormRow key={i} game={g} teamAbbr={game.homeTeam.abbreviation} />
+                      ))}
+                      {homeTeamStats.recentForm.length === 0 && <p className="text-[10px] text-muted-foreground">—</p>}
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                <div className="text-center p-2 rounded-lg bg-white/5">
-                  <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
-                  <span className="text-sm font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating.toFixed(1)}</span>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-white/5">
-                  <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
-                  <span className="text-sm font-bold text-[#39ff14]">{awayTeamStats.defensiveRating.toFixed(1)}</span>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-white/5">
-                  <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
-                  <span className="text-sm font-bold text-[#ff6b35]">{awayTeamStats.pace.toFixed(1)}</span>
-                </div>
-              </div>
-              <div className="border-t border-white/5 pt-2">
-                <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
-                {awayTeamStats.recentForm.slice(0, 3).map((g, i) => (
-                  <RecentFormRow key={i} game={g} teamAbbr={game.awayTeam.abbreviation} />
-                ))}
-                {awayTeamStats.recentForm.length === 0 && <p className="text-[10px] text-muted-foreground">—</p>}
-              </div>
-            </div>
-            <div className="glass-card rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                  <span className="text-xs font-bold">{game.homeTeam.abbreviation}</span>
-                </div>
-                <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.homeTeam.name}</Link>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                <div className="text-center p-2 rounded-lg bg-white/5">
-                  <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
-                  <span className="text-sm font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating.toFixed(1)}</span>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-white/5">
-                  <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
-                  <span className="text-sm font-bold text-[#39ff14]">{homeTeamStats.defensiveRating.toFixed(1)}</span>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-white/5">
-                  <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
-                  <span className="text-sm font-bold text-[#ff6b35]">{homeTeamStats.pace.toFixed(1)}</span>
-                </div>
-              </div>
-              <div className="border-t border-white/5 pt-2">
-                <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
-                {homeTeamStats.recentForm.slice(0, 3).map((g, i) => (
-                  <RecentFormRow key={i} game={g} teamAbbr={game.homeTeam.abbreviation} />
-                ))}
-                {homeTeamStats.recentForm.length === 0 && <p className="text-[10px] text-muted-foreground">—</p>}
-              </div>
-            </div>
-          </div>
+            );
+          })()}
           {matchupAnalysis && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">

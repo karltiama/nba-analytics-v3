@@ -23,9 +23,18 @@ export function LineMovementChart({
   width = 400,
   embedded = false,
 }: LineMovementChartProps) {
-  if (data.length < 2) return null;
+  // Normalize to at least 2 points so the chart always renders (e.g. one snapshot = flat line)
+  const safeData: DataPoint[] =
+    !data?.length
+      ? [{ time: 'Open', value: 0 }, { time: 'Now', value: 0 }]
+      : data.length === 1
+        ? [
+            { time: 'Open', value: data[0].value },
+            { time: 'Now', value: data[0].value },
+          ]
+        : data;
 
-  const values = data.map(d => d.value);
+  const values = safeData.map(d => d.value);
   const min = Math.min(...values) - 0.5;
   const max = Math.max(...values) + 0.5;
   const range = max - min || 1;
@@ -34,8 +43,8 @@ export function LineMovementChart({
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
-  const points = data.map((d, index) => {
-    const x = padding.left + (index / (data.length - 1)) * chartWidth;
+  const points = safeData.map((d, index) => {
+    const x = padding.left + (index / Math.max(safeData.length - 1, 1)) * chartWidth;
     const y = padding.top + chartHeight - ((d.value - min) / range) * chartHeight;
     return { x, y, ...d };
   });
@@ -44,8 +53,8 @@ export function LineMovementChart({
     .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
     .join(' ');
 
-  const openingValue = data[0].value;
-  const currentValue = data[data.length - 1].value;
+  const openingValue = safeData[0].value;
+  const currentValue = safeData[safeData.length - 1].value;
   const change = currentValue - openingValue;
   const changeColor = change > 0 ? '#39ff14' : change < 0 ? '#ff4757' : '#8888a0';
 

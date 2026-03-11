@@ -31,12 +31,12 @@ output "odds_lambda_function_arn" {
   value       = aws_lambda_function.odds_pre_game_snapshot.arn
 }
 
-output "odds_schedule_rule_name" {
-  description = "Name of the EventBridge rule for odds (when odds_enable_schedule is true)."
-  value       = var.odds_enable_schedule ? aws_cloudwatch_event_rule.odds_schedule[0].name : null
+output "odds_schedule_rule_names" {
+  description = "Names of the EventBridge rules for odds (when odds schedule is enabled)."
+  value       = length(local.odds_crons) > 0 ? aws_cloudwatch_event_rule.odds_schedule[*].name : []
 }
 
-output "odds_schedule_rule_arn" {
-  description = "ARN of the EventBridge rule for odds (when odds_enable_schedule is true)."
-  value       = var.odds_enable_schedule ? aws_cloudwatch_event_rule.odds_schedule[0].arn : null
+output "odds_schedule_rule_arns" {
+  description = "ARNs of the EventBridge rules for odds (when odds schedule is enabled)."
+  value       = length(local.odds_crons) > 0 ? aws_cloudwatch_event_rule.odds_schedule[*].arn : []
 }

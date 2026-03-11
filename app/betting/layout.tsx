@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Header } from '@/components/betting';
 
 export default function BettingLayout({
@@ -8,6 +9,7 @@ export default function BettingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
@@ -18,12 +20,18 @@ export default function BettingLayout({
     }
   }, [isDarkMode]);
 
+  // Only show layout Header on dashboard and game page; player page renders its own (avoids double header)
+  const showLayoutHeader =
+    pathname === '/betting' || pathname.startsWith('/betting/games/');
+
   return (
     <div className="min-h-screen bg-background gradient-mesh">
-      <Header
-        isDarkMode={isDarkMode}
-        onThemeToggle={() => setIsDarkMode(!isDarkMode)}
-      />
+      {showLayoutHeader && (
+        <Header
+          isDarkMode={isDarkMode}
+          onThemeToggle={() => setIsDarkMode(!isDarkMode)}
+        />
+      )}
       {children}
     </div>
   );

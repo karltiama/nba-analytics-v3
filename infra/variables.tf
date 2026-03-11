@@ -79,15 +79,21 @@ variable "odds_lambda_env" {
 }
 
 variable "odds_enable_schedule" {
-  description = "Set to true to create an EventBridge rule for the odds Lambda."
+  description = "Set to true to create EventBridge rule(s) for the odds Lambda."
   type        = bool
   default     = false
 }
 
 variable "odds_schedule_cron" {
-  description = "Cron expression for odds Lambda (UTC). Example: cron(0 14 * * ? *) = 09:00 ET. For every 30 min 10am-12pm ET use multiple rules or rate."
+  description = "Single cron expression (UTC). Used when odds_schedule_crons is empty. Example: cron(0 14 * * ? *) = 09:00 ET."
   type        = string
   default     = "cron(0 14 * * ? *)"
+}
+
+variable "odds_schedule_crons" {
+  description = "List of cron expressions (UTC) for multiple runs, e.g. every 30 min 10am-12pm ET. When non-empty, this is used instead of odds_schedule_cron. Example: [\"cron(0 15 * * ? *)\", \"cron(30 15 * * ? *)\", \"cron(0 16 * * ? *)\", \"cron(30 16 * * ? *)\", \"cron(0 17 * * ? *)\"]."
+  type        = list(string)
+  default     = []
 }
 
 # -----------------------------------------------------------------------------

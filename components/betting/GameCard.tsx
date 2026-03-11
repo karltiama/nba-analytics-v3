@@ -19,6 +19,8 @@ interface OddsInfo {
 
 export interface Game {
   id: string;
+  /** Game date YYYY-MM-DD (ET), for details page B2B detection */
+  gameDate?: string;
   homeTeam: TeamInfo;
   awayTeam: TeamInfo;
   startTime: string;

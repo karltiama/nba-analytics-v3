@@ -25,9 +25,17 @@ lambda_env = {
 odds_lambda_function_name = "odds-pre-game-snapshot"
 odds_lambda_timeout        = 300
 odds_lambda_memory_size   = 512
-odds_enable_schedule      = false
-# Example: 09:00 ET = 14:00 UTC (EST) or 13:00 UTC (EDT). For every 30 min 10am-12pm ET use separate rules.
-odds_schedule_cron = "cron(0 14 * * ? *)"
+odds_enable_schedule      = true
+# Single run (e.g. 09:00 ET) when odds_schedule_crons is not set:
+# odds_schedule_cron = "cron(0 14 * * ? *)"
+# Every 30 min 10am-12pm ET (UTC 15:00, 15:30, 16:00, 16:30, 17:00):
+odds_schedule_crons = [
+  "cron(0 15 * * ? *)",
+  "cron(30 15 * * ? *)",
+  "cron(0 16 * * ? *)",
+  "cron(30 16 * * ? *)",
+  "cron(0 17 * * ? *)",
+]
 
 # Required for odds-pre-game-snapshot. Use real values in terraform.tfvars.
 odds_lambda_env = {

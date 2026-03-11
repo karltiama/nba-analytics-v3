@@ -72,28 +72,33 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
 
 # -----------------------------------------------------------------------------
 # EventBridge schedule for odds (optional; set odds_enable_schedule = true to use)
+# When odds_schedule_crons is non-empty, one rule per cron (e.g. every 30 min 10am-12pm ET).
 # -----------------------------------------------------------------------------
+locals {
+  odds_crons = length(var.odds_schedule_crons) > 0 ? var.odds_schedule_crons : (var.odds_enable_schedule ? [var.odds_schedule_cron] : [])
+}
+
 resource "aws_cloudwatch_event_rule" "odds_schedule" {
-  count               = var.odds_enable_schedule ? 1 : 0
-  name                = "${var.odds_lambda_function_name}-schedule"
-  description         = "Schedule for ${var.odds_lambda_function_name} (e.g. 09:00 ET)"
-  schedule_expression = var.odds_schedule_cron
+  count               = length(local.odds_crons)
+  name                = "${var.odds_lambda_function_name}-schedule-${count.index}"
+  description         = "Odds snapshot run ${count.index + 1}/${length(local.odds_crons)} (e.g. 10am-12pm ET every 30 min)"
+  schedule_expression = local.odds_crons[count.index]
 }
 
 resource "aws_cloudwatch_event_target" "odds_pre_game" {
-  count     = var.odds_enable_schedule ? 1 : 0
-  rule      = aws_cloudwatch_event_rule.odds_schedule[0].name
+  count     = length(local.odds_crons)
+  rule      = aws_cloudwatch_event_rule.odds_schedule[count.index].name
   target_id = "odds-pre-game-snapshot"
   arn       = aws_lambda_function.odds_pre_game_snapshot.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge_odds" {
-  count         = var.odds_enable_schedule ? 1 : 0
-  statement_id  = "allow-eventbridge-invoke-odds"
+  count         = length(local.odds_crons)
+  statement_id  = "allow-eventbridge-invoke-odds-${count.index}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.odds_pre_game_snapshot.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.odds_schedule[0].arn
+  source_arn    = aws_cloudwatch_event_rule.odds_schedule[count.index].arn
 }
 
 # -----------------------------------------------------------------------------

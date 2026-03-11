@@ -74,15 +74,16 @@ export async function GET(
       getTeamRecentForm(game.away_team_id, 5),
     ]);
 
-    // Transform recent form to match modal format
+    // Transform recent form to match modal format (include game_date for B2B detection)
     const transformRecentForm = (form: any[]) => {
       return form.map((f) => ({
         opponent: f.opponent_abbr || 'OPP',
         result: f.result || 'L',
         score: `${f.team_score || 0}-${f.opponent_score || 0}`,
-        spread: 0, // Spread data not available in recent form query
-        covered: false, // Spread data not available
-      })).filter((f) => f.score !== '0-0'); // Filter out games without scores
+        spread: 0,
+        covered: false,
+        game_date: f.game_date ? String(f.game_date).slice(0, 10) : null,
+      })).filter((f) => f.score !== '0-0');
     };
 
     // Get historical matchups
@@ -138,10 +139,15 @@ export async function GET(
         })
       : '';
 
+    const gameDateStr = game.start_time
+      ? new Date(game.start_time).toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
+      : '';
+
     // Build response (include game for page/modal header)
     const response = {
       game: {
         id: resolvedGameId,
+        gameDate: gameDateStr,
         homeTeam: {
           id: game.home_team_id,
           name: game.home_team_name,
