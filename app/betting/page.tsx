@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { use, useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   GameCard,
@@ -226,7 +226,16 @@ function transformPlayer(apiPlayer: ApiPlayer): PlayerData {
 // MAIN COMPONENT
 // ================================
 
-export default function BettingDashboard() {
+type PageProps = {
+  params?: Promise<Record<string, string | string[]>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default function BettingDashboard(props: PageProps) {
+  // Unwrap Next.js 16 async params/searchParams so dev overlay doesn't enumerate them
+  if (props.params) use(props.params);
+  if (props.searchParams) use(props.searchParams);
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
