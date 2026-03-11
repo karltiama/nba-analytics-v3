@@ -39,7 +39,7 @@ interface HistoricalMatchup {
 
 interface InjuryReport {
   player: string;
-  status: 'Out' | 'Questionable' | 'Probable';
+  status: 'Out' | 'Questionable' | 'Probable' | 'Doubtful' | 'GTD';
   injury: string;
 }
 
@@ -125,17 +125,24 @@ function RecentFormRow({ game, teamAbbr }: { game: RecentGameResult; teamAbbr: s
 }
 
 function InjuryRow({ injury }: { injury: InjuryReport }) {
-  const statusColors = {
+  const statusColors: Record<InjuryReport['status'], string> = {
     Out: 'text-[#ff4757] bg-[#ff4757]/20',
     Questionable: 'text-[#ff6b35] bg-[#ff6b35]/20',
     Probable: 'text-[#39ff14] bg-[#39ff14]/20',
+    Doubtful: 'text-[#ff9500] bg-[#ff9500]/20',
+    GTD: 'text-[#ffcc00] bg-[#ffcc00]/20',
   };
+  const statusClass = statusColors[injury.status] ?? statusColors.Out;
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
-      <span className="text-xs text-white">{injury.player}</span>
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground">{injury.injury}</span>
-        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusColors[injury.status]}`}>
+    <div className="flex items-center justify-between gap-2 py-1.5 border-b border-white/5 last:border-0">
+      <span className="text-xs text-white truncate min-w-0">{injury.player}</span>
+      <div className="flex items-center gap-2 shrink-0">
+        {injury.injury ? (
+          <span className="text-[10px] text-muted-foreground truncate max-w-[140px]" title={injury.injury}>
+            {injury.injury}
+          </span>
+        ) : null}
+        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium whitespace-nowrap ${statusClass}`}>
           {injury.status}
         </span>
       </div>
@@ -487,7 +494,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           </section>
         )}
 
-        {/* F. Injuries — one card with two columns */}
+        {/* F. Injuries — per team from analytics.player_injury_status_current */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-4">Injuries</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -495,15 +502,25 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-4 h-4 text-[#ff6b35]" />
                 <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.awayTeam.name}</Link>
+                {(injuries?.away?.length ?? 0) > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">
+                    {(injuries?.away?.length ?? 0)} listed
+                  </span>
+                )}
               </div>
-              {injuries.away.length > 0 ? injuries.away.map((injury, i) => <InjuryRow key={i} injury={injury} />) : <p className="text-xs text-muted-foreground">No injuries reported</p>}
+              {(injuries?.away?.length ?? 0) > 0 ? injuries.away.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">No injuries reported</p>}
             </div>
             <div className="glass-card rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-4 h-4 text-[#ff6b35]" />
                 <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.homeTeam.name}</Link>
+                {(injuries?.home?.length ?? 0) > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">
+                    {(injuries?.home?.length ?? 0)} listed
+                  </span>
+                )}
               </div>
-              {injuries.home.length > 0 ? injuries.home.map((injury, i) => <InjuryRow key={i} injury={injury} />) : <p className="text-xs text-muted-foreground">No injuries reported</p>}
+              {(injuries?.home?.length ?? 0) > 0 ? injuries.home.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">No injuries reported</p>}
             </div>
           </div>
         </section>

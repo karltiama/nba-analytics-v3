@@ -36,3 +36,18 @@ odds_lambda_env = {
   # Optional:
   # PREFERRED_VENDOR = "draftkings"
 }
+
+# -----------------------------------------------------------------------------
+# Injuries snapshot Lambda
+# -----------------------------------------------------------------------------
+injuries_lambda_function_name = "injuries-snapshot"
+injuries_lambda_timeout       = 120
+injuries_lambda_memory_size   = 256
+injuries_enable_schedule      = false
+injuries_schedule_cron        = "cron(0 13,18,22 * * ? *)"
+
+# Required for injuries-snapshot. Use real values in terraform.tfvars.
+injuries_lambda_env = {
+  SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+  BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
+}

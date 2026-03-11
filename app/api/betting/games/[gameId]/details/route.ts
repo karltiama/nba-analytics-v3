@@ -8,6 +8,18 @@ import {
 } from '@/lib/betting/queries';
 import { query } from '@/lib/db';
 
+/** Normalize provider status to UI-friendly status for injury badges */
+function normalizeInjuryStatus(status: string | null): 'Out' | 'Questionable' | 'Probable' | 'Doubtful' | 'GTD' {
+  if (!status) return 'Out';
+  const s = status.toLowerCase();
+  if (s.includes('out') || s.includes('season')) return 'Out';
+  if (s.includes('questionable')) return 'Questionable';
+  if (s.includes('probable')) return 'Probable';
+  if (s.includes('doubtful')) return 'Doubtful';
+  if (s.includes('game time') || s.includes('gtd') || s.includes('decision')) return 'GTD';
+  return 'Out';
+}
+
 /**
  * GET /api/betting/games/[gameId]/details
  * 
@@ -81,6 +93,36 @@ export async function GET(
 
     // Get current odds
     const odds = await getGameOdds(resolvedGameId, 'draftkings');
+
+    // Get injuries per team from analytics.player_injury_status_current
+    const injuryRows = await query<{
+      player_id: string;
+      team_id: string;
+      status: string | null;
+      description: string | null;
+      full_name: string;
+    }>(
+      `SELECT i.player_id, i.team_id, i.status, i.description, p.full_name
+       FROM analytics.player_injury_status_current i
+       JOIN analytics.players p ON p.player_id = i.player_id
+       WHERE i.team_id IN ($1, $2)
+       ORDER BY i.team_id, p.full_name`,
+      [game.home_team_id, game.away_team_id]
+    );
+    const injuriesHome = injuryRows
+      .filter((r) => r.team_id === game.home_team_id)
+      .map((r) => ({
+        player: r.full_name,
+        status: normalizeInjuryStatus(r.status),
+        injury: r.description ?? '',
+      }));
+    const injuriesAway = injuryRows
+      .filter((r) => r.team_id === game.away_team_id)
+      .map((r) => ({
+        player: r.full_name,
+        status: normalizeInjuryStatus(r.status),
+        injury: r.description ?? '',
+      }));
 
     // Helper function to format stats to 1 decimal place
     const formatStat = (value: number | null | undefined): number => {
@@ -158,8 +200,8 @@ export async function GET(
         bookmaker: odds.bookmaker ?? null,
       },
       injuries: {
-        home: [], // Not available in MVP
-        away: [], // Not available in MVP
+        home: injuriesHome,
+        away: injuriesAway,
       },
       aiSuggestions: [], // Not available in MVP - can add simple calculations later
       aiConfidenceScores: {

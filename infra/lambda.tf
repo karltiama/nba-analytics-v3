@@ -95,3 +95,50 @@ resource "aws_lambda_permission" "allow_eventbridge_odds" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.odds_schedule[0].arn
 }
+
+# -----------------------------------------------------------------------------
+# Lambda: injuries-snapshot (run "npm install && npm run build" in lambda/injuries-snapshot first)
+# -----------------------------------------------------------------------------
+data "archive_file" "injuries_snapshot" {
+  type        = "zip"
+  source_dir  = "${path.module}/../lambda/injuries-snapshot"
+  output_path = "${path.module}/injuries-snapshot.zip"
+}
+
+resource "aws_lambda_function" "injuries_snapshot" {
+  filename         = data.archive_file.injuries_snapshot.output_path
+  function_name    = var.injuries_lambda_function_name
+  role             = aws_iam_role.lambda_injuries_execution.arn
+  handler          = "dist/index.handler"
+  runtime          = "nodejs20.x"
+  timeout          = var.injuries_lambda_timeout
+  memory_size      = var.injuries_lambda_memory_size
+  source_code_hash = data.archive_file.injuries_snapshot.output_base64sha256
+
+  environment {
+    variables = var.injuries_lambda_env
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "injuries_schedule" {
+  count               = var.injuries_enable_schedule ? 1 : 0
+  name                = "${var.injuries_lambda_function_name}-schedule"
+  description         = "Schedule for ${var.injuries_lambda_function_name} (e.g. 2-3x daily)"
+  schedule_expression = var.injuries_schedule_cron
+}
+
+resource "aws_cloudwatch_event_target" "injuries_snapshot" {
+  count     = var.injuries_enable_schedule ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.injuries_schedule[0].name
+  target_id = "injuries-snapshot"
+  arn       = aws_lambda_function.injuries_snapshot.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge_injuries" {
+  count         = var.injuries_enable_schedule ? 1 : 0
+  statement_id  = "allow-eventbridge-invoke-injuries"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.injuries_snapshot.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.injuries_schedule[0].arn
+}

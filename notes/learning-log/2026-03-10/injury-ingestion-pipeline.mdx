@@ -1,0 +1,83 @@
+## Context
+
+The app already has raw/analytics schemas, odds and player-props ingestion (Lambda + raw snapshots + transform). We needed an injury ingestion pipeline that fetches from BallDontLie player injuries (player/team based, no game_id), stores historical raw snapshots, and exposes current + history in analytics for the frontend.
+
+## Goal
+
+Implement injury ingestion: BDL GET /nba/v1/player_injuries → raw tables (append-only) → analytics tables (current upsert + history on meaningful change). No staging schema; frontend reads only analytics.*. Lambda and Terraform fit existing conventions.
+
+## Files Changed
+
+| File | Action |
+|------|--------|
+| `db/schemas/raw_injury_schema.sql` | Created — raw.injury_pull_runs, raw.player_injuries |
+| `db/schemas/analytics_injury_schema.sql` | Created — player_injury_status_current, player_injury_status_history, team_injury_summary_current view |
+| `lambda/injuries-snapshot/index.ts` | Created — fetch, raw insert, transform (current + history on change) |
+| `lambda/injuries-snapshot/package.json` | Created |
+| `lambda/injuries-snapshot/tsconfig.json` | Created |
+| `lambda/injuries-snapshot/.gitignore` | Created |
+| `lambda/injuries-snapshot/README.md` | Created — env, local run, EventBridge note, Terraform fit |
+| `infra/lambda.tf` | Added — archive_file, aws_lambda_function.injuries_snapshot, EventBridge rule/target/permission |
+| `infra/variables.tf` | Added — injuries_lambda_* variables |
+| `infra/iam.tf` | Added — lambda_injuries_execution role and policy attachment |
+| `infra/terraform.tfvars.example` | Added — injuries_* example vars |
+
+## Implementation Notes (key logic explained)
+
+- **Raw:** One pull run per invocation; one raw.player_injuries row per API row per pull. return_date stored as text (return_date_raw). No unique constraint; append-only.
+- **Transform:** Team mapping uses raw.teams JOIN analytics.teams ON abbreviation (same as transform-raw-to-analytics). Only players in analytics.players are written to analytics. Current = upsert by player_id. History = insert only when (status, description, return_date_raw, team_id) changed vs previous current row; first-time appearance on report also gets one history row.
+- **Lambda:** Full league pull (no team_ids[] filter in v1). Pagination via cursor. Handler creates pull run → fetches all pages → inserts raw → transformToAnalytics → completes run.
+
+## Key Decisions (and alternatives considered)
+
+- **Full pull vs team filter:** v1 does full league pull; API supports team_ids[] for a future optimization (e.g. teams with games today).
+- **History only on change:** Avoids duplicate history rows when re-running or when report unchanged; comparison is status, description, return_date_raw, team_id.
+- **No “cleared” in v1:** Players not in the API response are left as-is in current; optional follow-up could mark “cleared” when a player was in previous pull but not in current.
+
+## Assumptions
+
+- BDL NBAPlayerInjury shape: player (id, team_id or team.id), return_date, description, status. Pagination: meta.next_cursor, per_page.
+- analytics.players.player_id and analytics.teams.team_id are BDL ids as strings; raw.teams exists for team mapping.
+
+## Failure Modes
+
+- API 429: Lambda waits 60s and retries. Rate limit may require higher tier or lower frequency.
+- Player in raw but not in analytics.players: skipped in transform (no FK violation); raw still stores all.
+- Missing raw.teams or analytics.teams: team_id in analytics may be null; transform still runs.
+
+## How to Test (commands + steps)
+
+1. **Apply schemas:**  
+   `npx tsx scripts/run-schemas.ts raw_injury_schema`  
+   `npx tsx scripts/run-schemas.ts analytics_injury_schema`  
+   (Or run full default schemas first, then these.)
+
+2. **Run Lambda locally:**  
+   `cd lambda/injuries-snapshot && npx tsx index.ts`  
+   (Requires SUPABASE_DB_URL and BALLDONTLIE_API_KEY in .env at repo root or in lambda dir.)
+
+3. **Check raw:**  
+   `SELECT * FROM raw.injury_pull_runs ORDER BY pulled_at DESC LIMIT 1;`  
+   `SELECT * FROM raw.player_injuries WHERE pull_run_id = ? LIMIT 10;`
+
+4. **Check analytics:**  
+   `SELECT * FROM analytics.player_injury_status_current LIMIT 10;`  
+   `SELECT * FROM analytics.player_injury_status_history ORDER BY created_at DESC LIMIT 10;`  
+   `SELECT * FROM analytics.team_injury_summary_current;`
+
+5. **Terraform:**  
+   In infra: `terraform plan` (after npm install + npm run build in lambda/injuries-snapshot). Set injuries_lambda_env in tfvars for apply.
+
+## Verification Checklist
+
+- [ ] Run `raw_injury_schema.sql` and `analytics_injury_schema.sql` (e.g. via `run-schemas.ts`) and confirm tables/view exist.
+- [ ] From `lambda/injuries-snapshot`, run `npx tsx index.ts` with valid `.env`; confirm no throw and response shows rowsStored and transform counts.
+- [ ] In DB, confirm one row in `raw.injury_pull_runs` and rows in `raw.player_injuries` for that pull_run_id.
+- [ ] Confirm `analytics.player_injury_status_current` has rows for known injured players and `analytics.player_injury_status_history` only grows when status/description/return_date/team changes.
+- [ ] Run `npm run build` in `lambda/injuries-snapshot`; run `terraform plan` in `infra` and confirm injuries-snapshot resources appear (no plan errors).
+
+## Next Steps
+
+- Wire game details API to return injuries.home / injuries.away from analytics.player_injury_status_current joined to game home_team_id / away_team_id.
+- Optional: run transform as standalone script (e.g. scripts/transform-raw-injuries-to-analytics.ts) for a given pull_run_id.
+- Optional: “cleared” logic when a player disappears from the injury response.
