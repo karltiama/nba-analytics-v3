@@ -387,10 +387,10 @@ export default function BettingDashboard(props: PageProps) {
         : `No games on ${dateLabel}`;
 
   return (
-    <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 overflow-hidden">
+    <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pb-6">
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Main Content */}
-          <div className="flex-1 min-w-0 space-y-6">
+          <div className="flex-1 min-w-0 pt-8 space-y-6">
             {/* Date + Filters (single bar) */}
             <FilterBar
               searchValue={searchValue}
@@ -497,9 +497,9 @@ export default function BettingDashboard(props: PageProps) {
             </section>
           </div>
 
-          {/* AI Insights Sidebar */}
+          {/* AI Insights Sidebar — no self-start so it stretches; sticky then has room to stick */}
           <aside className="w-full xl:w-80 shrink-0">
-            <div className="sticky top-20">
+            <div className="sticky top-16 pt-8 pb-6">
               {loadingInsights ? (
                 <AIInsightPanelSkeleton />
               ) : (

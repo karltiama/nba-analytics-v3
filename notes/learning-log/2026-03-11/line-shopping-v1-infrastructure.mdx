@@ -1,0 +1,69 @@
+# Line Shopping v1 — Market comparison infrastructure
+
+## Context
+
+The app already ingests player props from BallDontLie into `raw.player_prop_snapshots` and transforms into `analytics.player_prop_current` / `analytics.player_prop_history`. We needed a dedicated **line shopping** layer: a flattened table of over/under lines per sportsbook with American/decimal odds and implied probability, plus comparison and “best line / best price” logic—without EV or ML.
+
+## Goal
+
+- Add `analytics.player_prop_lines` (one row per game, player, sportsbook, market_type, side, line_value, snapshot_at).
+- Transform from raw (over_under only): flatten to over/under rows, compute decimal odds and implied probability.
+- Provide comparison query and a line-shopping response (books + best over/under line, best price on same line).
+- Add TS odds helpers and types.
+
+## Files Changed
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `db/schemas/analytics_player_prop_lines_schema.sql` | Created | Table, unique + lookup + snapshot_at indexes; `american_to_decimal`, `american_to_implied_prob` SQL helpers |
+| `db/scripts/transform_raw_player_props_to_lines.sql` | Created | Reference INSERT from raw → player_prop_lines (over + under UNION ALL, ON CONFLICT DO NOTHING) |
+| `scripts/transform-raw-player-props-to-lines.ts` | Created | Script to run transform (optional `--pull-run-id`) |
+| `lib/betting/odds-utils.ts` | Created | `americanToDecimal`, `americanToImpliedProb` |
+| `lib/betting/types.ts` | Created | `PlayerPropLineRow`, `PlayerPropLineComparisonRow`, `PlayerPropLineShoppingResponse`, etc. |
+| `lib/betting/queries.ts` | Modified | `getPlayerPropLines`, `getPlayerPropLineShopping`; imports from `@/lib/betting/types` |
+
+## Implementation Notes (key logic explained)
+
+- **Schema:** `player_prop_lines` stores `sportsbook` (raw.vendor), `market_type` (raw.prop_type, e.g. points/rebounds), `side` (over/under), `line_value`, `odds_american`, `odds_decimal`, `implied_probability`, `snapshot_at`. `team_id` comes from `analytics.player_game_logs` when present.
+- **Transform:** Only `market_type = 'over_under'`; each snapshot becomes two rows (over with over_odds, under with under_odds). Skips NULL odds. Uses SQL helpers for decimal and implied prob; idempotent via unique on (game_id, player_id, sportsbook, market_type, side, line_value, snapshot_at).
+- **Best over line:** Min `line_value` among over rows. **Best under line:** Max `line_value` among under rows.
+- **Best price on same line:** Consensus line = modal `line_value`; then max(odds_american) for over and for under at that line (best for bettor).
+- **getPlayerPropLines:** Optional `snapshotAt`; if omitted, uses max(snapshot_at) for that (game_id, player_id, market_type).
+
+## Key Decisions (and alternatives considered)
+
+- **Append-only lines table:** Matches raw pattern; “latest only” is done in the query (max snapshot_at). Alternative: separate “current” table or materialized view—deferred for v1.
+- **Consensus line = modal line:** Single line for “same line” best price in v1. Alternative: per-line best price (richer, can add later).
+- **SQL transform + TS script:** Single source of truth in SQL; script parameterizes optional pull_run_id. Alternative: TS-only transform—would duplicate conversion logic.
+
+## Assumptions
+
+- Only over_under raw snapshots feed `player_prop_lines`; milestone skipped for v1.
+- `game_id`/`player_id` remain text; `team_id` nullable, from player_game_logs when available.
+
+## Failure Modes
+
+- Raw rows with NULL over_odds or under_odds: that side is skipped in transform.
+- No rows for (game_id, player_id, market_type): comparison returns empty; best_* fields null.
+- Multiple snapshots: always scope by specific snapshot_at or “latest” (max) to avoid mixing times.
+
+## How to Test (commands + steps)
+
+1. Apply schema: `npx tsx scripts/run-schemas.ts analytics_player_prop_lines_schema`
+2. Run transform: `npx tsx scripts/transform-raw-player-props-to-lines.ts` (or with `--pull-run-id N`).
+3. Run verification script (steps 3+4): `npx tsx scripts/verify-line-shopping.ts` — samples one (game_id, player_id, market_type), prints rows and full `getPlayerPropLineShopping` JSON.
+4. Or inspect manually: `SELECT * FROM analytics.player_prop_lines WHERE game_id = '...' AND player_id = '...' AND market_type = 'points' LIMIT 20;`
+
+## Verification Checklist
+
+- [x] Run `analytics_player_prop_lines_schema.sql` on target DB; confirm table and indexes exist. — **Done:** `npx tsx scripts/run-schemas.ts analytics_player_prop_lines_schema`
+- [x] Run `npx tsx scripts/transform-raw-player-props-to-lines.ts`; confirm row count and no errors. — **Done:** 7168 rows inserted.
+- [x] Query `analytics.player_prop_lines` for a known (game_id, player_id, market_type); confirm over/under rows and odds_decimal/implied_probability. — **Done:** `npx tsx scripts/verify-line-shopping.ts` (Step 3).
+- [x] Call `getPlayerPropLineShopping(gameId, playerId, 'points')` and check `books`, `best_over_line`, `best_under_line`, `best_over_price_same_line`, `best_under_price_same_line` shape and values. — **Done:** same script (Step 4).
+- [ ] Run project build/lint; fix any type or import errors. — **Note:** Build fails on pre-existing `PlayerSeasonStats.tsx` (efg_pct). Lint reports pre-existing issues elsewhere; line-shopping files have no lint errors.
+
+## Next Steps
+
+- Wire an API route (e.g. `/api/betting/games/[gameId]/line-shopping`) to `getPlayerPropLineShopping`.
+- Optionally run the lines transform from the player-props Lambda after each snapshot.
+- Add frontend UI to display line shopping for a chosen player prop.

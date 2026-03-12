@@ -1,0 +1,33 @@
+# Betting dashboard sidebar: flush to top of container
+
+## Context
+The AI Insights sidebar (aside) had white space above it; the user wanted it to go all the way up to the container with no gap.
+
+## Goal
+Remove the top white space so the sidebar starts at the top of the main container.
+
+## Files Changed
+- `app/betting/page.tsx`
+
+## Implementation Notes
+- **Top padding:** Removed `pt-8` from `<main>` and added `pt-8` to the main content column only (`<div className="flex-1 min-w-0 pt-8 space-y-6">`). So the left column (filters, games, etc.) keeps the same top spacing; the sidebar column starts at the top of main with no gap.
+- **Sidebar alignment:** Added `self-start` to the aside so it doesn’t stretch with the flex row and stays aligned to the top.
+- **Sticky:** Kept `sticky top-16` so when scrolling the sidebar sticks just below the layout header (Header is `h-16`), avoiding overlap.
+
+## Key Decisions
+- Padding only on the main content column so the sidebar can sit flush to the top without affecting the rest of the layout.
+- `top-16` (64px) matches the betting layout header height so the sticky sidebar doesn’t sit under the nav.
+
+## Assumptions
+- Header height remains `h-16`; if it changes, update `top-16` to match.
+
+## Failure Modes
+- If the layout header is hidden or different on some routes, sticky offset may need to be route-specific.
+
+## How to Test
+1. Open `/betting` at xl width; confirm the AI Insights sidebar starts at the top of the content area (no white band above it).
+2. Confirm the left column (FilterBar, games) still has normal top spacing.
+3. Scroll down; confirm the sidebar sticks just below the header (`top-16`).
+
+## Next Steps
+- None.

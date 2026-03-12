@@ -45,26 +45,26 @@ export function FilterBar({
   const today = showDateNav ? getTodayET() : '';
 
   return (
-    <div className="glass-card rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+    <div className="glass-card rounded-xl p-2 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
       {/* Date nav (when props provided) */}
       {showDateNav && (
         <>
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => onDateChange(addDaysET(selectedDate, -1))}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
               aria-label="Previous day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm font-medium text-white min-w-[100px] sm:min-w-[120px] text-center">
+            <span className="text-sm font-medium text-white min-w-[72px] sm:min-w-[120px] text-center">
               {getDateLabel(selectedDate)}
             </span>
             <button
               type="button"
               onClick={() => onDateChange(addDaysET(selectedDate, 1))}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
               aria-label="Next day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -97,89 +97,88 @@ export function FilterBar({
         </>
       )}
 
-      {/* Search */}
-      <div className="relative flex-1 min-w-0">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Search teams..."
-          value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-9 pr-9 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#00d4ff]/50 transition-all"
-        />
-        {searchValue && (
+      {/* Search + sort + filters: wrap together in 640–950px so search keeps room */}
+      <div className="flex flex-1 min-w-0 flex-wrap items-center gap-2 sm:gap-3">
+        <div className="relative flex-1 min-w-[200px] w-full lg:min-w-0 lg:w-auto">
+          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search teams..."
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full pl-8 sm:pl-9 pr-8 sm:pr-9 py-1.5 sm:py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#00d4ff]/50 transition-all"
+          />
+          {searchValue && (
+            <button
+              onClick={() => onSearchChange('')}
+              className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-white/10 transition-colors"
+            >
+              <X className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+
+        <div className="relative shrink-0">
           <button
-            onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-white/10 transition-colors"
+            onClick={() => setShowSortMenu(!showSortMenu)}
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors whitespace-nowrap"
           >
-            <X className="w-3.5 h-3.5 text-muted-foreground" />
+            <ArrowUpDown className="w-4 h-4 text-muted-foreground shrink-0" />
+            <span className="text-sm text-white">
+              {sortOptions.find(o => o.value === sortBy)?.label}
+            </span>
           </button>
-        )}
-      </div>
+          {showSortMenu && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setShowSortMenu(false)} 
+              />
+              <div className="absolute right-0 top-full mt-1 z-20 w-48 glass-card rounded-lg border border-white/10 py-1 fade-in">
+                {sortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      onSortChange(option.value);
+                      setShowSortMenu(false);
+                    }}
+                    className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 transition-colors ${
+                      sortBy === option.value ? 'text-[#00d4ff]' : 'text-white'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
-      {/* Sort Dropdown */}
-      <div className="relative">
-        <button
-          onClick={() => setShowSortMenu(!showSortMenu)}
-          className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
-        >
-          <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm text-white">
-            {sortOptions.find(o => o.value === sortBy)?.label}
-          </span>
-        </button>
-        
-        {showSortMenu && (
-          <>
-            <div 
-              className="fixed inset-0 z-10" 
-              onClick={() => setShowSortMenu(false)} 
-            />
-            <div className="absolute right-0 top-full mt-1 z-20 w-48 glass-card rounded-lg border border-white/10 py-1 fade-in">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => {
-                    onSortChange(option.value);
-                    setShowSortMenu(false);
-                  }}
-                  className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 transition-colors ${
-                    sortBy === option.value ? 'text-[#00d4ff]' : 'text-white'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Filter Toggles */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={onFavoritesToggle}
-          className={`px-3 py-2 text-xs font-medium rounded-lg border transition-colors ${
-            showFavoritesOnly 
-              ? 'bg-[#39ff14]/20 border-[#39ff14]/50 text-[#39ff14]' 
-              : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
-          }`}
-        >
-          Favorites
-        </button>
-        <button
-          onClick={onCloseMatchupsToggle}
-          className={`px-3 py-2 text-xs font-medium rounded-lg border transition-colors ${
-            showCloseMatchups 
-              ? 'bg-[#ff6b35]/20 border-[#ff6b35]/50 text-[#ff6b35]' 
-              : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
-          }`}
-        >
-          Close Matchups
-        </button>
-        <button className="p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors">
-          <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-        </button>
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap">
+          <button
+            onClick={onFavoritesToggle}
+            className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
+              showFavoritesOnly 
+                ? 'bg-[#39ff14]/20 border-[#39ff14]/50 text-[#39ff14]' 
+                : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
+            }`}
+          >
+            Favorites
+          </button>
+          <button
+            onClick={onCloseMatchupsToggle}
+            className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
+              showCloseMatchups 
+                ? 'bg-[#ff6b35]/20 border-[#ff6b35]/50 text-[#ff6b35]' 
+                : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
+            }`}
+          >
+            Close Matchups
+          </button>
+          <button className="p-1.5 sm:p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors shrink-0" aria-label="Filters">
+            <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -67,9 +67,9 @@ function InsightCard({ insight }: { insight: Insight }) {
 
 export function AIInsightPanel({ insights }: AIInsightPanelProps) {
   return (
-    <div className="glass-card rounded-xl overflow-hidden h-full flex flex-col">
+    <div className="glass-card rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-[#bf5af2]/20">
             <Zap className="w-4 h-4 text-[#bf5af2]" />
@@ -85,15 +85,19 @@ export function AIInsightPanel({ insights }: AIInsightPanelProps) {
         </div>
       </div>
 
-      {/* Insights List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        {insights.map((insight) => (
-          <InsightCard key={insight.id} insight={insight} />
-        ))}
+      {/* Insights list — scrollable; panel height = viewport */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
+        {insights.length === 0 ? (
+          <p className="text-xs text-muted-foreground py-4">No insights yet. Check back soon.</p>
+        ) : (
+          insights.map((insight) => (
+            <InsightCard key={insight.id} insight={insight} />
+          ))
+        )}
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
+      <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02] shrink-0">
         <p className="text-[10px] text-muted-foreground text-center">
           Insights updated every 30 seconds • <span className="text-[#00d4ff]">Powered by AI</span>
         </p>

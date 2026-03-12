@@ -240,16 +240,21 @@ export function OffenseVsDefenseComparison({
   defenseTeam, 
   offenseAbbr, 
   defenseAbbr,
-  isSwapped
+  isSwapped,
+  embedded = false
 }: { 
   offenseTeam: TeamOffensiveRankings | null;
   defenseTeam: OpponentDefensiveRankings | null;
   offenseAbbr: string;
   defenseAbbr: string;
   isSwapped?: boolean;
+  /** When true, render inner content only (no card wrapper) for use inside a parent card */
+  embedded?: boolean;
 }) {
   if (!offenseTeam || !defenseTeam) {
-    return (
+    return embedded ? (
+      <p className="text-xs text-muted-foreground">No matchup data available</p>
+    ) : (
       <div className="glass-card rounded-xl p-4">
         <p className="text-xs text-muted-foreground">No matchup data available</p>
       </div>
@@ -262,9 +267,8 @@ export function OffenseVsDefenseComparison({
   const maxAssists = Math.max(offenseTeam.assists_per_game, defenseTeam.assists_allowed_per_game) * 1.1;
   const maxThrees = Math.max(offenseTeam.threes_per_game, defenseTeam.threes_allowed_per_game) * 1.1;
 
-  return (
-    <div className="glass-card rounded-xl p-4">
-      <div className="space-y-3">
+  const content = (
+    <div className="space-y-3">
         <StatComparisonRow
           label="Points"
           offenseRank={offenseTeam.points_rank}
@@ -319,8 +323,10 @@ export function OffenseVsDefenseComparison({
           />
         </div>
       </div>
-    </div>
   );
+
+  if (embedded) return content;
+  return <div className="glass-card rounded-xl p-4">{content}</div>;
 }
 
 export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis }) {
@@ -578,9 +584,9 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
   );
 }
 
-export function StartingLineupCard({ lineup, teamAbbr }: { lineup: StartingLineup; teamAbbr: string }) {
-  return (
-    <div className="glass-card rounded-xl p-4">
+export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lineup: StartingLineup; teamAbbr: string; embedded?: boolean }) {
+  const content = (
+    <>
       <div className="flex items-center gap-2 mb-3">
         <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
           <span className="text-xs font-bold">{teamAbbr}</span>
@@ -630,7 +636,10 @@ export function StartingLineupCard({ lineup, teamAbbr }: { lineup: StartingLineu
           No starting lineup data available
         </p>
       )}
-    </div>
+    </>
   );
+
+  if (embedded) return <div className="min-w-0">{content}</div>;
+  return <div className="glass-card rounded-xl p-4">{content}</div>;
 }
 

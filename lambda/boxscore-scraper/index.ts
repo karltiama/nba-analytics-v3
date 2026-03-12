@@ -696,8 +696,8 @@ async function processBBRefBoxScore(gameId: string): Promise<{ success: boolean;
         gameDateStr,
         homeTeamCode,
         awayTeamCode,
-        homeTeamId || null,
-        awayTeamId || null,
+        homeTeamId ?? undefined,
+        awayTeamId ?? undefined,
         homeScore,
         awayScore
       );

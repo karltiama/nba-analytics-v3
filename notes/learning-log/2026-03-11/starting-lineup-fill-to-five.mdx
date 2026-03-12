@@ -1,0 +1,56 @@
+# Starting lineup: fill to 5 players
+
+## Context
+
+After switching to analytics-only, injury-aware starting lineups, CLE and ORL (and possibly other teams) were only showing 3 players instead of 5. The query returned at most one player per canonical position (PG, SG, SF, PF, C) and filtered out anyone with `canonical_pos IS NULL`, so when only 3 positions had qualifying players we got 3 rows.
+
+## Goal
+
+Return up to 5 projected starters per team: prefer one per position, then fill remaining slots with the next-best candidates by starter likelihood so both teams show 5 when enough players exist.
+
+## Files Changed
+
+- `lib/betting/queries.ts` — `getProjectedStartingLineupFromAnalytics`
+
+## Implementation Notes (key logic explained)
+
+1. **Include all players (no NULL filter)**  
+   `canonical_position` now maps unmapped/unknown positions to `'OTHER'` via `ELSE 'OTHER'` and `COALESCE(position, '')`, so no one is dropped for position.
+
+2. **One per position first**  
+   `one_per_position` still picks the top player per `canonical_pos` (PG, SG, SF, PF, C, OTHER) by `starter_likelihood`. `filled_lineup` numbers those with a `slot` (1–6) by position order (PG→SG→SF→PF→C→OTHER).
+
+3. **Fill to 5 from runners-up**  
+   `need_more` is everyone in `position_rankings` with `position_rank > 1` (i.e. not the chosen one per position). The final result is the UNION of:
+   - Rows from `filled_lineup` with `rn = ROW_NUMBER() OVER (ORDER BY slot)` (so 1, 2, …),
+   - Rows from `need_more` with `rn = MAX(slot) + ROW_NUMBER() OVER (ORDER BY starter_likelihood DESC, ...)` (so 4, 5, 6, …).
+   Then `WHERE rn <= 5 ORDER BY rn LIMIT 5` returns at most 5 players: first the one-per-position set (up to 5), then the next-best by starter likelihood until we have 5.
+
+4. **Column fix**  
+   The first branch of the UNION selects `games_played` (from `filled_lineup`); the outer select aliases it as `games_started` for the API.
+
+## Key Decisions (and alternatives considered)
+
+- **OTHER bucket:** Map unknown/NULL position to `'OTHER'` instead of dropping. Alternative was to broaden mappings (e.g. "Guard" → SG); we kept the original mapping and used fill-up so we still get 5 even when only 3 positions have data.
+- **Fill order:** Fill remaining slots by `starter_likelihood DESC` (then minutes, points). Alternative was strict position order again; we preferred “best available” for slots 4–5.
+
+## Assumptions
+
+- At least 5 team players have ≥3 games in the last 10; otherwise we return fewer than 5 (no cross-team or legacy data).
+- Position strings in DB are as before (PG, SG, G, SF, F, G-F, F-G, PF, C, F-C, C-F); OTHER catches anything else.
+
+## Failure Modes
+
+- Fewer than 5 players with ≥3 games → lineup has fewer than 5; that’s expected.
+- All candidates injured (when `excludeInjuredPlayerIds` is used) → could return 0 players; caller should handle empty lineup.
+
+## How to Test (commands + steps)
+
+1. Run dev server and open a matchup that previously showed 3 players (e.g. CLE vs ORL).
+2. Check “Projected starters” (or equivalent) for both teams: each should show up to 5 players when data allows.
+3. Optional: in DB, set some players’ `position` to NULL or an unmapped value and confirm they appear under OTHER and that the fill-to-5 logic still returns 5 when possible.
+
+## Next Steps
+
+- If certain leagues/sources use positions like "Guard" or "Forward", consider adding those to the CASE in `canonical_position` so they map to SG/SF instead of OTHER.
+- Optionally surface “OTHER” in the UI (e.g. “G” or “—” ) so users know when position is inferred.

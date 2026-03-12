@@ -24,6 +24,7 @@ interface PlayerSeasonStatsProps {
     total_ftm?: number;
     total_fta?: number;
     ft_pct?: number;
+    efg_pct?: number;
     avg_minutes?: number;
     total_minutes?: number;
     avg_plus_minus?: number;

@@ -1,0 +1,35 @@
+# FilterBar: tighter spacing on small screens
+
+## Context
+On small screens the betting page FilterBar (search input, Start Time dropdown, date nav, filter toggles) looked cramped; the user asked to make spacing closer on smaller screens.
+
+## Goal
+Improve small-screen layout by reducing padding and gaps so the search and controls fit better without looking squashed.
+
+## Files Changed
+- `components/betting/FilterBar.tsx`
+
+## Implementation Notes
+- **Card:** `p-3` → `p-2 sm:p-3`, `gap-3` → `gap-2 sm:gap-3` so the bar uses less padding and gap on small screens.
+- **Date nav:** `gap-1 sm:gap-2` → `gap-0.5 sm:gap-2`; prev/next buttons `p-2` → `p-1.5 sm:p-2`; date label `min-w-[100px]` → `min-w-[72px] sm:min-w-[120px]` to free horizontal space.
+- **Search:** Input `pl-9 pr-9 py-2` → `pl-8 sm:pl-9 pr-8 sm:pr-9 py-1.5 sm:py-2`; Search icon `left-3` → `left-2.5 sm:left-3`; clear button `right-3` → `right-2.5 sm:right-3`.
+- **Sort button:** Wrapper given `shrink-0` so it doesn’t shrink; button `gap-2` → `gap-1.5 sm:gap-2`, `px-3 py-2` → `px-2 sm:px-3 py-1.5 sm:py-2`.
+- **Filter toggles:** Container `gap-2` → `gap-1.5 sm:gap-2`, `shrink-0 flex-wrap` added; Favorites/Close Matchups `px-3 py-2` → `px-2 sm:px-3 py-1.5 sm:py-2`; sliders icon button `p-2` → `p-1.5 sm:p-2`.
+
+## Key Decisions
+- Used responsive utilities (`sm:`) so layout stays comfortable on larger breakpoints.
+- Reduced date label min-width on small only so “Today”/short labels still fit; 72px is enough for short labels.
+
+## Assumptions
+- No change to behavior or props; layout only.
+
+## Failure Modes
+- Very narrow viewports: filter row may still wrap; flex-wrap on toggles allows a second row if needed.
+
+## How to Test
+1. Open `/betting` and resize to a narrow width (e.g. 380px).
+2. Confirm the bar looks less cramped: smaller gaps and padding, search has more usable width.
+3. Resize to sm and up; confirm spacing matches previous look (p-3, gap-3, etc.).
+
+## Next Steps
+- None. Optional: on very small screens, shorten sort label to “Time” or use icon-only and show full label in dropdown.

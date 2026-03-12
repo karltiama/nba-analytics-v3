@@ -1,4 +1,12 @@
+import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
+import { fetchLineupsFromBallDontLie } from '@/lib/balldontlie/lineups';
+import type {
+  PlayerPropLineComparisonRow,
+  PlayerPropLineShoppingResponse,
+  PlayerPropLineBookEntry,
+  PlayerPropLineBestEntry,
+} from '@/lib/betting/types';
 
 /**
  * Betting Dashboard Query Functions
@@ -1420,126 +1428,140 @@ export interface MatchupAnalysis {
 }
 
 /**
- * Get projected starting lineup for a team based on recent games
- * Uses multiple heuristics to determine starters:
- * 1. Players marked as started (if available)
- * 2. Players with high minutes (25+ min typically indicates starter)
- * 3. Players who appear early in box score order (starters listed first)
- * 4. Most common player at each position in recent games
+ * Get projected starting lineup for a team from analytics schema only (no bbref).
+ * Uses recent completed games, minutes-based starter heuristic, one player per position.
+ * Optionally excludes players who are on the injury report (e.g. Out, Doubtful).
  */
-export async function getProjectedStartingLineup(teamId: string): Promise<StartingLineup | null> {
+export async function getProjectedStartingLineupFromAnalytics(
+  teamId: string,
+  options?: { excludeInjuredPlayerIds?: string[] }
+): Promise<StartingLineup | null> {
+  const excludeIds = options?.excludeInjuredPlayerIds ?? [];
+  const excludeClause = excludeIds.length > 0
+    ? `AND pgl.player_id != ALL($2::text[])`
+    : '';
+  const params = excludeIds.length > 0 ? [teamId, excludeIds] : [teamId];
+
   const result = await query(`
     WITH recent_games AS (
-      SELECT DISTINCT bg.bbref_game_id, bg.game_date
-      FROM bbref_games bg
-      WHERE bg.status = 'Final'
-        AND (bg.home_team_id = $1 OR bg.away_team_id = $1)
-      ORDER BY bg.game_date DESC
+      SELECT g.game_id, g.start_time
+      FROM analytics.games g
+      WHERE g.status = 'Final'
+        AND (g.home_team_id = $1 OR g.away_team_id = $1)
+      ORDER BY COALESCE(g.start_time, '1970-01-01'::timestamptz) DESC
       LIMIT 10
     ),
+    -- Parse minutes (stored as text) to numeric; treat invalid as 0
     player_game_data AS (
-      SELECT 
-        bpgs.player_id,
+      SELECT
+        pgl.player_id,
         p.full_name,
         p.position,
-        bpgs.game_id,
-        bpgs.minutes,
-        bpgs.points,
-        bpgs.started,
-        bpgs.dnp_reason,
-        -- Calculate starter score: higher = more likely to be starter
-        CASE 
-          WHEN bpgs.started = true THEN 10  -- Explicit starter flag
-          WHEN bpgs.minutes >= 30 THEN 8     -- High minutes = likely starter
-          WHEN bpgs.minutes >= 25 THEN 6     -- Good minutes = probably starter
-          WHEN bpgs.minutes >= 20 THEN 4     -- Decent minutes = maybe starter
-          ELSE 2                              -- Low minutes = unlikely starter
-        END as starter_score,
-        -- Get player order in game (starters usually appear first)
+        pgl.points,
+        (NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric) AS minutes_num,
+        CASE
+          WHEN (NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric) >= 30 THEN 8
+          WHEN (NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric) >= 25 THEN 6
+          WHEN (NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric) >= 20 THEN 4
+          ELSE 2
+        END AS starter_score,
         ROW_NUMBER() OVER (
-          PARTITION BY bpgs.game_id, bpgs.team_id 
-          ORDER BY 
-            CASE WHEN bpgs.started = true THEN 0 ELSE 1 END,
-            bpgs.minutes DESC NULLS LAST,
-            bpgs.points DESC
-        ) as player_order
-      FROM bbref_player_game_stats bpgs
-      JOIN players p ON bpgs.player_id = p.player_id
-      JOIN recent_games rg ON bpgs.game_id = rg.bbref_game_id
-      WHERE bpgs.team_id = $1
-        AND bpgs.dnp_reason IS NULL
-        AND bpgs.minutes > 0
+          PARTITION BY pgl.game_id, pgl.team_id
+          ORDER BY (NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric) DESC NULLS LAST, pgl.points DESC
+        ) AS player_order
+      FROM analytics.player_game_logs pgl
+      JOIN analytics.players p ON p.player_id = pgl.player_id
+      JOIN recent_games rg ON rg.game_id = pgl.game_id
+      WHERE pgl.team_id = $1
+        AND (pgl.minutes IS NOT NULL AND TRIM(pgl.minutes) != '')
+        ${excludeClause}
     ),
     player_aggregates AS (
-      SELECT 
+      SELECT
         player_id,
-        MAX(full_name) as full_name,
-        MAX(position) as position,
-        COUNT(*) as games_played,
-        SUM(CASE WHEN started = true THEN 1 ELSE 0 END) as explicit_starts,
-        SUM(CASE WHEN minutes >= 25 THEN 1 ELSE 0 END) as high_minute_games,
-        SUM(CASE WHEN player_order <= 5 THEN 1 ELSE 0 END) as early_appearance_games,
-        AVG(starter_score) as avg_starter_score,
-        AVG(points) as avg_points,
-        AVG(minutes) as avg_minutes
+        MAX(full_name) AS full_name,
+        MAX(position) AS position,
+        COUNT(*) AS games_played,
+        SUM(CASE WHEN minutes_num >= 25 THEN 1 ELSE 0 END) AS high_minute_games,
+        SUM(CASE WHEN player_order <= 5 THEN 1 ELSE 0 END) AS early_appearance_games,
+        AVG(starter_score) AS avg_starter_score,
+        AVG(points) AS avg_points,
+        AVG(minutes_num) AS avg_minutes
       FROM player_game_data
       GROUP BY player_id
-      HAVING COUNT(*) >= 3  -- Must have played in at least 3 recent games
+      HAVING COUNT(*) >= 3
     ),
-    position_candidates AS (
-      SELECT 
+    canonical_position AS (
+      SELECT
         player_id,
         full_name,
         position,
         games_played,
-        explicit_starts,
         high_minute_games,
         early_appearance_games,
         avg_starter_score,
         avg_points,
         avg_minutes,
-        -- Combined starter likelihood score
-        (explicit_starts * 3 + high_minute_games * 2 + early_appearance_games * 1.5 + avg_starter_score) as starter_likelihood
+        (high_minute_games * 2 + early_appearance_games * 1.5 + COALESCE(avg_starter_score, 0)) AS starter_likelihood,
+        CASE
+          WHEN UPPER(TRIM(COALESCE(position, ''))) IN ('PG') THEN 'PG'
+          WHEN UPPER(TRIM(COALESCE(position, ''))) IN ('SG', 'G') THEN 'SG'
+          WHEN UPPER(TRIM(COALESCE(position, ''))) IN ('SF', 'F', 'G-F', 'F-G') THEN 'SF'
+          WHEN UPPER(TRIM(COALESCE(position, ''))) IN ('PF') THEN 'PF'
+          WHEN UPPER(TRIM(COALESCE(position, ''))) IN ('C', 'F-C', 'C-F') THEN 'C'
+          ELSE 'OTHER'
+        END AS canonical_pos
       FROM player_aggregates
     ),
     position_rankings AS (
-      SELECT 
+      SELECT
         player_id,
         full_name,
         position,
+        canonical_pos,
         games_played,
-        explicit_starts,
         avg_points,
         avg_minutes,
+        starter_likelihood,
         ROW_NUMBER() OVER (
-          PARTITION BY position 
-          ORDER BY starter_likelihood DESC, avg_minutes DESC, avg_points DESC
-        ) as position_rank
-      FROM position_candidates
+          PARTITION BY canonical_pos
+          ORDER BY starter_likelihood DESC, avg_minutes DESC NULLS LAST, avg_points DESC NULLS LAST
+        ) AS position_rank
+      FROM canonical_position
+    ),
+    one_per_position AS (
+      SELECT player_id, full_name, position, games_played, avg_points, avg_minutes, canonical_pos
+      FROM position_rankings
+      WHERE position_rank = 1
+    ),
+    filled_lineup AS (
+      SELECT player_id, full_name, position, games_played, avg_points, avg_minutes, canonical_pos,
+        ROW_NUMBER() OVER (
+          ORDER BY CASE canonical_pos WHEN 'PG' THEN 1 WHEN 'SG' THEN 2 WHEN 'SF' THEN 3 WHEN 'PF' THEN 4 WHEN 'C' THEN 5 ELSE 6 END,
+          full_name
+        ) AS slot
+      FROM one_per_position
+    ),
+    need_more AS (
+      SELECT pr.player_id, pr.full_name, pr.position, pr.games_played, pr.avg_points, pr.avg_minutes, pr.canonical_pos, pr.starter_likelihood
+      FROM position_rankings pr
+      WHERE pr.position_rank > 1
+        AND NOT EXISTS (SELECT 1 FROM one_per_position o WHERE o.player_id = pr.player_id)
     )
-    SELECT 
-      player_id,
-      full_name,
-      position,
-      games_played as games_started,
-      avg_points,
-      avg_minutes
-    FROM position_rankings
-    WHERE position_rank = 1
-      AND position IS NOT NULL
-    ORDER BY 
-      CASE position
-        WHEN 'PG' THEN 1
-        WHEN 'SG' THEN 2
-        WHEN 'SF' THEN 3
-        WHEN 'PF' THEN 4
-        WHEN 'C' THEN 5
-        ELSE 6
-      END,
-      position,
-      full_name
+    SELECT player_id, full_name, position, games_played AS games_started, avg_points, avg_minutes
+    FROM (
+      SELECT player_id, full_name, position, games_played, avg_points, avg_minutes,
+        ROW_NUMBER() OVER (ORDER BY slot) AS rn
+      FROM filled_lineup
+      UNION ALL
+      SELECT player_id, full_name, position, games_played, avg_points, avg_minutes,
+        (SELECT COALESCE(MAX(slot), 0) FROM filled_lineup) + ROW_NUMBER() OVER (ORDER BY starter_likelihood DESC, avg_minutes DESC NULLS LAST, avg_points DESC NULLS LAST) AS rn
+      FROM need_more
+    ) combined
+    WHERE rn <= 5
+    ORDER BY rn
     LIMIT 5
-  `, [teamId]);
+  `, params as string[]);
 
   if (result.length === 0) {
     return null;
@@ -1551,7 +1573,7 @@ export async function getProjectedStartingLineup(teamId: string): Promise<Starti
       player_id: row.player_id,
       full_name: row.full_name,
       position: row.position || 'N/A',
-      games_started: parseInt(row.games_started) || 0,
+      games_started: parseInt(row.games_started, 10) || 0,
       avg_points: parseFloat(row.avg_points) || 0,
       avg_minutes: parseFloat(row.avg_minutes) || 0,
     })),
@@ -1559,21 +1581,18 @@ export async function getProjectedStartingLineup(teamId: string): Promise<Starti
 }
 
 /**
- * Get projected starting lineups for both teams in a game
+ * Get projected starting lineups for both teams (analytics-only, no injury exclusion).
+ * For injury-aware lineups use getMatchupAnalysis which excludes Out/Doubtful.
  */
 export async function getGameStartingLineups(
   homeTeamId: string,
   awayTeamId: string
 ): Promise<{ home: StartingLineup | null; away: StartingLineup | null }> {
   const [homeLineup, awayLineup] = await Promise.all([
-    getProjectedStartingLineup(homeTeamId),
-    getProjectedStartingLineup(awayTeamId),
+    getProjectedStartingLineupFromAnalytics(homeTeamId),
+    getProjectedStartingLineupFromAnalytics(awayTeamId),
   ]);
-
-  return {
-    home: homeLineup,
-    away: awayLineup,
-  };
+  return { home: homeLineup, away: awayLineup };
 }
 
 /**
@@ -1637,8 +1656,74 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
     }
   }
 
-  // Get projected starting lineups
-  const startingLineups = await getGameStartingLineups(homeTeamId, awayTeamId);
+  // Get injured player IDs per team (Out, Doubtful) so we exclude them from projected lineup
+  const injuryRows = await query<{ player_id: string; team_id: string }>(
+    `SELECT player_id, team_id
+     FROM analytics.player_injury_status_current
+     WHERE team_id IN ($1, $2)
+       AND (LOWER(COALESCE(status, '')) LIKE 'out%' OR LOWER(COALESCE(status, '')) LIKE 'doubtful%')
+     ORDER BY team_id`,
+    [homeTeamId, awayTeamId]
+  );
+  const homeInjuredIds = injuryRows.filter((r) => r.team_id === homeTeamId).map((r) => r.player_id);
+  const awayInjuredIds = injuryRows.filter((r) => r.team_id === awayTeamId).map((r) => r.player_id);
+
+  // Prefer BallDontLie lineups when available (game must have started; 2025+ season)
+  let startingLineups: { home: StartingLineup | null; away: StartingLineup | null } = {
+    home: null,
+    away: null,
+  };
+  // Cache BDL lineups per game for 60s to avoid calling the API on every page load
+  const bdlResponse = await unstable_cache(
+    () => fetchLineupsFromBallDontLie(gameId, undefined),
+    ['bdl-lineups', gameId],
+    { revalidate: 60 }
+  )();
+  if (bdlResponse?.data?.length) {
+    const starters = bdlResponse.data.filter((e) => e.starter);
+    if (starters.length > 0) {
+      const teamMapRows = await query<{ internal_id: string; provider_id: string }>(
+        `SELECT internal_id, provider_id
+         FROM provider_id_map
+         WHERE entity_type = 'team' AND provider = 'balldontlie' AND internal_id IN ($1, $2)`,
+        [homeTeamId, awayTeamId]
+      );
+      const bdlTeamIdToInternal: Record<string, string> = {};
+      for (const row of teamMapRows) {
+        bdlTeamIdToInternal[row.provider_id] = row.internal_id;
+      }
+      const homePlayers: StartingLineupPlayer[] = [];
+      const awayPlayers: StartingLineupPlayer[] = [];
+      for (const e of starters) {
+        const bdlTeamId = String(e.player?.team_id ?? '');
+        const internalTeamId = bdlTeamIdToInternal[bdlTeamId];
+        if (!internalTeamId) continue;
+        const fullName = [e.player?.first_name, e.player?.last_name].filter(Boolean).join(' ').trim() || 'Unknown';
+        const player: StartingLineupPlayer = {
+          player_id: String(e.player?.id ?? ''),
+          full_name: fullName,
+          position: e.player?.position ?? e.position ?? 'N/A',
+          games_started: 0,
+          avg_points: 0,
+          avg_minutes: 0,
+        };
+        if (internalTeamId === homeTeamId) homePlayers.push(player);
+        else if (internalTeamId === awayTeamId) awayPlayers.push(player);
+      }
+      if (homePlayers.length > 0) startingLineups.home = { team_id: homeTeamId, players: homePlayers };
+      if (awayPlayers.length > 0) startingLineups.away = { team_id: awayTeamId, players: awayPlayers };
+    }
+  }
+
+  // Fall back to analytics-projected lineups when BDL lineups missing or incomplete
+  if (!startingLineups.home || !startingLineups.away) {
+    const [homeLineup, awayLineup] = await Promise.all([
+      getProjectedStartingLineupFromAnalytics(homeTeamId, { excludeInjuredPlayerIds: homeInjuredIds }),
+      getProjectedStartingLineupFromAnalytics(awayTeamId, { excludeInjuredPlayerIds: awayInjuredIds }),
+    ]);
+    if (!startingLineups.home) startingLineups.home = homeLineup;
+    if (!startingLineups.away) startingLineups.away = awayLineup;
+  }
 
   return {
     game_id: game.game_id,
@@ -1651,5 +1736,133 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
     pace_analysis: paceAnalysis,
     key_players: keyPlayers,
     starting_lineups: startingLineups,
+  };
+}
+
+// ============================================
+// PLAYER PROP LINE SHOPPING
+// ============================================
+
+/**
+ * Get all sportsbook lines for a player prop (game, player, market_type).
+ * Optionally at a specific snapshot_at; otherwise uses latest snapshot.
+ */
+export async function getPlayerPropLines(
+  gameId: string,
+  playerId: string,
+  marketType: string,
+  snapshotAt?: string | null
+): Promise<PlayerPropLineComparisonRow[]> {
+  if (snapshotAt) {
+    const rows = await query<PlayerPropLineComparisonRow>(
+      `SELECT sportsbook, side, line_value, odds_american, odds_decimal, implied_probability, snapshot_at, player_name
+       FROM analytics.player_prop_lines
+       WHERE game_id = $1 AND player_id = $2 AND market_type = $3 AND snapshot_at = $4
+       ORDER BY side, line_value, sportsbook`,
+      [gameId, playerId, marketType, snapshotAt]
+    );
+    return rows;
+  }
+  const rows = await query<PlayerPropLineComparisonRow>(
+    `SELECT sportsbook, side, line_value, odds_american, odds_decimal, implied_probability, snapshot_at, player_name
+     FROM analytics.player_prop_lines l
+     WHERE l.game_id = $1 AND l.player_id = $2 AND l.market_type = $3
+       AND l.snapshot_at = (
+         SELECT max(snapshot_at) FROM analytics.player_prop_lines
+         WHERE game_id = $1 AND player_id = $2 AND market_type = $3
+       )
+     ORDER BY side, line_value, sportsbook`,
+    [gameId, playerId, marketType]
+  );
+  return rows;
+}
+
+/**
+ * Line shopping response: all books for the prop plus best over/under line and best price on same (consensus) line.
+ */
+export async function getPlayerPropLineShopping(
+  gameId: string,
+  playerId: string,
+  marketType: string
+): Promise<PlayerPropLineShoppingResponse> {
+  const rows = await getPlayerPropLines(gameId, playerId, marketType, null);
+  const playerName =
+    rows.length > 0 && rows[0].player_name != null ? rows[0].player_name : '';
+
+  const books: PlayerPropLineBookEntry[] = rows.map((r) => ({
+    book: r.sportsbook,
+    line: Number(r.line_value),
+    side: r.side,
+    odds: r.odds_american,
+  }));
+
+  const overRows = rows.filter((r) => r.side === 'over');
+  const underRows = rows.filter((r) => r.side === 'under');
+
+  // Best over line: minimum line_value (easiest over)
+  let best_over_line: PlayerPropLineBestEntry | null = null;
+  if (overRows.length > 0) {
+    const minOver = overRows.reduce((acc, r) =>
+      Number(r.line_value) < Number(acc.line_value) ? r : acc
+    );
+    best_over_line = { book: minOver.sportsbook, line: Number(minOver.line_value) };
+  }
+
+  // Best under line: maximum line_value (easiest under)
+  let best_under_line: PlayerPropLineBestEntry | null = null;
+  if (underRows.length > 0) {
+    const maxUnder = underRows.reduce((acc, r) =>
+      Number(r.line_value) > Number(acc.line_value) ? r : acc
+    );
+    best_under_line = { book: maxUnder.sportsbook, line: Number(maxUnder.line_value) };
+  }
+
+  // Consensus line: modal line_value (most frequent) across all rows
+  const lineCounts = new Map<string, number>();
+  for (const r of rows) {
+    const key = String(r.line_value);
+    lineCounts.set(key, (lineCounts.get(key) ?? 0) + 1);
+  }
+  let consensusLine: number | null = null;
+  let maxCount = 0;
+  for (const [key, count] of lineCounts) {
+    if (count > maxCount) {
+      maxCount = count;
+      consensusLine = parseFloat(key);
+    }
+  }
+
+  // Best over price on same line: max(odds_american) for over at consensus line
+  let best_over_price_same_line: PlayerPropLineBestEntry | null = null;
+  if (consensusLine != null && overRows.length > 0) {
+    const atLine = overRows.filter((r) => Number(r.line_value) === consensusLine);
+    if (atLine.length > 0) {
+      const best = atLine.reduce((acc, r) =>
+        r.odds_american > acc.odds_american ? r : acc
+      );
+      best_over_price_same_line = { book: best.sportsbook, odds: best.odds_american };
+    }
+  }
+
+  // Best under price on same line: max(odds_american) for under at consensus line
+  let best_under_price_same_line: PlayerPropLineBestEntry | null = null;
+  if (consensusLine != null && underRows.length > 0) {
+    const atLine = underRows.filter((r) => Number(r.line_value) === consensusLine);
+    if (atLine.length > 0) {
+      const best = atLine.reduce((acc, r) =>
+        r.odds_american > acc.odds_american ? r : acc
+      );
+      best_under_price_same_line = { book: best.sportsbook, odds: best.odds_american };
+    }
+  }
+
+  return {
+    player: playerName,
+    market: marketType,
+    books,
+    best_over_line,
+    best_under_line,
+    best_over_price_same_line,
+    best_under_price_same_line,
   };
 }

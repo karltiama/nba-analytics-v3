@@ -1,0 +1,70 @@
+# BallDontLie lineups integration
+
+## Context
+
+Starting lineups were derived only from analytics (recent game logs, minutes-based heuristic). The user wanted to also use BallDontLie’s lineups API when available.
+
+## Goal
+
+- **Inputs:** Game ID (and existing matchup analysis flow).
+- **Output:** When BDL lineups are available for that game, use them for `starting_lineups` in matchup analysis; otherwise keep using analytics-projected lineups (with injury exclusion).
+
+## Files Changed
+
+- **Added:** `lib/balldontlie/lineups.ts` — fetches `GET /nba/v1/lineups?game_ids[]=<id>` and returns typed response or `null`.
+- **Modified:** `lib/betting/queries.ts` — `getMatchupAnalysis` tries BDL lineups first, then falls back to `getProjectedStartingLineupFromAnalytics` when BDL returns nothing or is incomplete.
+
+## Implementation Notes (key logic explained)
+
+1. **BDL lineups endpoint**  
+   - URL: `https://api.balldontlie.io/nba/v1/lineups` (same host as injuries; path includes `/nba/v1`).  
+   - Query: `game_ids[]=<gameId>` (game ID as integer; our `analytics.games.game_id` is the BDL game id when seeded from BDL).  
+   - Auth: `Authorization` header with `BALLDONTLIE_API_KEY` (or `BALDONTLIE_API_KEY`).  
+   - Response: `data` array of lineup entries with `starter`, `position`, `player.id`, `player.first_name`, `player.last_name`, `player.team_id` (BDL team id).
+
+2. **Team ID mapping**  
+   BDL returns `player.team_id` (BallDontLie team id). We need internal `team_id` for `StartingLineup`. We query `provider_id_map` where `entity_type = 'team'`, `provider = 'balldontlie'`, `internal_id IN (home_team_id, away_team_id)` and build `provider_id` → `internal_id` so we can assign each starter to home or away.
+
+3. **Starter-only, then shape**  
+   We filter `data` to `starter === true`, map each entry to `StartingLineupPlayer` (BDL does not provide `games_started` / `avg_points` / `avg_minutes`, so those are set to 0), and build `StartingLineup` for home and away.
+
+4. **Fallback**  
+   If BDL returns no data, non-2xx, or we don’t get at least one starter per side from BDL, we use the existing analytics-projected lineups (with injury exclusion) for the missing side(s).
+
+## Key Decisions (and alternatives considered)
+
+- **Try BDL first, then analytics:** Ensures we use official lineups when the game has started (BDL only has lineups once the game begins; 2025+ season). Pre-game we always use analytics.
+- **No new env var:** Reuse `BALLDONTLIE_API_KEY` / `BALDONTLIE_API_KEY`; no simpler alternative for calling the API.
+- **GOAT tier:** Lineups endpoint requires GOAT tier; doc/code comments mention this so operators know.
+
+## Assumptions
+
+- `analytics.games.game_id` is the BallDontLie game id (string form), as in the current seed-from-BDL flow.
+- `provider_id_map` has team rows for `provider = 'balldontlie'` and `internal_id` = our home/away team ids so BDL `player.team_id` can be mapped to internal.
+- BDL player `id` is acceptable as `player_id` in our UI (links to player pages may require provider_id_map for players if we use different internal ids elsewhere).
+
+## Failure Modes
+
+- Missing or invalid `BALLDONTLIE_API_KEY`: BDL fetch returns `null`, we fall back to analytics.
+- Game not started or pre-2025: BDL returns empty or no starters; we fall back to analytics.
+- Team mapping missing for a BDL team_id: starters for that team are skipped; we may get only one side from BDL and use analytics for the other.
+
+## How to Test (commands + steps)
+
+1. Set `BALLDONTLIE_API_KEY` in `.env` (GOAT tier for lineups).
+2. Open a game that has already started (and is 2025 season) and load matchup analysis — starting lineups should come from BDL if the API returns data.
+3. Open a scheduled (pre-game) game — starting lineups should come from analytics.
+4. Temporarily break the API key or use a game ID with no BDL lineup — lineup should still appear via analytics fallback.
+
+## Next Steps
+
+- Optionally add `/nba/v1/lineups` to `docs/api/balldontlie-openapi.yaml` for in-repo documentation.
+- If player links use a different id system, resolve BDL player id to internal via `provider_id_map` before returning.
+
+## Verification Checklist
+
+- [ ] `BALLDONTLIE_API_KEY` (or `BALDONTLIE_API_KEY`) is set in `.env`; GOAT tier required for lineups.
+- [ ] For a game that has already started (2025 season), matchup analysis shows starting lineups (from BDL when API returns data).
+- [ ] For a scheduled (pre-game) game, starting lineups still show via analytics projection.
+- [ ] With API key removed or invalid, matchup analysis still returns lineups (analytics fallback).
+- [ ] `provider_id_map` has team rows for `provider = 'balldontlie'` for home/away teams so BDL starters map to correct side.
