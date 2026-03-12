@@ -1,0 +1,55 @@
+# Check Odds Workflow Script
+
+## Context
+
+Odds on the betting page come from `analytics.game_odds_current`, populated by the `odds-pre-game-snapshot` Lambda (EventBridge 10am–12pm ET). User reported odds not updating even after 10am.
+
+## Goal
+
+Add a single script to diagnose the full odds pipeline: pull runs, today's games, current odds, and raw vs analytics game_id alignment so we can see why the page has no odds.
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `scripts/check-odds-workflow.ts` | New: DB checks + next-step suggestions |
+
+## Implementation Notes
+
+- **1. Pull runs:** Last 10 rows from `raw.odds_pull_runs`; count how many ran “today” (ET) and show status/error_message.
+- **2. Today’s games:** Same query as `getGamesForDate(today)` so we use the same `game_id` list the API uses.
+- **3. game_odds_current:** For those game_ids, count how many have a row; list missing IDs.
+- **4. Raw vs analytics:** Latest successful run’s raw snapshots: do its `game_id`s overlap today’s games? If raw has different IDs, Lambda either queried another date or BDL didn’t return today yet.
+- **5. Next steps:** Printed from logic (no runs today → check EventBridge / run manually; no today games → nightly-bdl-updater; BDL check script).
+
+Optional CLI arg: `YYYY-MM-DD` to check a specific date instead of “today” ET.
+
+## Key Decisions
+
+- **No BDL API call in this script** — keeps it DB-only and fast; user can run `check-bdl-odds-today.ts` separately.
+- **Reuse getGamesForDate date logic** — ET date range so “today” matches what the betting API uses.
+- **Alternatives:** Could add a small admin API route that runs these queries; script is simpler and doesn’t require auth.
+
+## Assumptions
+
+- `SUPABASE_DB_URL` in `.env`.
+- EventBridge cron is `*/30 15-17 * * ? *` (UTC): in **EDT** that’s 11:00, 11:30, 12:00, 12:30, 13:00 ET (first run 11am), not 10am. In EST it’s 10am–12pm.
+
+## Failure Modes
+
+- Missing `SUPABASE_DB_URL` → script exits with message.
+- Tables missing → SQL errors; ensure `raw_odds_schema` and `analytics_odds_schema` are applied.
+
+## How to Test
+
+```bash
+npx tsx scripts/check-odds-workflow.ts
+npx tsx scripts/check-odds-workflow.ts 2026-03-12
+```
+
+Expect: 4 sections (runs, today games, current odds, raw vs today) and a “Next steps” section.
+
+## Next Steps
+
+- If Lambda hasn’t run today: run it manually (`cd lambda/odds-pre-game-snapshot && npx tsx index.ts`) or fix EventBridge schedule.
+- Consider starting the EventBridge window earlier (e.g. 9am ET) so odds appear sooner.

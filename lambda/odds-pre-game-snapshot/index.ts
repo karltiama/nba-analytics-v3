@@ -1,12 +1,12 @@
 /**
  * Lambda Function: Pre-Game Odds Snapshot
  *
- * Scheduled: Every 30 min from 10am–12pm ET via EventBridge
- * Purpose: Fetch today's NBA game odds from BallDontLie /v2/odds,
+ * Scheduled: Every 30 min from 10am–12pm ET via EventBridge (or 6am if cron adjusted).
+ * Purpose: Fetch today's and tomorrow's NBA game odds from BallDontLie /v2/odds,
  *          store raw snapshots, and transform into analytics tables.
+ * Default: fetches both today and tomorrow (ET) so tomorrow's odds appear when BDL has them.
  *
- * Prerequisite: nightly-bdl-updater must have run so today's games
- *               exist in analytics.games (runs at 03:00 ET).
+ * Prerequisite: nightly-bdl-updater must have run so games exist in analytics.games (runs at 03:00 ET).
  *
  * Pipeline: BDL /v2/odds -> raw.odds_pull_runs + raw.odds_snapshots
  *           -> analytics.game_odds_current + analytics.game_odds_history
@@ -391,8 +391,11 @@ interface LambdaEvent {
   dates?: string[];  // multiple dates override
 }
 
-function getTodayET(): string[] {
-  return [new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' })];
+/** Default dates to fetch: today and tomorrow (ET). Tomorrow gets odds as soon as BDL has them. */
+function getDefaultDatesET(): string[] {
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const tomorrow = new Date(Date.now() + 86400000).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  return [today, tomorrow];
 }
 
 async function processDate(dateStr: string): Promise<{
@@ -447,7 +450,7 @@ export const handler = async (event: LambdaEvent) => {
     console.log(`Preferred vendor: ${PREFERRED_VENDOR}`);
 
     const dates = event.dates
-      || (event.date ? [event.date] : getTodayET());
+      || (event.date ? [event.date] : getDefaultDatesET());
     console.log(`Fetching odds for dates: ${dates.join(', ')}`);
 
     const results = [];

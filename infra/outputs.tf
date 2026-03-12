@@ -40,3 +40,14 @@ output "odds_schedule_rule_arns" {
   description = "ARNs of the EventBridge rules for odds (when odds schedule is enabled)."
   value       = length(local.odds_crons) > 0 ? aws_cloudwatch_event_rule.odds_schedule[*].arn : []
 }
+
+# Injuries Lambda (when injuries_enable_schedule is true)
+output "injuries_schedule_rule_name" {
+  description = "Name of the EventBridge rule for injuries Lambda (when schedule is enabled)."
+  value       = var.injuries_enable_schedule ? aws_cloudwatch_event_rule.injuries_schedule[0].name : null
+}
+
+output "injuries_schedule_rule_arn" {
+  description = "ARN of the EventBridge rule for injuries Lambda (when schedule is enabled)."
+  value       = var.injuries_enable_schedule ? aws_cloudwatch_event_rule.injuries_schedule[0].arn : null
+}

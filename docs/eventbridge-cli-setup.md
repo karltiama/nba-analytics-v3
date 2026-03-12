@@ -116,7 +116,25 @@ cat response.json
 
 ---
 
-## 5. Remove / re-create (optional)
+## 5. Odds rule: 6am–12pm ET (optional)
+
+To run the odds Lambda every 30 minutes from **6am–12pm ET** instead of 10am–12pm, update only the rule (target and permission stay the same):
+
+```bash
+# Same REGION (and ACCOUNT_ID) as in section 1
+aws events put-rule \
+  --name odds-snapshot-schedule \
+  --schedule-expression "cron(0/30 11-17 * * ? *)" \
+  --description "NBA odds snapshot every 30 min, 6am-12pm ET" \
+  --state ENABLED \
+  --region "$REGION"
+```
+
+Cron `0/30 11-17` = 11:00–17:00 UTC = 6:00am–12:00pm ET (EST) or 7:00am–1:00pm ET (EDT).
+
+---
+
+## 6. Remove / re-create (optional)
 
 To delete a rule (targets must be removed first):
 
@@ -140,7 +158,7 @@ aws lambda remove-permission \
 
 | Rule name                         | Schedule (UTC)           | Lambda                     |
 |-----------------------------------|--------------------------|----------------------------|
-| `odds-snapshot-schedule`          | `0/30 15-17 * * ? *`     | `odds-pre-game-snapshot`   |
+| `odds-snapshot-schedule`          | `0/30 15-17 * * ? *` (10am–12pm ET) or `0/30 11-17 * * ? *` (6am–12pm ET) | `odds-pre-game-snapshot`   |
 | `player-props-snapshot-schedule`  | `5,35 15-17 * * ? *`     | `player-props-snapshot`    |
 
 After running the commands in sections 1–3, both Lambdas will be triggered by EventBridge Rules at the intended ET times.

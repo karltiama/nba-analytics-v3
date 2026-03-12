@@ -49,9 +49,25 @@ If you don’t use a `terraform.tfvars` file, set variables via `-var` or `TF_VA
 
 **nightly-bdl-updater:** Set `enable_schedule = true` and `schedule_cron = "cron(0 8 * * ? *)"` (or your desired UTC cron).
 
-**odds-pre-game-snapshot:** Set `odds_enable_schedule = true` and `odds_schedule_cron` (e.g. `"cron(0 14 * * ? *)"` for 09:00 ET). For every 30 min 10am–12pm ET you’d add multiple rules or use a rate expression.
+**odds-pre-game-snapshot:** Set `odds_enable_schedule = true` and **either** `odds_schedule_crons` (list) **or** `odds_schedule_cron` (single). For every 30 min 10am–12pm ET use the list (see `terraform.tfvars.example`):
+```hcl
+odds_schedule_crons = [
+  "cron(0 15 * * ? *)", "cron(30 15 * * ? *)", "cron(0 16 * * ? *)", "cron(30 16 * * ? *)", "cron(0 17 * * ? *)",
+]
+```
+(UTC 15–17 = 10am–12pm ET. For 6am–12pm ET use hours 11–17 with 0 and 30 minutes.)
 
 Then run `terraform apply` again.
+
+### Check: Odds EventBridge setup
+
+1. **In `terraform.tfvars`** ensure:
+   - `odds_enable_schedule = true`
+   - `odds_schedule_crons = [ ... ]` with at least one cron (or set `odds_schedule_cron` for a single run).
+2. **Validate:** `terraform -chdir=infra validate`
+3. **Plan:** `terraform -chdir=infra plan -var-file=terraform.tfvars` (path relative to `infra/`). You should see 5× `aws_cloudwatch_event_rule.odds_schedule`, 5× `aws_cloudwatch_event_target.odds_pre_game`, 5× `aws_lambda_permission.allow_eventbridge_odds` to be created (if not already in state).
+4. **Apply:** `terraform -chdir=infra apply -var-file=terraform.tfvars`
+5. **Verify:** AWS Console → EventBridge → Rules; look for `odds-pre-game-snapshot-schedule-0` … `-4`, or `terraform -chdir=infra output odds_schedule_rule_names`.
 
 ## Outputs
 

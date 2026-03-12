@@ -1,0 +1,45 @@
+# Injury workflow EventBridge schedule
+
+## Context
+
+The injuries-snapshot Lambda and its EventBridge schedule were already defined in Terraform but disabled: `injuries_enable_schedule` defaulted to false and `injuries_lambda_env` was not set in tfvars. The goal was to enable the schedule and give the Lambda the required env so it runs periodically in the background.
+
+## Goal
+
+Enable the injury workflow to run on a schedule via EventBridge (2–3x daily) so injury data is refreshed in the background; no invocation when visiting betting/games/[gameId].
+
+## Files Changed
+
+- [infra/terraform.tfvars](infra/terraform.tfvars) — Added injuries block: `injuries_enable_schedule = true`, `injuries_schedule_cron`, `injuries_lambda_env` (SUPABASE_DB_URL, BALLDONTLIE_API_KEY), plus optional name/timeout/memory.
+- [infra/outputs.tf](infra/outputs.tf) — Added `injuries_schedule_rule_name` and `injuries_schedule_rule_arn` (when schedule enabled).
+
+## Implementation Notes
+
+- Terraform already had `aws_cloudwatch_event_rule.injuries_schedule`, `aws_cloudwatch_event_target.injuries_snapshot`, and `aws_lambda_permission.allow_eventbridge_injuries` with `count = var.injuries_enable_schedule ? 1 : 0`. Enabling the schedule and setting env in tfvars is sufficient; no new resources were added in .tf files.
+- Cron used: `cron(0 13,18,22 * * ? *)` (13:00, 18:00, 22:00 UTC ≈ 8am ET, 1pm ET, 5pm ET).
+
+## Key Decisions
+
+- Reused the same `SUPABASE_DB_URL` and `BALLDONTLIE_API_KEY` as in `lambda_env` / `odds_lambda_env` for consistency and so the Lambda can connect to DB and BDL.
+- Added optional outputs for injuries schedule so you can verify with `terraform output` or in AWS Console; mirrors the pattern used for odds and nightly-bdl.
+
+## Assumptions
+
+- terraform.tfvars is not committed (it contains secrets); injuries_lambda_env uses the same credentials as other Lambdas.
+- The injuries-snapshot Lambda zip is built (`npm install && npm run build` in lambda/injuries-snapshot) before apply; Terraform plan showed the Lambda will be created/updated from the existing archive.
+
+## Failure Modes
+
+- If injuries_lambda_env is empty or missing keys, the Lambda will throw at runtime (SUPABASE_DB_URL / BALLDONTLIE_API_KEY required).
+- If the zip is stale, deploy the Lambda code first (build in lambda/injuries-snapshot then re-apply).
+
+## How to Test
+
+1. **Apply:** From repo root: `cd infra` then `terraform plan` (tfvars auto-loaded), then `terraform apply`. Ensure lambda/injuries-snapshot is built first: `cd lambda/injuries-snapshot && npm install && npm run build`.
+2. **Verify schedule:** AWS Console → EventBridge → Rules → look for `injuries-snapshot-schedule`, or run `terraform output injuries_schedule_rule_name` from infra.
+3. **Verify Lambda:** AWS Console → Lambda → injuries-snapshot → check Environment variables are set; optionally invoke once to confirm it runs.
+
+## Next Steps
+
+- After apply, wait for the first cron run or invoke the Lambda manually to confirm injury data is written to the DB.
+- Optionally add a short note to infra/README.md about the injuries schedule (enable_schedule, schedule_cron, injuries_lambda_env).

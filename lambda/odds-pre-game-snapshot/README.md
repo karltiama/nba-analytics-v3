@@ -1,15 +1,15 @@
 # Pre-Game Odds Snapshot Lambda
 
-Fetches today's NBA game odds from BallDontLie `/v2/odds`, stores raw snapshots, and transforms into analytics tables. Designed to run every 30 minutes from 10am–12pm ET so odds are captured as sportsbooks publish them.
+Fetches **today's and tomorrow's** NBA game odds from BallDontLie `/v2/odds`, stores raw snapshots, and transforms into analytics tables. Each run requests both dates so tomorrow's odds appear as soon as BDL has them. Designed to run every 30 minutes (e.g. 10am–12pm ET, or 6am–12pm ET if you want earlier attempts).
 
-**Prerequisite:** The `nightly-bdl-updater` Lambda must have already run (03:00 ET) so today's games exist in `analytics.games`.
+**Prerequisite:** The `nightly-bdl-updater` Lambda must have already run (03:00 ET) so games exist in `analytics.games`.
 
 ## Pipeline
 
 ```
-EventBridge (cron every 30 min, 10:00–12:00 ET)
+EventBridge (cron every 30 min, e.g. 10:00–12:00 ET or 6:00–12:00 ET)
   -> Lambda handler
-    -> BDL API: GET /v2/odds?dates[]=today
+    -> BDL API: GET /v2/odds?dates[]=today&dates[]=tomorrow (default)
     -> raw.odds_pull_runs (audit log)
     -> raw.odds_snapshots (append-only)
     -> analytics.game_odds_current (upsert — latest odds per game)
@@ -119,6 +119,23 @@ This produces `lambda/odds-pre-game-snapshot/odds-pre-game-snapshot.zip` ready f
 
 ### Step 7: Create the EventBridge Schedule
 
+**Option A — Terraform (if you deploy Lambdas with infra/):** Set in `infra/terraform.tfvars`:
+```hcl
+odds_enable_schedule = true
+odds_schedule_crons = [
+  "cron(0 15 * * ? *)", "cron(30 15 * * ? *)", "cron(0 16 * * ? *)", "cron(30 16 * * ? *)", "cron(0 17 * * ? *)"
+]
+```
+(10am–12pm ET every 30 min). For 6am–12pm ET use hours 11–17 instead of 15–17. Then `terraform apply`. See [infra/README.md](../../infra/README.md) and [infra/terraform.tfvars.example](../../infra/terraform.tfvars.example).
+
+**Option B — AWS CLI:** From the repo root, run:
+```bash
+bash scripts/setup-eventbridge-rules.sh
+```
+Or follow [docs/eventbridge-cli-setup.md](../../docs/eventbridge-cli-setup.md). To use a 6am–12pm ET window, see section 5 in that doc.
+
+**Option C — AWS Console:**
+
 1. Open the [Amazon EventBridge console](https://console.aws.amazon.com/events/)
 2. In the left sidebar, click **Rules**
 3. Make sure you're in the **default** event bus, then click **Create rule**
@@ -129,9 +146,8 @@ This produces `lambda/odds-pre-game-snapshot/odds-pre-game-snapshot.zip` ready f
 5. Click **Next**
 6. Define the schedule:
    - Choose **Cron-based schedule**
-   - **Cron expression:** `*/30 15-17 * * ? *`
-   - This runs every 30 min from 15:00–17:00 UTC = **10:00am–12:00pm ET**
-   - Triggers at: 10:00, 10:30, 11:00, 11:30, 12:00 ET (5 invocations/day)
+   - **Option A (10am–12pm ET):** `*/30 15-17 * * ? *` — 15:00–17:00 UTC = 10:00am–12:00pm ET (EST) or 11:00am–1:00pm ET (EDT)
+   - **Option B (6am–12pm ET):** `*/30 11-17 * * ? *` — 11:00–17:00 UTC = 6:00am–12:00pm ET (EST) or 7:00am–1:00pm ET (EDT); more runs, earlier chance to capture lines
    - Verify the **Next 10 trigger dates** look correct
 7. Click **Next**
 8. Select target:
@@ -198,6 +214,7 @@ EventBridge **Rules** (used above) are different from **EventBridge Scheduler**.
 
 | Frequency | Cron (UTC) | Use case |
 |---|---|---|
+| Every 30 min, 6am–12pm ET | `*/30 11-17 * * ? *` | Earliest attempts — 6am start (EDT: 7am–1pm ET) |
 | Every 30 min, 10am–12pm ET | `*/30 15-17 * * ? *` | **Recommended** — captures odds as books publish |
 | 1x daily at 11am ET | `0 16 * * ? *` | Minimal — single snapshot |
 | Every 30 min, 10am–7pm ET | `*/30 15-0 * * ? *` | Extended — captures line movement through tip-off |

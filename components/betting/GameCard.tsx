@@ -239,21 +239,25 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
         </div>
       )}
 
-      {/* Implied Probabilities — only show when real odds exist */}
+      {/* Implied Probabilities — only show when real odds exist. Bar: left = away %, right = home %. */}
       {hasOdds ? (
         <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
           <div className="flex items-center gap-3">
-            <div className="text-center">
+            <div className="text-center min-w-[2.5rem]">
               <div className="text-[10px] text-muted-foreground">{game.awayTeam.abbreviation}</div>
               <div className="text-xs font-semibold text-white">{game.awayImpliedProb}%</div>
             </div>
-            <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="flex-1 flex h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-[#00d4ff] to-[#39ff14] rounded-full transition-all duration-500"
-                style={{ width: `${game.homeImpliedProb}%` }}
+                className="h-full rounded-l-full bg-[#00d4ff]/80 transition-all duration-500 min-w-0"
+                style={{ flex: game.awayImpliedProb }}
+              />
+              <div
+                className="h-full rounded-r-full bg-[#39ff14]/80 transition-all duration-500 min-w-0"
+                style={{ flex: game.homeImpliedProb }}
               />
             </div>
-            <div className="text-center">
+            <div className="text-center min-w-[2.5rem]">
               <div className="text-[10px] text-muted-foreground">{game.homeTeam.abbreviation}</div>
               <div className="text-xs font-semibold text-white">{game.homeImpliedProb}%</div>
             </div>

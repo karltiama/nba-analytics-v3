@@ -10,7 +10,7 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
   function_name    = var.lambda_function_name
   role             = aws_iam_role.lambda_nightly_bdl_execution.arn
   handler          = "dist/index.handler"
-  runtime          = "nodejs20.x"
+  runtime          = "nodejs22.x"
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
   source_code_hash = data.archive_file.nightly_bdl.output_base64sha256
@@ -60,7 +60,7 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
   function_name    = var.odds_lambda_function_name
   role             = aws_iam_role.lambda_odds_execution.arn
   handler          = "dist/index.handler"
-  runtime          = "nodejs20.x"
+  runtime          = "nodejs22.x"
   timeout          = var.odds_lambda_timeout
   memory_size      = var.odds_lambda_memory_size
   source_code_hash = data.archive_file.odds_pre_game.output_base64sha256
@@ -115,7 +115,7 @@ resource "aws_lambda_function" "injuries_snapshot" {
   function_name    = var.injuries_lambda_function_name
   role             = aws_iam_role.lambda_injuries_execution.arn
   handler          = "dist/index.handler"
-  runtime          = "nodejs20.x"
+  runtime          = "nodejs22.x"
   timeout          = var.injuries_lambda_timeout
   memory_size      = var.injuries_lambda_memory_size
   source_code_hash = data.archive_file.injuries_snapshot.output_base64sha256
