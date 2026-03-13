@@ -51,3 +51,19 @@ output "injuries_schedule_rule_arn" {
   description = "ARN of the EventBridge rule for injuries Lambda (when schedule is enabled)."
   value       = var.injuries_enable_schedule ? aws_cloudwatch_event_rule.injuries_schedule[0].arn : null
 }
+
+# Player props ingestion Lambda (EventBridge Scheduler)
+output "player_props_lambda_function_name" {
+  description = "Name of the player props ingestion Lambda."
+  value       = aws_lambda_function.player_props_ingestion.function_name
+}
+
+output "player_props_lambda_function_arn" {
+  description = "ARN of the player props ingestion Lambda."
+  value       = aws_lambda_function.player_props_ingestion.arn
+}
+
+output "player_props_schedule_name" {
+  description = "Name of the EventBridge Scheduler schedule (when player_props_enable_schedule is true)."
+  value       = var.player_props_enable_schedule ? aws_scheduler_schedule.player_props[0].name : null
+}

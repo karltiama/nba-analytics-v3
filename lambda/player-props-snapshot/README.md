@@ -7,18 +7,18 @@ Fetches today's NBA player props from BallDontLie `/v2/odds/player_props`, store
 ## Pipeline
 
 ```
-EventBridge (cron every 30 min, 10:05–12:05 ET — offset from odds)
+EventBridge Scheduler (rate 30 min) or EventBridge Rules
   -> Lambda handler
-    -> DB: SELECT game_id FROM analytics.games WHERE game_date = today
-    -> For each game:
-       -> BDL API: GET /v2/odds/player_props?game_id={id}
-       -> raw.player_prop_snapshots (append-only)
-       -> raw.player_prop_market_outcomes (normalized sides)
+    -> fetchTodaysGames() -> DB: SELECT game_id FROM analytics.games WHERE today ET
+    -> For each game: fetchPlayerPropsForGame(game_id) -> BDL GET /v2/odds/player_props?game_id={id}
+    -> raw.player_prop_snapshots + raw.player_prop_market_outcomes (legacy, append-only)
     -> raw.player_prop_pull_runs (audit log)
-    -> analytics.player_prop_current (delete+insert per game — latest props)
-    -> analytics.player_prop_history (append — every snapshot for line movement)
-    -> analytics.player_prop_movement_summary (recompute open vs current for O/U)
+    -> normalizePlayerPropResponse() -> raw.player_prop_snapshots_v2 (append-only, flattened per side)
+    -> upsertAnalyticsCurrent() -> analytics.player_props_current (Prop Explorer — latest per sportsbook/prop/side)
+    -> analytics.player_prop_current + analytics.player_prop_history + analytics.player_prop_movement_summary (legacy)
 ```
+
+**Prop Explorer tables (v2):** `raw.player_prop_snapshots_v2` stores one row per (game, player, sportsbook, prop_type, side, line) with `odds_american`, `odds_decimal`, `implied_probability`. `analytics.player_props_current` is the frontend-ready table for the Player Prop Explorer (query by `player_id` or `game_id`).
 
 **Prop types captured:** points, rebounds, assists, threes, PRA, and all other prop types returned by BDL.
 
@@ -56,13 +56,28 @@ Requires a `.env` file at the project root (or in this directory) with `SUPABASE
 cd lambda/player-props-snapshot
 npm install
 npm run build
+```
+
+For Terraform deployment, the `infra/` module zips the entire `lambda/player-props-snapshot` directory (including `dist/`). Run `npm run build` before `terraform apply` so the zip includes the compiled handler.
+
+For manual zip (e.g. AWS Console upload):
+
+```bash
 cd dist
 cp ../package.json ../package-lock.json .
 npm install --production
 zip -r ../player-props-snapshot.zip .
 ```
 
-This produces `lambda/player-props-snapshot/player-props-snapshot.zip` ready for upload.
+## Terraform (recommended)
+
+The repo includes Terraform for this Lambda and EventBridge Scheduler:
+
+- **Lambda name:** `nba-player-props-ingestion-lambda` (configurable via `player_props_lambda_function_name`)
+- **Schedule name:** `nba-player-props-schedule` — EventBridge Scheduler, `rate(30 minutes)`, flexible time window OFF
+- **Optional:** Add a second schedule later for pregame-only (e.g. every 15 min before tip) via another `aws_scheduler_schedule` or cron in a separate variable
+
+Set in `terraform.tfvars` (or env): `player_props_lambda_env` with `BALLDONTLIE_API_KEY` and `SUPABASE_DB_URL`; set `player_props_enable_schedule = true` to create the schedule. See `infra/terraform.tfvars.example`.
 
 ## AWS Console Deployment Guide
 

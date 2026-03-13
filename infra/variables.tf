@@ -135,3 +135,45 @@ variable "injuries_schedule_cron" {
   type        = string
   default     = "cron(0 13,18,22 * * ? *)"
 }
+
+# -----------------------------------------------------------------------------
+# Lambda: player-props ingestion (nba-player-props-ingestion-lambda)
+# EventBridge Scheduler: nba-player-props-schedule (every 30 min; flexible time window OFF).
+# Optional: add a second schedule later for pregame-only (e.g. every 15 min before tip).
+# -----------------------------------------------------------------------------
+variable "player_props_lambda_function_name" {
+  description = "Name of the player props ingestion Lambda function."
+  type        = string
+  default     = "nba-player-props-ingestion-lambda"
+}
+
+variable "player_props_lambda_timeout" {
+  description = "Player props Lambda timeout in seconds."
+  type        = number
+  default     = 300
+}
+
+variable "player_props_lambda_memory_size" {
+  description = "Player props Lambda memory size in MB."
+  type        = number
+  default     = 512
+}
+
+variable "player_props_lambda_env" {
+  description = "Environment variables for the player props Lambda (BALLDONTLIE_API_KEY, SUPABASE_DB_URL). Do not commit real values."
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}
+
+variable "player_props_enable_schedule" {
+  description = "Set to true to create EventBridge Scheduler schedule for the player props Lambda (e.g. every 30 min)."
+  type        = bool
+  default     = false
+}
+
+variable "player_props_schedule_expression" {
+  description = "Schedule expression for EventBridge Scheduler. Use rate(30 minutes) for every 30 min. Flexible time window is disabled."
+  type        = string
+  default     = "rate(30 minutes)"
+}

@@ -147,3 +147,55 @@ resource "aws_lambda_permission" "allow_eventbridge_injuries" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.injuries_schedule[0].arn
 }
+
+# -----------------------------------------------------------------------------
+# Lambda: player-props ingestion (run "npm install && npm run build" in lambda/player-props-snapshot first)
+# EventBridge Scheduler: every 30 min; flexible time window OFF.
+# Optional: add a second schedule later for pregame-only (e.g. every 15 min before tip).
+# -----------------------------------------------------------------------------
+data "archive_file" "player_props" {
+  type        = "zip"
+  source_dir  = "${path.module}/../lambda/player-props-snapshot"
+  output_path = "${path.module}/player-props-snapshot.zip"
+}
+
+resource "aws_lambda_function" "player_props_ingestion" {
+  filename         = data.archive_file.player_props.output_path
+  function_name    = var.player_props_lambda_function_name
+  role             = aws_iam_role.lambda_player_props_execution.arn
+  handler          = "dist/index.handler"
+  runtime          = "nodejs22.x"
+  timeout          = var.player_props_lambda_timeout
+  memory_size      = var.player_props_lambda_memory_size
+  source_code_hash = data.archive_file.player_props.output_base64sha256
+
+  environment {
+    variables = var.player_props_lambda_env
+  }
+}
+
+resource "aws_scheduler_schedule" "player_props" {
+  count       = var.player_props_enable_schedule ? 1 : 0
+  name        = "nba-player-props-schedule"
+  group_name  = "default"
+  description = "Every 30 min player props ingestion (BallDontLie); optional: add pregame-only schedule later."
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  schedule_expression = var.player_props_schedule_expression
+
+  target {
+    arn      = aws_lambda_function.player_props_ingestion.arn
+    role_arn = aws_iam_role.scheduler_player_props_invoke.arn
+  }
+}
+
+resource "aws_lambda_permission" "allow_scheduler_player_props" {
+  count         = var.player_props_enable_schedule ? 1 : 0
+  statement_id  = "allow-eventbridge-scheduler-invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.player_props_ingestion.function_name
+  principal     = "scheduler.events.amazonaws.com"
+}

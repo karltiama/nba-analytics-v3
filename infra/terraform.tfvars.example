@@ -59,3 +59,18 @@ injuries_lambda_env = {
   SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
   BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
 }
+
+# -----------------------------------------------------------------------------
+# Player props ingestion Lambda (EventBridge Scheduler: every 30 min)
+# -----------------------------------------------------------------------------
+player_props_lambda_function_name = "nba-player-props-ingestion-lambda"
+player_props_lambda_timeout       = 300
+player_props_lambda_memory_size   = 512
+player_props_enable_schedule      = false
+player_props_schedule_expression  = "rate(30 minutes)"
+
+# Required for player-props Lambda. Use real values in terraform.tfvars.
+player_props_lambda_env = {
+  BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
+  SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+}

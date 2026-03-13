@@ -114,6 +114,152 @@ function isBackToBack(gameDate: string | undefined, recentForm: RecentGameResult
   return diffDays === 1;
 }
 
+// --- Player props filterable list ---
+const LINE_NONE = '__none__';
+
+function hasLineValue(prop: PlayerPropItem): boolean {
+  const v = prop.lineValue;
+  return v != null && !Number.isNaN(v);
+}
+
+function formatLineDisplay(prop: PlayerPropItem): string {
+  if (!hasLineValue(prop)) return '—';
+  return String(prop.lineValue);
+}
+
+function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropItem[] }) {
+  const [filterPlayer, setFilterPlayer] = useState<string>('all');
+  const [filterPropType, setFilterPropType] = useState<string>('all');
+  const [filterLine, setFilterLine] = useState<string>('all');
+
+  const players = Array.from(
+    new Map(playerProps.map((p) => [p.playerId, { id: p.playerId, name: p.playerName }])).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
+
+  const propTypes = Array.from(new Set(playerProps.map((p) => p.propType))).sort();
+
+  const hasAnyWithoutLine = playerProps.some((p) => !hasLineValue(p));
+  const numericLines = Array.from(
+    new Set(playerProps.filter(hasLineValue).map((p) => String(p.lineValue)))
+  ).sort((a, b) => parseFloat(a) - parseFloat(b));
+
+  const filtered = playerProps.filter((prop) => {
+    if (filterPlayer !== 'all' && prop.playerId !== filterPlayer) return false;
+    if (filterPropType !== 'all' && prop.propType !== filterPropType) return false;
+    if (filterLine === 'all') return true;
+    if (filterLine === LINE_NONE) return !hasLineValue(prop);
+    return hasLineValue(prop) && String(prop.lineValue) === filterLine;
+  });
+
+  const selectClass =
+    'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff] focus:border-[#00d4ff]/50';
+  const optionStyle = { backgroundColor: '#111827', color: '#fff' };
+
+  return (
+    <>
+      <h2 className="text-lg font-semibold text-white mb-4">Player props</h2>
+      <div className="glass-card rounded-xl overflow-hidden border border-white/5">
+        <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex flex-wrap items-center gap-3">
+          <h2 className="text-sm font-semibold text-white shrink-0">Player props</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="text-[10px] text-muted-foreground shrink-0">Player</label>
+            <select
+              value={filterPlayer}
+              onChange={(e) => setFilterPlayer(e.target.value)}
+              className={selectClass}
+              aria-label="Filter by player"
+            >
+              <option value="all" style={optionStyle}>All players</option>
+              {players.map((p) => (
+                <option key={p.id} value={p.id} style={optionStyle}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            <label className="text-[10px] text-muted-foreground shrink-0 ml-1">Prop</label>
+            <select
+              value={filterPropType}
+              onChange={(e) => setFilterPropType(e.target.value)}
+              className={selectClass}
+              aria-label="Filter by prop type"
+            >
+              <option value="all" style={optionStyle}>All props</option>
+              {propTypes.map((t) => (
+                <option key={t} value={t} style={optionStyle}>
+                  {t.replace(/_/g, ' ')}
+                </option>
+              ))}
+            </select>
+            <label className="text-[10px] text-muted-foreground shrink-0 ml-1">Line</label>
+            <select
+              value={filterLine}
+              onChange={(e) => setFilterLine(e.target.value)}
+              className={selectClass}
+              aria-label="Filter by line"
+            >
+              <option value="all" style={optionStyle}>All lines</option>
+              {numericLines.map((l) => (
+                <option key={l} value={l} style={optionStyle}>
+                  {l}
+                </option>
+              ))}
+              {hasAnyWithoutLine && (
+                <option value={LINE_NONE} style={optionStyle}>(No line)</option>
+              )}
+            </select>
+          </div>
+          <span className="text-[10px] text-muted-foreground ml-auto">
+            {filtered.length} of {playerProps.length}
+          </span>
+        </div>
+        <div className="p-3 overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left text-[10px] text-muted-foreground py-1.5">Player</th>
+                <th className="text-left text-[10px] text-muted-foreground py-1.5">Prop</th>
+                <th className="text-center text-[10px] text-muted-foreground py-1.5">Line</th>
+                <th className="text-center text-[10px] text-muted-foreground py-1.5">Over</th>
+                <th className="text-center text-[10px] text-muted-foreground py-1.5">Under</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length > 0 ? (
+                filtered.map((prop, i) => (
+                  <tr key={`${prop.playerId}-${prop.propType}-${prop.lineValue}-${i}`} className="border-b border-white/5 last:border-0">
+                    <td className="py-1.5 text-xs text-white">
+                      <Link href={`/betting/players/${prop.playerId}`} className="hover:text-[#00d4ff] transition-colors">
+                        {prop.playerName}
+                      </Link>
+                    </td>
+                    <td className="py-1.5 text-[10px] text-muted-foreground capitalize">{prop.propType.replace(/_/g, ' ')}</td>
+                    <td className="py-1.5 text-xs font-mono text-white text-center">{formatLineDisplay(prop)}</td>
+                    <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
+                      {prop.overOdds != null ? (prop.overOdds > 0 ? `+${prop.overOdds}` : prop.overOdds) : '—'}
+                    </td>
+                    <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
+                      {prop.underOdds != null ? (prop.underOdds > 0 ? `+${prop.underOdds}` : prop.underOdds) : '—'}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-6 text-center text-xs text-muted-foreground">
+                    No props match the current filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          <p className="text-[10px] text-muted-foreground mt-2">
+            Odds from {playerProps[0]?.vendor ?? 'book'} · American format
+          </p>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // --- Row / gauge helpers (migrated from modal) ---
 function RecentFormRow({ game, teamAbbr }: { game: RecentGameResult; teamAbbr: string }) {
   return (
@@ -640,47 +786,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
           {playerProps.length > 0 && (
-            <>
-              <h2 className="text-lg font-semibold text-white mb-4">Player props</h2>
-              <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-                <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-                  <h2 className="text-sm font-semibold text-white">Player props</h2>
-                </div>
-                <div className="p-3 overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left text-[10px] text-muted-foreground py-1.5">Player</th>
-                      <th className="text-left text-[10px] text-muted-foreground py-1.5">Prop</th>
-                      <th className="text-center text-[10px] text-muted-foreground py-1.5">Line</th>
-                      <th className="text-center text-[10px] text-muted-foreground py-1.5">Over</th>
-                      <th className="text-center text-[10px] text-muted-foreground py-1.5">Under</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {playerProps.map((prop, i) => (
-                      <tr key={`${prop.playerId}-${prop.propType}-${prop.lineValue}-${i}`} className="border-b border-white/5 last:border-0">
-                        <td className="py-1.5 text-xs text-white">
-                          <Link href={`/players/${prop.playerId}`} className="hover:text-[#00d4ff] transition-colors">
-                            {prop.playerName}
-                          </Link>
-                        </td>
-                        <td className="py-1.5 text-[10px] text-muted-foreground capitalize">{prop.propType.replace(/_/g, ' ')}</td>
-                        <td className="py-1.5 text-xs font-mono text-white text-center">{prop.lineValue}</td>
-                        <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
-                          {prop.overOdds != null ? (prop.overOdds > 0 ? `+${prop.overOdds}` : prop.overOdds) : '—'}
-                        </td>
-                        <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
-                          {prop.underOdds != null ? (prop.underOdds > 0 ? `+${prop.underOdds}` : prop.underOdds) : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="text-[10px] text-muted-foreground mt-2">Odds from {playerProps[0]?.vendor ?? 'book'} · American format</p>
-                </div>
-              </div>
-            </>
+            <PlayerPropsFilterableList props={playerProps} />
           )}
         </section>
 

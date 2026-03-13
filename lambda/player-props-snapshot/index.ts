@@ -116,6 +116,104 @@ function parseNumeric(val: string | null | undefined): number | null {
   return isNaN(n) ? null : n;
 }
 
+/** American to decimal: negative 1 + 100/|odds|, positive 1 + odds/100 */
+function convertAmericanToDecimal(oddsAmerican: number): number {
+  if (oddsAmerican < 0) return 1 + 100 / Math.abs(oddsAmerican);
+  return 1 + oddsAmerican / 100;
+}
+
+/** Implied probability: negative |odds|/(|odds|+100), positive 100/(odds+100) */
+function calculateImpliedProbability(oddsAmerican: number): number {
+  if (oddsAmerican < 0) return Math.abs(oddsAmerican) / (Math.abs(oddsAmerican) + 100);
+  return 100 / (oddsAmerican + 100);
+}
+
+/** Normalized row for raw v2 and analytics.player_props_current (one per sportsbook/prop/side/line). */
+export interface NormalizedPropRow {
+  game_id: number;
+  player_id: number;
+  player_name: string | null;
+  team_id: number | null;
+  sportsbook: string;
+  prop_type: string;
+  market_type: string;
+  side: string;
+  line_value: number | null;
+  odds_american: number;
+  odds_decimal: number;
+  implied_probability: number;
+  raw_json: object;
+}
+
+/** Flatten BDL response into one row per side (over/under or milestone) with computed decimal odds and implied probability. */
+function normalizePlayerPropResponse(rows: BdlPlayerPropRow[]): NormalizedPropRow[] {
+  const out: NormalizedPropRow[] = [];
+  for (const row of rows) {
+    const lineValue = parseNumeric(row.line_value);
+    const market = row.market;
+    if (market.type === 'over_under') {
+      const overDec = convertAmericanToDecimal(market.over_odds);
+      const overImpl = calculateImpliedProbability(market.over_odds);
+      out.push({
+        game_id: row.game_id,
+        player_id: row.player_id,
+        player_name: null,
+        team_id: null,
+        sportsbook: row.vendor,
+        prop_type: row.prop_type,
+        market_type: 'over_under',
+        side: 'over',
+        line_value: lineValue,
+        odds_american: market.over_odds,
+        odds_decimal: overDec,
+        implied_probability: overImpl,
+        raw_json: row,
+      });
+      const underDec = convertAmericanToDecimal(market.under_odds);
+      const underImpl = calculateImpliedProbability(market.under_odds);
+      out.push({
+        game_id: row.game_id,
+        player_id: row.player_id,
+        player_name: null,
+        team_id: null,
+        sportsbook: row.vendor,
+        prop_type: row.prop_type,
+        market_type: 'over_under',
+        side: 'under',
+        line_value: lineValue,
+        odds_american: market.under_odds,
+        odds_decimal: underDec,
+        implied_probability: underImpl,
+        raw_json: row,
+      });
+    } else {
+      const dec = convertAmericanToDecimal(market.odds);
+      const impl = calculateImpliedProbability(market.odds);
+      out.push({
+        game_id: row.game_id,
+        player_id: row.player_id,
+        player_name: null,
+        team_id: null,
+        sportsbook: row.vendor,
+        prop_type: row.prop_type,
+        market_type: 'milestone',
+        side: 'milestone',
+        line_value: lineValue,
+        odds_american: market.odds,
+        odds_decimal: dec,
+        implied_probability: impl,
+        raw_json: row,
+      });
+    }
+  }
+  return out;
+}
+
+/** Returns today's games (ET) for ingestion. */
+async function fetchTodaysGames(): Promise<{ gameId: string; bdlGameId: number }[]> {
+  return getTodayGameIds(getTodayET());
+}
+
 // ============================================
 // FETCH TARGET GAMES FROM DB
 // ============================================
@@ -265,6 +363,89 @@ async function insertMarketOutcomes(snapshotId: number, row: BdlPlayerPropRow): 
       [snapshotId, row.market.odds]
     );
   }
+}
+
+// ============================================
+// RAW V2 + ANALYTICS PLAYER_PROPS_CURRENT
+// ============================================
+
+/** Bulk insert into raw.player_prop_snapshots_v2 (append-only). */
+async function insertRawSnapshots(rows: NormalizedPropRow[], fetchedAt: Date): Promise<number> {
+  if (rows.length === 0) return 0;
+  let inserted = 0;
+  for (const r of rows) {
+    try {
+      await pool.query(
+        `INSERT INTO raw.player_prop_snapshots_v2 (
+           game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
+           line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+        [
+          r.game_id,
+          r.player_id,
+          r.player_name,
+          r.team_id,
+          r.sportsbook,
+          r.prop_type,
+          r.market_type,
+          r.side,
+          r.line_value,
+          r.odds_american,
+          r.odds_decimal,
+          r.implied_probability,
+          fetchedAt,
+          JSON.stringify(r.raw_json),
+        ]
+      );
+      inserted++;
+    } catch (err: any) {
+      console.error(`  DB insert raw v2 failed for game ${r.game_id} player ${r.player_id} ${r.prop_type} ${r.side}:`, err.message);
+    }
+  }
+  return inserted;
+}
+
+/** Upsert latest rows into analytics.player_props_current (Prop Explorer table). */
+async function upsertAnalyticsCurrent(rows: NormalizedPropRow[], snapshotAt: Date): Promise<number> {
+  if (rows.length === 0) return 0;
+  let upserted = 0;
+  for (const r of rows) {
+    try {
+      const result = await pool.query(
+        `INSERT INTO analytics.player_props_current (
+           game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
+           line_value, odds_american, odds_decimal, implied_probability, snapshot_at
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+         ON CONFLICT (game_id, player_id, sportsbook, prop_type, side, line_value)
+         DO UPDATE SET
+           player_name = excluded.player_name,
+           team_id = excluded.team_id,
+           odds_american = excluded.odds_american,
+           odds_decimal = excluded.odds_decimal,
+           implied_probability = excluded.implied_probability,
+           snapshot_at = excluded.snapshot_at`,
+        [
+          r.game_id,
+          r.player_id,
+          r.player_name,
+          r.team_id,
+          r.sportsbook,
+          r.prop_type,
+          r.market_type,
+          r.side,
+          r.line_value,
+          r.odds_american,
+          r.odds_decimal,
+          r.implied_probability,
+          snapshotAt,
+        ]
+      );
+      upserted += result.rowCount ?? 0;
+    } catch (err: any) {
+      console.error(`  DB upsert analytics.player_props_current failed for game ${r.game_id} player ${r.player_id}:`, err.message);
+    }
+  }
+  return upserted;
 }
 
 // ============================================
@@ -484,6 +665,7 @@ async function processDate(dateStr: string): Promise<{
   const allPlayers = new Set<number>();
   const allVendors = new Set<string>();
   const gamesWithProps: string[] = [];
+  const allBdlRows: BdlPlayerPropRow[] = [];
 
   for (const game of games) {
     try {
@@ -503,6 +685,7 @@ async function processDate(dateStr: string): Promise<{
           totalStored++;
           allPlayers.add(row.player_id);
           allVendors.add(row.vendor);
+          allBdlRows.push(row);
         } catch (err: any) {
           console.error(`  Error storing prop for game ${row.game_id} player ${row.player_id}:`, err.message);
         }
@@ -510,13 +693,20 @@ async function processDate(dateStr: string): Promise<{
 
       await sleep(200);
     } catch (err: any) {
-      console.error(`  Error fetching props for game ${game.bdlGameId}:`, err.message);
+      console.error(`  API failure game_id=${game.bdlGameId}:`, (err as Error).message);
     }
   }
 
   console.log(`Stored ${totalStored}/${totalFetched} raw snapshots across ${gamesWithProps.length} games`);
 
-  // Transform to analytics
+  // V2 pipeline: raw.player_prop_snapshots_v2 + analytics.player_props_current
+  const fetchedAt = new Date();
+  const normalized = normalizePlayerPropResponse(allBdlRows);
+  const rawV2Inserted = await insertRawSnapshots(normalized, fetchedAt);
+  const analyticsUpserted = await upsertAnalyticsCurrent(normalized, fetchedAt);
+  console.log(`V2 — raw snapshots inserted: ${rawV2Inserted}, analytics.player_props_current upserted: ${analyticsUpserted}`);
+
+  // Transform to analytics (legacy tables)
   const transformResult = await transformToAnalytics(pullRunId, gamesWithProps);
   console.log(`Transform — current: ${transformResult.current}, history: ${transformResult.history}, movement: ${transformResult.movement}`);
 

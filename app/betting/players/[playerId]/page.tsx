@@ -1,5 +1,6 @@
 import { PlayerHeader } from './components/PlayerHeader';
 import { PlayerPageTabs } from './components/PlayerPageTabs';
+import { PlayerPropSelectorSidebar } from '@/components/betting/PlayerPropSelectorSidebar';
 import {
   resolveAnalyticsPlayerId,
   getAnalyticsPlayerInfo,
@@ -143,20 +144,33 @@ export default async function BettingPlayerPage({
       </header>
 
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-        <div className="space-y-6 fade-in">
-          <PlayerHeader
-            player={player}
-            seasonAverages={seasonAverages}
-            team={currentTeam}
-          />
-          <PlayerPageTabs
-            games={games}
-            seasonAverages={seasonAverages}
-            nextGame={nextGame}
-            opponentContext={opponentContext}
-            recentForm={recentForm}
-            vsOpponentHistory={vsOpponentHistory}
-          />
+        <div className="flex flex-col xl:flex-row gap-6">
+          <div className="flex-1 min-w-0 space-y-6 fade-in">
+            <PlayerHeader
+              player={player}
+              seasonAverages={seasonAverages}
+              team={currentTeam}
+            />
+            <PlayerPageTabs
+              games={games}
+              seasonAverages={seasonAverages}
+              nextGame={nextGame}
+              opponentContext={opponentContext}
+              recentForm={recentForm}
+              vsOpponentHistory={vsOpponentHistory}
+            />
+          </div>
+          <aside className="w-full xl:w-80 shrink-0">
+            <div className="sticky top-14">
+              <PlayerPropSelectorSidebar
+                key={playerId}
+                playerId={playerId}
+                playerName={player.full_name}
+                gameId={nextGame ? parseInt(nextGame.game_id, 10) : undefined}
+                defaultLineValue={seasonAverages?.avg_points ?? undefined}
+              />
+            </div>
+          </aside>
         </div>
       </main>
     </div>
