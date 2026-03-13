@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lambdas": "tsx scripts/call-all-lambdas.ts",
+    "lambdas:aws": "tsx scripts/call-all-lambdas.ts --aws"
   },
   "dependencies": {
     "@types/cheerio": "^0.22.35",
