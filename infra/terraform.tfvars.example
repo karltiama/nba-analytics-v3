@@ -61,16 +61,29 @@ injuries_lambda_env = {
 }
 
 # -----------------------------------------------------------------------------
-# Player props ingestion Lambda (EventBridge Scheduler: every 30 min)
+# Player props ingestion Lambda (EventBridge Scheduler)
+# Set player_props_enable_schedule = true so the Lambda runs and fills analytics.player_props_current.
+# Without this, the player page sidebar has no props (empty "All stats" dropdown).
 # -----------------------------------------------------------------------------
 player_props_lambda_function_name = "nba-player-props-ingestion-lambda"
 player_props_lambda_timeout       = 300
 player_props_lambda_memory_size   = 512
-player_props_enable_schedule      = false
+player_props_enable_schedule      = true
 player_props_schedule_expression  = "rate(30 minutes)"
 
+# Optional: run only 10am-12pm ET every 30 min (UTC 15:00, 15:30, 16:00, 16:30, 17:00). When set, overrides rate above.
+player_props_schedule_crons = [
+  "cron(0 15 * * ? *)",
+  "cron(30 15 * * ? *)",
+  "cron(0 16 * * ? *)",
+  "cron(30 16 * * ? *)",
+  "cron(0 17 * * ? *)",
+]
+
 # Required for player-props Lambda. Use real values in terraform.tfvars.
+# Optional: INCLUDE_TOMORROW=true to also fetch props for tomorrow's games (recommended so upcoming games get lines).
 player_props_lambda_env = {
   BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
   SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+  # INCLUDE_TOMORROW   = "true"
 }

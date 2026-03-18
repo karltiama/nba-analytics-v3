@@ -47,6 +47,7 @@ const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 const BALLDONTLIE_API_KEY = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;
 const BDL_BASE = 'https://api.balldontlie.io/v2';
 const PREFERRED_VENDOR = process.env.PREFERRED_VENDOR || 'draftkings';
+const INCLUDE_TOMORROW = process.env.INCLUDE_TOMORROW === 'true' || process.env.INCLUDE_TOMORROW === '1';
 
 if (!SUPABASE_DB_URL) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
@@ -631,6 +632,12 @@ function getTodayET(): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
+/** Tomorrow's date in ET (for INCLUDE_TOMORROW). */
+function getTomorrowET(): string {
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  return tomorrow.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+}
+
 async function processDate(dateStr: string): Promise<{
   date: string;
   pullRunId: number;
@@ -736,8 +743,12 @@ export const handler = async (event: LambdaEvent) => {
     console.log('Event:', JSON.stringify(event));
     console.log(`Preferred vendor: ${PREFERRED_VENDOR}`);
 
-    const dates = event.dates
-      || (event.date ? [event.date] : [getTodayET()]);
+    let dates = event.dates || (event.date ? [event.date] : [getTodayET()]);
+    if (dates.length === 1 && dates[0] === getTodayET() && INCLUDE_TOMORROW) {
+      const tomorrow = getTomorrowET();
+      if (tomorrow !== dates[0]) dates = [dates[0], tomorrow];
+      console.log(`INCLUDE_TOMORROW=true: also processing ${tomorrow}`);
+    }
     console.log(`Processing dates: ${dates.join(', ')}`);
 
     const results = [];

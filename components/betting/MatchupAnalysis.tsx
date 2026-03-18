@@ -598,7 +598,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
         {lineup.players.map((player, index) => (
           <Link
             key={player.player_id}
-            href={`/players/${player.player_id}`}
+            href={`/betting/players/${player.player_id}`}
             className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-white/5 transition-colors border-b border-white/5 last:border-0"
           >
             <div className="flex items-center gap-2 flex-1">

@@ -31,6 +31,7 @@ EventBridge Scheduler (rate 30 min) or EventBridge Rules
 | `SUPABASE_DB_URL` | Yes | -- | Postgres connection string |
 | `BALLDONTLIE_API_KEY` | Yes | -- | BallDontLie API key (GOAT tier required) |
 | `PREFERRED_VENDOR` | No | `draftkings` | Which sportsbook to use for `player_prop_current` |
+| `INCLUDE_TOMORROW` | No | `false` | Set to `true` to also fetch props for **tomorrow's** games (ET). Use so upcoming games get lines as soon as books publish. |
 
 ## Local Testing
 

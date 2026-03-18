@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import type { GameLog, MetricKey, SeasonAverages } from '@/lib/players/types';
 import { METRIC_LABELS } from '@/lib/players/types';
 import { extractMetric, getSeasonAvgForMetric, summaryStats } from '@/lib/players/metrics';
+import { usePlayerAnalysis } from './PlayerAnalysisContext';
 import { StatTabs } from './StatTabs';
 import { PlayerTrendChart } from './PlayerTrendChart';
 import { SummaryCardsRow } from './SummaryCardsRow';
@@ -35,6 +36,14 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
   const [bettingLine, setBettingLine] = useState<number | null>(null);
   const [timeframe, setTimeframe] = useState<Timeframe>(20);
   const [locationFilter, setLocationFilter] = useState<LocationFilter>('all');
+
+  const analysis = usePlayerAnalysis();
+  useEffect(() => {
+    analysis?.setActiveMetric(activeMetric);
+  }, [activeMetric, analysis]);
+  useEffect(() => {
+    analysis?.setBettingLine(bettingLine);
+  }, [bettingLine, analysis]);
 
   const gamesByLocation = useMemo(
     () =>

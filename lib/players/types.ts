@@ -8,6 +8,15 @@ export const METRIC_LABELS: Record<MetricKey, string> = {
   pra: 'PTS + REB + AST',
 };
 
+/** Maps MetricKey to the lowercase prop_type string used in analytics.player_props_current. */
+export const METRIC_TO_PROP_TYPE: Record<MetricKey, string> = {
+  pts: 'points',
+  reb: 'rebounds',
+  ast: 'assists',
+  '3pm': 'threes',
+  pra: 'points_rebounds_assists',
+};
+
 export interface GameLog {
   game_id: string;
   game_date: string;

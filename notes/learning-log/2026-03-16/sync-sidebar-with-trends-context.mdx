@@ -1,0 +1,64 @@
+## Context
+
+The player analysis page (`/betting/players/[playerId]`) has two key sibling components:
+- **PlayerTrendsTab** (main content) — where the user selects a stat and enters a betting line for hit-rate analysis.
+- **PlayerPropSelectorSidebar** (right sidebar) — shows sportsbook prop lines filtered by stat, outcome, and line value.
+
+These two components had zero shared state. The user had to independently configure both — selecting "Points" and typing "24.5" in trends, then separately doing the same in the sidebar.
+
+## Goal
+
+Sync the sidebar prop filters with whatever the user is actively researching in the trends tab, so when they pick a stat and enter a betting line, the sidebar automatically shows relevant sportsbook props near that value.
+
+## Files Changed
+
+- `lib/players/types.ts` — Added `METRIC_TO_PROP_TYPE` mapping (MetricKey → propType string)
+- `app/betting/players/[playerId]/components/PlayerAnalysisContext.tsx` — **New file.** React Context holding `activeMetric` and `bettingLine` with setters.
+- `app/betting/players/[playerId]/page.tsx` — Wrapped flex layout in `<PlayerAnalysisProvider>`
+- `app/betting/players/[playerId]/components/PlayerTrendsTab.tsx` — Pushes `activeMetric` and `bettingLine` to context via `useEffect`
+- `components/betting/PlayerPropSelectorSidebar.tsx` — Reads context, syncs `filterStat` and `filterLineRaw` when context changes
+
+## Implementation Notes
+
+**Data flow:** PlayerTrendsTab is the **write** side (source of truth), PlayerPropSelectorSidebar is the **read** side (consumer). The context is a thin bridge — just two values and two setters.
+
+**Stat mapping challenge:** The trends tab uses short `MetricKey` values (`pts`, `reb`, `ast`, `3pm`, `pra`) while the sidebar filters by `propType` strings from the API (`points`, `rebounds`, `threes`, etc.). `METRIC_TO_PROP_TYPE` bridges these. The `3pm` key maps to `threes` (not `3-pointers made`) because the raw `prop_type` column in the DB stores the value from the Odds API's market key (`player_threes` → `threes`).
+
+**Ref guard pattern:** The sidebar has an existing `useEffect` that resets the line input to the median when `filterStat` changes. Without a guard, this would override the line value pushed from context. A `contextSyncRef` boolean ref prevents this: set to `true` before the context-driven state update, checked and reset in the median effect.
+
+**Prev-value refs:** `prevContextMetricRef` and `prevContextLineRef` track the last-seen context values so the sync effect only fires on actual changes, not on every render.
+
+## Key Decisions
+
+- **React Context over URL params** — Context is simpler, no URL noise, and the sync is ephemeral (no need to bookmark/share a specific filter state). Alternative: `useSearchParams` would make filter state shareable but adds complexity.
+- **Sidebar imports from `app/` path** — The sidebar is already player-page-specific, so importing the context from `@/app/betting/players/[playerId]/components/` is acceptable. Alternative: move context to `lib/` for stricter separation, but unnecessary given the sidebar's scope.
+- **Graceful null handling** — `usePlayerAnalysis()` returns `null` when no provider wraps the component. The sidebar works independently in that case (no sync, no crash). The trends tab also guards with `analysis?.setX()`.
+
+## Assumptions
+
+- The `prop_type` values in `analytics.player_props_current` use lowercase strings matching the Odds API market key suffixes (`points`, `rebounds`, `assists`, `threes`, `blocks`).
+- The combo prop `pra` maps to `pts + reb + ast` in the DB — this may not have matching sportsbook props, but the sync still works (sidebar just shows "No props match").
+- The sidebar is only rendered inside the player page layout (wrapped by the provider). If reused elsewhere without the provider, it falls back to independent mode.
+
+## Failure Modes
+
+- **Prop type mismatch**: If the DB stores a different string than what `METRIC_TO_PROP_TYPE` maps to (e.g., `3-pointers made` instead of `threes`), the sidebar won't match any props for that stat. Fix: update the mapping.
+- **Ref guard race condition**: If React batches effects differently than expected, the median-reset effect might fire before the context sync effect in edge cases. In practice, React 18+ batches state updates within the same effect, so the guard works reliably.
+- **Context not available**: If the `PlayerAnalysisProvider` is accidentally removed from the page, the sidebar silently falls back to independent filtering (no crash, just no sync).
+
+## How to Test
+
+1. Navigate to any player page: `/betting/players/[playerId]`
+2. In the **Trends** tab, select different stats (Points, Rebounds, Assists, 3PM, PRA)
+3. Verify the sidebar **stat filter dropdown** updates to match the selected stat
+4. Enter a betting line value in the **Line Analysis** input (e.g., 24.5 for Points)
+5. Verify the sidebar **line filter** updates to show 24.5
+6. Manually change the sidebar filters — they should stay changed until the trends tab changes again
+7. Switch to the Matchup or Game Log tab — sidebar should retain the last synced values
+8. Clear the betting line in trends — sidebar should keep its current line (only non-null values sync)
+
+## Next Steps
+
+- Add **blocks** (`blk`) as a new trend metric — data exists in `GameLog.blocks` and `SeasonAverages.avg_blocks`, sportsbooks offer blocks props
+- Add other computable metrics (steals, PTS+REB, PTS+AST, REB+AST) for fuller prop coverage
+- Consider a visual indicator on the sidebar showing "Synced with Trends" when context-driven

@@ -174,11 +174,31 @@ resource "aws_lambda_function" "player_props_ingestion" {
   }
 }
 
-resource "aws_scheduler_schedule" "player_props" {
-  count       = var.player_props_enable_schedule ? 1 : 0
+# When player_props_schedule_crons is set, create one schedule per cron (e.g. 10am-12pm ET every 30 min).
+# Otherwise create a single schedule using player_props_schedule_expression (e.g. rate(30 minutes)).
+resource "aws_scheduler_schedule" "player_props_crons" {
+  count       = var.player_props_enable_schedule ? length(var.player_props_schedule_crons) : 0
+  name        = "nba-player-props-${count.index}"
+  group_name  = "default"
+  description = "Player props ingestion (BallDontLie) run ${count.index + 1}/${length(var.player_props_schedule_crons)}."
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  schedule_expression = var.player_props_schedule_crons[count.index]
+
+  target {
+    arn      = aws_lambda_function.player_props_ingestion.arn
+    role_arn = aws_iam_role.scheduler_player_props_invoke.arn
+  }
+}
+
+resource "aws_scheduler_schedule" "player_props_rate" {
+  count       = var.player_props_enable_schedule && length(var.player_props_schedule_crons) == 0 ? 1 : 0
   name        = "nba-player-props-schedule"
   group_name  = "default"
-  description = "Every 30 min player props ingestion (BallDontLie); optional: add pregame-only schedule later."
+  description = "Every 30 min player props ingestion (BallDontLie)."
 
   flexible_time_window {
     mode = "OFF"

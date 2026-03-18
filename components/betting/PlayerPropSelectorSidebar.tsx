@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Minus, Target } from 'lucide-react';
+import { usePlayerAnalysis } from '@/app/betting/players/[playerId]/components/PlayerAnalysisContext';
+import { METRIC_TO_PROP_TYPE } from '@/lib/players/types';
+import type { MetricKey } from '@/lib/players/types';
 
 /**
  * Single useEffect is only for fetching props (async). Filter updates are synchronous like
@@ -21,6 +24,11 @@ export interface PlayerPropRow {
   oddsAmerican: number | null;
   oddsDecimal: number | null;
   impliedProbability: number | null;
+  consensusProbability?: number | null;
+  edgeProbability?: number | null;
+  modelProbability?: number | null;
+  ev?: number | null;
+  projection?: number | null;
   snapshotAt: string;
 }
 
@@ -35,6 +43,25 @@ interface PlayerPropSelectorSidebarProps {
 function formatOdds(odds: number | null): string {
   if (odds == null) return '—';
   return odds > 0 ? `+${odds}` : String(odds);
+}
+
+function formatEdge(edgeP: number | null | undefined): string {
+  if (edgeP == null || Number.isNaN(edgeP)) return '—';
+  const pct = edgeP * 100;
+  const abs = Math.abs(pct);
+  const sign = pct >= 0 ? '+' : '−';
+  return `${sign}${abs.toFixed(1)}%`;
+}
+
+function formatEv(ev: number | null | undefined): string {
+  if (ev == null || !Number.isFinite(ev)) return '—';
+  const pct = ev * 100;
+  const sign = pct >= 0 ? '+' : '';
+  return `${sign}${pct.toFixed(1)}%`;
+}
+
+function isOverUnderSide(p: PlayerPropRow): boolean {
+  return (p.marketType ?? '').toLowerCase() === 'over_under' && (p.side === 'over' || p.side === 'under');
 }
 
 const LINE_STEP = 0.5;
@@ -91,7 +118,7 @@ export function PlayerPropSelectorSidebar({
   const [props, setProps] = useState<PlayerPropRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStat, setFilterStat] = useState<string>('points');
-  const [filterOutcome, setFilterOutcome] = useState<string>('at least');
+  const [filterOutcome, setFilterOutcome] = useState<string>('over');
   const defaultLine = useMemo(() => {
     if (defaultLineValue != null && !Number.isNaN(defaultLineValue)) {
       return roundToHalf(defaultLineValue);
@@ -101,6 +128,7 @@ export function PlayerPropSelectorSidebar({
   const [filterLineRaw, setFilterLineRaw] = useState<string>(() =>
     defaultLine != null ? String(defaultLine) : ''
   );
+  const [showBestEdgeOnly, setShowBestEdgeOnly] = useState(false);
   const filterLineNum: number | null =
     filterLineRaw.trim() === ''
       ? null
@@ -116,6 +144,8 @@ export function PlayerPropSelectorSidebar({
       try {
         const url = new URL(`/api/betting/players/${playerId}/props`, window.location.origin);
         if (gameId != null) url.searchParams.set('game_id', String(gameId));
+        url.searchParams.set('with_consensus', '1');
+        url.searchParams.set('with_ev', '1');
         const res = await fetch(url.toString());
         if (!res.ok) {
           setProps([]);
@@ -133,9 +163,38 @@ export function PlayerPropSelectorSidebar({
     return () => { cancelled = true; };
   }, [playerId, gameId]);
 
-  // When user switches prop type, set line to median line for that stat (or clear for "all").
+  const analysis = usePlayerAnalysis();
+  const contextSyncRef = useRef(false);
+  const prevContextMetricRef = useRef<MetricKey | null>(null);
+  const prevContextLineRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (props.length === 0) return; // keep initial default while loading
+    if (!analysis) return;
+    const metricChanged = analysis.activeMetric !== prevContextMetricRef.current;
+    const lineChanged = analysis.bettingLine !== prevContextLineRef.current;
+    prevContextMetricRef.current = analysis.activeMetric;
+    prevContextLineRef.current = analysis.bettingLine;
+
+    if (!metricChanged && !lineChanged) return;
+
+    if (metricChanged) {
+      const propType = METRIC_TO_PROP_TYPE[analysis.activeMetric];
+      setFilterStat(propType);
+    }
+    if (analysis.bettingLine != null) {
+      contextSyncRef.current = true;
+      setFilterLineRaw(String(roundToHalf(analysis.bettingLine)));
+    }
+  }, [analysis?.activeMetric, analysis?.bettingLine]);
+
+  // When user switches prop type, set line to median line for that stat (or clear for "all").
+  // Skipped when the change originated from context sync (the context provides its own line).
+  useEffect(() => {
+    if (contextSyncRef.current) {
+      contextSyncRef.current = false;
+      return;
+    }
+    if (props.length === 0) return;
     if (filterStat === 'all') {
       setFilterLineRaw('');
       return;
@@ -160,12 +219,12 @@ export function PlayerPropSelectorSidebar({
       (p.propType != null && p.propType.toLowerCase() === effectiveStat.toLowerCase());
     if (!statMatch) return false;
 
-    if (filterOutcome === 'over' && p.side !== 'over') return false;
+    // Over = over/under "over" + milestone (any "over this line" bet)
+    if (filterOutcome === 'over' && p.side !== 'over' && p.side !== 'milestone') return false;
     if (filterOutcome === 'under' && p.side !== 'under') return false;
-    if (filterOutcome === 'at least' && p.side !== 'over' && p.side !== 'milestone') return false;
 
     if (filterLineNum != null) {
-      if (filterOutcome === 'over' || filterOutcome === 'at least') {
+      if (filterOutcome === 'over') {
         if (!lineAtOrAbove(filterLineNum, p.lineValue)) return false;
       } else if (filterOutcome === 'under') {
         if (!lineAtOrBelow(filterLineNum, p.lineValue)) return false;
@@ -190,10 +249,16 @@ export function PlayerPropSelectorSidebar({
 
   const groupsWithBest = Array.from(groups.entries()).map(([key, rows]) => {
     const bestOdds = Math.max(...rows.map((r) => r.oddsAmerican ?? -Infinity));
+    const bestEdge = Math.max(...rows.map((r) => (r.edgeProbability ?? -Infinity)));
+    const bestEv = Math.max(...rows.map((r) => (r.ev != null && Number.isFinite(r.ev) ? r.ev : -Infinity)));
+    const hasAnyEv = rows.some((r) => r.ev != null && Number.isFinite(r.ev));
     return {
       key,
       rows,
       bestOdds: bestOdds === -Infinity ? null : bestOdds,
+      bestEdge: bestEdge === -Infinity ? null : bestEdge,
+      bestEv: bestEv === -Infinity ? null : bestEv,
+      hasAnyEv,
     };
   });
 
@@ -240,7 +305,6 @@ export function PlayerPropSelectorSidebar({
           <option value="all" style={optionStyle}>All</option>
           <option value="over" style={optionStyle}>Over</option>
           <option value="under" style={optionStyle}>Under</option>
-          <option value="at least" style={optionStyle}>At least</option>
         </select>
         <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-gray-900 overflow-hidden">
           <button
@@ -276,6 +340,16 @@ export function PlayerPropSelectorSidebar({
             <Plus className="w-3.5 h-3.5" />
           </button>
         </div>
+        <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-gray-900 text-xs text-white py-1.5 px-2 cursor-pointer hover:bg-white/5 focus-within:ring-1 focus-within:ring-[#00d4ff]">
+          <input
+            type="checkbox"
+            checked={showBestEdgeOnly}
+            onChange={(e) => setShowBestEdgeOnly(e.target.checked)}
+            className="rounded border-white/20 bg-gray-800 text-[#00d4ff] focus:ring-[#00d4ff]"
+            aria-label="Show best edge only"
+          />
+          <span>Best edge only</span>
+        </label>
       </div>
 
       {/* Content */}
@@ -287,16 +361,39 @@ export function PlayerPropSelectorSidebar({
             No props match. Try a lower line, different stat, or outcome.
           </p>
         ) : (
-          groupsWithBest.map(({ key, rows, bestOdds }) => {
+          groupsWithBest.map(({ key, rows, bestOdds, bestEdge, bestEv, hasAnyEv }) => {
             const [propType, side, lineVal] = key.split('|');
             const lineValue = lineVal === 'null' ? null : parseFloat(lineVal);
             const isOver = side === 'over' || side === 'milestone';
+            const rowsToShow =
+              showBestEdgeOnly
+                ? rows.filter((r) => {
+                    if (hasAnyEv && bestEv != null && r.ev != null && Number.isFinite(r.ev) && r.ev === bestEv)
+                      return true;
+                    const hasEdge =
+                      isOverUnderSide(r) && r.edgeProbability != null && Number.isFinite(r.edgeProbability);
+                    const isBestByEdge =
+                      hasEdge && bestEdge != null && r.edgeProbability != null && r.edgeProbability === bestEdge;
+                    const isBestByOdds =
+                      !hasEdge &&
+                      bestOdds != null &&
+                      r.oddsAmerican != null &&
+                      r.oddsAmerican === bestOdds;
+                    return isBestByEdge || isBestByOdds;
+                  })
+                : rows;
+            const rowsSortedByEdge = [...rowsToShow].sort((a, b) => {
+              const evA = a.ev != null && Number.isFinite(a.ev) ? a.ev : -Infinity;
+              const evB = b.ev != null && Number.isFinite(b.ev) ? b.ev : -Infinity;
+              if (evB !== evA) return evB - evA;
+              return (b.edgeProbability ?? -Infinity) - (a.edgeProbability ?? -Infinity);
+            });
             return (
               <div
                 key={key}
                 className="p-3 rounded-lg bg-white/[0.03] border border-white/5"
               >
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   {isOver ? (
                     <Plus className="w-3.5 h-3.5 text-[#39ff14]" />
                   ) : (
@@ -308,13 +405,28 @@ export function PlayerPropSelectorSidebar({
                   <span className="text-xs font-mono text-white">
                     {formatLineValue(lineValue)}
                   </span>
+                  {rowsToShow.some((r) => r.projection != null && Number.isFinite(r.projection)) && (
+                    <span className="text-[10px] text-muted-foreground">
+                      (model {formatLineValue(rowsToShow.find((r) => r.projection != null)?.projection ?? null)})
+                    </span>
+                  )}
                 </div>
                 <ul className="space-y-1">
-                  {rows.map((r) => {
-                    const isBest =
+                  {rowsSortedByEdge.map((r) => {
+                    const hasEv = r.ev != null && Number.isFinite(r.ev);
+                    const hasEdge =
+                      isOverUnderSide(r) && r.edgeProbability != null && Number.isFinite(r.edgeProbability);
+                    const isBestByEv =
+                      hasAnyEv && bestEv != null && hasEv && r.ev === bestEv;
+                    const isBestByEdge =
+                      !hasAnyEv && hasEdge && bestEdge != null && r.edgeProbability != null && r.edgeProbability === bestEdge;
+                    const isBestByOdds =
+                      !hasAnyEv &&
+                      !hasEdge &&
                       bestOdds != null &&
                       r.oddsAmerican != null &&
                       r.oddsAmerican === bestOdds;
+                    const isBest = isBestByEv || isBestByEdge || isBestByOdds;
                     return (
                       <li
                         key={`${r.sportsbook}-${r.oddsAmerican}`}
@@ -325,13 +437,21 @@ export function PlayerPropSelectorSidebar({
                         <span className="text-muted-foreground truncate">
                           {r.sportsbook ?? '—'}
                         </span>
-                        <span className="font-mono text-white shrink-0 ml-2">
-                          {formatOdds(r.oddsAmerican)}
-                          {isBest && (
-                            <span className="ml-1.5 text-[10px] text-[#00d4ff] font-medium">
-                              Best
-                            </span>
-                          )}
+                        <span className="font-mono text-white shrink-0 ml-2 flex items-center gap-2">
+                          <span className="text-xs">
+                            EV {formatEv(r.ev)}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            Edge {hasEdge ? formatEdge(r.edgeProbability) : '—'}
+                          </span>
+                          <span>
+                            {formatOdds(r.oddsAmerican)}
+                            {isBest && (
+                              <span className="ml-1.5 text-[10px] text-[#00d4ff] font-medium">
+                                Best
+                              </span>
+                            )}
+                          </span>
                         </span>
                       </li>
                     );

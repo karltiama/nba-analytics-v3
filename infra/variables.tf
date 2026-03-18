@@ -173,7 +173,13 @@ variable "player_props_enable_schedule" {
 }
 
 variable "player_props_schedule_expression" {
-  description = "Schedule expression for EventBridge Scheduler. Use rate(30 minutes) for every 30 min. Flexible time window is disabled."
+  description = "Schedule expression for EventBridge Scheduler when player_props_schedule_crons is empty. Use rate(30 minutes) for every 30 min. Flexible time window is disabled."
   type        = string
   default     = "rate(30 minutes)"
+}
+
+variable "player_props_schedule_crons" {
+  description = "Optional list of cron expressions (UTC) for player props, e.g. 10am-12pm ET every 30 min. When non-empty, this is used instead of player_props_schedule_expression (one schedule per cron). Example: [\"cron(0 15 * * ? *)\", \"cron(30 15 * * ? *)\", \"cron(0 16 * * ? *)\", \"cron(30 16 * * ? *)\", \"cron(0 17 * * ? *)\"]."
+  type        = list(string)
+  default     = []
 }

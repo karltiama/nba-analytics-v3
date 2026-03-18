@@ -78,6 +78,18 @@ After apply:
 - **odds_lambda_function_name** / **odds_lambda_function_arn** – odds-pre-game-snapshot.
 - **odds_schedule_rule_name** / **odds_schedule_rule_arn** – Set when `odds_enable_schedule` is true.
 
+## Player props Lambda (nba-player-props-ingestion-lambda)
+
+This Lambda fills `analytics.player_props_current`, which the player page sidebar uses. **If the schedule is disabled, the sidebar shows "All stats" with no options** because no props are ingested.
+
+1. **Build before apply:** `cd lambda/player-props-snapshot && npm install && npm run build`
+2. **Enable the schedule** in `terraform.tfvars`:
+   - `player_props_enable_schedule = true`
+   - Optionally set `player_props_schedule_crons` to run only 10am–12pm ET (see `terraform.tfvars.example`). If left empty, the single `player_props_schedule_expression` (e.g. `rate(30 minutes)`) is used.
+3. **Set env:** `player_props_lambda_env` with `SUPABASE_DB_URL`, `BALLDONTLIE_API_KEY`. Optional: `INCLUDE_TOMORROW=true` so tomorrow's games get props when books publish.
+
+After apply, EventBridge Scheduler will invoke the Lambda on the configured schedule. Run a manual test from the Lambda console to confirm DB and BDL API work.
+
 ## Extending to more Lambdas
 
 To add **boxscore**, **player-props**, or **injuries** Lambdas:

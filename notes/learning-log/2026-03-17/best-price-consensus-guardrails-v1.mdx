@@ -1,0 +1,21 @@
+---
+title: Best price vs consensus (Guardrails v1)
+date: 2026-03-17
+---
+
+## Context
+We added consensus/edge fields and displayed them in the player sidebar. Some prop rows (e.g. `milestone`) don’t have paired sides and shouldn’t show a “consensus edge” yet.
+
+## Goal
+Add v1 guardrails so “Edge vs consensus” only appears where the consensus is meaningful and computed (over/under markets with sides over/under).
+
+## Files Changed
+- `components/betting/PlayerPropSelectorSidebar.tsx`
+
+## Implementation Notes (key logic explained)
+- Added `isOverUnderSide()` helper to gate edge display/highlighting to:\n  - `marketType === 'over_under'`\n  - `side in ('over','under')`\n- UI now shows `Edge —` for non-eligible markets (like `milestone`) even if the API includes the field.\n\n## Key Decisions (and alternatives considered)
+- **Decision**: enforce guardrails in the UI as a last line of defense.\n- **Alternative**: fully exclude non-eligible rows in the API response; deferred to avoid changing existing UI behavior and filters.\n\n## Assumptions
+- Option A consensus is only trustworthy for paired two-sided markets.\n\n## Failure Modes
+- If the API changes market_type strings, the UI gating could hide edges unexpectedly.\n\n## How to Test (commands + steps)
+- `npm run dev`\n- Open a player page with both O/U and milestone props.\n- Confirm:\n  - O/U rows show `Edge +/-x.x%` when consensus exists.\n  - Milestone rows show `Edge —`.\n\n## Next Steps
+- Consider sorting offers within a group by edge when present.\n- Later: add EV-based ranking once a projection model exists.\n+
