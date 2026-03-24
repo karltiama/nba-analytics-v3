@@ -1,0 +1,39 @@
+## Context
+Injury sync was updating and inserting active injuries, but stale injuries stayed in `analytics.player_injury_status_current` when players disappeared from the latest provider feed.
+
+## Goal
+Make the injuries transform enforce add/update/remove parity in the current table for each run.
+
+## Files Changed
+- `lambda/injuries-snapshot/index.ts`
+
+## Implementation Notes (key logic explained)
+- Extended `transformToAnalytics` return shape to include `removed`.
+- Collected all player IDs seen in the latest transformed pull.
+- Added a cleanup delete after upserts:
+  - If latest pull has players, delete current rows not present in that latest set.
+  - If latest pull is empty, clear current rows for tracked players.
+- Included removed count in transform logging.
+
+## Key Decisions (and alternatives considered)
+- Decision: delete missing players from current table to keep it a strict "current injuries" mirror.
+- Alternative considered: keep rows and set a "cleared" status, but that keeps stale records in the same table and can confuse consumers.
+
+## Assumptions
+- `analytics.player_injury_status_current` is intended to represent only currently injured players.
+- `analytics.players` contains the tracked player universe for cleanup scope.
+
+## Failure Modes
+- Provider outage or incomplete feed could temporarily under-report injuries by over-deleting.
+- Very large latest ID array could increase delete-query planning cost.
+
+## How to Test (commands + steps)
+1. Run:
+   - `cd lambda/injuries-snapshot`
+   - `npx tsx index.ts`
+2. Confirm logs include: `Transform — current: X history: Y removed: Z`.
+3. Query DB and verify no stale rows remain in `analytics.player_injury_status_current` for players absent from latest pull.
+
+## Next Steps
+- Add verification script parity check for stale current rows.
+- Update README to document strict mirror behavior and risk tradeoff.

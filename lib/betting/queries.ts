@@ -1866,3 +1866,468 @@ export async function getPlayerPropLineShopping(
     best_under_price_same_line,
   };
 }
+
+export interface InjuryOpportunityGuardrailFlags {
+  capped_by_absolute_minutes: boolean;
+  capped_by_plus8_rule: boolean;
+  usage_multiplier_clamped: boolean;
+  starter_absorption_applied: boolean;
+  weak_role_match_penalty: boolean;
+  /** True when game is within 45m of tip and consensus snapshots are older than 30m. */
+  near_tip_stale_line_penalty: boolean;
+}
+
+/** Layer B: how consensus line was built (fresh, latest-per-book, paired O/U). */
+export interface InjuryOpportunityConsensusDiagnostics {
+  books_count: number;
+  oldest_snapshot_at: string;
+  newest_snapshot_at: string;
+  /** Minutes since newest contributing book snapshot (freshness of market). */
+  staleness_minutes: number;
+  /** Spread of lines across books at snapshot time; null if single book or undefined. */
+  line_dispersion_stddev: number | null;
+}
+
+export interface InjuryOpportunityContext {
+  injured_players: Array<{ player_id: string; full_name: string; position: string | null; status: string | null; baseline_minutes: number }>;
+  lost_minutes_total: number;
+  redistributable_minutes_total: number;
+}
+
+export interface InjuryOpportunityCandidate {
+  game_id: string;
+  team_id: string;
+  player_id: string;
+  full_name: string;
+  position: string | null;
+  baseline_minutes: number;
+  projected_minutes: number;
+  baseline_ppm: number;
+  opportunity_multiplier: number;
+  projected_points: number;
+  consensus_line_points: number;
+  edge_vs_line: number;
+  confidence: number;
+  adjusted_edge: number;
+  injury_context: InjuryOpportunityContext;
+  guardrail_flags: InjuryOpportunityGuardrailFlags;
+  consensus_diagnostics: InjuryOpportunityConsensusDiagnostics;
+}
+
+type TeamOpportunityInputs = {
+  gameId: string;
+  teamId: string;
+  gameStartTime: string;
+  injuredRows: Array<{ player_id: string; full_name: string; position: string | null; status: string | null; baseline_minutes: number; usage_proxy: number }>;
+  candidateRows: Array<{ player_id: string; full_name: string; position: string | null; baseline_minutes: number; baseline_ppm: number; appearance_count: number; minute_stddev: number; consistency_ratio: number }>;
+  lineRows: Array<{
+    player_id: string;
+    line_value: number;
+    books: number;
+    oldest_snapshot_at: string;
+    newest_snapshot_at: string;
+    staleness_minutes: number;
+    line_dispersion_stddev: number | null;
+  }>;
+};
+
+function toRoleBucket(position: string | null): 'G' | 'F' | 'C' | 'OTHER' {
+  const p = (position ?? '').toUpperCase();
+  if (p.includes('C')) return 'C';
+  if (p.includes('F')) return 'F';
+  if (p.includes('G') || p.includes('PG') || p.includes('SG')) return 'G';
+  return 'OTHER';
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function buildTeamCandidates(input: TeamOpportunityInputs): InjuryOpportunityCandidate[] {
+  const MIN_PARTICIPATION = 3;
+  const ALPHA = 0.35;
+  const ABS_MIN_CAP = 34;
+  const RELATIVE_GAIN_CAP = 8;
+  const OPPORTUNITY_MULTIPLIER_MIN = 0.9;
+  const OPPORTUNITY_MULTIPLIER_MAX = 1.15;
+
+  const linesByPlayer = new Map<string, TeamOpportunityInputs['lineRows'][number]>();
+  for (const row of input.lineRows) linesByPlayer.set(row.player_id, row);
+
+  const eligibleCandidates = input.candidateRows.filter((r) => r.appearance_count >= MIN_PARTICIPATION && linesByPlayer.has(r.player_id));
+  if (eligibleCandidates.length === 0) return [];
+
+  let lostMinutesTotal = 0;
+  let redistributableLostMinutes = 0;
+  let lostUsageTotal = 0;
+  let starterAbsorptionApplied = false;
+  const injuredBuckets = new Map<'G' | 'F' | 'C' | 'OTHER', number>();
+  injuredBuckets.set('G', 0);
+  injuredBuckets.set('F', 0);
+  injuredBuckets.set('C', 0);
+  injuredBuckets.set('OTHER', 0);
+
+  for (const inj of input.injuredRows) {
+    const bucket = toRoleBucket(inj.position);
+    const baseline = Number.isFinite(inj.baseline_minutes) ? inj.baseline_minutes : 0;
+    const cappedPortion = baseline > 30 ? baseline * 0.6 : baseline;
+    if (baseline > 30) starterAbsorptionApplied = true;
+    lostMinutesTotal += baseline;
+    redistributableLostMinutes += cappedPortion;
+    lostUsageTotal += Math.max(0, inj.usage_proxy * cappedPortion);
+    injuredBuckets.set(bucket, (injuredBuckets.get(bucket) ?? 0) + cappedPortion);
+  }
+
+  if (redistributableLostMinutes <= 0) return [];
+
+  const rawWeights = new Map<string, number>();
+  const usageWeights = new Map<string, number>();
+  for (const c of eligibleCandidates) {
+    const bucket = toRoleBucket(c.position);
+    const bucketLost = injuredBuckets.get(bucket) ?? 0;
+    const nonMatchingLost = redistributableLostMinutes - bucketLost;
+    const roleWeight = bucketLost > 0 ? 1 : (nonMatchingLost > 0 ? 0.3 : 0.1);
+    const minuteWeight = clamp(c.baseline_minutes / 22, 0.1, 1.0);
+    const consistencyWeight = clamp(c.consistency_ratio, 0.1, 1.0);
+    const weight = roleWeight * (0.5 + 0.3 * minuteWeight + 0.2 * consistencyWeight);
+    rawWeights.set(c.player_id, Math.max(0, weight));
+    usageWeights.set(c.player_id, Math.max(0, roleWeight * consistencyWeight));
+  }
+
+  const totalWeight = Array.from(rawWeights.values()).reduce((a, b) => a + b, 0);
+  const totalUsageWeight = Array.from(usageWeights.values()).reduce((a, b) => a + b, 0);
+  if (totalWeight <= 0) return [];
+
+  const injuryContext: InjuryOpportunityContext = {
+    injured_players: input.injuredRows.map((r) => ({
+      player_id: r.player_id,
+      full_name: r.full_name,
+      position: r.position,
+      status: r.status,
+      baseline_minutes: r.baseline_minutes,
+    })),
+    lost_minutes_total: Number(lostMinutesTotal.toFixed(2)),
+    redistributable_minutes_total: Number(redistributableLostMinutes.toFixed(2)),
+  };
+
+  const mostlyDoubtful = input.injuredRows.length > 0 &&
+    input.injuredRows.filter((r) => (r.status ?? '').toLowerCase().startsWith('out')).length <
+    input.injuredRows.length / 2;
+
+  return eligibleCandidates.map((c) => {
+    const baseMinutes = c.baseline_minutes;
+    const normalizedShare = (rawWeights.get(c.player_id) ?? 0) / totalWeight;
+    const allocatedMinutes = redistributableLostMinutes * normalizedShare;
+    const rawProjectedMinutes = baseMinutes + allocatedMinutes;
+    const maxFromRelative = baseMinutes + RELATIVE_GAIN_CAP;
+    const projectedMinutes = Math.min(rawProjectedMinutes, ABS_MIN_CAP, maxFromRelative);
+
+    const usageShare = totalUsageWeight > 0 ? (usageWeights.get(c.player_id) ?? 0) / totalUsageWeight : 0;
+    const redistributedUsageShare = lostUsageTotal > 0 ? usageShare : 0;
+    let usageDelta = ALPHA * redistributedUsageShare;
+    const minuteGain = projectedMinutes - baseMinutes;
+    if (minuteGain > 6) usageDelta *= 0.5;
+    const rawMultiplier = 1 + usageDelta;
+    const clampedMultiplier = clamp(rawMultiplier, OPPORTUNITY_MULTIPLIER_MIN, OPPORTUNITY_MULTIPLIER_MAX);
+    const projectedPoints = projectedMinutes * c.baseline_ppm * clampedMultiplier;
+
+    let confidence = 1;
+    if (c.appearance_count < 5) confidence -= 0.2;
+    if (c.minute_stddev > 7) confidence -= 0.15;
+    const bucket = toRoleBucket(c.position);
+    const weakRoleMatch = (injuredBuckets.get(bucket) ?? 0) === 0;
+    if (weakRoleMatch) confidence -= 0.2;
+    if (c.appearance_count <= 4) confidence -= 0.15;
+    if (mostlyDoubtful) confidence -= 0.1;
+    if (!weakRoleMatch && c.minute_stddev <= 4 && c.appearance_count >= 7 && !mostlyDoubtful) {
+      confidence += 0.1;
+    }
+
+    const line = linesByPlayer.get(c.player_id)!;
+    const tipMs = new Date(input.gameStartTime).getTime();
+    const nowMs = Date.now();
+    const minutesUntilTip = (tipMs - nowMs) / 60000;
+    const nearTipStale =
+      Number.isFinite(minutesUntilTip) &&
+      minutesUntilTip > 0 &&
+      minutesUntilTip < 45 &&
+      line.staleness_minutes > 30;
+    if (nearTipStale) {
+      confidence -= 0.1;
+    }
+
+    confidence = clamp(confidence, 0.15, 1.0);
+
+    const edge = projectedPoints - line.line_value;
+    const adjustedEdge = edge * confidence;
+
+    const consensus_diagnostics: InjuryOpportunityConsensusDiagnostics = {
+      books_count: line.books,
+      oldest_snapshot_at: line.oldest_snapshot_at,
+      newest_snapshot_at: line.newest_snapshot_at,
+      staleness_minutes: Number(line.staleness_minutes.toFixed(1)),
+      line_dispersion_stddev:
+        line.line_dispersion_stddev != null && Number.isFinite(line.line_dispersion_stddev)
+          ? Number(line.line_dispersion_stddev.toFixed(3))
+          : null,
+    };
+
+    return {
+      game_id: input.gameId,
+      team_id: input.teamId,
+      player_id: c.player_id,
+      full_name: c.full_name,
+      position: c.position,
+      baseline_minutes: Number(baseMinutes.toFixed(2)),
+      projected_minutes: Number(projectedMinutes.toFixed(2)),
+      baseline_ppm: Number(c.baseline_ppm.toFixed(4)),
+      opportunity_multiplier: Number(clampedMultiplier.toFixed(4)),
+      projected_points: Number(projectedPoints.toFixed(2)),
+      consensus_line_points: Number(line.line_value.toFixed(2)),
+      edge_vs_line: Number(edge.toFixed(2)),
+      confidence: Number(confidence.toFixed(3)),
+      adjusted_edge: Number(adjustedEdge.toFixed(2)),
+      injury_context: injuryContext,
+      consensus_diagnostics,
+      guardrail_flags: {
+        capped_by_absolute_minutes: rawProjectedMinutes > ABS_MIN_CAP,
+        capped_by_plus8_rule: rawProjectedMinutes > maxFromRelative,
+        usage_multiplier_clamped: rawMultiplier !== clampedMultiplier,
+        starter_absorption_applied: starterAbsorptionApplied,
+        weak_role_match_penalty: weakRoleMatch,
+        near_tip_stale_line_penalty: nearTipStale,
+      },
+    };
+  });
+}
+
+/** Only props snapshots at least this recent count toward consensus (historical rows unchanged). */
+const INJURY_OPPORTUNITY_LINE_FRESHNESS_MINUTES = 120;
+
+export async function getInjuryOpportunityCandidates(limit: number = 25): Promise<InjuryOpportunityCandidate[]> {
+  const upcomingGames = await query<{ game_id: string; home_team_id: string; away_team_id: string; start_time: string | Date }>(
+    `SELECT g.game_id, g.home_team_id, g.away_team_id, g.start_time
+     FROM analytics.games g
+     WHERE g.start_time >= now() - interval '6 hour'
+       AND g.start_time < now() + interval '7 day'
+     ORDER BY g.start_time ASC
+     LIMIT 30`
+  );
+  if (upcomingGames.length === 0) return [];
+
+  const gameIds = upcomingGames.map((g) => g.game_id);
+  const teamIds = Array.from(new Set(upcomingGames.flatMap((g) => [g.home_team_id, g.away_team_id])));
+
+  const injuredRows = await query<{
+    team_id: string;
+    player_id: string;
+    full_name: string;
+    position: string | null;
+    status: string | null;
+    baseline_minutes: number;
+    usage_proxy: number;
+  }>(
+    `WITH l10 AS (
+       SELECT pgl.player_id, pgl.team_id,
+              AVG(CASE WHEN NULLIF(TRIM(COALESCE(pgl.minutes, '')), '') IS NOT NULL
+                THEN NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric
+                ELSE NULL END) AS avg_minutes,
+              AVG(CASE
+                WHEN NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric > 0
+                THEN ((COALESCE(pgl.field_goals_attempted,0) + 0.44 * COALESCE(pgl.free_throws_attempted,0) + COALESCE(pgl.turnovers,0))::numeric
+                  / NULLIF(NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric,0))
+                ELSE NULL END) AS usage_proxy
+       FROM analytics.player_game_logs pgl
+       JOIN analytics.games g ON g.game_id = pgl.game_id
+       WHERE g.status = 'Final'
+         AND pgl.team_id = ANY($1::text[])
+       GROUP BY pgl.player_id, pgl.team_id
+     )
+     SELECT i.team_id, i.player_id, p.full_name, p.position, i.status,
+            COALESCE(l10.avg_minutes, 0)::float AS baseline_minutes,
+            COALESCE(l10.usage_proxy, 0)::float AS usage_proxy
+     FROM analytics.player_injury_status_current i
+     JOIN analytics.players p ON p.player_id = i.player_id
+     LEFT JOIN l10 ON l10.player_id = i.player_id AND l10.team_id = i.team_id
+     WHERE i.team_id = ANY($1::text[])
+       AND (LOWER(COALESCE(i.status, '')) LIKE 'out%' OR LOWER(COALESCE(i.status, '')) LIKE 'doubtful%')`,
+    [teamIds]
+  );
+
+  const injuredByTeam = new Map<string, typeof injuredRows>();
+  for (const row of injuredRows) {
+    if (!injuredByTeam.has(row.team_id)) injuredByTeam.set(row.team_id, []);
+    injuredByTeam.get(row.team_id)!.push(row);
+  }
+
+  const injuredPlayerIds = new Set(injuredRows.map((r) => r.player_id));
+  const candidates = await query<{
+    team_id: string;
+    player_id: string;
+    full_name: string;
+    position: string | null;
+    baseline_minutes: number;
+    baseline_ppm: number;
+    appearance_count: number;
+    minute_stddev: number;
+    consistency_ratio: number;
+  }>(
+    `WITH recent AS (
+       SELECT pgl.player_id, pgl.team_id,
+              NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric AS minutes_num,
+              COALESCE(pgl.points, 0)::numeric AS points_num,
+              ROW_NUMBER() OVER (PARTITION BY pgl.player_id ORDER BY pgl.game_date DESC NULLS LAST) AS rn
+       FROM analytics.player_game_logs pgl
+       JOIN analytics.games g ON g.game_id = pgl.game_id
+       WHERE g.status = 'Final'
+         AND pgl.team_id = ANY($1::text[])
+     ),
+     l10 AS (
+       SELECT r.player_id, r.team_id,
+              AVG(r.minutes_num) FILTER (WHERE r.minutes_num IS NOT NULL) AS avg_minutes,
+              SUM(r.points_num) FILTER (WHERE r.minutes_num IS NOT NULL) / NULLIF(SUM(r.minutes_num) FILTER (WHERE r.minutes_num IS NOT NULL), 0) AS ppm,
+              SUM(CASE WHEN r.minutes_num > 0 THEN 1 ELSE 0 END)::int AS appearances,
+              COALESCE(stddev_samp(r.minutes_num) FILTER (WHERE r.minutes_num IS NOT NULL), 0) AS minute_stddev
+       FROM recent r
+       WHERE r.rn <= 10
+       GROUP BY r.player_id, r.team_id
+     )
+     SELECT l10.team_id, l10.player_id, p.full_name, p.position,
+            COALESCE(l10.avg_minutes, 0)::float AS baseline_minutes,
+            COALESCE(l10.ppm, 0)::float AS baseline_ppm,
+            COALESCE(l10.appearances, 0)::int AS appearance_count,
+            COALESCE(l10.minute_stddev, 0)::float AS minute_stddev,
+            CASE
+              WHEN COALESCE(l10.avg_minutes, 0) <= 0 THEN 0
+              ELSE GREATEST(0, LEAST(1, 1 - (COALESCE(l10.minute_stddev, 0) / NULLIF(l10.avg_minutes, 0))))
+            END::float AS consistency_ratio
+     FROM l10
+     JOIN analytics.players p ON p.player_id = l10.player_id
+     WHERE COALESCE(l10.avg_minutes, 0) BETWEEN 8 AND 22`,
+    [teamIds]
+  );
+
+  const lines = await query<{
+    game_id: string;
+    player_id: string;
+    line_value: number;
+    books: number;
+    oldest_snapshot_at: string | Date;
+    newest_snapshot_at: string | Date;
+    staleness_minutes: number;
+    line_dispersion_stddev: number | null;
+  }>(
+    `WITH fresh AS (
+       SELECT ppc.game_id, ppc.player_id, ppc.sportsbook, ppc.side, ppc.line_value, ppc.snapshot_at
+       FROM analytics.player_props_current ppc
+       WHERE ppc.game_id::text = ANY($1::text[])
+         AND LOWER(COALESCE(ppc.prop_type, '')) = 'points'
+         AND LOWER(COALESCE(ppc.market_type, '')) = 'over_under'
+         AND LOWER(COALESCE(ppc.side, '')) IN ('over', 'under')
+         AND ppc.line_value IS NOT NULL
+         AND ppc.sportsbook IS NOT NULL
+         AND ppc.snapshot_at >= now() - ($2::int * interval '1 minute')
+     ),
+     latest_over AS (
+       SELECT DISTINCT ON (game_id, player_id, sportsbook)
+         game_id, player_id, sportsbook, line_value, snapshot_at AS over_snapshot_at
+       FROM fresh
+       WHERE LOWER(side) = 'over'
+       ORDER BY game_id, player_id, sportsbook, snapshot_at DESC
+     ),
+     paired AS (
+       SELECT lo.game_id, lo.player_id, lo.sportsbook, lo.line_value, lo.over_snapshot_at
+       FROM latest_over lo
+       WHERE EXISTS (
+         SELECT 1 FROM fresh f
+         WHERE f.game_id = lo.game_id
+           AND f.player_id = lo.player_id
+           AND f.sportsbook = lo.sportsbook
+           AND f.line_value = lo.line_value
+           AND LOWER(f.side) = 'under'
+       )
+     ),
+     agg AS (
+       SELECT
+         game_id,
+         player_id,
+         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY line_value)::float AS line_value,
+         COUNT(*)::int AS books,
+         MIN(over_snapshot_at) AS oldest_snapshot_at,
+         MAX(over_snapshot_at) AS newest_snapshot_at,
+         stddev_samp(line_value) AS line_dispersion_stddev
+       FROM paired
+       GROUP BY game_id, player_id
+       HAVING COUNT(*) >= 3
+     )
+     SELECT
+       game_id::text AS game_id,
+       player_id::text AS player_id,
+       line_value,
+       books,
+       oldest_snapshot_at,
+       newest_snapshot_at,
+       (EXTRACT(EPOCH FROM (now() - newest_snapshot_at)) / 60.0)::float AS staleness_minutes,
+       line_dispersion_stddev::float AS line_dispersion_stddev
+     FROM agg`,
+    [gameIds, INJURY_OPPORTUNITY_LINE_FRESHNESS_MINUTES]
+  );
+
+  const linesNormalized: TeamOpportunityInputs['lineRows'] = lines.map((l) => ({
+    player_id: String(l.player_id),
+    line_value: Number(l.line_value),
+    books: Number(l.books),
+    oldest_snapshot_at:
+      l.oldest_snapshot_at instanceof Date
+        ? l.oldest_snapshot_at.toISOString()
+        : String(l.oldest_snapshot_at),
+    newest_snapshot_at:
+      l.newest_snapshot_at instanceof Date
+        ? l.newest_snapshot_at.toISOString()
+        : String(l.newest_snapshot_at),
+    staleness_minutes: Number(l.staleness_minutes),
+    line_dispersion_stddev:
+      l.line_dispersion_stddev != null && Number.isFinite(Number(l.line_dispersion_stddev))
+        ? Number(l.line_dispersion_stddev)
+        : null,
+  }));
+
+  const candidateByTeam = new Map<string, typeof candidates>();
+  for (const c of candidates) {
+    if (injuredPlayerIds.has(c.player_id)) continue;
+    if (!candidateByTeam.has(c.team_id)) candidateByTeam.set(c.team_id, []);
+    candidateByTeam.get(c.team_id)!.push(c);
+  }
+  const linesByGame = new Map<string, TeamOpportunityInputs['lineRows']>();
+  for (let i = 0; i < lines.length; i++) {
+    const gid = String(lines[i].game_id);
+    const row = linesNormalized[i];
+    if (!linesByGame.has(gid)) linesByGame.set(gid, []);
+    linesByGame.get(gid)!.push(row);
+  }
+
+  const all: InjuryOpportunityCandidate[] = [];
+  for (const g of upcomingGames) {
+    const gameLines = linesByGame.get(String(g.game_id)) ?? [];
+    const gameStartIso =
+      g.start_time instanceof Date ? g.start_time.toISOString() : String(g.start_time);
+    for (const teamId of [g.home_team_id, g.away_team_id]) {
+      const teamInjuries = injuredByTeam.get(teamId) ?? [];
+      if (teamInjuries.length === 0) continue;
+      const teamCandidates = candidateByTeam.get(teamId) ?? [];
+      if (teamCandidates.length === 0) continue;
+      all.push(...buildTeamCandidates({
+        gameId: g.game_id,
+        teamId,
+        gameStartTime: gameStartIso,
+        injuredRows: teamInjuries,
+        candidateRows: teamCandidates,
+        lineRows: gameLines,
+      }));
+    }
+  }
+
+  return all
+    .sort((a, b) => b.adjusted_edge - a.adjusted_edge)
+    .slice(0, Math.max(1, limit));
+}

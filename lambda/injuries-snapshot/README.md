@@ -10,14 +10,14 @@ EventBridge (e.g. 2–3x daily) or manual invoke
     -> BDL API: GET /nba/v1/player_injuries (paginated)
     -> raw.injury_pull_runs (audit log)
     -> raw.player_injuries (append-only)
-    -> analytics.player_injury_status_current (upsert — latest per player)
+    -> analytics.player_injury_status_current (upsert + remove missing from latest pull)
     -> analytics.player_injury_status_history (append — only on meaningful change)
 ```
 
 **Grain:**
 - **raw.injury_pull_runs:** one row per ingestion run.
 - **raw.player_injuries:** one row per provider injury row per pull.
-- **analytics.player_injury_status_current:** one row per player (latest known status).
+- **analytics.player_injury_status_current:** strict mirror of latest pull for tracked players (rows are upserted for present players and removed when absent).
 - **analytics.player_injury_status_history:** one row per meaningful injury state change (status, description, return_date_raw, team_id).
 
 ## Environment Variables
@@ -56,6 +56,8 @@ Produces `lambda/injuries-snapshot/injuries-snapshot.zip` for upload.
 ## EventBridge schedule (suggested)
 
 Run 2–3x daily so injury reports stay current (e.g. morning, midday, pre-game).
+
+Because current injury rows are removed when missing from a pull, frequent runs help recover quickly from provider-side temporary omissions.
 
 - **UTC example:** `cron(0 13,18,22 * * ? *)` (13:00, 18:00, 22:00 UTC ≈ 8am, 1pm, 6pm ET).
 - In Terraform: set `injuries_enable_schedule = true` and `injuries_schedule_cron` to the desired expression.

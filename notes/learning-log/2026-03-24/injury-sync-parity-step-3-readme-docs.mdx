@@ -1,0 +1,33 @@
+## Context
+The ingestion behavior changed from pure upsert semantics to strict mirror semantics for current injuries.
+
+## Goal
+Document the new stale-row cleanup behavior so operations and downstream consumers understand expected results.
+
+## Files Changed
+- `lambda/injuries-snapshot/README.md`
+
+## Implementation Notes (key logic explained)
+- Updated pipeline description to mention current table now does upsert plus delete-on-missing.
+- Clarified grain definition for `analytics.player_injury_status_current` as strict latest-pull mirror.
+- Added scheduling note: frequent pulls reduce impact of temporary provider omissions.
+
+## Key Decisions (and alternatives considered)
+- Decision: document behavior directly in the Lambda README where the workflow is operated.
+- Alternative considered: document only in notes, but that increases risk of drift from actual runtime docs.
+
+## Assumptions
+- Team uses README as source-of-truth for this Lambda’s runtime behavior.
+
+## Failure Modes
+- If implementation changes and README is not updated later, docs may become inaccurate.
+
+## How to Test (commands + steps)
+1. Open `lambda/injuries-snapshot/README.md`.
+2. Confirm pipeline line includes removal behavior.
+3. Confirm grain section states strict mirror semantics.
+4. Confirm EventBridge section includes temporary-omission caveat.
+
+## Next Steps
+- Run script-level verification and optional local lambda run to validate row-removal counts.
+- Keep monitoring `removed` metric trend in logs.

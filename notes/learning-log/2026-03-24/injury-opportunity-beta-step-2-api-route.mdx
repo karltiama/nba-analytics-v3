@@ -1,0 +1,39 @@
+## Context
+The core Injury Opportunity Engine beta query needs an API surface so we can inspect ranked candidates and validate realism quickly.
+
+## Goal
+Expose a dedicated endpoint for guarded injury-opportunity candidates.
+
+## Files Changed
+- `app/api/betting/players/opportunity/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added `GET /api/betting/players/opportunity`.
+- Reads optional `limit` param with safe clamp (`1..100`, default `25`).
+- Calls `getInjuryOpportunityCandidates(limit)` and returns:
+  - engine label
+  - candidates payload
+  - metadata (count, ranking, beta note)
+- Includes robust error handling and returns HTTP 500 on failures.
+
+## Key Decisions (and alternatives considered)
+- Dedicated route chosen over extending existing player props route to keep concerns isolated.
+- Kept response shape close to existing API patterns with `meta` and explicit engine identity.
+
+## Assumptions
+- Consumers can call this beta endpoint independently without UI coupling changes yet.
+
+## Failure Modes
+- If upstream data (injuries/props/games) is sparse, endpoint can return empty list.
+- Query/runtime errors return 500 with diagnostic message.
+
+## How to Test (commands + steps)
+1. Run app: `npm run dev`
+2. Request:
+   - `GET /api/betting/players/opportunity`
+   - `GET /api/betting/players/opportunity?limit=10`
+3. Confirm response includes engine label, candidates array, and meta fields.
+
+## Next Steps
+- Run realism checks on current slate and inspect top candidates for plausibility.
+- Document tuning assumptions after first validation pass.

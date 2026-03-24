@@ -186,7 +186,9 @@ async function insertRawSnapshot(
 // TRANSFORM: raw -> analytics (current + history on meaningful change)
 // ============================================
 
-async function transformToAnalytics(pullRunId: number): Promise<{ current: number; history: number }> {
+async function transformToAnalytics(
+  pullRunId: number
+): Promise<{ current: number; history: number; removed: number }> {
   // Build provider_team_id -> analytics team_id map (same logic as transform-raw-to-analytics)
   const teamMapRes = await pool.query(
     `SELECT r.id as raw_id, t.team_id
@@ -216,9 +218,11 @@ async function transformToAnalytics(pullRunId: number): Promise<{ current: numbe
 
   let currentCount = 0;
   let historyCount = 0;
+  const currentPlayerIds = new Set<string>();
 
   for (const row of rawRows.rows) {
     const playerId = String(row.provider_player_id);
+    currentPlayerIds.add(playerId);
     const teamId = mapTeamId(row.provider_team_id ?? null);
     const status = row.status ?? null;
     const description = row.description ?? null;
@@ -277,7 +281,27 @@ async function transformToAnalytics(pullRunId: number): Promise<{ current: numbe
     currentCount += 1;
   }
 
-  return { current: currentCount, history: historyCount };
+  const latestPlayerIds = Array.from(currentPlayerIds);
+  let removedCount = 0;
+  if (latestPlayerIds.length > 0) {
+    const removed = await pool.query(
+      `DELETE FROM analytics.player_injury_status_current c
+       WHERE c.player_id IN (SELECT p.player_id FROM analytics.players p)
+         AND c.player_id != ALL($1::text[])
+       RETURNING c.player_id`,
+      [latestPlayerIds]
+    );
+    removedCount = removed.rowCount ?? 0;
+  } else {
+    const removed = await pool.query(
+      `DELETE FROM analytics.player_injury_status_current c
+       WHERE c.player_id IN (SELECT p.player_id FROM analytics.players p)
+       RETURNING c.player_id`
+    );
+    removedCount = removed.rowCount ?? 0;
+  }
+
+  return { current: currentCount, history: historyCount, removed: removedCount };
 }
 
 // ============================================
@@ -307,7 +331,14 @@ export const handler = async () => {
     console.log('Stored', stored, '/', rows.length, 'raw snapshots');
 
     const transformResult = await transformToAnalytics(pullRunId);
-    console.log('Transform — current:', transformResult.current, 'history:', transformResult.history);
+    console.log(
+      'Transform — current:',
+      transformResult.current,
+      'history:',
+      transformResult.history,
+      'removed:',
+      transformResult.removed
+    );
 
     await completePullRun(pullRunId, rows.length, stored, 'success', {
       transform: transformResult,

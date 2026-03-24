@@ -38,6 +38,29 @@ async function main() {
   );
   console.log('Sample current rows:', sample.rows);
 
+  const staleCurrent = await pool.query(
+    `WITH latest_run AS (
+       SELECT max(pull_run_id) AS pull_run_id
+       FROM raw.injury_pull_runs
+       WHERE status = 'success'
+     ),
+     latest_players AS (
+       SELECT DISTINCT provider_player_id::text AS player_id
+       FROM raw.player_injuries
+       WHERE pull_run_id = (SELECT pull_run_id FROM latest_run)
+     )
+     SELECT c.player_id, c.team_id, c.status, c.description
+     FROM analytics.player_injury_status_current c
+     LEFT JOIN latest_players lp ON lp.player_id = c.player_id
+     WHERE lp.player_id IS NULL
+     ORDER BY c.player_id
+     LIMIT 20`
+  );
+  console.log('Potential stale current rows missing from latest successful pull:', staleCurrent.rows.length);
+  if (staleCurrent.rows.length > 0) {
+    console.log('Sample stale rows (first 20):', staleCurrent.rows);
+  }
+
   await pool.end();
 }
 

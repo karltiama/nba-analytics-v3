@@ -1,0 +1,48 @@
+## Context
+We need an MVP Injury Opportunity Engine that is conservative, explainable, and focused on low-minute players impacted by injuries.
+
+## Goal
+Define the beta response contract and implement a guarded core candidate generator in one query/service path.
+
+## Files Changed
+- `lib/betting/queries.ts`
+
+## Implementation Notes (key logic explained)
+- Added `InjuryOpportunityCandidate` contract and supporting types for guardrail flags + injury context.
+- Added `getInjuryOpportunityCandidates(limit)` with conservative defaults:
+  - upcoming games window
+  - low-minute candidate filter (8-22 baseline minutes)
+  - exclude injured players (Out/Doubtful set)
+  - consensus line baseline from `analytics.player_props_current` points over/under
+- Added strict guardrails:
+  - normalized minute redistribution
+  - starter absorption when injured baseline minutes > 30 (60% redistributable)
+  - minute caps (`<=34` and `<= baseline + 8`)
+  - clamped opportunity multiplier (`0.90` to `1.15`)
+  - anti-double-counting (reduce usage bump when minute gain is large)
+- Added confidence penalties/bonus and final `adjusted_edge = edge_vs_line * confidence`.
+
+## Key Decisions (and alternatives considered)
+- Chose consensus points line (median across books, min 3 books) for stability.
+- Used penalty-first confidence scoring to reduce false positives.
+- Kept role matching bucketed (`G/F/C/OTHER`) for MVP simplicity instead of complex archetype modeling.
+
+## Assumptions
+- `analytics.player_props_current` has sufficient points over/under coverage for upcoming games.
+- `analytics.player_game_logs.minutes` can be parsed with the existing numeric cleanup pattern.
+- `analytics.player_injury_status_current` accurately reflects current injuries.
+
+## Failure Modes
+- Sparse prop coverage may drop otherwise valid candidates.
+- Position strings can be noisy, weakening role-match quality.
+- Teams with unclear injury statuses can still produce low-confidence candidates.
+
+## How to Test (commands + steps)
+1. Hit the upcoming API route once wired to this query function.
+2. Verify outputs include required fields + guardrail flags.
+3. Spot-check that no candidate exceeds `34` minutes or `baseline + 8`.
+4. Confirm minute redistribution per team does not exceed redistributable lost minutes.
+
+## Next Steps
+- Expose endpoint response in a dedicated beta route.
+- Run sanity checks on a live slate and tune thresholds only if outputs look unrealistic.

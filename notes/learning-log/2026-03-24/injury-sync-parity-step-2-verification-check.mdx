@@ -1,0 +1,36 @@
+## Context
+After adding stale-row cleanup in the transform, we need a quick verification signal that current injuries align with the latest successful pull.
+
+## Goal
+Add a parity check to the verification script that reports current-table rows missing from the latest provider pull.
+
+## Files Changed
+- `scripts/verify-injury-tables.ts`
+
+## Implementation Notes (key logic explained)
+- Added a CTE-based query:
+  - `latest_run`: most recent successful pull ID.
+  - `latest_players`: distinct player IDs from that pull.
+  - left join against `analytics.player_injury_status_current` and filter `lp.player_id IS NULL`.
+- Logs count plus up to 20 sample stale rows.
+
+## Key Decisions (and alternatives considered)
+- Decision: validate against latest *successful* pull only.
+- Alternative considered: use latest pull regardless of status, but failed runs can create false stale alerts.
+
+## Assumptions
+- Successful pull entries in `raw.injury_pull_runs` are reliable checkpoints.
+- Player IDs are stored consistently as text-compatible values between raw and analytics.
+
+## Failure Modes
+- If no successful pull exists, result interpretation is not meaningful.
+- A provider feed glitch could produce temporary stale detections.
+
+## How to Test (commands + steps)
+1. Run: `npx tsx scripts/verify-injury-tables.ts`
+2. Check output line: `Potential stale current rows missing from latest successful pull: N`.
+3. If `N > 0`, inspect printed sample rows and compare with latest raw pull.
+
+## Next Steps
+- Update Lambda README to document strict mirror semantics and cleanup behavior.
+- Run end-to-end lambda + verification in sequence.
