@@ -30,6 +30,13 @@ export interface PlayerPropRow {
   ev?: number | null;
   projection?: number | null;
   snapshotAt: string;
+  /** Track B.1 / EV ladder (optional; present when API returns `with_ev=1`). */
+  confidenceTier?: 'high' | 'medium' | 'low' | null;
+  isComboProp?: boolean;
+  modelProbabilityTrackBRaw?: number | null;
+  modelProbabilityTrackBCalibrated?: number | null;
+  anchorDeltaAbsTrackB?: number | null;
+  modelTrackVersion?: string | null;
 }
 
 interface PlayerPropSelectorSidebarProps {

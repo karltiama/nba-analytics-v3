@@ -3,6 +3,14 @@
  */
 
 import { getAnalyticsPlayerSeasonStats, getAnalyticsPlayerGames } from '@/lib/players/analytics-queries';
+import type { GameLog } from '@/lib/players/types';
+import {
+  buildStabilitySignals,
+  neutralStabilitySignals,
+  type PropStatSeriesKey,
+  type StabilitySignals,
+  isComboPropType,
+} from '@/lib/betting/track-b1-policy';
 
 export interface ModelInputStats {
   pts: number;
@@ -20,10 +28,47 @@ export interface ModelInputStatsExt {
   std10: ModelInputStats;
 }
 
+export interface PropModelStabilityMeta {
+  /** Precomputed stability per stat series (aligned with `ext.std10` keys). */
+  signalsByStat: Record<PropStatSeriesKey, StabilitySignals>;
+}
+
 export interface PlayerPropModelInputs {
   last10: ModelInputStats;
   season: ModelInputStats;
   ext: ModelInputStatsExt;
+  meta: PropModelStabilityMeta;
+}
+
+const STABILITY_STAT_KEYS: PropStatSeriesKey[] = [
+  'pts',
+  'reb',
+  'ast',
+  'threes',
+  'pra',
+  'pa',
+  'pr',
+  'ra',
+];
+
+function buildMetaFromGames(games: GameLog[]): PropModelStabilityMeta {
+  const signalsByStat = {} as Record<PropStatSeriesKey, StabilitySignals>;
+  for (const k of STABILITY_STAT_KEYS) {
+    signalsByStat[k] = buildStabilitySignals(games, k);
+  }
+  return { signalsByStat };
+}
+
+function neutralMeta(): PropModelStabilityMeta {
+  const n = neutralStabilitySignals();
+  const signalsByStat = {} as Record<PropStatSeriesKey, StabilitySignals>;
+  for (const k of STABILITY_STAT_KEYS) signalsByStat[k] = { ...n };
+  return { signalsByStat };
+}
+
+/** Combo flag for a prop_type string (re-export for callers that avoid importing policy). */
+export function getComboPropInfo(propType: string): { isCombo: boolean } {
+  return { isCombo: isComboPropType(propType) };
 }
 
 function avg(values: (number | null)[]): number {
@@ -81,6 +126,7 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
         last5: season,
         std10: { pts: 0, reb: 0, ast: 0, threes: 0, pra: 0, pa: 0, pr: 0, ra: 0 },
       },
+      meta: neutralMeta(),
     };
   }
 
@@ -128,7 +174,7 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
     ra: stddev(games.slice(0, 10).map((g) => (g.rebounds ?? 0) + (g.assists ?? 0))),
   };
 
-  return { last10, season, ext: { last5, std10 } };
+  return { last10, season, ext: { last5, std10 }, meta: buildMetaFromGames(games) };
 }
 
 /** Map prop_type (and common aliases) to stat key. Handles "points", "pts", "PRA", "pra", etc. */
@@ -171,14 +217,24 @@ function inferStatFromPropType(key: string): 'pts' | 'reb' | 'ast' | 'threes' | 
 export function getStatsForPropType(
   inputs: PlayerPropModelInputs,
   propType: string
-): { last10Avg: number; seasonAvg: number; last5Avg: number; observedStdDev: number } | null {
+): {
+  last10Avg: number;
+  seasonAvg: number;
+  last5Avg: number;
+  observedStdDev: number;
+  stat: PropStatSeriesKey;
+  stability: StabilitySignals;
+} | null {
   const key = (propType ?? '').toLowerCase().trim();
   const stat = PROP_TO_STAT[key] ?? inferStatFromPropType(key);
   if (!stat) return null;
+  const stability = inputs.meta.signalsByStat[stat] ?? neutralStabilitySignals();
   return {
     last10Avg: inputs.last10[stat],
     seasonAvg: inputs.season[stat],
     last5Avg: inputs.ext.last5[stat],
     observedStdDev: inputs.ext.std10[stat],
+    stat,
+    stability,
   };
 }

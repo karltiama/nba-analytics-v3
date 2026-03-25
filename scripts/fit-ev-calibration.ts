@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { writeFileSync } from 'fs';
+import { join } from 'path';
 import { Pool } from 'pg';
 import {
   computePlayerPropProbability,
@@ -44,6 +45,15 @@ function statValue(r: Row): number | null {
   if (t === 'threes') return r.three_pointers_made;
   if (t === 'points_rebounds_assists' || t === 'pra') {
     return (r.points ?? 0) + (r.rebounds ?? 0) + (r.assists ?? 0);
+  }
+  if (t === 'points_assists' || t === 'pa') {
+    return (r.points ?? 0) + (r.assists ?? 0);
+  }
+  if (t === 'points_rebounds' || t === 'pr') {
+    return (r.points ?? 0) + (r.rebounds ?? 0);
+  }
+  if (t === 'rebounds_assists' || t === 'ra') {
+    return (r.rebounds ?? 0) + (r.assists ?? 0);
   }
   return null;
 }
@@ -97,6 +107,9 @@ async function main() {
           when p.prop_type in ('assists','ast') then gl2.assists::float8
           when p.prop_type = 'threes' then gl2.three_pointers_made::float8
           when p.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when p.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) filter (where rn2 <= 10) as last10_avg,
         avg(case
@@ -105,6 +118,9 @@ async function main() {
           when p.prop_type in ('assists','ast') then gl2.assists::float8
           when p.prop_type = 'threes' then gl2.three_pointers_made::float8
           when p.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when p.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) filter (where rn2 <= 5) as last5_avg,
         avg(case
@@ -113,6 +129,9 @@ async function main() {
           when p.prop_type in ('assists','ast') then gl2.assists::float8
           when p.prop_type = 'threes' then gl2.three_pointers_made::float8
           when p.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when p.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) as season_avg,
         stddev_samp(case
@@ -121,6 +140,9 @@ async function main() {
           when p.prop_type in ('assists','ast') then gl2.assists::float8
           when p.prop_type = 'threes' then gl2.three_pointers_made::float8
           when p.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when p.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when p.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) filter (where rn2 <= 10) as stddev10
       from analytics.player_props_current p
@@ -184,7 +206,7 @@ async function main() {
     tracks: { trackA, trackB },
   };
   writeFileSync(
-    'C:/Users/tiama/Desktop/Coding/nba-analytics-v3/lib/betting/ev-calibration-artifacts.json',
+    join(process.cwd(), 'lib/betting/ev-calibration-artifacts.json'),
     JSON.stringify(output, null, 2) + '\n',
     'utf-8'
   );

@@ -233,6 +233,7 @@ export async function GET(request: NextRequest) {
         selectedTrack
       );
 
+      const cal = getCalibrationVersion();
       return {
         gameId: r.game_id,
         playerId: r.player_id,
@@ -246,17 +247,9 @@ export async function GET(request: NextRequest) {
         oddsDecimal: r.odds_decimal != null ? Number(r.odds_decimal) : null,
         impliedProbability: offerP != null && Number.isFinite(offerP) ? offerP : null,
         snapshotAt: r.snapshot_at,
-        modelProbability: evFields.modelProbability,
-        ev: evFields.ev,
-        projection: evFields.projection,
-        modelProbabilityTrackA: evFields.modelProbabilityTrackA,
-        evTrackA: evFields.evTrackA,
-        projectionTrackA: evFields.projectionTrackA,
-        modelProbabilityTrackB: evFields.modelProbabilityTrackB,
-        evTrackB: evFields.evTrackB,
-        projectionTrackB: evFields.projectionTrackB,
+        ...evFields,
         evSelectedTrack: selectedTrack,
-        calibrationVersion: getCalibrationVersion(),
+        calibrationVersion: cal,
       };
     });
 

@@ -86,6 +86,9 @@ async function main() {
           when c.prop_type in ('assists','ast') then gl2.assists::float8
           when c.prop_type = 'threes' then gl2.three_pointers_made::float8
           when c.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when c.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) filter (where rn2 <= 10) as last10_avg,
         avg(case
@@ -94,6 +97,9 @@ async function main() {
           when c.prop_type in ('assists','ast') then gl2.assists::float8
           when c.prop_type = 'threes' then gl2.three_pointers_made::float8
           when c.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when c.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) filter (where rn2 <= 5) as last5_avg,
         avg(case
@@ -102,6 +108,9 @@ async function main() {
           when c.prop_type in ('assists','ast') then gl2.assists::float8
           when c.prop_type = 'threes' then gl2.three_pointers_made::float8
           when c.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when c.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) as season_avg,
         stddev_samp(case
@@ -110,6 +119,9 @@ async function main() {
           when c.prop_type in ('assists','ast') then gl2.assists::float8
           when c.prop_type = 'threes' then gl2.three_pointers_made::float8
           when c.prop_type in ('points_rebounds_assists','pra') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_assists','pa') then (coalesce(gl2.points,0)+coalesce(gl2.assists,0))::float8
+          when c.prop_type in ('points_rebounds','pr') then (coalesce(gl2.points,0)+coalesce(gl2.rebounds,0))::float8
+          when c.prop_type in ('rebounds_assists','ra') then (coalesce(gl2.rebounds,0)+coalesce(gl2.assists,0))::float8
           else null
         end) filter (where rn2 <= 10) as stddev10
       from chosen c
@@ -133,6 +145,9 @@ async function main() {
         when prop_type in ('assists','ast') then assists::float8
         when prop_type = 'threes' then three_pointers_made::float8
         when prop_type in ('points_rebounds_assists','pra') then (coalesce(points,0)+coalesce(rebounds,0)+coalesce(assists,0))::float8
+        when prop_type in ('points_assists','pa') then (coalesce(points,0)+coalesce(assists,0))::float8
+        when prop_type in ('points_rebounds','pr') then (coalesce(points,0)+coalesce(rebounds,0))::float8
+        when prop_type in ('rebounds_assists','ra') then (coalesce(rebounds,0)+coalesce(assists,0))::float8
         else null
       end as stat_value,
       coalesce(last10_avg, 0) as last10_avg,

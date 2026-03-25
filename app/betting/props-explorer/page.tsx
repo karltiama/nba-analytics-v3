@@ -27,6 +27,8 @@ type ExplorerRow = {
   modelProbabilityTrackB: number | null;
   evSelectedTrack: string;
   calibrationVersion: string;
+  confidenceTier?: 'high' | 'medium' | 'low' | null;
+  anchorDeltaAbsTrackB?: number | null;
 };
 
 type ExplorerMeta = {
@@ -377,6 +379,9 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium">Book</th>
                 <th className="py-2 px-2 font-medium text-right">Odds</th>
                 <th className="py-2 px-2 font-medium text-right">Implied</th>
+                <th className="py-2 px-2 font-medium text-right" title="Track B.1 confidence tier">
+                  Conf
+                </th>
                 <th className="py-2 px-2 font-medium text-right">Model</th>
                 <th className="py-2 px-2 font-medium text-right">EV</th>
                 <th className="py-2 px-2 font-medium text-right">EV A</th>
@@ -388,13 +393,13 @@ export default function PropsExplorerPage(props: PageProps) {
             <tbody>
               {loading && rows.length === 0 ? (
                 <tr>
-                  <td colSpan={14} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={15} className="py-8 text-center text-muted-foreground">
                     Loading…
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={14} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={15} className="py-8 text-center text-muted-foreground">
                     No rows. Adjust filters or date.
                   </td>
                 </tr>
@@ -435,6 +440,16 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="py-1.5 px-2 text-right font-mono">
                       {formatPct(r.impliedProbability)}
+                    </td>
+                    <td
+                      className="py-1.5 px-2 text-right font-mono text-muted-foreground capitalize"
+                      title={
+                        r.anchorDeltaAbsTrackB != null && Number.isFinite(r.anchorDeltaAbsTrackB)
+                          ? `Anchor |Δ| vs calibrated: ${(r.anchorDeltaAbsTrackB * 100).toFixed(2)}%`
+                          : undefined
+                      }
+                    >
+                      {r.confidenceTier ?? '—'}
                     </td>
                     <td className="py-1.5 px-2 text-right font-mono">
                       {formatPct(r.modelProbability)}

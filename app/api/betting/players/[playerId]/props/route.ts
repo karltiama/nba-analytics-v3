@@ -5,6 +5,18 @@ import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
 import { computePropEvFields } from '@/lib/betting/player-prop-ev-row';
 
+const EV_LEGACY_NULLS = {
+  modelProbability: null as number | null,
+  ev: null as number | null,
+  projection: null as number | null,
+  modelProbabilityTrackA: null as number | null,
+  evTrackA: null as number | null,
+  projectionTrackA: null as number | null,
+  modelProbabilityTrackB: null as number | null,
+  evTrackB: null as number | null,
+  projectionTrackB: null as number | null,
+};
+
 type PropRow = {
   game_id: number;
   player_id: number;
@@ -162,38 +174,23 @@ export async function GET(
           ? consensusP - offerFairP
           : null;
 
-      let modelProbability: number | null = null;
-      let ev: number | null = null;
-      let projection: number | null = null;
-      let modelProbabilityTrackA: number | null = null;
-      let evTrackA: number | null = null;
-      let projectionTrackA: number | null = null;
-      let modelProbabilityTrackB: number | null = null;
-      let evTrackB: number | null = null;
-      let projectionTrackB: number | null = null;
-      if (withEv && modelInputs && isOverUnder) {
-        const evFields = computePropEvFields(
-          {
-            prop_type: r.prop_type,
-            market_type: r.market_type,
-            side: r.side,
-            line_value: r.line_value,
-            odds_american: r.odds_american,
-            odds_decimal: r.odds_decimal,
-          },
-          modelInputs,
-          selectedTrack
-        );
-        modelProbability = evFields.modelProbability;
-        ev = evFields.ev;
-        projection = evFields.projection;
-        modelProbabilityTrackA = evFields.modelProbabilityTrackA;
-        evTrackA = evFields.evTrackA;
-        projectionTrackA = evFields.projectionTrackA;
-        modelProbabilityTrackB = evFields.modelProbabilityTrackB;
-        evTrackB = evFields.evTrackB;
-        projectionTrackB = evFields.projectionTrackB;
-      }
+      const evFields = withEv
+        ? computePropEvFields(
+            {
+              prop_type: r.prop_type,
+              market_type: r.market_type,
+              side: r.side,
+              line_value: r.line_value,
+              odds_american: r.odds_american,
+              odds_decimal: r.odds_decimal,
+            },
+            modelInputs,
+            selectedTrack
+          )
+        : null;
+
+      const cal = getCalibrationVersion();
+      const evPayload = evFields ?? EV_LEGACY_NULLS;
 
       return {
         gameId: r.game_id,
@@ -210,17 +207,9 @@ export async function GET(
         snapshotAt: r.snapshot_at,
         consensusProbability: consensusP,
         edgeProbability: edgeP,
-        modelProbability: modelProbability ?? null,
-        ev: ev != null && Number.isFinite(ev) ? ev : null,
-        projection,
-        modelProbabilityTrackA: modelProbabilityTrackA != null && Number.isFinite(modelProbabilityTrackA) ? modelProbabilityTrackA : null,
-        evTrackA: evTrackA != null && Number.isFinite(evTrackA) ? evTrackA : null,
-        projectionTrackA: projectionTrackA != null && Number.isFinite(projectionTrackA) ? projectionTrackA : null,
-        modelProbabilityTrackB: modelProbabilityTrackB != null && Number.isFinite(modelProbabilityTrackB) ? modelProbabilityTrackB : null,
-        evTrackB: evTrackB != null && Number.isFinite(evTrackB) ? evTrackB : null,
-        projectionTrackB: projectionTrackB != null && Number.isFinite(projectionTrackB) ? projectionTrackB : null,
+        ...evPayload,
         evSelectedTrack: selectedTrack,
-        calibrationVersion: getCalibrationVersion(),
+        calibrationVersion: cal,
       };
     });
 

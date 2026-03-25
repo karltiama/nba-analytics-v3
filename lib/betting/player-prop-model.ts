@@ -3,6 +3,14 @@
  * No ML; projection = 0.7 * L10 + 0.3 * season; fixed std by prop type; Normal CDF.
  */
 
+import type { StabilitySignals } from '@/lib/betting/track-b1-policy';
+import {
+  computeEffectiveStdDevTrackB1,
+  computeL5BlendWeight,
+  isComboPropType,
+  neutralStabilitySignals,
+} from '@/lib/betting/track-b1-policy';
+
 /**
  * Projection = 0.7 * last10Avg + 0.3 * seasonAvg
  */
@@ -77,6 +85,15 @@ export interface PlayerPropProbabilityInput {
 export interface PlayerPropProbabilityOutput {
   projection: number;
   probability: number;
+  /** Track B.1 diagnostics (present when upgraded / B.1 path). */
+  sigmaEffective?: number;
+  reliabilityShrinkSummary?: string;
+  comboSigmaMultiplierApplied?: number;
+}
+
+export interface TrackB1Context {
+  signals: StabilitySignals;
+  isCombo: boolean;
 }
 
 /**
@@ -93,26 +110,41 @@ export function computePlayerPropProbability(
 }
 
 /**
- * Dynamic sigma upgrade:
- * - Projection leans slightly more to recent form using last5 if available.
- * - Sigma blends observed short-term volatility with prop defaults.
+ * Track B.1: stability-weighted L5 blend, effective σ with reliability shrink + combo multiplier.
  */
-export function computeUpgradedPlayerPropProbability(
-  input: PlayerPropProbabilityInput
+export function computeTrackB1PlayerPropProbability(
+  input: PlayerPropProbabilityInput,
+  context: TrackB1Context
 ): PlayerPropProbabilityOutput {
   const { last10Avg, seasonAvg, line, propType, last5Avg, observedStdDev } = input;
+  const { signals, isCombo } = context;
+  const wL5 = computeL5BlendWeight(signals, isCombo);
   const baseProjection = computeProjection(last10Avg, seasonAvg);
   const projection = Number.isFinite(last5Avg as number)
-    ? 0.55 * baseProjection + 0.45 * (last5Avg as number)
+    ? (1 - wL5) * baseProjection + wL5 * (last5Avg as number)
     : baseProjection;
 
   const fallbackStd = getStdDev(propType);
-  const obsStd = observedStdDev != null && Number.isFinite(observedStdDev) && observedStdDev > 0
-    ? observedStdDev
-    : null;
-  const blendedStd = obsStd != null ? 0.65 * obsStd + 0.35 * fallbackStd : fallbackStd;
-  // Guardrail: do not allow dynamic sigma to collapse too low vs the prop fallback variance.
-  const stdDev = Math.max(0.7 * fallbackStd, blendedStd);
+  const { stdDev, comboSigmaMultiplierApplied, reliabilityShrinkSummary } =
+    computeEffectiveStdDevTrackB1(fallbackStd, observedStdDev, signals, isCombo);
   const probability = computeProbability(projection, line, stdDev);
-  return { projection, probability };
+  return {
+    projection,
+    probability,
+    sigmaEffective: stdDev,
+    reliabilityShrinkSummary,
+    comboSigmaMultiplierApplied,
+  };
+}
+
+/**
+ * Dynamic sigma upgrade (Track B.1). Pass `stabilitySignals` from game logs; omit for neutral offline defaults.
+ */
+export function computeUpgradedPlayerPropProbability(
+  input: PlayerPropProbabilityInput,
+  stabilitySignals?: StabilitySignals | null
+): PlayerPropProbabilityOutput {
+  const signals = stabilitySignals ?? neutralStabilitySignals();
+  const isCombo = isComboPropType(input.propType);
+  return computeTrackB1PlayerPropProbability(input, { signals, isCombo });
 }
