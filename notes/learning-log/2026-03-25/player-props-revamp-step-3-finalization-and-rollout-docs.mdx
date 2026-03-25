@@ -1,0 +1,41 @@
+## Context
+Fan-out resources were added, but run-level completion and rollout guidance still needed to make operations reliable and understandable.
+
+## Goal
+Add pull-run finalization when all game jobs complete and document concrete rollout steps for production cutover.
+
+## Files Changed
+- `lambda/player-props-snapshot/src/bulk-writers.ts`
+- `lambda/player-props-snapshot/worker.ts`
+- `infra/README.md`
+
+## Implementation Notes (key logic explained)
+- Added `finalizePullRunIfComplete()` to aggregate per-game status from `raw.player_prop_game_runs`.
+- The function updates `raw.player_prop_pull_runs` to `success` or `error` once there are no `started` game rows left.
+- Worker now calls finalization after each game success/failure update.
+- Updated infra docs to explain the new controller/worker queue model and phased rollout checklist.
+
+## Key Decisions (and alternatives considered)
+- Chose database-driven completion detection instead of external orchestration state because per-game rows already exist and are durable.
+- Kept finalization logic idempotent so repeated worker retries cannot corrupt run completion.
+
+## Assumptions
+- `raw.player_prop_game_runs` records are created by controller before workers start.
+- Pull runs are unique and non-overlapping per controller invocation.
+
+## Failure Modes
+- If controller fails before creating all game rows, run finalization may never trigger.
+- If DB writes fail for status updates, pull run could remain `started`.
+- If workers are throttled heavily, run completion can lag despite successful fetches.
+
+## How to Test (commands + steps)
+1. Trigger controller for one date.
+2. Verify game rows are created in `raw.player_prop_game_runs`.
+3. Let workers process all messages.
+4. Confirm pull run transitions from `started` to `success` or `error`.
+5. Validate `infra/README.md` rollout steps against an actual deploy.
+
+## Next Steps
+- Add a cleanup/repair job for stale `started` runs older than an SLA window.
+- Attach SNS/Slack actions to CloudWatch alarms.
+- Add dashboard panels for per-run success ratio and lag-to-current-table.

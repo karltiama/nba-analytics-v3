@@ -1,0 +1,33 @@
+## Context
+Dual-track EV diagnostics require a safe mechanism to choose which EV track powers the default API field.
+
+## Goal
+Add an env-driven ranking selector with stable defaults.
+
+## Files Changed
+- `lib/betting/ev-selection-policy.ts`
+
+## Implementation Notes (key logic explained)
+- Added `resolveEvTrack()` that maps `EV_RANKING_TRACK` to:
+  - `baseline`
+  - `trackA_calibrated`
+  - `trackB_calibrated`
+- Default remains `baseline` for safety.
+
+## Key Decisions (and alternatives considered)
+- Used env var selector to avoid runtime DB/config coupling.
+- Added alias handling (`tracka`, `trackb`) to reduce operator error.
+
+## Assumptions
+- Deployment environment can set `EV_RANKING_TRACK` per environment.
+
+## Failure Modes
+- Mis-typed env values silently fall back to baseline (intentional safe behavior).
+
+## How to Test (commands + steps)
+1. Set `EV_RANKING_TRACK=baseline`, hit props API, confirm baseline `ev` stays active.
+2. Set `EV_RANKING_TRACK=trackA_calibrated`, confirm `ev` follows Track A values.
+3. Set `EV_RANKING_TRACK=trackB_calibrated`, confirm `ev` follows Track B values.
+
+## Next Steps
+- Expose both track diagnostics in API payload for side-by-side validation.

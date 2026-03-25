@@ -61,6 +61,8 @@ export interface PlayerPropProbabilityInput {
   seasonAvg: number;
   line: number;
   propType: string;
+  last5Avg?: number;
+  observedStdDev?: number | null;
 }
 
 export interface PlayerPropProbabilityOutput {
@@ -77,6 +79,29 @@ export function computePlayerPropProbability(
   const { last10Avg, seasonAvg, line, propType } = input;
   const projection = computeProjection(last10Avg, seasonAvg);
   const stdDev = getStdDev(propType);
+  const probability = computeProbability(projection, line, stdDev);
+  return { projection, probability };
+}
+
+/**
+ * Dynamic sigma upgrade:
+ * - Projection leans slightly more to recent form using last5 if available.
+ * - Sigma blends observed short-term volatility with prop defaults.
+ */
+export function computeUpgradedPlayerPropProbability(
+  input: PlayerPropProbabilityInput
+): PlayerPropProbabilityOutput {
+  const { last10Avg, seasonAvg, line, propType, last5Avg, observedStdDev } = input;
+  const baseProjection = computeProjection(last10Avg, seasonAvg);
+  const projection = Number.isFinite(last5Avg as number)
+    ? 0.55 * baseProjection + 0.45 * (last5Avg as number)
+    : baseProjection;
+
+  const fallbackStd = getStdDev(propType);
+  const obsStd = observedStdDev != null && Number.isFinite(observedStdDev) && observedStdDev > 0
+    ? observedStdDev
+    : null;
+  const stdDev = obsStd != null ? 0.65 * obsStd + 0.35 * fallbackStd : fallbackStd;
   const probability = computeProbability(projection, line, stdDev);
   return { projection, probability };
 }

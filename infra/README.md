@@ -78,17 +78,41 @@ After apply:
 - **odds_lambda_function_name** / **odds_lambda_function_arn** – odds-pre-game-snapshot.
 - **odds_schedule_rule_name** / **odds_schedule_rule_arn** – Set when `odds_enable_schedule` is true.
 
-## Player props Lambda (nba-player-props-ingestion-lambda)
+## Player props fanout pipeline
 
-This Lambda fills `analytics.player_props_current`, which the player page sidebar uses. **If the schedule is disabled, the sidebar shows "All stats" with no options** because no props are ingested.
+Player props now run as **controller + per-game workers**:
+
+- Controller Lambda (`player_props_controller_function_name`) discovers today’s games and pushes one SQS message per game.
+- Worker Lambda (`player_props_lambda_function_name`) consumes one game message at a time and performs bulk writes to:
+  - `raw.player_prop_snapshots_v2`
+  - `analytics.player_props_current`
+  - `analytics.player_prop_current` (preferred vendor view)
+- Per-game status is tracked in `raw.player_prop_game_runs`.
+
+### Setup
 
 1. **Build before apply:** `cd lambda/player-props-snapshot && npm install && npm run build`
-2. **Enable the schedule** in `terraform.tfvars`:
+2. **Enable schedule** in `terraform.tfvars`:
    - `player_props_enable_schedule = true`
-   - Optionally set `player_props_schedule_crons` to run only 10am–12pm ET (see `terraform.tfvars.example`). If left empty, the single `player_props_schedule_expression` (e.g. `rate(30 minutes)`) is used.
-3. **Set env:** `player_props_lambda_env` with `SUPABASE_DB_URL`, `BALLDONTLIE_API_KEY`. Optional: `INCLUDE_TOMORROW=true` so tomorrow's games get props when books publish.
+   - Use `player_props_schedule_crons` or `player_props_schedule_expression`.
+3. **Set worker env** via `player_props_lambda_env`:
+   - required: `SUPABASE_DB_URL`, `BALLDONTLIE_API_KEY`
+   - optional: `PREFERRED_VENDOR`
+4. **Optional controller env overrides** via `player_props_controller_env`.
 
-After apply, EventBridge Scheduler will invoke the Lambda on the configured schedule. Run a manual test from the Lambda console to confirm DB and BDL API work.
+### Rollout (recommended)
+
+1. Apply schema migration for `raw.player_prop_game_runs`.
+2. `terraform plan/apply` to provision controller, worker, queue, DLQ, and alarms.
+3. Invoke controller once manually and verify:
+   - SQS receives one message per game.
+   - Worker drains queue.
+   - `raw.player_prop_game_runs` transitions `started -> success/error`.
+   - `analytics.player_props_current` has rows for active game IDs.
+4. Observe CloudWatch alarms:
+   - `nba-player-props-worker-failures`
+   - `nba-player-props-controller-low-coverage`
+5. Keep old schedule disabled after fanout has stable coverage for at least one slate.
 
 ## Extending to more Lambdas
 

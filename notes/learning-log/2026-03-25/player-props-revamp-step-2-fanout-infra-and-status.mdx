@@ -1,0 +1,58 @@
+## Context
+The monolithic player props Lambda timed out repeatedly at 300 seconds and failed to populate current props reliably for active games.
+
+## Goal
+Implement fan-out infrastructure (controller + SQS + worker), add per-game run tracking schema, and add reliability alarms for SLA monitoring.
+
+## Files Changed
+- `infra/variables.tf`
+- `infra/iam.tf`
+- `infra/lambda.tf`
+- `infra/outputs.tf`
+- `infra/monitoring.tf`
+- `db/schemas/raw_player_prop_game_runs.sql`
+
+## Implementation Notes (key logic explained)
+- Added separate controller Lambda variables and resource wiring so schedule targets controller instead of worker.
+- Added SQS queue + DLQ, with worker Lambda event source mapping (`batch_size = 1`) for one-game-per-message processing.
+- Added IAM permissions:
+  - controller can send SQS messages
+  - worker can consume SQS messages
+  - scheduler can invoke controller
+- Added per-game run status schema `raw.player_prop_game_runs` keyed by `(pull_run_id, game_id)` to track success/failure and row counts.
+- Added CloudWatch alarms on custom metrics:
+  - `GamesFailed` from worker batch
+  - low `GamesQueued` from controller window
+
+## Key Decisions (and alternatives considered)
+- Chose SQS fan-out over single-Lambda batching to isolate failures per game and unlock retry/DLQ semantics.
+- Chose to keep worker concurrency configurable with reserved concurrency variable rather than hard-coding behavior.
+- Chose alarm-first observability via custom metrics without introducing additional services.
+
+## Assumptions
+- Terraform state will include new queue, lambdas, and alarms in a single apply.
+- The queue URL is safely passed to both controller and worker env vars.
+- Existing schedule names can be reused while target ARN changes to controller Lambda.
+
+## Failure Modes
+- If `raw.player_prop_game_runs` migration is not applied, worker status writes fail.
+- If queue policy/permissions drift, controller enqueue or worker consume will fail.
+- If worker processing duration still exceeds timeout for extreme game payloads, retries may increase DLQ traffic.
+
+## How to Test (commands + steps)
+1. `cd infra && terraform validate`
+2. `cd ../lambda/player-props-snapshot && npm run build`
+3. Deploy Terraform and confirm resources:
+   - controller lambda
+   - worker lambda
+   - game queue + DLQ
+   - scheduler target points to controller
+4. Invoke controller once and verify SQS messages appear.
+5. Confirm worker drains queue and updates:
+   - `raw.player_prop_game_runs`
+   - `analytics.player_props_current`
+
+## Next Steps
+- Add controller finalization logic to close pull runs once all game runs complete.
+- Add alarm actions (SNS/Slack) for paging.
+- Run phased cutover and compare coverage/freshness vs old pipeline before disabling legacy schedule.

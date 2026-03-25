@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { getPlayerPropModelInputs, getStatsForPropType } from '@/lib/betting/player-prop-inputs';
-import { computePlayerPropProbability } from '@/lib/betting/player-prop-model';
+import { computePlayerPropProbability, computeUpgradedPlayerPropProbability } from '@/lib/betting/player-prop-model';
+import { calibrateProbability, getCalibrationVersion } from '@/lib/betting/ev-calibration';
+import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
 
 type PropRow = {
   game_id: number;
@@ -46,6 +48,7 @@ export async function GET(
   { params }: { params: Promise<{ playerId: string }> }
 ) {
   try {
+    const selectedTrack = resolveEvTrack();
     const { playerId } = await params;
     const playerIdNum = parseInt(playerId, 10);
     if (Number.isNaN(playerIdNum)) {
@@ -162,6 +165,12 @@ export async function GET(
       let modelProbability: number | null = null;
       let ev: number | null = null;
       let projection: number | null = null;
+      let modelProbabilityTrackA: number | null = null;
+      let evTrackA: number | null = null;
+      let projectionTrackA: number | null = null;
+      let modelProbabilityTrackB: number | null = null;
+      let evTrackB: number | null = null;
+      let projectionTrackB: number | null = null;
       const lineNum = r.line_value != null ? Number(r.line_value) : NaN;
       if (withEv && modelInputs && isOverUnder && Number.isFinite(lineNum)) {
         const stats = getStatsForPropType(modelInputs, r.prop_type ?? '');
@@ -179,18 +188,48 @@ export async function GET(
                 : 1 + oddsAm / 100
               : null;
         if (stats && decimalOdds != null) {
-          const result = computePlayerPropProbability({
+          const baselineResult = computePlayerPropProbability({
             last10Avg: stats.last10Avg,
             seasonAvg: stats.seasonAvg,
             line: lineNum,
             propType: r.prop_type ?? 'points',
           });
-          projection = Number.isFinite(result.projection) ? result.projection : null;
-          const { probability } = result;
-          const pTrue = (r.side ?? '').toLowerCase() === 'under' ? 1 - probability : probability;
-          if (Number.isFinite(pTrue)) {
-            modelProbability = pTrue;
-            ev = pTrue * decimalOdds - 1;
+          projection = Number.isFinite(baselineResult.projection) ? baselineResult.projection : null;
+          const pOverBase = baselineResult.probability;
+          const pBase = (r.side ?? '').toLowerCase() === 'under' ? 1 - pOverBase : pOverBase;
+          if (Number.isFinite(pBase)) {
+            modelProbability = pBase;
+            ev = pBase * decimalOdds - 1;
+          }
+
+          const pTrackA = calibrateProbability(pBase, r.prop_type ?? 'points', 'trackA');
+          modelProbabilityTrackA = pTrackA;
+          evTrackA = pTrackA * decimalOdds - 1;
+          projectionTrackA = projection;
+
+          const upgradedResult = computeUpgradedPlayerPropProbability({
+            last10Avg: stats.last10Avg,
+            seasonAvg: stats.seasonAvg,
+            line: lineNum,
+            propType: r.prop_type ?? 'points',
+            last5Avg: stats.last5Avg,
+            observedStdDev: stats.observedStdDev,
+          });
+          projectionTrackB = Number.isFinite(upgradedResult.projection) ? upgradedResult.projection : null;
+          const pOverB = upgradedResult.probability;
+          const pRawB = (r.side ?? '').toLowerCase() === 'under' ? 1 - pOverB : pOverB;
+          const pTrackB = calibrateProbability(pRawB, r.prop_type ?? 'points', 'trackB');
+          modelProbabilityTrackB = pTrackB;
+          evTrackB = pTrackB * decimalOdds - 1;
+
+          if (selectedTrack === 'trackA_calibrated') {
+            modelProbability = modelProbabilityTrackA;
+            ev = evTrackA;
+            projection = projectionTrackA;
+          } else if (selectedTrack === 'trackB_calibrated') {
+            modelProbability = modelProbabilityTrackB;
+            ev = evTrackB;
+            projection = projectionTrackB;
           }
         }
       }
@@ -213,6 +252,14 @@ export async function GET(
         modelProbability: modelProbability ?? null,
         ev: ev != null && Number.isFinite(ev) ? ev : null,
         projection,
+        modelProbabilityTrackA: modelProbabilityTrackA != null && Number.isFinite(modelProbabilityTrackA) ? modelProbabilityTrackA : null,
+        evTrackA: evTrackA != null && Number.isFinite(evTrackA) ? evTrackA : null,
+        projectionTrackA: projectionTrackA != null && Number.isFinite(projectionTrackA) ? projectionTrackA : null,
+        modelProbabilityTrackB: modelProbabilityTrackB != null && Number.isFinite(modelProbabilityTrackB) ? modelProbabilityTrackB : null,
+        evTrackB: evTrackB != null && Number.isFinite(evTrackB) ? evTrackB : null,
+        projectionTrackB: projectionTrackB != null && Number.isFinite(projectionTrackB) ? projectionTrackB : null,
+        evSelectedTrack: selectedTrack,
+        calibrationVersion: getCalibrationVersion(),
       };
     });
 

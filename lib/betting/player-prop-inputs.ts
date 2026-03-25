@@ -12,15 +12,29 @@ export interface ModelInputStats {
   pra: number;
 }
 
+export interface ModelInputStatsExt {
+  last5: ModelInputStats;
+  std10: ModelInputStats;
+}
+
 export interface PlayerPropModelInputs {
   last10: ModelInputStats;
   season: ModelInputStats;
+  ext: ModelInputStatsExt;
 }
 
 function avg(values: (number | null)[]): number {
   const valid = values.filter((v): v is number => v != null && Number.isFinite(v));
   if (valid.length === 0) return 0;
   return valid.reduce((a, b) => a + b, 0) / valid.length;
+}
+
+function stddev(values: (number | null)[]): number {
+  const valid = values.filter((v): v is number => v != null && Number.isFinite(v));
+  if (valid.length < 2) return 0;
+  const mean = valid.reduce((a, b) => a + b, 0) / valid.length;
+  const variance = valid.reduce((a, b) => a + (b - mean) * (b - mean), 0) / (valid.length - 1);
+  return Math.sqrt(Math.max(variance, 0));
 }
 
 /**
@@ -51,7 +65,14 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
   };
 
   if (games.length === 0) {
-    return { last10: season, season };
+    return {
+      last10: season,
+      season,
+      ext: {
+        last5: season,
+        std10: { pts: 0, reb: 0, ast: 0, threes: 0, pra: 0 },
+      },
+    };
   }
 
   const last10Pts = avg(games.map((g) => g.points));
@@ -70,7 +91,23 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
     pra: last10Pra,
   };
 
-  return { last10, season };
+  const last5: ModelInputStats = {
+    pts: avg(games.slice(0, 5).map((g) => g.points)),
+    reb: avg(games.slice(0, 5).map((g) => g.rebounds)),
+    ast: avg(games.slice(0, 5).map((g) => g.assists)),
+    threes: avg(games.slice(0, 5).map((g) => g.three_pointers_made)),
+    pra: avg(games.slice(0, 5).map((g) => (g.points ?? 0) + (g.rebounds ?? 0) + (g.assists ?? 0))),
+  };
+
+  const std10: ModelInputStats = {
+    pts: stddev(games.slice(0, 10).map((g) => g.points)),
+    reb: stddev(games.slice(0, 10).map((g) => g.rebounds)),
+    ast: stddev(games.slice(0, 10).map((g) => g.assists)),
+    threes: stddev(games.slice(0, 10).map((g) => g.three_pointers_made)),
+    pra: stddev(games.slice(0, 10).map((g) => (g.points ?? 0) + (g.rebounds ?? 0) + (g.assists ?? 0))),
+  };
+
+  return { last10, season, ext: { last5, std10 } };
 }
 
 /** Map prop_type (and common aliases) to stat key. Handles "points", "pts", "PRA", "pra", etc. */
@@ -107,12 +144,14 @@ function inferStatFromPropType(key: string): 'pts' | 'reb' | 'ast' | 'threes' | 
 export function getStatsForPropType(
   inputs: PlayerPropModelInputs,
   propType: string
-): { last10Avg: number; seasonAvg: number } | null {
+): { last10Avg: number; seasonAvg: number; last5Avg: number; observedStdDev: number } | null {
   const key = (propType ?? '').toLowerCase().trim();
   const stat = PROP_TO_STAT[key] ?? inferStatFromPropType(key);
   if (!stat) return null;
   return {
     last10Avg: inputs.last10[stat],
     seasonAvg: inputs.season[stat],
+    last5Avg: inputs.ext.last5[stat],
+    observedStdDev: inputs.ext.std10[stat],
   };
 }

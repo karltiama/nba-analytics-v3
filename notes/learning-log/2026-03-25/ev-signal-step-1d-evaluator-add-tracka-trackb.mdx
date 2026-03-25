@@ -1,0 +1,33 @@
+## Context
+Offline evaluation needed explicit Track A and Track B scoring to gate promotion decisions.
+
+## Goal
+Extend evaluator outputs to include calibrated Track A and calibrated Track B quality metrics.
+
+## Files Changed
+- `scripts/evaluate-ev-signal.ts`
+
+## Implementation Notes (key logic explained)
+- Added calibration application within evaluator for:
+  - `trackA` (calibrated baseline)
+  - `trackB` (calibrated upgraded)
+- Reports Brier, ECE(10), and decile scorecards for all four views:
+  - baseline, trackA, upgraded, trackB.
+
+## Key Decisions (and alternatives considered)
+- Kept evaluator JSON shape compact and directly comparable across tracks.
+- Reused existing metric helpers for consistency.
+
+## Assumptions
+- Calibration artifacts are present and valid before running comparisons.
+
+## Failure Modes
+- If artifact file is stale, track metrics may not reflect current market regime.
+
+## How to Test (commands + steps)
+1. Fit artifacts: `npx tsx scripts/fit-ev-calibration.ts --days 45`
+2. Evaluate: `npx tsx scripts/evaluate-ev-signal.ts --days 21`
+3. Compare ECE/Brier and top decile ROI across tracks.
+
+## Next Steps
+- Use scorecards to set track promotion thresholds.

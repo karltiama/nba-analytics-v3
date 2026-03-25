@@ -54,16 +54,50 @@ output "injuries_schedule_rule_arn" {
 
 # Player props ingestion Lambda (EventBridge Scheduler)
 output "player_props_lambda_function_name" {
-  description = "Name of the player props ingestion Lambda."
-  value       = aws_lambda_function.player_props_ingestion.function_name
+  description = "Name of the player props worker Lambda."
+  value       = aws_lambda_function.player_props_worker.function_name
 }
 
 output "player_props_lambda_function_arn" {
-  description = "ARN of the player props ingestion Lambda."
-  value       = aws_lambda_function.player_props_ingestion.arn
+  description = "ARN of the player props worker Lambda."
+  value       = aws_lambda_function.player_props_worker.arn
+}
+
+output "player_props_controller_function_name" {
+  description = "Name of the player props controller Lambda."
+  value       = aws_lambda_function.player_props_controller.function_name
+}
+
+output "player_props_controller_function_arn" {
+  description = "ARN of the player props controller Lambda."
+  value       = aws_lambda_function.player_props_controller.arn
+}
+
+output "player_props_game_queue_url" {
+  description = "SQS queue URL for per-game player props jobs."
+  value       = aws_sqs_queue.player_props_game_queue.id
+}
+
+output "player_props_game_dlq_url" {
+  description = "SQS dead-letter queue URL for failed game jobs."
+  value       = aws_sqs_queue.player_props_dlq.id
 }
 
 output "player_props_schedule_name" {
   description = "Name of the EventBridge Scheduler schedule (when player_props_enable_schedule is true)."
-  value       = var.player_props_enable_schedule ? aws_scheduler_schedule.player_props[0].name : null
+  value = var.player_props_enable_schedule ? (
+    length(var.player_props_schedule_crons) > 0
+      ? aws_scheduler_schedule.player_props_crons[0].name
+      : aws_scheduler_schedule.player_props_rate[0].name
+  ) : null
+}
+
+output "player_props_worker_failures_alarm_name" {
+  description = "CloudWatch alarm name for worker failures."
+  value       = aws_cloudwatch_metric_alarm.player_props_worker_failures.alarm_name
+}
+
+output "player_props_controller_low_coverage_alarm_name" {
+  description = "CloudWatch alarm name for low queued-game coverage."
+  value       = aws_cloudwatch_metric_alarm.player_props_controller_low_coverage.alarm_name
 }

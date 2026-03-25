@@ -1,0 +1,57 @@
+{
+  "version": "v1-fit-2026-03-25",
+  "tracks": {
+    "trackA": {
+      "default": {
+        "slope": 1,
+        "intercept": 0
+      },
+      "rebounds": {
+        "slope": 0.6775545128875904,
+        "intercept": 0.1612227435562045
+      },
+      "points_rebounds_assists": {
+        "slope": 0.42846525720350936,
+        "intercept": 0.2857673713982453
+      },
+      "threes": {
+        "slope": 0.7565420440979156,
+        "intercept": 0.12172897795104208
+      },
+      "assists": {
+        "slope": 0.6868343741923211,
+        "intercept": 0.1565828129038395
+      },
+      "points": {
+        "slope": 0.2983104517362944,
+        "intercept": 0.3508447741318528
+      }
+    },
+    "trackB": {
+      "default": {
+        "slope": 1,
+        "intercept": 0
+      },
+      "rebounds": {
+        "slope": 0.7561350300094007,
+        "intercept": 0.12193248499529952
+      },
+      "points_rebounds_assists": {
+        "slope": 0.5913326733517907,
+        "intercept": 0.20433366332410455
+      },
+      "threes": {
+        "slope": 0.7602199670827965,
+        "intercept": 0.1198900164586019
+      },
+      "assists": {
+        "slope": 0.7685925325562877,
+        "intercept": 0.11570373372185612
+      },
+      "points": {
+        "slope": 0.43661208629341003,
+        "intercept": 0.28169395685329496
+      }
+    }
+  }
+}

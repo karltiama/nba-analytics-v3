@@ -1,0 +1,36 @@
+## Context
+After wiring dual-track computation and calibration artifacts, we needed objective validation against baseline.
+
+## Goal
+Run fit + evaluation scripts and capture Track A/Track B quality deltas for promotion decisions.
+
+## Files Changed
+- `lib/betting/ev-calibration-artifacts.json`
+
+## Implementation Notes (key logic explained)
+- Ran `fit-ev-calibration.ts` on 45-day settled history (`8940` rows) to generate per-prop calibration coefficients.
+- Re-ran `evaluate-ev-signal.ts --days 21` to compare baseline, Track A, upgraded, and Track B.
+
+## Key Decisions (and alternatives considered)
+- Validated both calibration and upgraded-model effects together to confirm dual-track utility.
+- Used Brier + ECE + deciles as the three gate metrics.
+
+## Assumptions
+- 21-day evaluation is sufficient as an initial gate; longer rolling windows still needed.
+
+## Failure Modes
+- Coefficients can drift quickly with regime shifts; artifacts need periodic refresh.
+- Overfitting remains possible without strict out-of-sample windows.
+
+## How to Test (commands + steps)
+1. `npx tsx scripts/fit-ev-calibration.ts --days 45`
+2. `npx tsx scripts/evaluate-ev-signal.ts --days 21`
+3. Verify improved metrics:
+   - Baseline Brier: `0.2658` -> Track A: `0.2462`
+   - Upgraded Brier: `0.2500` -> Track B: `0.2416`
+   - Baseline ECE: `0.0986` -> Track A: `0.0249`
+   - Upgraded ECE: `0.0695` -> Track B: `0.0176`
+
+## Next Steps
+- Keep default API ranking on baseline until a rolling holdout confirms consistent Track B decile monotonicity.
+- Add scheduled artifact refresh and scorecard archiving.

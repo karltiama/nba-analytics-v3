@@ -149,9 +149,9 @@ resource "aws_lambda_permission" "allow_eventbridge_injuries" {
 }
 
 # -----------------------------------------------------------------------------
-# Lambda: player-props ingestion (run "npm install && npm run build" in lambda/player-props-snapshot first)
-# EventBridge Scheduler: every 30 min; flexible time window OFF.
-# Optional: add a second schedule later for pregame-only (e.g. every 15 min before tip).
+# Lambda: player-props fanout ingestion
+# - Controller Lambda: discovers games and enqueues one SQS message per game.
+# - Worker Lambda: processes one game per message and performs bulk writes.
 # -----------------------------------------------------------------------------
 data "archive_file" "player_props" {
   type        = "zip"
@@ -159,23 +159,64 @@ data "archive_file" "player_props" {
   output_path = "${path.module}/player-props-snapshot.zip"
 }
 
-resource "aws_lambda_function" "player_props_ingestion" {
+resource "aws_sqs_queue" "player_props_dlq" {
+  name = "nba-player-props-game-dlq"
+}
+
+resource "aws_sqs_queue" "player_props_game_queue" {
+  name                       = "nba-player-props-game-queue"
+  visibility_timeout_seconds = max(180, var.player_props_lambda_timeout + 30)
+  message_retention_seconds  = 86400
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.player_props_dlq.arn
+    maxReceiveCount     = 4
+  })
+}
+
+resource "aws_lambda_function" "player_props_worker" {
   filename         = data.archive_file.player_props.output_path
   function_name    = var.player_props_lambda_function_name
   role             = aws_iam_role.lambda_player_props_execution.arn
-  handler          = "dist/index.handler"
+  handler          = "dist/worker.handler"
   runtime          = "nodejs22.x"
   timeout          = var.player_props_lambda_timeout
   memory_size      = var.player_props_lambda_memory_size
   source_code_hash = data.archive_file.player_props.output_base64sha256
 
   environment {
-    variables = var.player_props_lambda_env
+    variables = merge(var.player_props_lambda_env, {
+      PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+    })
   }
 }
 
-# When player_props_schedule_crons is set, create one schedule per cron (e.g. 10am-12pm ET every 30 min).
-# Otherwise create a single schedule using player_props_schedule_expression (e.g. rate(30 minutes)).
+resource "aws_lambda_event_source_mapping" "player_props_worker_queue" {
+  event_source_arn                   = aws_sqs_queue.player_props_game_queue.arn
+  function_name                      = aws_lambda_function.player_props_worker.arn
+  batch_size                         = 1
+  maximum_batching_window_in_seconds = 0
+}
+
+resource "aws_lambda_function" "player_props_controller" {
+  filename         = data.archive_file.player_props.output_path
+  function_name    = var.player_props_controller_function_name
+  role             = aws_iam_role.lambda_player_props_controller_execution.arn
+  handler          = "dist/controller.handler"
+  runtime          = "nodejs22.x"
+  timeout          = var.player_props_controller_timeout
+  memory_size      = var.player_props_controller_memory_size
+  source_code_hash = data.archive_file.player_props.output_base64sha256
+
+  environment {
+    variables = merge(var.player_props_controller_env, {
+      SUPABASE_DB_URL        = lookup(var.player_props_lambda_env, "SUPABASE_DB_URL", "")
+      BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", "")
+      PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+      PREFERRED_VENDOR       = lookup(var.player_props_lambda_env, "PREFERRED_VENDOR", "draftkings")
+    })
+  }
+}
+
 resource "aws_scheduler_schedule" "player_props_crons" {
   count       = var.player_props_enable_schedule ? length(var.player_props_schedule_crons) : 0
   name        = "nba-player-props-${count.index}"
@@ -186,10 +227,11 @@ resource "aws_scheduler_schedule" "player_props_crons" {
     mode = "OFF"
   }
 
-  schedule_expression = var.player_props_schedule_crons[count.index]
+  schedule_expression          = var.player_props_schedule_crons[count.index]
+  schedule_expression_timezone = var.player_props_schedule_timezone
 
   target {
-    arn      = aws_lambda_function.player_props_ingestion.arn
+    arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
   }
 }
@@ -204,10 +246,11 @@ resource "aws_scheduler_schedule" "player_props_rate" {
     mode = "OFF"
   }
 
-  schedule_expression = var.player_props_schedule_expression
+  schedule_expression          = var.player_props_schedule_expression
+  schedule_expression_timezone = var.player_props_schedule_timezone
 
   target {
-    arn      = aws_lambda_function.player_props_ingestion.arn
+    arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
   }
 }
@@ -216,6 +259,6 @@ resource "aws_lambda_permission" "allow_scheduler_player_props" {
   count         = var.player_props_enable_schedule ? 1 : 0
   statement_id  = "allow-eventbridge-scheduler-invoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.player_props_ingestion.function_name
-  principal     = "scheduler.events.amazonaws.com"
+  function_name = aws_lambda_function.player_props_controller.function_name
+  principal     = "scheduler.amazonaws.com"
 }

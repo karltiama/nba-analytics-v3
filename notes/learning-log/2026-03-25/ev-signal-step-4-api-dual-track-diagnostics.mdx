@@ -1,0 +1,39 @@
+## Context
+We need non-breaking API exposure of baseline, Track A, and Track B EV probabilities to compare model quality without forcing immediate cutover.
+
+## Goal
+Extend player props API response with per-track diagnostics and optional selection gate for default `ev`.
+
+## Files Changed
+- `app/api/betting/players/[playerId]/props/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added dual-track computation in API runtime:
+  - baseline probability/EV
+  - Track A calibrated baseline
+  - Track B upgraded + calibrated
+- Added response diagnostics:
+  - `modelProbabilityTrackA`, `evTrackA`, `projectionTrackA`
+  - `modelProbabilityTrackB`, `evTrackB`, `projectionTrackB`
+  - `evSelectedTrack`, `calibrationVersion`
+- Default `ev` remains baseline unless `EV_RANKING_TRACK` selects another track.
+
+## Key Decisions (and alternatives considered)
+- Chose API-side parallel computation to ensure same row-level context for fair comparison.
+- Preserved existing fields to avoid breaking current UI components.
+
+## Assumptions
+- Optional extended stats (`last5Avg`, `observedStdDev`) are available from input layer.
+
+## Failure Modes
+- Runtime CPU cost increases due to multi-track compute per row.
+- If calibration artifacts are stale, Track A/B signals may not improve.
+
+## How to Test (commands + steps)
+1. Call API with `with_ev=1` and verify new diagnostic fields exist.
+2. Compare `ev` against `evTrackA`/`evTrackB` for multiple props.
+3. Toggle `EV_RANKING_TRACK` and ensure selected default `ev` changes accordingly.
+
+## Next Steps
+- Run offline harness and compare Track A vs Track B calibration and decile quality.
+- Promote selected track only after test gates pass.

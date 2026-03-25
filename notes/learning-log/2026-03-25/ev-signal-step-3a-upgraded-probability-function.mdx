@@ -1,0 +1,34 @@
+## Context
+Track B requires an upgraded probability path to compare against the baseline model.
+
+## Goal
+Add an upgraded probability function with dynamic sigma and recent-form blending.
+
+## Files Changed
+- `lib/betting/player-prop-model.ts`
+
+## Implementation Notes (key logic explained)
+- Extended `PlayerPropProbabilityInput` with optional `last5Avg` and `observedStdDev`.
+- Added `computeUpgradedPlayerPropProbability()`:
+  - projection blends baseline projection with last-5 trend
+  - sigma blends observed 10-game volatility with static prop-type sigma.
+
+## Key Decisions (and alternatives considered)
+- Kept upgraded logic deterministic and lightweight for fast API runtime.
+- Reused existing Normal CDF probability computation to reduce risk.
+
+## Assumptions
+- Upstream input layer can provide `last5Avg` and `observedStdDev`.
+- Fallback behavior remains stable when optional fields are missing.
+
+## Failure Modes
+- Volatility estimates with very low sample quality can overreact.
+- Aggressive blending could overfit recent streaks.
+
+## How to Test (commands + steps)
+1. Run TypeScript compile to ensure new exports/types pass.
+2. Compare output of baseline vs upgraded with known test cases.
+3. Use offline harness to inspect Brier/ECE differences.
+
+## Next Steps
+- Add Track A calibration layer and integrate both tracks into API diagnostics.

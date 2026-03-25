@@ -1,0 +1,54 @@
+## Context
+The player props ingestion Lambda was timing out before writing UI-facing tables. The first step is to split core logic into reusable modules and prepare separate controller/worker handlers.
+
+## Goal
+Extract shared ingestion primitives (env, DB, game discovery, API fetch, normalization, bulk writes, metrics) so fan-out processing can be implemented cleanly.
+
+## Files Changed
+- `lambda/player-props-snapshot/src/types.ts`
+- `lambda/player-props-snapshot/src/env.ts`
+- `lambda/player-props-snapshot/src/db.ts`
+- `lambda/player-props-snapshot/src/game-discovery.ts`
+- `lambda/player-props-snapshot/src/fetch.ts`
+- `lambda/player-props-snapshot/src/normalize.ts`
+- `lambda/player-props-snapshot/src/bulk-writers.ts`
+- `lambda/player-props-snapshot/src/metrics.ts`
+- `lambda/player-props-snapshot/controller.ts`
+- `lambda/player-props-snapshot/worker.ts`
+- `lambda/player-props-snapshot/index.ts`
+- `lambda/player-props-snapshot/tsconfig.json`
+- `lambda/player-props-snapshot/package.json`
+- `lambda/player-props-snapshot/package-lock.json`
+
+## Implementation Notes (key logic explained)
+- Added typed payload contracts for game targets and SQS worker messages.
+- Added controller entrypoint to enqueue one message per game into SQS and initialize pull/game run records.
+- Added worker entrypoint to process per-game payloads and use chunked bulk DB operations.
+- Replaced monolithic `index.ts` body with a simple export alias to controller handler.
+- Implemented chunked insert/upsert functions for `raw.player_prop_snapshots_v2` and `analytics.player_props_current`.
+- Added helper to refresh legacy `analytics.player_prop_current` lines for preferred vendor compatibility.
+
+## Key Decisions (and alternatives considered)
+- Chose module extraction before infra rewiring so logic can be reused by both handlers.
+- Chose SQL chunked VALUES statements over row-by-row queries to reduce DB round-trips.
+- Kept legacy `analytics.player_prop_current` refresh in worker to avoid breaking existing game endpoint consumers.
+
+## Assumptions
+- `raw.player_prop_game_runs` table will be added in a later diff for per-game status updates.
+- SQS queue URL is injected via `PLAYER_PROPS_QUEUE_URL` in Lambda environment.
+
+## Failure Modes
+- Missing queue URL in controller environment will throw on startup.
+- Missing new DB table (`raw.player_prop_game_runs`) will fail worker writes until schema migration is applied.
+- Large chunk sizes could still pressure DB if runtime settings are too low.
+
+## How to Test (commands + steps)
+1. `cd lambda/player-props-snapshot`
+2. `npm run build`
+3. Verify `dist/controller.js`, `dist/worker.js`, and `dist/index.js` are produced.
+4. Smoke test type-check by ensuring no TS compile errors.
+
+## Next Steps
+- Add DB schema for per-game run tracking.
+- Rewire Terraform to deploy controller + worker Lambdas and SQS.
+- Add retry/DLQ and CloudWatch alarms/metrics for 15-minute coverage SLA.

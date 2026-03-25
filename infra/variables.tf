@@ -148,28 +148,65 @@ variable "player_props_lambda_function_name" {
 }
 
 variable "player_props_lambda_timeout" {
-  description = "Player props Lambda timeout in seconds."
+  description = "Player props worker Lambda timeout in seconds."
   type        = number
-  default     = 300
+  default     = 600
 }
 
 variable "player_props_lambda_memory_size" {
-  description = "Player props Lambda memory size in MB."
+  description = "Player props worker Lambda memory size in MB."
   type        = number
   default     = 512
 }
 
 variable "player_props_lambda_env" {
-  description = "Environment variables for the player props Lambda (BALLDONTLIE_API_KEY, SUPABASE_DB_URL). Do not commit real values."
+  description = "Environment variables for the player props worker Lambda (BALLDONTLIE_API_KEY, SUPABASE_DB_URL). Do not commit real values."
   type        = map(string)
   default     = {}
   sensitive   = true
+}
+
+variable "player_props_controller_function_name" {
+  description = "Name of the player props controller Lambda function."
+  type        = string
+  default     = "nba-player-props-controller-lambda"
+}
+
+variable "player_props_controller_timeout" {
+  description = "Player props controller Lambda timeout in seconds."
+  type        = number
+  default     = 120
+}
+
+variable "player_props_controller_memory_size" {
+  description = "Player props controller Lambda memory size in MB."
+  type        = number
+  default     = 256
+}
+
+variable "player_props_controller_env" {
+  description = "Environment variables for the player props controller Lambda (SUPABASE_DB_URL). Do not commit real values."
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}
+
+variable "player_props_worker_reserved_concurrency" {
+  description = "Reserved concurrency for player props worker Lambda."
+  type        = number
+  default     = 4
 }
 
 variable "player_props_enable_schedule" {
   description = "Set to true to create EventBridge Scheduler schedule for the player props Lambda (e.g. every 30 min)."
   type        = bool
   default     = false
+}
+
+variable "player_props_schedule_timezone" {
+  description = "Timezone for EventBridge Scheduler cron expressions for player props (e.g. America/New_York)."
+  type        = string
+  default     = "America/New_York"
 }
 
 variable "player_props_schedule_expression" {
@@ -179,7 +216,7 @@ variable "player_props_schedule_expression" {
 }
 
 variable "player_props_schedule_crons" {
-  description = "Optional list of cron expressions (UTC) for player props, e.g. 10am-12pm ET every 30 min. When non-empty, this is used instead of player_props_schedule_expression (one schedule per cron). Example: [\"cron(0 15 * * ? *)\", \"cron(30 15 * * ? *)\", \"cron(0 16 * * ? *)\", \"cron(30 16 * * ? *)\", \"cron(0 17 * * ? *)\"]."
+  description = "Optional list of cron expressions for player props. Interpreted using player_props_schedule_timezone. When non-empty, this is used instead of player_props_schedule_expression (one schedule per cron). Example for every 15 minutes from 12:00-23:59 ET: [\"cron(0/15 12-23 ? * * *)\"]."
   type        = list(string)
   default     = []
 }

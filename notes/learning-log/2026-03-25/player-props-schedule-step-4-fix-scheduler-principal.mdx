@@ -1,0 +1,31 @@
+## Context
+`terraform apply` failed when creating the EventBridge Scheduler invoke role and Lambda permission due to an invalid service principal (`scheduler.events.amazonaws.com`).
+
+## Goal
+Fix the Scheduler service principal so IAM trust and Lambda permissions are valid.
+
+## Files Changed
+- `infra/iam.tf`
+- `infra/lambda.tf`
+
+## Implementation Notes (key logic explained)
+- Updated IAM assume role principal for `aws_iam_role.scheduler_player_props_invoke` to `scheduler.amazonaws.com`.
+- Updated Lambda permission principal for `aws_lambda_permission.allow_scheduler_player_props` to `scheduler.amazonaws.com`.
+
+## Key Decisions (and alternatives considered)
+- Decision: use the canonical EventBridge Scheduler service principal `scheduler.amazonaws.com`.
+- Alternative: `scheduler.events.amazonaws.com` was rejected because AWS IAM rejected it as invalid.
+
+## Assumptions
+- The AWS account uses standard EventBridge Scheduler service principal naming.
+
+## Failure Modes
+- If the environment uses a different scheduler integration, permissions may need additional `source_arn` constraints later.
+
+## How to Test (commands + steps)
+1. `terraform -chdir=infra plan`
+2. `terraform -chdir=infra apply`
+3. Confirm schedule is created and Lambda permission exists without errors.
+
+## Next Steps
+- Re-run apply after this fix and confirm the schedule appears in AWS Scheduler.

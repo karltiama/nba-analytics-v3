@@ -1,0 +1,33 @@
+## Context
+We want player props ingestion to run frequently during the actionable ET window without manual UTC conversion.
+
+## Goal
+Configure the real Terraform variables to run player props ingestion every 15 minutes from 12:00–23:59 ET.
+
+## Files Changed
+- `infra/terraform.tfvars`
+
+## Implementation Notes (key logic explained)
+- Set `player_props_schedule_timezone = "America/New_York"`.
+- Set `player_props_schedule_crons = ["cron(0/15 12-23 ? * * *)"]`.
+- Left `player_props_schedule_expression` in place, but it will be ignored when `player_props_schedule_crons` is non-empty (per `infra/lambda.tf` logic).
+
+## Key Decisions (and alternatives considered)
+- Decision: use one cron entry covering 12–23 hours with 15-minute step.
+- Alternative: split into multiple cron entries; unnecessary for this simple schedule.
+
+## Assumptions
+- `infra/lambda.tf` uses `aws_scheduler_schedule` and honors `schedule_expression_timezone`.
+
+## Failure Modes
+- Terraform apply may fail if provider/resource doesn’t support timezone field.
+- If cron precedence changes, rate expression could still run; verify resource counts in plan.
+
+## How to Test (commands + steps)
+1. `terraform -chdir=infra plan`
+2. Verify `aws_scheduler_schedule.player_props_crons` count is 1 and `player_props_rate` count is 0.
+3. Apply and confirm AWS Scheduler next run times are every 15 minutes between 12:00–23:59 ET.
+
+## Next Steps
+- Run `terraform apply` when ready.
+- Monitor Lambda logs for invocation cadence and 429 rate limits.

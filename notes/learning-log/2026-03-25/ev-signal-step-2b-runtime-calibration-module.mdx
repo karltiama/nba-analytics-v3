@@ -1,0 +1,34 @@
+## Context
+The EV API needs a deterministic calibration utility to support Track A/Track B outputs consistently.
+
+## Goal
+Add runtime probability calibration helper using artifact-driven linear transforms.
+
+## Files Changed
+- `lib/betting/ev-calibration.ts`
+
+## Implementation Notes (key logic explained)
+- Added `calibrateProbability(rawProbability, propType, track)` with:
+  - prop type normalization
+  - fallback to track default params
+  - hard clamp to [0, 1]
+- Added `getCalibrationVersion()` for diagnostics and API transparency.
+
+## Key Decisions (and alternatives considered)
+- Used linear transform for first pass simplicity and interpretability.
+- Kept strict clamping to avoid invalid EV due to malformed coefficients.
+
+## Assumptions
+- Artifact file is present and valid JSON in build output.
+
+## Failure Modes
+- Bad artifact values (large slope/intercept) can still saturate probabilities near 0/1.
+- Missing artifact keys reduce benefit due to default fallback.
+
+## How to Test (commands + steps)
+1. Call calibrator with known values and ensure output bounds [0,1].
+2. Validate identity coefficients preserve raw probability.
+3. Verify version getter returns expected artifact version.
+
+## Next Steps
+- Integrate Track A/Track B probabilities and EV diagnostics in props API.
