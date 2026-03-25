@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Sun, Moon, User, Zap } from 'lucide-react';
 
 interface HeaderProps {
@@ -41,6 +42,17 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
               </p>
             </div>
           </div>
+
+          {!teamName && (
+            <nav className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
+              <Link href="/betting" className="hover:text-white transition-colors">
+                Dashboard
+              </Link>
+              <Link href="/betting/props-explorer" className="hover:text-[#00d4ff] transition-colors">
+                Props Explorer
+              </Link>
+            </nav>
+          )}
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">

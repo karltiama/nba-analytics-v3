@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { getPlayerPropModelInputs, getStatsForPropType } from '@/lib/betting/player-prop-inputs';
-import { computePlayerPropProbability, computeUpgradedPlayerPropProbability } from '@/lib/betting/player-prop-model';
-import { calibrateProbability, getCalibrationVersion } from '@/lib/betting/ev-calibration';
+import { getPlayerPropModelInputs } from '@/lib/betting/player-prop-inputs';
+import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
+import { computePropEvFields } from '@/lib/betting/player-prop-ev-row';
 
 type PropRow = {
   game_id: number;
@@ -171,67 +171,28 @@ export async function GET(
       let modelProbabilityTrackB: number | null = null;
       let evTrackB: number | null = null;
       let projectionTrackB: number | null = null;
-      const lineNum = r.line_value != null ? Number(r.line_value) : NaN;
-      if (withEv && modelInputs && isOverUnder && Number.isFinite(lineNum)) {
-        const stats = getStatsForPropType(modelInputs, r.prop_type ?? '');
-        const oddsDec =
-          r.odds_decimal != null && Number.isFinite(Number(r.odds_decimal))
-            ? Number(r.odds_decimal)
-            : null;
-        const oddsAm = r.odds_american != null ? Number(r.odds_american) : null;
-        const decimalOdds =
-          oddsDec != null
-            ? oddsDec
-            : oddsAm != null && Number.isFinite(oddsAm)
-              ? oddsAm < 0
-                ? 1 + 100 / Math.abs(oddsAm)
-                : 1 + oddsAm / 100
-              : null;
-        if (stats && decimalOdds != null) {
-          const baselineResult = computePlayerPropProbability({
-            last10Avg: stats.last10Avg,
-            seasonAvg: stats.seasonAvg,
-            line: lineNum,
-            propType: r.prop_type ?? 'points',
-          });
-          projection = Number.isFinite(baselineResult.projection) ? baselineResult.projection : null;
-          const pOverBase = baselineResult.probability;
-          const pBase = (r.side ?? '').toLowerCase() === 'under' ? 1 - pOverBase : pOverBase;
-          if (Number.isFinite(pBase)) {
-            modelProbability = pBase;
-            ev = pBase * decimalOdds - 1;
-          }
-
-          const pTrackA = calibrateProbability(pBase, r.prop_type ?? 'points', 'trackA');
-          modelProbabilityTrackA = pTrackA;
-          evTrackA = pTrackA * decimalOdds - 1;
-          projectionTrackA = projection;
-
-          const upgradedResult = computeUpgradedPlayerPropProbability({
-            last10Avg: stats.last10Avg,
-            seasonAvg: stats.seasonAvg,
-            line: lineNum,
-            propType: r.prop_type ?? 'points',
-            last5Avg: stats.last5Avg,
-            observedStdDev: stats.observedStdDev,
-          });
-          projectionTrackB = Number.isFinite(upgradedResult.projection) ? upgradedResult.projection : null;
-          const pOverB = upgradedResult.probability;
-          const pRawB = (r.side ?? '').toLowerCase() === 'under' ? 1 - pOverB : pOverB;
-          const pTrackB = calibrateProbability(pRawB, r.prop_type ?? 'points', 'trackB');
-          modelProbabilityTrackB = pTrackB;
-          evTrackB = pTrackB * decimalOdds - 1;
-
-          if (selectedTrack === 'trackA_calibrated') {
-            modelProbability = modelProbabilityTrackA;
-            ev = evTrackA;
-            projection = projectionTrackA;
-          } else if (selectedTrack === 'trackB_calibrated') {
-            modelProbability = modelProbabilityTrackB;
-            ev = evTrackB;
-            projection = projectionTrackB;
-          }
-        }
+      if (withEv && modelInputs && isOverUnder) {
+        const evFields = computePropEvFields(
+          {
+            prop_type: r.prop_type,
+            market_type: r.market_type,
+            side: r.side,
+            line_value: r.line_value,
+            odds_american: r.odds_american,
+            odds_decimal: r.odds_decimal,
+          },
+          modelInputs,
+          selectedTrack
+        );
+        modelProbability = evFields.modelProbability;
+        ev = evFields.ev;
+        projection = evFields.projection;
+        modelProbabilityTrackA = evFields.modelProbabilityTrackA;
+        evTrackA = evFields.evTrackA;
+        projectionTrackA = evFields.projectionTrackA;
+        modelProbabilityTrackB = evFields.modelProbabilityTrackB;
+        evTrackB = evFields.evTrackB;
+        projectionTrackB = evFields.projectionTrackB;
       }
 
       return {

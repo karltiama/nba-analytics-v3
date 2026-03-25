@@ -1,0 +1,38 @@
+## Context
+The Props Explorer table displayed numeric player IDs when name rendering was not user-friendly. This reduced scanability for bettors and analysts.
+
+## Goal
+Render a readable player label in the table using abbreviated format (`F. Last`) while preserving a safe fallback to `playerId`.
+
+## Files Changed
+- `app/betting/props-explorer/page.tsx`
+
+## Implementation Notes (key logic explained)
+- Added `formatPlayerLabel(playerName, playerId)` helper.
+- Behavior:
+  - If `playerName` is missing/blank, return `playerId`.
+  - If single token name, return as-is.
+  - If multi-token, format as `FirstInitial. LastParts` (e.g., `S. Gilgeous-Alexander`).
+- Updated Player column cell to use this formatter.
+
+## Key Decisions (and alternatives considered)
+- Chose UI-only formatting for minimal risk and no API contract changes.
+- Alternative: backend could return `display_name` directly; deferred to keep this diff small.
+
+## Assumptions
+- `playerName` values are generally full names when available.
+- Keeping `playerId` fallback is acceptable when source name is null.
+
+## Failure Modes
+- Names with unusual formats (mononyms, suffixes) may not abbreviate perfectly.
+- If upstream `playerName` quality is poor, IDs will still appear.
+
+## How to Test (commands + steps)
+1. Start dev server: `npm run dev`
+2. Open: `/betting/props-explorer`
+3. Verify Player column displays abbreviated names (`F. Last`) for populated rows.
+4. Verify links still navigate to `/betting/players/[playerId]`.
+
+## Next Steps
+- Optionally add a UI toggle for full name vs abbreviated label.
+- Optionally include server-provided `display_name` for consistent formatting across pages.

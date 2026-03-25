@@ -18,11 +18,17 @@ const STD_BY_PROP: Record<string, number> = {
   assists: 2.5,
   ast: 2.5,
   threes: 1.5,
+  points_assists: 7,
+  points_rebounds: 7,
+  rebounds_assists: 4.5,
   points_rebounds_assists: 8,
   pra: 8,
 };
 
 const DEFAULT_STD = 5;
+const MAX_ABS_Z = 3.0;
+const PROB_FLOOR = 0.03;
+const PROB_CEIL = 0.97;
 
 /**
  * Fixed standard deviation by prop type (lowercase).
@@ -52,8 +58,11 @@ function normCdf(z: number): number {
  */
 export function computeProbability(projection: number, line: number, stdDev: number): number {
   if (!Number.isFinite(stdDev) || stdDev <= 0) return 0.5;
-  const z = (line - projection) / stdDev;
-  return 1 - normCdf(z);
+  // Guardrail: cap tail confidence from extreme projection-line gaps.
+  const rawZ = (line - projection) / stdDev;
+  const z = Math.max(-MAX_ABS_Z, Math.min(MAX_ABS_Z, rawZ));
+  const p = 1 - normCdf(z);
+  return Math.max(PROB_FLOOR, Math.min(PROB_CEIL, p));
 }
 
 export interface PlayerPropProbabilityInput {
@@ -101,7 +110,9 @@ export function computeUpgradedPlayerPropProbability(
   const obsStd = observedStdDev != null && Number.isFinite(observedStdDev) && observedStdDev > 0
     ? observedStdDev
     : null;
-  const stdDev = obsStd != null ? 0.65 * obsStd + 0.35 * fallbackStd : fallbackStd;
+  const blendedStd = obsStd != null ? 0.65 * obsStd + 0.35 * fallbackStd : fallbackStd;
+  // Guardrail: do not allow dynamic sigma to collapse too low vs the prop fallback variance.
+  const stdDev = Math.max(0.7 * fallbackStd, blendedStd);
   const probability = computeProbability(projection, line, stdDev);
   return { projection, probability };
 }

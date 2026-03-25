@@ -1,6 +1,6 @@
 export type EvTrack = 'baseline' | 'trackA_calibrated' | 'trackB_calibrated';
 
-const DEFAULT_TRACK: EvTrack = 'baseline';
+const DEFAULT_TRACK: EvTrack = 'trackB_calibrated';
 
 export function resolveEvTrack(): EvTrack {
   const raw = (process.env.EV_RANKING_TRACK ?? '').toLowerCase().trim();

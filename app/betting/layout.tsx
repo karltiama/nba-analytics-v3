@@ -22,7 +22,9 @@ export default function BettingLayout({
 
   // Only show layout Header on dashboard and game page; player page renders its own (avoids double header)
   const showLayoutHeader =
-    pathname === '/betting' || pathname.startsWith('/betting/games/');
+    pathname === '/betting' ||
+    pathname.startsWith('/betting/games/') ||
+    pathname.startsWith('/betting/props-explorer');
 
   return (
     <div className="min-h-screen bg-background gradient-mesh">

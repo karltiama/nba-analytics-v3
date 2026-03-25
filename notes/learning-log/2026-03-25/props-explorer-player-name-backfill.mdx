@@ -1,0 +1,40 @@
+## Context
+The Props Explorer Player column still displayed numeric IDs for many rows because `analytics.player_props_current.player_name` was null on some records.
+
+## Goal
+Ensure the explorer API returns player names reliably so the Player column shows names instead of IDs whenever possible.
+
+## Files Changed
+- `app/api/betting/props-explorer/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added a `LEFT JOIN` from props rows to `analytics.players`:
+  - `pl.player_id = p.player_id::text`
+- Updated row selects to use:
+  - `COALESCE(p.player_name, pl.full_name) AS player_name`
+- This preserves any existing props snapshot name but backfills from canonical player metadata when missing.
+
+## Key Decisions (and alternatives considered)
+- Decision: backfill names in API query.
+- Alternative: keep API unchanged and only format IDs in UI.
+  - Rejected because it still shows IDs when names are absent upstream.
+
+## Assumptions
+- `analytics.players.full_name` is populated for most active players.
+- `p.player_id` is safely castable to text for join.
+
+## Failure Modes
+- If a player is missing in `analytics.players`, API will still return null name and UI may fallback to ID.
+- If source names differ between props snapshots and canonical players, `COALESCE` keeps snapshot value first.
+
+## How to Test (commands + steps)
+1. `npm run dev`
+2. Open `/betting/props-explorer`
+3. Verify Player column shows names for rows that previously showed IDs.
+4. Optionally hit:
+   - `/api/betting/props-explorer?date=<today>&limit=20`
+   - Confirm `playerName` fields are populated.
+
+## Next Steps
+- If needed, switch preference to canonical name first: `COALESCE(pl.full_name, p.player_name)`.
+- Add an explicit API `displayName` field to centralize formatting conventions.

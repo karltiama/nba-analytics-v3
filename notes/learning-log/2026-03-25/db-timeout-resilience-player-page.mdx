@@ -1,0 +1,40 @@
+## Context
+The betting player page crashed during server render with a runtime error: `Connection terminated due to connection timeout` originating from `lib/db.ts` (`queryOne`).
+
+## Goal
+Improve DB query resilience for transient connection issues so player page loads do not fail on brief pool/network timeouts.
+
+## Files Changed
+- `lib/db.ts`
+
+## Implementation Notes (key logic explained)
+- Increased pool connection timeout default from `2000ms` to env-driven `DB_CONNECTION_TIMEOUT_MS` (default `10000ms`).
+- Added pool-level statement timeout via `DB_STATEMENT_TIMEOUT_MS` (default `30000ms`).
+- Added retry wrapper `queryWithRetry` used by both `query` and `queryOne`.
+  - Retries only transient connection failures (timeout/reset/unexpected terminate messages).
+  - Retry attempts are env-driven with `DB_QUERY_MAX_ATTEMPTS` (default `2`).
+  - Includes short linear backoff (`150ms * attempt`).
+
+## Key Decisions (and alternatives considered)
+- Decision: implement targeted retry in DB helper, not per-call try/catch.
+- Alternative: add page-level try/catch around player loader only.
+  - Rejected because it duplicates resilience logic and leaves other routes exposed.
+
+## Assumptions
+- Most observed failures are transient connection establishment/pool failures rather than deterministic SQL errors.
+- Retrying once is sufficient for typical Supabase pool hiccups.
+
+## Failure Modes
+- Persistent network/database outages still fail after retries.
+- Very long-running queries can still hit statement timeout.
+
+## How to Test (commands + steps)
+1. `npm run build`
+2. Run `npm run dev`
+3. Load a betting player page (`/betting/players/<id>`) repeatedly.
+4. Confirm no runtime crash from `queryOne` timeout during normal operation.
+5. (Optional) set low timeout envs to force retries and verify fallback behavior.
+
+## Next Steps
+- Add lightweight DB metrics/logging for retry counts and timeout incidence.
+- Tune `DB_CONNECTION_TIMEOUT_MS` and `DB_QUERY_MAX_ATTEMPTS` from observed production latency.
