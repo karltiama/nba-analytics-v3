@@ -1,0 +1,37 @@
+## Context
+The research endpoint was timing out for the default page request volume/window, causing visible failures in UI.
+
+## Goal
+Reduce default query cost in `BettingResearchPage` so normal loads complete reliably.
+
+## Files Changed
+- `app/betting/research/page.tsx`
+
+## Implementation Notes (key logic explained)
+- Changed default `after` window from last 14 days to last 3 days.
+- Reduced default `limit` from 200 rows to 50 rows.
+- Updated helper text to reflect the new default window.
+
+These changes reduce initial DB workload without removing functionality; users can still widen the date range manually.
+
+## Key Decisions (and alternatives considered)
+- Chosen: lower default request size/window in UI.
+- Alternative: keep defaults and increase DB statement timeout.
+- Why chosen: immediate stability improvement with minimal risk.
+
+## Assumptions
+- Most initial research checks can start from recent data.
+- Power users can intentionally widen scope when needed.
+
+## Failure Modes
+- Users may initially see fewer rows than expected until they adjust filters.
+- Very wide manual filters may still trigger backend timeouts.
+
+## How to Test (commands + steps)
+1. Run app: `npm run dev`
+2. Open `/betting/research`
+3. Confirm initial call uses recent 3-day window and returns quickly.
+4. Increase date range and confirm behavior degrades only for large windows.
+
+## Next Steps
+- Add backend pagination and async metadata loading for wider windows.

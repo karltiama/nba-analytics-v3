@@ -1,0 +1,35 @@
+## Context
+Pregame bucket logic in research views introduced expensive lateral lookups and repeated endpoint timeouts.
+
+## Goal
+Restore fast, close-only decision-line view behavior.
+
+## Files Changed
+- `db/schemas/research_v_prop_decision_lines.sql`
+
+## Implementation Notes (key logic explained)
+Reverted `research.v_prop_decision_lines` to a single `DISTINCT ON` close snapshot per market key.
+Removed:
+- `t60m_*` and `t15m_*` lateral bucket lookups
+- `close_*` alias columns
+
+The view now returns only the close-line fields plus `decision_at` and `game_start_time`.
+
+## Key Decisions (and alternatives considered)
+- Chosen: full rollback to close-only for reliability.
+- Alternative: keep buckets behind parameterized query logic.
+- Why chosen: view cost remained too high under normal filters.
+
+## Assumptions
+- Close snapshot alone is sufficient for current research page needs.
+
+## Failure Modes
+- Loss of pregame movement context until v2 pipeline returns.
+
+## How to Test (commands + steps)
+1. Reapply research SQL install script.
+2. Query `research.v_prop_decision_lines` and confirm bucket columns are gone.
+3. Confirm row counts return quickly on recent windows.
+
+## Next Steps
+- Rebuild pregame buckets via precomputed table/materialized view in a later phase.

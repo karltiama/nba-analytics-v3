@@ -1,0 +1,34 @@
+## Context
+API route still included optional heavy pregame selection paths after SQL rollback.
+
+## Goal
+Return to a stable close-only endpoint contract that avoids removed bucket columns.
+
+## Files Changed
+- `app/api/betting/research/prop-eval/route.ts`
+
+## Implementation Notes (key logic explained)
+- Removed bucket/delta fields from `EvalRow`.
+- Removed `include_pregame` branching and bucket column projection from SQL.
+- Kept `pregame.close` in output by mapping it from legacy close odds fields (`odds_*`, `implied_probability`).
+- Kept `include_meta=1` behavior as optional for expensive metadata.
+
+## Key Decisions (and alternatives considered)
+- Chosen: preserve only `pregame.close` for response continuity.
+- Alternative: remove `pregame` object entirely.
+- Why chosen: minimizes frontend contract churn.
+
+## Assumptions
+- Consumers can work with close-only pregame object for now.
+
+## Failure Modes
+- Exact metadata may still be slow on very broad windows if `include_meta=1` is used.
+
+## How to Test (commands + steps)
+1. Reinstall SQL schema.
+2. Call endpoint without flags and verify `200`.
+3. Confirm each row includes `pregame.close` and no bucket deltas.
+4. Call with `include_meta=1` only when needed.
+
+## Next Steps
+- Simplify research page columns to remove delta display.

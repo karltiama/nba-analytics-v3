@@ -1,0 +1,38 @@
+## Context
+The eval view inherited pregame bucket fields and delta calculations from decision lines.
+
+## Goal
+Simplify `research.v_prop_eval_units` to close-only fields for reliable query performance.
+
+## Files Changed
+- `db/schemas/research_v_prop_eval_units.sql`
+
+## Implementation Notes (key logic explained)
+Removed pregame-specific projections from `joined` and final select:
+- `close_*`
+- `t60m_*`
+- `t15m_*`
+- `delta_t60m_to_close_ip`
+- `delta_t15m_to_close_ip`
+
+Retained core close-line odds fields (`odds_american`, `odds_decimal`, `implied_probability`) plus outcome logic.
+
+## Key Decisions (and alternatives considered)
+- Chosen: reduce view columns and computations aggressively.
+- Alternative: keep columns but set null placeholders.
+- Why chosen: smaller logical surface and less accidental downstream coupling.
+
+## Assumptions
+- API/UI can use existing close fields as the baseline representation.
+
+## Failure Modes
+- Any consumer expecting bucket columns from this view will break until updated.
+
+## How to Test (commands + steps)
+1. Reinstall research SQL.
+2. Query `information_schema.columns` for `research.v_prop_eval_units`.
+3. Confirm bucket/delta columns are absent.
+4. Run sample endpoint query and verify success.
+
+## Next Steps
+- Align API mapping to stop selecting removed columns.

@@ -1,0 +1,32 @@
+## Context
+The first page of research results appeared to show only one player because the default fetch size was too small for the current ordering.
+
+## Goal
+Improve player diversity in initial table results without changing backend logic.
+
+## Files Changed
+- `app/betting/research/page.tsx`
+
+## Implementation Notes (key logic explained)
+Increased default query `limit` from `50` to `200` in the page query string builder.
+
+This keeps filtering and sorting logic unchanged while broadening the first result window.
+
+## Key Decisions (and alternatives considered)
+- Chosen: increase default limit.
+- Alternative: redesign SQL ordering/grouping for one-row-per-player style output.
+- Why chosen: minimal-risk UI fix with immediate impact.
+
+## Assumptions
+- Endpoint remains stable with close-only query path at `limit=200`.
+
+## Failure Modes
+- Larger payload may increase initial load time on slower networks/DB states.
+
+## How to Test (commands + steps)
+1. Open `/betting/research`.
+2. Confirm more than one player appears in the first loaded page.
+3. Verify filters still apply and refresh works.
+
+## Next Steps
+- If needed, add user-selectable limit and sort options in UI.

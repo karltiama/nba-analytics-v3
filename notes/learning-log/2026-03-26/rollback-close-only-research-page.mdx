@@ -1,0 +1,34 @@
+## Context
+Research page still displayed a delta column tied to removed pregame bucket fields.
+
+## Goal
+Keep UI aligned with close-only backend and remove broken/empty movement display.
+
+## Files Changed
+- `app/betting/research/page.tsx`
+
+## Implementation Notes (key logic explained)
+- Simplified `PropEvalRow.pregame` type to `close` only.
+- Removed `Δ15m→Close` table column.
+- Updated loading/empty `colSpan` from 11 to 10.
+- Kept `Close IP` as a useful compact signal.
+
+## Key Decisions (and alternatives considered)
+- Chosen: preserve `Close IP`, remove movement columns.
+- Alternative: remove all pregame display from UI.
+- Why chosen: retains useful information while avoiding misleading blanks.
+
+## Assumptions
+- Close implied probability is still valuable for quick scanning.
+
+## Failure Modes
+- If API omits `pregame.close`, column renders `—` safely.
+
+## How to Test (commands + steps)
+1. Run app and open `/betting/research`.
+2. Confirm table no longer includes `Δ15m→Close`.
+3. Confirm `Close IP` values render.
+4. Confirm no layout break in loading/empty states.
+
+## Next Steps
+- Add a future toggle for advanced pregame analysis once precomputed data is available.

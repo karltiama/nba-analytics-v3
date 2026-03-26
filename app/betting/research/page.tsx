@@ -17,6 +17,9 @@ type PropEvalRow = {
   oddsAmerican: number | null;
   oddsDecimal: number | null;
   impliedProbability: number | null;
+  pregame?: {
+    close?: { impliedProbability: number | null } | null;
+  } | null;
   gameStartTime: string | null;
   statActual: number | null;
   betWon: boolean | null;
@@ -30,7 +33,7 @@ type Meta = {
 };
 
 export default function BettingResearchPage() {
-  const [after, setAfter] = useState(() => addDaysET(getTodayET(), -14));
+  const [after, setAfter] = useState(() => addDaysET(getTodayET(), -3));
   const [before, setBefore] = useState('');
   const [propType, setPropType] = useState('');
   const [rows, setRows] = useState<PropEvalRow[]>([]);
@@ -38,6 +41,9 @@ export default function BettingResearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [missingViews, setMissingViews] = useState(false);
+
+  const formatIp = (v: number | null | undefined) =>
+    v != null && Number.isFinite(v) ? v.toFixed(3) : '—';
 
   const queryString = useMemo(() => {
     const u = new URLSearchParams();
@@ -176,6 +182,7 @@ export default function BettingResearchPage() {
                 <th className="py-2 px-2 font-medium">Side</th>
                 <th className="py-2 px-2 font-medium text-right">Line</th>
                 <th className="py-2 px-2 font-medium text-right">Actual</th>
+                <th className="py-2 px-2 font-medium text-right">Close IP</th>
                 <th className="py-2 px-2 font-medium">Won</th>
                 <th className="py-2 px-2 font-medium">Book</th>
                 <th className="py-2 px-2 font-medium text-right">Decided</th>
@@ -184,13 +191,13 @@ export default function BettingResearchPage() {
             <tbody>
               {loading && rows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={10} className="py-8 text-center text-muted-foreground">
                     Loading…
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={10} className="py-8 text-center text-muted-foreground">
                     No rows. Widen dates or apply SQL views in the database.
                   </td>
                 </tr>
@@ -214,6 +221,9 @@ export default function BettingResearchPage() {
                     <td className="py-1.5 px-2 text-right font-mono text-white">
                       {r.statActual != null && Number.isFinite(r.statActual) ? r.statActual.toFixed(1) : '—'}
                     </td>
+                    <td className="py-1.5 px-2 text-right font-mono text-white">
+                      {formatIp(r.pregame?.close?.impliedProbability)}
+                    </td>
                     <td className="py-1.5 px-2">
                       {r.betWon === null ? '—' : r.betWon ? 'Y' : 'N'}
                     </td>
@@ -232,7 +242,7 @@ export default function BettingResearchPage() {
       </div>
 
       <p className="text-[10px] text-muted-foreground mt-4">
-        Date label (ET): {getDateLabel(after)} — default window is last 14 days from today ET.
+        Date label (ET): {getDateLabel(after)} — default window is last 3 days from today ET.
       </p>
     </main>
   );

@@ -65,6 +65,7 @@ function toNum(v: string | number | null | undefined): number | null {
 export async function GET(request: NextRequest) {
   try {
     const sp = request.nextUrl.searchParams;
+    const includeMeta = sp.get('include_meta') === '1';
     let limit = parseInt(sp.get('limit') || '100', 10);
     if (Number.isNaN(limit)) limit = 100;
     limit = Math.min(Math.max(1, limit), MAX_LIMIT);
@@ -74,41 +75,45 @@ export async function GET(request: NextRequest) {
 
     const { sql: whereSql, params: whereParams } = buildWhere(sp);
 
-    const countRow = await queryOne<{ c: string }>(
-      `SELECT count(*)::text AS c FROM research.v_prop_eval_units ${whereSql}`,
-      whereParams
-    );
-    const totalMatching = parseInt(countRow?.c ?? '0', 10) || 0;
+    let totalMatching: number | null = null;
+    let rangeRow: { mn: string | null; mx: string | null } | null = null;
+    if (includeMeta) {
+      const countRow = await queryOne<{ c: string }>(
+        `SELECT count(*)::text AS c FROM research.v_prop_eval_units ${whereSql}`,
+        whereParams
+      );
+      totalMatching = parseInt(countRow?.c ?? '0', 10) || 0;
+      rangeRow = await queryOne<{ mn: string | null; mx: string | null }>(
+        `SELECT min(game_date)::text AS mn, max(game_date)::text AS mx FROM research.v_prop_eval_units ${whereSql}`,
+        whereParams
+      );
+    }
 
     const limitIdx = whereParams.length + 1;
     const offsetIdx = whereParams.length + 2;
     const rows = await query<EvalRow>(
       `SELECT
-         game_id,
-         player_id,
-         player_name,
-         game_date::text AS game_date,
-         sportsbook,
-         prop_type,
-         side,
-         line_value,
-         decision_at,
-         odds_american,
-         odds_decimal,
-         implied_probability,
-         game_start_time,
-         stat_actual,
-         bet_won
-       FROM research.v_prop_eval_units
+         v.game_id,
+         v.player_id,
+         COALESCE(v.player_name, p.full_name) AS player_name,
+         v.game_date::text AS game_date,
+         v.sportsbook,
+         v.prop_type,
+         v.side,
+         v.line_value,
+         v.decision_at,
+         v.odds_american,
+         v.odds_decimal,
+         v.implied_probability,
+         v.game_start_time,
+         v.stat_actual,
+         v.bet_won
+       FROM research.v_prop_eval_units v
+       LEFT JOIN analytics.players p ON p.player_id::text = v.player_id::text
        ${whereSql}
-       ORDER BY game_date DESC NULLS LAST, decision_at DESC
+       ORDER BY v.game_date DESC NULLS LAST, v.decision_at DESC
        LIMIT $${limitIdx} OFFSET $${offsetIdx}`,
       [...whereParams, limit, offset]
-    );
-
-    const rangeRow = await queryOne<{ mn: string | null; mx: string | null }>(
-      `SELECT min(game_date)::text AS mn, max(game_date)::text AS mx FROM research.v_prop_eval_units ${whereSql}`,
-      whereParams
     );
 
     const mapped = rows.map((r) => ({
@@ -124,6 +129,13 @@ export async function GET(request: NextRequest) {
       oddsAmerican: r.odds_american,
       oddsDecimal: toNum(r.odds_decimal as number | string | null),
       impliedProbability: toNum(r.implied_probability as number | string | null),
+      pregame: {
+        close: {
+          oddsAmerican: r.odds_american,
+          oddsDecimal: toNum(r.odds_decimal as number | string | null),
+          impliedProbability: toNum(r.implied_probability as number | string | null),
+        },
+      },
       gameStartTime: r.game_start_time,
       statActual: toNum(r.stat_actual as number | string | null),
       betWon: r.bet_won,
@@ -132,7 +144,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       rows: mapped,
       meta: {
-        totalMatching,
+        totalMatching: totalMatching ?? rows.length,
         limit,
         offset,
         dateRange:

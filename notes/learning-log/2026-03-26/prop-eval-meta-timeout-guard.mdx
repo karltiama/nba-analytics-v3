@@ -1,0 +1,83 @@
+## Context
+`/api/betting/research/prop-eval` began failing with statement timeouts after adding pregame bucket fields, especially during metadata aggregation queries.
+
+## Goal
+Keep pregame bucket output (`t15m`, `t60m`, `close`) while preventing endpoint timeouts in normal UI usage.
+
+## Files Changed
+- `app/api/betting/research/prop-eval/route.ts`
+
+## Implementation Notes (key logic explained)
+Introduced an optional query flag:
+- `include_meta=1` enables expensive metadata queries (`count(*)`, `min/max(game_date)`).
+- Default behavior skips metadata queries, returning rows quickly.
+
+Response compatibility:
+- `meta` object is still returned.
+- `meta.totalMatching` falls back to `rows.length` when metadata is skipped.
+- `meta.dateRange` remains null when metadata is not requested.
+
+## Key Decisions (and alternatives considered)
+- Chosen: feature-flag metadata at request level.
+- Alternative: always run metadata but increase DB statement timeout.
+- Why chosen: better latency and avoids global timeout side effects.
+
+## Assumptions
+- UI does not require exact total counts for initial render.
+- Consumers can request exact metadata with `include_meta=1` when needed.
+
+## Failure Modes
+- `totalMatching` is approximate by default (page-size count), not full count.
+- Requests with `include_meta=1` can still timeout on very large slices.
+
+## How to Test (commands + steps)
+1. Start app: `npm run dev`
+2. Call `/api/betting/research/prop-eval?after=2026-03-12&limit=200&offset=0`
+3. Verify fast success and presence of `pregame` fields.
+4. Call same endpoint with `&include_meta=1`
+5. Verify exact metadata is returned (or identify heavy-query behavior separately).
+
+## Next Steps
+- Consider moving metadata to a separate endpoint or cached/materialized summary.
+
+---
+
+## Context
+After metadata gating, endpoint still timed out on row fetch when selecting all pregame bucket columns.
+
+## Goal
+Keep endpoint responsive by default while preserving access to full pregame buckets when explicitly requested.
+
+## Files Changed
+- `app/api/betting/research/prop-eval/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added `include_pregame=1` flag.
+- Default row query excludes heavy bucket columns to reduce query cost.
+- When `include_pregame=1`, query includes:
+  - `close_*`, `t60m_*`, `t15m_*`, and delta fields.
+- Response mapping always returns `pregame`:
+  - Default mode sets `pregame.close` from legacy odds fields and leaves movement deltas null.
+  - Full mode returns all bucketed values.
+
+## Key Decisions (and alternatives considered)
+- Chosen: opt-in heavy pregame retrieval.
+- Alternative: always fetch pregame and increase DB timeout.
+- Why chosen: avoids broad DB timeout tuning and stabilizes default UI calls.
+
+## Assumptions
+- Most UI flows can start with close-only values.
+- Deeper research can request `include_pregame=1`.
+
+## Failure Modes
+- `include_pregame=1` may still timeout on very heavy slices.
+- Users might misinterpret null deltas in default mode unless documented.
+
+## How to Test (commands + steps)
+1. Call endpoint without flags; confirm fast `200`.
+2. Confirm `pregame.close` is populated from legacy odds fields.
+3. Call with `include_pregame=1`; confirm bucket/delta fields are present.
+4. Call with `include_meta=1` and validate metadata behavior separately.
+
+## Next Steps
+- Add lightweight UI toggle for deep pregame analysis mode.

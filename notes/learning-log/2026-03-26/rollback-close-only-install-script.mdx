@@ -1,0 +1,33 @@
+## Context
+The one-shot installer had pregame bucket SQL that no longer matched the new simplification target.
+
+## Goal
+Keep `research_install_all.sql` aligned with close-only view definitions.
+
+## Files Changed
+- `db/schemas/research_install_all.sql`
+
+## Implementation Notes (key logic explained)
+- Reverted `research.v_prop_decision_lines` section to close-only `DISTINCT ON` logic.
+- Removed all pregame bucket projections and lateral joins.
+- Reverted `research.v_prop_eval_units` section to close-only column set.
+- Updated view comment text to close-only description.
+
+## Key Decisions (and alternatives considered)
+- Chosen: strict parity between standalone schema files and install-all script.
+- Alternative: keep installer richer than standalone files.
+- Why chosen: avoids environment drift and runtime surprises.
+
+## Assumptions
+- Install-all is the primary operational path for schema refresh.
+
+## Failure Modes
+- Existing DB sessions may cache old plans until views are refreshed/reloaded.
+
+## How to Test (commands + steps)
+1. Run `research_install_all.sql` via CLI.
+2. Verify endpoint no longer references missing bucket columns.
+3. Validate `/betting/research` loads.
+
+## Next Steps
+- Simplify API and UI mappings to remove pregame branching.
