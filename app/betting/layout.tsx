@@ -24,7 +24,8 @@ export default function BettingLayout({
   const showLayoutHeader =
     pathname === '/betting' ||
     pathname.startsWith('/betting/games/') ||
-    pathname.startsWith('/betting/props-explorer');
+    pathname.startsWith('/betting/props-explorer') ||
+    pathname.startsWith('/betting/research');
 
   return (
     <div className="min-h-screen bg-background gradient-mesh">
