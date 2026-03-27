@@ -1,0 +1,48 @@
+## Context
+Props Explorer can show no rows when the scheduled player-props ingestion has not run yet. We needed a manual trigger inside the app to invoke the existing ingestion Lambda on demand.
+
+## Goal
+Add a minimal server-side endpoint that manually invokes the player-props Lambda via AWS CLI.
+
+## Files Changed
+- `app/api/betting/props-explorer/route.ts`
+- `notes/learning-log/2026-03-27/props-explorer-manual-player-props-pull-step-1-api.mdx`
+
+## Implementation Notes (key logic explained)
+- Added a small `invokePlayerPropsLambda()` helper that calls:
+  - `aws lambda invoke`
+  - function name from `PLAYER_PROPS_LAMBDA_FUNCTION` (fallback: `player-props-snapshot`)
+  - region from `AWS_REGION` (fallback: `us-east-1`)
+  - payload `{}` and output to `/dev/stdout`
+- Added `POST /api/betting/props-explorer` that:
+  - invokes the helper
+  - returns JSON with `ok`, `message`, `functionName`, `region`, `output`, and `triggeredAt`
+  - returns HTTP 500 with structured error details on failure
+
+## Key Decisions (and alternatives considered)
+- Chose to add `POST` to an existing route instead of creating a new endpoint to keep the diff small.
+- Chose AWS CLI invocation to match existing project patterns (`scripts/call-all-lambdas.ts`) and avoid adding new SDK dependencies.
+- Alternative considered: AWS SDK `@aws-sdk/client-lambda` invocation from route handler (cleaner in some deployments, but would require dependency changes).
+
+## Assumptions
+- App server environment can run `aws` CLI and has credentials/permissions to invoke the Lambda.
+- The deployed Lambda function is named `player-props-snapshot` unless overridden by env var.
+
+## Failure Modes
+- `aws` CLI is missing in runtime environment.
+- AWS credentials/region are not configured or lack `lambda:InvokeFunction`.
+- Lambda function name mismatch.
+- Invoke succeeds but ingestion itself fails downstream (DB/API issues).
+
+## How to Test (commands + steps)
+1. Start app: `npm run dev`
+2. Manually call endpoint:
+   - PowerShell:
+   - `Invoke-RestMethod -Method Post -Uri "http://localhost:3000/api/betting/props-explorer"`
+3. Confirm response includes `ok: true` and function metadata.
+4. Check CloudWatch logs for `player-props-snapshot`.
+5. Refresh Props Explorer and verify rows populate.
+
+## Next Steps
+- Add a UI button in Props Explorer to trigger this `POST` endpoint directly from the page.
+- Add loading/error/success UI feedback around manual pull action.

@@ -1,0 +1,34 @@
+## Context
+Props Explorer can display confidence tier in table rows, and backend now supports sorting by that computed field.
+
+## Goal
+Expose confidence sorting in the Props Explorer UI controls.
+
+## Files Changed
+- `app/betting/props-explorer/page.tsx`
+
+## Implementation Notes (key logic explained)
+- Added a new sort option to `SORT_OPTIONS`: `{ value: 'confidence', label: 'Confidence tier' }`.
+- No additional UI state changes were required because sorting is already query-param driven.
+
+## Key Decisions (and alternatives considered)
+- Kept label explicit as "Confidence tier" to match table semantics.
+- Avoided extra controls (like a dedicated toggle) to preserve existing interaction model.
+
+## Assumptions
+- Users will primarily use descending direction for "best confidence first."
+- Existing generic sort dropdown behavior should remain consistent for this new option.
+
+## Failure Modes
+- If API support is unavailable in another environment, selecting this sort would silently fall back to snapshot ordering server-side behavior.
+- Users may choose ascending direction and interpret results incorrectly without realizing it inverts confidence priority.
+
+## How to Test (commands + steps)
+1. Run `npm run dev`
+2. Navigate to `/betting/props-explorer`
+3. Open the "Sort by" dropdown and select `Confidence tier`
+4. Verify URL includes `sort=confidence`
+5. Confirm rows reorder based on `Conf` column values
+
+## Next Steps
+- Optionally set default `dir=desc` automatically when `sort=confidence` is selected for better UX.

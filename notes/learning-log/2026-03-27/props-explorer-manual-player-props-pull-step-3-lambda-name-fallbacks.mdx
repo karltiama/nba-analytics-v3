@@ -1,0 +1,45 @@
+## Context
+Manual pull failed in runtime because the endpoint invoked `player-props-snapshot`, but deployed infra currently uses newer function names.
+
+## Goal
+Make manual Lambda invocation resilient to naming differences between legacy and current deployments.
+
+## Files Changed
+- `app/api/betting/props-explorer/route.ts`
+- `notes/learning-log/2026-03-27/props-explorer-manual-player-props-pull-step-3-lambda-name-fallbacks.mdx`
+
+## Implementation Notes (key logic explained)
+- Replaced single hardcoded fallback name with ordered candidate list:
+  - `PLAYER_PROPS_LAMBDA_FUNCTION` (override)
+  - `PLAYER_PROPS_CONTROLLER_FUNCTION` (override)
+  - `nba-player-props-controller-lambda` (current controller default)
+  - `nba-player-props-ingestion-lambda` (worker default)
+  - `player-props-snapshot` (legacy)
+- `invokePlayerPropsLambda()` now loops through candidates and retries only on `ResourceNotFoundException`.
+- For any other AWS invoke failure (permissions, auth, timeout, etc.), it fails fast with original error.
+
+## Key Decisions (and alternatives considered)
+- Chose ordered fallback list to keep endpoint robust across environments with minimal config burden.
+- Preferred controller lambda first for fanout architecture compatibility.
+- Alternative considered: require a single env var with no fallback; rejected for operational friction.
+
+## Assumptions
+- In current infra, invoking controller is the correct manual trigger path.
+- At least one candidate function exists in the configured AWS account/region.
+
+## Failure Modes
+- No candidate function exists in the target account/region.
+- IAM user/role lacks `lambda:InvokeFunction`.
+- AWS CLI auth/profile mismatch in app runtime.
+
+## How to Test (commands + steps)
+1. Start app: `npm run dev`
+2. Click `Pull Player Props` on Props Explorer page.
+3. Confirm no `Function not found` error appears.
+4. Confirm endpoint returns success and rows refresh.
+5. If still failing, set explicit env var and retry:
+   - `PLAYER_PROPS_LAMBDA_FUNCTION=nba-player-props-controller-lambda`
+
+## Next Steps
+- Optionally surface which function was invoked in UI success text for easier debugging.
+- Optionally add `AWS_PROFILE` support in invoke path if multiple profiles are used locally.

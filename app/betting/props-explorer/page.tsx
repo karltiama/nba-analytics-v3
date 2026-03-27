@@ -72,6 +72,7 @@ const SORT_OPTIONS = [
   { value: 'ev', label: 'EV (selected track)' },
   { value: 'ev_track_a', label: 'EV Track A' },
   { value: 'ev_track_b', label: 'EV Track B' },
+  { value: 'confidence', label: 'Confidence tier' },
   { value: 'odds_american', label: 'American odds' },
 ] as const;
 
@@ -107,6 +108,7 @@ export default function PropsExplorerPage(props: PageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [games, setGames] = useState<Array<{ id: string; label: string }>>([]);
+  const [addingPaperKey, setAddingPaperKey] = useState<string | null>(null);
 
   const updateParams = useCallback(
     (updates: Record<string, string | null>) => {
@@ -197,6 +199,44 @@ export default function PropsExplorerPage(props: PageProps) {
   const evSortActive = ['ev', 'ev_track_a', 'ev_track_b'].includes(sort);
   const canPrev = offset > 0;
   const canNext = rows.length === limit;
+
+  const addToPaper = useCallback(
+    async (r: ExplorerRow) => {
+      const key = `${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}`;
+      setAddingPaperKey(key);
+      setError(null);
+      try {
+        const res = await fetch('/api/betting/paper-bets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gameId: r.gameId,
+            playerId: r.playerId,
+            playerName: r.playerName,
+            sportsbook: r.sportsbook,
+            propType: r.propType,
+            marketType: r.marketType,
+            side: r.side,
+            lineValue: r.lineValue,
+            oddsAmerican: r.oddsAmerican,
+            impliedProbability: r.impliedProbability,
+            ev: r.ev,
+            confidenceTier: r.confidenceTier ?? null,
+            calibrationVersion: r.calibrationVersion,
+            decisionSnapshotAt: r.snapshotAt,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || data.error || 'Failed to add paper bet');
+        router.push('/betting/paper?tab=open');
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Could not add to paper');
+      } finally {
+        setAddingPaperKey(null);
+      }
+    },
+    [router]
+  );
 
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
@@ -388,23 +428,26 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">EV B</th>
                 <th className="py-2 px-2 font-medium text-right">Proj</th>
                 <th className="py-2 px-2 font-medium">Updated</th>
+                <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
               </tr>
             </thead>
             <tbody>
               {loading && rows.length === 0 ? (
                 <tr>
-                  <td colSpan={15} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={16} className="py-8 text-center text-muted-foreground">
                     Loading…
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={15} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={16} className="py-8 text-center text-muted-foreground">
                     No rows. Adjust filters or date.
                   </td>
                 </tr>
               ) : (
-                rows.map((r, idx) => (
+                rows.map((r, idx) => {
+                  const paperKey = `${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}`;
+                  return (
                   <tr
                     key={`${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
                     className="border-b border-white/5 hover:bg-white/[0.03]"
@@ -471,8 +514,20 @@ export default function PropsExplorerPage(props: PageProps) {
                     <td className="py-1.5 px-2 text-[10px] text-muted-foreground whitespace-nowrap">
                       {new Date(r.snapshotAt).toLocaleString()}
                     </td>
+                    <td className="py-1.5 px-1">
+                      <button
+                        type="button"
+                        disabled={addingPaperKey !== null}
+                        onClick={() => addToPaper(r)}
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-[#00d4ff]/40 text-[#8fefff] hover:bg-[#00d4ff]/15 disabled:opacity-40"
+                        title="Add to paper bets"
+                      >
+                        {addingPaperKey === paperKey ? '…' : 'Add'}
+                      </button>
+                    </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>

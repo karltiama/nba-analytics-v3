@@ -54,6 +54,9 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
               <Link href="/betting/research" className="hover:text-[#00d4ff]/90 transition-colors text-muted-foreground">
                 Research
               </Link>
+              <Link href="/betting/paper" className="hover:text-[#00d4ff]/90 transition-colors text-muted-foreground">
+                Paper
+              </Link>
             </nav>
           )}
 

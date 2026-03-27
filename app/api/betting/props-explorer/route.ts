@@ -20,7 +20,7 @@ type DbRow = {
   snapshot_at: string;
 };
 
-const EV_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b']);
+const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
 const MAX_LIMIT = 200;
 const EV_FETCH_CAP = 2500;
 
@@ -114,6 +114,7 @@ function sortKey(
     ev: number | null;
     evTrackA: number | null;
     evTrackB: number | null;
+    confidenceTier?: 'high' | 'medium' | 'low' | null;
     snapshotAt: string;
     oddsAmerican: number | null;
   },
@@ -126,6 +127,17 @@ function sortKey(
       return row.evTrackA != null && Number.isFinite(row.evTrackA) ? row.evTrackA : Number.NEGATIVE_INFINITY;
     case 'ev_track_b':
       return row.evTrackB != null && Number.isFinite(row.evTrackB) ? row.evTrackB : Number.NEGATIVE_INFINITY;
+    case 'confidence': {
+      const rank =
+        row.confidenceTier === 'high'
+          ? 3
+          : row.confidenceTier === 'medium'
+            ? 2
+            : row.confidenceTier === 'low'
+              ? 1
+              : Number.NEGATIVE_INFINITY;
+      return rank;
+    }
     case 'odds_american':
       return row.oddsAmerican != null && Number.isFinite(row.oddsAmerican) ? row.oddsAmerican : Number.NEGATIVE_INFINITY;
     case 'snapshot_at':
@@ -133,6 +145,7 @@ function sortKey(
       return new Date(row.snapshotAt).getTime();
   }
 }
+
 
 /**
  * GET /api/betting/props-explorer
@@ -179,14 +192,14 @@ export async function GET(request: NextRequest) {
     const orderSqlCol =
       sort === 'odds_american'
         ? 'p.odds_american'
-        : sort === 'snapshot_at' || !EV_SORTS.has(sort)
+        : sort === 'snapshot_at' || !COMPUTED_SORTS.has(sort)
           ? 'p.snapshot_at'
           : 'p.snapshot_at';
     const orderDir = dirAsc ? 'ASC' : 'DESC';
 
     let dbRows: DbRow[];
 
-    if (EV_SORTS.has(sort)) {
+    if (COMPUTED_SORTS.has(sort)) {
       const fetchParams = [...whereParams, EV_FETCH_CAP];
       const limIdx = whereParams.length + 1;
       dbRows = await query<DbRow>(
@@ -258,7 +271,7 @@ export async function GET(request: NextRequest) {
       outRows = outRows.filter((r) => r.ev != null && Number.isFinite(r.ev) && r.ev >= minEv);
     }
 
-    if (EV_SORTS.has(sort)) {
+    if (COMPUTED_SORTS.has(sort)) {
       outRows = [...outRows].sort((a, b) => {
         const ka = sortKey(a, sort);
         const kb = sortKey(b, sort);
@@ -277,7 +290,7 @@ export async function GET(request: NextRequest) {
         evSelectedTrack: selectedTrack,
         calibrationVersion: getCalibrationVersion(),
         computedAt: new Date().toISOString(),
-        evFetchCap: EV_SORTS.has(sort) ? EV_FETCH_CAP : null,
+        evFetchCap: COMPUTED_SORTS.has(sort) ? EV_FETCH_CAP : null,
         sort,
         dir: dirAsc ? 'asc' : 'desc',
       },
