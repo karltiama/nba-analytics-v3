@@ -1,0 +1,32 @@
+## Context
+Environment controls were added but not yet applied at runtime in the ingestion worker.
+
+## Goal
+Wire worker writes to use env-driven raw JSON storage and sampling policy.
+
+## Files Changed
+- `lambda/player-props-snapshot/worker.ts`
+
+## Implementation Notes (key logic explained)
+- Updated `bulkInsertRawV2` call to pass:
+  - `enabled: env.storePropRawJson`
+  - `sampleRate: env.propRawJsonSampleRate`
+- Keeps existing current-table upsert flow unchanged.
+
+## Key Decisions (and alternatives considered)
+- Chosen: pass policy once per message from parsed env.
+- Alternative: pass env object directly to writer; rejected to keep writer interface narrow.
+
+## Assumptions
+- `getLambdaEnv()` is called once per invocation and values remain stable during batch.
+
+## Failure Modes
+- Misconfigured env values can reduce or eliminate payload sampling unexpectedly.
+
+## How to Test (commands + steps)
+1. Set env to disable raw JSON and process one game.
+2. Query recent raw rows and verify `raw_json` is null.
+3. Set sample rate to `1` and confirm raw JSON is present for all new rows.
+
+## Next Steps
+- Update infra/docs defaults and complete validation checks.

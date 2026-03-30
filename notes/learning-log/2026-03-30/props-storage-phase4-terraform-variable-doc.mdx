@@ -1,0 +1,29 @@
+## Context
+Terraform variable docs for player props env did not mention the new optional payload control keys.
+
+## Goal
+Document optional `STORE_PROP_RAW_JSON` and `PROP_RAW_JSON_SAMPLE_RATE` usage in infra variable descriptions.
+
+## Files Changed
+- `infra/variables.tf`
+
+## Implementation Notes (key logic explained)
+- Expanded `player_props_lambda_env` description to include optional raw payload control keys.
+- Clarified that defaults are applied in `infra/lambda.tf`.
+
+## Key Decisions (and alternatives considered)
+- Chosen: keep this as description-only change to avoid behavior changes.
+- Alternative: add schema validation in Terraform for sample rate format; deferred for simplicity.
+
+## Assumptions
+- Operators read variable descriptions when setting tfvars/env.
+
+## Failure Modes
+- Description-only updates do not prevent invalid runtime values; runtime validation still needed.
+
+## How to Test (commands + steps)
+1. Run `terraform -chdir=infra validate`.
+2. Inspect variable help/docs in editor and confirm updated description text.
+
+## Next Steps
+- Keep tfvars example comments aligned with this description.

@@ -34,7 +34,10 @@ export const handler = async (event: SQSEvent) => {
       const props = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId);
       const normalized = normalizePlayerPropRows(props);
       const snapshotAt = new Date();
-      const rawV2 = await bulkInsertRawV2(pool, normalized, snapshotAt);
+      const rawV2 = await bulkInsertRawV2(pool, normalized, snapshotAt, {
+        enabled: env.storePropRawJson,
+        sampleRate: env.propRawJsonSampleRate,
+      });
       const current = await bulkUpsertCurrent(pool, normalized, snapshotAt);
       const preferred = buildPreferredVendorLines(normalized, env.preferredVendor, snapshotAt);
       const legacyCurrent = await refreshPreferredVendorCurrent(pool, msg.runId, msg.gameId, preferred);

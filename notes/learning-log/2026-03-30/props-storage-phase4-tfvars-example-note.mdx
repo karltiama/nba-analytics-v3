@@ -1,0 +1,30 @@
+## Context
+`terraform.tfvars.example` listed raw payload env vars but did not indicate Terraform now provides defaults in `infra/lambda.tf`.
+
+## Goal
+Clarify override behavior so operators understand when to set these vars.
+
+## Files Changed
+- `infra/terraform.tfvars.example`
+
+## Implementation Notes (key logic explained)
+- Added a short comment above `STORE_PROP_RAW_JSON` and `PROP_RAW_JSON_SAMPLE_RATE`.
+- Comment explains these are optional overrides for defaults already configured in Terraform.
+
+## Key Decisions (and alternatives considered)
+- Chosen: concise inline comment to keep onboarding simple.
+- Alternative: separate infra doc section; deferred to avoid duplication.
+
+## Assumptions
+- Teams bootstrap from `terraform.tfvars.example`.
+
+## Failure Modes
+- If users miss the comment, behavior is still safe due to default values in Terraform.
+
+## How to Test (commands + steps)
+1. Copy example to `terraform.tfvars`.
+2. Run `terraform -chdir=infra plan -var-file=terraform.tfvars`.
+3. Verify plan still works with and without the optional raw payload env overrides.
+
+## Next Steps
+- Apply infra changes and verify both Lambdas receive expected env values.

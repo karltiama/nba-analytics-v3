@@ -1,0 +1,42 @@
+## Context
+Hourly dedupe controls future growth, but existing historical rows still exceed storage limits and need retention pruning.
+
+## Goal
+Provide a safe operational script to prune `raw.player_prop_snapshots_v2` older than retention (default 30 days).
+
+## Files Changed
+- `scripts/prune-player-prop-snapshots-v2.ts`
+
+## Implementation Notes (key logic explained)
+- Added a TS prune script using `SUPABASE_DB_URL`.
+- Supports dry-run by default; requires `--execute` to perform deletes.
+- Deletes in batches using `ctid` to avoid long-running single transaction deletes.
+- Parameters:
+  - `--days` (default `30`)
+  - `--batch-size` (default `50000`)
+  - `--sleep-ms` (default `200`)
+- Runs `vacuum (analyze)` at the end for planner stats and cleanup.
+
+## Key Decisions (and alternatives considered)
+- Chosen: application-level chunked delete script for controllable cleanup.
+- Alternative: single giant SQL delete in dashboard; rejected due to lock/timeout risk on large tables.
+
+## Assumptions
+- Script runs during low-traffic windows for best impact.
+- `raw.player_prop_snapshots_v2` is not latency-critical for app reads.
+
+## Failure Modes
+- Running without `--execute` performs no deletion (intentional dry-run safety).
+- Large cleanup can still take time depending on DB load and autovacuum state.
+
+## How to Test (commands + steps)
+1. Dry-run estimate:
+   - `npx tsx scripts/prune-player-prop-snapshots-v2.ts --days 30`
+2. Execute prune:
+   - `npx tsx scripts/prune-player-prop-snapshots-v2.ts --days 30 --batch-size 50000 --execute`
+3. Validate size trend:
+   - `select pg_size_pretty(pg_total_relation_size('raw.player_prop_snapshots_v2'));`
+
+## Next Steps
+- Document scheduling/runbook for recurring retention pruning.
+- Add optional/sampled raw JSON capture controls.

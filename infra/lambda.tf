@@ -184,9 +184,16 @@ resource "aws_lambda_function" "player_props_worker" {
   source_code_hash = data.archive_file.player_props.output_base64sha256
 
   environment {
-    variables = merge(var.player_props_lambda_env, {
-      PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
-    })
+    variables = merge(
+      {
+        STORE_PROP_RAW_JSON       = "false"
+        PROP_RAW_JSON_SAMPLE_RATE = "0"
+      },
+      var.player_props_lambda_env,
+      {
+        PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+      }
+    )
   }
 }
 
@@ -208,12 +215,19 @@ resource "aws_lambda_function" "player_props_controller" {
   source_code_hash = data.archive_file.player_props.output_base64sha256
 
   environment {
-    variables = merge(var.player_props_controller_env, {
-      SUPABASE_DB_URL        = lookup(var.player_props_lambda_env, "SUPABASE_DB_URL", "")
-      BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", "")
-      PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
-      PREFERRED_VENDOR       = lookup(var.player_props_lambda_env, "PREFERRED_VENDOR", "draftkings")
-    })
+    variables = merge(
+      {
+        STORE_PROP_RAW_JSON       = "false"
+        PROP_RAW_JSON_SAMPLE_RATE = "0"
+      },
+      var.player_props_controller_env,
+      {
+        SUPABASE_DB_URL        = lookup(var.player_props_lambda_env, "SUPABASE_DB_URL", "")
+        BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", "")
+        PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+        PREFERRED_VENDOR       = lookup(var.player_props_lambda_env, "PREFERRED_VENDOR", "draftkings")
+      }
+    )
   }
 }
 

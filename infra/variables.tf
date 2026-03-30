@@ -160,7 +160,7 @@ variable "player_props_lambda_memory_size" {
 }
 
 variable "player_props_lambda_env" {
-  description = "Environment variables for the player props worker Lambda (BALLDONTLIE_API_KEY, SUPABASE_DB_URL). Do not commit real values."
+  description = "Environment variables for the player props worker Lambda (BALLDONTLIE_API_KEY, SUPABASE_DB_URL). Optional: STORE_PROP_RAW_JSON and PROP_RAW_JSON_SAMPLE_RATE (defaults set in lambda.tf). Do not commit real values."
   type        = map(string)
   default     = {}
   sensitive   = true

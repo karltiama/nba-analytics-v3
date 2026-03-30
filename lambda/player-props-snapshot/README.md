@@ -32,6 +32,8 @@ EventBridge Scheduler (rate 30 min) or EventBridge Rules
 | `BALLDONTLIE_API_KEY` | Yes | -- | BallDontLie API key (GOAT tier required) |
 | `PREFERRED_VENDOR` | No | `draftkings` | Which sportsbook to use for `player_prop_current` |
 | `INCLUDE_TOMORROW` | No | `false` | Set to `true` to also fetch props for **tomorrow's** games (ET). Use so upcoming games get lines as soon as books publish. |
+| `STORE_PROP_RAW_JSON` | No | `false` | Set `true` to store raw JSON payload per normalized row in `raw.player_prop_snapshots_v2`. |
+| `PROP_RAW_JSON_SAMPLE_RATE` | No | `0` | Decimal from `0` to `1`. When `STORE_PROP_RAW_JSON=true`, only this fraction of rows stores raw JSON. |
 
 ## Local Testing
 
@@ -176,6 +178,40 @@ EventBridge **Rules** (used above) are different from **EventBridge Scheduler**.
 - **CloudWatch Logs:** `/aws/lambda/player-props-snapshot`
 - **Key metrics:** Invocations, Errors, Duration
 - **DB audit:** `SELECT * FROM raw.player_prop_pull_runs ORDER BY pulled_at DESC LIMIT 10;`
+
+## Retention Runbook (raw.player_prop_snapshots_v2)
+
+`raw.player_prop_snapshots_v2` is for short-horizon diagnostics and hourly history. Use a 30-day retention target.
+
+### One-time cleanup
+
+```bash
+# Dry-run estimate
+npm run prune:player-props-v2
+
+# Execute chunked prune (default 30 days)
+npm run prune:player-props-v2 -- --execute
+```
+
+### Recurring cleanup
+
+- Run at least daily during off-peak.
+- Recommended cron cadence: once per day after nightly pipelines complete.
+- If backlog is large, temporarily run every 2-4 hours until stabilized.
+
+### Verification queries
+
+```sql
+select pg_size_pretty(pg_total_relation_size('raw.player_prop_snapshots_v2')) as total_size;
+```
+
+```sql
+select date_trunc('day', fetched_at) as day, count(*)
+from raw.player_prop_snapshots_v2
+group by 1
+order by 1 desc
+limit 14;
+```
 
 ## Expected Output
 

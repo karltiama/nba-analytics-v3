@@ -1,0 +1,36 @@
+## Context
+Even with hourly dedupe, storing raw JSON in every row remains a major storage contributor.
+
+## Goal
+Make raw JSON payload persistence optional and sampled in `bulkInsertRawV2`.
+
+## Files Changed
+- `lambda/player-props-snapshot/src/bulk-writers.ts`
+
+## Implementation Notes (key logic explained)
+- Added `RawJsonOptions` with:
+  - `enabled`
+  - `sampleRate`
+- Updated `bulkInsertRawV2` signature to accept `rawJsonOptions`.
+- Raw JSON column value now stores `NULL` unless:
+  - storage is enabled, and
+  - random sample passes `sampleRate`.
+
+## Key Decisions (and alternatives considered)
+- Chosen: probabilistic per-row sampling for simple runtime control.
+- Alternative: deterministic hash-based sampling; rejected for initial simplicity.
+
+## Assumptions
+- Historical analytics does not depend on complete raw JSON for every row.
+
+## Failure Modes
+- Sampling variability can cause uneven payload density in small batches.
+- If caller forgets to pass options, TypeScript compile should fail (intentional).
+
+## How to Test (commands + steps)
+1. Run with `STORE_PROP_RAW_JSON=false`; verify new rows have `raw_json is null`.
+2. Run with `STORE_PROP_RAW_JSON=true` and `PROP_RAW_JSON_SAMPLE_RATE=1`; verify all rows have JSON.
+3. Run with sample rate `0.1`; verify approximately 10% rows have JSON over larger sample.
+
+## Next Steps
+- Wire worker to pass env-derived options into `bulkInsertRawV2`.

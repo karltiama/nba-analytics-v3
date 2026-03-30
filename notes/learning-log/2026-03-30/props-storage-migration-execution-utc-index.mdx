@@ -1,0 +1,51 @@
+## Context
+
+Supabase `raw.player_prop_snapshots_v2` exceeded disk budget. Planned steps: dedupe intrahour duplicates, add hourly unique index, optional 30-day prune, verify stats.
+
+## Goal
+
+Execute migration safely under statement timeouts and fix index definition so Postgres accepts it (IMMUTABLE expression).
+
+## Files Changed
+
+- `scripts/apply-player-props-v2-hourly-migration.ts` — hour-window deletes + UTC partition + UTC index expression
+- `scripts/create-player-props-v2-hourly-index.ts` — standalone index creation with `statement_timeout = 0`
+- `scripts/verify-player-props-v2-stats.ts` — size / row / raw_json counts
+- `db/schemas/MIGRATION_player_props_v2_hourly_retention.sql` — UTC `date_trunc` for delete + index
+- `lambda/player-props-snapshot/src/bulk-writers.ts` — `ON CONFLICT` target matches index expression
+- `package.json` — `prune:player-props-v2:execute` (npm was swallowing `--execute` in some invocations)
+
+## Implementation Notes (key logic explained)
+
+- Full-table dedupe hit Supabase statement timeout; switched to **per-hour UTC windows** in `apply-player-props-v2-hourly-migration.ts`.
+- `create unique index ... (date_trunc('hour', fetched_at))` failed with **functions in index expression must be marked IMMUTABLE** because `date_trunc` on `timestamptz` is STABLE.
+- Fix: use `(date_trunc('hour', fetched_at at time zone 'UTC'))` which yields `timestamp` and uses an IMMUTABLE `date_trunc` overload.
+- `bulkInsertRawV2` `ON CONFLICT` columns must match the unique index definition exactly.
+
+## Key Decisions (and alternatives considered)
+
+- Chosen: UTC-normalized hour bucket everywhere (index, writer conflict target, migration SQL).
+- Alternative: store explicit `fetched_hour_utc` column; deferred to avoid extra schema migration surface.
+
+## Assumptions
+
+- Supabase session timezone is UTC or irrelevant once `AT TIME ZONE 'UTC'` is used for bucketing.
+
+## Failure Modes
+
+- Very dense hours can still approach statement timeout; reduce window further or increase `statement_timeout` if needed.
+- `npm run ... -- --execute` may be mishandled by npm; use `npm run prune:player-props-v2:execute` or `npx tsx ... --execute`.
+
+## How to Test (commands + steps)
+
+1. `npx tsx scripts/apply-player-props-v2-hourly-migration.ts` (or run SQL from `MIGRATION_player_props_v2_hourly_retention.sql` in editor if script unavailable)
+2. If index step fails, run `npx tsx scripts/create-player-props-v2-hourly-index.ts`
+3. `npm run prune:player-props-v2` then `npm run prune:player-props-v2:execute`
+4. `npx tsx scripts/verify-player-props-v2-stats.ts`
+5. `cd lambda/player-props-snapshot && npm run build`
+
+## Next Steps
+
+- Redeploy player-props Lambda so `ON CONFLICT` matches production index.
+- Run `VACUUM FULL` only if Supabase support recommends it; otherwise rely on autovacuum after large deletes.
+- Expect `raw_json` to stay populated on **old** rows until pruned; new rows respect `STORE_PROP_RAW_JSON=false`.

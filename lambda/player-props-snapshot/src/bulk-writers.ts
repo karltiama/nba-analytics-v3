@@ -3,6 +3,11 @@ import type { NormalizedPropRow } from './types';
 
 const CHUNK_SIZE = 500;
 
+type RawJsonOptions = {
+  enabled: boolean;
+  sampleRate: number;
+};
+
 function chunk<T>(items: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -105,7 +110,12 @@ export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): 
   );
 }
 
-export async function bulkInsertRawV2(pool: Pool, rows: NormalizedPropRow[], fetchedAt: Date): Promise<number> {
+export async function bulkInsertRawV2(
+  pool: Pool,
+  rows: NormalizedPropRow[],
+  fetchedAt: Date,
+  rawJsonOptions: RawJsonOptions
+): Promise<number> {
   if (rows.length === 0) return 0;
   let inserted = 0;
   for (const group of chunk(rows, CHUNK_SIZE)) {
@@ -126,7 +136,7 @@ export async function bulkInsertRawV2(pool: Pool, rows: NormalizedPropRow[], fet
         r.odds_decimal,
         r.implied_probability,
         fetchedAt,
-        JSON.stringify(r.raw_json)
+        rawJsonOptions.enabled && Math.random() < rawJsonOptions.sampleRate ? JSON.stringify(r.raw_json) : null
       );
       return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base + 9},$${base + 10},$${base + 11},$${base + 12},$${base + 13},$${base + 14})`;
     });
@@ -134,7 +144,10 @@ export async function bulkInsertRawV2(pool: Pool, rows: NormalizedPropRow[], fet
       `INSERT INTO raw.player_prop_snapshots_v2 (
          game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
          line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json
-       ) VALUES ${tuples.join(',')}`,
+       ) VALUES ${tuples.join(',')}
+       ON CONFLICT (
+         game_id, player_id, sportsbook, prop_type, side, line_value, (date_trunc('hour', fetched_at at time zone 'UTC'))
+       ) DO NOTHING`,
       values
     );
     inserted += result.rowCount ?? 0;

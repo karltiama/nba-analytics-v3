@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lambdas": "tsx scripts/call-all-lambdas.ts",
-    "lambdas:aws": "tsx scripts/call-all-lambdas.ts --aws"
+    "lambdas:aws": "tsx scripts/call-all-lambdas.ts --aws",
+    "prune:player-props-v2": "tsx scripts/prune-player-prop-snapshots-v2.ts --days 30",
+    "prune:player-props-v2:execute": "tsx scripts/prune-player-prop-snapshots-v2.ts --days 30 --execute"
   },
   "dependencies": {
     "@types/cheerio": "^0.22.35",

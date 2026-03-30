@@ -1,0 +1,37 @@
+## Context
+Hourly dedupe logic was added at write-time, but Postgres needs a matching unique index for conflict handling and existing duplicates must be cleaned first.
+
+## Goal
+Create a safe migration that backfills hourly dedupe and enforces hourly uniqueness going forward.
+
+## Files Changed
+- `db/schemas/MIGRATION_player_props_v2_hourly_retention.sql`
+
+## Implementation Notes (key logic explained)
+- Added a CTE using `row_number()` partitioned by `(game_id, player_id, sportsbook, prop_type, side, line_value, date_trunc('hour', fetched_at))`.
+- Deletes rows where `rn > 1`, keeping newest by `fetched_at desc, id desc`.
+- Adds unique expression index on the same key + hour bucket expression.
+
+## Key Decisions (and alternatives considered)
+- Chosen: clean duplicates in-place before unique index creation.
+- Alternative: fail index creation and require manual cleanup; rejected because rollout would be brittle.
+
+## Assumptions
+- Keeping only the newest row per key per hour preserves needed historical granularity.
+- Existing consumers do not require all intrahour duplicates.
+
+## Failure Modes
+- Migration can be heavy on a large table and may take time during peak load.
+- If rows are inserted concurrently during migration, contention may slow index creation.
+
+## How to Test (commands + steps)
+1. Run migration in staging.
+2. Verify no hourly duplicates remain:
+   - `select game_id, player_id, sportsbook, prop_type, side, line_value, date_trunc('hour', fetched_at) h, count(*) c from raw.player_prop_snapshots_v2 group by 1,2,3,4,5,6,7 having count(*) > 1 limit 10;`
+3. Confirm index exists:
+   - `select indexname from pg_indexes where tablename = 'player_prop_snapshots_v2' and indexname like '%hourly_unique%';`
+4. Run two ingestion passes in the same hour and verify duplicate rows do not increase.
+
+## Next Steps
+- Add 30-day retention pruning workflow (one-time cleanup + scheduled process).
+- Add optional/sampled `raw_json` capture.

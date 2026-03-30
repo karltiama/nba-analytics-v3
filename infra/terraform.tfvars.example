@@ -88,4 +88,7 @@ player_props_lambda_env = {
   BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
   SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
   # INCLUDE_TOMORROW   = "true"
+  # Optional: override defaults from infra/lambda.tf for raw payload capture policy.
+  # STORE_PROP_RAW_JSON       = "false"
+  # PROP_RAW_JSON_SAMPLE_RATE = "0"
 }
