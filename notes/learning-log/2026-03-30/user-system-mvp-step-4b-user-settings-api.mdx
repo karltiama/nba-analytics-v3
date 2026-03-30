@@ -1,0 +1,40 @@
+## Context
+Implemented the per-user settings API endpoint for MVP personalization.
+
+## Goal
+Add authenticated `GET` and `PUT` routes for `user_settings` with validation and safe upsert behavior.
+
+## Files Changed
+- `app/api/user/settings/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added auth requirement through `getAuthUserFromRequest`.
+- Added `ensureSettings(userId)` so first settings read initializes default row.
+- `GET` returns normalized/camelCase settings payload.
+- `PUT` validates with zod and upserts settings values.
+- Numeric DB values are converted to JS numbers on response.
+
+## Key Decisions (and alternatives considered)
+- Decision: lazy-create settings row on first read.
+  - Alternative: require explicit setup POST; skipped for lower onboarding friction.
+- Decision: use partial update semantics with `COALESCE` in SQL.
+  - Alternative: overwrite all fields each request; skipped to avoid accidental data loss.
+
+## Assumptions
+- Favorite teams can be represented as text abbreviations/ids in a text array.
+- Product can tolerate nullable optional settings in early-stage onboarding.
+
+## Failure Modes
+- Invalid payload types fail zod validation with 400.
+- Missing auth context returns 401.
+- DB/RLS issues return 500.
+
+## How to Test (commands + steps)
+1. Unauthenticated `GET /api/user/settings` should return 401.
+2. Authenticated `GET` should return defaults and create row if absent.
+3. Authenticated `PUT` with partial payload should update only provided fields.
+4. Fetch again with `GET` and confirm persistence.
+5. Verify DB row in `public.user_settings` for the same user id.
+
+## Next Steps
+- Add `/api/user/saved-props` for list/add/remove saved prop cards used by props explorer UI.

@@ -1,0 +1,65 @@
+## Context
+
+Paper trading v1 stored EV and confidence but not full model context; settlement was only manual POST; Summary was a single global ROI.
+
+## Goal
+
+Persist model snapshot at bet time, add segmented analytics for settled bets, and a cron-safe settlement endpoint with Vercel schedule.
+
+## Files Changed
+
+- `db/schemas/paper_schema.sql`, `db/schemas/MIGRATION_paper_bets_snapshot.sql`
+- `app/api/betting/paper-bets/route.ts`
+- `app/api/betting/paper-bets/analytics/route.ts` (new)
+- `app/api/betting/paper-bets/settle/route.ts`
+- `lib/betting/paper-settle-runner.ts` (new)
+- `app/api/cron/paper-settle/route.ts` (new)
+- `vercel.json` (new)
+- `app/betting/props-explorer/page.tsx`
+- `app/betting/paper/page.tsx`
+
+## Implementation Notes (key logic explained)
+
+- **Snapshot columns**: `model_probability`, `projection`, `ev_selected_track` on `paper.bets`; POST body accepts camelCase; optional for backward compatibility.
+- **Analytics**: Four `GROUP BY` queries on `status = 'settled'` with conditional aggregates (`FILTER (WHERE result = …)`). EV buckets use nested `CASE` on `ev` (decimal edge).
+- **Settlement**: `runPaperSettlement()` centralizes the prior loop; POST `/api/betting/paper-bets/settle` and GET `/api/cron/paper-settle` both call it.
+- **Cron auth**: Bearer or `?secret=` must match `PAPER_SETTLE_CRON_SECRET` or `CRON_SECRET` (Vercel cron uses `CRON_SECRET`). In production, one of these must be set or the cron route returns 503.
+
+## Key Decisions (and alternatives considered)
+
+- **Dual env vars**: Accept `CRON_SECRET` (Vercel default) so cron works without renaming; `PAPER_SETTLE_CRON_SECRET` for explicit naming.
+- **Dev without secret**: If no secret is set and `NODE_ENV !== 'production'`, cron GET is allowed without auth for local `curl`.
+- **Analytics vs client rollups**: Server-side aggregates so breakdowns are not limited to the 500-row history fetch.
+
+## Assumptions
+
+- Migration is applied before relying on new columns; existing GETs will error until `ALTER` runs.
+- Vercel project has Cron enabled and `CRON_SECRET` (or custom header) aligned with deployed env.
+
+## Failure Modes
+
+- Missing migration: INSERT/SELECT fails with unknown column.
+- `research.v_player_game_outcomes` missing: settlement unchanged (503/500).
+- Cron 401: secret mismatch between env and `Authorization` header.
+
+## How to Test (commands + steps)
+
+1. `npm test` — existing tests pass.
+2. `npm run build` — compiles.
+3. Apply `db/schemas/MIGRATION_paper_bets_snapshot.sql` in Supabase.
+4. Add a bet from Props Explorer; confirm DB row has snapshot fields.
+5. `GET /api/betting/paper-bets/analytics` — JSON segments.
+6. `GET /api/cron/paper-settle` with `Authorization: Bearer <secret>` — same JSON shape as POST settle.
+
+## Next Steps
+
+- Set `CRON_SECRET` or `PAPER_SETTLE_CRON_SECRET` in Vercel env for scheduled runs.
+- Optional: export CSV for paper bets.
+
+## Verification Checklist
+
+- [ ] Migration applied in Supabase
+- [ ] New bet from Props Explorer persists model/proj/track
+- [ ] Summary tab shows four breakdown tables when settled rows exist
+- [ ] Manual “Settle now” still works
+- [ ] Cron URL returns 401 without secret in production

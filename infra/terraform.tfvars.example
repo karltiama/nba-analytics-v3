@@ -71,8 +71,10 @@ player_props_lambda_memory_size   = 512
 player_props_enable_schedule      = true
 player_props_schedule_expression  = "rate(30 minutes)"
 
-# Optional: run only 10am-12pm ET every 30 min (UTC 15:00, 15:30, 16:00, 16:30, 17:00). When set, overrides rate above.
+# Optional: run only 9am-12pm ET every 30 min (UTC 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00). When set, overrides rate above.
 player_props_schedule_crons = [
+  "cron(0 14 * * ? *)",
+  "cron(30 14 * * ? *)",
   "cron(0 15 * * ? *)",
   "cron(30 15 * * ? *)",
   "cron(0 16 * * ? *)",

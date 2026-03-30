@@ -1,0 +1,50 @@
+## Context
+User asked to execute the player props pull and adjust the Lambda schedule to start at 9 ET.
+
+## Goal
+1) Trigger the player props ingestion run.
+2) Update schedule config so player props cron windows start at 9:00 AM ET.
+
+## Files Changed
+- `infra/terraform.tfvars.example`
+- `notes/learning-log/2026-03-30/player-props-start-at-9-et.mdx`
+
+## Implementation Notes (key logic explained)
+- Invoked the deployed controller Lambda:
+  - `aws lambda invoke --function-name nba-player-props-controller-lambda --payload "{}" infra/lambda-response-nba-player-props-controller-lambda.json --region us-east-1`
+- Response confirmed run queued successfully with:
+  - `pullRunId: 273`
+  - `queuedGames: 8`
+  - `date: 2026-03-30`
+- Updated `player_props_schedule_crons` example to add UTC `14:00` and `14:30` slots, which map to `9:00` and `9:30` ET, preserving 30-minute cadence.
+
+## Key Decisions (and alternatives considered)
+- Decision: Update `infra/terraform.tfvars.example` only.
+  - Why: Smallest safe diff that captures requested scheduling intent without broad infra refactors.
+- Alternative considered: change `infra/variables.tf` defaults.
+  - Rejected: would alter baseline module defaults for all environments rather than explicit env config values.
+
+## Assumptions
+- The active deployment uses values aligned with `terraform.tfvars`/example patterns for schedule management.
+- "Start at 9" means 9:00 AM ET in the existing ET-focused scheduling convention.
+
+## Failure Modes
+- If production/staging uses a different tfvars file, this example-only change will not affect deployed schedules until applied in real vars and `terraform apply`.
+- If timezone config differs from ET, UTC mapping may be off.
+
+## How to Test (commands + steps)
+1. Confirm invoke result payload:
+   - `Get-Content infra/lambda-response-nba-player-props-controller-lambda.json`
+2. Verify queued run in DB (optional):
+   - Query `raw.player_prop_pull_runs` for `id = 273` and status transitions.
+3. Update actual `terraform.tfvars` schedule values to include 14:00/14:30 UTC entries.
+4. Run Terraform plan:
+   - `cd infra`
+   - `terraform plan`
+5. Apply schedule update:
+   - `terraform apply`
+6. Verify scheduler next trigger times include 9:00/9:30 ET in AWS.
+
+## Next Steps
+- Mirror the same cron additions in the real `terraform.tfvars` used for deployment.
+- Apply Terraform changes and validate first two morning invocations in CloudWatch logs.

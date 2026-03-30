@@ -23,12 +23,92 @@ type PaperBet = {
   confidenceTier: string | null;
   calibrationVersion: string | null;
   decisionSnapshotAt: string;
+  modelProbability: number | null;
+  projection: number | null;
+  evSelectedTrack: string | null;
   result: string | null;
   profitUnits: number | null;
   settledAt: string | null;
 };
 
+type AnalyticsSegment = {
+  key: string;
+  count: number;
+  wins: number;
+  losses: number;
+  pushes: number;
+  voids: number;
+  stakeSum: number;
+  profitSum: number;
+};
+
+type PaperAnalytics = {
+  byPropType: AnalyticsSegment[];
+  byConfidence: AnalyticsSegment[];
+  byCalibration: AnalyticsSegment[];
+  byEvBucket: AnalyticsSegment[];
+};
+
 type Tab = 'open' | 'history' | 'summary';
+
+const EV_BUCKET_LABEL: Record<string, string> = {
+  unknown: 'EV null',
+  neg: 'EV < 0',
+  '0_2pct': '0% ≤ EV < 2%',
+  '2_5pct': '2% ≤ EV < 5%',
+  '5pct_plus': 'EV ≥ 5%',
+};
+
+function formatPct(x: number | null | undefined, digits = 1): string {
+  if (x == null || !Number.isFinite(x)) return '—';
+  return `${(x * 100).toFixed(digits)}%`;
+}
+
+function SegmentTable({ title, rows, keyLabel }: { title: string; rows: AnalyticsSegment[]; keyLabel?: (k: string) => string }) {
+  if (rows.length === 0) return null;
+  return (
+    <div className="mt-5">
+      <h3 className="text-xs font-medium text-white mb-2">{title}</h3>
+      <div className="overflow-x-auto border border-white/10 rounded-lg">
+        <table className="w-full text-left text-[11px]">
+          <thead className="bg-gray-950/80 border-b border-white/10 text-muted-foreground">
+            <tr>
+              <th className="py-1.5 px-2 font-medium">Segment</th>
+              <th className="py-1.5 px-2 font-medium text-right">n</th>
+              <th className="py-1.5 px-2 font-medium text-right">W/L/P/V</th>
+              <th className="py-1.5 px-2 font-medium text-right">Net</th>
+              <th className="py-1.5 px-2 font-medium text-right">ROI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const roi = r.stakeSum > 0 ? r.profitSum / r.stakeSum : null;
+              const label = keyLabel ? keyLabel(r.key) : r.key;
+              return (
+                <tr key={r.key} className="border-b border-white/5">
+                  <td className="py-1 px-2 text-white capitalize">{label}</td>
+                  <td className="py-1 px-2 text-right font-mono text-muted-foreground">{r.count}</td>
+                  <td className="py-1 px-2 text-right font-mono text-muted-foreground text-[10px]">
+                    {r.wins}/{r.losses}/{r.pushes}/{r.voids}
+                  </td>
+                  <td
+                    className={`py-1 px-2 text-right font-mono ${r.profitSum >= 0 ? 'text-[#39ff14]' : 'text-[#ff4757]'}`}
+                  >
+                    {r.profitSum >= 0 ? '+' : ''}
+                    {r.profitSum.toFixed(2)}
+                  </td>
+                  <td className="py-1 px-2 text-right font-mono text-white">
+                    {roi != null ? `${(roi * 100).toFixed(1)}%` : '—'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 function formatOdds(odds: number | null): string {
   if (odds == null) return '—';
@@ -43,6 +123,7 @@ function PaperBetsContent() {
 
   const [openBets, setOpenBets] = useState<PaperBet[]>([]);
   const [historyBets, setHistoryBets] = useState<PaperBet[]>([]);
+  const [analytics, setAnalytics] = useState<PaperAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [settling, setSettling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,21 +142,39 @@ function PaperBetsContent() {
     return (data.bets ?? []) as PaperBet[];
   }, []);
 
+  const loadAnalytics = useCallback(async () => {
+    const res = await fetch('/api/betting/paper-bets/analytics');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || data.error || 'Failed to load analytics');
+    return {
+      byPropType: data.byPropType ?? [],
+      byConfidence: data.byConfidence ?? [],
+      byCalibration: data.byCalibration ?? [],
+      byEvBucket: data.byEvBucket ?? [],
+    } as PaperAnalytics;
+  }, []);
+
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [open, hist] = await Promise.all([loadOpen(), loadHistory()]);
+      const [open, hist, seg] = await Promise.all([
+        loadOpen(),
+        loadHistory(),
+        loadAnalytics().catch(() => null),
+      ]);
       setOpenBets(open);
       setHistoryBets(hist);
+      setAnalytics(seg);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error');
       setOpenBets([]);
       setHistoryBets([]);
+      setAnalytics(null);
     } finally {
       setLoading(false);
     }
-  }, [loadOpen, loadHistory]);
+  }, [loadOpen, loadHistory, loadAnalytics]);
 
   useEffect(() => {
     refresh();
@@ -132,7 +231,9 @@ function PaperBetsContent() {
           <h1 className="text-xl font-semibold text-white">Paper Bets</h1>
           <p className="text-xs text-muted-foreground mt-1">
             Log legs from Props Explorer. Settlement uses Final box scores (same stat mapping as research views).
-            ROI = sum(profit) / sum(stake) on settled bets. No auth in v1 — personal use only.
+            ROI = sum(profit) / sum(stake) on settled bets. Cron: GET /api/cron/paper-settle (Bearer{' '}
+            <span className="font-mono">PAPER_SETTLE_CRON_SECRET</span> or <span className="font-mono">CRON_SECRET</span>
+            ). No auth in v1 — personal use only.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -216,6 +317,26 @@ function PaperBetsContent() {
               </dd>
             </div>
           </dl>
+          <p className="text-[10px] text-muted-foreground">
+            Breakdowns use all settled rows in the database (not limited by the 500-row history fetch). EV buckets use
+            decimal edge as stored (e.g. 0.05 = 5%).
+          </p>
+          {loading && !analytics ? (
+            <p className="text-xs text-muted-foreground mt-4">Loading breakdowns…</p>
+          ) : analytics ? (
+            <>
+              <SegmentTable title="By prop type" rows={analytics.byPropType} />
+              <SegmentTable title="By confidence tier" rows={analytics.byConfidence} />
+              <SegmentTable title="By calibration version" rows={analytics.byCalibration} />
+              <SegmentTable
+                title="By EV bucket"
+                rows={analytics.byEvBucket}
+                keyLabel={(k) => EV_BUCKET_LABEL[k] ?? k}
+              />
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground mt-4">Breakdowns unavailable.</p>
+          )}
         </div>
       )}
 
@@ -233,6 +354,9 @@ function PaperBetsContent() {
                   <th className="py-2 px-2 font-medium">Book</th>
                   <th className="py-2 px-2 font-medium text-right">Odds</th>
                   <th className="py-2 px-2 font-medium text-right">Stake</th>
+                  <th className="py-2 px-2 font-medium text-right">Model</th>
+                  <th className="py-2 px-2 font-medium text-right">Proj</th>
+                  <th className="py-2 px-2 font-medium">Track</th>
                   {validTab === 'history' && (
                     <>
                       <th className="py-2 px-2 font-medium">Result</th>
@@ -245,13 +369,13 @@ function PaperBetsContent() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={validTab === 'history' ? 11 : 8} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={validTab === 'history' ? 14 : 11} className="py-8 text-center text-muted-foreground">
                       Loading…
                     </td>
                   </tr>
                 ) : displayRows.length === 0 ? (
                   <tr>
-                    <td colSpan={validTab === 'history' ? 11 : 8} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={validTab === 'history' ? 14 : 11} className="py-8 text-center text-muted-foreground">
                       {validTab === 'open' ? 'No open bets. Add from Props Explorer.' : 'No settled bets yet.'}
                     </td>
                   </tr>
@@ -281,6 +405,15 @@ function PaperBetsContent() {
                       </td>
                       <td className="py-1.5 px-2 text-right font-mono">{formatOdds(b.oddsAmerican)}</td>
                       <td className="py-1.5 px-2 text-right font-mono">{b.stakeUnits}</td>
+                      <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
+                        {formatPct(b.modelProbability)}
+                      </td>
+                      <td className="py-1.5 px-2 text-right font-mono text-white">
+                        {b.projection != null && Number.isFinite(b.projection) ? b.projection.toFixed(1) : '—'}
+                      </td>
+                      <td className="py-1.5 px-2 text-[10px] font-mono text-muted-foreground truncate max-w-[100px]">
+                        {b.evSelectedTrack ?? '—'}
+                      </td>
                       {validTab === 'history' && (
                         <>
                           <td className="py-1.5 px-2 capitalize text-muted-foreground">{b.result ?? '—'}</td>

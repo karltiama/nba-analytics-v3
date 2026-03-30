@@ -18,6 +18,9 @@ const createBetSchema = z.object({
   confidenceTier: z.enum(['high', 'medium', 'low']).nullable().optional(),
   calibrationVersion: z.string().nullable().optional(),
   decisionSnapshotAt: z.string().min(1),
+  modelProbability: z.number().nullable().optional(),
+  projection: z.number().nullable().optional(),
+  evSelectedTrack: z.string().nullable().optional(),
 });
 
 function toStrId(v: number | string): string {
@@ -43,6 +46,9 @@ type BetRow = {
   confidence_tier: string | null;
   calibration_version: string | null;
   decision_snapshot_at: string;
+  model_probability: string | number | null;
+  projection: string | number | null;
+  ev_selected_track: string | null;
   result: string | null;
   profit_units: string | number | null;
   settled_at: string | null;
@@ -68,6 +74,9 @@ function mapBet(r: BetRow) {
     confidenceTier: r.confidence_tier,
     calibrationVersion: r.calibration_version,
     decisionSnapshotAt: r.decision_snapshot_at,
+    modelProbability: r.model_probability != null ? Number(r.model_probability) : null,
+    projection: r.projection != null ? Number(r.projection) : null,
+    evSelectedTrack: r.ev_selected_track ?? null,
     result: r.result,
     profitUnits: r.profit_units != null ? Number(r.profit_units) : null,
     settledAt: r.settled_at,
@@ -103,7 +112,8 @@ export async function GET(request: NextRequest) {
     const rows = await query<BetRow>(
       `SELECT id, created_at, status, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
               line_value, odds_american, implied_probability, stake_units, ev, confidence_tier, calibration_version,
-              decision_snapshot_at, result, profit_units, settled_at
+              decision_snapshot_at, model_probability, projection, ev_selected_track,
+              result, profit_units, settled_at
        FROM paper.bets
        ${where}
        ORDER BY
@@ -151,15 +161,16 @@ export async function POST(request: NextRequest) {
       `INSERT INTO paper.bets (
          status, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
          line_value, odds_american, implied_probability, stake_units, ev, confidence_tier, calibration_version,
-         decision_snapshot_at
+         decision_snapshot_at, model_probability, projection, ev_selected_track
        ) VALUES (
          'open', $1, $2, $3, $4, $5, $6, $7,
          $8, $9, $10, $11, $12, $13, $14,
-         $15::timestamptz
+         $15::timestamptz, $16, $17, $18
        )
        RETURNING id, created_at, status, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
                  line_value, odds_american, implied_probability, stake_units, ev, confidence_tier, calibration_version,
-                 decision_snapshot_at, result, profit_units, settled_at`,
+                 decision_snapshot_at, model_probability, projection, ev_selected_track,
+                 result, profit_units, settled_at`,
       [
         gameId,
         playerId,
@@ -176,6 +187,9 @@ export async function POST(request: NextRequest) {
         d.confidenceTier ?? null,
         d.calibrationVersion ?? null,
         d.decisionSnapshotAt,
+        d.modelProbability ?? null,
+        d.projection ?? null,
+        d.evSelectedTrack ?? null,
       ]
     );
 

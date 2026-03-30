@@ -41,6 +41,17 @@ type ExplorerMeta = {
   dir: string;
 };
 
+type SavedProp = {
+  id: string;
+  gameId: string;
+  playerId: number;
+  sportsbook: string | null;
+  propType: string | null;
+  side: string | null;
+  lineValue: number | null;
+  snapshotAt: string | null;
+};
+
 type PageProps = {
   params?: Promise<Record<string, string | string[]>>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -109,6 +120,20 @@ export default function PropsExplorerPage(props: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [games, setGames] = useState<Array<{ id: string; label: string }>>([]);
   const [addingPaperKey, setAddingPaperKey] = useState<string | null>(null);
+  const [savedPropIdByKey, setSavedPropIdByKey] = useState<Record<string, string>>({});
+  const [savingPropKey, setSavingPropKey] = useState<string | null>(null);
+
+  const buildSavedPropKey = useCallback((v: SavedProp | ExplorerRow) => {
+    return [
+      String(v.gameId),
+      String(v.playerId),
+      v.sportsbook ?? '',
+      v.propType ?? '',
+      v.side ?? '',
+      v.lineValue ?? '',
+      v.snapshotAt ?? '',
+    ].join('|');
+  }, []);
 
   const updateParams = useCallback(
     (updates: Record<string, string | null>) => {
@@ -148,6 +173,32 @@ export default function PropsExplorerPage(props: PageProps) {
       cancelled = true;
     };
   }, [date]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/user/saved-props?limit=200');
+        if (res.status === 401) {
+          if (!cancelled) setSavedPropIdByKey({});
+          return;
+        }
+        if (!res.ok) return;
+        const data = await res.json();
+        const next: Record<string, string> = {};
+        for (const row of data.rows ?? []) {
+          const key = buildSavedPropKey(row as SavedProp);
+          next[key] = String(row.id);
+        }
+        if (!cancelled) setSavedPropIdByKey(next);
+      } catch {
+        if (!cancelled) setSavedPropIdByKey({});
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [buildSavedPropKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -224,6 +275,9 @@ export default function PropsExplorerPage(props: PageProps) {
             confidenceTier: r.confidenceTier ?? null,
             calibrationVersion: r.calibrationVersion,
             decisionSnapshotAt: r.snapshotAt,
+            modelProbability: r.modelProbability,
+            projection: r.projection,
+            evSelectedTrack: r.evSelectedTrack,
           }),
         });
         const data = await res.json().catch(() => ({}));
@@ -236,6 +290,59 @@ export default function PropsExplorerPage(props: PageProps) {
       }
     },
     [router]
+  );
+
+  const toggleSavedProp = useCallback(
+    async (r: ExplorerRow) => {
+      const key = buildSavedPropKey(r);
+      setSavingPropKey(key);
+      setError(null);
+      try {
+        const existingId = savedPropIdByKey[key];
+        if (existingId) {
+          const res = await fetch(`/api/user/saved-props?id=${encodeURIComponent(existingId)}`, {
+            method: 'DELETE',
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.message || data.error || 'Failed to remove saved prop');
+          setSavedPropIdByKey((prev) => {
+            const copy = { ...prev };
+            delete copy[key];
+            return copy;
+          });
+          return;
+        }
+
+        const res = await fetch('/api/user/saved-props', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gameId: r.gameId,
+            playerId: r.playerId,
+            playerName: r.playerName,
+            sportsbook: r.sportsbook,
+            propType: r.propType,
+            marketType: r.marketType,
+            side: r.side,
+            lineValue: r.lineValue,
+            oddsAmerican: r.oddsAmerican,
+            impliedProbability: r.impliedProbability,
+            snapshotAt: r.snapshotAt,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || data.error || 'Failed to save prop');
+        const savedId = data?.savedProp?.id;
+        if (savedId) {
+          setSavedPropIdByKey((prev) => ({ ...prev, [key]: String(savedId) }));
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Could not save prop');
+      } finally {
+        setSavingPropKey(null);
+      }
+    },
+    [buildSavedPropKey, savedPropIdByKey]
   );
 
   return (
@@ -428,29 +535,32 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">EV B</th>
                 <th className="py-2 px-2 font-medium text-right">Proj</th>
                 <th className="py-2 px-2 font-medium">Updated</th>
+                <th className="py-2 px-2 font-medium w-[72px]">Save</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
               </tr>
             </thead>
             <tbody>
               {loading && rows.length === 0 ? (
                 <tr>
-                  <td colSpan={16} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={17} className="py-8 text-center text-muted-foreground">
                     Loading…
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={16} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={17} className="py-8 text-center text-muted-foreground">
                     No rows. Adjust filters or date.
                   </td>
                 </tr>
               ) : (
                 rows.map((r, idx) => {
                   const paperKey = `${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}`;
+                  const saveKey = buildSavedPropKey(r);
+                  const isSaved = Boolean(savedPropIdByKey[saveKey]);
                   return (
                   <tr
                     key={`${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
-                    className="border-b border-white/5 hover:bg-white/[0.03]"
+                    className="border-b border-white/5 hover:bg-white/3"
                   >
                     <td className="py-1.5 px-2 font-mono text-muted-foreground">
                       <Link
@@ -513,6 +623,17 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="py-1.5 px-2 text-[10px] text-muted-foreground whitespace-nowrap">
                       {new Date(r.snapshotAt).toLocaleString()}
+                    </td>
+                    <td className="py-1.5 px-1">
+                      <button
+                        type="button"
+                        disabled={savingPropKey !== null}
+                        onClick={() => toggleSavedProp(r)}
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-white/20 text-white hover:bg-white/10 disabled:opacity-40"
+                        title={isSaved ? 'Remove saved prop' : 'Save prop'}
+                      >
+                        {savingPropKey === saveKey ? '…' : isSaved ? 'Saved' : 'Save'}
+                      </button>
                     </td>
                     <td className="py-1.5 px-1">
                       <button

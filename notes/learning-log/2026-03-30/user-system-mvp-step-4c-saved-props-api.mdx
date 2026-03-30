@@ -1,0 +1,41 @@
+## Context
+Implemented saved-props API needed for user-specific bookmarking in the props explorer flow.
+
+## Goal
+Provide authenticated endpoints to list, save, and remove saved props.
+
+## Files Changed
+- `app/api/user/saved-props/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added auth requirement to all methods (`GET`, `POST`, `DELETE`).
+- `GET` returns newest saved props for current user (with optional `limit`).
+- `POST` validates payload and inserts/upserts a saved prop record.
+  - Uses conflict target aligned with dedupe index fields.
+  - On duplicate, updates note value if provided.
+- `DELETE` removes by `id` only when row belongs to current user.
+
+## Key Decisions (and alternatives considered)
+- Decision: use `DELETE ?id=` for simple remove flow.
+  - Alternative: delete by composite key payload; skipped for cleaner frontend state updates.
+- Decision: preserve denormalized prop details in saved record.
+  - Alternative: store only pointer to snapshot row; skipped because snapshot lifecycles vary.
+
+## Assumptions
+- `snapshotAt` from client can be nullable; dedupe key handles null with fallback sentinel.
+- `playerId` can be safely cast to bigint.
+
+## Failure Modes
+- Missing auth context returns 401.
+- Invalid `snapshotAt` format fails zod validation.
+- Invalid UUID in delete id path returns 500 from DB cast error (could be refined later).
+
+## How to Test (commands + steps)
+1. Authenticated `GET /api/user/saved-props` should return an array.
+2. `POST /api/user/saved-props` with a valid prop payload should return `savedProp`.
+3. Repeat same `POST` payload and confirm dedupe/upsert behavior.
+4. `DELETE /api/user/saved-props?id=<saved_id>` should return `{ ok: true }`.
+5. Confirm row ownership enforcement by trying delete with another user token.
+
+## Next Steps
+- Connect props explorer UI to save/unsave actions and reflect saved state client-side.

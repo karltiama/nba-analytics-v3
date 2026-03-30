@@ -22,6 +22,9 @@ create table if not exists paper.bets (
   confidence_tier        text,
   calibration_version    text,
   decision_snapshot_at   timestamptz not null,
+  model_probability      numeric,
+  projection             numeric,
+  ev_selected_track      text,
   result                 text check (result is null or result in ('win', 'loss', 'push', 'void')),
   profit_units           numeric,
   settled_at             timestamptz
