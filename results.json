@@ -1,0 +1,150 @@
+{
+  "sampleSize": 5000,
+  "brierScore": 0.23886813843064056,
+  "totalBetsEvaluated": 5000,
+  "evDistribution": {
+    "above_15pct": 464,
+    "10_to_15pct": 418,
+    "5_to_10pct": 398,
+    "2_to_5pct": 272,
+    "0_to_2pct": 227,
+    "neg_0_to_5pct": 549,
+    "neg_5_to_10pct": 589,
+    "neg_10_to_15pct": 688,
+    "below_neg15pct": 1395
+  },
+  "byThreshold": {
+    "ev_0pct": {
+      "betsPlaced": 1779,
+      "won": 1097,
+      "hitRate": 0.6166385609893198,
+      "roiUnits": 315.8214464930935,
+      "roaPct": 17.75275134868429
+    },
+    "ev_2pct": {
+      "betsPlaced": 1552,
+      "won": 974,
+      "hitRate": 0.6275773195876289,
+      "roiUnits": 312.0576615949142,
+      "roaPct": 20.10680809245581
+    },
+    "ev_5pct": {
+      "betsPlaced": 1280,
+      "won": 820,
+      "hitRate": 0.640625,
+      "roiUnits": 298.6241424233769,
+      "roaPct": 23.33001112682632
+    },
+    "ev_8pct": {
+      "betsPlaced": 1028,
+      "won": 663,
+      "hitRate": 0.6449416342412452,
+      "roiUnits": 254.14568835519697,
+      "roaPct": 24.722343225213713
+    },
+    "ev_10pct": {
+      "betsPlaced": 882,
+      "won": 568,
+      "hitRate": 0.6439909297052154,
+      "roiUnits": 221.69417226126953,
+      "roaPct": 25.135393680416048
+    }
+  },
+  "byPropType": {
+    "assists": {
+      "betsPlaced": 252,
+      "won": 166,
+      "hitRate": 0.6587301587301587,
+      "roiUnits": 60.738291943103505,
+      "roaPct": 24.10249680281885
+    },
+    "points": {
+      "betsPlaced": 314,
+      "won": 210,
+      "hitRate": 0.6687898089171974,
+      "roiUnits": 88.47383164649573,
+      "roaPct": 28.17637950525342
+    },
+    "points_assists": {
+      "betsPlaced": 74,
+      "won": 46,
+      "hitRate": 0.6216216216216216,
+      "roiUnits": 11.842995032379111,
+      "roaPct": 16.004047341052853
+    },
+    "points_rebounds": {
+      "betsPlaced": 105,
+      "won": 60,
+      "hitRate": 0.5714285714285714,
+      "roiUnits": 7.919995671496364,
+      "roaPct": 7.542853020472728
+    },
+    "points_rebounds_assists": {
+      "betsPlaced": 124,
+      "won": 77,
+      "hitRate": 0.6209677419354839,
+      "roiUnits": 22.548814156841814,
+      "roaPct": 18.184527545840172
+    },
+    "rebounds": {
+      "betsPlaced": 328,
+      "won": 188,
+      "hitRate": 0.573170731707317,
+      "roiUnits": 27.344895897377388,
+      "roaPct": 8.336858505297984
+    },
+    "rebounds_assists": {
+      "betsPlaced": 71,
+      "won": 42,
+      "hitRate": 0.5915492957746479,
+      "roiUnits": 10.053601862178327,
+      "roaPct": 14.160002622786378
+    },
+    "threes": {
+      "betsPlaced": 284,
+      "won": 185,
+      "hitRate": 0.6514084507042254,
+      "roiUnits": 83.13523538504096,
+      "roaPct": 29.272970206000338
+    }
+  },
+  "byConfidence": {
+    "high": {
+      "betsPlaced": 107,
+      "won": 68,
+      "hitRate": 0.6355140186915887,
+      "roiUnits": 20.14115613082677,
+      "roaPct": 18.82351040264184
+    },
+    "medium": {
+      "betsPlaced": 487,
+      "won": 317,
+      "hitRate": 0.6509240246406571,
+      "roiUnits": 123.43248512379314,
+      "roaPct": 25.34547949153863
+    },
+    "low": {
+      "betsPlaced": 958,
+      "won": 589,
+      "hitRate": 0.6148225469728601,
+      "roiUnits": 168.4840203402934,
+      "roaPct": 17.587058490636053
+    }
+  },
+  "bySide": {
+    "over": {
+      "betsPlaced": 471,
+      "won": 300,
+      "hitRate": 0.6369426751592356,
+      "roiUnits": 121.99444244869782,
+      "roaPct": 25.901155509277668
+    },
+    "under": {
+      "betsPlaced": 1081,
+      "won": 674,
+      "hitRate": 0.6234967622571693,
+      "roiUnits": 190.0632191462154,
+      "roaPct": 17.58216643350744
+    }
+  }
+}

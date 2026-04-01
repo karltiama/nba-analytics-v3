@@ -51,11 +51,10 @@ function buildWhereClause(sp: URLSearchParams): { sql: string; params: unknown[]
     i++;
   }
 
-  const playerIdParam = sp.get('player_id');
-  const playerId = playerIdParam != null ? parseInt(playerIdParam, 10) : NaN;
-  if (Number.isFinite(playerId)) {
-    conditions.push(`p.player_id = $${i++}`);
-    params.push(playerId);
+  const playerName = sp.get('player_name')?.trim();
+  if (playerName) {
+    conditions.push(`COALESCE(p.player_name, pl.full_name) ILIKE $${i++}`);
+    params.push(`%${playerName}%`);
   }
 
   const propType = sp.get('prop_type')?.trim();
@@ -71,10 +70,13 @@ function buildWhereClause(sp: URLSearchParams): { sql: string; params: unknown[]
     params.push(side);
   }
 
-  const sportsbook = sp.get('sportsbook')?.trim();
-  if (sportsbook) {
-    conditions.push(`p.sportsbook = $${i++}`);
-    params.push(sportsbook);
+  const sportsbookParam = sp.get('sportsbook')?.trim();
+  if (sportsbookParam) {
+    const books = sportsbookParam.split(',').filter(Boolean).map((b) => b.toLowerCase());
+    if (books.length > 0) {
+      conditions.push(`p.sportsbook = ANY($${i++})`);
+      params.push(books);
+    }
   }
 
   const marketType = (sp.get('market_type') || 'over_under').trim().toLowerCase();

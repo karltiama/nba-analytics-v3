@@ -123,11 +123,28 @@ function clamp01(v: number): number {
   return v;
 }
 
-const MAX_MODEL_MARKET_PROB_GAP = 0.2;
+/**
+ * Odds-aware anchor scaling.
+ * BASE_ANCHOR_BUDGET controls the max EV the model can express at any odds level.
+ * effectiveGap = BASE_ANCHOR_BUDGET / (decimalOdds - 1), clamped to [MIN, MAX].
+ *
+ *   -450 (1.22 dec) → gap = min(10%, 0.08/0.22) = 10.0%  (capped)
+ *   -200 (1.50 dec) → gap = min(10%, 0.08/0.50) = 10.0%  (capped)
+ *   -110 (1.91 dec) → gap ≈ 8.8%
+ *   +100 (2.00 dec) → gap = 8.0%
+ *   +150 (2.50 dec) → gap ≈ 5.3%
+ *   +200 (3.00 dec) → gap = 4.0%
+ *   +260 (3.60 dec) → gap ≈ 3.1%
+ */
+const BASE_ANCHOR_BUDGET = 0.08;
+const MIN_ANCHOR_GAP = 0.02;
+const MAX_ANCHOR_GAP = 0.10;
 
-function anchorToMarket(modelProb: number, marketProb: number): number {
-  const lo = Math.max(0, marketProb - MAX_MODEL_MARKET_PROB_GAP);
-  const hi = Math.min(1, marketProb + MAX_MODEL_MARKET_PROB_GAP);
+function anchorToMarket(modelProb: number, marketProb: number, decimalOdds: number = 1.91): number {
+  const rawGap = BASE_ANCHOR_BUDGET / Math.max(decimalOdds - 1, 0.1);
+  const effectiveGap = Math.max(MIN_ANCHOR_GAP, Math.min(MAX_ANCHOR_GAP, rawGap));
+  const lo = Math.max(0, marketProb - effectiveGap);
+  const hi = Math.min(1, marketProb + effectiveGap);
   return Math.max(lo, Math.min(hi, modelProb));
 }
 
@@ -176,7 +193,7 @@ export function computePropEvFields(
     Number.isFinite(baselineResult.projection) ? baselineResult.projection : null;
   const pOverBase = baselineResult.probability;
   const pSideRawBaseline = isUnder ? 1 - pOverBase : pOverBase;
-  const pBase = anchorToMarket(clamp01(pSideRawBaseline), marketProb);
+  const pBase = anchorToMarket(clamp01(pSideRawBaseline), marketProb, decimalOdds);
   if (!Number.isFinite(pBase)) {
     return { ...EMPTY, calibrationVersion: calVer };
   }
@@ -186,7 +203,7 @@ export function computePropEvFields(
 
   const pSideRawA = clamp01(pSideRawBaseline);
   const pCalA = clamp01(calibrateProbability(pSideRawA, propTypeStr, 'trackA'));
-  const pAnchA = anchorToMarket(pCalA, marketProb);
+  const pAnchA = anchorToMarket(pCalA, marketProb, decimalOdds);
   const modelProbabilityTrackA = pAnchA;
   const evTrackA = evFromProb(pAnchA, decimalOdds);
   const projectionTrackA = projection;
@@ -211,7 +228,7 @@ export function computePropEvFields(
   const pOverB = upgradedResult.probability;
   const pSideRawB = clamp01(isUnder ? 1 - pOverB : pOverB);
   const pCalB = clamp01(calibrateProbability(pSideRawB, propTypeStr, 'trackB'));
-  const pAnchB = anchorToMarket(pCalB, marketProb);
+  const pAnchB = anchorToMarket(pCalB, marketProb, decimalOdds);
   const modelProbabilityTrackB = pAnchB;
   const evTrackB = evFromProb(pAnchB, decimalOdds);
   const evTrackBRaw = evFromProb(pSideRawB, decimalOdds);

@@ -3,7 +3,7 @@
 import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, CalendarDays, ListFilter } from 'lucide-react';
 import { getTodayET, addDaysET, getDateLabel } from '@/components/betting';
 
 type ExplorerRow = {
@@ -87,6 +87,15 @@ const SORT_OPTIONS = [
   { value: 'odds_american', label: 'American odds' },
 ] as const;
 
+const AVAILABLE_BOOKS = [
+  { id: 'draftkings', label: 'DraftKings' },
+  { id: 'fanduel', label: 'FanDuel' },
+  { id: 'betmgm', label: 'BetMGM' },
+  { id: 'caesars', label: 'Caesars' },
+  { id: 'betrivers', label: 'BetRivers' },
+  { id: 'fanatics', label: 'Fanatics' },
+];
+
 export default function PropsExplorerPage(props: PageProps) {
   if (props.params) use(props.params);
   if (props.searchParams) use(props.searchParams);
@@ -101,10 +110,11 @@ export default function PropsExplorerPage(props: PageProps) {
   }, [searchParams]);
 
   const gameId = searchParams.get('game_id') ?? '';
-  const playerId = searchParams.get('player_id') ?? '';
+  const playerName = searchParams.get('player_name') ?? '';
   const propType = searchParams.get('prop_type') ?? '';
   const side = searchParams.get('side') ?? 'all';
   const sportsbook = searchParams.get('sportsbook') ?? '';
+  const selectedBooks = useMemo(() => new Set(sportsbook.split(',').filter(Boolean)), [sportsbook]);
   const sort = searchParams.get('sort') ?? 'snapshot_at';
   const dir = searchParams.get('dir') === 'asc' ? 'asc' : 'desc';
   const minEv = searchParams.get('min_ev') ?? '';
@@ -213,7 +223,7 @@ export default function PropsExplorerPage(props: PageProps) {
         u.searchParams.set('dir', dir);
         if (gameId.trim()) u.searchParams.set('game_id', gameId.trim());
         else u.searchParams.set('date', date);
-        if (playerId.trim()) u.searchParams.set('player_id', playerId.trim());
+        if (playerName.trim()) u.searchParams.set('player_name', playerName.trim());
         if (propType.trim()) u.searchParams.set('prop_type', propType.trim());
         if (side && side !== 'all') u.searchParams.set('side', side);
         if (sportsbook.trim()) u.searchParams.set('sportsbook', sportsbook.trim());
@@ -240,7 +250,7 @@ export default function PropsExplorerPage(props: PageProps) {
     return () => {
       cancelled = true;
     };
-  }, [date, gameId, playerId, propType, side, sportsbook, sort, dir, minEv, limit, offset]);
+  }, [date, gameId, playerName, propType, side, sportsbook, sort, dir, minEv, limit, offset]);
 
   const selectClass =
     'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]';
@@ -362,39 +372,44 @@ export default function PropsExplorerPage(props: PageProps) {
         )}
       </div>
 
-      <div className="glass-card rounded-xl p-3 sm:p-4 space-y-3 mb-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 shrink-0">
+      <div className="glass-card rounded-xl border border-white/5 mb-6 overflow-hidden">
+        {/* Context Row */}
+        <div className="bg-white/5 p-3 sm:px-4 border-b border-white/5 flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-1 shrink-0 bg-gray-900/50 p-1 rounded-lg border border-white/5">
             <button
               type="button"
               onClick={() => updateParams({ date: addDaysET(date, -1), offset: '0' })}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-white"
+              className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
               aria-label="Previous day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm font-medium text-white min-w-[100px] text-center">
-              {getDateLabel(date)}
-            </span>
+            <div className="flex items-center gap-1.5 px-2">
+              <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-sm font-medium text-white min-w-[80px] text-center">
+                {getDateLabel(date)}
+              </span>
+            </div>
             <button
               type="button"
               onClick={() => updateParams({ date: addDaysET(date, 1), offset: '0' })}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-white"
+              className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
               aria-label="Next day"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
+            <div className="w-[1px] h-4 bg-white/10 mx-1" />
             <button
               type="button"
               onClick={() => updateParams({ date: getTodayET(), offset: '0' })}
-              className="ml-1 px-2 py-1 rounded text-xs text-muted-foreground hover:bg-white/10 hover:text-white"
+              className="px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white transition-colors rounded"
             >
               Today
             </button>
           </div>
 
           <select
-            className={selectClass}
+            className={`${selectClass} min-w-[200px] border-white/5`}
             aria-label="Game"
             value={gameId}
             onChange={(e) => updateParams({ game_id: e.target.value || null, offset: '0' })}
@@ -406,80 +421,132 @@ export default function PropsExplorerPage(props: PageProps) {
               </option>
             ))}
           </select>
-
-          <input
-            className={`${inputClass} w-24`}
-            placeholder="Player ID"
-            value={playerId}
-            onChange={(e) => updateParams({ player_id: e.target.value || null, offset: '0' })}
-            aria-label="Player ID"
-          />
-
-          <input
-            className={`${inputClass} w-28`}
-            placeholder="Prop type"
-            value={propType}
-            onChange={(e) => updateParams({ prop_type: e.target.value || null, offset: '0' })}
-            aria-label="Prop type prefix"
-          />
-
-          <select
-            className={selectClass}
-            value={side}
-            onChange={(e) => updateParams({ side: e.target.value === 'all' ? null : e.target.value, offset: '0' })}
-            aria-label="Side"
-          >
-            <option value="all">All sides</option>
-            <option value="over">Over</option>
-            <option value="under">Under</option>
-          </select>
-
-          <input
-            className={`${inputClass} w-32`}
-            placeholder="Sportsbook"
-            value={sportsbook}
-            onChange={(e) => updateParams({ sportsbook: e.target.value || null, offset: '0' })}
-            aria-label="Sportsbook"
-          />
-
-          <select
-            className={selectClass}
-            value={sort}
-            onChange={(e) => updateParams({ sort: e.target.value, offset: '0' })}
-            aria-label="Sort by"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className={selectClass}
-            value={dir}
-            onChange={(e) => updateParams({ dir: e.target.value, offset: '0' })}
-            aria-label="Sort direction"
-          >
-            <option value="desc">Desc</option>
-            <option value="asc">Asc</option>
-          </select>
-
-          <input
-            className={`${inputClass} w-20`}
-            placeholder="Min EV"
-            value={minEv}
-            onChange={(e) => updateParams({ min_ev: e.target.value || null, offset: '0' })}
-            aria-label="Minimum EV"
-          />
         </div>
 
-        {evSortActive && meta?.evFetchCap != null && (
-          <p className="text-[10px] text-amber-200/90">
-            EV sorts scan up to {meta.evFetchCap} freshest rows, then sort — global order is approximate
-            for very large slates.
-          </p>
-        )}
+        {/* Main Filters Grid */}
+        <div className="p-3 sm:p-4 space-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div className="relative col-span-2 md:col-span-1">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <Search className="h-3.5 w-3.5 text-muted-foreground" />
+              </div>
+              <input
+                className={`${inputClass} pl-8`}
+                placeholder="Player Name"
+                value={playerName}
+                onChange={(e) => updateParams({ player_name: e.target.value || null, offset: '0' })}
+                aria-label="Player Name"
+              />
+            </div>
+
+            <select
+              className={selectClass}
+              value={propType}
+              onChange={(e) => updateParams({ prop_type: e.target.value || null, offset: '0' })}
+              aria-label="Prop type"
+            >
+              <option value="">All props</option>
+              <option value="points">Points</option>
+              <option value="rebounds">Rebounds</option>
+              <option value="assists">Assists</option>
+              <option value="threes">Threes</option>
+              <option value="points_assists">Pts + Ast</option>
+              <option value="points_rebounds">Pts + Reb</option>
+              <option value="rebounds_assists">Reb + Ast</option>
+              <option value="points_rebounds_assists">PRA</option>
+              <option value="steals">Steals</option>
+              <option value="blocks">Blocks</option>
+              <option value="turnovers">Turnovers</option>
+            </select>
+
+            <select
+              className={selectClass}
+              value={side}
+              onChange={(e) => updateParams({ side: e.target.value === 'all' ? null : e.target.value, offset: '0' })}
+              aria-label="Side"
+            >
+              <option value="all">All sides</option>
+              <option value="over">Over</option>
+              <option value="under">Under</option>
+            </select>
+
+            <div className="relative col-span-1">
+              <input
+                className={`${inputClass} pl-8`}
+                placeholder="0.0%"
+                value={minEv}
+                onChange={(e) => updateParams({ min_ev: e.target.value || null, offset: '0' })}
+                aria-label="Minimum EV"
+              />
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <span className="text-muted-foreground text-xs font-medium">EV+</span>
+              </div>
+            </div>
+
+            <div className="col-span-2 md:col-span-4 lg:col-span-1 flex items-center gap-2">
+              <select
+                className={`${selectClass} flex-1`}
+                value={sort}
+                onChange={(e) => updateParams({ sort: e.target.value, offset: '0' })}
+                aria-label="Sort by"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                className={`${selectClass} w-20 shrink-0`}
+                value={dir}
+                onChange={(e) => updateParams({ dir: e.target.value, offset: '0' })}
+                aria-label="Sort direction"
+              >
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-white/5">
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium shrink-0">
+              <ListFilter className="w-3.5 h-3.5" />
+              <span>Sportsbooks:</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5" aria-label="Sportsbooks">
+              {AVAILABLE_BOOKS.map((book) => {
+                const active = selectedBooks.has(book.id);
+                return (
+                  <button
+                    key={book.id}
+                    type="button"
+                    onClick={() => {
+                      const next = new Set(selectedBooks);
+                      if (active) next.delete(book.id);
+                      else next.add(book.id);
+                      const val = Array.from(next).join(',');
+                      updateParams({ sportsbook: val || null, offset: '0' });
+                    }}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded-full border transition-all duration-200 ${
+                      active 
+                        ? 'bg-[#00d4ff]/20 border-[#00d4ff]/50 text-[#00d4ff] shadow-[0_0_10px_rgba(0,212,255,0.1)]' 
+                        : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {book.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {evSortActive && meta?.evFetchCap != null && (
+            <p className="text-[10px] text-amber-200/90 pt-1">
+              EV sorts scan up to {meta.evFetchCap} freshest rows, then sort — global order is approximate
+              for very large slates.
+            </p>
+          )}
+        </div>
       </div>
 
       {error && (
