@@ -1,0 +1,89 @@
+## Context
+
+The matchup **AI Projection Summary** card already showed deterministic chips (`getGameSummaryBullets`) and optional injury “game context” prose. The product asked for a short **LLM-written** 2–4 sentence summary grounded in that same on-page data.
+
+## Goal
+
+- **Goal:** Call OpenAI from the server to produce a 2–4 sentence matchup summary from existing signals (bullets, optional injury narrative, optional odds hint).
+- **Inputs:** `OPENAI_API_KEY` (optional); POST body with team names, bullets, optional injury fields, optional odds string.
+- **Output/Done:** New API route returns `{ summary }`; the card shows loading, then text, or a clear fallback when the key is missing or the request fails.
+
+## Files Changed
+
+- `app/api/betting/games/[gameId]/ai-projection-summary/route.ts` — `POST`, Zod validation, `fetch` to OpenAI Chat Completions (no new npm dependency).
+- `components/betting/MatchupPageLayout.tsx` — `formatOddsHintForAi`, client fetch on load, UI for loading / success / unavailable / error, footer copy when summary succeeds.
+
+## Implementation Notes (key logic explained)
+
+- **Server-only secret:** The browser never sees `OPENAI_API_KEY`; the route returns `503` with `code: "NO_OPENAI_KEY"` when unset so the UI can show setup instructions instead of a hard error.
+- **No new package:** OpenAI is called via `fetch` to `https://api.openai.com/v1/chat/completions` (alternative: official `openai` SDK for retries and typings; adds a dependency).
+- **Prompt:** System message instructs 2–4 sentences, facts-only from the payload, no picks. User message includes matchup label, bullets, optional odds line, optional injury intro/paragraphs, plus `game id` for traceability.
+- **Model:** Defaults to `gpt-4o-mini`; override with `OPENAI_MODEL` for cost or quality tuning.
+- **Client:** One `useEffect` per loaded `data` builds the POST body from the same `getGameSummaryBullets` / `injuryNarrative` already used for display; `AbortController` cancels on unmount or Strict Mode double-invoke.
+
+## Key Decisions (and alternatives considered)
+
+- **POST with client-built context vs. server re-fetching `/details`:** Re-fetching would duplicate DB work and coupling; sending the structured context the UI already computed keeps one source of truth and fewer round trips.
+- **`fetch` vs. `openai` package:** Zero dependency and small surface; tradeoff is manual error parsing and no built-in retries.
+- **Graceful 503 when key missing:** Avoids treating “not configured” as a user-facing failure; devs see how to enable.
+
+## Assumptions
+
+- Game details load as a single `data` object; refetching the page is acceptable if you later add live updates and want a fresh summary.
+
+## Failure Modes
+
+- Missing/invalid API key → 503; UI explains `OPENAI_API_KEY`.
+- OpenAI outage or bad response → 502 / empty content; UI shows a short retry message.
+- User disables network mid-request → aborted fetch; effect cleanup avoids setState after unmount (guard + `cancelled` flag).
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Set `OPENAI_API_KEY` in `.env.local` (local) or deployment env; optionally set `OPENAI_MODEL` (e.g. `gpt-4o-mini`).
+3. `npm run dev` → open a betting game page with `/betting/games/[gameId]`.
+4. Confirm: brief “Generating summary…”, then 2–4 sentences under the chips; footer includes disclaimer + “coming soon”.
+5. Unset the key and reload: muted message about adding `OPENAI_API_KEY` on the server.
+
+## Next Steps
+
+- Optional: cache `{ gameId, hash(payload) } → summary` in Redis or KV to cut cost on repeat views.
+- Optional: add `openai` SDK if you want streaming or automatic retries.
+
+## Verification Checklist
+
+- [ ] With `OPENAI_API_KEY` set, a 2–4 sentence paragraph appears after the chips (not before game context).
+- [ ] With the key unset, no hard error; setup hint appears instead of the paragraph.
+- [ ] Navigating away mid-load does not throw in the console.
+- [ ] Footer shows the disclaimer when the summary succeeds.
+- [ ] `npx tsc --noEmit` passes.
+
+---
+
+## Update (injury + usage / starters context)
+
+### Goal
+
+Enrich the LLM payload so the summary can comment on **who is on the injury report**, **usual starters** (when matchup analysis provides them), and **which teammates’ minutes (or scoring) tended to rise** when an Out/Doubtful player had no minutes in past games.
+
+### Files Changed
+
+- `app/api/betting/games/[gameId]/ai-projection-summary/route.ts` — optional `injuryReportLines`, `usageShiftLines`, `expectedStarterLines`; prompt asks for 3–5 sentences; `max_tokens` 320.
+- `components/betting/MatchupPageLayout.tsx` — `buildAiProjectionSupplementalContext()` builds those lines from `injuries`, `injuryMatchupContext` (minutes delta preferred, else PTS split), and `matchupAnalysis.starting_lineups`.
+
+### Verification Checklist
+
+- [ ] Game with injury list: summary mentions notable names/status when data exists.
+- [ ] Game with injury matchup context: summary references teammate usage/minutes uplift when `usageShiftLines` are sent.
+- [ ] With starters: summary references “usual” starters without implying a guarantee.
+
+### Update (server-side cache)
+
+- **Route:** `unstable_cache` wraps the OpenAI call; cache key = `gameId` + SHA-256 of validated POST body + model; TTL from `AI_PROJECTION_SUMMARY_CACHE_SECONDS` (default **900**, min 60, max 86400).
+- **Effect:** Identical refreshes reuse the cached summary and do not re-call OpenAI until the entry expires. Changing injuries/odds context changes the body hash → new call.
+- **Limits:** Does not stop someone from sending *different* bodies to burn quota; combine with OpenAI spending limits and optional per-IP rate limiting for public deployments.
+
+### Update (remove Game context prose, keep split tables)
+
+- **UI:** Removed the long “Game context” intro/paragraphs under AI Projection; kept a short label + one-line disclaimer and the collapsible **Underlying numbers** tables (`MatchupPageLayout.tsx`).
+- **API:** `buildInjuryContextNarrative` / `injuryNarrative` remains in the POST payload (`injuryIntro` / `injuryParagraphs`) so the LLM still receives the same structured injury text without duplicating it on screen.

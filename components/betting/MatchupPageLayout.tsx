@@ -3,12 +3,20 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays, ChevronDown, Loader2, Users } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Game } from './GameCard';
 import { LineMovementChart } from './LineMovementChart';
 import { StartingLineupCard } from './MatchupAnalysis';
 import type { InjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
+import { buildInjuryContextNarrative } from '@/lib/betting/injury-context-narrative';
+import {
+  getGameSummaryBulletsForAi,
+  formatOddsHintForAiSummary,
+  buildAiSupplementalLines,
+} from '@/lib/betting/ai-game-summary-payload';
+import type { MarketSentimentSnapshot } from '@/lib/betting/market-sentiment-types';
+import { MarketSentimentChart, resolveSentimentChartData } from '@/components/betting/MarketSentimentChart';
 
 // --- Types (migrated from GameDetailsModal) ---
 interface RecentGameResult {
@@ -85,6 +93,8 @@ export interface PlayerPropItem {
   vendor: string;
 }
 
+export type { MarketSentimentSnapshot } from '@/lib/betting/market-sentiment-types';
+
 export interface GameDetailsData {
   game: Game;
   homeTeamStats: TeamStats;
@@ -100,6 +110,8 @@ export interface GameDetailsData {
   playerProps?: PlayerPropItem[];
   /** Teammate splits when Out/Doubtful players did not play (box-score based). */
   injuryMatchupContext?: InjuryMatchupContext | null;
+  /** Prediction-market crowd sentiment (e.g. Polymarket); optional until wired to an API. */
+  marketSentiment?: MarketSentimentSnapshot | null;
 }
 
 /** True if team's most recent game was the day before this game (back-to-back). */
@@ -430,54 +442,82 @@ function AIConfidenceGauge({ label, value, color }: { label: string; value: numb
   );
 }
 
-/** 2–4 high-signal summary bullets from existing data */
-function getGameSummaryBullets(data: GameDetailsData): string[] {
-  const bullets: string[] = [];
-  const { matchupAnalysis, homeTeamStats, awayTeamStats, spreadMovement, injuries } = data;
+function MarketSentimentPanel({
+  game,
+  sentiment,
+}: {
+  game: Game;
+  sentiment?: MarketSentimentSnapshot | null;
+}) {
+  const { points, mode } = resolveSentimentChartData(game.id, sentiment);
+  const lastHome = points[points.length - 1].homeWinPct;
+  const lastAway = Math.max(0, Math.min(100, 100 - lastHome));
 
-  if (matchupAnalysis?.pace_analysis) {
-    const { projected_pace, pace_impact } = matchupAnalysis.pace_analysis;
-    bullets.push(`${pace_impact.charAt(0).toUpperCase() + pace_impact.slice(1)} pace (projected ${projected_pace?.toFixed(0) ?? '—'})`);
-  } else if (homeTeamStats?.pace != null && awayTeamStats?.pace != null) {
-    const avg = (homeTeamStats.pace + awayTeamStats.pace) / 2;
-    bullets.push(`Avg pace ${avg.toFixed(0)}`);
-  }
+  const awayBar = lastAway;
+  const homeBar = lastHome;
 
-  if (
-    homeTeamStats?.offensiveRating != null &&
-    awayTeamStats?.defensiveRating != null &&
-    awayTeamStats?.offensiveRating != null &&
-    homeTeamStats?.defensiveRating != null
-  ) {
-    const homeO = homeTeamStats.offensiveRating;
-    const awayD = awayTeamStats.defensiveRating;
-    const awayO = awayTeamStats.offensiveRating;
-    const homeD = homeTeamStats.defensiveRating;
-    if (homeO > awayD && awayO <= homeD) bullets.push('Home offense vs Away defense: advantage Home');
-    else if (awayO > homeD && homeO <= awayD) bullets.push('Away offense vs Home defense: advantage Away');
-    else bullets.push('Offense vs defense: mixed');
-  }
+  const caption =
+    mode === 'history'
+      ? 'Crowd-implied home win % over time (prediction market).'
+      : mode === 'snapshot'
+        ? 'Snapshot only — add price history for a full trajectory.'
+        : 'Sample trajectory — wire Gamma + CLOB (or another public feed) for live data.';
 
-  if (spreadMovement?.length >= 2) {
-    const open = spreadMovement[0].value;
-    const now = spreadMovement[spreadMovement.length - 1].value;
-    const move = now - open;
-    if (Math.abs(move) >= 0.5) {
-      bullets.push(`Line moved ${move > 0 ? 'toward Home' : 'toward Away'} (${move > 0 ? '+' : ''}${move.toFixed(1)})`);
-    }
-  }
+  const sourceLine =
+    mode === 'demo'
+      ? 'Data: illustrative (not live).'
+      : sentiment?.source
+        ? `Source: ${sentiment.source}`
+        : 'Source: prediction market';
 
-  const totalInjuries = (injuries?.home?.length ?? 0) + (injuries?.away?.length ?? 0);
-  if (totalInjuries === 0) bullets.push('No major injuries reported');
-  else bullets.push(`Key injury context: ${totalInjuries} listed`);
+  return (
+    <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5 h-full flex flex-col min-h-[200px]">
+      <div className="flex items-start gap-2 mb-2">
+        <Users className="w-3.5 h-3.5 text-white/40 shrink-0 mt-0.5" aria-hidden />
+        <div>
+          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Human sentiment</p>
+          <p className="text-[10px] text-muted-foreground/90 leading-snug mt-0.5">
+            Crowd-implied win odds from a prediction market — not a book line.
+          </p>
+        </div>
+      </div>
 
-  return bullets.slice(0, 4);
+      <div className="mb-2">
+        <MarketSentimentChart data={points} homeTeamAbbr={game.homeTeam.abbreviation} />
+        <p className="text-[10px] text-muted-foreground mt-1 leading-snug">{caption}</p>
+      </div>
+
+      <div className="flex h-2.5 rounded-full overflow-hidden bg-white/10 mb-3 mt-1">
+        <div
+          className="h-full bg-[#00d4ff]/90 transition-[width]"
+          style={{ width: `${awayBar}%` }}
+          title={`${game.awayTeam.abbreviation} ${lastAway.toFixed(1)}%`}
+        />
+        <div
+          className="h-full bg-[#39ff14]/90 transition-[width]"
+          style={{ width: `${homeBar}%` }}
+          title={`${game.homeTeam.abbreviation} ${lastHome.toFixed(1)}%`}
+        />
+      </div>
+      <div className="space-y-2 text-xs flex-1">
+        <div className="flex justify-between gap-2">
+          <span className="text-muted-foreground">{game.awayTeam.abbreviation}</span>
+          <span className="font-mono tabular-nums text-[#00d4ff] font-semibold">{lastAway.toFixed(1)}%</span>
+        </div>
+        <div className="flex justify-between gap-2">
+          <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span>
+          <span className="font-mono tabular-nums text-[#39ff14] font-semibold">{lastHome.toFixed(1)}%</span>
+        </div>
+      </div>
+      <p className="text-[10px] text-muted-foreground mt-auto pt-2">{sourceLine}</p>
+    </div>
+  );
 }
 
 const SECTION_IDS = ['section-ai-projection', 'section-odds', 'section-matchup', 'section-players', 'section-injuries'] as const;
 const SECTION_LABELS: Record<(typeof SECTION_IDS)[number], string> = {
   'section-ai-projection': 'AI Projection',
-  'section-odds': 'Odds & lines',
+  'section-odds': 'Odds & sentiment',
   'section-matchup': 'Matchup',
   'section-players': 'Players',
   'section-injuries': 'Injuries',
@@ -486,6 +526,10 @@ const SECTION_LABELS: Record<(typeof SECTION_IDS)[number], string> = {
 export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<(typeof SECTION_IDS)[number]>(SECTION_IDS[0]);
+  const [aiSummaryText, setAiSummaryText] = useState<string | null>(null);
+  const [aiSummaryStatus, setAiSummaryStatus] = useState<
+    'idle' | 'loading' | 'success' | 'unavailable' | 'error'
+  >('idle');
   const {
     game,
     homeTeamStats,
@@ -500,9 +544,29 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     matchupAnalysis,
     playerProps = [],
     injuryMatchupContext,
+    marketSentiment,
   } = data;
 
-  const summaryBullets = getGameSummaryBullets(data);
+  const summaryBullets = getGameSummaryBulletsForAi({
+    matchupAnalysis: data.matchupAnalysis,
+    homeTeamStats: data.homeTeamStats,
+    awayTeamStats: data.awayTeamStats,
+    spreadMovement: data.spreadMovement,
+    injuries: data.injuries,
+  });
+
+  const injuryNarrative = useMemo(
+    () =>
+      injuryMatchupContext?.entries?.length
+        ? buildInjuryContextNarrative(
+            injuryMatchupContext,
+            game.homeTeam.id,
+            game.homeTeam.name,
+            game.awayTeam.name
+          )
+        : null,
+    [injuryMatchupContext, game.homeTeam.id, game.homeTeam.name, game.awayTeam.name]
+  );
 
   const scrollToSection = (sectionId: (typeof SECTION_IDS)[number]) => {
     const el = document.getElementById(sectionId);
@@ -533,6 +597,87 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     });
     return () => observers.forEach((o) => o.disconnect());
   }, []);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    let cancelled = false;
+
+    async function loadAiSummary() {
+      setAiSummaryStatus('loading');
+      setAiSummaryText(null);
+      const bullets = getGameSummaryBulletsForAi({
+        matchupAnalysis,
+        homeTeamStats: data.homeTeamStats,
+        awayTeamStats: data.awayTeamStats,
+        spreadMovement: data.spreadMovement,
+        injuries: data.injuries,
+      });
+      const oddsHint = formatOddsHintForAiSummary(currentOdds, game);
+      const supplemental = buildAiSupplementalLines(
+        data.injuries,
+        data.injuryMatchupContext,
+        game,
+        matchupAnalysis
+      );
+      const body: Record<string, unknown> = {
+        homeTeamName: game.homeTeam.name,
+        awayTeamName: game.awayTeam.name,
+        bullets,
+        oddsHint,
+      };
+      if (supplemental.injuryReportLines.length) {
+        body.injuryReportLines = supplemental.injuryReportLines;
+      }
+      if (supplemental.usageShiftLines.length) {
+        body.usageShiftLines = supplemental.usageShiftLines;
+      }
+      if (supplemental.expectedStarterLines.length) {
+        body.expectedStarterLines = supplemental.expectedStarterLines;
+      }
+      if (injuryNarrative) {
+        body.injuryIntro = injuryNarrative.intro;
+        body.injuryParagraphs = injuryNarrative.paragraphs;
+      }
+
+      try {
+        const res = await fetch(`/api/betting/games/${encodeURIComponent(game.id)}/ai-projection-summary`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: ac.signal,
+        });
+        const j = (await res.json().catch(() => ({}))) as {
+          summary?: string;
+          code?: string;
+        };
+        if (cancelled) return;
+        if (res.status === 503 && j?.code === 'NO_OPENAI_KEY') {
+          setAiSummaryStatus('unavailable');
+          return;
+        }
+        if (!res.ok) {
+          setAiSummaryStatus('error');
+          return;
+        }
+        const text = typeof j.summary === 'string' ? j.summary.trim() : '';
+        if (text) {
+          setAiSummaryText(text);
+          setAiSummaryStatus('success');
+        } else {
+          setAiSummaryStatus('error');
+        }
+      } catch {
+        if (ac.signal.aborted || cancelled) return;
+        setAiSummaryStatus('error');
+      }
+    }
+
+    loadAiSummary();
+    return () => {
+      cancelled = true;
+      ac.abort();
+    };
+  }, [data, injuryNarrative, matchupAnalysis]);
 
   return (
     <main className="min-h-screen bg-background gradient-mesh max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
@@ -608,72 +753,106 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 );
               })}
             </div>
-            {injuryMatchupContext && injuryMatchupContext.entries.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
-                <div>
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Game context</p>
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    Teammate scoring ({injuryMatchupContext.season}) when listed players had no minutes vs when they played.
-                    Small samples — interpret cautiously.
-                  </p>
-                </div>
-                <div className="space-y-3">
-                  {injuryMatchupContext.entries.map((entry) => {
-                    const teamLabel =
-                      entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
-                    return (
-                      <div key={entry.player_id} className="border border-white/5 rounded-lg p-2.5 bg-white/[0.02]">
-                        <div className="flex flex-wrap items-baseline gap-2 mb-2">
-                          <span className="text-xs font-medium text-white">{entry.full_name}</span>
-                          <span className="text-[10px] text-muted-foreground">{teamLabel}</span>
-                          <span className="text-[10px] text-muted-foreground">
-                            Played {entry.games_played_sample} · No minutes {entry.games_missed_sample} team games
-                          </span>
-                          {entry.low_sample && (
-                            <span className="text-[10px] text-amber-400/90">Low sample</span>
-                          )}
-                        </div>
-                        {entry.teammates.length === 0 ? (
-                          <p className="text-[10px] text-muted-foreground">No teammate split data.</p>
-                        ) : (
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-[10px] text-left">
-                              <thead>
-                                <tr className="text-muted-foreground border-b border-white/5">
-                                  <th className="py-1 pr-2 font-normal">Teammate</th>
-                                  <th className="py-1 px-1 font-normal">PTS (with)</th>
-                                  <th className="py-1 px-1 font-normal">PTS (out)</th>
-                                  <th className="py-1 px-1 font-normal">Δ</th>
-                                  <th className="py-1 pl-1 font-normal text-right">n</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {entry.teammates.map((t) => (
-                                  <tr key={t.player_id} className="border-b border-white/[0.03] text-white/90">
-                                    <td className="py-1 pr-2 truncate max-w-[140px]" title={t.full_name}>
-                                      {t.full_name}
-                                    </td>
-                                    <td className="py-1 px-1">{t.avg_pts_with ?? '—'}</td>
-                                    <td className="py-1 px-1">{t.avg_pts_without ?? '—'}</td>
-                                    <td className={`py-1 px-1 ${(t.pts_delta ?? 0) > 0 ? 'text-emerald-400/90' : (t.pts_delta ?? 0) < 0 ? 'text-rose-400/90' : ''}`}>
-                                      {t.pts_delta != null ? (t.pts_delta > 0 ? `+${t.pts_delta}` : String(t.pts_delta)) : '—'}
-                                    </td>
-                                    <td className="py-1 pl-1 text-right text-muted-foreground">
-                                      {t.n_games_played_with}/{t.n_games_missed}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+            {aiSummaryStatus === 'loading' && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#bf5af2]/90" aria-hidden />
+                <span>Generating summary…</span>
               </div>
             )}
-            <p className="text-xs text-muted-foreground mt-3">Full AI projection — coming soon</p>
+            {aiSummaryStatus === 'success' && aiSummaryText && (
+              <p className="text-sm text-white/90 leading-relaxed mt-3 border-l-2 border-[#bf5af2]/35 pl-3">
+                {aiSummaryText}
+              </p>
+            )}
+            {aiSummaryStatus === 'unavailable' && (
+              <p className="text-xs text-muted-foreground mt-3">
+                Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
+                AI-written summary.
+              </p>
+            )}
+            {aiSummaryStatus === 'error' && (
+              <p className="text-xs text-amber-400/90 mt-3">Could not load AI summary. Try again later.</p>
+            )}
+            {injuryMatchupContext?.entries?.length ? (
+              <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                  Out / doubtful — players to watch (splits)
+                </p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  From season box scores: teammate PTS when listed players had minutes vs no minutes. Descriptive only—not a projection; tiny samples can mislead.
+                </p>
+                <details className="group rounded-lg border border-white/10 bg-white/[0.02]">
+                  <summary className="cursor-pointer list-none px-3 py-2 text-[11px] text-muted-foreground hover:text-white/90 [&::-webkit-details-marker]:hidden flex items-center gap-2">
+                    <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform group-open:rotate-180" />
+                    Underlying numbers
+                  </summary>
+                  <div className="px-3 pb-3 pt-0 space-y-3 border-t border-white/5">
+                    {injuryMatchupContext?.entries.map((entry) => {
+                      const teamLabel =
+                        entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
+                      return (
+                        <div key={entry.player_id} className="border border-white/5 rounded-lg p-2.5 bg-white/[0.02]">
+                          <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                            <span className="text-xs font-medium text-white">{entry.full_name}</span>
+                            <span className="text-[10px] text-muted-foreground">{teamLabel}</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              With minutes {entry.games_played_sample} · No minutes {entry.games_missed_sample} team games
+                            </span>
+                            {entry.low_sample && (
+                              <span className="text-[10px] text-amber-400/90">Low sample</span>
+                            )}
+                          </div>
+                          {entry.teammates.length === 0 ? (
+                            <p className="text-[10px] text-muted-foreground">No teammate split data.</p>
+                          ) : (
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-[10px] text-left">
+                                <thead>
+                                  <tr className="text-muted-foreground border-b border-white/5">
+                                    <th className="py-1 pr-2 font-normal">Teammate</th>
+                                    <th className="py-1 px-1 font-normal">PTS (with)</th>
+                                    <th className="py-1 px-1 font-normal">PTS (out)</th>
+                                    <th className="py-1 px-1 font-normal">Δ</th>
+                                    <th className="py-1 pl-1 font-normal text-right">n</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {entry.teammates.map((t) => (
+                                    <tr key={t.player_id} className="border-b border-white/[0.03] text-white/90">
+                                      <td className="py-1 pr-2 truncate max-w-[140px]" title={t.full_name}>
+                                        {t.full_name}
+                                      </td>
+                                      <td className="py-1 px-1">{t.avg_pts_with ?? '—'}</td>
+                                      <td className="py-1 px-1">{t.avg_pts_without ?? '—'}</td>
+                                      <td className={`py-1 px-1 ${(t.pts_delta ?? 0) > 0 ? 'text-emerald-400/90' : (t.pts_delta ?? 0) < 0 ? 'text-rose-400/90' : ''}`}>
+                                        {t.pts_delta != null ? (t.pts_delta > 0 ? `+${t.pts_delta}` : String(t.pts_delta)) : '—'}
+                                      </td>
+                                      <td className="py-1 pl-1 text-right text-muted-foreground">
+                                        {t.n_games_played_with}/{t.n_games_missed}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
+              </div>
+            ) : null}
+            <p className="text-xs text-muted-foreground mt-3">
+              {aiSummaryStatus === 'success' && aiSummaryText ? (
+                <>
+                  Generated from on-page signals; not betting advice.{' '}
+                  <span className="text-white/35">·</span> Full AI projection — coming soon
+                </>
+              ) : (
+                'Full AI projection — coming soon'
+              )}
+            </p>
             </div>
           </div>
         </section>
@@ -682,68 +861,77 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           <div className="glass-card rounded-xl overflow-hidden border border-white/5">
             <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
               <h2 className="text-sm font-semibold text-white">Odds & line movement</h2>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Sportsbook lines and crowd sentiment side by side</p>
             </div>
-            <div className="p-2.5 sm:p-3 space-y-3">
-              <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Current odds</p>
-                <div className="flex items-stretch justify-between gap-2 sm:gap-4 w-full">
-                  <div className="text-center flex-1 min-w-0">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Spread</p>
-                    <p className="text-base sm:text-lg font-bold text-white tabular-nums">
-                      {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
-                    </p>
-                    {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
-                      <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
-                        {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
-                      </p>
-                    )}
+            <div className="p-2.5 sm:p-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:items-stretch">
+                <div className="space-y-3 min-w-0 flex flex-col">
+                  <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5">
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Odds & lines</p>
+                    <div className="flex items-stretch justify-between gap-2 sm:gap-4 w-full">
+                      <div className="text-center flex-1 min-w-0">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Spread</p>
+                        <p className="text-base sm:text-lg font-bold text-white tabular-nums">
+                          {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
+                        </p>
+                        {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
+                          <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
+                            {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
+                          </p>
+                        )}
+                      </div>
+                      <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
+                      <div className="text-center flex-1 min-w-0">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Moneyline</p>
+                        <p className="text-xs sm:text-sm font-bold text-white leading-tight">
+                          {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
+                            <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                          ) : currentOdds?.moneylineHome != null ? (
+                            <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                          ) : currentOdds?.moneylineAway != null ? (
+                            <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
+                          ) : (
+                            '—'
+                          )}
+                        </p>
+                      </div>
+                      <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
+                      <div className="text-center flex-1 min-w-0">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Total</p>
+                        <p className="text-base sm:text-lg font-bold text-white tabular-nums">{currentOdds?.overUnder ?? '—'}</p>
+                        {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
+                          <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
+                            O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
-                  <div className="text-center flex-1 min-w-0">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Moneyline</p>
-                    <p className="text-xs sm:text-sm font-bold text-white leading-tight">
-                      {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
-                        <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
-                      ) : currentOdds?.moneylineHome != null ? (
-                        <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
-                      ) : currentOdds?.moneylineAway != null ? (
-                        <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
-                      ) : (
-                        '—'
-                      )}
-                    </p>
-                  </div>
-                  <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
-                  <div className="text-center flex-1 min-w-0">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Total</p>
-                    <p className="text-base sm:text-lg font-bold text-white tabular-nums">{currentOdds?.overUnder ?? '—'}</p>
-                    {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
-                      <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
-                        O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
-                      </p>
-                    )}
+
+                  <div className="border-t border-white/5 pt-3 flex-1 min-h-0">
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Line movement</p>
+                    <Tabs defaultValue="spread" className="w-full">
+                      <TabsList className="w-full grid grid-cols-2 mb-2 bg-white/10 p-1 rounded-lg h-8">
+                        <TabsTrigger value="spread" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
+                          Spread ({game.homeTeam.abbreviation})
+                        </TabsTrigger>
+                        <TabsTrigger value="total" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
+                          Total (O/U)
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="spread" className="mt-0 outline-none">
+                        <LineMovementChart data={spreadMovement} label={`Spread: ${game.homeTeam.abbreviation}`} color="#00d4ff" height={176} width={520} embedded />
+                      </TabsContent>
+                      <TabsContent value="total" className="mt-0 outline-none">
+                        <LineMovementChart data={totalMovement} label="Total (O/U)" color="#39ff14" height={176} width={520} embedded />
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </div>
-              </div>
 
-              <div className="border-t border-white/5 pt-3">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Movement</p>
-                <Tabs defaultValue="spread" className="w-full">
-                  <TabsList className="w-full grid grid-cols-2 mb-2 bg-white/10 p-1 rounded-lg h-8">
-                    <TabsTrigger value="spread" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
-                      Spread ({game.homeTeam.abbreviation})
-                    </TabsTrigger>
-                    <TabsTrigger value="total" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
-                      Total (O/U)
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="spread" className="mt-0 outline-none">
-                    <LineMovementChart data={spreadMovement} label={`Spread: ${game.homeTeam.abbreviation}`} color="#00d4ff" height={176} width={520} embedded />
-                  </TabsContent>
-                  <TabsContent value="total" className="mt-0 outline-none">
-                    <LineMovementChart data={totalMovement} label="Total (O/U)" color="#39ff14" height={176} width={520} embedded />
-                  </TabsContent>
-                </Tabs>
+                <div className="min-w-0 lg:border-l lg:border-white/5 lg:pl-3 flex flex-col">
+                  <MarketSentimentPanel game={game} sentiment={marketSentiment} />
+                </div>
               </div>
             </div>
           </div>

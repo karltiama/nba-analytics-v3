@@ -1,0 +1,41 @@
+## Context
+
+Users saw the onboarding dialog flash then disappear (“auto signed in”) when using **Start Winning Now** (`/betting?onboard=1`). The first `GET /api/user/profile` often returned **401** because Supabase session cookies were not attached yet on the first navigation tick.
+
+## Goal
+
+- **Goal:** Keep the onboarding flow visible until we know the user is authenticated and onboarding state is resolved.
+- **Inputs:** `?onboard=1` from CTA; cookies eventually available.
+- **Output/Done:** Retries + stable sign-in state; do not strip `onboard` on 401.
+
+## Files Changed
+
+- `components/betting/OnboardingGate.tsx` — multi-attempt profile fetch with `cache: 'no-store'`; 401 after retries → `guest` + keep URL; strip `onboard` only after 200; `AbortController` on unmount.
+- `components/betting/OnboardingModal.tsx` — `signin_required` phase with links to `/login` and `/signup` using `next=/betting?onboard=1`.
+
+## Implementation Notes (key logic explained)
+
+- **`fetchProfileWithSessionWait`:** Up to 8 attempts, 200ms apart, only when launched from `onboard=1`; stops early on non-401.
+- **401 handling:** Set `authState` to `guest`, leave `?onboard=1` so a future login redirect can resume onboarding.
+- **200 handling:** Set `authed` / `needsOnboarding`, then strip `onboard` from the URL.
+- **Removed** `visibilitychange` refetch that called `setAuthState('loading')` and caused flicker loops.
+
+## Key Decisions (and alternatives considered)
+
+- **Alternatives:** Supabase client `onAuthStateChange` — heavier; retries are minimal and scoped to CTA traffic.
+
+## Assumptions
+
+- `/login` and `/signup` will honor a `next` query param for post-auth redirect (implement if missing).
+
+## How to Test
+
+1. While logged in, clear site data, click **Start Winning Now** — expect spinner up to ~1.4s then form (not a flash dismiss).
+2. Logged out + CTA — expect **Sign in** modal, URL still contains `onboard=1` until authenticated.
+
+## Verification Checklist
+
+1. Logged-in user with incomplete onboarding: modal stays through session sync.
+2. Guest: sign-in modal persists; no instant dismiss.
+3. After successful profile: `onboard` removed from URL.
+4. `npm run build` passes.

@@ -1,0 +1,50 @@
+## Context
+
+The betting header showed “Sign in / Create account” for users who could reach `/betting` (middleware saw a Supabase session) because UI state came only from `GET /api/user/profile`. Any 401 or mismatch on that route forced `guest` even when the browser had a valid session.
+
+## Goal
+
+Align header auth UI with the same signal as route protection: **Supabase browser session** (`getSession` / `onAuthStateChange`). Use `/api/user/profile` only to enrich display name, username, timezone, and email when available.
+
+## Files Changed
+
+- `components/betting/Header.tsx`
+
+## Implementation Notes (key logic explained)
+
+- `useMemo(() => createSupabaseBrowserClient(), [])` — one client per header mount.
+- `syncAccount`: `await supabase.auth.getSession()` → no user ⇒ `guest`; user ⇒ `user` + minimal `profile` from `session.user.email`.
+- Fetch `/api/user/profile` afterward; on success merge DB fields; on non-OK or error, **keep** session-based user (no downgrade to guest).
+- `onAuthStateChange` re-runs `syncAccount` so login/logout/refresh updates the menu without a full reload.
+
+## Key Decisions (and alternatives considered)
+
+- **Session-first** vs **API-only:** Session-first matches middleware and fixes the “signed in but header says guest” bug when the API cookie reader lags or fails.
+- **Alternative:** Fix only server cookie parsing — still valuable for APIs, but the header should not depend on a duplicated auth path for basic signed-in detection.
+
+## Assumptions
+
+- `NEXT_PUBLIC_SUPABASE_*` is set in the client bundle (already required for login).
+- Betting layout always mounts this header in a client context where `createBrowserClient` works.
+
+## Failure Modes
+
+- Missing public env: client throws (same as before on sign-out path).
+- Session present but email hidden by provider: `displayLabel` may fall back to `'Account'` until profile loads.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Sign in, open `/betting`: header should show your email (or profile name) within one session resolution, not “Sign in”.
+3. Sign out: header returns to Sign in / Create account; middleware should redirect if you navigate to `/betting` without session.
+
+## Next Steps
+
+- If onboarding still 401s, keep improving `getAuthUserFromRequest` / or move user APIs to `createServerClient` for refresh cookies.
+
+## Verification Checklist
+
+- [ ] After login, header shows user menu (not Sign in) on `/betting`.
+- [ ] Sign out clears header and session.
+- [ ] Hard refresh while logged in still shows user menu.
+- [ ] No new dependencies or env vars.

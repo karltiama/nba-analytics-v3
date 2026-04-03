@@ -45,7 +45,7 @@ export default function LandingPage() {
           
           <div className="flex flex-col sm:flex-row gap-4 mt-6 slide-up" style={{ animationDelay: '400ms' }}>
             <Link
-              href="/signup"
+              href="/betting?onboard=1"
               className="group flex h-14 items-center justify-center gap-2 rounded-full bg-[#00d4ff] px-8 text-black font-bold transition-all hover:bg-[#00e5ff] neon-glow-cyan"
             >
               Start Winning Now

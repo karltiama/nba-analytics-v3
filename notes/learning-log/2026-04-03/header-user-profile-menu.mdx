@@ -1,0 +1,51 @@
+## Context
+
+The betting `Header` user control was a non-functional button. We needed a small account menu with profile context and auth actions.
+
+## Goal
+
+- **Goal:** Open a menu from the user avatar button showing profile summary when signed in, or sign-in / sign-up when not.
+- **Inputs:** `GET /api/user/profile` with session cookies; Supabase `signOut` for logout.
+- **Output/Done:** Radix `DropdownMenu` on the trigger; profile includes email from auth.
+
+## Files Changed
+
+- `app/api/user/profile/route.ts` — `GET` response includes `email` from `getAuthUserFromRequest`.
+- `components/betting/Header.tsx` — fetch profile on mount; dropdown with loading / guest / signed-in states; `router.refresh()` after sign out.
+
+## Implementation Notes (key logic explained)
+
+- **Display name order:** `displayName` → `username` → email local-part → `"Account"`.
+- **`next` for auth links:** `encodeURIComponent(usePathname())` so return lands on the current betting route.
+- **`DropdownMenu` `modal={false}`:** avoids focus conflicts with other overlays (e.g. onboarding dialog) per Radix guidance for stacked layers.
+
+## Key Decisions (and alternatives considered)
+
+- **No separate `/account` page yet** — menu is read-only summary plus sign out; a settings page can link here later.
+- **Alternatives:** Dedicated profile page only — skipped to match “click button → see profile” quickly.
+
+## Assumptions
+
+- `createSupabaseBrowserClient` env vars are set for sign out.
+
+## Failure Modes
+
+- Profile fetch errors → menu shows guest links (safe fallback).
+
+## How to Test
+
+1. Signed out: open menu → Sign in / Create account.
+2. Signed in: open menu → label, email, timezone, Sign out.
+3. After Sign out → menu shows guest state; `router.refresh()` updates server components.
+
+## Verification Checklist
+
+1. Menu opens aligned to the trigger (end / below).
+2. Email matches Supabase user.
+3. Sign out clears session and subsequent `/api/user/profile` is 401.
+4. `npm run build` passes.
+
+## Next Steps
+
+- Add “Edit profile” → future settings page with `PUT /api/user/profile`.
+- Refetch profile on `window` focus after login in another tab (optional).

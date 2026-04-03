@@ -10,6 +10,9 @@ import {
   PropsExplorerPlayerSidebarPlaceholder,
   type PropsExplorerSelection,
 } from '@/components/betting/PropsExplorerPlayerPanel';
+import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
+import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type ExplorerRow = {
   gameId: number;
@@ -133,6 +136,13 @@ export default function PropsExplorerPage(props: PageProps) {
   const [savingPropKey, setSavingPropKey] = useState<string | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<PropsExplorerSelection | null>(null);
   const [isXlViewport, setIsXlViewport] = useState(false);
+
+  const effectiveGameId = useMemo(() => {
+    const fromFilter = gameId.trim();
+    if (fromFilter) return fromFilter;
+    if (selectedPlayer?.gameId != null) return String(selectedPlayer.gameId);
+    return null;
+  }, [gameId, selectedPlayer]);
 
   useLayoutEffect(() => {
     const mq = window.matchMedia('(min-width: 1280px)');
@@ -579,9 +589,18 @@ export default function PropsExplorerPage(props: PageProps) {
       )}
 
       <div className="flex items-center justify-between gap-2 mb-2 text-xs text-muted-foreground">
-        <span>
-          {loading ? 'Loading…' : `${rows.length} rows`}
-          {meta != null && ` · ${meta.totalMatching.toLocaleString()} matching`}
+        <span className="flex items-center gap-2 min-h-[1.125rem]">
+          {loading && rows.length === 0 ? (
+            <>
+              <Skeleton className="h-3.5 w-24" />
+              <Skeleton className="h-3.5 w-36 sm:w-44" />
+            </>
+          ) : (
+            <>
+              {loading ? 'Refreshing…' : `${rows.length} rows`}
+              {meta != null && ` · ${meta.totalMatching.toLocaleString()} matching`}
+            </>
+          )}
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -603,6 +622,9 @@ export default function PropsExplorerPage(props: PageProps) {
         </div>
       </div>
 
+      {loading && rows.length === 0 ? (
+        <PropsExplorerTableSkeleton />
+      ) : (
       <div className="glass-card rounded-xl overflow-hidden border border-white/5">
         <div className="overflow-x-auto max-h-[calc(100vh-16rem)] overflow-y-auto">
           <table className="w-full text-left text-xs">
@@ -627,13 +649,7 @@ export default function PropsExplorerPage(props: PageProps) {
               </tr>
             </thead>
             <tbody>
-              {loading && rows.length === 0 ? (
-                <tr>
-                  <td colSpan={14} className="py-8 text-center text-muted-foreground">
-                    Loading…
-                  </td>
-                </tr>
-              ) : rows.length === 0 ? (
+              {rows.length === 0 ? (
                 <tr>
                   <td colSpan={14} className="py-8 text-center text-muted-foreground">
                     No rows. Adjust filters or date.
@@ -659,6 +675,7 @@ export default function PropsExplorerPage(props: PageProps) {
                               playerName: r.playerName,
                               propType: r.propType,
                               lineValue: r.lineValue,
+                              gameId: r.gameId,
                             })
                           }
                           className="text-left text-[#00d4ff] hover:underline truncate min-w-0 flex-1 text-xs"
@@ -745,18 +762,22 @@ export default function PropsExplorerPage(props: PageProps) {
           </table>
         </div>
       </div>
+      )}
         </div>
 
-        <aside className="hidden xl:block w-full xl:w-96 shrink-0 xl:sticky xl:top-16 xl:self-start space-y-2">
-          {selectedPlayer && isXlViewport ? (
-            <PropsExplorerPlayerPanel
-              variant="sidebar"
-              selection={selectedPlayer}
-              onClose={() => setSelectedPlayer(null)}
-            />
-          ) : (
-            <PropsExplorerPlayerSidebarPlaceholder />
-          )}
+        <aside className="hidden xl:flex xl:flex-col gap-3 w-full xl:w-96 shrink-0 xl:sticky xl:top-16 xl:self-start xl:max-h-[calc(100vh-5rem)]">
+          <PropsExplorerGameContextPanel gameId={effectiveGameId} />
+          <div className="flex-1 min-h-0 flex flex-col min-h-[12rem]">
+            {selectedPlayer && isXlViewport ? (
+              <PropsExplorerPlayerPanel
+                variant="sidebar"
+                selection={selectedPlayer}
+                onClose={() => setSelectedPlayer(null)}
+              />
+            ) : (
+              <PropsExplorerPlayerSidebarPlaceholder />
+            )}
+          </div>
         </aside>
       </div>
 

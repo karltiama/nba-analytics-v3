@@ -1,0 +1,43 @@
+## Context
+Player props controller schedule in Terraform was updated to run three times per Eastern day.
+
+## Goal
+- **Goal:** Align `player_props_schedule_crons` with 8 AM, 12 PM, and 2 PM Eastern daily.
+- **Inputs:** Existing `infra/terraform.tfvars` player props block; EventBridge Scheduler uses `player_props_schedule_timezone` (`America/New_York`).
+- **Output/Done:** Three cron expressions in tfvars; deploy via `terraform apply` when ready.
+
+## Files Changed
+- `infra/terraform.tfvars`
+- `notes/learning-log/2026-04-03/player-props-schedule-8-12-14-et.mdx`
+
+## Implementation Notes (key logic explained)
+- `aws_scheduler_schedule.player_props_crons` in `infra/lambda.tf` creates **one schedule per** `player_props_schedule_crons` entry, all with `schedule_expression_timezone = America/New_York`.
+- AWS cron format: `cron(minutes hours day-of-month month day-of-week year)`; `cron(0 12 ? * * *)` is **noon** ET, not midnight.
+
+## Key Decisions (and alternatives considered)
+- **Decision:** Treat “12” in the request as **12:00 PM (noon)** ET, not 12:00 AM midnight, for a sensible props-ingestion cadence.
+- **Alternative:** Use `cron(0 0 ? * * *)` for true midnight ET; say the word if you want that instead of or in addition to noon.
+
+## Assumptions
+- “12 am” in the user message was phrasing for **noon**; if you meant midnight, hour should be `0` instead of `12`.
+
+## Failure Modes
+- Changes **do not** hit AWS until `terraform apply` in `infra`.
+- Wrong interpretation of “12” → schedule at noon vs midnight.
+
+## How to Test (commands + steps)
+1. `cd infra`
+2. `terraform plan` — expect three `aws_scheduler_schedule.player_props_crons` resources (indices 0–2) with expressions `cron(0 8 ? * * *)`, `cron(0 12 ? * * *)`, `cron(0 14 ? * * *)`.
+3. `terraform apply` (when ready).
+4. AWS Console → EventBridge Scheduler → verify `nba-player-props-0`, `nba-player-props-1`, `nba-player-props-2` and **Next invocation** times in ET.
+
+## Next Steps
+- Apply Terraform in the target environment.
+- Optionally remove or trim `player_props_schedule_expression` comment confusion (it is unused when `player_props_schedule_crons` is non-empty).
+
+## Verification Checklist
+- [ ] `terraform plan` shows create/update for three player-props schedules matching 8 / 12 / 14 ET.
+- [ ] After apply, three schedules exist in EventBridge Scheduler (`nba-player-props-0` … `nba-player-props-2`).
+- [ ] `State` is `ENABLED` for each.
+- [ ] First morning run after deploy: check CloudWatch logs for `nba-player-props-controller-lambda` and confirm `GamesQueued` > 0 when games exist for that ET date.
+- [ ] If you wanted **midnight** instead of **noon**, update the `cron(0 12 …)` line to `cron(0 0 …)` and re-apply.

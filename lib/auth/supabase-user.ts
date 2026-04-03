@@ -1,4 +1,5 @@
-import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export interface AuthUserContext {
   userId: string;
@@ -21,33 +22,6 @@ function readBearerToken(request: NextRequest): string | null {
   return token || null;
 }
 
-function maybeParseSupabaseAuthCookie(rawCookieValue: string): string | null {
-  try {
-    const decoded = decodeURIComponent(rawCookieValue);
-    const parsed = JSON.parse(decoded);
-    if (Array.isArray(parsed) && typeof parsed[0] === 'string' && parsed[0].length > 0) {
-      return parsed[0];
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-function readTokenFromCookies(request: NextRequest): string | null {
-  const direct = request.cookies.get('sb-access-token')?.value;
-  if (direct) return direct;
-
-  const all = request.cookies.getAll();
-  for (const c of all) {
-    if (c.name.endsWith('-auth-token')) {
-      const parsed = maybeParseSupabaseAuthCookie(c.value);
-      if (parsed) return parsed;
-    }
-  }
-  return null;
-}
-
 function getSupabaseAuthConfig() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
@@ -57,27 +31,98 @@ function getSupabaseAuthConfig() {
   return { supabaseUrl, anonKey };
 }
 
-export async function getAuthUserFromRequest(request: NextRequest): Promise<AuthUserContext | null> {
-  const accessToken = readBearerToken(request) || readTokenFromCookies(request);
-  if (!accessToken) return null;
+export type SupabaseAuthResolution =
+  | { ok: false }
+  | {
+      ok: true;
+      auth: AuthUserContext;
+      /** Apply refreshed session cookies (same pattern as `lib/supabase/middleware.ts`). */
+      withAuthCookies: (response: NextResponse) => NextResponse;
+    };
 
+/**
+ * Resolve the current user for Route Handlers using `@supabase/ssr` (same cookie decoding as middleware).
+ * Always wrap JSON responses with `withAuthCookies` when `ok` so token refresh can update the browser.
+ */
+export async function resolveSupabaseAuth(request: NextRequest): Promise<SupabaseAuthResolution> {
   const { supabaseUrl, anonKey } = getSupabaseAuthConfig();
-  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    method: 'GET',
-    headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${accessToken}`,
-    },
-    cache: 'no-store',
-  });
-  if (!response.ok) return null;
+  const bearer = readBearerToken(request);
 
-  const user = (await response.json()) as SupabaseUserResponse;
-  if (!user?.id) return null;
+  if (bearer) {
+    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      method: 'GET',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${bearer}`,
+      },
+      cache: 'no-store',
+    });
+    if (!response.ok) return { ok: false };
+    const user = (await response.json()) as SupabaseUserResponse;
+    if (!user?.id) return { ok: false };
+    return {
+      ok: true,
+      auth: {
+        userId: user.id,
+        email: user.email ?? null,
+        accessToken: bearer,
+      },
+      withAuthCookies: (r) => r,
+    };
+  }
+
+  let relay = NextResponse.next({ request });
+  const supabase = createServerClient(supabaseUrl, anonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => {
+          try {
+            request.cookies.set(name, value);
+          } catch {
+            /* RequestCookies can be read-only in some runtimes */
+          }
+        });
+        relay = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) => {
+          relay.cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error || !user?.id) {
+    return { ok: false };
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   return {
-    userId: user.id,
-    email: user.email ?? null,
-    accessToken,
+    ok: true,
+    auth: {
+      userId: user.id,
+      email: user.email ?? null,
+      accessToken: session?.access_token ?? '',
+    },
+    withAuthCookies(response: NextResponse) {
+      relay.cookies.getAll().forEach((cookie) => {
+        response.cookies.set(cookie.name, cookie.value);
+      });
+      return response;
+    },
   };
+}
+
+/** Prefer {@link resolveSupabaseAuth} in Route Handlers so refreshed cookies are not dropped. */
+export async function getAuthUserFromRequest(request: NextRequest): Promise<AuthUserContext | null> {
+  const r = await resolveSupabaseAuth(request);
+  return r.ok ? r.auth : null;
 }

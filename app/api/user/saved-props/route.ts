@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { query, queryOne } from '@/lib/db';
-import { getAuthUserFromRequest } from '@/lib/auth/supabase-user';
+import { resolveSupabaseAuth } from '@/lib/auth/supabase-user';
 
 const savedPropSchema = z.object({
   gameId: z.union([z.number(), z.string()]),
@@ -63,10 +63,11 @@ function mapSavedProp(row: SavedPropRow) {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const auth = await getAuthUserFromRequest(request);
-    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const ar = await resolveSupabaseAuth(request);
+  if (!ar.ok) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { auth, withAuthCookies } = ar;
 
+  try {
     const limit = Math.min(200, Math.max(1, parseInt(request.nextUrl.searchParams.get('limit') || '100', 10) || 100));
     const rows = await query<SavedPropRow>(
       `SELECT id, user_id, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
@@ -77,27 +78,32 @@ export async function GET(request: NextRequest) {
        LIMIT $2`,
       [auth.userId, limit]
     );
-    return NextResponse.json({ rows: rows.map(mapSavedProp) });
+    return withAuthCookies(NextResponse.json({ rows: rows.map(mapSavedProp) }));
   } catch (error: unknown) {
-    return NextResponse.json(
-      {
-        error: 'Failed to load saved props',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
+    return withAuthCookies(
+      NextResponse.json(
+        {
+          error: 'Failed to load saved props',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 500 }
+      )
     );
   }
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const auth = await getAuthUserFromRequest(request);
-    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const ar = await resolveSupabaseAuth(request);
+  if (!ar.ok) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { auth, withAuthCookies } = ar;
 
+  try {
     const body = await request.json();
     const parsed = savedPropSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid body', details: parsed.error.flatten() }, { status: 400 });
+      return withAuthCookies(
+        NextResponse.json({ error: 'Invalid body', details: parsed.error.flatten() }, { status: 400 })
+      );
     }
     const d = parsed.data;
 
@@ -138,26 +144,31 @@ export async function POST(request: NextRequest) {
       ]
     );
 
-    if (!row) return NextResponse.json({ error: 'Failed to save prop' }, { status: 500 });
-    return NextResponse.json({ savedProp: mapSavedProp(row) });
+    if (!row) {
+      return withAuthCookies(NextResponse.json({ error: 'Failed to save prop' }, { status: 500 }));
+    }
+    return withAuthCookies(NextResponse.json({ savedProp: mapSavedProp(row) }));
   } catch (error: unknown) {
-    return NextResponse.json(
-      {
-        error: 'Failed to save prop',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
+    return withAuthCookies(
+      NextResponse.json(
+        {
+          error: 'Failed to save prop',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 500 }
+      )
     );
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  try {
-    const auth = await getAuthUserFromRequest(request);
-    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const ar = await resolveSupabaseAuth(request);
+  if (!ar.ok) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { auth, withAuthCookies } = ar;
 
+  try {
     const id = request.nextUrl.searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    if (!id) return withAuthCookies(NextResponse.json({ error: 'Missing id' }, { status: 400 }));
 
     const row = await queryOne<{ id: string }>(
       `DELETE FROM public.user_saved_props
@@ -165,15 +176,19 @@ export async function DELETE(request: NextRequest) {
        RETURNING id`,
       [id, auth.userId]
     );
-    if (!row) return NextResponse.json({ error: 'Saved prop not found' }, { status: 404 });
-    return NextResponse.json({ ok: true, id: row.id });
+    if (!row) {
+      return withAuthCookies(NextResponse.json({ error: 'Saved prop not found' }, { status: 404 }));
+    }
+    return withAuthCookies(NextResponse.json({ ok: true, id: row.id }));
   } catch (error: unknown) {
-    return NextResponse.json(
-      {
-        error: 'Failed to delete saved prop',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
+    return withAuthCookies(
+      NextResponse.json(
+        {
+          error: 'Failed to delete saved prop',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 500 }
+      )
     );
   }
 }

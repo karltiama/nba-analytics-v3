@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Header } from '@/components/betting';
+import { Header, OnboardingGate } from '@/components/betting';
 
 export default function BettingLayout({
   children,
@@ -26,9 +26,10 @@ export default function BettingLayout({
     pathname.startsWith('/betting/games/') ||
     pathname.startsWith('/betting/props-explorer') ||
     pathname.startsWith('/betting/research') ||
-    pathname.startsWith('/betting/paper');
+    pathname.startsWith('/betting/paper') ||
+    pathname.startsWith('/betting/profile');
 
-  return (
+  const renderShell = () => (
     <div className="min-h-screen bg-background gradient-mesh">
       {showLayoutHeader && (
         <Header
@@ -38,5 +39,11 @@ export default function BettingLayout({
       )}
       {children}
     </div>
+  );
+
+  return (
+    <Suspense fallback={renderShell()}>
+      <OnboardingGate>{renderShell()}</OnboardingGate>
+    </Suspense>
   );
 }

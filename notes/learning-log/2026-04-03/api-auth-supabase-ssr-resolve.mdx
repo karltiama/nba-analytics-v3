@@ -1,0 +1,53 @@
+## Context
+
+`/betting/profile` (and other `fetch('/api/user/*')` calls) showed “sign in again” while the user could load `/betting` because middleware used `@supabase/ssr`’s cookie storage, but API routes used a **hand-rolled** JWT extraction that could drift from SSR encoding/chunking. Separately, even a correct read could leave **refreshed session cookies** on the floor: middleware applies them to its response, but Route Handlers previously returned `NextResponse.json` without merging updated `Set-Cookie` headers.
+
+## Goal
+
+Make user APIs authenticate the same way as middleware and **forward any refreshed auth cookies** on the JSON response.
+
+## Files Changed
+
+- `lib/auth/supabase-user.ts` — add `resolveSupabaseAuth`; implement cookie path with `createServerClient` + relay `NextResponse.next({ request })` and `withAuthCookies`; keep `getAuthUserFromRequest` as a thin wrapper for non-route use.
+- `app/api/user/profile/route.ts` — use `resolveSupabaseAuth` + `withAuthCookies` on all responses after auth.
+- `app/api/user/settings/route.ts` — same.
+- `app/api/user/onboarding/route.ts` — same.
+- `app/api/user/saved-props/route.ts` — same (GET/POST/DELETE).
+
+## Implementation Notes (key logic explained)
+
+- **`createServerClient`** from `@supabase/ssr` reads the same chunked/base64url session cookies as middleware (`getAll` from `request.cookies`).
+- **`setAll`** mirrors `lib/supabase/middleware.ts`: mutate `request.cookies` when possible, rebuild `relay = NextResponse.next({ request })`, set cookies on `relay` with options.
+- **`withAuthCookies(response)`** copies every cookie from `relay` onto the final `NextResponse` (usually `NextResponse.json`) so the browser receives refreshed tokens on API calls.
+- **Bearer** `Authorization` header still supported; `withAuthCookies` is a no-op in that branch.
+
+## Key Decisions (and alternatives considered)
+
+- **Explicit `resolveSupabaseAuth` + `withAuthCookies`** instead of a global wrapper: keeps each route obvious and avoids magic.
+- **Alternative:** only use `cookies()` from `next/headers` in routes — can diverge from `NextRequest` in edge cases; using `request.cookies` matches middleware inputs.
+
+## Assumptions
+
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set for the server.
+
+## Failure Modes
+
+- If `request.cookies.set` throws (read-only), relay may miss updates; middleware still refreshes on full page navigations.
+- Cookie copy uses `name` + `value` only (same as existing middleware redirect loop); exotic cookie attributes are not re-specified per cookie.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Sign in → open `/betting/profile` — both profile and settings requests should return 200.
+3. DevTools → Network → `GET /api/user/profile` — response should include `Set-Cookie` when Supabase refreshes the session (optional timing).
+
+## Next Steps
+
+- Consider a small helper `jsonWithAuth(request, data, init)` to reduce repetition in user routes.
+
+## Verification Checklist
+
+- [ ] `/betting/profile` loads without “sign in again” when session is valid.
+- [ ] `GET /api/user/profile` and `GET /api/user/settings` return 200 in Network tab.
+- [ ] Saved props and onboarding still work when authenticated.
+- [ ] No new env vars.

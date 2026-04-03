@@ -1,0 +1,56 @@
+## Context
+
+Onboarding previously appeared only after `/betting` loaded and `GET /api/user/profile` finished, with no tie to the landing CTA. The hero button “Start Winning Now” linked to `/signup`.
+
+## Goal
+
+- **Goal:** When a user clicks “Start Winning Now”, they should see the onboarding modal immediately (or as soon as the betting shell mounts).
+- **Inputs:** Landing page CTA → navigate to `/betting?onboard=1`.
+- **Output/Done:** Modal opens on first paint with a loading shell, then form if the user is signed in and incomplete onboarding; query param is stripped after profile load.
+
+## Files Changed
+
+- `app/page.tsx` — “Start Winning Now” `href` → `/betting?onboard=1`.
+- `components/betting/OnboardingGate.tsx` — detect `onboard=1` once per mount (ref), open modal during profile fetch, strip param after response.
+- `components/betting/OnboardingModal.tsx` — `phase: 'loading' | 'ready'` for spinner vs form; header copy when loading.
+- `app/betting/layout.tsx` — `Suspense` around `OnboardingGate` for `useSearchParams` (Next.js requirement).
+
+## Implementation Notes (key logic explained)
+
+- **`onboard=1` is consumed once:** A ref stores whether the first URL had the flag so `searchParams` updates after `router.replace` do not change behavior or retrigger logic incorrectly.
+- **Immediate modal:** If launched from CTA, `modalOpen` is true while `loading` is true (`phase === 'loading'`), so the dialog appears with a spinner instead of waiting for the fetch to finish.
+- **Strip query:** After profile resolves (success, 401, or error), `onboard` is removed from the URL so refresh/bookmarks stay clean.
+- **401:** Modal closes; unauthenticated users still land on `/betting` without a blocking modal (signup flow unchanged for other links).
+
+## Key Decisions (and alternatives considered)
+
+- **CTA → `/betting` not `/signup`:** Matches “start using the product now”; logged-out users see the dashboard without onboarding until they authenticate (separate improvement: redirect to login with `returnUrl`).
+- **Alternatives:** Open modal on `/` (needs auth detection on marketing page); or post-signup redirect only — narrower funnel.
+
+## Assumptions
+
+- Users who should onboard are signed in before or shortly after hitting the CTA, or you will add auth redirect later.
+
+## Failure Modes
+
+- **No Supabase session:** Brief loading shell may flash if `onboard=1` is present, then modal closes after 401.
+
+## How to Test (commands + steps)
+
+1. `npm run build`
+2. While signed in with incomplete onboarding: open `/` → click “Start Winning Now” → expect modal immediately (spinner then steps).
+3. Complete onboarding → click CTA again (if you manually add `?onboard=1`) → no form if already completed.
+4. Logged out + `?onboard=1` → no blocking modal after load.
+
+## Next Steps
+
+- Point “Get Started” / signup success redirect to `/betting?onboard=1` for a single funnel.
+- Optional: logged-out CTA → `/login?next=/betting?onboard=1` (encode query).
+
+## Verification Checklist
+
+1. Hero “Start Winning Now” navigates to `/betting?onboard=1`.
+2. Signed-in, incomplete onboarding: modal visible immediately with loader, then form.
+3. URL loses `onboard` after profile loads.
+4. `npm run build` succeeds.
+5. Suspense boundary prevents `useSearchParams` static generation issues on `/betting`.

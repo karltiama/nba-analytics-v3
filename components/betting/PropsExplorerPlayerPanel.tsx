@@ -18,6 +18,8 @@ export type PropsExplorerSelection = {
   playerName: string | null;
   propType: string | null;
   lineValue: number | null;
+  /** NBA game id for loading sidebar game context alongside the player preview. */
+  gameId: number;
 };
 
 type PreviewResponse = {
@@ -79,7 +81,7 @@ function PropsExplorerPlayerPanelBodySkeleton() {
 /** Full aside placeholder: header shimmer + body skeleton (empty selection). */
 export function PropsExplorerPlayerPanelSkeleton() {
   return (
-    <div className="glass-card rounded-xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)]">
+    <div className="glass-card rounded-xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1">
       <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] shrink-0">
         <div className={`h-4 w-36 ${skeletonPulse}`} />
         <div className={`h-3 w-28 mt-2 ${skeletonPulse} bg-white/5`} />
@@ -175,7 +177,7 @@ export function PropsExplorerPlayerPanel({ selection, onClose, variant }: PropsE
       className={
         variant === 'drawer'
           ? 'glass-card rounded-xl border border-white/10 overflow-hidden flex flex-col h-full max-h-[calc(100dvh-1.5rem)]'
-          : 'glass-card rounded-xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)]'
+          : 'glass-card rounded-xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1'
       }
     >
       <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] flex items-start justify-between gap-2 shrink-0">

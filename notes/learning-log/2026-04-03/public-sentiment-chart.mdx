@@ -1,0 +1,55 @@
+## Context
+
+The matchup **Human sentiment** column already showed a split bar and percentages. The goal was to add a **public sentiment chart** first: a time-series view of crowd-implied **home win %** before wiring Polymarket (Gamma + CLOB) on the server.
+
+## Goal
+
+- Render an SVG **line/area chart** (same visual language as `LineMovementChart`) for home win %.
+- Support three data modes: **history** (API `history` array), **snapshot** (flat line from `homeWinPct` / `awayWinPct`), **demo** (deterministic placeholder per `game.id`).
+- Keep types in a small shared module to avoid circular imports between the layout and chart.
+
+## Files Changed
+
+- `lib/betting/market-sentiment-types.ts` — `MarketSentimentSnapshot` + optional `history`.
+- `components/betting/MarketSentimentChart.tsx` — chart, `resolveSentimentChartData`, `demoSentimentHistory`.
+- `components/betting/MatchupPageLayout.tsx` — `MarketSentimentPanel` uses chart + bar; re-exports snapshot type from lib.
+- `components/betting/index.ts` — exports chart helpers and types.
+
+## Implementation Notes (key logic explained)
+
+- **`resolveSentimentChartData`**: If `history` has at least two points, use it (`history` mode). Else if `homeWinPct` (or derivable from away) is set, use a two-point **Open / Now** series (`snapshot`). Else **`demoSentimentHistory(gameId)`** uses a string hash to seed stable pseudo-random walk around ~42–58% so each game looks different but stays consistent on reload.
+- **Bar and table**: Current implied split uses the **last point** of the resolved series so chart and bar stay aligned.
+- **Copy**: Demo mode shows an explicit “Sample trajectory” caption and “Data: illustrative (not live).”
+
+## Key Decisions (and alternatives considered)
+
+- **No new chart library** — SVG only, consistent with `LineMovementChart` and zero new dependencies.
+- **Types in `lib/`** — avoids `MatchupPageLayout` ↔ `MarketSentimentChart` circular imports.
+- **Demo always drawable** — avoids an empty panel before the API exists; clearly labeled as sample.
+
+## Assumptions
+
+- Home win % is on a **0–100** scale for display; away is `100 - home` for the bar when only one series is shown.
+
+## Failure Modes
+
+- Malformed `history` (e.g. empty strings, out-of-range %) is not validated yet — add Zod at the API boundary when Polymarket is wired.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Open any game matchup → **Odds & line movement** → right column: chart + bar + demo caption.
+3. Optional: in devtools, mock `marketSentiment: { homeWinPct: 60, awayWinPct: 40 }` — chart should show a flat line at 60% (`snapshot` mode).
+
+## Next Steps
+
+- Server route: fetch Gamma market + CLOB midpoints, map to `history` and/or snapshot on `GameDetailsData.marketSentiment`.
+- Validate and cache responses; respect Polymarket [rate limits](https://docs.polymarket.com/api-reference/rate-limits).
+
+## Verification Checklist
+
+- [ ] Chart renders with area + line + end dot for every game (demo or real).
+- [ ] Caption switches between sample / snapshot / history copy appropriately.
+- [ ] Bar percentages match the last point on the chart.
+- [ ] No TypeScript errors.
+- [ ] No circular import / runtime errors on matchup page load.

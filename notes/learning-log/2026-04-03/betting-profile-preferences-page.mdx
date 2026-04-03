@@ -1,0 +1,58 @@
+## Context
+
+Users needed a dedicated place to edit account fields and betting-related preferences after onboarding, without re-running the onboarding modal.
+
+## Goal
+
+Add a simple **Profile & preferences** page under the protected `/betting` area: load `GET /api/user/profile` and `GET /api/user/settings`, allow edits, persist via existing `PUT` routes.
+
+## Files Changed
+
+- `app/api/user/settings/route.ts` — extend `PUT` schema and upsert to include `oddsFormat`, `paperDisplayMode`, `primaryGoal`, `experienceLevel`; call `ensureSettings` before write.
+- `app/betting/profile/page.tsx` — new client page (account + preferences forms, two save actions).
+- `app/betting/layout.tsx` — show main `Header` on `/betting/profile`.
+- `components/betting/Header.tsx` — nav link + dropdown item to `/betting/profile`.
+
+## Implementation Notes (key logic explained)
+
+- **Settings API:** New fields use the same `COALESCE(EXCLUDED.*, existing.*)` pattern as existing columns so omitted/null JSON fields do not wipe prior DB values on conflict update.
+- **Profile page:** Loads both APIs in parallel; **Save account** sends `displayName`, `username`, `timezone` (avoids clearing username by always sending current form state). **Save preferences** sends the full preference payload including odds/paper mode and optional goal/experience.
+- **Sportsbook:** Reuses `SPORTSBOOK_OPTIONS` datalist for suggestions; value remains free text (max 60).
+
+## Key Decisions (and alternatives considered)
+
+- **Two save buttons** instead of one mega-submit: clearer errors and matches separate API resources.
+- **No new API routes** — reuse profile + settings.
+- **Alternative:** PATCH with sparse field masks — rejected to keep server logic minimal.
+
+## Assumptions
+
+- `user_settings` migration (`odds_format`, `paper_display_mode`, `primary_goal`, `experience_level`) is applied where the app runs.
+- User has a `profiles` row (created when loading profile elsewhere or on first GET profile).
+
+## Failure Modes
+
+- **401 on load:** Page shows sign-in prompt (middleware usually prevents this).
+- **Username validation:** API requires length ≥ 2 when set; short input returns 400 — message shown as generic error unless expanded later.
+- **DB FK:** `user_settings` requires `profiles` row; edge case if profile missing — profile GET normally ensures it.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Sign in → open `/betting/profile` (or Header → Profile & preferences).
+3. Change display name → Save account → refresh → value persists.
+4. Change odds format / paper mode → Save preferences → refresh → persists.
+5. Confirm Header shows **Profile** in desktop nav on this route.
+
+## Next Steps
+
+- Optional: single “Save all” or toast library for feedback.
+- Optional: PATCH-style profile API to allow partial updates without sending all fields.
+
+## Verification Checklist
+
+- [ ] `/betting/profile` loads when authenticated and shows email + forms.
+- [ ] Save account updates display name in header after refresh (if profile API returns it).
+- [ ] Save preferences updates odds/paper fields (verify via DB or reload).
+- [ ] Unauthenticated user cannot access `/betting/profile` (middleware).
+- [ ] No new env vars or dependencies.
