@@ -7,6 +7,7 @@ import {
   getLineMovement,
 } from '@/lib/betting/queries';
 import { query } from '@/lib/db';
+import { getInjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
 
 /** Normalize provider status to UI-friendly status for injury badges */
 function normalizeInjuryStatus(status: string | null): 'Out' | 'Questionable' | 'Probable' | 'Doubtful' | 'GTD' {
@@ -125,6 +126,13 @@ export async function GET(
         injury: r.description ?? '',
       }));
 
+    let injuryMatchupContext: Awaited<ReturnType<typeof getInjuryMatchupContext>> = null;
+    try {
+      injuryMatchupContext = await getInjuryMatchupContext(resolvedGameId);
+    } catch (ctxErr) {
+      console.error('injury matchup context:', ctxErr);
+    }
+
     // Helper function to format stats to 1 decimal place
     const formatStat = (value: number | null | undefined): number => {
       const num = parseFloat(value?.toString() || '0') || 0;
@@ -209,6 +217,7 @@ export async function GET(
         home: injuriesHome,
         away: injuriesAway,
       },
+      injuryMatchupContext: injuryMatchupContext ?? { season: '', entries: [] },
       aiSuggestions: [], // Not available in MVP - can add simple calculations later
       aiConfidenceScores: {
         moneyline: 0, // Not available in MVP

@@ -1,0 +1,39 @@
+## Context
+Props Explorer exposed “context” filters (Usage ↑, Elite Def, B2B), a legend, a Context table column, and API support via `context` plus heavy sentiment enrichment queries.
+
+## Goal
+Remove context flags from the prop finder: no UI toggles, no column/badges, no API query param, and no sentiment DB work on this route.
+
+## Files Changed
+- `app/betting/props-explorer/page.tsx`
+- `app/api/betting/props-explorer/route.ts`
+
+## Implementation Notes (key logic explained)
+- **Page**: Dropped `SentimentSignals` type, `SentimentBadge`, `AVAILABLE_CONTEXTS`, URL `context` handling, legend block, Context filter row, and the Context column; adjusted table `colSpan` to 16.
+- **API**: Removed `SentimentSignals` export, `loadSentimentSignals`, `context` / `selectedContexts` filtering, `sentimentSignals` on each row, roster join used only for team id, and extra game/team columns from the SELECT.
+
+## Key Decisions (and alternatives considered)
+- Decision: remove server-side sentiment entirely for this endpoint.
+  - Why: fewer queries per request and simpler response; user asked to drop context from prop finder.
+  - Alternative: keep computing sentiment but hide UI (rejected: wasted DB load).
+
+## Assumptions
+- No other consumers depended on `sentimentSignals` or `?context=` on `/api/betting/props-explorer`.
+
+## Failure Modes
+- Bookmarks with `?context=...` are ignored (harmless).
+- Any client expecting `sentimentSignals` in JSON will get undefined (update if needed).
+
+## How to Test (commands + steps)
+1. Open `/betting/props-explorer` — no Context chips or legend; table has no Context column.
+2. `GET /api/betting/props-explorer?limit=5&date=YYYY-MM-DD` — JSON rows have no `sentimentSignals`; `?context=usage_boost` has no effect.
+3. Smoke: filters (date, game, player, books, min EV, sort) still work.
+
+## Next Steps
+- If sentiment is needed elsewhere, add a dedicated lightweight endpoint or reuse `scripts/sentiment-diagnostic.ts`.
+
+## Verification Checklist
+- [ ] Props Explorer loads without context UI.
+- [ ] Table columns align (16 columns incl. Save/Paper).
+- [ ] API returns 200 and expected row shape without `sentimentSignals`.
+- [ ] No TypeScript/lint errors on touched files.

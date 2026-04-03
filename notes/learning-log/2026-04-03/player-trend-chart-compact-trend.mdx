@@ -1,0 +1,18 @@
+## Context
+Props Explorer embeds `PlayerTrendChart` in a narrow sidebar. The default chart layout reserved a large right column with “Hover to see {metric} value…” which wasted space and duplicated the game log below.
+
+## Goal
+Add a compact mode that hides the hover hint panel and mobile hover strip for embedded use only.
+
+## Files Changed
+- `app/betting/players/[playerId]/components/PlayerTrendChart.tsx`
+- `components/betting/PropsExplorerPlayerPanel.tsx`
+
+## Implementation Notes
+- New optional prop `compactTrend` (default `false`). When `true`: single-column body (`p-3`), no `lg:flex-row`, no right hover column, no `lg:hidden` mobile detail strip under the SVG; chart interaction (hover line on SVG) unchanged.
+- If `compactTrend` and `children` are passed, children render below the chart in a `min-w-0` wrapper (for future use).
+- `PropsExplorerPlayerPanel` passes `compactTrend` on its chart instance.
+
+## Verification Checklist
+- [ ] Full betting player trends tab still shows hover panel and mobile strip.
+- [ ] Props Explorer sidebar chart has no “Hover to see…” block.

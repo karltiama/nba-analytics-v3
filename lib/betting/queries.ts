@@ -1090,148 +1090,6 @@ export interface TeamOffensiveRankings {
   offensive_rating: number;
 }
 
-/**
- * Get opponent defensive rankings for a specific team
- * Returns where the team ranks in allowing various stats
- */
-export async function getOpponentDefensiveRankings(teamId: string): Promise<OpponentDefensiveRankings | null> {
-  const result = await query(`
-    WITH team_defensive_stats AS (
-      SELECT 
-        btgs.team_id,
-        AVG(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as points_allowed_per_game,
-        AVG(opp_tgs.rebounds) as rebounds_allowed_per_game,
-        AVG(opp_tgs.assists) as assists_allowed_per_game,
-        AVG(opp_tgs.three_pointers_made) as threes_allowed_per_game,
-        AVG(
-          CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END::numeric / 
-          NULLIF(btgs.possessions, 0)
-        ) * 100 as defensive_rating
-      FROM bbref_team_game_stats btgs
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      JOIN bbref_team_game_stats opp_tgs ON bg.bbref_game_id = opp_tgs.game_id 
-        AND opp_tgs.team_id != btgs.team_id
-        AND opp_tgs.source = 'bbref'
-      WHERE bg.status = 'Final'
-        AND btgs.source = 'bbref'
-      GROUP BY btgs.team_id
-    ),
-    rankings AS (
-      SELECT 
-        team_id,
-        points_allowed_per_game,
-        rebounds_allowed_per_game,
-        assists_allowed_per_game,
-        threes_allowed_per_game,
-        defensive_rating,
-        RANK() OVER (ORDER BY points_allowed_per_game DESC) as points_allowed_rank,
-        RANK() OVER (ORDER BY rebounds_allowed_per_game DESC) as rebounds_allowed_rank,
-        RANK() OVER (ORDER BY assists_allowed_per_game DESC) as assists_allowed_rank,
-        RANK() OVER (ORDER BY threes_allowed_per_game DESC) as threes_allowed_rank
-      FROM team_defensive_stats
-    )
-    SELECT 
-      team_id,
-      points_allowed_rank,
-      rebounds_allowed_rank,
-      assists_allowed_rank,
-      threes_allowed_rank,
-      points_allowed_per_game,
-      rebounds_allowed_per_game,
-      assists_allowed_per_game,
-      threes_allowed_per_game,
-      defensive_rating
-    FROM rankings
-    WHERE team_id = $1
-  `, [teamId]);
-
-  if (result.length === 0) {
-    return null;
-  }
-
-  const row = result[0];
-  return {
-    team_id: row.team_id,
-    points_allowed_rank: parseInt(row.points_allowed_rank) || 0,
-    rebounds_allowed_rank: parseInt(row.rebounds_allowed_rank) || 0,
-    assists_allowed_rank: parseInt(row.assists_allowed_rank) || 0,
-    threes_allowed_rank: parseInt(row.threes_allowed_rank) || 0,
-    points_allowed_per_game: parseFloat(row.points_allowed_per_game) || 0,
-    rebounds_allowed_per_game: parseFloat(row.rebounds_allowed_per_game) || 0,
-    assists_allowed_per_game: parseFloat(row.assists_allowed_per_game) || 0,
-    threes_allowed_per_game: parseFloat(row.threes_allowed_per_game) || 0,
-    defensive_rating: parseFloat(row.defensive_rating) || 0,
-  };
-}
-
-/**
- * Get offensive rankings for a specific team
- * Returns where the team ranks in producing various stats
- */
-export async function getTeamOffensiveRankings(teamId: string): Promise<TeamOffensiveRankings | null> {
-  const result = await query(`
-    WITH team_offensive_stats AS (
-      SELECT 
-        btgs.team_id,
-        AVG(btgs.points) as points_per_game,
-        AVG(btgs.rebounds) as rebounds_per_game,
-        AVG(btgs.assists) as assists_per_game,
-        AVG(btgs.three_pointers_made) as threes_per_game,
-        AVG(btgs.points::numeric / NULLIF(btgs.possessions, 0)) * 100 as offensive_rating
-      FROM bbref_team_game_stats btgs
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE bg.status = 'Final'
-        AND btgs.source = 'bbref'
-      GROUP BY btgs.team_id
-    ),
-    rankings AS (
-      SELECT 
-        team_id,
-        points_per_game,
-        rebounds_per_game,
-        assists_per_game,
-        threes_per_game,
-        offensive_rating,
-        RANK() OVER (ORDER BY points_per_game DESC) as points_rank,
-        RANK() OVER (ORDER BY rebounds_per_game DESC) as rebounds_rank,
-        RANK() OVER (ORDER BY assists_per_game DESC) as assists_rank,
-        RANK() OVER (ORDER BY threes_per_game DESC) as threes_rank
-      FROM team_offensive_stats
-    )
-    SELECT 
-      team_id,
-      points_rank,
-      rebounds_rank,
-      assists_rank,
-      threes_rank,
-      points_per_game,
-      rebounds_per_game,
-      assists_per_game,
-      threes_per_game,
-      offensive_rating
-    FROM rankings
-    WHERE team_id = $1
-  `, [teamId]);
-
-  if (result.length === 0) {
-    return null;
-  }
-
-  const row = result[0];
-  return {
-    team_id: row.team_id,
-    points_rank: parseInt(row.points_rank) || 0,
-    rebounds_rank: parseInt(row.rebounds_rank) || 0,
-    assists_rank: parseInt(row.assists_rank) || 0,
-    threes_rank: parseInt(row.threes_rank) || 0,
-    points_per_game: parseFloat(row.points_per_game) || 0,
-    rebounds_per_game: parseFloat(row.rebounds_per_game) || 0,
-    assists_per_game: parseFloat(row.assists_per_game) || 0,
-    threes_per_game: parseFloat(row.threes_per_game) || 0,
-    offensive_rating: parseFloat(row.offensive_rating) || 0,
-  };
-}
-
 export interface PlayerVsOpponentStats {
   player_id: string;
   player_name: string;
@@ -1251,90 +1109,6 @@ export interface PlayerVsOpponentStats {
   threes_diff: number;
 }
 
-/**
- * Get a player's historical stats vs a specific opponent
- * Compares their performance vs this opponent to their season average
- */
-export async function getPlayerVsOpponentStats(
-  playerId: string,
-  opponentTeamId: string
-): Promise<PlayerVsOpponentStats | null> {
-  // Get player stats vs this opponent
-  const vsOpponentResult = await query(`
-    SELECT 
-      bpgs.player_id,
-      p.full_name as player_name,
-      bpgs.team_id,
-      COUNT(DISTINCT bpgs.game_id) as games_played,
-      AVG(bpgs.points) as avg_points,
-      AVG(bpgs.rebounds) as avg_rebounds,
-      AVG(bpgs.assists) as avg_assists,
-      AVG(bpgs.three_pointers_made) as avg_threes
-    FROM bbref_player_game_stats bpgs
-    JOIN players p ON bpgs.player_id = p.player_id
-    JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
-    WHERE bpgs.player_id = $1
-      AND bg.status = 'Final'
-      AND bpgs.dnp_reason IS NULL
-      AND bpgs.minutes > 10
-      AND (
-        (bg.home_team_id = $2 AND bpgs.team_id = bg.away_team_id) OR
-        (bg.away_team_id = $2 AND bpgs.team_id = bg.home_team_id)
-      )
-    GROUP BY bpgs.player_id, p.full_name, bpgs.team_id
-  `, [playerId, opponentTeamId]);
-
-  if (vsOpponentResult.length === 0) {
-    return null;
-  }
-
-  // Get player season averages
-  const seasonResult = await query(`
-    SELECT 
-      AVG(bpgs.points) as season_avg_points,
-      AVG(bpgs.rebounds) as season_avg_rebounds,
-      AVG(bpgs.assists) as season_avg_assists,
-      AVG(bpgs.three_pointers_made) as season_avg_threes
-    FROM bbref_player_game_stats bpgs
-    JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
-    WHERE bpgs.player_id = $1
-      AND bg.status = 'Final'
-      AND bpgs.dnp_reason IS NULL
-      AND bpgs.minutes > 10
-  `, [playerId]);
-
-  const vsOpponent = vsOpponentResult[0];
-  const season = seasonResult[0] || {};
-
-  const avgPoints = parseFloat(vsOpponent.avg_points) || 0;
-  const avgRebounds = parseFloat(vsOpponent.avg_rebounds) || 0;
-  const avgAssists = parseFloat(vsOpponent.avg_assists) || 0;
-  const avgThrees = parseFloat(vsOpponent.avg_threes) || 0;
-  const seasonAvgPoints = parseFloat(season.season_avg_points) || 0;
-  const seasonAvgRebounds = parseFloat(season.season_avg_rebounds) || 0;
-  const seasonAvgAssists = parseFloat(season.season_avg_assists) || 0;
-  const seasonAvgThrees = parseFloat(season.season_avg_threes) || 0;
-
-  return {
-    player_id: vsOpponent.player_id,
-    player_name: vsOpponent.player_name,
-    team_id: vsOpponent.team_id,
-    games_played: parseInt(vsOpponent.games_played) || 0,
-    avg_points: avgPoints,
-    avg_rebounds: avgRebounds,
-    avg_assists: avgAssists,
-    avg_threes: avgThrees,
-    season_avg_points: seasonAvgPoints,
-    season_avg_rebounds: seasonAvgRebounds,
-    season_avg_assists: seasonAvgAssists,
-    season_avg_threes: seasonAvgThrees,
-    points_diff: avgPoints - seasonAvgPoints,
-    rebounds_diff: avgRebounds - seasonAvgRebounds,
-    assists_diff: avgAssists - seasonAvgAssists,
-    threes_diff: avgThrees - seasonAvgThrees,
-  };
-}
-
 export interface PaceAnalysis {
   home_team_pace: number;
   away_team_pace: number;
@@ -1344,29 +1118,25 @@ export interface PaceAnalysis {
 }
 
 /**
- * Analyze pace for a matchup
- * Projects the game pace based on both teams' average pace
+ * Pace for a matchup from analytics.team_season_averages (latest season row per team).
  */
 export async function getPaceAnalysis(
   homeTeamId: string,
   awayTeamId: string
 ): Promise<PaceAnalysis> {
   const result = await query(`
-    WITH team_pace AS (
-      SELECT 
-        btgs.team_id,
-        AVG(btgs.possessions) * 48.0 / NULLIF(AVG(btgs.minutes), 0) * 5 as pace
-      FROM bbref_team_game_stats btgs
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE bg.status = 'Final'
-        AND btgs.source = 'bbref'
-        AND btgs.team_id IN ($1, $2)
-      GROUP BY btgs.team_id
+    WITH latest AS (
+      SELECT DISTINCT ON (team_id)
+        team_id,
+        COALESCE(avg_pace, 100)::double precision AS pace
+      FROM analytics.team_season_averages
+      WHERE team_id IN ($1, $2)
+      ORDER BY team_id, season DESC NULLS LAST
     )
     SELECT 
       MAX(CASE WHEN team_id = $1 THEN pace END) as home_team_pace,
       MAX(CASE WHEN team_id = $2 THEN pace END) as away_team_pace
-    FROM team_pace
+    FROM latest
   `, [homeTeamId, awayTeamId]);
 
   const row = result[0] || {};
@@ -1596,8 +1366,8 @@ export async function getGameStartingLineups(
 }
 
 /**
- * Get comprehensive matchup analysis for a game
- * Includes opponent defensive rankings, pace analysis, and key player matchups
+ * Matchup analysis for a game: analytics pace, projected starters (BDL + analytics fallback).
+ * BBRef-based rankings and key-player vs-opponent stats are intentionally omitted.
  */
 export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysis | null> {
   const gameResult = await query(`
@@ -1615,46 +1385,7 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
   const homeTeamId = game.home_team_id;
   const awayTeamId = game.away_team_id;
 
-  // Get offensive and defensive rankings for both teams
-  const [homeOffense, awayOffense, homeDefense, awayDefense, paceAnalysis] = await Promise.all([
-    getTeamOffensiveRankings(homeTeamId),
-    getTeamOffensiveRankings(awayTeamId),
-    getOpponentDefensiveRankings(homeTeamId),
-    getOpponentDefensiveRankings(awayTeamId),
-    getPaceAnalysis(homeTeamId, awayTeamId),
-  ]);
-
-  // Get key players (top 3 scorers from each team) and their stats vs opponent
-  const keyPlayersResult = await query(`
-    WITH top_scorers AS (
-      SELECT 
-        bpgs.player_id,
-        bpgs.team_id,
-        AVG(bpgs.points) as avg_points,
-        ROW_NUMBER() OVER (PARTITION BY bpgs.team_id ORDER BY AVG(bpgs.points) DESC) as rn
-      FROM bbref_player_game_stats bpgs
-      JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
-      WHERE bpgs.team_id IN ($1, $2)
-        AND bg.status = 'Final'
-        AND bpgs.dnp_reason IS NULL
-        AND bpgs.minutes > 10
-      GROUP BY bpgs.player_id, bpgs.team_id
-      HAVING COUNT(DISTINCT bpgs.game_id) >= 5
-    )
-    SELECT player_id, team_id
-    FROM top_scorers
-    WHERE rn <= 3
-  `, [homeTeamId, awayTeamId]);
-
-  // Get player vs opponent stats for key players
-  const keyPlayers: PlayerVsOpponentStats[] = [];
-  for (const player of keyPlayersResult) {
-    const opponentId = player.team_id === homeTeamId ? awayTeamId : homeTeamId;
-    const playerStats = await getPlayerVsOpponentStats(player.player_id, opponentId);
-    if (playerStats) {
-      keyPlayers.push(playerStats);
-    }
-  }
+  const paceAnalysis = await getPaceAnalysis(homeTeamId, awayTeamId);
 
   // Get injured player IDs per team (Out, Doubtful) so we exclude them from projected lineup
   const injuryRows = await query<{ player_id: string; team_id: string }>(
@@ -1729,12 +1460,12 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
     game_id: game.game_id,
     home_team_id: homeTeamId,
     away_team_id: awayTeamId,
-    home_offense: homeOffense,
-    away_offense: awayOffense,
-    home_defense: homeDefense,
-    away_defense: awayDefense,
+    home_offense: null,
+    away_offense: null,
+    home_defense: null,
+    away_defense: null,
     pace_analysis: paceAnalysis,
-    key_players: keyPlayers,
+    key_players: [],
     starting_lineups: startingLineups,
   };
 }

@@ -1,10 +1,15 @@
 'use client';
 
-import { use, useCallback, useEffect, useMemo, useState } from 'react';
+import { use, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Search, CalendarDays, ListFilter } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, CalendarDays, ListFilter, ExternalLink } from 'lucide-react';
 import { getTodayET, addDaysET, getDateLabel } from '@/components/betting';
+import {
+  PropsExplorerPlayerPanel,
+  PropsExplorerPlayerSidebarPlaceholder,
+  type PropsExplorerSelection,
+} from '@/components/betting/PropsExplorerPlayerPanel';
 
 type ExplorerRow = {
   gameId: number;
@@ -21,10 +26,6 @@ type ExplorerRow = {
   modelProbability: number | null;
   ev: number | null;
   projection: number | null;
-  evTrackA: number | null;
-  modelProbabilityTrackA: number | null;
-  evTrackB: number | null;
-  modelProbabilityTrackB: number | null;
   evSelectedTrack: string;
   calibrationVersion: string;
   confidenceTier?: 'high' | 'medium' | 'low' | null;
@@ -80,9 +81,7 @@ function formatPlayerLabel(playerName: string | null, playerId: number): string 
 
 const SORT_OPTIONS = [
   { value: 'snapshot_at', label: 'Snapshot time' },
-  { value: 'ev', label: 'EV (selected track)' },
-  { value: 'ev_track_a', label: 'EV Track A' },
-  { value: 'ev_track_b', label: 'EV Track B' },
+  { value: 'ev', label: 'EV' },
   { value: 'confidence', label: 'Confidence tier' },
   { value: 'odds_american', label: 'American odds' },
 ] as const;
@@ -132,6 +131,16 @@ export default function PropsExplorerPage(props: PageProps) {
   const [addingPaperKey, setAddingPaperKey] = useState<string | null>(null);
   const [savedPropIdByKey, setSavedPropIdByKey] = useState<Record<string, string>>({});
   const [savingPropKey, setSavingPropKey] = useState<string | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<PropsExplorerSelection | null>(null);
+  const [isXlViewport, setIsXlViewport] = useState(false);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia('(min-width: 1280px)');
+    const sync = () => setIsXlViewport(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   const buildSavedPropKey = useCallback((v: SavedProp | ExplorerRow) => {
     return [
@@ -234,6 +243,19 @@ export default function PropsExplorerPage(props: PageProps) {
         if (!res.ok) throw new Error('Failed to load props');
         const data = await res.json();
         if (!cancelled) {
+          const hasExplicitDate = Boolean(searchParams.get('date'));
+          const noFiltersApplied =
+            !gameId.trim() &&
+            !playerName.trim() &&
+            !propType.trim() &&
+            side === 'all' &&
+            !sportsbook.trim() &&
+            minEv.trim() === '';
+          // If default "today" has no props yet, fall back once to yesterday.
+          if (Array.isArray(data.rows) && data.rows.length === 0 && !hasExplicitDate && noFiltersApplied) {
+            updateParams({ date: addDaysET(date, -1), offset: '0' });
+            return;
+          }
           setRows(data.rows ?? []);
           setMeta(data.meta ?? null);
         }
@@ -250,7 +272,7 @@ export default function PropsExplorerPage(props: PageProps) {
     return () => {
       cancelled = true;
     };
-  }, [date, gameId, playerName, propType, side, sportsbook, sort, dir, minEv, limit, offset]);
+  }, [date, gameId, playerName, propType, side, sportsbook, sort, dir, minEv, limit, offset, searchParams, updateParams]);
 
   const selectClass =
     'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]';
@@ -361,8 +383,7 @@ export default function PropsExplorerPage(props: PageProps) {
         <div>
           <h1 className="text-xl font-semibold text-white">Props Explorer</h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Filter slate props with EV (selected track: {meta?.evSelectedTrack ?? '…'}) and Track A/B
-            reference columns.
+            Filter slate props with EV (selected track: {meta?.evSelectedTrack ?? '…'}).
           </p>
         </div>
         {meta && (
@@ -372,7 +393,7 @@ export default function PropsExplorerPage(props: PageProps) {
         )}
       </div>
 
-      <div className="glass-card rounded-xl border border-white/5 mb-6 overflow-hidden">
+      <div className="glass-card w-full rounded-xl border border-white/5 mb-6 overflow-hidden">
         {/* Context Row */}
         <div className="bg-white/5 p-3 sm:px-4 border-b border-white/5 flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-1 shrink-0 bg-gray-900/50 p-1 rounded-lg border border-white/5">
@@ -398,7 +419,7 @@ export default function PropsExplorerPage(props: PageProps) {
             >
               <ChevronRight className="w-4 h-4" />
             </button>
-            <div className="w-[1px] h-4 bg-white/10 mx-1" />
+            <div className="w-px h-4 bg-white/10 mx-1" />
             <button
               type="button"
               onClick={() => updateParams({ date: getTodayET(), offset: '0' })}
@@ -549,6 +570,8 @@ export default function PropsExplorerPage(props: PageProps) {
         </div>
       </div>
 
+      <div className="flex flex-col xl:flex-row xl:items-start gap-4">
+        <div className="flex-1 min-w-0">
       {error && (
         <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757] mb-4">
           <p className="text-sm text-[#ff4757]">{error}</p>
@@ -585,7 +608,6 @@ export default function PropsExplorerPage(props: PageProps) {
           <table className="w-full text-left text-xs">
             <thead className="sticky top-0 z-10 bg-gray-950/95 border-b border-white/10">
               <tr className="text-muted-foreground">
-                <th className="py-2 px-2 font-medium">Game</th>
                 <th className="py-2 px-2 font-medium">Player</th>
                 <th className="py-2 px-2 font-medium">Prop</th>
                 <th className="py-2 px-2 font-medium">Side</th>
@@ -598,8 +620,6 @@ export default function PropsExplorerPage(props: PageProps) {
                 </th>
                 <th className="py-2 px-2 font-medium text-right">Model</th>
                 <th className="py-2 px-2 font-medium text-right">EV</th>
-                <th className="py-2 px-2 font-medium text-right">EV A</th>
-                <th className="py-2 px-2 font-medium text-right">EV B</th>
                 <th className="py-2 px-2 font-medium text-right">Proj</th>
                 <th className="py-2 px-2 font-medium">Updated</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Save</th>
@@ -609,13 +629,13 @@ export default function PropsExplorerPage(props: PageProps) {
             <tbody>
               {loading && rows.length === 0 ? (
                 <tr>
-                  <td colSpan={17} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={14} className="py-8 text-center text-muted-foreground">
                     Loading…
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={17} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={14} className="py-8 text-center text-muted-foreground">
                     No rows. Adjust filters or date.
                   </td>
                 </tr>
@@ -629,21 +649,31 @@ export default function PropsExplorerPage(props: PageProps) {
                     key={`${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
                     className="border-b border-white/5 hover:bg-white/3"
                   >
-                    <td className="py-1.5 px-2 font-mono text-muted-foreground">
-                      <Link
-                        href={`/betting/games/${r.gameId}`}
-                        className="text-[#00d4ff] hover:underline"
-                      >
-                        {r.gameId}
-                      </Link>
-                    </td>
                     <td className="py-1.5 px-2">
-                      <Link
-                        href={`/betting/players/${r.playerId}`}
-                        className="text-[#00d4ff] hover:underline truncate max-w-[140px] block"
-                      >
-                        {formatPlayerLabel(r.playerName, r.playerId)}
-                      </Link>
+                      <div className="flex items-center gap-1 min-w-0 max-w-[160px]">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedPlayer({
+                              playerId: r.playerId,
+                              playerName: r.playerName,
+                              propType: r.propType,
+                              lineValue: r.lineValue,
+                            })
+                          }
+                          className="text-left text-[#00d4ff] hover:underline truncate min-w-0 flex-1 text-xs"
+                        >
+                          {formatPlayerLabel(r.playerName, r.playerId)}
+                        </button>
+                        <Link
+                          href={`/betting/players/${r.playerId}`}
+                          className="shrink-0 p-0.5 rounded text-muted-foreground hover:text-white"
+                          title="Open full profile"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
                     </td>
                     <td className="py-1.5 px-2 text-white capitalize">
                       {(r.propType ?? '—').replace(/_/g, ' ')}
@@ -676,12 +706,6 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="py-1.5 px-2 text-right font-mono text-[#39ff14]">
                       {formatPct(r.ev)}
-                    </td>
-                    <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
-                      {formatPct(r.evTrackA)}
-                    </td>
-                    <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
-                      {formatPct(r.evTrackB)}
                     </td>
                     <td className="py-1.5 px-2 text-right font-mono text-white">
                       {r.projection != null && Number.isFinite(r.projection)
@@ -721,6 +745,28 @@ export default function PropsExplorerPage(props: PageProps) {
           </table>
         </div>
       </div>
+        </div>
+
+        <aside className="hidden xl:block w-full xl:w-96 shrink-0 xl:sticky xl:top-16 xl:self-start space-y-2">
+          {selectedPlayer && isXlViewport ? (
+            <PropsExplorerPlayerPanel
+              variant="sidebar"
+              selection={selectedPlayer}
+              onClose={() => setSelectedPlayer(null)}
+            />
+          ) : (
+            <PropsExplorerPlayerSidebarPlaceholder />
+          )}
+        </aside>
+      </div>
+
+      {selectedPlayer && !isXlViewport ? (
+        <PropsExplorerPlayerPanel
+          variant="drawer"
+          selection={selectedPlayer}
+          onClose={() => setSelectedPlayer(null)}
+        />
+      ) : null}
     </main>
   );
 }

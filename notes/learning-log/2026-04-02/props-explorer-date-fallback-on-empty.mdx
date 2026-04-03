@@ -1,0 +1,42 @@
+## Context
+Props Explorer was still showing no rows even after API stability fixes because the default date could point to a slate with no ingested props yet.
+
+## Goal
+Improve default UX so users still see props by automatically stepping back one day when the default date has zero rows.
+
+## Files Changed
+- `app/betting/props-explorer/page.tsx`
+
+## Implementation Notes (key logic explained)
+- In the main props fetch effect, after receiving API data:
+  - Detect whether URL has an explicit `date` parameter.
+  - Detect whether no filters are applied (pure default state).
+  - If default state + no explicit date + zero rows, call `updateParams` with `date = addDaysET(date, -1)` and return early.
+- Added missing `context` dependency to the fetch effect to keep filter-driven fetches in sync.
+
+## Key Decisions (and alternatives considered)
+- Decision: UI-only fallback (one-time previous-day shift) instead of backend query fallback.
+  - Why: smallest safe diff with low risk and immediate user-visible improvement.
+  - Alternative considered: API fallback to latest date with props. Rejected for now due larger route/query complexity.
+- Decision: fallback only in default/no-filter state.
+  - Why: avoids surprising behavior when user intentionally filters to a specific date or criteria.
+
+## Assumptions
+- Missing rows on "today" is often a data freshness/timing issue, not a hard system failure.
+- Previous day is likely to contain props when today does not.
+
+## Failure Modes
+- If both today and yesterday have no rows, table remains empty (expected).
+- If user explicitly sets a date in URL, fallback does not trigger (intent preserved).
+- If filters are applied, fallback does not trigger (intent preserved).
+
+## How to Test (commands + steps)
+1. Open `/betting/props-explorer` with no query params.
+2. If today has no rows, verify URL updates once to previous date and rows appear.
+3. Add an explicit date (`?date=YYYY-MM-DD`) with no rows; verify no auto-fallback occurs.
+4. Apply filters and verify no automatic date change occurs.
+5. Toggle context chips and confirm requests refresh (dependency fix).
+
+## Next Steps
+- If needed, add backend fallback to latest available props date and expose it in response metadata.
+- Add an explicit empty-state CTA: “No props for this date, view previous day”.

@@ -17,6 +17,17 @@ export const METRIC_TO_PROP_TYPE: Record<MetricKey, string> = {
   pra: 'points_rebounds_assists',
 };
 
+/** Inverse map for props explorer / quick previews; combo props without a dedicated metric default to pts. */
+const PROP_TYPE_TO_METRIC: Record<string, MetricKey> = Object.fromEntries(
+  (Object.entries(METRIC_TO_PROP_TYPE) as [MetricKey, string][]).map(([k, v]) => [v, k])
+) as Record<string, MetricKey>;
+
+export function propTypeToMetricKey(propType: string | null | undefined): MetricKey {
+  const key = (propType ?? '').trim().toLowerCase();
+  if (!key) return 'pts';
+  return PROP_TYPE_TO_METRIC[key] ?? 'pts';
+}
+
 export interface GameLog {
   game_id: string;
   game_date: string;

@@ -140,11 +140,31 @@ const BASE_ANCHOR_BUDGET = 0.08;
 const MIN_ANCHOR_GAP = 0.02;
 const MAX_ANCHOR_GAP = 0.10;
 
-function anchorToMarket(modelProb: number, marketProb: number, decimalOdds: number = 1.91): number {
+/**
+ * Band [lo, hi] for implied win probability that `anchorToMarket` clamps toward.
+ * Use for diagnostics (e.g. max |EV| ≈ effectiveGap × decimalOdds when m±gap stays inside (0,1)).
+ */
+export function getImpliedProbAnchorBand(
+  marketProb: number,
+  decimalOdds: number
+): { effectiveGap: number; lo: number; hi: number } {
   const rawGap = BASE_ANCHOR_BUDGET / Math.max(decimalOdds - 1, 0.1);
   const effectiveGap = Math.max(MIN_ANCHOR_GAP, Math.min(MAX_ANCHOR_GAP, rawGap));
   const lo = Math.max(0, marketProb - effectiveGap);
   const hi = Math.min(1, marketProb + effectiveGap);
+  return { effectiveGap, lo, hi };
+}
+
+/** Largest |p × decimalOdds − 1| for p constrained to the anchor band (theoretical EV cap for that side/odds). */
+export function maxAbsEvAllowedByAnchorBand(marketProb: number, decimalOdds: number): number {
+  const { lo, hi } = getImpliedProbAnchorBand(marketProb, decimalOdds);
+  const evHi = hi * decimalOdds - 1;
+  const evLo = lo * decimalOdds - 1;
+  return Math.max(Math.abs(evHi), Math.abs(evLo));
+}
+
+function anchorToMarket(modelProb: number, marketProb: number, decimalOdds: number = 1.91): number {
+  const { lo, hi } = getImpliedProbAnchorBand(marketProb, decimalOdds);
   return Math.max(lo, Math.min(hi, modelProb));
 }
 

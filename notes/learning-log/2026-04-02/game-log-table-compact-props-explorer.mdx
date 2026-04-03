@@ -1,0 +1,41 @@
+## Context
+Props Explorer’s player sidebar embeds `GameLogTable` inside a narrow column with heavy padding and many columns (OPP, MIN, 3PM, FG, +/-), which made the log tall and hard to scan.
+
+## Goal
+Add an optional compact layout: fewer columns (Date, Result, PTS, REB, AST or 3PM when the active prop is threes, plus PRA when the active metric is PRA), tighter padding and type, without changing the full player page table.
+
+## Files Changed
+- `app/betting/players/[playerId]/components/GameLogTable.tsx`
+- `components/betting/PropsExplorerPlayerPanel.tsx`
+
+## Implementation Notes (key logic explained)
+- **`compact?: boolean`** on `GameLogTable`: smaller header/card padding, `text-[10px]` cells, abbreviated “Game Log” chrome.
+- **Compact columns**: Date, Result (W/L + score), PTS, REB, fifth column is **AST** or **3PM** depending on `activeMetric` so threes props still highlight the right stat; **PRA** column still appears when `activeMetric === 'pra'`.
+- **DNP rows**: single date cell + `colSpan` over the remaining compact columns (4 or 5).
+- **PropsExplorerPlayerPanel** passes **`compact`** only there; `PlayerGameLogTab` keeps the full table.
+
+## Key Decisions (and alternatives considered)
+- Decision: omit opponent from compact rows (slate context already implies matchup focus).
+  - Alternative: add a tiny `@ ABC` in Result (rejected: user asked for minimal columns).
+
+## Assumptions
+- Full game log on `/betting/players/[id]` remains the detailed view.
+
+## Failure Modes
+- If new `MetricKey` values are added later, compact mode may need another column rule (today only pts/reb/ast/3pm/pra exist).
+
+## How to Test (commands + steps)
+1. `npx tsc --noEmit`
+2. Props Explorer → select a player → sidebar game log shows ~5–6 narrow columns.
+3. Switch StatTabs to **Threes**: fifth column header reads **3PM** and values match makes.
+4. Open full player page game log: still shows OPP, MIN, 3PM, FG, +/-.
+
+## Next Steps
+- Optional: raise `max-h-56` on the panel wrapper if you want more visible rows now that each row is shorter.
+
+## Verification Checklist
+- [ ] Sidebar game log fits ~96 sidebar width without huge horizontal scroll.
+- [ ] PRA props show PTS, REB, AST, PRA in compact mode.
+- [ ] Threes props show 3PM instead of AST in the fifth column.
+- [ ] DNP rows render without column misalignment.
+- [ ] Full player page game log unchanged.

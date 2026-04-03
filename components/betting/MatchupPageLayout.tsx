@@ -2,16 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays, ChevronDown } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Game } from './GameCard';
 import { LineMovementChart } from './LineMovementChart';
-import {
-  OffenseVsDefenseComparison,
-  PlayerMatchupCard,
-  StartingLineupCard,
-} from './MatchupAnalysis';
+import { StartingLineupCard } from './MatchupAnalysis';
+import type { InjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
 
 // --- Types (migrated from GameDetailsModal) ---
 interface RecentGameResult {
@@ -74,7 +71,7 @@ interface MatchupAnalysisData {
   home_defense: any;
   away_defense: any;
   pace_analysis: any;
-  key_players: any[];
+  key_players?: any[];
   starting_lineups: { home: any; away: any };
 }
 
@@ -101,6 +98,8 @@ export interface GameDetailsData {
   aiConfidenceScores: { moneyline: number; spread: number; total: number };
   matchupAnalysis?: MatchupAnalysisData | null;
   playerProps?: PlayerPropItem[];
+  /** Teammate splits when Out/Doubtful players did not play (box-score based). */
+  injuryMatchupContext?: InjuryMatchupContext | null;
 }
 
 /** True if team's most recent game was the day before this game (back-to-back). */
@@ -127,10 +126,52 @@ function formatLineDisplay(prop: PlayerPropItem): string {
   return String(prop.lineValue);
 }
 
+function samePropMarket(a: PlayerPropItem, b: PlayerPropItem): boolean {
+  return (
+    a.playerId === b.playerId &&
+    a.propType === b.propType &&
+    a.lineValue === b.lineValue
+  );
+}
+
+/** Prefer points; else first prop after stable sort. */
+function pickPrimaryProp(props: PlayerPropItem[]): PlayerPropItem {
+  if (props.length === 0) {
+    throw new Error('pickPrimaryProp: empty');
+  }
+  const sorted = [...props].sort(
+    (a, b) => a.propType.localeCompare(b.propType) || Number(a.lineValue) - Number(b.lineValue)
+  );
+  const pts = sorted.find((p) => p.propType.toLowerCase() === 'points');
+  return pts ?? sorted[0];
+}
+
+function groupPropsByPlayer(props: PlayerPropItem[]): Array<{
+  playerId: string;
+  playerName: string;
+  props: PlayerPropItem[];
+}> {
+  const map = new Map<string, PlayerPropItem[]>();
+  for (const p of props) {
+    if (!map.has(p.playerId)) map.set(p.playerId, []);
+    map.get(p.playerId)!.push(p);
+  }
+  return Array.from(map.entries())
+    .map(([playerId, list]) => ({
+      playerId,
+      playerName: list[0]?.playerName ?? '',
+      props: list.sort(
+        (a, b) => a.propType.localeCompare(b.propType) || Number(a.lineValue) - Number(b.lineValue)
+      ),
+    }))
+    .sort((a, b) => a.playerName.localeCompare(b.playerName));
+}
+
 function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropItem[] }) {
   const [filterPlayer, setFilterPlayer] = useState<string>('all');
   const [filterPropType, setFilterPropType] = useState<string>('all');
   const [filterLine, setFilterLine] = useState<string>('all');
+  const [expandedPlayerIds, setExpandedPlayerIds] = useState<Set<string>>(() => new Set());
 
   const players = Array.from(
     new Map(playerProps.map((p) => [p.playerId, { id: p.playerId, name: p.playerName }])).values()
@@ -151,13 +192,23 @@ function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropIt
     return hasLineValue(prop) && String(prop.lineValue) === filterLine;
   });
 
+  const grouped = useMemo(() => groupPropsByPlayer(filtered), [filtered]);
+
+  const togglePlayerExpanded = (playerId: string) => {
+    setExpandedPlayerIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(playerId)) next.delete(playerId);
+      else next.add(playerId);
+      return next;
+    });
+  };
+
   const selectClass =
     'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff] focus:border-[#00d4ff]/50';
   const optionStyle = { backgroundColor: '#111827', color: '#fff' };
 
   return (
     <>
-      <h2 className="text-lg font-semibold text-white mb-4">Player props</h2>
       <div className="glass-card rounded-xl overflow-hidden border border-white/5">
         <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex flex-wrap items-center gap-3">
           <h2 className="text-sm font-semibold text-white shrink-0">Player props</h2>
@@ -208,11 +259,12 @@ function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropIt
               )}
             </select>
           </div>
-          <span className="text-[10px] text-muted-foreground ml-auto">
-            {filtered.length} of {playerProps.length}
+          <span className="text-[10px] text-muted-foreground ml-auto text-right max-w-[11rem] leading-tight">
+            {grouped.length} player{grouped.length === 1 ? '' : 's'} · {filtered.length} line{filtered.length === 1 ? '' : 's'}{' '}
+            <span className="text-muted-foreground/80">(expand for more markets)</span>
           </span>
         </div>
-        <div className="p-3 overflow-x-auto">
+        <div className="p-3 overflow-x-auto max-h-[min(520px,65vh)] overflow-y-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10">
@@ -224,24 +276,71 @@ function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropIt
               </tr>
             </thead>
             <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((prop, i) => (
-                  <tr key={`${prop.playerId}-${prop.propType}-${prop.lineValue}-${i}`} className="border-b border-white/5 last:border-0">
-                    <td className="py-1.5 text-xs text-white">
-                      <Link href={`/betting/players/${prop.playerId}`} className="hover:text-[#00d4ff] transition-colors">
-                        {prop.playerName}
-                      </Link>
-                    </td>
-                    <td className="py-1.5 text-[10px] text-muted-foreground capitalize">{prop.propType.replace(/_/g, ' ')}</td>
-                    <td className="py-1.5 text-xs font-mono text-white text-center">{formatLineDisplay(prop)}</td>
-                    <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
-                      {prop.overOdds != null ? (prop.overOdds > 0 ? `+${prop.overOdds}` : prop.overOdds) : '—'}
-                    </td>
-                    <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
-                      {prop.underOdds != null ? (prop.underOdds > 0 ? `+${prop.underOdds}` : prop.underOdds) : '—'}
-                    </td>
-                  </tr>
-                ))
+              {grouped.length > 0 ? (
+                grouped.flatMap((g) => {
+                  const primary = pickPrimaryProp(g.props);
+                  const rest = g.props.filter((p) => !samePropMarket(p, primary));
+                  const isOpen = expandedPlayerIds.has(g.playerId);
+                  const showExpand = rest.length > 0;
+
+                  const rowFor = (prop: PlayerPropItem, opts: { sub?: boolean }) => (
+                    <tr
+                      key={`${prop.playerId}-${prop.propType}-${prop.lineValue}${opts.sub ? '-sub' : ''}`}
+                      className={`border-b border-white/5 last:border-0 ${opts.sub ? 'bg-white/[0.02]' : ''}`}
+                    >
+                      <td className={`py-1.5 text-xs text-white ${opts.sub ? 'pl-8' : ''}`}>
+                        {opts.sub ? (
+                          <span className="text-[10px] text-muted-foreground">↳</span>
+                        ) : (
+                          <div className="flex items-center gap-1 min-w-0">
+                            {showExpand ? (
+                              <button
+                                type="button"
+                                onClick={() => togglePlayerExpanded(g.playerId)}
+                                className="p-0.5 rounded shrink-0 hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+                                aria-expanded={isOpen}
+                                aria-label={isOpen ? `Collapse props for ${g.playerName}` : `Expand ${rest.length} more props for ${g.playerName}`}
+                              >
+                                <ChevronDown
+                                  className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                                />
+                              </button>
+                            ) : (
+                              <span className="w-4 shrink-0" aria-hidden />
+                            )}
+                            <Link
+                              href={`/betting/players/${prop.playerId}`}
+                              className="hover:text-[#00d4ff] transition-colors truncate"
+                            >
+                              {prop.playerName}
+                            </Link>
+                            {showExpand && (
+                              <span className="text-[10px] text-muted-foreground shrink-0">+{rest.length}</span>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-1.5 text-[10px] text-muted-foreground capitalize">
+                        {prop.propType.replace(/_/g, ' ')}
+                      </td>
+                      <td className="py-1.5 text-xs font-mono text-white text-center">{formatLineDisplay(prop)}</td>
+                      <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
+                        {prop.overOdds != null ? (prop.overOdds > 0 ? `+${prop.overOdds}` : prop.overOdds) : '—'}
+                      </td>
+                      <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
+                        {prop.underOdds != null ? (prop.underOdds > 0 ? `+${prop.underOdds}` : prop.underOdds) : '—'}
+                      </td>
+                    </tr>
+                  );
+
+                  const rows = [rowFor(primary, {})];
+                  if (isOpen) {
+                    for (const p of rest) {
+                      rows.push(rowFor(p, { sub: true }));
+                    }
+                  }
+                  return rows;
+                })
               ) : (
                 <tr>
                   <td colSpan={5} className="py-6 text-center text-xs text-muted-foreground">
@@ -252,7 +351,7 @@ function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropIt
             </tbody>
           </table>
           <p className="text-[10px] text-muted-foreground mt-2">
-            Odds from {playerProps[0]?.vendor ?? 'book'} · American format
+            Odds from {playerProps[0]?.vendor ?? 'book'} · American format · Primary row is points when available
           </p>
         </div>
       </div>
@@ -344,11 +443,16 @@ function getGameSummaryBullets(data: GameDetailsData): string[] {
     bullets.push(`Avg pace ${avg.toFixed(0)}`);
   }
 
-  if (matchupAnalysis?.home_offense && matchupAnalysis?.away_defense && matchupAnalysis?.away_offense && matchupAnalysis?.home_defense) {
-    const homeO = matchupAnalysis.home_offense.offensive_rating ?? 0;
-    const awayD = matchupAnalysis.away_defense.defensive_rating ?? 0;
-    const awayO = matchupAnalysis.away_offense.offensive_rating ?? 0;
-    const homeD = matchupAnalysis.home_defense.defensive_rating ?? 0;
+  if (
+    homeTeamStats?.offensiveRating != null &&
+    awayTeamStats?.defensiveRating != null &&
+    awayTeamStats?.offensiveRating != null &&
+    homeTeamStats?.defensiveRating != null
+  ) {
+    const homeO = homeTeamStats.offensiveRating;
+    const awayD = awayTeamStats.defensiveRating;
+    const awayO = awayTeamStats.offensiveRating;
+    const homeD = homeTeamStats.defensiveRating;
     if (homeO > awayD && awayO <= homeD) bullets.push('Home offense vs Away defense: advantage Home');
     else if (awayO > homeD && homeO <= awayD) bullets.push('Away offense vs Home defense: advantage Away');
     else bullets.push('Offense vs defense: mixed');
@@ -370,12 +474,10 @@ function getGameSummaryBullets(data: GameDetailsData): string[] {
   return bullets.slice(0, 4);
 }
 
-const KEY_PLAYERS_MAX = 4;
-
 const SECTION_IDS = ['section-ai-projection', 'section-odds', 'section-matchup', 'section-players', 'section-injuries'] as const;
 const SECTION_LABELS: Record<(typeof SECTION_IDS)[number], string> = {
   'section-ai-projection': 'AI Projection',
-  'section-odds': 'Odds',
+  'section-odds': 'Odds & lines',
   'section-matchup': 'Matchup',
   'section-players': 'Players',
   'section-injuries': 'Injuries',
@@ -397,19 +499,21 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     aiConfidenceScores,
     matchupAnalysis,
     playerProps = [],
+    injuryMatchupContext,
   } = data;
 
   const summaryBullets = getGameSummaryBullets(data);
-  const keyPlayers = (matchupAnalysis?.key_players ?? []).slice(0, KEY_PLAYERS_MAX);
 
   const scrollToSection = (sectionId: (typeof SECTION_IDS)[number]) => {
     const el = document.getElementById(sectionId);
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.scrollY;
-    const stickyOffset = 160; // leave room for sticky header so section headers aren't covered
+    const stickyOffset = 160;
     window.scrollTo({ top: y - stickyOffset, behavior: 'smooth' });
     setActiveSection(sectionId);
   };
+
+  const totalListedInjuries = (injuries?.home?.length ?? 0) + (injuries?.away?.length ?? 0);
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
@@ -431,53 +535,54 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
   }, []);
 
   return (
-    <main className="min-h-screen bg-background gradient-mesh max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
-      <div className="space-y-6">
-        {/* Matchup header — back icon + centered title + section nav; sticky when scrolling */}
-        <div className="sticky top-0 z-10 glass-card rounded-xl overflow-hidden border border-white/5 bg-background/95 backdrop-blur-sm">
-          <div className="px-4 py-5 flex items-center justify-center gap-x-6 gap-y-3 min-w-0 bg-white/[0.02] relative">
-            <button
-              type="button"
-              onClick={() => router.push('/betting')}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg text-muted-foreground hover:text-[#00d4ff] hover:bg-white/10 transition-colors"
-              aria-label="Back to Betting"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-3 min-w-0 shrink-0">
-              <Calendar className="w-5 h-5 text-[#00d4ff] shrink-0" />
-              <span className="text-base font-medium text-muted-foreground truncate">{game.startTime}</span>
-            </div>
-            <div className="flex items-center gap-4 shrink-0">
-              <Link href={`/teams/${game.awayTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
-                <span className="block text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</span>
-                <span className="block text-sm text-muted-foreground mt-0.5">{game.awayTeam.record}</span>
-              </Link>
-              <span className="text-sm text-muted-foreground">@</span>
-              <Link href={`/teams/${game.homeTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
-                <span className="block text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</span>
-                <span className="block text-sm text-muted-foreground mt-0.5">{game.homeTeam.record}</span>
-              </Link>
-            </div>
+    <main className="min-h-screen bg-background gradient-mesh max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
+      {/* Sticky header: matchup + horizontal section nav (scroll-to-section everywhere) */}
+      <div className="sticky top-0 z-10 glass-card rounded-xl overflow-hidden border border-white/5 bg-background/95 backdrop-blur-sm">
+        <div className="px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-center gap-x-4 gap-y-2 min-w-0 bg-white/[0.02] relative">
+          <button
+            type="button"
+            onClick={() => router.push('/betting')}
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-[#00d4ff] hover:bg-white/10 transition-colors"
+            aria-label="Back to Betting"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2 min-w-0 shrink-0">
+            <Calendar className="w-4 h-4 text-[#00d4ff] shrink-0" />
+            <span className="text-sm font-medium text-muted-foreground truncate">{game.startTime}</span>
           </div>
-          <div className="px-5 py-2 border-t border-white/5 flex flex-wrap items-center justify-center gap-2 bg-white/[0.02]">
-            {SECTION_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => scrollToSection(id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  activeSection === id
-                    ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/40'
-                    : 'bg-white/5 text-muted-foreground border border-white/5 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {SECTION_LABELS[id]}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <Link href={`/teams/${game.awayTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
+              <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</span>
+              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.awayTeam.record}</span>
+            </Link>
+            <span className="text-xs text-muted-foreground">@</span>
+            <Link href={`/teams/${game.homeTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
+              <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</span>
+              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.homeTeam.record}</span>
+            </Link>
           </div>
         </div>
+        <div className="px-3 sm:px-5 py-2 border-t border-white/5 flex flex-wrap items-center justify-center gap-1.5 bg-white/[0.02]">
+          {SECTION_IDS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => scrollToSection(id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                activeSection === id
+                  ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/40'
+                  : 'bg-white/5 text-muted-foreground border border-white/5 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              {SECTION_LABELS[id]}
+            </button>
+          ))}
+        </div>
+      </div>
 
+      <div className="mt-4 flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
+        <div className="flex-1 min-w-0 space-y-4">
         <section id="section-ai-projection" className="scroll-mt-[10rem]">
           <div className="glass-card rounded-xl overflow-hidden border border-[#bf5af2]/30">
             <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex items-center gap-1.5">
@@ -503,84 +608,149 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 );
               })}
             </div>
-            <p className="text-xs text-muted-foreground">Coming soon</p>
+            {injuryMatchupContext && injuryMatchupContext.entries.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
+                <div>
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Game context</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Teammate scoring ({injuryMatchupContext.season}) when listed players had no minutes vs when they played.
+                    Small samples — interpret cautiously.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  {injuryMatchupContext.entries.map((entry) => {
+                    const teamLabel =
+                      entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
+                    return (
+                      <div key={entry.player_id} className="border border-white/5 rounded-lg p-2.5 bg-white/[0.02]">
+                        <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                          <span className="text-xs font-medium text-white">{entry.full_name}</span>
+                          <span className="text-[10px] text-muted-foreground">{teamLabel}</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            Played {entry.games_played_sample} · No minutes {entry.games_missed_sample} team games
+                          </span>
+                          {entry.low_sample && (
+                            <span className="text-[10px] text-amber-400/90">Low sample</span>
+                          )}
+                        </div>
+                        {entry.teammates.length === 0 ? (
+                          <p className="text-[10px] text-muted-foreground">No teammate split data.</p>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-[10px] text-left">
+                              <thead>
+                                <tr className="text-muted-foreground border-b border-white/5">
+                                  <th className="py-1 pr-2 font-normal">Teammate</th>
+                                  <th className="py-1 px-1 font-normal">PTS (with)</th>
+                                  <th className="py-1 px-1 font-normal">PTS (out)</th>
+                                  <th className="py-1 px-1 font-normal">Δ</th>
+                                  <th className="py-1 pl-1 font-normal text-right">n</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {entry.teammates.map((t) => (
+                                  <tr key={t.player_id} className="border-b border-white/[0.03] text-white/90">
+                                    <td className="py-1 pr-2 truncate max-w-[140px]" title={t.full_name}>
+                                      {t.full_name}
+                                    </td>
+                                    <td className="py-1 px-1">{t.avg_pts_with ?? '—'}</td>
+                                    <td className="py-1 px-1">{t.avg_pts_without ?? '—'}</td>
+                                    <td className={`py-1 px-1 ${(t.pts_delta ?? 0) > 0 ? 'text-emerald-400/90' : (t.pts_delta ?? 0) < 0 ? 'text-rose-400/90' : ''}`}>
+                                      {t.pts_delta != null ? (t.pts_delta > 0 ? `+${t.pts_delta}` : String(t.pts_delta)) : '—'}
+                                    </td>
+                                    <td className="py-1 pl-1 text-right text-muted-foreground">
+                                      {t.n_games_played_with}/{t.n_games_missed}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground mt-3">Full AI projection — coming soon</p>
             </div>
           </div>
         </section>
 
-        <section id="section-odds" className="space-y-4 scroll-mt-[10rem]">
+        <section id="section-odds" className="scroll-mt-[10rem]">
           <div className="glass-card rounded-xl overflow-hidden border border-white/5">
             <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">Odds</h2>
+              <h2 className="text-sm font-semibold text-white">Odds & line movement</h2>
             </div>
-            <div className="p-3 flex items-center">
-            <div className="flex items-center justify-between gap-4 w-full">
-              <div className="text-center flex-1">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Spread</p>
-                <p className="text-lg font-bold text-white">
-                  {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
-                </p>
-                {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
-                  <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-                    {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
-                  </p>
-                )}
+            <div className="p-2.5 sm:p-3 space-y-3">
+              <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Current odds</p>
+                <div className="flex items-stretch justify-between gap-2 sm:gap-4 w-full">
+                  <div className="text-center flex-1 min-w-0">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Spread</p>
+                    <p className="text-base sm:text-lg font-bold text-white tabular-nums">
+                      {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
+                    </p>
+                    {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
+                      <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
+                        {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
+                  <div className="text-center flex-1 min-w-0">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Moneyline</p>
+                    <p className="text-xs sm:text-sm font-bold text-white leading-tight">
+                      {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
+                        <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                      ) : currentOdds?.moneylineHome != null ? (
+                        <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                      ) : currentOdds?.moneylineAway != null ? (
+                        <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
+                      ) : (
+                        '—'
+                      )}
+                    </p>
+                  </div>
+                  <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
+                  <div className="text-center flex-1 min-w-0">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Total</p>
+                    <p className="text-base sm:text-lg font-bold text-white tabular-nums">{currentOdds?.overUnder ?? '—'}</p>
+                    {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
+                      <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
+                        O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="w-px h-10 bg-white/10 shrink-0" />
-              <div className="text-center flex-1">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Moneyline</p>
-                <p className="text-sm font-bold text-white leading-tight">
-                  {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
-                    <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
-                  ) : currentOdds?.moneylineHome != null ? (
-                    <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
-                  ) : currentOdds?.moneylineAway != null ? (
-                    <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
-                  ) : (
-                    '—'
-                  )}
-                </p>
+
+              <div className="border-t border-white/5 pt-3">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Movement</p>
+                <Tabs defaultValue="spread" className="w-full">
+                  <TabsList className="w-full grid grid-cols-2 mb-2 bg-white/10 p-1 rounded-lg h-8">
+                    <TabsTrigger value="spread" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
+                      Spread ({game.homeTeam.abbreviation})
+                    </TabsTrigger>
+                    <TabsTrigger value="total" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
+                      Total (O/U)
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="spread" className="mt-0 outline-none">
+                    <LineMovementChart data={spreadMovement} label={`Spread: ${game.homeTeam.abbreviation}`} color="#00d4ff" height={176} width={520} embedded />
+                  </TabsContent>
+                  <TabsContent value="total" className="mt-0 outline-none">
+                    <LineMovementChart data={totalMovement} label="Total (O/U)" color="#39ff14" height={176} width={520} embedded />
+                  </TabsContent>
+                </Tabs>
               </div>
-              <div className="w-px h-10 bg-white/10 shrink-0" />
-              <div className="text-center flex-1">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Total</p>
-                <p className="text-lg font-bold text-white">{currentOdds?.overUnder ?? '—'}</p>
-                {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
-                  <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-                    O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
-                  </p>
-                )}
-              </div>
-            </div>
-            </div>
-          </div>
-          <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">Line movement</h2>
-            </div>
-            <div className="p-3">
-              <Tabs defaultValue="spread" className="w-full">
-                <TabsList className="w-full grid grid-cols-2 mb-2 bg-white/10 p-1 rounded-lg h-8">
-                  <TabsTrigger value="spread" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
-                    Spread ({game.homeTeam.abbreviation})
-                  </TabsTrigger>
-                  <TabsTrigger value="total" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
-                    Total (O/U)
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="spread" className="mt-0 outline-none">
-                  <LineMovementChart data={spreadMovement} label={`Spread: ${game.homeTeam.abbreviation}`} color="#00d4ff" height={200} width={520} embedded />
-                </TabsContent>
-                <TabsContent value="total" className="mt-0 outline-none">
-                  <LineMovementChart data={totalMovement} label="Total (O/U)" color="#39ff14" height={200} width={520} embedded />
-                </TabsContent>
-              </Tabs>
             </div>
           </div>
         </section>
 
-        <section id="section-matchup" className="space-y-6 scroll-mt-[10rem]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section id="section-matchup" className="space-y-4 scroll-mt-[10rem]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Column 1: Projected starters */}
             <div className="glass-card rounded-xl overflow-hidden border border-white/5 min-w-0">
               <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
@@ -704,36 +874,12 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                       </div>
                     </TabsContent>
                   </Tabs>
-                  {matchupAnalysis && (
-                    <>
-                      <div className="border-t border-white/10 my-4" aria-hidden />
-                      <div className="space-y-4">
-                        <OffenseVsDefenseComparison
-                          offenseTeam={matchupAnalysis.away_offense}
-                          defenseTeam={matchupAnalysis.home_defense}
-                          offenseAbbr={game.awayTeam.abbreviation}
-                          defenseAbbr={game.homeTeam.abbreviation}
-                          isSwapped={false}
-                          embedded
-                        />
-                        <OffenseVsDefenseComparison
-                          offenseTeam={matchupAnalysis.home_offense}
-                          defenseTeam={matchupAnalysis.away_defense}
-                          offenseAbbr={game.homeTeam.abbreviation}
-                          defenseAbbr={game.awayTeam.abbreviation}
-                          isSwapped={false}
-                          embedded
-                        />
-                      </div>
-                    </>
-                  )}
                 </>
               );
             })()}
             </div>
             </div>
           </div>
-          <h2 className="text-lg font-semibold text-white mb-4">Historical matchups</h2>
           <div className="glass-card rounded-xl overflow-hidden border border-white/5">
             <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
               <h2 className="text-sm font-semibold text-white">Historical matchups</h2>
@@ -763,36 +909,14 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           </div>
         </section>
 
-        <section id="section-players" className="space-y-6 scroll-mt-[10rem]">
-          <h2 className="text-lg font-semibold text-white mb-4">Key player matchups</h2>
-          <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">Key player matchups</h2>
-            </div>
-            <div className="p-3">
-              {keyPlayers.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {keyPlayers.map((player) => (
-                    <PlayerMatchupCard
-                      key={player.player_id}
-                      player={player}
-                      opponentAbbr={String(player.team_id) === String(game.homeTeam.id) ? game.awayTeam.abbreviation : game.homeTeam.abbreviation}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">No matchup data for this game yet.</p>
-              )}
-            </div>
-          </div>
+        <section id="section-players" className="space-y-4 scroll-mt-[10rem]">
           {playerProps.length > 0 && (
             <PlayerPropsFilterableList props={playerProps} />
           )}
         </section>
 
         <section id="section-injuries" className="scroll-mt-[10rem]">
-          <h2 className="text-lg font-semibold text-white mb-4">Injuries</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="glass-card rounded-xl overflow-hidden border border-white/5">
               <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#ff6b35] shrink-0" />
@@ -823,6 +947,67 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
         </section>
+        </div>
+
+        <aside
+          className="hidden lg:flex flex-col w-[17rem] shrink-0 gap-3 self-start sticky top-40 z-[5] pt-1"
+          aria-label="Game snapshot"
+        >
+          <div className="glass-card rounded-xl border border-white/5 overflow-hidden">
+            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
+              <p className="text-xs font-semibold text-white">At a glance</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Snapshot only — scroll the page for full sections</p>
+            </div>
+            <div className="p-3 space-y-3 text-xs">
+              <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
+                <span>{game.awayTeam.abbreviation}</span>
+                <span className="text-white font-mono tabular-nums">{game.awayTeam.record}</span>
+              </div>
+              <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
+                <span>{game.homeTeam.abbreviation}</span>
+                <span className="text-white font-mono tabular-nums">{game.homeTeam.record}</span>
+              </div>
+              <div className="border-t border-white/5 pt-3 space-y-2">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Lines</p>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Spread</span>
+                  <span className="text-white font-mono tabular-nums text-right">
+                    {currentOdds?.spread != null
+                      ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}`
+                      : '—'}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Total</span>
+                  <span className="text-white font-mono tabular-nums">{currentOdds?.overUnder ?? '—'}</span>
+                </div>
+                <div className="text-[10px] text-muted-foreground leading-snug">
+                  ML{' '}
+                  <span className="text-white/90">
+                    {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null
+                      ? `${game.awayTeam.abbreviation} ${currentOdds.moneylineAway > 0 ? '+' : ''}${currentOdds.moneylineAway} · ${game.homeTeam.abbreviation} ${currentOdds.moneylineHome > 0 ? '+' : ''}${currentOdds.moneylineHome}`
+                      : '—'}
+                  </span>
+                </div>
+                {currentOdds?.bookmaker && (
+                  <p className="text-[10px] text-muted-foreground pt-1">Book: {currentOdds.bookmaker}</p>
+                )}
+              </div>
+              <div className="border-t border-white/5 pt-3">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1">Injuries</p>
+                <p className="text-[11px] text-white/90">
+                  {totalListedInjuries === 0
+                    ? 'None listed'
+                    : `${totalListedInjuries} player${totalListedInjuries === 1 ? '' : 's'} on report`}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {game.awayTeam.abbreviation} {injuries?.away?.length ?? 0} · {game.homeTeam.abbreviation}{' '}
+                  {injuries?.home?.length ?? 0}
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </main>
   );

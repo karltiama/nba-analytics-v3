@@ -1,0 +1,37 @@
+## Context
+
+Matchup analysis mixed BBRef (`bbref_*` tables) with analytics; product goal is no BBRef in this flow.
+
+## Goal
+
+Remove BBRef queries from `getMatchupAnalysis`, derive pace from `analytics.team_season_averages`, drop key-player vs-opponent and O/D ranking UI on the matchup page.
+
+## Files Changed
+
+- `lib/betting/queries.ts` — removed `getOpponentDefensiveRankings`, `getTeamOffensiveRankings`, `getPlayerVsOpponentStats`; `getPaceAnalysis` uses `team_season_averages`; `getMatchupAnalysis` returns null O/D + empty `key_players`.
+- `components/betting/MatchupPageLayout.tsx` — removed `OffenseVsDefenseComparison`, key-player card; summary bullets use team ORTG/DRTG from details.
+- `app/api/betting/games/[gameId]/matchup-analysis/route.ts` — comment update.
+
+## Implementation Notes (key logic explained)
+
+- **Pace:** `DISTINCT ON (team_id) ... ORDER BY season DESC` for latest season row; `COALESCE(avg_pace, 100)`.
+- **API shape:** `MatchupAnalysis` unchanged; offense/defense slots are `null`, `key_players` is `[]`.
+
+## Key Decisions (and alternatives considered)
+
+- **Summary bullet:** Reused ORTG/DRTG from `homeTeamStats` / `awayTeamStats` (same source as team comparison card) instead of BBRef ratings.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. `GET /api/betting/games/{id}/matchup-analysis` — `pace_analysis` present; `key_players` []; offense/defense `null`.
+3. Matchup page: Team comparison still shows ORTG/DRTG/PACE; no BBRef comparison blocks.
+
+## Verification Checklist
+
+- [ ] No `bbref_` in `getMatchupAnalysis` / `getPaceAnalysis` code paths.
+- [ ] Players section shows only player props when lines exist.
+
+## Next Steps
+
+- Optional: rename nav label "Players" → "Props" if desired.

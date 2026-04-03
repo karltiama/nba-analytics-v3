@@ -17,7 +17,7 @@ type DbRow = {
   odds_american: number | null;
   odds_decimal: string | number | null;
   implied_probability: string | number | null;
-  snapshot_at: string;
+  snapshot_at: string | Date;
 };
 
 const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
@@ -261,7 +261,7 @@ export async function GET(request: NextRequest) {
         oddsAmerican: r.odds_american ?? null,
         oddsDecimal: r.odds_decimal != null ? Number(r.odds_decimal) : null,
         impliedProbability: offerP != null && Number.isFinite(offerP) ? offerP : null,
-        snapshotAt: r.snapshot_at,
+        snapshotAt: r.snapshot_at instanceof Date ? r.snapshot_at.toISOString() : r.snapshot_at,
         ...evFields,
         evSelectedTrack: selectedTrack,
         calibrationVersion: cal,

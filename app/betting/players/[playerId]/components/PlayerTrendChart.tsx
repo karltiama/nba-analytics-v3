@@ -9,11 +9,17 @@ interface PlayerTrendChartProps {
   bettingLine?: number | null;
   metricLabel: string;
   children?: ReactNode;
+  /** Default 540. Use ~300–360 for narrow sidebars. */
+  svgWidth?: number;
+  /** Default 220. */
+  chartHeight?: number;
+  /** Chart + legend only: no hover hint column or “Hover to see…” placeholder (e.g. Props Explorer sidebar). */
+  compactTrend?: boolean;
 }
 
-const CHART_HEIGHT = 220;
+const DEFAULT_CHART_HEIGHT = 220;
 const PADDING = { top: 24, right: 56, bottom: 44, left: 56 };
-const SVG_WIDTH = 540;
+const DEFAULT_SVG_WIDTH = 540;
 
 export function PlayerTrendChart({
   data,
@@ -22,12 +28,16 @@ export function PlayerTrendChart({
   bettingLine,
   metricLabel,
   children,
+  svgWidth: svgWidthProp,
+  chartHeight: chartHeightProp,
+  compactTrend = false,
 }: PlayerTrendChartProps) {
+  const CHART_HEIGHT = chartHeightProp ?? DEFAULT_CHART_HEIGHT;
+  const svgWidth = svgWidthProp ?? DEFAULT_SVG_WIDTH;
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const svgWidth = SVG_WIDTH;
   const chartWidth = svgWidth - PADDING.left - PADDING.right;
 
   const getIndexFromEvent = useCallback(
@@ -65,7 +75,10 @@ export function PlayerTrendChart({
 
   if (data.length === 0) {
     return (
-      <div className="glass-card rounded-xl p-8 flex items-center justify-center h-[280px]">
+      <div
+        className="glass-card rounded-xl p-8 flex items-center justify-center"
+        style={{ minHeight: CHART_HEIGHT + 60 }}
+      >
         <span className="text-muted-foreground">No data to chart</span>
       </div>
     );
@@ -111,9 +124,21 @@ export function PlayerTrendChart({
           )}
         </div>
       </div>
-      <div className="p-4 flex flex-col lg:flex-row lg:items-start gap-4">
+      <div
+        className={
+          compactTrend
+            ? 'p-3 flex flex-col gap-2'
+            : 'p-4 flex flex-col lg:flex-row lg:items-start gap-4'
+        }
+      >
         {/* Chart SVG — fixed width, shrinks on small screens */}
-        <div className="w-full min-w-0 lg:w-auto lg:shrink-0 flex flex-col items-center lg:items-start">
+        <div
+          className={
+            compactTrend
+              ? 'w-full min-w-0 flex flex-col items-center'
+              : 'w-full min-w-0 lg:w-auto lg:shrink-0 flex flex-col items-center lg:items-start'
+          }
+        >
           <svg
             ref={svgRef}
             width={svgWidth}
@@ -280,52 +305,57 @@ export function PlayerTrendChart({
           </svg>
 
           {/* Game details — below chart on small/medium screens */}
-          <div className="lg:hidden mt-2 min-h-[28px]">
-            {displayIndex !== null && (
-              <div className="flex items-center gap-3 text-sm font-mono">
-                <span className="font-bold text-[#00d4ff] text-lg">{data[displayIndex]}</span>
-                <span className="text-muted-foreground">{metricLabel}</span>
-                <span className="text-muted-foreground">vs {labels[displayIndex] ?? '—'}</span>
-                <span className="text-xs text-muted-foreground/60">(Game {displayIndex + 1}/{data.length})</span>
-              </div>
-            )}
-          </div>
+          {!compactTrend && (
+            <div className="lg:hidden mt-2 min-h-[28px]">
+              {displayIndex !== null && (
+                <div className="flex items-center gap-3 text-sm font-mono">
+                  <span className="font-bold text-[#00d4ff] text-lg">{data[displayIndex]}</span>
+                  <span className="text-muted-foreground">{metricLabel}</span>
+                  <span className="text-muted-foreground">vs {labels[displayIndex] ?? '—'}</span>
+                  <span className="text-xs text-muted-foreground/60">(Game {displayIndex + 1}/{data.length})</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Right panel — hover info + children (line analysis) on 2xl+ */}
-        <div className="flex-1 min-w-0 flex flex-col gap-4">
-          {/* Game details — right of chart on 2xl+, fixed height; click point to pin */}
-          <div className="hidden lg:block h-20">
-            {displayIndex !== null ? (
-              <div className="relative p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
-                {pinnedIndex !== null && (
-                  <button
-                    type="button"
-                    onClick={() => setPinnedIndex(null)}
-                    className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground/60 hover:text-white transition-colors"
-                  >
-                    Unpin
-                  </button>
-                )}
-                <div className="text-xl font-bold text-[#00d4ff] leading-tight">{data[displayIndex]} {metricLabel}</div>
-                <div className="text-sm text-muted-foreground w-full">
-                  Opponent: {labels[displayIndex] ?? '—'}
+        {/* Right panel — hover info + children (line analysis) on lg+ */}
+        {!compactTrend && (
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
+            {/* Game details — right of chart on lg+, fixed height; click point to pin */}
+            <div className="hidden lg:block h-20">
+              {displayIndex !== null ? (
+                <div className="relative p-2 rounded-lg bg-white/5 font-mono h-full flex flex-col justify-center items-center text-center min-w-0 gap-0.5">
+                  {pinnedIndex !== null && (
+                    <button
+                      type="button"
+                      onClick={() => setPinnedIndex(null)}
+                      className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground/60 hover:text-white transition-colors"
+                    >
+                      Unpin
+                    </button>
+                  )}
+                  <div className="text-xl font-bold text-[#00d4ff] leading-tight">{data[displayIndex]} {metricLabel}</div>
+                  <div className="text-sm text-muted-foreground w-full">
+                    Opponent: {labels[displayIndex] ?? '—'}
+                  </div>
+                  <div className="text-xs text-muted-foreground/60">
+                    Game {displayIndex + 1} of {data.length}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground/60">
-                  Game {displayIndex + 1} of {data.length}
+              ) : (
+                <div className="p-2 rounded-lg bg-white/5 h-full flex items-center justify-center">
+                  <span className="text-base text-muted-foreground/50">
+                    Hover to see {metricLabel} value, opponent and game number
+                  </span>
                 </div>
-              </div>
-            ) : (
-              <div className="p-2 rounded-lg bg-white/5 h-full flex items-center justify-center">
-                <span className="text-base text-muted-foreground/50">
-                  Hover to see {metricLabel} value, opponent and game number
-                </span>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {children}
-        </div>
+            {children}
+          </div>
+        )}
+        {compactTrend && children ? <div className="min-w-0">{children}</div> : null}
       </div>
     </div>
   );

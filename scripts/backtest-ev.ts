@@ -6,7 +6,11 @@
  *   - Breakdown by EV bucket
  *   - Breakdown by confidence tier
  *   - Breakdown by side (over/under)
+ *
+ * Load env before `lib/db` (reads `SUPABASE_DB_URL` at import time).
  */
+import 'dotenv/config';
+
 import { query } from '../lib/db';
 import { computePropEvFields, type PropEvRowInput } from '../lib/betting/player-prop-ev-row';
 import { type GameLog } from '../lib/players/types';
@@ -17,9 +21,7 @@ import {
 } from '../lib/betting/track-b1-policy';
 import { type PlayerPropModelInputs, type ModelInputStats } from '../lib/betting/player-prop-inputs';
 
-import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-dotenv.config();
 
 const SAMPLE_SIZE = 5000;
 

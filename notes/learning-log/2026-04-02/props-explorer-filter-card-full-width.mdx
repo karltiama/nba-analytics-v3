@@ -1,0 +1,38 @@
+## Context
+Props Explorer used a single `xl:flex-row` wrapper that put the page title, filter `glass-card`, and main table inside `flex-1` beside the sticky player sidebar. The filter bar therefore shared horizontal space with the sidebar and felt visually “short” compared to the content width.
+
+## Goal
+Make the filter `glass-card` span the full main column width and place the player sidebar **below** that strip in the document flow, while keeping the table + sidebar side-by-side on `xl+` in a second row.
+
+## Files Changed
+- `app/betting/props-explorer/page.tsx`
+
+## Implementation Notes (key logic explained)
+- **Structure**: `main` now contains (1) full-width title row, (2) full-width filter `glass-card`, then (3) `flex flex-col xl:flex-row` with `flex-1 min-w-0` for errors/pagination/table and `aside` for the player panel.
+- **Tailwind**: Added `w-full` on the filter `glass-card` so it explicitly stretches within `main` (block-level behavior is already full width; this documents intent and avoids surprises if display changes).
+
+## Key Decisions (and alternatives considered)
+- Decision: two-row layout (filters full width, then table | sidebar) instead of a CSS grid spanning columns.
+  - Why: minimal change, matches mental model “toolbar full width, detail below.”
+  - Alternative: CSS grid with `aside` in row 2 only — more complex for the same outcome.
+
+## Assumptions
+- Sticky sidebar on `xl` should remain beside the **table** only (not beside filters), which matches the new structure.
+
+## Failure Modes
+- If a future edit wraps title + filters back inside `flex-1` beside `aside`, the filter bar will shrink again — keep filters outside the table/sidebar row.
+
+## How to Test (commands + steps)
+1. `npx tsc --noEmit`
+2. Open `/betting/props-explorer` at viewport ≥ `xl`: filter card spans the same width as the combined table + sidebar row; sidebar sits below the filter card, aligned with the table column.
+3. Narrow viewport: stack order is title → filters → table → drawer for player detail (unchanged drawer logic).
+
+## Next Steps
+- Optional: normalize indentation inside `flex-1` block in `page.tsx` for readability (no behavior change).
+
+## Verification Checklist
+- [ ] Filter card spans full content width on desktop (no gap on the right where the sidebar used to sit).
+- [ ] Sidebar appears below the filter card, still sticky next to the table on `xl+`.
+- [ ] Mobile/tablet: filters still usable; player panel still opens as drawer below `xl`.
+- [ ] `npx tsc --noEmit` passes.
+- [ ] Pagination and table scroll behavior unchanged.

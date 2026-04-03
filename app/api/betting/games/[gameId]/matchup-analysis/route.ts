@@ -4,10 +4,8 @@ import { getMatchupAnalysis } from '@/lib/betting/queries';
 /**
  * GET /api/betting/games/[gameId]/matchup-analysis
  * 
- * Returns comprehensive matchup analysis for a game:
- * - Opponent defensive rankings
- * - Pace analysis
- * - Key player vs opponent stats
+ * Returns matchup analysis for a game (analytics pace, projected starters).
+ * BBRef-based rankings and key-player vs-opponent stats are not included.
  */
 export async function GET(
   request: NextRequest,

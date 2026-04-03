@@ -12,7 +12,8 @@
     "lambdas": "tsx scripts/call-all-lambdas.ts",
     "lambdas:aws": "tsx scripts/call-all-lambdas.ts --aws",
     "prune:player-props-v2": "tsx scripts/prune-player-prop-snapshots-v2.ts --days 30",
-    "prune:player-props-v2:execute": "tsx scripts/prune-player-prop-snapshots-v2.ts --days 30 --execute"
+    "prune:player-props-v2:execute": "tsx scripts/prune-player-prop-snapshots-v2.ts --days 30 --execute",
+    "ev-b:sanity": "tsx scripts/ev-b-sanity-check.ts"
   },
   "dependencies": {
     "@types/cheerio": "^0.22.35",

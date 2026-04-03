@@ -1,0 +1,43 @@
+## Context
+
+Game matchup **Player props** table showed **Unknown** for every player because `analytics.player_prop_current.player_name` was often null while `player_id` still referenced `analytics.players`.
+
+## Goal
+
+Return display names by **COALESCE** ing snapshot `player_name` with `analytics.players.full_name` in the player-props API.
+
+## Files Changed
+
+- `app/api/betting/games/[gameId]/player-props/route.ts`
+
+## Implementation Notes (key logic explained)
+
+- `LEFT JOIN analytics.players` on `player_id`.
+- `COALESCE(NULLIF(TRIM(ppc.player_name), ''), p.full_name)` treats null and blank strings as missing.
+- `ORDER BY` uses the same expression so sorting matches displayed names.
+
+## Key Decisions (and alternatives considered)
+
+- **Fix at read time** vs backfilling `player_name` in ETL: read-time join is immediate and matches `props-explorer` / `prop-eval` patterns using `COALESCE` with `players`.
+
+## Assumptions
+
+- `player_id` in props rows exists in `analytics.players` for normal cases; otherwise UI may still show `Unknown`.
+
+## Failure Modes
+
+- Orphan `player_id` not in `analytics.players` → still `Unknown`.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. `GET /api/betting/games/<gameId>/player-props` — JSON `playerName` should be real names when `players.full_name` exists.
+
+## Next Steps
+
+- Optional: align `app/api/betting/players/[playerId]/props/route.ts` if it shows null names for the same reason.
+
+## Verification Checklist
+
+- [ ] Matchup page Player props dropdown and table show names, not repeated Unknown.
+- [ ] Sort order in API matches alphabetical names.

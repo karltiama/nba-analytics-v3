@@ -1,0 +1,43 @@
+## Context
+The player props ingestion scheduler was running every 15 minutes, which felt excessive and likely increased database load unnecessarily.
+
+## Goal
+Reduce schedule frequency to two daily runs at 8:00 AM ET and 2:00 PM ET.
+
+## Files Changed
+- `infra/terraform.tfvars`
+
+## Implementation Notes (key logic explained)
+- Replaced high-frequency cron list with two explicit cron expressions.
+- Kept `player_props_schedule_timezone` as `America/New_York` so run times are interpreted in ET.
+- Added:
+  - `cron(0 8 ? * * *)` for 8:00 AM ET
+  - `cron(0 14 ? * * *)` for 2:00 PM ET
+
+## Key Decisions (and alternatives considered)
+- Decision: use two explicit cron entries rather than a `rate(...)` expression.
+  - Why: exact, predictable execution windows.
+  - Alternative: `rate(6 hours)` (rejected because it does not align to fixed business times).
+
+## Assumptions
+- EventBridge Scheduler resources are managed via Terraform in this repo.
+- `player_props_schedule_crons` overrides `player_props_schedule_expression` when non-empty.
+
+## Failure Modes
+- If Terraform apply is not run, AWS schedule remains unchanged.
+- If timezone is changed accidentally, runs could fire at unintended local times.
+- If cron syntax is edited incorrectly, scheduler creation/update can fail.
+
+## How to Test (commands + steps)
+1. Apply infra changes:
+   - `cd infra`
+   - `terraform plan`
+   - `terraform apply`
+2. Verify deployed schedules:
+   - `aws scheduler list-schedules --max-results 100 --query "Schedules[?contains(Name, 'player-props')].[Name,State,ScheduleExpression,ScheduleExpressionTimezone]" --output table`
+3. Confirm two schedules exist for player props at 8 and 14 ET.
+4. Check controller Lambda invocations around those times in CloudWatch.
+
+## Next Steps
+- Monitor DB write volume and API latency for 1-2 days after change.
+- If needed, add one extra pregame run only on heavy slate days.

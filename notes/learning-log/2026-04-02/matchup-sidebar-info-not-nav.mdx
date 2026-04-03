@@ -1,0 +1,37 @@
+## Context
+
+Sidebar was briefly used for **section navigation**; product preference is the **original horizontal pills** for scroll-to-section, with the sidebar reserved for **information density**.
+
+## Goal
+
+- Restore **always-visible** horizontal section buttons under the matchup header (all breakpoints).
+- Remove sidebar **nav** entirely.
+- Add a **right column** (`lg+`) sticky **“At a glance”** card: records, lines (spread / total / ML), book, injury counts — **no links** to sections.
+
+## Files Changed
+
+- `components/betting/MatchupPageLayout.tsx`
+
+## Implementation Notes (key logic explained)
+
+- **Scroll offset** fixed at `160` again to match the taller sticky header (title row + pills).
+- **Section `scroll-mt-[10rem]`** restored for alignment with sticky header.
+- **`totalListedInjuries`** derived for summary copy in the glance card.
+- **Aside:** `hidden lg:flex`, `sticky top-28`, `w-[17rem]` — desktop-only so mobile keeps a single-column scroll flow.
+
+## Key Decisions (and alternatives considered)
+
+- **Right rail:** Main content stays primary reading order; snapshot follows on wide screens.
+- **Subtitle** “Snapshot only — scroll the page for full sections” sets expectation that navigation is still the top pills.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Confirm pills under header on **mobile and desktop**.
+3. `lg+`: right **At a glance** panel shows odds/injury summary; clicking pills still scrolls main column.
+
+## Verification Checklist
+
+- [ ] No vertical “On this page” nav.
+- [ ] Horizontal pills work on large screens.
+- [ ] Sidebar has no section-jump buttons.

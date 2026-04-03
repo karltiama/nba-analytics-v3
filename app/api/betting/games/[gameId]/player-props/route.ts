@@ -25,10 +25,13 @@ export async function GET(
       under_odds: number | null;
       vendor: string;
     }>(
-      `SELECT player_id, player_name, prop_type, line_value, over_odds, under_odds, vendor
-       FROM analytics.player_prop_current
-       WHERE game_id = $1 AND vendor = $2
-       ORDER BY player_name NULLS LAST, prop_type, line_value`,
+      `SELECT ppc.player_id,
+              COALESCE(NULLIF(TRIM(ppc.player_name), ''), p.full_name) AS player_name,
+              ppc.prop_type, ppc.line_value, ppc.over_odds, ppc.under_odds, ppc.vendor
+       FROM analytics.player_prop_current ppc
+       LEFT JOIN analytics.players p ON p.player_id = ppc.player_id
+       WHERE ppc.game_id = $1 AND ppc.vendor = $2
+       ORDER BY COALESCE(NULLIF(TRIM(ppc.player_name), ''), p.full_name) NULLS LAST, ppc.prop_type, ppc.line_value`,
       [gameId, PREFERRED_VENDOR]
     );
 

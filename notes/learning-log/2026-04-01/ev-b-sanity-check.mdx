@@ -1,0 +1,65 @@
+## Context
+
+EV B (`evTrackB`) is the edge after Track B.1 → calibration → **market anchoring**. Users asked whether displayed values are “reasonable” and whether tuning is needed.
+
+## Goal
+
+- **Goal:** Make it easy to inspect the **distribution** of live EV B and compare to the **theoretical maximum** implied by the anchor band (so we know if values are tiny by design or stuck at the cap).
+- **Inputs:** `SUPABASE_DB_URL`, `analytics.player_props_current` snapshot rows (same family as props-explorer).
+- **Output/Done:** JSON summary + `ev-b-sanity.json`; exported helpers for anchor-band math in `player-prop-ev-row.ts`.
+
+## Files Changed
+
+- `lib/betting/player-prop-ev-row.ts` — `getImpliedProbAnchorBand`, `maxAbsEvAllowedByAnchorBand`; `anchorToMarket` uses shared band.
+- `scripts/ev-b-sanity-check.ts` — new diagnostic script.
+- `notes/learning-log/2026-04-01/ev-b-sanity-check.mdx` — this file.
+
+## Implementation Notes (key logic explained)
+
+- **`EV = p × decimalOdds − 1`** with `p` the **anchored** probability. Anchoring clamps `p` to `[marketProb − gap, marketProb + gap]` (odds-aware gap from `BASE_ANCHOR_BUDGET`). So **|EV| cannot exceed** `maxAbsEvAllowedByAnchorBand(marketProb, decimalOdds)` for that row (unless `lo`/`hi` hit 0 or 1).
+- **Rough scale:** at −110 (~1.91), gap ≈ 8.8% → **~17%** max |EV| (≈ `gap × d`). Longer odds → smaller gap → **smaller** max |EV| by design.
+- The script compares **|EV_B| / cap** per row; many rows near **~1.0** mean the model is **saturating** the anchor (calibrated `p` wants to sit outside the band).
+
+## Key Decisions (and alternatives considered)
+
+- **Export helpers from production module** — Keeps diagnostics aligned with UI math; alternative was duplicating constants in the script (risk of drift).
+- **No default change to `BASE_ANCHOR_BUDGET`** — Tuning requires backtest / paper-bucket evidence; script only informs whether values are “small” vs “pinned.”
+
+## Assumptions
+
+- Implied probability for the side is `1 / odds_decimal` (same as `computePropEvFields`).
+
+## Failure Modes
+
+- Script fails fast without `SUPABASE_DB_URL`.
+- Small or stale `player_props_current` sample → percentiles not representative.
+- **Load order:** `lib/db` reads env at import time. Use `import 'dotenv/config'` as the **first** import in scripts (not `dotenv.config()` after other imports), or env will be empty when the pool is created.
+
+## Verification run (2026-04-01)
+
+Local run after dotenv fix: `rowsComputed` 703, anchored `max` |EV| ≈ 0.18, raw `max` |EV| ≈ 0.53. `countNearCap` 295 / 703 (~42%) — many rows sit at the anchor band edge; interpret before raising `BASE_ANCHOR_BUDGET`.
+
+## How to Test (commands + steps)
+
+1. Ensure `.env` has `SUPABASE_DB_URL`.
+2. Run: `npx tsx scripts/ev-b-sanity-check.ts`
+3. Inspect console and `ev-b-sanity.json` for `evTrackB_anchored` percentiles and `anchorSaturation.countNearCap`.
+4. Optional: run `npx tsx scripts/backtest-ev.ts` for historical Brier / ROI by threshold.
+
+## Next Steps
+
+- If `meanCapRatio` is high and `countNearCap` is large, consider **raising `BASE_ANCHOR_BUDGET`** only after `backtest-ev` / paper analytics show benefit.
+- If anchored EV is always tiny but **raw** EV is huge, the story is **anchoring**, not the projection model alone.
+
+## Verification Checklist
+
+- [ ] Run `ev-b-sanity-check.ts` locally with DB and confirm `rowsComputed` > 0.
+- [ ] Confirm `max` anchored |EV| stays below ~0.20 for typical −110-style odds (unless band hits 0/1).
+- [ ] Compare `evTrackB_raw` vs `evTrackB_anchored` in the JSON — large gap is expected.
+- [ ] Re-run `npm run build` or `tsc` if you change anchor constants.
+- [ ] If you change `BASE_ANCHOR_BUDGET`, re-run `backtest-ev` and paper-bucket analytics.
+
+## Dependencies / env
+
+- **Justification:** `SUPABASE_DB_URL` — same as other DB scripts.
+- **Simpler alternative:** Use existing `ev-diagnostic.ts` output for manual inspection (no new script).
