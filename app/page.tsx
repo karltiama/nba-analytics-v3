@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Activity, Zap, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
+import { FeaturedGames } from '@/components/landing/FeaturedGames';
 
 export default function LandingPage() {
   return (
@@ -60,16 +61,19 @@ export default function LandingPage() {
           </div>
         </div>
 
+        {/* Featured Games / Live Data */}
+        <FeaturedGames />
+
         {/* Dashboard Preview / Screenshot */}
         <div className="mt-28 w-full max-w-6xl mx-auto slide-up group" style={{ animationDelay: '600ms' }}>
-          <div className="relative rounded-2xl p-2 glass-card border border-white/10 neon-glow-cyan/30 shadow-2xl overflow-hidden card-hover transition-all duration-500 hover:neon-glow-cyan hover:border-[#00d4ff]/40">
-             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none rounded-2xl" />
-             <div className="relative rounded-xl overflow-hidden bg-black/60 aspect-[16/9] border border-white/5">
+          <div className="relative rounded-2xl glass-card border border-white/10 shadow-2xl transition-all duration-500 hover:neon-glow-cyan hover:border-[#00d4ff]/40">
+             <div className="relative rounded-xl overflow-visible bg-black/60 border border-white/5">
                 <Image 
-                  src="/demo-dashboard.png" 
+                  src="/dashboard.png" 
                   alt="NBA Platform Dashboard Preview" 
-                  fill
-                  className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-[1.01]"
+                  width={2400}
+                  height={1350}
+                  className="w-full h-auto opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-[1.005] rounded-xl"
                   priority
                 />
              </div>
