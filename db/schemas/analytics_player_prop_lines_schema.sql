@@ -4,10 +4,12 @@
 -- Run after analytics_schema.sql (analytics.games, analytics.players).
 
 -- Helper: American odds -> decimal odds
+-- SET search_path: avoids mutable search_path (Supabase linter / CVE-style object resolution issues)
 create or replace function analytics.american_to_decimal(odds_american integer)
 returns numeric
 language sql
 immutable
+set search_path = ''
 as $$
   select case
     when odds_american > 0 then 1 + (odds_american::numeric / 100)
@@ -21,6 +23,7 @@ create or replace function analytics.american_to_implied_prob(odds_american inte
 returns numeric
 language sql
 immutable
+set search_path = ''
 as $$
   select case
     when odds_american <= 0 then abs(odds_american)::numeric / (abs(odds_american) + 100)

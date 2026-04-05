@@ -1,12 +1,18 @@
 import { Pool, type QueryResult, type QueryResultRow } from 'pg';
 
-if (!process.env.SUPABASE_DB_URL) {
+const connectionString = process.env.SUPABASE_DB_URL?.trim();
+if (!connectionString) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
 }
 
+/** Match Lambdas (e.g. lambda/odds-pre-game-snapshot): trim avoids ENOTFOUND from stray newlines in host; SSL required for Supabase. */
+const useSupabaseSsl =
+  connectionString.includes('supabase.co') || connectionString.includes('pooler.supabase.com');
+
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.SUPABASE_DB_URL,
+  connectionString,
+  ssl: useSupabaseSsl ? { rejectUnauthorized: false } : undefined,
   // Connection pool settings
   max: 20,
   idleTimeoutMillis: 30000,

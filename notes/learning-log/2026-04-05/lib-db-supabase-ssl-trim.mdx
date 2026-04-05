@@ -1,0 +1,49 @@
+## Context
+
+Production (e.g. Vercel) could not reach Postgres while local dev worked, even when `SUPABASE_DB_URL` appeared to match. Lambdas in this repo already used `ssl` and trimmed URLs; `lib/db.ts` did not.
+
+## Goal
+
+Align Next.js server Postgres (`lib/db.ts`) with proven Supabase connection handling: trim the connection string and enable TLS for Supabase hosts.
+
+## Files Changed
+
+- `lib/db.ts`
+
+## Implementation Notes (key logic explained)
+
+- **`trim()`** on `SUPABASE_DB_URL`: hosting UIs sometimes store a trailing newline or space. That can corrupt the hostname inside `pg`’s parser and surface as **`getaddrinfo ENOTFOUND`** (DNS lookup for a bad host string).
+- **`ssl: { rejectUnauthorized: false }`** when the URL looks like Supabase: matches `lambda/odds-pre-game-snapshot/index.ts` and other workers; Supabase uses certificates that `pg` often needs this flag for (same pattern as `scripts/fetch-sample-player-props.ts`).
+
+## Key Decisions (and alternatives considered)
+
+- **Conditional SSL** only for `supabase.co` / `pooler.supabase.com` so non-Supabase Postgres URLs are unchanged.
+- **Alternative:** append `?sslmode=require` in the dashboard connection string only; still recommend `trim()` in code for newline issues.
+
+## Assumptions
+
+- Production DB is Supabase-hosted Postgres accessed via URI in `SUPABASE_DB_URL`.
+
+## Failure Modes
+
+- If the error is still **`ENOTFOUND`**, verify the **exact** production string (no typo; correct Vercel project and **Production** environment); `trim()` fixes whitespace, not wrong hostnames.
+- If you use a **custom** Postgres host that needs SSL but does not match the substring check, set SSL via env or extend the condition.
+
+## How to Test (commands + steps)
+
+1. `npm run build` — ensure Next.js build passes.
+2. Deploy to Vercel; open `/api/games?limit=1` on production — expect `200` and JSON with `games` (not `500` / DNS errors).
+3. Locally: keep `.env` as-is; run `npm run dev` and load betting page.
+
+## Next Steps
+
+- If issues persist, copy the **exact** error from Vercel → Deployment → **Functions** / **Logs** (message only, no secrets).
+- In Vercel, re-paste `SUPABASE_DB_URL` once with **no trailing newline**, save, **Redeploy**.
+
+## Verification Checklist
+
+- [ ] `npm run build` succeeds locally.
+- [ ] Vercel **Production** has `SUPABASE_DB_URL` set (same project you’re testing).
+- [ ] Redeploy after merging; retest `/api/games` on the production domain.
+- [ ] Confirm betting page loads games without 500s in browser Network tab.
+- [ ] If using Preview deployments, confirm Preview env also has `SUPABASE_DB_URL` or test Production URL only.
