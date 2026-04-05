@@ -19,6 +19,7 @@
     "ev-b:sanity": "tsx scripts/ev-b-sanity-check.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.1024.0",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
     "@types/cheerio": "^0.22.35",
