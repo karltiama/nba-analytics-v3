@@ -148,7 +148,7 @@ cat response.json
 **Wait for scheduled run:**
 - Check CloudWatch logs after 09:05 ET
 - Verify odds were stored in database
-- Check admin page: `/admin/odds-debug`
+- Query staging/markets tables or run `npx tsx scripts/test-odds-api.ts` and inspect DB output
 
 ---
 
@@ -194,7 +194,6 @@ WHERE bs.game_date = CURRENT_DATE;
 - Validation script for bbref_schedule
 - Lambda function code
 - Test script (test-odds-api.ts)
-- Admin debug page
 - Integration with betting dashboard
 
 ⏳ **Next Steps:**
@@ -224,10 +223,7 @@ cd lambda/odds-pre-game-snapshot
 npx tsx index.ts
 ```
 
-**Check odds in database:**
-```bash
-# Visit: http://localhost:3000/admin/odds-debug
-```
+**Check odds in database:** query `markets` / staging tables or use `npx tsx scripts/test-odds-api.ts`.
 
 ---
 

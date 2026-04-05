@@ -55,7 +55,6 @@ After deploy, confirm cron runs in Vercel → project → Cron / Logs, or call t
 ## 6. Optional hardening
 
 - **Rate limits:** Supabase Auth rate limits; consider CAPTCHA for auth if you see abuse.
-- **Admin routes:** Restrict or protect `/admin/*` if exposed publicly.
 - **Monitoring:** Enable Vercel Analytics / Log Drains; watch 5xx and cron failures.
 
 ## 7. Build warnings you may see

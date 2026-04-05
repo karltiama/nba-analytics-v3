@@ -328,7 +328,7 @@ player_team_rosters (team-roster relationships)
 2. **Handle errors gracefully** - Games may not exist (404), players may not match
 3. **Store raw data** - Keep `scraped_boxscores` for debugging
 4. **Validate data** - Check for missing games, skipped players, roster issues
-5. **Monitor scraping** - Use `bbref-data-check` API to verify data completeness
+5. **Monitor scraping** - Use scripts (e.g. `verify-bbref-data.ts`, `list-roster-issues.ts`) to verify data completeness
 6. **Resolve issues promptly** - Fix skipped players and roster mismatches
 
 ---
@@ -338,5 +338,3 @@ player_team_rosters (team-roster relationships)
 - `docs/bbref-csv-boxscore-scraping.md` - Detailed CSV scraping guide
 - `docs/html-boxscore-scraping.md` - HTML scraping details
 - `scripts/RESOLVING_UNRESOLVED_PLAYERS_GUIDE.md` - Player resolution guide
-- `app/api/admin/bbref-data-check/route.ts` - Data quality check API
-

@@ -606,7 +606,7 @@ async function main() {
       }
     }
 
-    console.log('\n✅ Done! View results at: http://localhost:3000/admin/odds-debug');
+    console.log('\n✅ Done! Verify staging/raw tables in the database as needed.');
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error:', error);

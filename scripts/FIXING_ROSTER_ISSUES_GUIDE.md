@@ -10,13 +10,7 @@ Roster issues occur when players appear in box scores (`bbref_player_game_stats`
 
 ## Identifying Roster Issues
 
-### 1. View in Admin Dashboard
-
-The `admin/bbref-data-check` page now shows roster issues:
-- **Roster column**: Shows number of issues and active roster count
-- **Issues alert**: Lists teams with roster issues
-
-### 2. List All Roster Issues
+### 1. List All Roster Issues
 
 ```bash
 # List all roster issues across all teams
@@ -94,9 +88,7 @@ tsx scripts/fix-roster-issues.ts --auto
 # 3. Verify fixes (should show 0 issues)
 tsx scripts/list-roster-issues.ts
 
-# 4. Check admin dashboard
-# Visit: /admin/bbref-data-check
-# Roster column should show ✓ for all teams
+# 4. Re-run list-roster-issues — should show 0 issues when fixed
 ```
 
 ## Important Notes
