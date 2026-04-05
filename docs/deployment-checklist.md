@@ -11,6 +11,8 @@ npm run build
 
 Fix any TypeScript or build errors before deploying. Run `npm start` and smoke-test critical paths (home, login, signup, betting).
 
+The **`lambda/`** folder is excluded from the root `tsconfig.json` so Vercel’s Next.js build does not typecheck AWS Lambda code (`aws-lambda` types, etc.). Build and typecheck each function under `lambda/<name>/` with its own `package.json` when you change Lambdas.
+
 ## 2. Environment variables (hosting dashboard)
 
 Copy from `.env.example` into your provider (Vercel → Project → Settings → Environment Variables). Set **Production** (and Preview if you use PR previews).
