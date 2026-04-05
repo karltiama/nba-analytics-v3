@@ -1,0 +1,86 @@
+## Context
+
+The betting app needed an MVP flow to upload bet slip screenshots (single or parlay), extract legs with OpenAI vision, let users correct parsing errors, then run the existing `computePropEvFields` pipeline per leg with a simple independent-leg parlay summary.
+
+## Goal
+
+- **Goal:** Ship `/betting/bet-slip-analyzer` with `POST /api/betting/bet-slip/parse` and `POST /api/betting/bet-slip/analyze`, reusing `OPENAI_API_KEY` / `OPENAI_MODEL` and EV logic from the rest of the app.
+- **Inputs:** Multipart image; JSON body with confirmed legs + optional `resolved_player_id` for disambiguation.
+- **Output/Done:** Working page + routes; MDX log with verification checklist.
+
+## Files Changed
+
+- [`lib/betting/player-prop-inputs.ts`](lib/betting/player-prop-inputs.ts) — `resolvePropStatKey()` wraps `propTypeToStatKey` for bet-slip eligibility checks.
+- [`lib/betting/bet-slip/schema.ts`](lib/betting/bet-slip/schema.ts) — Zod schemas for extraction and analyze payloads.
+- [`lib/betting/bet-slip/openai-extract.ts`](lib/betting/bet-slip/openai-extract.ts) — Vision + `response_format: json_object` + validation.
+- [`lib/betting/bet-slip/player-resolve.ts`](lib/betting/bet-slip/player-resolve.ts) — `analytics.players` name resolution (exact → first/last → ILIKE → last name).
+- [`lib/betting/bet-slip/parlay-summary.ts`](lib/betting/bet-slip/parlay-summary.ts) — Independent product of leg model probabilities; parlay EV from total decimal odds.
+- [`app/api/betting/bet-slip/parse/route.ts`](app/api/betting/bet-slip/parse/route.ts) — Multipart `image`, 6MB cap, MIME allowlist.
+- [`app/api/betting/bet-slip/analyze/route.ts`](app/api/betting/bet-slip/analyze/route.ts) — Per-leg match + `computePropEvFields` + parlay block.
+- [`components/betting/bet-slip/UploadPanel.tsx`](components/betting/bet-slip/UploadPanel.tsx) — Drag/drop + file input.
+- [`components/betting/bet-slip/ReviewEditor.tsx`](components/betting/bet-slip/ReviewEditor.tsx) — Editable slip + legs + ambiguous candidate dropdown wiring.
+- [`components/betting/bet-slip/AnalysisResults.tsx`](components/betting/bet-slip/AnalysisResults.tsx) — Leg cards + parlay summary copy.
+- [`app/betting/bet-slip-analyzer/page.tsx`](app/betting/bet-slip-analyzer/page.tsx) — Client orchestration.
+- [`app/betting/layout.tsx`](app/betting/layout.tsx) — Header visibility for the new route.
+- [`components/betting/Header.tsx`](components/betting/Header.tsx) — Nav link “Bet slip”.
+
+## Implementation Notes (key logic explained)
+
+- **Secrets:** OpenAI only on server; client calls `/api/betting/bet-slip/parse` with `FormData`.
+- **Extraction:** Chat Completions with `image_url` data URL, `response_format: json_object`, Zod parse after stripping optional markdown fences.
+- **EV:** Each leg builds `PropEvRowInput` with `market_type: 'over_under'`; `resolveEvTrack()` matches the rest of the app.
+- **Player match:** Optional `resolved_player_id` skips fuzzy search when the user picks from ambiguous candidates.
+- **Parlay:** `computeParlaySummary` multiplies leg `modelProbability` values when all legs analyzed; total implied P from American or decimal total odds; EV = `pCombined * D - 1` when `D` is known.
+
+## Key Decisions (and alternatives considered)
+
+- **Decision:** Raw `fetch` to OpenAI (same as AI projection summary) — no new SDK dependency.
+- **Alternative:** Official `openai` package — rejected for MVP to stay consistent with existing routes.
+- **Decision:** No persistence — state lives in React; paper bets require `gameId` per row and were not extended.
+
+## Assumptions
+
+- `analytics.players` has `first_name`, `last_name`, `full_name` for name resolution.
+- Vision model (`gpt-4o-mini` by default) returns JSON matching the Zod schema when prompted.
+- Over/under player props only; other market types are out of scope.
+
+## Failure Modes
+
+- Missing or invalid `OPENAI_API_KEY` → 503 `NO_OPENAI_KEY` on parse.
+- Unreadable image → model may return empty legs or `needs_review`; user must edit manually.
+- Ambiguous name match → user must pick a candidate or fix the name.
+- Unsupported `prop_type` text → leg shows `propTypeError` without EV.
+
+## How to Test (commands + steps)
+
+1. `npm run build`
+2. `npm run dev` — open `/betting/bet-slip-analyzer` (with `OPENAI_API_KEY` set in `.env`).
+3. Upload a small JPEG/PNG slip; confirm legs populate in the review form.
+4. Edit a leg intentionally wrong → Run analysis → confirm unmatched or wrong EV until corrected.
+5. For a parlay with total odds on the slip, confirm parlay block shows combined P and estimated EV when all legs analyze.
+6. Optional: call `POST /api/betting/bet-slip/analyze` with JSON body matching `betSlipAnalyzeBodySchema` (e.g. via curl or REST client) with a known `player_name` from your DB.
+
+## Env vars
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `OPENAI_API_KEY` | Yes (for parse) | Server-side vision + JSON extraction |
+| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini`; must support vision |
+
+**Simpler alternative:** No OpenAI — not supported for this feature; parse step always needs the key.
+
+## Next Steps
+
+- Optional UI: player search/autocomplete against `analytics.players`.
+- Optional: cross-check leg lines against `analytics.player_props_current` for the slate date.
+- Correlation-aware parlay math (same-game) would require a different model.
+
+## Verification Checklist
+
+1. [ ] `/betting/bet-slip-analyzer` loads with header nav “Bet slip” and matches betting dark styling.
+2. [ ] Parse without `OPENAI_API_KEY` shows a clear message (503 handling on client).
+3. [ ] Valid image returns editable legs; “Run analysis” shows per-leg projection, model P, implied P, EV, confidence when matched.
+4. [ ] Ambiguous player returns candidate dropdown; selecting a candidate and re-running analysis resolves the leg.
+5. [ ] Parlay (2+ legs) shows combined model probability and independence disclaimer when applicable.
+6. [ ] Reset clears upload/analysis state.
+7. [ ] `npm run build` passes with no TypeScript errors.

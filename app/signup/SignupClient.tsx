@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Activity } from 'lucide-react';
+import { ContinueWithGoogleButton } from '@/components/auth/ContinueWithGoogleButton';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { safeInternalPath } from '@/lib/auth/safe-next';
 
@@ -67,7 +68,9 @@ export function SignupClient() {
       <main className="relative z-10 flex items-center justify-center px-4 pb-20">
         <div className="w-full max-w-md glass-card border border-white/10 rounded-2xl p-8 shadow-2xl">
           <h1 className="text-2xl font-bold text-white mb-1">Create account</h1>
-          <p className="text-sm text-muted-foreground mb-6">Start with email and a password (min. 6 characters).</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Use email and a password (min. 6 characters), or continue with Google below.
+          </p>
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -116,6 +119,12 @@ export function SignupClient() {
               {loading ? 'Creating…' : 'Create account'}
             </button>
           </form>
+          <div className="flex items-center gap-3 my-6">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">or</span>
+            <div className="h-px flex-1 bg-white/10" />
+          </div>
+          <ContinueWithGoogleButton nextPath={nextPath} disabled={loading} />
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link href={`/login?next=${encodeURIComponent(nextPath)}`} className="text-[#00d4ff] hover:underline">

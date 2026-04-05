@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import { ArrowRight, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { GameCard, getTodayET, type Game } from '@/components/betting';
+import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader';
 import { GameCardSkeleton } from '@/components/betting/skeletons';
 
 // Reuse the transformation logic from the main betting page
@@ -132,25 +132,19 @@ export function FeaturedGames() {
   if (!loading && games.length === 0) return null;
 
   return (
-    <section className="w-full max-w-6xl mx-auto mt-24 px-4 sm:px-6">
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#39ff14]/10 border border-[#39ff14]/30 flex items-center justify-center">
-            <Trophy className="w-5 h-5 text-[#39ff14]" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Today's Matchups</h2>
-            <p className="text-sm text-muted-foreground">Live odds and predictive analysis for the slate</p>
-          </div>
-        </div>
-        <Link 
-          href="/betting" 
-          className="group flex items-center gap-2 text-sm font-semibold text-[#00d4ff] hover:text-[#00e5ff] transition-colors"
-        >
-          View Full Terminal
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </Link>
-      </div>
+    <section
+      className="w-full max-w-6xl mx-auto mt-32 px-4 sm:px-6"
+      aria-labelledby="landing-featured-games-heading"
+    >
+      <LandingSectionHeader
+        id="landing-featured-games-heading"
+        icon={Trophy}
+        accent="lime"
+        title="Today's Matchups"
+        description="Live odds and predictive analysis for the slate"
+        href="/betting"
+        linkLabel="View Full Terminal"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (

@@ -1,0 +1,75 @@
+## Context
+
+The betting dashboard sidebar (`AIInsightPanel`) previously relied on Basketball Reference tables for pace/defense rankings, dashboard counts, and trending players. The product goal is analytics-schema-only stat highlights plus a real OpenAI-generated “slate summary” tied to the selected ET calendar date.
+
+## Goal
+
+- **Goal:** Remove BBRef dependencies from `/api/betting/insights` and add a cached LLM slate narrative from data already in the app (analytics + odds).
+- **Inputs:** `analytics.team_season_averages`, `analytics.games`, `analytics.player_season_averages`, `analytics.games` counts, `analytics.game_odds_current`, `OPENAI_API_KEY`, optional `AI_SLATE_INSIGHTS_CACHE_SECONDS` / `OPENAI_MODEL`.
+- **Output/Done:** Insights API uses analytics queries; new `GET /api/betting/ai-slate-insights?date=YYYY-MM-DD` returns `{ summary, code?, message? }`; betting page shows LLM block + existing cards; TypeScript passes.
+
+## Files Changed
+
+| File | Purpose |
+|------|---------|
+| `lib/betting/queries.ts` | `getTeamPaceRankings`, `getTeamDefensiveRankings`, `getDashboardSummary` now read `analytics.*` only; export `CURRENT_ANALYTICS_SEASON`. |
+| `app/api/betting/insights/route.ts` | Use `getTrendingPlayersFromAnalytics(5)` instead of BBRef `getTrendingPlayers`. |
+| `lib/betting/ai-slate-context.ts` | Build deterministic user prompt + payload hash for cache key. |
+| `app/api/betting/ai-slate-insights/route.ts` | OpenAI call + `unstable_cache` by date + hash + model. |
+| `components/betting/AIInsightPanel.tsx` | “Slate summary” section + footer disclaimer. |
+| `app/betting/page.tsx` | Fetch slate API when `selectedDate` changes; `AbortController` avoids stale text. |
+
+## Implementation Notes (key logic explained)
+
+- **Pace / defense ranks:** `analytics.team_season_averages.avg_pace` and `avg_defensive_rating` (lower DRTG = better defense), filtered by `CURRENT_ANALYTICS_SEASON` and `games_played > 0`.
+- **Dashboard summary:** Final game counts from `analytics.games`; player/team counts from `analytics.player_season_averages` / `team_season_averages` for the same season; latest completed game date from `MAX((start_time AT TIME ZONE 'America/New_York')::date)`.
+- **Slate LLM:** `buildAiSlateUserContent(dateEt)` loads that date’s games (`getGamesForDate`), DraftKings odds (`getGamesOdds`), full `getAllTeamRatings()` for teams on the slate, league pace/defense leaders, and `getTrendingPlayersFromAnalytics(5)`. The SHA-256 hash of a stable JSON payload drives `unstable_cache` invalidation when underlying numbers or schedule change.
+- **Client:** Slate fetch is aborted when the user changes the date quickly so an older response cannot overwrite a newer selection.
+
+## Key Decisions (and alternatives considered)
+
+- **Separate route vs embedding summary in `/api/betting/insights`:** Chosen separate `GET` so the LLM path can fail or cache independently without blocking stat cards; fewer bytes on the insights response.
+- **503 vs 200 when `OPENAI_API_KEY` is missing:** Returns **200** with `summary: null` and `code: 'NO_OPENAI_KEY'` so the UI can show a friendly hint without treating it as a hard error (matches graceful degradation pattern used elsewhere).
+- **No new DB tables:** Cache is Next.js `unstable_cache` only; no persistence layer added.
+
+## Assumptions
+
+- `analytics.team_season_averages` is populated with `avg_pace`, `avg_defensive_rating`, and `avg_offensive_rating` for the current season row per team.
+- Odds exist in `analytics.game_odds_current` for many slate games (optional lines still produce a useful prompt).
+
+## Failure Modes
+
+- **Empty `team_season_averages`:** Pace/defense insight cards may not render; LLM still receives trending players and schedule if present.
+- **OpenAI outage / rate limits:** Route returns 502 with `OPENAI_ERROR`; panel shows hint.
+- **Missing key:** Slate section shows configuration message; stat cards still load from `/api/betting/insights`.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Set `OPENAI_API_KEY` locally; optional `AI_SLATE_INSIGHTS_CACHE_SECONDS=120` for faster cache turnover while testing.
+3. Run the dev server, open `/betting`, pick a date with games; confirm the **Slate summary** paragraph updates and matches teams on the grid.
+4. Change dates rapidly; confirm the summary matches the last selected date (no flash of wrong slate).
+5. Unset `OPENAI_API_KEY` and reload; confirm stat cards still appear and the slate area shows the key hint.
+
+## Next Steps
+
+- Optionally add injury or line-movement lines to `buildAiSlateUserContent` once those feeds are analytics-backed and stable.
+- Consider server-side rate limiting if the endpoint is exposed publicly.
+
+## Verification Checklist
+
+- [ ] `/api/betting/insights` returns 200 with pace/defense/trending widgets without any BBRef-backed queries in this path.
+- [ ] `/api/betting/ai-slate-insights?date=YYYY-MM-DD` returns prose when `OPENAI_API_KEY` is set.
+- [ ] Betting page shows “Slate summary” above the insight cards; footer mentions analytics DB + OpenAI + not advice.
+- [ ] Changing the calendar date refetches the slate summary.
+- [ ] No TypeScript errors (`npx tsc --noEmit`).
+
+## Dependencies / env
+
+| Variable | Purpose | Simpler alternative |
+|----------|---------|---------------------|
+| `OPENAI_API_KEY` | Required for slate LLM text | Omit key: deterministic cards only, hint in UI. |
+| `OPENAI_MODEL` | Optional model override | Default `gpt-4o-mini` in route. |
+| `AI_SLATE_INSIGHTS_CACHE_SECONDS` | Cache TTL (default 900) | Omit to use default 15 minutes. |
+
+No new npm packages were added.

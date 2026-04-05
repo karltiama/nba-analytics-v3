@@ -1,6 +1,15 @@
 'use client';
 
-import { Zap, TrendingUp, AlertTriangle, Target, DollarSign, Activity } from 'lucide-react';
+import {
+  Zap,
+  TrendingUp,
+  AlertTriangle,
+  Target,
+  DollarSign,
+  Activity,
+  Sparkles,
+  Loader2,
+} from 'lucide-react';
 
 export interface Insight {
   id: string;
@@ -13,6 +22,11 @@ export interface Insight {
 
 interface AIInsightPanelProps {
   insights: Insight[];
+  /** OpenAI slate narrative for the selected ET date (analytics-backed context). */
+  slateSummary?: string | null;
+  slateSummaryLoading?: boolean;
+  /** When summary is null: optional hint (e.g. missing API key). */
+  slateSummaryHint?: string | null;
 }
 
 function getInsightIcon(type: Insight['type']) {
@@ -65,7 +79,12 @@ function InsightCard({ insight }: { insight: Insight }) {
   );
 }
 
-export function AIInsightPanel({ insights }: AIInsightPanelProps) {
+export function AIInsightPanel({
+  insights,
+  slateSummary = null,
+  slateSummaryLoading = false,
+  slateSummaryHint = null,
+}: AIInsightPanelProps) {
   return (
     <div className="glass-card rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]">
       {/* Header */}
@@ -76,7 +95,7 @@ export function AIInsightPanel({ insights }: AIInsightPanelProps) {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white">AI Insights</h3>
-            <p className="text-[10px] text-muted-foreground">Real-time analysis</p>
+            <p className="text-[10px] text-muted-foreground">Slate + analytics signals</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -85,21 +104,45 @@ export function AIInsightPanel({ insights }: AIInsightPanelProps) {
         </div>
       </div>
 
-      {/* Insights list — scrollable; panel height = viewport */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
-        {insights.length === 0 ? (
-          <p className="text-xs text-muted-foreground py-4">No insights yet. Check back soon.</p>
-        ) : (
-          insights.map((insight) => (
-            <InsightCard key={insight.id} insight={insight} />
-          ))
-        )}
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+        {/* LLM slate summary */}
+        <div className="p-3 pb-0 shrink-0 border-b border-white/5">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-[#bf5af2]" />
+            <span className="text-[11px] font-medium text-white/90">Slate summary</span>
+          </div>
+          {slateSummaryLoading ? (
+            <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin text-[#00d4ff] shrink-0" />
+              Generating summary…
+            </div>
+          ) : slateSummary ? (
+            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+              {slateSummary}
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground/80 py-1">
+              {slateSummaryHint ||
+                'No AI summary for this slate. Add OPENAI_API_KEY on the server to enable.'}
+            </p>
+          )}
+        </div>
+
+        {/* Deterministic insight cards */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
+          {insights.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-4">No stat highlights yet.</p>
+          ) : (
+            insights.map((insight) => <InsightCard key={insight.id} insight={insight} />)
+          )}
+        </div>
       </div>
 
       {/* Footer */}
       <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02] shrink-0">
         <p className="text-[10px] text-muted-foreground text-center">
-          Insights updated every 30 seconds • <span className="text-[#00d4ff]">Powered by AI</span>
+          Stat cards from analytics DB • Slate text via OpenAI (cached) •{' '}
+          <span className="text-[#00d4ff]">Not betting advice</span>
         </p>
       </div>
     </div>

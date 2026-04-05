@@ -1,0 +1,41 @@
+## Context
+
+Landing sections (Featured Games, Props Explorer preview, Trending preview) used different heading patterns: icon size/placement, title size (`text-lg` vs `text-2xl`), and CTA link style (arrow vs text arrow).
+
+## Goal
+
+Unify section headings: same typography, icon-in-box treatment, bottom border, and CTA with `ArrowRight`, with a distinct accent color per section.
+
+## Files Changed
+
+- `components/landing/LandingSectionHeader.tsx` — shared header: `w-10 h-10` rounded icon box, `text-2xl` title, muted description, `mb-8 pb-4 border-b border-white/5`, cyan link + arrow.
+- `components/landing/FeaturedGames.tsx` — uses header with `Trophy`, accent `lime`.
+- `components/landing/LandingPropsTablePreview.tsx` — uses `Table2`, accent `cyan`; removed standalone `Link` import.
+- `components/landing/LandingTrendingPlayerStripPreview.tsx` — uses `Flame`, accent `orange`; L5 vs SZN folded into description text; removed inline pill + duplicate subtitle paragraph.
+
+## Implementation Notes (key logic explained)
+
+- **Accents**: Three presets (`lime`, `cyan`, `orange`) map to background/border/icon colors used elsewhere on the site (games, props, trending).
+- **a11y**: Section `aria-labelledby` preserved; heading `id` passed through `LandingSectionHeader`.
+
+## Key Decisions (and alternatives considered)
+
+- **Single component vs copy-paste**: Shared component keeps future sections consistent.
+- **Trending pill**: Dropped the small “L5 vs SZN” chip next to the title in favor of one subtitle line so the block matches Featured Games / Props exactly.
+
+## Assumptions
+
+- Dashboard screenshot block and feature cards below the fold stay as-is (user only referenced the three matchup/props/trending sections).
+
+## How to Test
+
+1. `npx tsc --noEmit`
+2. Open `/` — verify three sections share layout: icon box, title, subtitle, right CTA with arrow.
+3. Tab through links; confirm keyboard focus order is sensible.
+
+## Verification Checklist
+
+- [ ] All three section titles use `text-2xl font-bold tracking-tight`.
+- [ ] Each section has a 40×40 icon tile with matching accent border.
+- [ ] CTA uses the same cyan style + `ArrowRight` hover nudge.
+- [ ] Trending description mentions L5 vs SZN without a separate title-row pill.

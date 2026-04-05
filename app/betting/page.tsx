@@ -4,7 +4,6 @@ import { use, useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   GameCard,
-  PlayerCard,
   AIInsightPanel,
   BettingInsights,
   FilterBar,
@@ -12,13 +11,11 @@ import {
   getDateLabel,
   TrendingPlayerStrip,
   type Game,
-  type PlayerData,
   type Insight,
   type SortOption,
 } from '@/components/betting';
 import {
   GameCardSkeleton,
-  PlayerCardSkeleton,
   BettingInsightsSkeleton,
   AIInsightPanelSkeleton,
 } from '@/components/betting/skeletons';
@@ -78,30 +75,6 @@ interface ApiGame {
     underOdds: number;
     bookmaker?: string | null; // Which bookmaker these odds are from
   };
-}
-
-interface ApiPlayer {
-  id: string;
-  name: string;
-  team: string;
-  teamAbbreviation: string;
-  position: string;
-  opponent: string;
-  opponentAbbreviation: string;
-  props: Array<{
-    type: 'points' | 'rebounds' | 'assists' | 'threes';
-    line: number;
-    trend: 'over' | 'under';
-    confidence: number;
-    recentAvg: number;
-    seasonAvg: number;
-  }>;
-  recentPoints: number[];
-  recentRebounds: number[];
-  recentAssists: number[];
-  whyText: string;
-  trendPercentage: number;
-  trendDirection: 'up' | 'down';
 }
 
 // Transform API game to GameCard format
@@ -201,27 +174,6 @@ function transformGame(apiGame: ApiGame): Game {
   };
 }
 
-// Transform API player to PlayerCard format
-function transformPlayer(apiPlayer: ApiPlayer): PlayerData {
-  return {
-    id: apiPlayer.id,
-    name: apiPlayer.name,
-    team: apiPlayer.team,
-    teamAbbreviation: apiPlayer.teamAbbreviation,
-    position: apiPlayer.position,
-    opponent: apiPlayer.opponent,
-    opponentAbbreviation: apiPlayer.opponentAbbreviation,
-    props: apiPlayer.props,
-    recentPoints: apiPlayer.recentPoints,
-    recentRebounds: apiPlayer.recentRebounds,
-    recentAssists: apiPlayer.recentAssists,
-    whyText: apiPlayer.whyText,
-    trendPercentage: Math.round(apiPlayer.trendPercentage),
-    trendDirection: apiPlayer.trendDirection,
-  };
-}
-
-
 // ================================
 // MAIN COMPONENT
 // ================================
@@ -252,14 +204,15 @@ export default function BettingDashboard(props: PageProps) {
 
   // Data states
   const [games, setGames] = useState<Game[]>([]);
-  const [players, setPlayers] = useState<PlayerData[]>([]);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [widgets, setWidgets] = useState<any[]>([]);
+  const [slateSummary, setSlateSummary] = useState<string | null>(null);
+  const [slateSummaryHint, setSlateSummaryHint] = useState<string | null>(null);
 
   // Loading states
   const [loadingGames, setLoadingGames] = useState(true);
-  const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
+  const [slateSummaryLoading, setSlateSummaryLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch games for a given date
@@ -304,22 +257,6 @@ export default function BettingDashboard(props: PageProps) {
     fetchGames(selectedDate);
   }, [selectedDate, fetchGames]);
 
-  // Fetch players
-  const fetchPlayers = useCallback(async () => {
-    setLoadingPlayers(true);
-    try {
-      const res = await fetch('/api/betting/players/trending?limit=8');
-      if (!res.ok) throw new Error('Failed to fetch players');
-      const data = await res.json();
-      const transformedPlayers = data.players.map(transformPlayer);
-      setPlayers(transformedPlayers);
-    } catch (err: any) {
-      console.error('Error fetching players:', err);
-    } finally {
-      setLoadingPlayers(false);
-    }
-  }, []);
-
   // Fetch insights
   const fetchInsights = useCallback(async () => {
     setLoadingInsights(true);
@@ -336,11 +273,52 @@ export default function BettingDashboard(props: PageProps) {
     }
   }, []);
 
-  // Initial fetch for players and insights (games are fetched when selectedDate changes)
+  // League-wide stat cards / highlights (not tied to calendar date)
   useEffect(() => {
-    fetchPlayers();
     fetchInsights();
-  }, [fetchPlayers, fetchInsights]);
+  }, [fetchInsights]);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    setSlateSummaryLoading(true);
+    setSlateSummaryHint(null);
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/betting/ai-slate-insights?date=${encodeURIComponent(selectedDate)}`,
+          { signal: ac.signal }
+        );
+        const data = await res.json();
+        if (data.summary && typeof data.summary === 'string') {
+          setSlateSummary(data.summary);
+          setSlateSummaryHint(null);
+        } else {
+          setSlateSummary(null);
+          setSlateSummaryHint(
+            typeof data.message === 'string'
+              ? data.message
+              : data.code === 'NO_OPENAI_KEY'
+                ? 'Add OPENAI_API_KEY on the server to enable the slate summary.'
+                : data.code === 'OPENAI_ERROR'
+                  ? 'OpenAI request failed. Try again later.'
+                  : 'Summary unavailable.'
+          );
+        }
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') return;
+        console.error('Error fetching AI slate insights:', e);
+        setSlateSummary(null);
+        setSlateSummaryHint('Could not load slate summary.');
+      } finally {
+        if (!ac.signal.aborted) {
+          setSlateSummaryLoading(false);
+        }
+      }
+    })();
+
+    return () => ac.abort();
+  }, [selectedDate]);
 
   // Filter games
   const filteredGames = games.filter(game => {
@@ -368,8 +346,6 @@ export default function BettingDashboard(props: PageProps) {
         return 0;
     }
   });
-
-  const isLoading = loadingGames || loadingPlayers || loadingInsights;
 
   const dateLabel = getDateLabel(selectedDate);
   const gamesSectionTitle =
@@ -462,39 +438,6 @@ export default function BettingDashboard(props: PageProps) {
                 <BettingInsights widgets={widgets} />
               ) : null}
             </section>
-
-            {/* Players to Watch */}
-            <section>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-white">Players to Watch</h2>
-                  <p className="text-xs text-muted-foreground">Players with significant L5 vs Season trends</p>
-                </div>
-                <span className="text-[10px] px-2 py-1 bg-[#bf5af2]/20 text-[#bf5af2] rounded-full font-medium">
-                  DATA-DRIVEN
-                </span>
-              </div>
-              
-              {loadingPlayers ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[...Array(4)].map((_, i) => (
-                    <PlayerCardSkeleton key={i} />
-                  ))}
-                </div>
-              ) : players.length === 0 ? (
-                <div className="glass-card rounded-xl p-8 text-center">
-                  <p className="text-muted-foreground">No trending players found</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {players.map((player, index) => (
-                    <div key={player.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                      <PlayerCard player={player} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
           </div>
 
           {/* AI Insights Sidebar — no self-start so it stretches; sticky then has room to stick */}
@@ -503,7 +446,12 @@ export default function BettingDashboard(props: PageProps) {
               {loadingInsights ? (
                 <AIInsightPanelSkeleton />
               ) : (
-                <AIInsightPanel insights={insights} />
+                <AIInsightPanel
+                  insights={insights}
+                  slateSummary={slateSummary}
+                  slateSummaryLoading={slateSummaryLoading}
+                  slateSummaryHint={slateSummaryHint}
+                />
               )}
             </div>
           </aside>

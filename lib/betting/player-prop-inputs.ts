@@ -7,10 +7,16 @@ import type { GameLog } from '@/lib/players/types';
 import {
   buildStabilitySignals,
   neutralStabilitySignals,
+  propTypeToStatKey,
   type PropStatSeriesKey,
   type StabilitySignals,
   isComboPropType,
 } from '@/lib/betting/track-b1-policy';
+
+/** Same as `propTypeToStatKey` — use to know if a slip leg’s prop text maps to the EV model. */
+export function resolvePropStatKey(propType: string): PropStatSeriesKey | null {
+  return propTypeToStatKey(propType);
+}
 
 export interface ModelInputStats {
   pts: number;

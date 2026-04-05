@@ -349,7 +349,7 @@ export async function getTrendingPlayers(limit: number = 10): Promise<TrendingPl
 }
 
 /** Current NBA season start year (e.g. 2025 for 2025-26). */
-const CURRENT_ANALYTICS_SEASON = '2025';
+export const CURRENT_ANALYTICS_SEASON = '2025';
 
 /**
  * Get trending players from analytics schema (same shape as getTrendingPlayers).
@@ -674,91 +674,91 @@ export interface TeamPaceComparison {
 }
 
 /**
- * Get pace rankings for all teams
+ * Get pace rankings for all teams (analytics.team_season_averages; no BBRef).
  */
 export async function getTeamPaceRankings(): Promise<TeamPaceComparison[]> {
-  const result = await query(`
-    WITH team_pace AS (
-      SELECT 
-        btgs.team_id,
-        t.abbreviation as team_abbr,
-        AVG(btgs.possessions) * 48.0 / NULLIF(AVG(btgs.minutes), 0) * 5 as pace
-      FROM bbref_team_game_stats btgs
-      JOIN teams t ON btgs.team_id = t.team_id
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE bg.status = 'Final'
-        AND btgs.source = 'bbref'
-      GROUP BY btgs.team_id, t.abbreviation
-    )
-    SELECT 
-      team_id,
-      team_abbr,
-      pace,
-      RANK() OVER (ORDER BY pace DESC) as pace_rank
-    FROM team_pace
-    ORDER BY pace DESC
-  `);
+  const result = await query(
+    `
+    SELECT
+      tsa.team_id,
+      t.abbreviation AS team_abbr,
+      tsa.avg_pace::numeric AS pace,
+      RANK() OVER (ORDER BY tsa.avg_pace DESC NULLS LAST) AS pace_rank
+    FROM analytics.team_season_averages tsa
+    JOIN analytics.teams t ON t.team_id = tsa.team_id
+    WHERE tsa.season = $1
+      AND tsa.games_played > 0
+      AND tsa.avg_pace IS NOT NULL
+    ORDER BY tsa.avg_pace DESC NULLS LAST
+    `,
+    [CURRENT_ANALYTICS_SEASON]
+  );
 
   return result.map((row: any) => ({
     team_id: row.team_id,
     team_abbr: row.team_abbr,
     pace: parseFloat(row.pace) || 0,
-    pace_rank: parseInt(row.pace_rank),
+    pace_rank: parseInt(row.pace_rank, 10),
   }));
 }
 
 /**
- * Get defensive rankings for all teams
+ * Get defensive rankings for all teams (analytics.team_season_averages; lower DRTG is better).
  */
 export async function getTeamDefensiveRankings() {
-  const result = await query(`
-    WITH team_defense AS (
-      SELECT 
-        btgs.team_id,
-        t.abbreviation as team_abbr,
-        AVG(
-          CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END::numeric / 
-          NULLIF(btgs.possessions, 0)
-        ) * 100 as defensive_rating,
-        AVG(CASE WHEN btgs.is_home THEN bg.away_score ELSE bg.home_score END) as points_allowed
-      FROM bbref_team_game_stats btgs
-      JOIN teams t ON btgs.team_id = t.team_id
-      JOIN bbref_games bg ON btgs.game_id = bg.bbref_game_id
-      WHERE bg.status = 'Final'
-        AND btgs.source = 'bbref'
-      GROUP BY btgs.team_id, t.abbreviation
-    )
-    SELECT 
-      team_id,
-      team_abbr,
-      defensive_rating,
-      points_allowed,
-      RANK() OVER (ORDER BY defensive_rating ASC) as defensive_rank
-    FROM team_defense
-    ORDER BY defensive_rating ASC
-  `);
+  const result = await query(
+    `
+    SELECT
+      tsa.team_id,
+      t.abbreviation AS team_abbr,
+      tsa.avg_defensive_rating::numeric AS defensive_rating,
+      tsa.avg_points_allowed::numeric AS points_allowed,
+      RANK() OVER (ORDER BY tsa.avg_defensive_rating ASC NULLS LAST) AS defensive_rank
+    FROM analytics.team_season_averages tsa
+    JOIN analytics.teams t ON t.team_id = tsa.team_id
+    WHERE tsa.season = $1
+      AND tsa.games_played > 0
+      AND tsa.avg_defensive_rating IS NOT NULL
+    ORDER BY tsa.avg_defensive_rating ASC NULLS LAST
+    `,
+    [CURRENT_ANALYTICS_SEASON]
+  );
 
   return result.map((row: any) => ({
     team_id: row.team_id,
     team_abbr: row.team_abbr,
     defensive_rating: parseFloat(row.defensive_rating) || 0,
     points_allowed: parseFloat(row.points_allowed) || 0,
-    defensive_rank: parseInt(row.defensive_rank),
+    defensive_rank: parseInt(row.defensive_rank, 10),
   }));
 }
 
 /**
- * Get summary stats for dashboard widgets
+ * Get summary stats for dashboard widgets (analytics schema only).
  */
 export async function getDashboardSummary() {
-  // Get total games, players, and data freshness
-  const result = await query(`
-    SELECT 
-      (SELECT COUNT(DISTINCT bbref_game_id) FROM bbref_games WHERE status = 'Final') as total_games,
-      (SELECT COUNT(DISTINCT player_id) FROM bbref_player_game_stats) as total_players,
-      (SELECT MAX(game_date) FROM bbref_games WHERE status = 'Final') as latest_game_date,
-      (SELECT COUNT(DISTINCT team_id) FROM bbref_team_game_stats) as teams_with_stats
-  `);
+  const result = await query(
+    `
+    SELECT
+      (SELECT COUNT(*)::bigint FROM analytics.games WHERE status = 'Final') AS total_games,
+      (
+        SELECT COUNT(DISTINCT player_id)::bigint
+        FROM analytics.player_season_averages
+        WHERE season = $1 AND games_played > 0
+      ) AS total_players,
+      (
+        SELECT MAX((start_time AT TIME ZONE 'America/New_York')::date)
+        FROM analytics.games
+        WHERE status = 'Final'
+      ) AS latest_game_date,
+      (
+        SELECT COUNT(*)::bigint
+        FROM analytics.team_season_averages
+        WHERE season = $1 AND games_played > 0
+      ) AS teams_with_stats
+    `,
+    [CURRENT_ANALYTICS_SEASON]
+  );
 
   return result[0] || {
     total_games: 0,

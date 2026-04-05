@@ -1,0 +1,30 @@
+## Context
+
+The marketing homepage included a large `next/image` screenshot (`/dashboard.png`) between the live previews and the feature cards.
+
+## Goal
+
+Remove that dashboard preview block; it is no longer needed.
+
+## Files Changed
+
+- `app/page.tsx` — deleted the screenshot wrapper and the `next/image` import.
+
+## Implementation Notes
+
+- No replacement content; the Features grid follows the Trending preview directly (still spaced with `mt-32` on the grid).
+
+## Assumptions
+
+- `public/dashboard.png` may remain on disk as an unused asset; delete separately if you want to trim repo size.
+
+## How to Test
+
+1. `npx tsc --noEmit`
+2. Open `/` — confirm no dashboard image and layout still reads cleanly before the three feature cards.
+
+## Verification Checklist
+
+- [ ] No `Image` import in `app/page.tsx`.
+- [ ] No broken layout between Trending section and feature grid.
+- [ ] No console errors.

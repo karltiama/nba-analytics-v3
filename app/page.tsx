@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Activity, Zap, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
 import { FeaturedGames } from '@/components/landing/FeaturedGames';
+import { LandingPropsTablePreview } from '@/components/landing/LandingPropsTablePreview';
+import { LandingTrendingPlayerStripPreview } from '@/components/landing/LandingTrendingPlayerStripPreview';
 
 export default function LandingPage() {
   return (
@@ -27,7 +28,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="relative z-10 flex flex-col items-center justify-center pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto min-h-screen">
+      <main className="relative z-10 flex flex-col items-center justify-center pt-32 pb-28 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto min-h-screen">
         {/* Hero Section */}
         <div className="text-center max-w-4xl mx-auto flex flex-col items-center gap-8 fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card border-[#bf5af2]/30 mb-2 slide-up" style={{ animationDelay: '100ms' }}>
@@ -64,24 +65,12 @@ export default function LandingPage() {
         {/* Featured Games / Live Data */}
         <FeaturedGames />
 
-        {/* Dashboard Preview / Screenshot */}
-        <div className="mt-28 w-full max-w-6xl mx-auto slide-up group" style={{ animationDelay: '600ms' }}>
-          <div className="relative rounded-2xl glass-card border border-white/10 shadow-2xl transition-all duration-500 hover:neon-glow-cyan hover:border-[#00d4ff]/40">
-             <div className="relative rounded-xl overflow-visible bg-black/60 border border-white/5">
-                <Image 
-                  src="/dashboard.png" 
-                  alt="NBA Platform Dashboard Preview" 
-                  width={2400}
-                  height={1350}
-                  className="w-full h-auto opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-[1.005] rounded-xl"
-                  priority
-                />
-             </div>
-          </div>
-        </div>
+        <LandingPropsTablePreview />
+
+        <LandingTrendingPlayerStripPreview />
 
         {/* Features Grid */}
-        <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl slide-up" style={{ animationDelay: '800ms' }}>
+        <div className="mt-40 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl slide-up" style={{ animationDelay: '800ms' }}>
           <div className="glass-card p-8 rounded-2xl border border-white/5 card-hover relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-32 bg-[#bf5af2]/5 blur-[100px] group-hover:bg-[#bf5af2]/15 transition-all duration-500 rounded-full"></div>
             <Zap className="w-10 h-10 text-[#bf5af2] mb-6 neon-text-purple relative z-10" />
@@ -106,7 +95,7 @@ export default function LandingPage() {
       </main>
       
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 glass-card py-10 mt-20 bg-black/40">
+      <footer className="relative z-10 border-t border-white/10 glass-card py-10 mt-28 bg-black/40">
         <div className="max-w-[1400px] mx-auto px-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-4">
           <div className="flex items-center gap-2 opacity-50">
             <Activity className="w-4 h-4" />

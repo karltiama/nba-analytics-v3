@@ -25,6 +25,7 @@ export default function BettingLayout({
     pathname === '/betting' ||
     pathname.startsWith('/betting/games/') ||
     pathname.startsWith('/betting/props-explorer') ||
+    pathname.startsWith('/betting/bet-slip-analyzer') ||
     pathname.startsWith('/betting/research') ||
     pathname.startsWith('/betting/paper') ||
     pathname.startsWith('/betting/profile');

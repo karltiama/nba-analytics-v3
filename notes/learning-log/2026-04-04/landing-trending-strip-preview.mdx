@@ -1,0 +1,52 @@
+## Context
+
+The betting home page uses `TrendingPlayerStrip` (client: tabs, API, horizontal scroll). The marketing landing page needed a matching visual without fetching or interactive tabs.
+
+## Goal
+
+Add a Trending Players strip preview on `/` with the same card chrome as `TrendingPlayerStrip`, static demo players on the left, and the rightmost cards as skeleton placeholders.
+
+## Files Changed
+
+- `components/landing/LandingTrendingPlayerStripPreview.tsx` — new section: header + “L5 vs SZN” pill, static stat tab row (PTS highlighted), horizontal strip of demo `Link` cards + `SKELETON_TAIL_CARDS` skeleton cards.
+- `app/page.tsx` — render after `LandingPropsTablePreview`.
+
+## Implementation Notes (key logic explained)
+
+- **Parity**: Card dimensions (`min-w-[172px] max-w-[172px]`), `glass-card`, rank row, team · vs opp, PTS L5 / vs szn + delta with `TrendingUp`, and HOT/PRA↑ badges follow `TrendingPlayerStrip` / `TrendingCard`.
+- **Tail**: Three skeleton cards reuse the same block layout as `StripSkeleton` in `TrendingPlayerStrip.tsx` (rank, name lines, stat blocks), with `aria-hidden`.
+- **No client JS**: Tabs are non-interactive `span`s; no scroll buttons (would need client + ref). Right-edge gradient hints more content off-screen.
+- **Links**: Demo cards point to `/betting`; “Open full terminal →” also `/betting`.
+
+## Key Decisions (and alternatives considered)
+
+- **Duplicate vs export**: Did not export `TrendingCard` / `StripSkeleton` from `TrendingPlayerStrip` to avoid scope creep; landing file stays self-contained.
+- **Five demo + three skeleton**: Readable on desktop; user can scroll horizontally on small viewports to see skeletons.
+
+## Assumptions
+
+- Illustrative names and numbers only.
+- Three cards count as “last few” skeleton slots.
+
+## Failure Modes
+
+- **Gradient**: `from-background` depends on theme token; if contrast is wrong, tweak gradient stops.
+- **Badge `PRA↑`**: Uses Unicode arrow in JSX string; same idea as `\u2191` in the live component.
+
+## How to Test (commands + steps)
+
+1. `npx tsc --noEmit`
+2. Open `/`, scroll to “Trending Players”; confirm five filled cards then three pulsing skeletons on the right (may require horizontal scroll on narrow widths).
+3. Click a demo card → `/betting`.
+
+## Next Steps
+
+- Optional: extract shared `TrendingCard` + skeleton primitives if more previews need them.
+
+## Verification Checklist
+
+- [ ] Section title and L5 vs SZN badge match the betting strip look.
+- [ ] PTS tab looks selected; other tabs muted.
+- [ ] Last three cards are skeleton-only (no names/numbers).
+- [ ] Horizontal scroll works on small screens.
+- [ ] No console errors.

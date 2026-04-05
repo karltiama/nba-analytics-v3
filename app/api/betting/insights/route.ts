@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import { 
-  getTeamPaceRankings, 
+import {
+  getTeamPaceRankings,
   getTeamDefensiveRankings,
   getDashboardSummary,
-  getTrendingPlayers 
+  getTrendingPlayersFromAnalytics,
 } from '@/lib/betting/queries';
 
 /**
  * GET /api/betting/insights
  * 
- * Fetches AI-style insights for the betting dashboard
- * Based on real BBRef data analysis
+ * Fetches insight cards + widgets for the betting dashboard
+ * Pace/defense/dashboard from analytics; trending players from analytics L5 vs season
  */
 export async function GET() {
   try {
@@ -19,7 +19,7 @@ export async function GET() {
       getTeamPaceRankings(),
       getTeamDefensiveRankings(),
       getDashboardSummary(),
-      getTrendingPlayers(5),
+      getTrendingPlayersFromAnalytics(5),
     ]);
 
     const insights = [];

@@ -1,0 +1,59 @@
+## Context
+
+Login and signup already used Supabase email/password. Users asked for Google as a third-party option with a **Continue with Google** control.
+
+## Goal
+
+- **Goal:** Let users sign in or sign up with Google OAuth alongside email/password.
+- **Inputs:** `next` query (internal redirect), same as existing auth pages.
+- **Output/Done:** Shared button component; `/login` and `/signup` show Google first, then an **or** divider, then the existing forms.
+
+## Files Changed
+
+- `components/auth/ContinueWithGoogleButton.tsx` — calls `signInWithOAuth({ provider: 'google' })`, redirects browser to Google, return via `/auth/callback?next=…`.
+- `app/signup/SignupClient.tsx` — embeds the button + divider + copy tweak.
+- `app/login/LoginClient.tsx` — same.
+- `.env.example` — notes that Google is configured in Supabase + Google Cloud (no new app env vars).
+
+## Implementation Notes (key logic explained)
+
+- **`signInWithOAuth`** both creates and signs in users: first-time Google users get an account automatically; returning users sign in. No separate “signup only” call is required.
+- **`redirectTo`** matches email flows: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`. The existing callback route already runs `exchangeCodeForSession` for the OAuth code.
+- **`queryParams.prompt: 'select_account'`** asks Google to show the account picker when multiple Google sessions exist.
+- **`window.location.assign(data.url)`** ensures navigation when the client returns a URL (reliable across `@supabase/ssr` versions).
+
+## Key Decisions (and alternatives considered)
+
+- **Shared component** vs duplicated handlers: one component avoids drift between login and signup.
+- **White “Google” button** styling: common pattern; contrasts with the dark glass card.
+- **Alternative:** Apple, GitHub, etc. — same pattern with another provider and icons.
+
+## Assumptions
+
+- Google provider is enabled in Supabase with valid OAuth credentials.
+- Google Cloud OAuth client lists Supabase’s callback URL as an authorized redirect URI.
+
+## Failure Modes
+
+- **Redirect URI mismatch:** Google error until `https://<project-ref>.supabase.co/auth/v1/callback` is added in Google Cloud Console.
+- **Supabase URL not allow-listed:** add `http://localhost:3000/auth/callback` and production callback URLs under **Authentication → URL Configuration**.
+- **Provider disabled:** Supabase returns an error; the button shows it inline.
+
+## How to Test (commands + steps)
+
+1. **Supabase:** Authentication → Providers → Google → enable; paste Web client ID and secret from Google Cloud (APIs & Services → Credentials → OAuth 2.0 Client IDs).
+2. **Google Cloud:** Authorized redirect URIs → `https://<your-project-ref>.supabase.co/auth/v1/callback`.
+3. Run `npm run dev`, open `/signup` and `/login`, click **Continue with Google**, finish Google consent, confirm redirect to `next` (default `/betting`).
+
+## Next Steps
+
+- Optional: add `access_type: 'offline'` / refresh-token behavior only if you need Google APIs server-side (not required for identity-only login).
+
+## Verification Checklist
+
+1. Google provider enabled in Supabase with correct Client ID and secret.
+2. Google OAuth client includes Supabase callback URL exactly.
+3. Site URL and redirect URLs in Supabase include local and production app origins.
+4. New Google user lands signed in after OAuth; existing user can sign in the same way.
+5. Email/password flows still work below the **or** divider.
+6. `?next=/some-internal-path` is preserved through OAuth (check query on callback).

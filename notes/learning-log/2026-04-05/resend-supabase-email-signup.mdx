@@ -1,0 +1,58 @@
+## Context
+
+The app signs users up with Supabase Auth (`supabase.auth.signUp` in `app/signup/SignupClient.tsx`). Confirmation and recovery emails are sent by **Supabase Auth**, not by custom Next.js routes. For production delivery and a verified “From” domain, Supabase should use **custom SMTP**; Resend is a supported provider.
+
+## Goal
+
+- **Goal:** Deliver signup confirmation (and other auth) emails through Resend.
+- **Inputs:** Resend API key, verified domain in Resend, Supabase project dashboard access.
+- **Output/Done:** SMTP configured in Supabase so auth emails route through Resend; `.env.example` documents the key for local reference and optional future API use.
+
+## Files Changed
+
+- `.env.example` — documents `RESEND_API_KEY` and that it is used as the SMTP password in Supabase (not read by the current app code for auth mail).
+
+## Implementation Notes (key logic explained)
+
+- **No new runtime code:** Auth email sending stays inside Supabase. You connect Resend by filling **Authentication → Email → SMTP Settings** in the Supabase dashboard.
+- **Resend SMTP (from [Resend’s Supabase guide](https://resend.com/docs/send-with-supabase-smtp)):** Host `smtp.resend.com`, port `465`, username `resend`, password = your Resend API key.
+- **Sender fields:** Set **Sender email** and **Sender name** in Supabase to an address on a domain you verified in Resend (e.g. `no-reply@yourdomain.com`).
+- **Redirect URLs:** Unchanged — keep `http://localhost:3000/auth/callback` and production URLs under Supabase **Authentication → URL Configuration** as already documented in `notes/learning-log/2026-04-03/auth-login-signup-routes.mdx`.
+
+## Key Decisions (and alternatives considered)
+
+- **SMTP vs Resend npm package:** SMTP in Supabase is the smallest change and matches how auth emails are generated (templates in Supabase). **Alternative:** [Supabase Send Email hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook) + Resend HTTP API if you need custom React templates or queuing — more moving parts.
+- **Optional `RESEND_API_KEY` in app:** Commented in `.env.example` only. **Simpler alternative:** Store the key only in the Supabase SMTP UI and nowhere in this repo until you add a route that calls Resend’s API.
+
+## Assumptions
+
+- Signup flow remains Supabase email/password with optional email confirmation.
+- You own or can verify a domain in Resend for the “From” address.
+
+## Failure Modes
+
+- **Emails only to team addresses:** Default Supabase SMTP restricts recipients until custom SMTP is enabled ([Supabase docs](https://supabase.com/docs/guides/auth/auth-smtp)).
+- **Auth mail marked spam:** Add SPF/DKIM/DMARC for your domain in DNS per Resend’s domain setup; use a dedicated auth From address.
+- **Rate limits:** After enabling custom SMTP, Supabase may apply a low default hourly cap — raise it under **Authentication → Rate Limits** if needed.
+
+## How to Test (commands + steps)
+
+1. In [Resend](https://resend.com): create an API key; add and verify your domain; note SMTP values (host, port, user, password).
+2. In Supabase: **Authentication → Email → SMTP Settings** — enable, paste Resend SMTP, set sender name/email, save.
+3. Run the app (`npm run dev`), open `/signup`, register with a **non-team** email you control.
+4. Confirm the message arrives and the confirmation link completes at `/auth/callback?next=…`.
+
+## Next Steps
+
+- Tighten auth rate limits and consider CAPTCHA if you see signup abuse ([Supabase guidance](https://supabase.com/docs/guides/auth/auth-smtp)).
+- If you need a custom welcome email from Next.js, add the `resend` package and a server-only sender using `RESEND_API_KEY` (separate from auth templates).
+
+## Verification Checklist
+
+1. Resend domain shows “Verified” and DNS records are correct.
+2. Supabase SMTP test save succeeds with host `smtp.resend.com`, port `465`, user `resend`, password = API key.
+3. Sender email in Supabase uses that verified domain.
+4. Signup from `/signup` sends a confirmation email visible in Resend’s email log.
+5. Clicking the link in the email lands on `/auth/callback` and redirects to the expected `next` path.
+6. Password reset (if enabled) also arrives via Resend.
+7. Production site URL and `/auth/callback` are listed in Supabase redirect URLs.
