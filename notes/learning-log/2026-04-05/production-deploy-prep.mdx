@@ -11,7 +11,7 @@ The user planned to publish the site and asked for build preparation and deploym
 ## Files Changed
 
 - `.env.example` — optional production vars: OpenAI, cron secret, DB tuning comments.
-- `package.json` — `engines.node` `>=20.9.0` (aligns with Next.js 16 expectations).
+- `package.json` — `engines.node` pinned to `20.x` (Vercel: avoids open `>=` range auto-upgrading across major Node releases).
 - `README.md` — short “Production checklist” section linking to docs.
 - `docs/deployment-checklist.md` — deploy steps, Supabase URLs, Vercel Cron + `CRON_SECRET`, smoke tests.
 
