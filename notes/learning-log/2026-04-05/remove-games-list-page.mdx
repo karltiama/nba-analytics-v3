@@ -1,0 +1,24 @@
+## Context
+
+User asked to remove the games list route (`app/games/page.tsx`) temporarily.
+
+## Goal
+
+- **Goal:** Delete `/games` index; keep `/games/[gameId]` box score pages.
+- **Inputs:** `app/games/page.tsx`, links to `/games` (list only).
+- **Output/Done:** List page removed; back links updated to `/`.
+
+## Files Changed
+
+- `app/games/page.tsx` — deleted.
+- `app/games/[gameId]/page.tsx` — “Back to Games” → “Home” (`/`).
+- `app/teams/[teamId]/components/TeamHeader.tsx` — same.
+
+## Notes
+
+- Deep links like `/games/{gameId}` from team schedule, player logs, etc. are unchanged.
+
+## Verification Checklist
+
+1. `npm run build` succeeds.
+2. `/games` returns 404; `/games/[gameId]` still serves.

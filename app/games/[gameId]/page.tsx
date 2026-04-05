@@ -77,8 +77,8 @@ export default async function GameBoxScorePage({
       <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-4">Game not found</h1>
-          <Link href="/games" className="text-blue-600 dark:text-blue-400 hover:underline">
-            ← Back to Games
+          <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline">
+            ← Home
           </Link>
         </div>
       </div>
@@ -95,10 +95,10 @@ export default async function GameBoxScorePage({
         <GameMatchupInfo game={game} />
         <div>
           <Link
-            href="/games"
+            href="/"
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block"
           >
-            ← Back to Games
+            ← Home
           </Link>
           <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-2">
             Box Score
