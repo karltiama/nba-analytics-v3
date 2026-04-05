@@ -1,0 +1,57 @@
+## Context
+
+The user planned to publish the site and asked for build preparation and deployment tips.
+
+## Goal
+
+- **Goal:** Confirm production build, document env vars and hosting steps, add small repo affordances (`engines`, README pointer).
+- **Inputs:** Existing `vercel.json`, API routes, `.env.example`.
+- **Output/Done:** `npm run build` verified; `docs/deployment-checklist.md`; expanded `.env.example`; README link; `package.json` `engines`.
+
+## Files Changed
+
+- `.env.example` — optional production vars: OpenAI, cron secret, DB tuning comments.
+- `package.json` — `engines.node` `>=20.9.0` (aligns with Next.js 16 expectations).
+- `README.md` — short “Production checklist” section linking to docs.
+- `docs/deployment-checklist.md` — deploy steps, Supabase URLs, Vercel Cron + `CRON_SECRET`, smoke tests.
+
+## Implementation Notes (key logic explained)
+
+- **Build:** `next build` completed successfully; no code changes required for compile.
+- **Cron auth:** `app/api/cron/paper-settle/route.ts` requires `PAPER_SETTLE_CRON_SECRET` or `CRON_SECRET` in production; Vercel sends Bearer `CRON_SECRET` when that env is set — document alignment for operators.
+
+## Key Decisions (and alternatives considered)
+
+- **Checklist in `docs/`** vs only chat: persistent reference for go-live.
+- **No `next.config` changes:** defaults sufficient; `output: 'standalone'` only needed for custom Docker images.
+
+## Assumptions
+
+- Primary host is Vercel (because of `vercel.json` crons); other hosts need an external scheduler + secret for the same route.
+
+## Failure Modes
+
+- **Cron 503 in prod:** Secret env not set — checklist calls this out.
+- **Auth redirect loops:** Production URL not in Supabase allow list.
+
+## How to Test (commands + steps)
+
+```bash
+npm run build
+npm start
+```
+
+Then follow **Quick post-launch smoke test** in `docs/deployment-checklist.md`.
+
+## Next Steps
+
+- Migrate `middleware.ts` to Next’s `proxy` convention when upgrading patterns.
+- Add CI that runs `npm run build` on pull requests (optional).
+
+## Verification Checklist
+
+1. Local `npm run build` exits 0.
+2. Production env mirrors `.env.example` sections you use (Supabase + optional AI + cron).
+3. Supabase redirect URLs include production `/auth/callback`.
+4. `CRON_SECRET` set on Vercel if paper-settle cron should run.
+5. README links to `docs/deployment-checklist.md`.

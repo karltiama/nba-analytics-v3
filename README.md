@@ -34,3 +34,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Production checklist
+
+Before going live, run `npm run build` locally and copy env vars from `.env.example` into your host (never commit secrets). See **[docs/deployment-checklist.md](docs/deployment-checklist.md)** for Supabase URLs, cron secrets, and AI keys.
