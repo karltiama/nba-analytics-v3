@@ -55,8 +55,8 @@ export default async function PlayerPage({
       <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-4">Player not found</h1>
-          <Link href="/dashboard" className="text-blue-600 dark:text-blue-400 hover:underline">
-            &larr; Back to Dashboard
+          <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline">
+            &larr; Home
           </Link>
         </div>
       </div>

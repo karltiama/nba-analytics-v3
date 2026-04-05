@@ -25,10 +25,10 @@ export default async function GamesPage() {
             </p>
           </div>
           <Link
-            href="/dashboard"
+            href="/"
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
           >
-            ← Back to Dashboard
+            ← Home
           </Link>
         </div>
 

@@ -237,7 +237,7 @@ export default function BettingProfilePage() {
         href="/betting"
         className="text-sm text-muted-foreground hover:text-white transition-colors inline-block mb-6"
       >
-        ← Back to dashboard
+        ← Back to betting
       </Link>
 
       <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Profile & preferences</h1>

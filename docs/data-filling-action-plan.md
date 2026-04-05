@@ -19,11 +19,8 @@ for (date = 30 days ago; date <= today; date++) {
 }
 ```
 
-### 3. Data Completeness Dashboard
-**New Page**: `/admin/data-completeness`
-- Show % of games with box scores by date
-- Highlight gaps visually
-- Track trends over time
+### 3. Data completeness checks
+- Prefer SQL or one-off scripts (no admin UI): e.g. query `analytics.games` vs box score tables for gaps by date.
 
 ---
 
