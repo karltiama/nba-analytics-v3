@@ -157,12 +157,6 @@ export default async function OddsDebugPage() {
           </div>
           <div className="flex gap-4">
             <Link
-              href="/admin/data-dump"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-50"
-            >
-              ← Data Dump
-            </Link>
-            <Link
               href="/dashboard"
               className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-zinc-50"
             >
