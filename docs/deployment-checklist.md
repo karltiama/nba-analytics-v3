@@ -58,7 +58,7 @@ After deploy, confirm cron runs in Vercel → project → Cron / Logs, or call t
 
 ## 7. Build warnings you may see
 
-- **`middleware` file convention is deprecated (use `proxy`)** — Next.js 16 migration; build still succeeds. Follow [Next.js middleware → proxy](https://nextjs.org/docs/messages/middleware-to-proxy) when you upgrade the pattern.
+- **Proxy:** Root `proxy.ts` replaces deprecated `middleware.ts` ([Next.js middleware → proxy](https://nextjs.org/docs/messages/middleware-to-proxy)). Session logic lives in `lib/supabase/middleware.ts` (`updateSession`).
 - **`baseline-browser-mapping` is old** — optional devDependency update: `npm i baseline-browser-mapping@latest -D`.
 
 ## Quick post-launch smoke test
