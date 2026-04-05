@@ -35,7 +35,9 @@ Never commit `.env` or paste secrets into the repo.
 
 ## 4. Vercel Cron and paper settlement
 
-`vercel.json` schedules `GET /api/cron/paper-settle` every 15 minutes.
+`vercel.json` schedules `GET /api/cron/paper-settle` **once per day** at **12:00 UTC** (`0 12 * * *`).
+
+**Hobby vs Pro:** On **Vercel Hobby**, cron jobs are limited to **at most one run per day**. Schedules like every 15 minutes require **Pro** (or run settlement manually / via an external scheduler that calls the same URL with your secret). If you upgrade to Pro, you can change the schedule in `vercel.json` (e.g. `*/15 * * * *` for every 15 minutes).
 
 In **production**, the route returns **503** if no cron secret is set, and **401** if the request is not authorized.
 
