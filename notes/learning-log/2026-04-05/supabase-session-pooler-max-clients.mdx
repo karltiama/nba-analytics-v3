@@ -1,0 +1,51 @@
+## Context
+
+Production hit Supabase pooler error: `MaxClientsInSessionMode: max clients reached - in Session mode max clients are limited to pool_size`. Next.js `lib/db.ts` used `max: 20` on `pg.Pool`, which multiplies across Vercel serverless instances.
+
+## Goal
+
+Cap the application pool size for Supabase pooled connections so many concurrent lambdas do not exhaust Supavisor session (or transaction) pooler client slots.
+
+## Files Changed
+
+- `lib/db.ts`
+- `.env.example`
+
+## Implementation Notes (key logic explained)
+
+- **`resolvePoolMax()`** reads optional **`PG_POOL_MAX`** (integer ≥ 1, capped at 50). If unset:
+  - **`pooler.supabase.com`** or **`:6543`** (transaction pooler) → **`max: 1`** per Node process (typical for serverless + shared pooler).
+  - Other **`supabase.co`** URLs (e.g. direct `db.*`) → **`max: 5`** as a conservative default under high concurrency.
+  - Otherwise (local/self-hosted) → **`20`** (previous behavior).
+
+## Key Decisions (and alternatives considered)
+
+- **Default 1 for pooled hosts** instead of raising Supabase `pool_size`: cheaper than compute upgrades; aligns with “one connection per instance” guidance for serverless.
+- **Alternative:** Switch **`SUPABASE_DB_URL`** to **transaction mode** (`:6543`) for serverless; see Supabase docs on **`node-pg`** and prepared statements if you use parameterized queries heavily.
+
+## Assumptions
+
+- Traffic goes through Supabase **shared pooler** with a tier-limited max pooler clients.
+
+## Failure Modes
+
+- Very high single-instance parallelism might still queue; if needed, raise **`PG_POOL_MAX`** slightly (e.g. 2) or increase pool size in Supabase **Database** settings (plan limits apply).
+- **`MaxClientsInSessionMode`** can still appear if other apps or scripts hold many pooler connections.
+
+## How to Test (commands + steps)
+
+1. `npm run build`
+2. Deploy; under load, confirm pooler errors no longer spike (Vercel logs / Supabase Observability → pooler clients).
+
+## Next Steps
+
+- In Supabase dashboard, review **Observability** → pooler client usage after deploy.
+- If you need more throughput per instance, set **`PG_POOL_MAX=2`** only after monitoring.
+
+## Verification Checklist
+
+- [ ] `npm run build` passes.
+- [ ] `SUPABASE_DB_URL` uses pooler host or `:6543` as intended.
+- [ ] Production redeployed; betting/API routes work under normal traffic.
+- [ ] Optional: set **`PG_POOL_MAX=1`** explicitly in Vercel for clarity.
+- [ ] If errors persist, check other services using the same DB URL.

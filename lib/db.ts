@@ -9,12 +9,28 @@ if (!connectionString) {
 const useSupabaseSsl =
   connectionString.includes('supabase.co') || connectionString.includes('pooler.supabase.com');
 
+function resolvePoolMax(conn: string): number {
+  const fromEnv = process.env.PG_POOL_MAX;
+  if (fromEnv !== undefined && fromEnv !== '') {
+    const n = Number(fromEnv);
+    if (Number.isFinite(n) && n >= 1) return Math.min(Math.floor(n), 50);
+  }
+  // Supavisor session/transaction poolers enforce a small max *client* count per project tier.
+  // Vercel spins many instances; each Pool with high `max` multiplies connections → MaxClientsInSessionMode.
+  const pooledSupabase =
+    conn.includes('pooler.supabase.com') || conn.includes(':6543');
+  if (pooledSupabase) return 1;
+  // Direct db.*.supabase.co — still serverless-friendly default (many concurrent lambdas).
+  if (conn.includes('supabase.co')) return 5;
+  return 20;
+}
+
 // Create a connection pool
 const pool = new Pool({
   connectionString,
   ssl: useSupabaseSsl ? { rejectUnauthorized: false } : undefined,
   // Connection pool settings
-  max: 20,
+  max: resolvePoolMax(connectionString),
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT_MS ?? 10000),
   statement_timeout: Number(process.env.DB_STATEMENT_TIMEOUT_MS ?? 30000),

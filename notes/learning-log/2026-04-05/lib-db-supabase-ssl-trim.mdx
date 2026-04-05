@@ -24,9 +24,17 @@ Align Next.js server Postgres (`lib/db.ts`) with proven Supabase connection hand
 
 - Production DB is Supabase-hosted Postgres accessed via URI in `SUPABASE_DB_URL`.
 
+## Update: `ENOTFOUND` for `db.<project>.supabase.co` on Vercel (IPv6 vs IPv4)
+
+Supabase **direct** DB hostnames (`db.*.supabase.co:5432`) are **IPv6-first**; public DNS often returns **only AAAA** (no IPv4 `A` record). Many local networks support IPv6, so dev works. **Vercel serverless** commonly resolves/connects over **IPv4-only**, so the same hostname can fail DNS or connectivity with **`getaddrinfo ENOTFOUND`** or similar.
+
+**Fix (recommended):** In Supabase Dashboard → **Connect** → use **Session pooler** (or the shared pooler URI that uses `aws-0-<region>.pooler.supabase.com`). That hostname has **IPv4** `A` records and is intended for environments without IPv6. Paste that full URI into **`SUPABASE_DB_URL`** on Vercel and redeploy.
+
+**Alternatives:** Supabase **IPv4 add-on** for direct connections ([docs](https://supabase.com/docs/guides/platform/ipv4-address)); or **Transaction pooler** (`:6543`) for serverless—see Supabase docs on **prepared statements** with `node-pg` if you use transaction mode.
+
 ## Failure Modes
 
-- If the error is still **`ENOTFOUND`**, verify the **exact** production string (no typo; correct Vercel project and **Production** environment); `trim()` fixes whitespace, not wrong hostnames.
+- If the error is still **`ENOTFOUND`** after switching to the **pooler** host, verify the **exact** production string (no typo; correct Vercel project and **Production** environment); `trim()` fixes whitespace, not wrong hostnames.
 - If you use a **custom** Postgres host that needs SSL but does not match the substring check, set SSL via env or extend the condition.
 
 ## How to Test (commands + steps)
