@@ -21,6 +21,18 @@ export function LoginClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  async function waitForSessionReady(maxAttempts = 8, delayMs = 120) {
+    const supabase = createSupabaseBrowserClient();
+    for (let i = 0; i < maxAttempts; i++) {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) return true;
+      if (i < maxAttempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+    return false;
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -32,6 +44,9 @@ export function LoginClient() {
         setError(signError.message);
         return;
       }
+
+      // Avoid first-navigation redirect loop by waiting for client session hydration.
+      await waitForSessionReady();
       router.push(nextPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
