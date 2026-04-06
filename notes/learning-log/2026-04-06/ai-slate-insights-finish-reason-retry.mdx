@@ -1,0 +1,41 @@
+## Context
+The slate summary sometimes appeared truncated (ending mid-thought), and increasing `max_tokens` repeatedly was not the right long-term fix.
+
+## Goal
+Use a moderate token cap and add deterministic truncation handling (`finish_reason` + completion checks) with one retry.
+
+## Files Changed
+- `app/api/betting/ai-slate-insights/route.ts`
+
+## Implementation Notes (key logic explained)
+- Added typed parsing for OpenAI response choice + `finish_reason`.
+- Introduced `isLikelyTruncated()` checks:
+  - truncation if `finish_reason === "length"`
+  - truncation if output does not end with sentence punctuation
+  - truncation if output ends with dangling punctuation/parenthesis patterns
+- Added `callOpenAiOnce()` helper and kept generation prompt centralized there.
+- Reduced `max_tokens` to `320` (moderate cap aligned with `<170 words` target).
+- Added one retry path when first completion looks truncated.
+- Bumped cache key version to `v3-finish-reason-retry` so old cached outputs are bypassed.
+
+## Key Decisions (and alternatives considered)
+- Chose one retry only to control cost/latency and avoid loops.
+- Alternative considered: post-process by truncating to last period only; rejected as primary fix because it can drop important context.
+
+## Assumptions
+- Most valid summaries should end with complete sentence punctuation.
+- Single retry is sufficient for occasional length-stopped completions.
+
+## Failure Modes
+- A coherent summary that intentionally ends without punctuation could be retried unnecessarily.
+- If upstream API repeatedly returns short/incomplete outputs, retry still may not fully recover.
+
+## How to Test (commands + steps)
+1. Open `/betting` and load the same date that previously showed cut-off text.
+2. Hard refresh to trigger new cached generation.
+3. Confirm summary ends with complete sentence punctuation.
+4. Navigate between dates and verify responses remain complete.
+5. Check server logs for absence of repeated incomplete endings.
+
+## Next Steps
+- If needed, add lightweight telemetry for retry rate and finish reasons.

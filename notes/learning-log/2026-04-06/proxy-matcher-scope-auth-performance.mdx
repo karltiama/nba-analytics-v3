@@ -1,0 +1,34 @@
+## Context
+Sign-in felt slightly delayed in production, and middleware auth checks were running against a very broad route matcher.
+
+## Goal
+Reduce unnecessary middleware auth/session overhead by limiting matcher scope to protected surfaces.
+
+## Files Changed
+- `proxy.ts`
+
+## Implementation Notes (key logic explained)
+- Replaced catch-all matcher with targeted matchers:
+  - `/betting/:path*`
+  - `/api/user/:path*`
+- This limits `updateSession()` / `supabase.auth.getUser()` middleware work to protected pages and user APIs.
+
+## Key Decisions (and alternatives considered)
+- Chose route-level matcher narrowing as first optimization because it is low-risk and high-impact.
+- Alternative considered: changing middleware internals to short-circuit before `getUser`; deferred for now.
+
+## Assumptions
+- Auth protection is only required on betting routes and user API endpoints.
+- Public routes (landing/login/signup) do not require middleware auth refresh on every request.
+
+## Failure Modes
+- If any additional protected route lives outside `/betting` or `/api/user`, it may lose middleware protection.
+
+## How to Test (commands + steps)
+1. Visit `/` while signed out and confirm page loads normally.
+2. Visit `/betting` while signed out and confirm redirect to `/login?next=...`.
+3. Sign in and confirm `/betting` loads correctly with session.
+4. Call `/api/user/profile` signed out and confirm unauthorized behavior remains intact.
+
+## Next Steps
+- Audit other protected APIs and add matcher entries if needed.

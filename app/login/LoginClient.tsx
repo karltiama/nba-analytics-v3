@@ -32,7 +32,6 @@ export function LoginClient() {
         setError(signError.message);
         return;
       }
-      router.refresh();
       router.push(nextPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');

@@ -85,8 +85,9 @@ export function AIInsightPanel({
   slateSummaryLoading = false,
   slateSummaryHint = null,
 }: AIInsightPanelProps) {
+  void insights;
   return (
-    <div className="glass-card rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]">
+    <div className="glass-card rounded-xl overflow-hidden flex flex-col min-h-[70vh] max-h-[calc(100vh-5rem)]">
       {/* Header */}
       <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
@@ -106,7 +107,7 @@ export function AIInsightPanel({
 
       <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
         {/* LLM slate summary */}
-        <div className="p-3 pb-0 shrink-0 border-b border-white/5">
+        <div className="p-3 pb-3 border-b border-white/5 flex-1">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-3.5 h-3.5 text-[#bf5af2]" />
             <span className="text-[11px] font-medium text-white/90">Slate summary</span>
@@ -128,20 +129,12 @@ export function AIInsightPanel({
           )}
         </div>
 
-        {/* Deterministic insight cards */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
-          {insights.length === 0 ? (
-            <p className="text-xs text-muted-foreground py-4">No stat highlights yet.</p>
-          ) : (
-            insights.map((insight) => <InsightCard key={insight.id} insight={insight} />)
-          )}
-        </div>
       </div>
 
       {/* Footer */}
       <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02] shrink-0">
         <p className="text-[10px] text-muted-foreground text-center">
-          Stat cards from analytics DB • Slate text via OpenAI (cached) •{' '}
+          Slate text via OpenAI (cached) •{' '}
           <span className="text-[#00d4ff]">Not betting advice</span>
         </p>
       </div>

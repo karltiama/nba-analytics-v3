@@ -1,0 +1,48 @@
+## Context
+
+The betting game detail route (`/betting/games/[gameId]`) loads data in `GameDetailsPageClient` via client-side `fetch` calls. An earlier change added `loading.tsx` and a skeleton under `app/games/[gameId]/`, which targets the analytics box score page, not the betting UI.
+
+## Goal
+
+Show a layout-accurate skeleton on **`/betting/games/[gameId]`** while game APIs load, using the same visual language as `MatchupPageLayout` (gradient mesh, glass cards, sticky header).
+
+## Files Changed
+
+- Removed: `app/games/[gameId]/loading.tsx`, `app/games/[gameId]/components/GameBoxScorePageSkeleton.tsx` (wrong route).
+- `app/betting/games/[gameId]/components/BettingGameDetailsPageSkeleton.tsx` — new skeleton matching the matchup page shell.
+- `app/betting/games/[gameId]/GameDetailsPageClient.tsx` — replace the centered “Loading game details…” block with the skeleton.
+
+## Implementation Notes (key logic explained)
+
+- **Why not only `loading.tsx` on betting?** The betting `page.tsx` server component renders immediately and delegates to a client component; the slow phase is **client** fetching. A route `loading.tsx` would only cover the initial RSC boundary, not the API round-trip. The skeleton is wired to `loading === true` in `GameDetailsPageClient` where the user actually waits.
+- **Styling:** `Skeleton` uses `bg-white/10` so blocks read on `gradient-mesh` / glass surfaces (consistent with other betting placeholders).
+
+## Key Decisions (and alternatives considered)
+
+- **Colocate skeleton under `app/betting/games/[gameId]/components/`** — Keeps the route’s loading UI next to `GameDetailsPageClient`. Alternative: `components/betting/BettingGameDetailsPageSkeleton.tsx` for reuse; skipped until another route needs it.
+
+## Assumptions
+
+- Users primarily perceive load time during the client fetch phase after the shell mounts.
+
+## Failure Modes
+
+- If `MatchupPageLayout` structure changes heavily, the skeleton may feel misaligned until updated.
+
+## How to Test (commands + steps)
+
+1. `npm run dev`
+2. Navigate from `/betting` to a game (or open `/betting/games/<id>` directly).
+3. Confirm the full-page skeleton (header + pills + stacked cards + table placeholder) appears, then `MatchupPageLayout` content.
+4. `npx eslint "app/betting/games/[gameId]/**/*.tsx"`
+
+## Next Steps
+
+- None required unless the matchup layout is redesigned.
+
+## Verification Checklist
+
+- [ ] `/betting/games/[validId]` shows the new skeleton, not a single centered “Loading…” card.
+- [ ] `/games/[gameId]` (analytics box score) still works; no stray `loading.tsx` under that segment unless intentionally added later.
+- [ ] No console errors from the new component.
+- [ ] Skeleton is visible in both light and dark betting backgrounds.

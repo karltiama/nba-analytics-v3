@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MatchupPageLayout } from '@/components/betting/MatchupPageLayout';
+import { BettingGameDetailsPageSkeleton } from './components/BettingGameDetailsPageSkeleton';
 
 export function GameDetailsPageClient({ gameId }: { gameId: string }) {
   const [data, setData] = useState<any>(null);
@@ -47,13 +48,7 @@ export function GameDetailsPageClient({ gameId }: { gameId: string }) {
   }, [gameId]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background gradient-mesh flex items-center justify-center">
-        <div className="glass-card rounded-2xl p-8">
-          <p className="text-white">Loading game details...</p>
-        </div>
-      </div>
-    );
+    return <BettingGameDetailsPageSkeleton />;
   }
 
   if (error || !data?.game) {

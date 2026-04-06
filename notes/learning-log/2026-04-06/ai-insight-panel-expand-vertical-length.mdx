@@ -1,0 +1,34 @@
+## Context
+The betting right-rail AI panel felt too short vertically, reducing visible summary context and making the sidebar feel cramped.
+
+## Goal
+Expand the AI sidebar panel to a stronger vertical footprint while preserving scroll-safe behavior.
+
+## Files Changed
+- `components/betting/AIInsightPanel.tsx`
+
+## Implementation Notes (key logic explained)
+- Updated the outer panel height constraints:
+  - Added `min-h-[70vh]` so the panel occupies substantial vertical space.
+  - Increased max height from `max-h-[calc(100vh-8rem)]` to `max-h-[calc(100vh-5rem)]`.
+- Kept overflow handling unchanged so content remains scrollable inside the panel.
+
+## Key Decisions (and alternatives considered)
+- Chose CSS constraint adjustment only (smallest safe diff).
+- Alternative considered: changing sticky container offsets/padding in page layout; deferred to avoid broader layout side effects.
+
+## Assumptions
+- Primary target is desktop/right-rail experience on `/betting`.
+
+## Failure Modes
+- On short viewports, panel may still feel tight due to surrounding sticky spacing.
+- If future header height changes, `calc(100vh-5rem)` may need retuning.
+
+## How to Test (commands + steps)
+1. Open `/betting` on desktop width (`xl` breakpoint or wider).
+2. Confirm sidebar panel appears taller than before.
+3. Confirm summary and footer remain visible/usable with internal scrolling.
+4. Resize viewport height and ensure no overflow outside viewport.
+
+## Next Steps
+- If you want even taller, try `min-h-[75vh]` or reduce sticky wrapper padding in `app/betting/page.tsx`.

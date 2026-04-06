@@ -443,16 +443,12 @@ export default function BettingDashboard(props: PageProps) {
           {/* AI Insights Sidebar — no self-start so it stretches; sticky then has room to stick */}
           <aside className="w-full xl:w-80 shrink-0">
             <div className="sticky top-16 pt-8 pb-6">
-              {loadingInsights ? (
-                <AIInsightPanelSkeleton />
-              ) : (
-                <AIInsightPanel
-                  insights={insights}
-                  slateSummary={slateSummary}
-                  slateSummaryLoading={slateSummaryLoading}
-                  slateSummaryHint={slateSummaryHint}
-                />
-              )}
+              <AIInsightPanel
+                insights={insights}
+                slateSummary={slateSummary}
+                slateSummaryLoading={slateSummaryLoading}
+                slateSummaryHint={slateSummaryHint}
+              />
             </div>
           </aside>
         </div>
