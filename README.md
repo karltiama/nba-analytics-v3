@@ -1,40 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NBA Analytics (v3)
 
-## Getting Started
+Next.js app for NBA betting analytics: game and player views, odds/props tooling, and Supabase-backed APIs. Scheduled **AWS Lambda** jobs ingest data from **BallDontLie** (and optional scrapers) into Postgres; the UI reads from the `analytics` schema.
 
-First, run the development server:
+## Stack
+
+- **Frontend / API:** Next.js 16 (App Router), React 19, Tailwind CSS  
+- **Auth & DB:** Supabase (Auth + Postgres)  
+- **Background jobs:** AWS Lambda + EventBridge (and SQS for player props fan-out)  
+- **IaC:** Terraform under `infra/`  
+
+## Repository layout
+
+| Path | Purpose |
+|------|---------|
+| `app/` | Routes, pages, and `app/api/*` route handlers |
+| `components/` | Shared UI (including betting-specific components) |
+| `lib/` | Server utilities, Supabase clients, betting/analytics queries |
+| `lambda/` | Standalone Lambda packages (each has its own `package.json` + build) |
+| `infra/` | Terraform for Lambdas, schedules, IAM, etc. |
+| `db/schemas/` | SQL schema notes and migrations (reference) |
+| `scripts/` | One-off maintenance, seeds, diagnostics (not required for `npm run dev`) |
+| `docs/` | Deployment, odds/props design notes, troubleshooting |
+
+Lambda code is **excluded from the root TypeScript project** so `next build` stays fast; build each function inside `lambda/<name>/` when you change it (see `docs/deployment-checklist.md`).
+
+## Prerequisites
+
+- **Node.js 20.x** (see `package.json` `engines`)
+
+## Local development
 
 ```bash
+npm install
+cp .env.example .env.local
+# Edit .env.local with your Supabase URL, anon key, and optional SUPABASE_DB_URL
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Betting routes live under `/betting` (exact entry points may vary; explore `app/`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Production build:**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+- **Committed template:** [.env.example](.env.example) — copy to `.env.local` for local use.  
+- **Reference tables:** [docs/deployment-checklist.md](docs/deployment-checklist.md) (Vercel, Supabase, cron secrets, optional AI keys).  
+- **Never commit** `.env`, `.env.local`, or real API keys.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data ingestion (high level)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Source | Where it runs | Typical destination |
+|--------|----------------|---------------------|
+| BallDontLie games/stats | `lambda/nightly-bdl-updater` | `raw.*` → `analytics.*` game/player stats |
+| BallDontLie odds | `lambda/odds-pre-game-snapshot` | `analytics.game_odds_*` |
+| BallDontLie injuries | `lambda/injuries-snapshot` | `analytics.player_injury_status_*` |
+| BallDontLie player props | `lambda/player-props-snapshot` (controller + worker) | `analytics.player_props_current`, etc. |
+| Basketball Reference (optional) | `lambda/boxscore-scraper` / `scripts/` | `bbref_*` tables |
 
-## Deploy on Vercel
+Manual seeds and backfills live in `scripts/`; deeper detail: [docs/data-seeding-guide.md](docs/data-seeding-guide.md).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## npm scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Next.js dev server |
+| `npm run build` / `npm start` | Production build and serve |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest |
+| `npm run lambdas` | Invoke Lambdas locally via `scripts/call-all-lambdas.ts` |
+| `npm run lambdas:aws` | Same, targeting AWS |
+| `npm run prune:player-props-v2` | Prune old player-prop snapshot rows (dry-run; add `:execute` to apply) |
 
-## Production checklist
+## AWS / Terraform
 
-Before going live, run `npm run build` locally and copy env vars from `.env.example` into your host (never commit secrets). See **[docs/deployment-checklist.md](docs/deployment-checklist.md)** for Supabase URLs, cron secrets, and AI keys.
+See **[infra/README.md](infra/README.md)** for `terraform init/plan/apply`, building Lambdas before deploy, and schedule variables.
+
+## Documentation index
+
+- [Production deployment checklist](docs/deployment-checklist.md)  
+- [Supabase connection troubleshooting](docs/supabase-connection-troubleshooting.md)  
+- [Data seeding guide](docs/data-seeding-guide.md)  
+
+## License
+
+Private project (`"private": true` in `package.json`). Adjust if you open-source it.
