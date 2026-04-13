@@ -25,6 +25,9 @@
 .DS_Store
 *.pem
 
+# local reference notes (not part of shipped code)
+/notes/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
