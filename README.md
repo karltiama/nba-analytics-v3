@@ -1,91 +1,159 @@
 # NBA Analytics (v3)
 
-Next.js app for NBA betting analytics: game and player views, odds/props tooling, and Supabase-backed APIs. Scheduled **AWS Lambda** jobs ingest data from **BallDontLie** (and optional scrapers) into Postgres; the UI reads from the `analytics` schema.
+Production-style NBA analytics platform with a modern web app, data pipelines, and cloud automation. The project combines:
 
-## Stack
+- A **Next.js 16** application for interactive analysis and internal APIs
+- A **Supabase Postgres** data layer for analytics-ready tables
+- Multiple **AWS Lambda** jobs scheduled by EventBridge for ingestion
+- **Terraform** infrastructure definitions for repeatable deployment
 
-- **Frontend / API:** Next.js 16 (App Router), React 19, Tailwind CSS  
-- **Auth & DB:** Supabase (Auth + Postgres)  
-- **Background jobs:** AWS Lambda + EventBridge (and SQS for player props fan-out)  
-- **IaC:** Terraform under `infra/`  
+---
 
-## Repository layout
+## Quick Context For Employers
 
-| Path | Purpose |
-|------|---------|
-| `app/` | Routes, pages, and `app/api/*` route handlers |
-| `components/` | Shared UI (including betting-specific components) |
-| `lib/` | Server utilities, Supabase clients, betting/analytics queries |
-| `lambda/` | Standalone Lambda packages (each has its own `package.json` + build) |
-| `infra/` | Terraform for Lambdas, schedules, IAM, etc. |
-| `db/schemas/` | SQL schema notes and migrations (reference) |
-| `scripts/` | One-off maintenance, seeds, diagnostics (not required for `npm run dev`) |
-| `docs/` | Deployment, odds/props design notes, troubleshooting |
+This repository is intended to demonstrate end-to-end product engineering, including:
 
-Lambda code is **excluded from the root TypeScript project** so `next build` stays fast; build each function inside `lambda/<name>/` when you change it (see `docs/deployment-checklist.md`).
+- Building full-stack web features in a React/Next.js architecture
+- Designing data ingestion workflows from external APIs
+- Operating scheduled, serverless background jobs in AWS
+- Structuring analytics data for query performance and maintainability
+- Writing operational docs and troubleshooting guides for real deployment workflows
 
-## Prerequisites
+If you only have a few minutes, review:
 
-- **Node.js 20.x** (see `package.json` `engines`)
+1. `app/` and `lib/` for application and API design
+2. `lambda/` for ingestion architecture and reliability patterns
+3. `infra/` for Terraform-managed cloud resources
+4. `docs/` for deployment, incident handling, and design tradeoffs
 
-## Local development
+---
+## Why This Project Exists
+
+Sports betting tools often rely on surface-level statistics or manual analysis. This project was built to:
+
+- Automate ingestion of real-time NBA data (games, odds, injuries, props)
+- Transform raw data into structured analytics tables
+- Generate data-driven insights for evaluating player prop bets
+- Enable backtesting and performance tracking of betting strategies
+
+The goal is to remove emotion from decision-making and replace it with measurable, repeatable analysis.
+
+## What The System Does
+
+At a high level:
+
+1. Scheduled jobs fetch games, odds, injuries, and player props from external providers.
+2. Raw and transformed records are stored in Postgres (`raw.*` and `analytics.*`).
+3. The Next.js app serves dashboards and API routes powered by analytics tables.
+4. Utility scripts support backfills, data hygiene, and diagnostics.
+
+### Data Ingestion Coverage
+
+| Source | Runtime | Destination (typical) |
+|--------|---------|------------------------|
+| BallDontLie games/stats | `lambda/nightly-bdl-updater` | `raw.*` -> `analytics.*` |
+| BallDontLie odds | `lambda/odds-pre-game-snapshot` | `analytics.game_odds_*` |
+| BallDontLie injuries | `lambda/injuries-snapshot` | `analytics.player_injury_status_*` |
+| BallDontLie player props | `lambda/player-props-snapshot` | `analytics.player_props_current` and related tables |
+| Basketball Reference (optional) | `lambda/boxscore-scraper` / `scripts/` | `bbref_*` tables |
+
+---
+
+## Tech Stack
+
+- **Frontend/API:** Next.js 16, React 19, Tailwind CSS
+- **Data/Auth:** Supabase (Postgres + Auth)
+- **Cloud Jobs:** AWS Lambda, EventBridge, SQS
+- **Infra as Code:** Terraform
+- **Validation/Quality:** ESLint, Vitest
+
+---
+
+## Repository Guide
+
+| Path | Why it exists |
+|------|----------------|
+| `app/` | App Router pages plus API route handlers |
+| `components/` | Reusable UI and betting-focused presentation components |
+| `lib/` | Data access, Supabase clients, shared server utilities |
+| `lambda/` | Independent Lambda packages for ingestion and processing |
+| `infra/` | Terraform for Lambdas, IAM, scheduling, and deployment resources |
+| `scripts/` | Operational scripts for seeding, maintenance, and diagnostics |
+| `db/schemas/` | Schema references, migration notes, consolidation docs |
+| `docs/` | Runbooks, troubleshooting, design notes, and checklists |
+
+Note: Lambda packages are intentionally excluded from the root TypeScript project to keep web app builds fast. Build and test each Lambda package within its own folder when changing ingestion code.
+
+---
+
+## Local Setup
+
+### Prerequisites
+
+- Node.js `20.x`
+
+### Run Locally
 
 ```bash
 npm install
 cp .env.example .env.local
-# Edit .env.local with your Supabase URL, anon key, and optional SUPABASE_DB_URL
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Betting routes live under `/betting` (exact entry points may vary; explore `app/`).
+Then open [http://localhost:3000](http://localhost:3000).
 
-**Production build:**
+### Production Build Check
 
 ```bash
 npm run build
 npm start
 ```
 
-## Environment variables
+---
 
-- **Committed template:** [.env.example](.env.example) — copy to `.env.local` for local use.  
-- **Reference tables:** [docs/deployment-checklist.md](docs/deployment-checklist.md) (Vercel, Supabase, cron secrets, optional AI keys).  
-- **Never commit** `.env`, `.env.local`, or real API keys.
+## Environment And Secrets
 
-## Data ingestion (high level)
+- Start from `.env.example` and copy values into `.env.local`
+- Full environment matrix and deployment context are in `docs/deployment-checklist.md`
+- Never commit `.env`, `.env.local`, or live credentials
 
-| Source | Where it runs | Typical destination |
-|--------|----------------|---------------------|
-| BallDontLie games/stats | `lambda/nightly-bdl-updater` | `raw.*` → `analytics.*` game/player stats |
-| BallDontLie odds | `lambda/odds-pre-game-snapshot` | `analytics.game_odds_*` |
-| BallDontLie injuries | `lambda/injuries-snapshot` | `analytics.player_injury_status_*` |
-| BallDontLie player props | `lambda/player-props-snapshot` (controller + worker) | `analytics.player_props_current`, etc. |
-| Basketball Reference (optional) | `lambda/boxscore-scraper` / `scripts/` | `bbref_*` tables |
+---
 
-Manual seeds and backfills live in `scripts/`; deeper detail: [docs/data-seeding-guide.md](docs/data-seeding-guide.md).
+## Common Commands
 
-## npm scripts
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Start local Next.js dev server |
+| `npm run build` | Build production bundle |
+| `npm start` | Run built production server |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run Vitest suite |
+| `npm run lambdas` | Invoke Lambda flows locally |
+| `npm run lambdas:aws` | Invoke Lambda flows against AWS |
+| `npm run prune:player-props-v2` | Dry-run cleanup for old prop snapshots |
+| `npm run prune:player-props-v2:execute` | Execute cleanup for old prop snapshots |
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Next.js dev server |
-| `npm run build` / `npm start` | Production build and serve |
-| `npm run lint` | ESLint |
-| `npm test` | Vitest |
-| `npm run lambdas` | Invoke Lambdas locally via `scripts/call-all-lambdas.ts` |
-| `npm run lambdas:aws` | Same, targeting AWS |
-| `npm run prune:player-props-v2` | Prune old player-prop snapshot rows (dry-run; add `:execute` to apply) |
+---
 
-## AWS / Terraform
+## Engineering Decisions Worth Calling Out
 
-See **[infra/README.md](infra/README.md)** for `terraform init/plan/apply`, building Lambdas before deploy, and schedule variables.
+- **Separation of concerns:** Web app, data pipelines, and infrastructure code are isolated by directory and runtime boundary.
+- **Operational readiness:** Runbooks and deployment checklists are part of the repo, not external tribal knowledge.
+- **Scalable ingestion:** Player props ingestion supports controller/worker fan-out patterns via SQS.
+- **Maintainability focus:** Scripts and schema docs exist for iterative cleanup, backfill, and migration safety.
 
-## Documentation index
+---
 
-- [Production deployment checklist](docs/deployment-checklist.md)  
-- [Supabase connection troubleshooting](docs/supabase-connection-troubleshooting.md)  
-- [Data seeding guide](docs/data-seeding-guide.md)  
+## Additional Documentation
+
+- [Documentation index (start here)](docs/index.md)
+- [Deployment checklist](docs/deployment-checklist.md)
+- [Supabase troubleshooting](docs/internal/supabase-connection-troubleshooting.md)
+- [Data seeding guide](docs/data-seeding-guide.md)
+- [Infra guide](infra/README.md)
+
+---
 
 ## License
 
-Private project (`"private": true` in `package.json`). Adjust if you open-source it.
+Currently private (`"private": true` in `package.json`). Add a formal license before open sourcing.
