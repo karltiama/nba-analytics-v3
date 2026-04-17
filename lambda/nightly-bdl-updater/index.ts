@@ -2,8 +2,8 @@
  * Lambda Function: Nightly BDL Updater
  *
  * Scheduled: Daily at 08:00 UTC (03:00 ET) via EventBridge
- * Purpose: Fetch yesterday/today's Final games from BallDontLie API,
- *          upsert raw tables, then run scoped transforms + computes.
+ * Purpose: Sync upcoming BDL schedule (ET, all statuses) into raw/analytics games, then fetch
+ *          yesterday/today's Final games (ET date window), upsert raw tables, and run transforms + computes.
  *
  * Pipeline: BDL API → raw.games + raw.player_game_stats + raw.players
  *           → analytics.games + analytics.player_game_logs
@@ -15,6 +15,9 @@
  * - BALLDONTLIE_API_KEY (required)
  * - BALLDONTLIE_REQUEST_DELAY_MS (optional, default: 200)
  * - MAX_RETRIES (optional, default: 3)
+ * - BDL_SCHEDULE_SYNC_DAYS_FORWARD (optional, default: 14) — ET calendar days after today to
+ *   upsert scheduled/final games into raw + analytics (playoffs & slate discovery).
+ * - DISABLE_BDL_SCHEDULE_SYNC (optional, set to "1" to skip that step)
  */
 
 try {
@@ -74,10 +77,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function sid(id: number | null | undefined): string {
   if (id == null) return '';
   return String(id);
-}
-
-function formatDate(d: Date): string {
-  return d.toISOString().split('T')[0];
 }
 
 function getCurrentSeason(): number {
@@ -434,11 +433,95 @@ function mapTeamId(rawId: number | null | undefined, mapping: Map<number, number
   return String(chosen);
 }
 
+/** Upsert one BDL game into raw.games + analytics.games (all statuses). */
+async function upsertBdlGameRawAndAnalytics(
+  client: PoolClient,
+  g: any,
+  teamIdMap: Map<number, number>,
+): Promise<void> {
+  await client.query(upsertRawGame, [
+    g.id,
+    g.date ?? null,
+    g.season ?? null,
+    g.status ?? null,
+    g.period ?? null,
+    g.time ?? null,
+    g.period_detail ?? null,
+    g.datetime ?? null,
+    g.postseason ?? false,
+    g.home_team_score ?? null,
+    g.visitor_team_score ?? null,
+    JSON.stringify(g.home_team ?? null),
+    JSON.stringify(g.visitor_team ?? null),
+  ]);
+
+  const home = g.home_team && typeof g.home_team === 'object' ? g.home_team : null;
+  const visitor = g.visitor_team && typeof g.visitor_team === 'object' ? g.visitor_team : null;
+  const homeRawId = home?.id as number | undefined;
+  const awayRawId = visitor?.id as number | undefined;
+  const homeId = homeRawId != null ? mapTeamId(homeRawId, teamIdMap) : '';
+  const awayId = awayRawId != null ? mapTeamId(awayRawId, teamIdMap) : '';
+  if (!homeId || !awayId) {
+    console.warn(`  Skipping analytics.games for game ${g.id}: missing home or visitor team id`);
+    return;
+  }
+  const startTime = g.datetime
+    ? new Date(g.datetime)
+    : g.date
+      ? new Date(g.date + 'T12:00:00.000Z')
+      : null;
+  await client.query(upsertAnalyticsGame, [
+    sid(g.id),
+    g.season != null ? String(g.season) : null,
+    startTime,
+    g.status ?? null,
+    homeId,
+    awayId,
+    g.home_team_score ?? null,
+    g.visitor_team_score ?? null,
+    null,
+  ]);
+}
+
+/**
+ * Fetch BDL games for inclusive ET date range and upsert raw + analytics for every row (Scheduled, Final, …).
+ */
+async function syncUpcomingScheduleFromBdl(
+  startDateET: string,
+  endDateET: string,
+  season: number,
+): Promise<number> {
+  console.log(`[0/9] Schedule sync (all statuses): BDL ${startDateET} .. ${endDateET}, season ${season}...`);
+  const games = await fetchGames(startDateET, endDateET, season);
+  if (games.length === 0) {
+    console.log('  No games in window; nothing to upsert.');
+    return 0;
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('begin');
+    const teamIdMap = await buildTeamIdMap(client);
+    for (const g of games) {
+      await upsertBdlGameRawAndAnalytics(client, g, teamIdMap);
+    }
+    await client.query('commit');
+    console.log(`  Upserted ${games.length} game rows (raw + analytics).`);
+    return games.length;
+  } catch (err) {
+    await client.query('rollback').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 // ============================================
 // PIPELINE STEPS
 // ============================================
 
 interface PipelineResult {
+  scheduleGamesSynced: number;
   gamesFound: number;
   finalGames: number;
   statsUpserted: number;
@@ -452,6 +535,7 @@ interface PipelineResult {
 
 async function runPipeline(): Promise<PipelineResult> {
   const result: PipelineResult = {
+    scheduleGamesSynced: 0,
     gamesFound: 0,
     finalGames: 0,
     statsUpserted: 0,
@@ -463,13 +547,34 @@ async function runPipeline(): Promise<PipelineResult> {
     playerSeasonAvgs: 0,
   };
 
-  const now = new Date();
-  const yesterday = new Date(now);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const startDate = formatDate(yesterday);
-  const endDate = formatDate(now);
   const season = getCurrentSeason();
+  const forwardRaw = process.env.BDL_SCHEDULE_SYNC_DAYS_FORWARD;
+  const parsedForward = parseInt(forwardRaw ?? '14', 10);
+  const forwardDays = Number.isFinite(parsedForward)
+    ? Math.min(120, Math.max(0, parsedForward))
+    : 14;
+
+  const etRes = await pool.query<{
+    yesterday_et: string;
+    today_et: string;
+    schedule_end_et: string;
+  }>(
+    `select
+      to_char((timezone('America/New_York', now()))::date - interval '1 day', 'YYYY-MM-DD') as yesterday_et,
+      to_char((timezone('America/New_York', now()))::date, 'YYYY-MM-DD') as today_et,
+      to_char((timezone('America/New_York', now()))::date + $1::integer, 'YYYY-MM-DD') as schedule_end_et`,
+    [forwardDays],
+  );
+  const { yesterday_et, today_et, schedule_end_et } = etRes.rows[0];
+
+  if (process.env.DISABLE_BDL_SCHEDULE_SYNC !== '1' && forwardDays > 0) {
+    result.scheduleGamesSynced = await syncUpcomingScheduleFromBdl(today_et, schedule_end_et, season);
+  } else {
+    console.log('[0/9] Schedule sync skipped (DISABLE_BDL_SCHEDULE_SYNC=1 or BDL_SCHEDULE_SYNC_DAYS_FORWARD=0).');
+  }
+
+  const startDate = yesterday_et;
+  const endDate = today_et;
 
   console.log(`[1/9] Fetching games from BDL: ${startDate} to ${endDate} (season ${season})...`);
   const allGames = await fetchGames(startDate, endDate, season);

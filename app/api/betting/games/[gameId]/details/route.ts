@@ -9,16 +9,44 @@ import {
 import { query } from '@/lib/db';
 import { getInjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
 
-/** Normalize provider status to UI-friendly status for injury badges */
-function normalizeInjuryStatus(status: string | null): 'Out' | 'Questionable' | 'Probable' | 'Doubtful' | 'GTD' {
-  if (!status) return 'Out';
-  const s = status.toLowerCase();
-  if (s.includes('out') || s.includes('season')) return 'Out';
-  if (s.includes('questionable')) return 'Questionable';
-  if (s.includes('probable')) return 'Probable';
-  if (s.includes('doubtful')) return 'Doubtful';
-  if (s.includes('game time') || s.includes('gtd') || s.includes('decision')) return 'GTD';
-  return 'Out';
+/** Normalize provider injury fields to UI-friendly status for injury badges. */
+function normalizeInjuryStatus(
+  status: string | null,
+  description: string | null
+): 'Out' | 'Questionable' | 'Probable' | 'Doubtful' | 'GTD' {
+  const s = (status ?? '').toLowerCase();
+  const d = (description ?? '').toLowerCase();
+  const hay = `${s} ${d}`;
+
+  // Description often carries the latest update ("ruled out", "downgraded to out")
+  // even when the provider status field lags behind.
+  if (
+    hay.includes('ruled out') ||
+    hay.includes('downgraded to out') ||
+    hay.includes('out for') ||
+    hay.includes('out with') ||
+    hay.includes('out due to') ||
+    hay.includes('season-ending') ||
+    hay.includes('season ending') ||
+    s.includes('out') ||
+    s.includes('season')
+  ) {
+    return 'Out';
+  }
+  if (s.includes('doubtful') || d.includes('doubtful')) return 'Doubtful';
+  if (
+    s.includes('questionable') ||
+    d.includes('questionable') ||
+    d.includes('game-time decision') ||
+    d.includes('game time decision')
+  ) {
+    return 'Questionable';
+  }
+  if (s.includes('probable') || d.includes('probable')) return 'Probable';
+  if (s.includes('gtd') || d.includes('gtd') || d.includes('game-time')) return 'GTD';
+
+  // Unknown/noisy statuses should not default to "Out".
+  return 'Questionable';
 }
 
 /**
@@ -115,14 +143,14 @@ export async function GET(
       .filter((r) => r.team_id === game.home_team_id)
       .map((r) => ({
         player: r.full_name,
-        status: normalizeInjuryStatus(r.status),
+        status: normalizeInjuryStatus(r.status, r.description),
         injury: r.description ?? '',
       }));
     const injuriesAway = injuryRows
       .filter((r) => r.team_id === game.away_team_id)
       .map((r) => ({
         player: r.full_name,
-        status: normalizeInjuryStatus(r.status),
+        status: normalizeInjuryStatus(r.status, r.description),
         injury: r.description ?? '',
       }));
 

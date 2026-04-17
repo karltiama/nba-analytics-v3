@@ -66,6 +66,38 @@ function formatPct(x: number | null | undefined, digits = 1): string {
   return `${(x * 100).toFixed(digits)}%`;
 }
 
+type ValueGrade = 'good' | 'fair' | 'bad' | 'unknown';
+
+function getValueGrade(ev: number | null | undefined): ValueGrade {
+  if (ev == null || !Number.isFinite(ev)) return 'unknown';
+  if (ev > 0.03) return 'good';
+  if (ev < -0.02) return 'bad';
+  return 'fair';
+}
+
+function getValueCopy(ev: number | null | undefined): string {
+  const grade = getValueGrade(ev);
+  if (grade === 'good') return 'Good Value';
+  if (grade === 'bad') return 'Bad Value';
+  if (grade === 'fair') return 'Fair Value';
+  return 'No Signal';
+}
+
+function getValueToneClass(ev: number | null | undefined): string {
+  const grade = getValueGrade(ev);
+  if (grade === 'good') return 'bg-emerald-500/15 text-emerald-200 border-emerald-400/40';
+  if (grade === 'bad') return 'bg-rose-500/15 text-rose-200 border-rose-400/40';
+  if (grade === 'fair') return 'bg-amber-500/15 text-amber-200 border-amber-400/40';
+  return 'bg-white/5 text-muted-foreground border-white/10';
+}
+
+function formatConfidenceSimple(confidence: ExplorerRow['confidenceTier']): string {
+  if (confidence === 'high') return 'High';
+  if (confidence === 'medium') return 'Medium';
+  if (confidence === 'low') return 'Low';
+  return '—';
+}
+
 function formatOdds(odds: number | null): string {
   if (odds == null) return '—';
   return odds > 0 ? `+${odds}` : String(odds);
@@ -136,6 +168,7 @@ export default function PropsExplorerPage(props: PageProps) {
   const [savingPropKey, setSavingPropKey] = useState<string | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<PropsExplorerSelection | null>(null);
   const [isXlViewport, setIsXlViewport] = useState(false);
+  const [showAdvancedMetrics, setShowAdvancedMetrics] = useState(false);
 
   const effectiveGameId = useMemo(() => {
     const fromFilter = gameId.trim();
@@ -393,14 +426,14 @@ export default function PropsExplorerPage(props: PageProps) {
         <div>
           <h1 className="text-xl font-semibold text-white">Props Explorer</h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Filter slate props with EV (selected track: {meta?.evSelectedTrack ?? '…'}).
+            Simple mode highlights Good/Fair/Bad value from your model edge.
           </p>
         </div>
-        {meta && (
+        {showAdvancedMetrics && meta ? (
           <p className="text-[10px] text-muted-foreground font-mono">
             {meta.calibrationVersion} · {new Date(meta.computedAt).toLocaleString()}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div className="glass-card w-full rounded-xl border border-white/5 mb-6 overflow-hidden">
@@ -605,6 +638,14 @@ export default function PropsExplorerPage(props: PageProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setShowAdvancedMetrics((prev) => !prev)}
+            className="px-2.5 py-1 text-[11px] font-medium rounded-lg border border-white/10 bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10"
+            aria-pressed={showAdvancedMetrics}
+          >
+            {showAdvancedMetrics ? 'Hide advanced metrics' : 'Show advanced metrics'}
+          </button>
+          <button
+            type="button"
             disabled={!canPrev || loading}
             onClick={() => updateParams({ offset: String(Math.max(0, offset - limit)) })}
             className="px-2 py-1 rounded-lg border border-white/10 bg-white/5 disabled:opacity-40 hover:bg-white/10 text-white"
@@ -636,13 +677,16 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">Line</th>
                 <th className="py-2 px-2 font-medium">Book</th>
                 <th className="py-2 px-2 font-medium text-right">Odds</th>
-                <th className="py-2 px-2 font-medium text-right">Implied</th>
-                <th className="py-2 px-2 font-medium text-right" title="Track B.1 confidence tier">
-                  Conf
-                </th>
-                <th className="py-2 px-2 font-medium text-right">Model</th>
-                <th className="py-2 px-2 font-medium text-right">EV</th>
-                <th className="py-2 px-2 font-medium text-right">Proj</th>
+                <th className="py-2 px-2 font-medium">Value</th>
+                <th className="py-2 px-2 font-medium text-right">Confidence</th>
+                {showAdvancedMetrics ? (
+                  <>
+                    <th className="py-2 px-2 font-medium text-right">Implied</th>
+                    <th className="py-2 px-2 font-medium text-right">Model</th>
+                    <th className="py-2 px-2 font-medium text-right">EV</th>
+                    <th className="py-2 px-2 font-medium text-right">Proj</th>
+                  </>
+                ) : null}
                 <th className="py-2 px-2 font-medium">Updated</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Save</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
@@ -651,7 +695,7 @@ export default function PropsExplorerPage(props: PageProps) {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={14} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={showAdvancedMetrics ? 15 : 11} className="py-8 text-center text-muted-foreground">
                     No rows. Adjust filters or date.
                   </td>
                 </tr>
@@ -705,8 +749,17 @@ export default function PropsExplorerPage(props: PageProps) {
                     <td className="py-1.5 px-2 text-right font-mono text-white">
                       {formatOdds(r.oddsAmerican)}
                     </td>
-                    <td className="py-1.5 px-2 text-right font-mono">
-                      {formatPct(r.impliedProbability)}
+                    <td className="py-1.5 px-2">
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${getValueToneClass(r.ev)}`}
+                        title={
+                          r.ev != null && Number.isFinite(r.ev)
+                            ? `Model edge: ${(r.ev * 100).toFixed(1)}%`
+                            : 'No model edge available'
+                        }
+                      >
+                        {getValueCopy(r.ev)}
+                      </span>
                     </td>
                     <td
                       className="py-1.5 px-2 text-right font-mono text-muted-foreground capitalize"
@@ -716,19 +769,26 @@ export default function PropsExplorerPage(props: PageProps) {
                           : undefined
                       }
                     >
-                      {r.confidenceTier ?? '—'}
+                      {formatConfidenceSimple(r.confidenceTier)}
                     </td>
-                    <td className="py-1.5 px-2 text-right font-mono">
-                      {formatPct(r.modelProbability)}
-                    </td>
-                    <td className="py-1.5 px-2 text-right font-mono text-[#39ff14]">
-                      {formatPct(r.ev)}
-                    </td>
-                    <td className="py-1.5 px-2 text-right font-mono text-white">
-                      {r.projection != null && Number.isFinite(r.projection)
-                        ? r.projection.toFixed(1)
-                        : '—'}
-                    </td>
+                    {showAdvancedMetrics ? (
+                      <>
+                        <td className="py-1.5 px-2 text-right font-mono">
+                          {formatPct(r.impliedProbability)}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono">
+                          {formatPct(r.modelProbability)}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono text-[#39ff14]">
+                          {formatPct(r.ev)}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono text-white">
+                          {r.projection != null && Number.isFinite(r.projection)
+                            ? r.projection.toFixed(1)
+                            : '—'}
+                        </td>
+                      </>
+                    ) : null}
                     <td className="py-1.5 px-2 text-[10px] text-muted-foreground whitespace-nowrap">
                       {new Date(r.snapshotAt).toLocaleString()}
                     </td>

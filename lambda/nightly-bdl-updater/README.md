@@ -2,12 +2,15 @@
 
 Fetches yesterday's and today's Final NBA games from the BallDontLie API, upserts raw tables, transforms into analytics tables, and recomputes season averages.
 
+Before the Final-only pass, the Lambda **syncs the upcoming slate** (today through today+N Eastern calendar days): all game statuses from BDL are upserted into `raw.games` and `analytics.games` so playoff and future games appear before they go Final.
+
 ## Pipeline
 
 ```
 EventBridge (cron 08:00 UTC / 03:00 ET)
   -> Lambda handler
-    -> BDL API: GET /games (yesterday + today, status = Final)
+    -> BDL API: GET /games (today .. today+N ET, all statuses) -> raw + analytics games
+    -> BDL API: GET /games (yesterday + today ET, all statuses; then filter to Final)
     -> BDL API: GET /stats (box scores for Final games)
     -> raw.games (upsert)
     -> raw.player_game_stats (upsert)
@@ -27,6 +30,8 @@ EventBridge (cron 08:00 UTC / 03:00 ET)
 | `BALLDONTLIE_API_KEY` | Yes | -- | BallDontLie API key |
 | `BALLDONTLIE_REQUEST_DELAY_MS` | No | `200` | Delay between API calls (ms). GOAT tier: 200. Free tier: 12000 |
 | `MAX_RETRIES` | No | `3` | Max retry attempts for 429/5xx errors |
+| `BDL_SCHEDULE_SYNC_DAYS_FORWARD` | No | `14` | Inclusive end date = today (ET) + this many days; BDL schedule upsert for playoffs / Scheduled games |
+| `DISABLE_BDL_SCHEDULE_SYNC` | No | unset | Set to `1` to skip the forward schedule sync step |
 
 ## Local Testing
 

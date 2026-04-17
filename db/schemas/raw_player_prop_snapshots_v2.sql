@@ -21,10 +21,7 @@ create table if not exists raw.player_prop_snapshots_v2 (
   raw_json            jsonb
 );
 
-create index if not exists raw_player_prop_snapshots_v2_game_id_idx
-  on raw.player_prop_snapshots_v2 (game_id);
-create index if not exists raw_player_prop_snapshots_v2_player_id_idx
-  on raw.player_prop_snapshots_v2 (player_id);
+-- Dropped: game_id_idx (covered by game_player_prop composite), player_id_idx (no standalone queries).
 create index if not exists raw_player_prop_snapshots_v2_fetched_at_idx
   on raw.player_prop_snapshots_v2 (fetched_at);
 create index if not exists raw_player_prop_snapshots_v2_game_player_prop_idx

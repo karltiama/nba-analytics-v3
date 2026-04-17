@@ -22,11 +22,8 @@ create table if not exists analytics.player_props_current (
   constraint player_props_current_unique unique (game_id, player_id, sportsbook, prop_type, side, line_value)
 );
 
+-- Dropped: game_id_idx (covered by unique constraint), snapshot_at_idx (queries always filter by game_id first).
 create index if not exists analytics_player_props_current_player_id_idx
   on analytics.player_props_current (player_id);
-create index if not exists analytics_player_props_current_game_id_idx
-  on analytics.player_props_current (game_id);
 create index if not exists analytics_player_props_current_player_prop_idx
   on analytics.player_props_current (player_id, prop_type);
-create index if not exists analytics_player_props_current_snapshot_at_idx
-  on analytics.player_props_current (snapshot_at);
