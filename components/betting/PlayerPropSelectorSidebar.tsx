@@ -150,7 +150,7 @@ export function PlayerPropSelectorSidebar({
       setLoading(true);
       try {
         const url = new URL(`/api/betting/players/${playerId}/props`, window.location.origin);
-        if (gameId != null) url.searchParams.set('game_id', String(gameId));
+        if (gameId != null && Number.isFinite(gameId)) url.searchParams.set('game_id', String(gameId));
         url.searchParams.set('with_consensus', '1');
         url.searchParams.set('with_ev', '1');
         const res = await fetch(url.toString());

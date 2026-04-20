@@ -31,7 +31,7 @@ export function getLambdaEnv(): LambdaEnv {
   return {
     dbUrl: cleanUrl(dbUrl),
     apiKey,
-    preferredVendor: process.env.PREFERRED_VENDOR || DEFAULT_PREFERRED_VENDOR,
+    preferredVendor: (process.env.PREFERRED_VENDOR || DEFAULT_PREFERRED_VENDOR).trim().toLowerCase(),
     storePropRawJson: (process.env.STORE_PROP_RAW_JSON || 'false').toLowerCase() === 'true',
     propRawJsonSampleRate: rawJsonSampleRate,
   };

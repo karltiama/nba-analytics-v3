@@ -74,7 +74,7 @@ function buildWhereClause(sp: URLSearchParams): { sql: string; params: unknown[]
   if (sportsbookParam) {
     const books = sportsbookParam.split(',').filter(Boolean).map((b) => b.toLowerCase());
     if (books.length > 0) {
-      conditions.push(`p.sportsbook = ANY($${i++})`);
+      conditions.push(`lower(trim(p.sportsbook)) = ANY($${i++})`);
       params.push(books);
     }
   }

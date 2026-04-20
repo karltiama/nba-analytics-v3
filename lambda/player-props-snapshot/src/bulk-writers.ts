@@ -217,9 +217,10 @@ export function buildPreferredVendorLines(
   preferredVendor: string,
   snapshotAt: Date
 ): PreferredLine[] {
+  const preferred = preferredVendor.trim().toLowerCase();
   const grouped = new Map<string, { over?: number; under?: number; line: number }>();
   for (const row of normalized) {
-    if (row.sportsbook !== preferredVendor) continue;
+    if (row.sportsbook.trim().toLowerCase() !== preferred) continue;
     if (row.market_type !== 'over_under' || row.line_value == null) continue;
     const key = `${row.game_id}|${row.player_id}|${row.prop_type}|${row.line_value}`;
     const prev = grouped.get(key) ?? { line: row.line_value };
@@ -233,7 +234,7 @@ export function buildPreferredVendorLines(
     out.push({
       game_id: gameId ?? '',
       player_id: playerId ?? '',
-      vendor: preferredVendor,
+      vendor: preferred,
       prop_type: propType ?? '',
       line_value: value.line,
       market_type: 'over_under',

@@ -1,5 +1,10 @@
 import type { BdlPlayerPropRow, NormalizedPropRow } from './types';
 
+/** BDL returns mixed-case vendor names; normalize so preferred-vendor filters and UI queries stay stable. */
+function normalizeSportsbook(vendor: string): string {
+  return vendor.trim().toLowerCase();
+}
+
 function parseNumeric(val: string | null | undefined): number | null {
   if (val == null || val === '') return null;
   const n = Number.parseFloat(val);
@@ -27,7 +32,7 @@ export function normalizePlayerPropRows(rows: BdlPlayerPropRow[]): NormalizedPro
         player_id: row.player_id,
         player_name: null,
         team_id: null,
-        sportsbook: row.vendor,
+        sportsbook: normalizeSportsbook(row.vendor),
         prop_type: row.prop_type,
         market_type: 'over_under',
         side: 'over',
@@ -43,7 +48,7 @@ export function normalizePlayerPropRows(rows: BdlPlayerPropRow[]): NormalizedPro
         player_id: row.player_id,
         player_name: null,
         team_id: null,
-        sportsbook: row.vendor,
+        sportsbook: normalizeSportsbook(row.vendor),
         prop_type: row.prop_type,
         market_type: 'over_under',
         side: 'under',
@@ -60,7 +65,7 @@ export function normalizePlayerPropRows(rows: BdlPlayerPropRow[]): NormalizedPro
         player_id: row.player_id,
         player_name: null,
         team_id: null,
-        sportsbook: row.vendor,
+        sportsbook: normalizeSportsbook(row.vendor),
         prop_type: row.prop_type,
         market_type: 'milestone',
         side: 'milestone',

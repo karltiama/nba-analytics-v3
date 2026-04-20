@@ -1,38 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-const PREFERRED_VENDOR = 'draftkings';
+function preferredVendor(): string {
+  return (
+    process.env.PREFERRED_VENDOR?.trim() ||
+    process.env.PLAYER_PROPS_PREFERRED_VENDOR?.trim() ||
+    'draftkings'
+  );
+}
 
 /**
  * GET /api/betting/games/[gameId]/player-props
  *
- * Returns current player props for the game from analytics.player_prop_current.
- * Uses a single preferred vendor to avoid duplicate lines.
+ * Aggregates over/under rows from analytics.player_props_current (BDL snapshot) for one
+ * sportsbook (default DraftKings). Case-insensitive sportsbook match so props still load
+ * if legacy player_prop_current was empty due to vendor string casing.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
   try {
     const { gameId } = await params;
+    const vendor = preferredVendor();
 
     const rows = await query<{
       player_id: string;
       player_name: string | null;
       prop_type: string;
-      line_value: number;
+      line_value: string | number;
       over_odds: number | null;
       under_odds: number | null;
-      vendor: string;
     }>(
-      `SELECT ppc.player_id,
-              COALESCE(NULLIF(TRIM(ppc.player_name), ''), p.full_name) AS player_name,
-              ppc.prop_type, ppc.line_value, ppc.over_odds, ppc.under_odds, ppc.vendor
-       FROM analytics.player_prop_current ppc
-       LEFT JOIN analytics.players p ON p.player_id = ppc.player_id
-       WHERE ppc.game_id = $1 AND ppc.vendor = $2
-       ORDER BY COALESCE(NULLIF(TRIM(ppc.player_name), ''), p.full_name) NULLS LAST, ppc.prop_type, ppc.line_value`,
-      [gameId, PREFERRED_VENDOR]
+      `SELECT x.player_id,
+              x.player_name,
+              x.prop_type,
+              x.line_value,
+              x.over_odds,
+              x.under_odds
+       FROM (
+         SELECT
+           p.player_id::text AS player_id,
+           COALESCE(NULLIF(TRIM(MAX(p.player_name)), ''), MAX(pl.full_name)) AS player_name,
+           p.prop_type,
+           p.line_value,
+           MAX(CASE WHEN lower(p.side) = 'over' THEN p.odds_american END) AS over_odds,
+           MAX(CASE WHEN lower(p.side) = 'under' THEN p.odds_american END) AS under_odds
+         FROM analytics.player_props_current p
+         LEFT JOIN analytics.players pl ON pl.player_id = p.player_id::text
+         WHERE p.game_id::text = $1
+           AND lower(trim(p.sportsbook)) = lower(trim($2))
+           AND lower(coalesce(p.market_type, '')) = 'over_under'
+         GROUP BY p.player_id, p.prop_type, p.line_value
+       ) x
+       ORDER BY x.player_name NULLS LAST, x.prop_type, x.line_value`,
+      [gameId, vendor]
     );
 
     const playerProps = rows.map((r) => ({
@@ -42,7 +64,7 @@ export async function GET(
       lineValue: Number(r.line_value),
       overOdds: r.over_odds,
       underOdds: r.under_odds,
-      vendor: r.vendor,
+      vendor,
     }));
 
     return NextResponse.json({ playerProps });

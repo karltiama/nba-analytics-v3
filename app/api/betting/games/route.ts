@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  getGamesForDate, 
+import {
+  getGamesForDate,
   getTodaysGames,
-  getRecentGames, 
+  getRecentGames,
   getAllTeamRatings,
   getTeamRecentForm,
   getGamesOdds,
-  getTeamDefensiveRankings
+  getTeamDefensiveRankings,
 } from '@/lib/betting/queries';
+import {
+  getTodayEtYmd,
+  refreshBdlScheduleForEtDateRange,
+} from '@/lib/balldontlie/refresh-schedule-from-bdl';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/betting/games
@@ -25,21 +31,32 @@ export async function GET(request: NextRequest) {
     const mode = searchParams.get('mode') || 'today';
     const limit = parseInt(searchParams.get('limit') || '10');
 
+    const todayEt = getTodayEtYmd();
+    const liveRefreshEnabled = process.env.DISABLE_BDL_LIVE_SCHEDULE_REFRESH !== '1';
+
+    async function maybeRefreshScheduleForEtDay(ymd: string) {
+      if (!liveRefreshEnabled || ymd !== todayEt) return;
+      try {
+        await refreshBdlScheduleForEtDateRange(ymd, ymd);
+      } catch (e) {
+        console.error('[api/betting/games] Live BDL schedule refresh failed:', e);
+      }
+    }
+
     let games;
     let displayDate: string;
-    
+
     if (date) {
-      // Specific date requested
+      await maybeRefreshScheduleForEtDay(date);
       games = await getGamesForDate(date);
       displayDate = date;
     } else if (mode === 'recent') {
-      // Recent completed games
       games = await getRecentGames(limit);
       displayDate = 'recent';
     } else {
-      // Default: today's games
+      await maybeRefreshScheduleForEtDay(todayEt);
       games = await getTodaysGames();
-      displayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      displayDate = todayEt;
     }
 
     // Get team ratings and defensive rankings for all teams
