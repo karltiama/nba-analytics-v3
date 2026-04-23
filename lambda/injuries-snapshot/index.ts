@@ -286,8 +286,7 @@ async function transformToAnalytics(
   if (latestPlayerIds.length > 0) {
     const removed = await pool.query(
       `DELETE FROM analytics.player_injury_status_current c
-       WHERE c.player_id IN (SELECT p.player_id FROM analytics.players p)
-         AND c.player_id != ALL($1::text[])
+       WHERE c.player_id != ALL($1::text[])
        RETURNING c.player_id`,
       [latestPlayerIds]
     );
@@ -295,7 +294,6 @@ async function transformToAnalytics(
   } else {
     const removed = await pool.query(
       `DELETE FROM analytics.player_injury_status_current c
-       WHERE c.player_id IN (SELECT p.player_id FROM analytics.players p)
        RETURNING c.player_id`
     );
     removedCount = removed.rowCount ?? 0;
