@@ -21,11 +21,15 @@
     "ev-b:sanity": "tsx scripts/ev-b-sanity-check.ts",
     "archive:existing": "tsx scripts/archive/archive-existing-season-to-s3.ts",
     "archive:bdl-backfill": "tsx scripts/archive/backfill-balldontlie-season.ts",
-    "backtest:recent-form": "tsx scripts/backtesting/run-recent-form-minutes.ts"
+    "backtest:recent-form": "tsx scripts/backtesting/run-recent-form-minutes.ts",
+    "transform:player-logs:curated": "tsx scripts/transform/raw-player-game-logs-to-curated-parquet.ts",
+    "transform:games:curated": "tsx scripts/transform/raw-games-to-curated-parquet.ts",
+    "build:player-game-features": "tsx scripts/features/build-player-game-features-v1.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1024.0",
     "@aws-sdk/client-sqs": "^3.1024.0",
+    "@duckdb/node-api": "^1.5.2-r.1",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
     "@types/cheerio": "^0.22.35",
