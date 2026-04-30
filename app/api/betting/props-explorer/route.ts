@@ -6,7 +6,7 @@ import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
 import { computePropEvFields } from '@/lib/betting/player-prop-ev-row';
 
 type DbRow = {
-  game_id: number;
+  game_id: string | number;
   player_id: number;
   player_name: string | null;
   sportsbook: string | null;
@@ -36,13 +36,14 @@ function buildWhereClause(sp: URLSearchParams): { sql: string; params: unknown[]
   let i = 1;
 
   const gameIdParam = sp.get('game_id');
-  const gameId = gameIdParam != null ? parseInt(gameIdParam, 10) : NaN;
+  const gameId = gameIdParam?.trim() ?? '';
   const date =
     sp.get('date')?.trim() ||
     new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
-  if (Number.isFinite(gameId)) {
-    conditions.push(`p.game_id = $${i++}`);
+  if (gameId) {
+    // Compare as text so we do not lose identifiers due to numeric coercion.
+    conditions.push(`p.game_id::text = $${i++}`);
     params.push(gameId);
   } else {
     conditions.push(`g.start_time >= ($${i}::timestamp AT TIME ZONE 'America/New_York')`);

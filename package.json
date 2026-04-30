@@ -18,9 +18,13 @@
     "prune:player-props-v2:execute": "tsx scripts/prune-player-prop-snapshots-v2.ts --days 3 --execute",
     "materialize:closing-lines": "tsx scripts/materialize-closing-lines.ts",
     "materialize:closing-lines:execute": "tsx scripts/materialize-closing-lines.ts --execute",
-    "ev-b:sanity": "tsx scripts/ev-b-sanity-check.ts"
+    "ev-b:sanity": "tsx scripts/ev-b-sanity-check.ts",
+    "archive:existing": "tsx scripts/archive/archive-existing-season-to-s3.ts",
+    "archive:bdl-backfill": "tsx scripts/archive/backfill-balldontlie-season.ts",
+    "backtest:recent-form": "tsx scripts/backtesting/run-recent-form-minutes.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1024.0",
     "@aws-sdk/client-sqs": "^3.1024.0",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
