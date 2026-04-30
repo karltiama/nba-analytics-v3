@@ -209,3 +209,38 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+/**
+ * DELETE /api/betting/paper-bets?id=<bet_id>
+ * Removes an open paper bet by id.
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const id = (request.nextUrl.searchParams.get('id') || '').trim();
+    if (!id) {
+      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    }
+
+    const deleted = await queryOne<{ id: string }>(
+      `DELETE FROM paper.bets
+       WHERE id = $1 AND status = 'open'
+       RETURNING id`,
+      [id]
+    );
+
+    if (!deleted) {
+      return NextResponse.json({ error: 'Open bet not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, id: deleted.id });
+  } catch (error: unknown) {
+    console.error('[paper-bets DELETE]', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to remove paper bet',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}

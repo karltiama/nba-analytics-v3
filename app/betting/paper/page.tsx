@@ -126,6 +126,7 @@ function PaperBetsContent() {
   const [analytics, setAnalytics] = useState<PaperAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [settling, setSettling] = useState(false);
+  const [removingBetId, setRemovingBetId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadOpen = useCallback(async () => {
@@ -219,6 +220,21 @@ function PaperBetsContent() {
       setError(e instanceof Error ? e.message : 'Settle failed');
     } finally {
       setSettling(false);
+    }
+  };
+
+  const handleRemoveBet = async (betId: string) => {
+    setRemovingBetId(betId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/betting/paper-bets?id=${encodeURIComponent(betId)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error || 'Remove failed');
+      await refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Remove failed');
+    } finally {
+      setRemovingBetId(null);
     }
   };
 
@@ -357,6 +373,7 @@ function PaperBetsContent() {
                   <th className="py-2 px-2 font-medium text-right">Model</th>
                   <th className="py-2 px-2 font-medium text-right">Proj</th>
                   <th className="py-2 px-2 font-medium">Track</th>
+                  {validTab === 'open' && <th className="py-2 px-2 font-medium text-right">Actions</th>}
                   {validTab === 'history' && (
                     <>
                       <th className="py-2 px-2 font-medium">Result</th>
@@ -369,13 +386,13 @@ function PaperBetsContent() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={validTab === 'history' ? 14 : 11} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={validTab === 'history' ? 14 : validTab === 'open' ? 12 : 11} className="py-8 text-center text-muted-foreground">
                       Loading…
                     </td>
                   </tr>
                 ) : displayRows.length === 0 ? (
                   <tr>
-                    <td colSpan={validTab === 'history' ? 14 : 11} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={validTab === 'history' ? 14 : validTab === 'open' ? 12 : 11} className="py-8 text-center text-muted-foreground">
                       {validTab === 'open' ? 'No open bets. Add from Props Explorer.' : 'No settled bets yet.'}
                     </td>
                   </tr>
@@ -414,6 +431,18 @@ function PaperBetsContent() {
                       <td className="py-1.5 px-2 text-[10px] font-mono text-muted-foreground truncate max-w-[100px]">
                         {b.evSelectedTrack ?? '—'}
                       </td>
+                      {validTab === 'open' && (
+                        <td className="py-1.5 px-2 text-right">
+                          <button
+                            type="button"
+                            disabled={removingBetId === b.id}
+                            onClick={() => void handleRemoveBet(b.id)}
+                            className="px-2 py-1 rounded border border-[#ff4757]/40 bg-[#ff4757]/10 text-[#ff9ba4] hover:bg-[#ff4757]/20 disabled:opacity-50"
+                          >
+                            {removingBetId === b.id ? 'Removing…' : 'Remove'}
+                          </button>
+                        </td>
+                      )}
                       {validTab === 'history' && (
                         <>
                           <td className="py-1.5 px-2 capitalize text-muted-foreground">{b.result ?? '—'}</td>
