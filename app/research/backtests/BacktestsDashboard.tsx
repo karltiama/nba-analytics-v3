@@ -160,6 +160,53 @@ export function BacktestsDashboard() {
         </p>
       </div>
 
+      <div className="glass-card rounded-xl p-4 sm:p-5 mb-6 border border-white/10 space-y-4 text-xs text-muted-foreground max-w-4xl">
+        <div>
+          <h2 className="text-sm font-medium text-white mb-2">What this backtest is</h2>
+          <p className="leading-relaxed">
+            This is <strong className="text-white/90">not</strong> a sportsbook or prop line. There is a{' '}
+            <strong className="text-white/90">synthetic line</strong>: the player’s{' '}
+            <strong className="text-white/90">season-to-date average points before this game</strong> (only
+            prior games — no lookahead). We also look at their{' '}
+            <strong className="text-white/90">last-5-games average</strong> before tip.
+          </p>
+          <p className="leading-relaxed mt-2">
+            A <strong className="text-white/90">signal</strong> fires when they have at least five prior games
+            and recent scoring is hotter than their baseline:{' '}
+            <code className="text-[#00d4ff] text-[11px]">(L5 avg − season avg) ≥ threshold</code> (in points).
+            Each signal is graded against the synthetic line only:{' '}
+            <strong className="text-white/90">win</strong> if actual points are above that line,{' '}
+            <strong className="text-white/90">loss</strong> if below, <strong className="text-white/90">push</strong>{' '}
+            if equal. So the question is roughly:{' '}
+            <em className="text-white/80">“When they’ve been scoring above their own usual level lately, do they
+            still beat their usual tonight?”</em>
+          </p>
+        </div>
+        <div className="border-t border-white/10 pt-4">
+          <h2 className="text-sm font-medium text-white mb-2">What the threshold controls</h2>
+          <p className="leading-relaxed">
+            <strong className="text-white/90">Threshold</strong> is the minimum edge (in points) between the
+            last-5 average and the season average before we count a game as a signal. With threshold{' '}
+            <span className="text-white font-mono">{threshold}</span>, we only include games where{' '}
+            <code className="text-[#00d4ff] text-[11px]">L5 avg − season avg ≥ {threshold}</code>.
+          </p>
+          <ul className="list-disc pl-4 mt-2 space-y-1">
+            <li>
+              <strong className="text-white/90">Higher threshold</strong> — stricter “hot streak” rule; fewer
+              signals, usually stronger recent-vs-season gap.
+            </li>
+            <li>
+              <strong className="text-white/90">Lower threshold</strong> — more games qualify; weaker recent edge
+              still counts.
+            </li>
+          </ul>
+          <p className="leading-relaxed mt-2 text-[11px]">
+            Changing the threshold re-runs the underlying backtest for that value; reports are stored per
+            threshold under <code className="text-[#00d4ff]">threshold=…</code> in S3.
+          </p>
+        </div>
+      </div>
+
       <div className="glass-card rounded-xl p-3 sm:p-4 flex flex-wrap items-end gap-4 mb-6">
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-muted-foreground">Season</span>
