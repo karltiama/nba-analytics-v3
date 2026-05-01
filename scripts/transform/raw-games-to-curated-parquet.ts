@@ -408,6 +408,7 @@ async function main(): Promise<void> {
   let aggregateRowsWritten = 0;
   let aggregateRawRows = 0;
   let aggregateDropped = 0;
+  let aggregateBoundaryRowsDropped = 0;
   const seenAcrossPartitions = new Set<string>();
   let crossPartitionDuplicateKeysDetected = 0;
 
@@ -485,6 +486,7 @@ async function main(): Promise<void> {
     const nullCoercions = createNullCoercionCounts();
     const dedupe = new Set<string>();
     let duplicateRowsDropped = 0;
+    let boundaryRowsDropped = 0;
     const normalized: CuratedGame[] = [];
 
     for (const row of rawRows) {
@@ -495,6 +497,10 @@ async function main(): Promise<void> {
         nullCoercionCounts: nullCoercions,
       });
       if (!mapped) continue;
+      if (mapped.season !== String(args.season) || mapped.game_date !== dt) {
+        boundaryRowsDropped += 1;
+        continue;
+      }
       const key = partitionDedupeKey(mapped);
       if (dedupe.has(key)) {
         duplicateRowsDropped += 1;
@@ -508,6 +514,7 @@ async function main(): Promise<void> {
 
     addCounts(aggregateNullCoercions, nullCoercions);
     aggregateDropped += duplicateRowsDropped;
+    aggregateBoundaryRowsDropped += boundaryRowsDropped;
 
     const tmpParquetPath = path.join(os.tmpdir(), `slice6-games-${dt}-${randomUUID()}.parquet`);
     await writePartitionParquet({ rows: normalized, outputParquetPath: tmpParquetPath });
@@ -533,6 +540,9 @@ async function main(): Promise<void> {
     console.log(
       `  [wrote]         ${outputKey} (raw=${rawRows.length}, curated=${validation.rowCount}, dropped=${duplicateRowsDropped})`
     );
+    if (boundaryRowsDropped > 0) {
+      console.log(`  [boundary-drop] rows dropped due to season/dt mismatch: ${boundaryRowsDropped}`);
+    }
     console.log(
       `  [validate]      count=${validation.rowCount}, range=${validation.dateRange.from ?? 'null'} -> ${validation.dateRange.to ?? 'null'}`
     );
@@ -608,6 +618,7 @@ async function main(): Promise<void> {
   console.log(`  rawInputRowCount          : ${manifest.rawInputRowCount}`);
   console.log(`  curatedRowCount           : ${manifest.rowCount}`);
   console.log(`  duplicateRowsDropped      : ${manifest.duplicateRowsDropped}`);
+  console.log(`  boundaryRowsDropped       : ${aggregateBoundaryRowsDropped}`);
   console.log(`  nullCoercionCounts        : ${JSON.stringify(manifest.nullCoercionCounts)}`);
   console.log(`  crossPartitionDuplicates  : ${manifest.crossPartitionDuplicateKeysDetected}`);
   console.log(

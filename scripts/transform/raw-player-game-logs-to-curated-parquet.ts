@@ -43,6 +43,7 @@ import {
   type CuratedPlayerGameLog,
   type NullCoercionCounts,
 } from '@/lib/curated/player-game-logs-schema';
+import { createNullCoercionCounts as createGameNullCoercionCounts, normalizeRawGameRow } from '@/lib/curated/games-schema';
 
 type CliArgs = {
   season: number;
@@ -158,6 +159,10 @@ function inputKeyForDt(prefix: string, dt: string): string {
 
 function outputKeyForDt(prefix: string, dt: string): string {
   return `${prefix}/dt=${dt}/data.parquet`;
+}
+
+function gamesInputKeyForDt(season: number, dt: string): string {
+  return `raw/source=existing_ingestion/league=nba/season=${season}/entity=games/dt=${dt}/data.jsonl`;
 }
 
 async function discoverRawPartitions(
@@ -388,6 +393,7 @@ async function main(): Promise<void> {
   let aggregateRowsWritten = 0;
   let aggregateRawRows = 0;
   let aggregateDropped = 0;
+  let aggregateBoundaryRowsDropped = 0;
 
   // For slice scope: still log cross-partition duplicates during aggregate validation.
   const seenAcrossPartitions = new Set<string>();
@@ -465,9 +471,26 @@ async function main(): Promise<void> {
     }
 
     const nullCoercions = createNullCoercionCounts();
+    const gameNullCoercions = createGameNullCoercionCounts();
     const dedupe = new Set<string>();
     let duplicateRowsDropped = 0;
+    let boundaryRowsDropped = 0;
     const normalized: CuratedPlayerGameLog[] = [];
+    const finalGameIds = new Set<string>();
+    const rawGamesRows = await readJsonlRows(s3Client, bucket, gamesInputKeyForDt(args.season, dt)).catch(
+      () => []
+    );
+    for (const gameRow of rawGamesRows) {
+      const mappedGame = normalizeRawGameRow({
+        row: gameRow,
+        season: args.season,
+        partitionDate: dt,
+        nullCoercionCounts: gameNullCoercions,
+      });
+      if (!mappedGame) continue;
+      if (mappedGame.season !== String(args.season) || mappedGame.game_date !== dt) continue;
+      finalGameIds.add(mappedGame.game_id);
+    }
 
     for (const row of rawRows) {
       const mapped = normalizeRawPlayerGameLogRow({
@@ -477,6 +500,14 @@ async function main(): Promise<void> {
         nullCoercionCounts: nullCoercions,
       });
       if (!mapped) continue;
+      if (mapped.season !== String(args.season) || mapped.game_date !== dt) {
+        boundaryRowsDropped += 1;
+        continue;
+      }
+      if (finalGameIds.size > 0 && !finalGameIds.has(mapped.game_id)) {
+        boundaryRowsDropped += 1;
+        continue;
+      }
       const key = partitionDedupeKey(mapped);
       if (dedupe.has(key)) {
         duplicateRowsDropped += 1;
@@ -493,6 +524,7 @@ async function main(): Promise<void> {
 
     addCounts(aggregateNullCoercions, nullCoercions);
     aggregateDropped += duplicateRowsDropped;
+    aggregateBoundaryRowsDropped += boundaryRowsDropped;
 
     const tmpParquetPath = path.join(
       os.tmpdir(),
@@ -521,6 +553,9 @@ async function main(): Promise<void> {
     console.log(
       `  [wrote]         ${outputKey} (raw=${rawRows.length}, curated=${validation.rowCount}, dropped=${duplicateRowsDropped})`
     );
+    if (boundaryRowsDropped > 0) {
+      console.log(`  [boundary-drop] rows dropped due to season/dt/final-game mismatch: ${boundaryRowsDropped}`);
+    }
     console.log(
       `  [validate]      count=${validation.rowCount}, range=${validation.dateRange.from ?? 'null'} -> ${validation.dateRange.to ?? 'null'}`
     );
@@ -596,6 +631,7 @@ async function main(): Promise<void> {
   console.log(`  rawInputRowCount          : ${manifest.rawInputRowCount}`);
   console.log(`  curatedRowCount           : ${manifest.rowCount}`);
   console.log(`  duplicateRowsDropped      : ${manifest.duplicateRowsDropped}`);
+  console.log(`  boundaryRowsDropped       : ${aggregateBoundaryRowsDropped}`);
   console.log(
     `  nullCoercionCounts        : ${JSON.stringify(manifest.nullCoercionCounts)}`
   );

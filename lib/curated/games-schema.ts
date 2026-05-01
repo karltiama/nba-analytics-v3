@@ -60,6 +60,12 @@ function asNullableString(v: unknown): string | null {
   return s.length > 0 ? s : null;
 }
 
+function isCompletedGameStatus(status: string | null): boolean {
+  if (!status) return false;
+  const normalized = status.trim().toLowerCase();
+  return normalized === 'final' || normalized === 'final/ot' || normalized === 'final/2ot';
+}
+
 function parseNumeric(
   value: unknown,
   field: NumericField,
@@ -114,6 +120,8 @@ export function normalizeRawGameRow(args: {
 
   const gameId = asNullableString(row.game_id);
   if (!gameId) return null;
+  const status = asNullableString(row.status);
+  if (!isCompletedGameStatus(status)) return null;
 
   const homeScore = parseNumeric(row.home_score, 'home_score', nullCoercionCounts);
   const awayScore = parseNumeric(row.away_score, 'away_score', nullCoercionCounts);
@@ -123,11 +131,11 @@ export function normalizeRawGameRow(args: {
   const isPostseason = parseNullableBoolean(rawIsPostseason);
 
   return {
-    season: asNullableString(row.season) ?? String(season),
+    season: String(season),
     game_id: gameId,
     game_date: asNullableString(row.game_date) ?? partitionDate,
     start_time: asNullableString(row.start_time),
-    status: asNullableString(row.status),
+    status,
     home_team_id: asNullableString(row.home_team_id),
     away_team_id: asNullableString(row.away_team_id),
     home_team_abbr: asNullableString(row.home_team_abbr),

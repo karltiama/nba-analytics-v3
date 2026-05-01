@@ -143,6 +143,39 @@ export class S3Storage {
     }
   }
 
+  /** Raw UTF-8 body (e.g. NDJSON lines). */
+  async getText(key: string): Promise<string | null> {
+    try {
+      const out = await this.client.send(
+        new GetObjectCommand({ Bucket: this.bucket, Key: key })
+      );
+      if (!out.Body) return null;
+      return await out.Body.transformToString();
+    } catch (err: unknown) {
+      if (isNotFound(err)) return null;
+      throw err;
+    }
+  }
+
+  async putText(
+    key: string,
+    body: string,
+    opts?: { overwrite?: boolean; contentType?: string }
+  ): Promise<WriteResult> {
+    if (!opts?.overwrite && (await this.objectExists(key))) {
+      return { written: false, reason: 'exists' };
+    }
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: body,
+        ContentType: opts?.contentType ?? 'text/plain; charset=utf-8',
+      })
+    );
+    return { written: true, reason: 'written' };
+  }
+
   async *listByPrefix(prefix: string): AsyncIterable<ListedObject> {
     let token: string | undefined;
     do {

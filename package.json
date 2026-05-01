@@ -21,7 +21,11 @@
     "ev-b:sanity": "tsx scripts/ev-b-sanity-check.ts",
     "archive:existing": "tsx scripts/archive/archive-existing-season-to-s3.ts",
     "archive:bdl-backfill": "tsx scripts/archive/backfill-balldontlie-season.ts",
+    "ingest:previous-season": "tsx scripts/ingestion/ingest-previous-season.ts",
     "backtest:recent-form": "tsx scripts/backtesting/run-recent-form-minutes.ts",
+    "backtest:points-l5-vs-season": "tsx scripts/backtesting/run-points-l5-vs-season-backtest.ts",
+    "report:backtest:points-l5-vs-season": "tsx scripts/backtesting/report-points-l5-vs-season-backtest.ts",
+    "report:backtest:points-l5-threshold-sweep": "tsx scripts/backtesting/report-points-l5-vs-season-threshold-sweep.ts",
     "transform:player-logs:curated": "tsx scripts/transform/raw-player-game-logs-to-curated-parquet.ts",
     "transform:games:curated": "tsx scripts/transform/raw-games-to-curated-parquet.ts",
     "build:player-game-features": "tsx scripts/features/build-player-game-features-v1.ts"

@@ -72,6 +72,12 @@ function asNullableString(v: unknown): string | null {
   return s.length > 0 ? s : null;
 }
 
+function isCompletedGameStatus(status: string | null): boolean {
+  if (!status) return false;
+  const normalized = status.trim().toLowerCase();
+  return normalized === 'final' || normalized === 'final/ot' || normalized === 'final/2ot';
+}
+
 function parseNumeric(
   value: unknown,
   field: NumericField,
@@ -88,6 +94,14 @@ function parseNumeric(
     if (!trimmed) {
       nullCoercionCounts[field] += 1;
       return null;
+    }
+    if (field === 'minutes') {
+      const mmss = trimmed.match(/^(\d+):([0-5]\d)$/);
+      if (mmss) {
+        const minutes = Number(mmss[1]);
+        const seconds = Number(mmss[2]);
+        return minutes + seconds / 60;
+      }
     }
     const match = trimmed.match(/-?\d+(\.\d+)?/);
     if (!match) {
@@ -120,6 +134,8 @@ export function normalizeRawPlayerGameLogRow(args: {
   const playerId = asNullableString(row.player_id);
   const gameId = asNullableString(row.game_id);
   if (!playerId || !gameId) return null;
+  const gameStatus = asNullableString(row.game_status ?? row.status);
+  if (gameStatus && !isCompletedGameStatus(gameStatus)) return null;
 
   const points = parseNumeric(row.points, 'points', nullCoercionCounts);
   const rebounds = parseNumeric(row.rebounds, 'rebounds', nullCoercionCounts);
@@ -136,7 +152,7 @@ export function normalizeRawPlayerGameLogRow(args: {
   }
 
   return {
-    season: asNullableString(row.season) ?? String(season),
+    season: String(season),
     game_id: gameId,
     game_date: asNullableString(row.game_date) ?? partitionDate,
     player_id: playerId,
