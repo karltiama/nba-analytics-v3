@@ -29,6 +29,33 @@ type SweepPayload = {
   missingThresholds: number[];
 };
 
+type FeatureScore = {
+  feature_name: string;
+  sample_size: number;
+  null_count: number;
+  null_rate: number;
+  target_true_count: number;
+  target_false_count: number;
+  mean_when_target_true: number | null;
+  mean_when_target_false: number | null;
+  mean_difference: number | null;
+  abs_mean_difference: number | null;
+  simple_correlation_with_target: number | null;
+  rank: number;
+};
+
+type FeatureRankingPayload = {
+  season: number;
+  target_definition: string;
+  generated_at: string;
+  input_path: string;
+  output_path: string;
+  total_rows_analyzed: number;
+  total_usable_rows: number;
+  features_scored: number;
+  feature_scores: FeatureScore[];
+};
+
 function fmtRate(n: number | null | undefined): string {
   if (n == null || !Number.isFinite(n)) return '—';
   return `${(n * 100).toFixed(2)}%`;
@@ -46,6 +73,7 @@ function cardTitle(cls: string) {
 export function BacktestsDashboard() {
   const [season, setSeason] = useState<number>(2023);
   const [threshold, setThreshold] = useState<number>(3);
+  const [featureSeason, setFeatureSeason] = useState<number>(2024);
 
   const [summary, setSummary] = useState<SummaryPayload | null>(null);
   const [summaryErr, setSummaryErr] = useState<string | null>(null);
@@ -58,6 +86,10 @@ export function BacktestsDashboard() {
   const [sweep, setSweep] = useState<SweepPayload | null>(null);
   const [sweepErr, setSweepErr] = useState<string | null>(null);
   const [sweepLoading, setSweepLoading] = useState(true);
+
+  const [featureRanking, setFeatureRanking] = useState<FeatureRankingPayload | null>(null);
+  const [featureRankingErr, setFeatureRankingErr] = useState<string | null>(null);
+  const [featureRankingLoading, setFeatureRankingLoading] = useState(true);
 
   const loadSummary = useCallback(async () => {
     setSummaryLoading(true);
@@ -125,6 +157,29 @@ export function BacktestsDashboard() {
     }
   }, []);
 
+  const loadFeatureRanking = useCallback(async () => {
+    setFeatureRankingLoading(true);
+    setFeatureRankingErr(null);
+    setFeatureRanking(null);
+    try {
+      const res = await fetch(
+        `/api/research/feature-selection/player-points?season=${featureSeason}`
+      );
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setFeatureRankingErr(data.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      setFeatureRanking(data as FeatureRankingPayload);
+    } catch (e) {
+      setFeatureRankingErr(
+        e instanceof Error ? e.message : 'Failed to load feature ranking report'
+      );
+    } finally {
+      setFeatureRankingLoading(false);
+    }
+  }, [featureSeason]);
+
   useEffect(() => {
     void loadSummary();
   }, [loadSummary]);
@@ -136,6 +191,10 @@ export function BacktestsDashboard() {
   useEffect(() => {
     void loadSweep();
   }, [loadSweep]);
+
+  useEffect(() => {
+    void loadFeatureRanking();
+  }, [loadFeatureRanking]);
 
   const sum = summary?.summary;
 
@@ -516,6 +575,148 @@ export function BacktestsDashboard() {
           <li>Does not prove profitability; no EV shown.</li>
           <li>Use to validate signal behavior before adding real market odds.</li>
         </ul>
+      </div>
+
+      <div className="mt-10 border-t border-white/10 pt-8">
+        <div className="flex flex-wrap items-end gap-4 mb-3">
+          <h2 className="text-sm font-medium text-white">
+            Feature Ranking Report (Proxy Target)
+          </h2>
+          <label className="flex flex-col gap-1 text-xs">
+            <span className="text-muted-foreground">Feature report season</span>
+            <select
+              value={featureSeason}
+              onChange={(e) => setFeatureSeason(Number(e.target.value))}
+              className="rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-[100px]"
+            >
+              {[2023, 2024, 2025].map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              void loadFeatureRanking();
+            }}
+            className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs"
+          >
+            Refresh feature ranking
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground mb-3 max-w-4xl">
+          Signal discovery only. Target is{' '}
+          <code className="text-[#00d4ff] text-[11px]">
+            actual_points &gt; points_season_avg_before_game
+          </code>
+          . This is not a betting profitability report.
+        </p>
+
+        {featureRankingLoading && !featureRankingErr && (
+          <p className="text-xs text-muted-foreground mb-2">Loading feature ranking…</p>
+        )}
+        {featureRankingErr && (
+          <div className="glass-card rounded-xl p-4 border-l-4 border-l-amber-500 mb-4 space-y-2">
+            <p className="text-sm text-amber-200">{featureRankingErr}</p>
+            <p className="text-xs text-muted-foreground font-mono">
+              npx tsx scripts/research/rank-player-point-features.ts --season={featureSeason}
+            </p>
+          </div>
+        )}
+
+        {featureRanking && (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+              {(
+                [
+                  ['Rows analyzed', String(featureRanking.total_rows_analyzed), 'text-white'],
+                  ['Usable rows', String(featureRanking.total_usable_rows), 'text-white'],
+                  ['Features scored', String(featureRanking.features_scored), 'text-[#00d4ff]'],
+                  ['Generated', featureRanking.generated_at.slice(0, 10), 'text-muted-foreground'],
+                ] as const
+              ).map(([label, val, cls]) => (
+                <div key={label} className="glass-card rounded-xl p-3 border border-white/5">
+                  <p className={cardTitle('text-muted-foreground')}>{label}</p>
+                  <p className={`text-lg font-semibold mt-1 ${cls}`}>{val}</p>
+                </div>
+              ))}
+            </div>
+
+            <h3 className="text-xs font-medium text-white mb-2">
+              Top 10 features by absolute mean difference
+            </h3>
+            <div className="glass-card rounded-xl overflow-hidden border border-white/5 mb-5 overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[760px]">
+                <thead className="bg-gray-950/95 border-b border-white/10">
+                  <tr className="text-muted-foreground">
+                    <th className="py-2 px-2">Rank</th>
+                    <th className="py-2 px-2">Feature</th>
+                    <th className="py-2 px-2 text-right">Abs diff</th>
+                    <th className="py-2 px-2 text-right">Mean diff</th>
+                    <th className="py-2 px-2 text-right">Sample</th>
+                    <th className="py-2 px-2 text-right">Null rate</th>
+                    <th className="py-2 px-2 text-right">Corr</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {featureRanking.feature_scores.slice(0, 10).map((f) => (
+                    <tr key={f.feature_name} className="border-b border-white/5 hover:bg-white/3">
+                      <td className="py-1.5 px-2 font-mono">{f.rank}</td>
+                      <td className="py-1.5 px-2 font-mono">{f.feature_name}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtNum(f.abs_mean_difference)}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtNum(f.mean_difference)}</td>
+                      <td className="py-1.5 px-2 text-right">{f.sample_size}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtRate(f.null_rate)}</td>
+                      <td className="py-1.5 px-2 text-right">
+                        {fmtNum(f.simple_correlation_with_target)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <h3 className="text-xs font-medium text-white mb-2">Full feature score table</h3>
+            <div className="glass-card rounded-xl overflow-hidden border border-white/5 overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[980px]">
+                <thead className="bg-gray-950/95 border-b border-white/10">
+                  <tr className="text-muted-foreground">
+                    <th className="py-2 px-2">Rank</th>
+                    <th className="py-2 px-2">Feature</th>
+                    <th className="py-2 px-2 text-right">Sample</th>
+                    <th className="py-2 px-2 text-right">Nulls</th>
+                    <th className="py-2 px-2 text-right">T true</th>
+                    <th className="py-2 px-2 text-right">T false</th>
+                    <th className="py-2 px-2 text-right">Mean(T)</th>
+                    <th className="py-2 px-2 text-right">Mean(F)</th>
+                    <th className="py-2 px-2 text-right">Mean diff</th>
+                    <th className="py-2 px-2 text-right">Abs diff</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {featureRanking.feature_scores.map((f) => (
+                    <tr key={`${f.rank}-${f.feature_name}`} className="border-b border-white/5 hover:bg-white/3">
+                      <td className="py-1.5 px-2 font-mono">{f.rank}</td>
+                      <td className="py-1.5 px-2 font-mono">{f.feature_name}</td>
+                      <td className="py-1.5 px-2 text-right">{f.sample_size}</td>
+                      <td className="py-1.5 px-2 text-right">
+                        {f.null_count} ({fmtRate(f.null_rate)})
+                      </td>
+                      <td className="py-1.5 px-2 text-right">{f.target_true_count}</td>
+                      <td className="py-1.5 px-2 text-right">{f.target_false_count}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtNum(f.mean_when_target_true)}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtNum(f.mean_when_target_false)}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtNum(f.mean_difference)}</td>
+                      <td className="py-1.5 px-2 text-right">{fmtNum(f.abs_mean_difference)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
     </main>
   );

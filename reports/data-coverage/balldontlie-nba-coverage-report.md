@@ -1,0 +1,75 @@
+# BallDontLie NBA Data Coverage Report
+
+- Generated at: 2026-05-01T16:48:15.053Z
+- Storage mode: s3
+- Bucket: `nba-analytics-data-260029269390`
+- Seasons: 2023, 2024, 2025, 2026
+
+## Season Coverage
+
+### Season 2023
+- games_count: 1319
+- player_logs_count: 46090
+- game_partitions: 208
+- player_log_partitions: 208
+- curated_games_count: 1319
+- curated_logs_count: 46090
+- feature_rows_count: 46090
+- prop_odds_detected: no
+- missing_dates.games: 2023-11-07, 2023-11-23, 2023-12-03, 2023-12-10, 2023-12-24, 2024-02-16, 2024-02-17, 2024-02-18, 2024-02-19, 2024-02-20, 2024-02-21, 2024-04-08, 2024-04-13, 2024-04-15, 2024-04-18, 2024-05-20, 2024-05-29, 2024-05-31, 2024-06-01, 2024-06-02, 2024-06-03, 2024-06-04, 2024-06-05, 2024-06-07, 2024-06-08, 2024-06-10, 2024-06-11, 2024-06-13, 2024-06-15, 2024-06-16
+- missing_dates.player_game_logs: 2023-11-07, 2023-11-23, 2023-12-03, 2023-12-10, 2023-12-24, 2024-02-16, 2024-02-17, 2024-02-18, 2024-02-19, 2024-02-20, 2024-02-21, 2024-04-08, 2024-04-13, 2024-04-15, 2024-04-18, 2024-05-20, 2024-05-29, 2024-05-31, 2024-06-01, 2024-06-02, 2024-06-03, 2024-06-04, 2024-06-05, 2024-06-07, 2024-06-08, 2024-06-10, 2024-06-11, 2024-06-13, 2024-06-15, 2024-06-16
+- warnings:
+  - Missing prop odds/lines archives for this season.
+
+### Season 2024
+- games_count: 1321
+- player_logs_count: 46150
+- game_partitions: 214
+- player_log_partitions: 214
+- curated_games_count: 1321
+- curated_logs_count: 46150
+- feature_rows_count: 46150
+- prop_odds_detected: no
+- missing_dates.games: 2024-11-05, 2024-11-28, 2024-12-18, 2024-12-24, 2025-02-14, 2025-02-15, 2025-02-16, 2025-02-17, 2025-02-18, 2025-04-12, 2025-04-14, 2025-04-17, 2025-05-17, 2025-05-19, 2025-05-30, 2025-06-01, 2025-06-02, 2025-06-03, 2025-06-04, 2025-06-06, 2025-06-07, 2025-06-09, 2025-06-10, 2025-06-12, 2025-06-14, 2025-06-15, 2025-06-17, 2025-06-18, 2025-06-20, 2025-06-21
+- missing_dates.player_game_logs: 2024-11-05, 2024-11-28, 2024-12-18, 2024-12-24, 2025-02-14, 2025-02-15, 2025-02-16, 2025-02-17, 2025-02-18, 2025-04-12, 2025-04-14, 2025-04-17, 2025-05-17, 2025-05-19, 2025-05-30, 2025-06-01, 2025-06-02, 2025-06-03, 2025-06-04, 2025-06-06, 2025-06-07, 2025-06-09, 2025-06-10, 2025-06-12, 2025-06-14, 2025-06-15, 2025-06-17, 2025-06-18, 2025-06-20, 2025-06-21
+- warnings:
+  - Missing prop odds/lines archives for this season.
+
+### Season 2025
+- games_count: 1280
+- player_logs_count: 44676
+- game_partitions: 181
+- player_log_partitions: 180
+- curated_games_count: 1280
+- curated_logs_count: 44676
+- feature_rows_count: 44676
+- prop_odds_detected: no
+- missing_dates.games: 2025-11-27, 2025-12-24, 2026-02-13, 2026-02-14, 2026-02-15, 2026-02-16, 2026-02-17, 2026-02-18, 2026-04-11, 2026-04-13, 2026-04-16
+- missing_dates.player_game_logs: 2025-11-27, 2025-12-24, 2026-02-13, 2026-02-14, 2026-02-15, 2026-02-16, 2026-02-17, 2026-02-18, 2026-04-11, 2026-04-13, 2026-04-16
+- warnings:
+  - Missing prop odds/lines archives for this season.
+
+### Season 2026
+- games_count: 0
+- player_logs_count: 0
+- game_partitions: 0
+- player_log_partitions: 0
+- curated_games_count: 0
+- curated_logs_count: 0
+- feature_rows_count: 0
+- prop_odds_detected: no
+- missing_dates.games: (none detected)
+- missing_dates.player_game_logs: (none detected)
+- warnings:
+  - Missing raw games archives under existing_ingestion.
+  - Missing raw player_game_logs archives under existing_ingestion.
+  - Missing curated games parquet manifest/rows.
+  - Missing curated player_game_logs parquet manifest/rows.
+  - Missing feature-layer outputs for player_game_features.
+  - Missing prop odds/lines archives for this season.
+
+## Preservation Priority
+
+- Preserve missing raw archives first (games + player_game_logs) for any season with zero partitions.
+- Preserve prop odds/lines immediately if not detected, before API access expires.
+- Materialize curated and feature manifests after raw preservation to validate downstream completeness.

@@ -26,9 +26,15 @@
     "backtest:points-l5-vs-season": "tsx scripts/backtesting/run-points-l5-vs-season-backtest.ts",
     "report:backtest:points-l5-vs-season": "tsx scripts/backtesting/report-points-l5-vs-season-backtest.ts",
     "report:backtest:points-l5-threshold-sweep": "tsx scripts/backtesting/report-points-l5-vs-season-threshold-sweep.ts",
+    "research:rank-point-features": "tsx scripts/research/rank-player-point-features.ts",
+    "research:points-proxy-sweep": "tsx scripts/research/run-player-points-proxy-strategy-sweep.ts",
+    "research:compare-points-proxy-strategies": "tsx scripts/research/compare-player-points-proxy-strategies.ts",
+    "research:points-proxy-breakdowns": "tsx scripts/research/analyze-player-points-proxy-strategy-breakdowns.ts",
+    "research:materialize-player-names": "tsx scripts/research/materialize-player-display-name-lookup.ts",
     "transform:player-logs:curated": "tsx scripts/transform/raw-player-game-logs-to-curated-parquet.ts",
     "transform:games:curated": "tsx scripts/transform/raw-games-to-curated-parquet.ts",
-    "build:player-game-features": "tsx scripts/features/build-player-game-features-v1.ts"
+    "build:player-game-features": "tsx scripts/features/build-player-game-features-v1.ts",
+    "audit:bdl-coverage": "tsx scripts/audit/audit-bdl-data-coverage.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1024.0",
