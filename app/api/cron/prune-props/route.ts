@@ -17,6 +17,14 @@ function isAuthorized(request: NextRequest): boolean {
   return bearer === secret || q === secret;
 }
 
+function runtimeMode() {
+  const dataMode = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  const offseason = process.env.OFFSEASON_MODE === '1';
+  const cronDryRun = process.env.CRON_DRY_RUN === '1';
+  const shouldSkipMutations = cronDryRun || offseason || dataMode !== 'live_api';
+  return { dataMode, offseason, cronDryRun, shouldSkipMutations };
+}
+
 async function materializeClosingLines(): Promise<number> {
   const result = await pool.query(`
     INSERT INTO research.prop_decision_lines
@@ -119,6 +127,18 @@ export async function GET(request: NextRequest) {
   }
   if (!isAuthorized(request)) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const mode = runtimeMode();
+  if (mode.shouldSkipMutations) {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      reason: 'Cron mutation skipped by runtime mode flags',
+      dataMode: mode.dataMode,
+      offseasonMode: mode.offseason,
+      cronDryRun: mode.cronDryRun,
+    });
   }
 
   try {

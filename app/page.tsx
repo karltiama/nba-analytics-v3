@@ -33,7 +33,13 @@ export default function LandingPage() {
         <div className="text-center max-w-4xl mx-auto flex flex-col items-center gap-8 fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card border-[#bf5af2]/30 mb-2 slide-up" style={{ animationDelay: '100ms' }}>
             <span className="flex h-2 w-2 rounded-full bg-[#39ff14] animate-pulse"></span>
-            <span className="text-[11px] font-bold text-[#bf5af2] uppercase tracking-wider">Live Platform Now Available</span>
+            <span className="text-[11px] font-bold text-[#bf5af2] uppercase tracking-wider">Offseason Improvements In Progress</span>
+          </div>
+
+          <div className="max-w-3xl rounded-xl border border-[#00d4ff]/25 bg-[#00d4ff]/10 px-4 py-3 slide-up" style={{ animationDelay: '150ms' }}>
+            <p className="text-sm text-[#bfefff]">
+              Offseason mode: live NBA updates are paused while we improve the platform for next season.
+            </p>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight text-white drop-shadow-lg slide-up" style={{ animationDelay: '200ms' }}>

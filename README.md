@@ -117,6 +117,27 @@ npm start
 - Full environment matrix and deployment context are in `docs/deployment-checklist.md`
 - Never commit `.env`, `.env.local`, or live credentials
 
+### Offseason Runtime Mode
+
+Use these flags to keep schedulers alive while skipping live mutation/provider work:
+
+- `DATA_MODE=live_api|replay|manual_csv` (default: `live_api`)
+- `OFFSEASON_MODE=0|1`
+- `CRON_DRY_RUN=0|1`
+
+Recommended offseason settings:
+
+- `DATA_MODE=replay`
+- `OFFSEASON_MODE=1`
+- `CRON_DRY_RUN=1`
+
+Reactivation next season:
+
+1. Set `DATA_MODE=live_api`
+2. Set `OFFSEASON_MODE=0`
+3. Set `CRON_DRY_RUN=0`
+4. Confirm provider keys are configured (for example `BALLDONTLIE_API_KEY`)
+
 ---
 
 ## Common Commands

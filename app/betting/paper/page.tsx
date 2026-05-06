@@ -297,6 +297,13 @@ function PaperBetsContent() {
         </div>
       </div>
 
+      <div className="glass-card rounded-xl p-4 border border-white/10 mb-6">
+        <p className="text-sm text-muted-foreground">
+          Offseason mode is active. Automated settlement and live-data refresh workflows are paused while next season
+          improvements are in progress.
+        </p>
+      </div>
+
       {error && (
         <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757] mb-4">
           <p className="text-sm text-[#ff4757]">{error}</p>

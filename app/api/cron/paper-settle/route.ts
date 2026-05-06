@@ -16,6 +16,14 @@ function isAuthorized(request: NextRequest): boolean {
   return bearer === secret || q === secret;
 }
 
+function runtimeMode() {
+  const dataMode = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  const offseason = process.env.OFFSEASON_MODE === '1';
+  const cronDryRun = process.env.CRON_DRY_RUN === '1';
+  const shouldSkipMutations = cronDryRun || offseason || dataMode !== 'live_api';
+  return { dataMode, offseason, cronDryRun, shouldSkipMutations };
+}
+
 /**
  * GET /api/cron/paper-settle
  * Scheduled settlement (Vercel Cron or external curl). Requires Bearer or ?secret= matching
@@ -30,6 +38,18 @@ export async function GET(request: NextRequest) {
   }
   if (!isAuthorized(request)) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const mode = runtimeMode();
+  if (mode.shouldSkipMutations) {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      reason: 'Paper settlement skipped by runtime mode flags',
+      dataMode: mode.dataMode,
+      offseasonMode: mode.offseason,
+      cronDryRun: mode.cronDryRun,
+    });
   }
 
   try {

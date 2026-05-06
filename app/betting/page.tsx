@@ -367,6 +367,12 @@ export default function BettingDashboard(props: PageProps) {
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Main Content */}
           <div className="flex-1 min-w-0 pt-8 space-y-6">
+            <div className="glass-card rounded-xl p-4 border border-white/10">
+              <p className="text-sm text-muted-foreground">
+                Offseason mode is active. Live props and automated slate refreshes are currently paused while we
+                improve next season tooling.
+              </p>
+            </div>
             {/* Date + Filters (single bar) */}
             <FilterBar
               searchValue={searchValue}

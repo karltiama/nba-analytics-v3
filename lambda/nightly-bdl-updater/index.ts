@@ -48,11 +48,21 @@ const BALLDONTLIE_API_KEY = process.env.BALLDONTLIE_API_KEY || process.env.BALDO
 const REQUEST_DELAY_MS = parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '200', 10);
 const MAX_RETRIES = parseInt(process.env.MAX_RETRIES || '3', 10);
 const RETRY_BASE_DELAY_MS = 60000;
+const OFFSEASON_MODE = process.env.OFFSEASON_MODE === '1';
+
+function getDataMode(): 'live_api' | 'replay' | 'manual_csv' {
+  const raw = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  if (raw === 'replay' || raw === 'manual_csv') return raw;
+  return 'live_api';
+}
+
+const DATA_MODE = getDataMode();
+const SHOULD_CALL_LIVE_API = DATA_MODE === 'live_api' && !OFFSEASON_MODE;
 
 if (!SUPABASE_DB_URL) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
 }
-if (!BALLDONTLIE_API_KEY) {
+if (SHOULD_CALL_LIVE_API && !BALLDONTLIE_API_KEY) {
   throw new Error('Missing BALLDONTLIE_API_KEY environment variable');
 }
 
@@ -521,6 +531,9 @@ async function syncUpcomingScheduleFromBdl(
 // ============================================
 
 interface PipelineResult {
+  dataMode: 'live_api' | 'replay' | 'manual_csv';
+  offseasonMode: boolean;
+  skippedProviderCalls: boolean;
   scheduleGamesSynced: number;
   gamesFound: number;
   finalGames: number;
@@ -535,6 +548,9 @@ interface PipelineResult {
 
 async function runPipeline(): Promise<PipelineResult> {
   const result: PipelineResult = {
+    dataMode: DATA_MODE,
+    offseasonMode: OFFSEASON_MODE,
+    skippedProviderCalls: false,
     scheduleGamesSynced: 0,
     gamesFound: 0,
     finalGames: 0,
@@ -546,6 +562,14 @@ async function runPipeline(): Promise<PipelineResult> {
     teamSeasonAvgs: 0,
     playerSeasonAvgs: 0,
   };
+
+  if (!SHOULD_CALL_LIVE_API) {
+    result.skippedProviderCalls = true;
+    console.log(
+      `[offseason] Skipping BDL provider calls (DATA_MODE=${DATA_MODE}, OFFSEASON_MODE=${OFFSEASON_MODE ? '1' : '0'}).`
+    );
+    return result;
+  }
 
   const season = getCurrentSeason();
   const forwardRaw = process.env.BDL_SCHEDULE_SYNC_DAYS_FORWARD;
