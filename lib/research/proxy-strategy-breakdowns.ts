@@ -334,7 +334,7 @@ export function assessStrategyNarrative(bundle: StrategyBreakdownBundle): Strate
     reasons.push('Player concentration is high relative to typical broad strategies.');
   } else if (share >= 0.3 || (hrSpread != null && hrSpread > 0.15)) {
     label = 'noisy';
-    if (label === 'broad') reasons.push('Mixed concentration or cross-season instability.');
+    reasons.push('Mixed concentration or cross-season instability.');
   }
 
   if (label === 'broad' && reasons.length === 0) {
