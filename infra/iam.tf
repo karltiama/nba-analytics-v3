@@ -196,3 +196,28 @@ resource "aws_iam_role_policy" "scheduler_player_props_invoke_lambda" {
     ]
   })
 }
+
+# -----------------------------------------------------------------------------
+# IAM role for boxscore-scraper Lambda
+# -----------------------------------------------------------------------------
+resource "aws_iam_role" "lambda_boxscore_execution" {
+  name = "${var.boxscore_lambda_function_name}-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_boxscore_basic_execution" {
+  role       = aws_iam_role.lambda_boxscore_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}

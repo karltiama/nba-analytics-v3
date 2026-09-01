@@ -14,3 +14,5 @@ override.tf.json
 
 # Build artifacts (zip produced by archive_file)
 *.zip
+tfplan
+tfplan-*

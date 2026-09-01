@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
 import * as readline from 'readline';
+import { getNbaStatsSeason } from '@/lib/season';
 
 /**
  * Add Unresolved Players
@@ -80,7 +81,7 @@ async function addToRoster(playerId: string, teamCode: string) {
   }
   
   const teamId = teamResult.rows[0].team_id;
-  const currentSeason = '2025-26'; // Adjust as needed
+  const currentSeason = getNbaStatsSeason();
   
   await pool.query(`
     INSERT INTO player_team_rosters (

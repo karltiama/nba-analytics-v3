@@ -17,6 +17,22 @@ function cleanUrl(raw: string): string {
   return value;
 }
 
+export type RuntimeMode = {
+  dataMode: string;
+  offseason: boolean;
+  cronDryRun: boolean;
+  shouldSkipMutations: boolean;
+};
+
+/** Same skip rule as Vercel crons: dry-run, offseason, or non-live data mode. */
+export function getRuntimeMode(): RuntimeMode {
+  const dataMode = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  const offseason = process.env.OFFSEASON_MODE === '1';
+  const cronDryRun = process.env.CRON_DRY_RUN === '1';
+  const shouldSkipMutations = cronDryRun || offseason || dataMode !== 'live_api';
+  return { dataMode, offseason, cronDryRun, shouldSkipMutations };
+}
+
 export function getLambdaEnv(): LambdaEnv {
   const dbUrl = process.env.SUPABASE_DB_URL;
   const apiKey = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;

@@ -38,11 +38,22 @@ import { z } from 'zod';
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 const BALLDONTLIE_API_KEY = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;
 const BDL_BASE = 'https://api.balldontlie.io';
+const OFFSEASON_MODE = process.env.OFFSEASON_MODE === '1';
+const CRON_DRY_RUN = process.env.CRON_DRY_RUN === '1';
+
+function getDataMode(): 'live_api' | 'replay' | 'manual_csv' {
+  const raw = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  if (raw === 'replay' || raw === 'manual_csv') return raw;
+  return 'live_api';
+}
+
+const DATA_MODE = getDataMode();
+const SHOULD_SKIP_MUTATIONS = CRON_DRY_RUN || OFFSEASON_MODE || DATA_MODE !== 'live_api';
 
 if (!SUPABASE_DB_URL) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
 }
-if (!BALLDONTLIE_API_KEY) {
+if (!SHOULD_SKIP_MUTATIONS && !BALLDONTLIE_API_KEY) {
   throw new Error('Missing BALLDONTLIE_API_KEY environment variable');
 }
 
@@ -309,6 +320,24 @@ async function transformToAnalytics(
 export const handler = async () => {
   try {
     console.log('Starting injuries snapshot (BallDontLie /nba/v1/player_injuries)...');
+
+    if (SHOULD_SKIP_MUTATIONS) {
+      console.log(
+        `[offseason] Skipping injuries provider calls and writes (DATA_MODE=${DATA_MODE}, OFFSEASON_MODE=${OFFSEASON_MODE ? '1' : '0'}, CRON_DRY_RUN=${CRON_DRY_RUN ? '1' : '0'}).`
+      );
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: true,
+          skipped: true,
+          reason: 'Injuries snapshot skipped by runtime mode flags',
+          dataMode: DATA_MODE,
+          offseasonMode: OFFSEASON_MODE,
+          cronDryRun: CRON_DRY_RUN,
+          timestamp: new Date().toISOString(),
+        }),
+      };
+    }
 
     const pullRunId = await createPullRun();
     console.log('Created pull run:', pullRunId);

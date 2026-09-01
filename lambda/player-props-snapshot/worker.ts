@@ -1,5 +1,5 @@
 import type { SQSEvent } from 'aws-lambda';
-import { getLambdaEnv } from './src/env';
+import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
 import { normalizePlayerPropRows } from './src/normalize';
@@ -23,6 +23,25 @@ function parseMessage(body: string): WorkerMessage {
 }
 
 export const handler = async (event: SQSEvent) => {
+  const mode = getRuntimeMode();
+  if (mode.shouldSkipMutations) {
+    console.log(
+      `[offseason] Skipping player-props worker (DATA_MODE=${mode.dataMode}, OFFSEASON_MODE=${mode.offseason ? '1' : '0'}, CRON_DRY_RUN=${mode.cronDryRun ? '1' : '0'}). Draining ${event.Records.length} message(s) without writes.`
+    );
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        skipped: true,
+        reason: 'Player-props worker skipped by runtime mode flags',
+        dataMode: mode.dataMode,
+        offseasonMode: mode.offseason,
+        cronDryRun: mode.cronDryRun,
+        drained: event.Records.length,
+      }),
+    };
+  }
+
   const env = getLambdaEnv();
   const pool = getDbPool(env.dbUrl);
   let successCount = 0;

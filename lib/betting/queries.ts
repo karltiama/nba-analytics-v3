@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
 import { fetchLineupsFromBallDontLie } from '@/lib/balldontlie/lineups';
+import { getAnalyticsSeason } from '@/lib/season';
 import type {
   PlayerPropLineComparisonRow,
   PlayerPropLineShoppingResponse,
@@ -348,8 +349,8 @@ export async function getTrendingPlayers(limit: number = 10): Promise<TrendingPl
   });
 }
 
-/** Current NBA season start year (e.g. 2025 for 2025-26). */
-export const CURRENT_ANALYTICS_SEASON = '2025';
+/** Current NBA season start year. Prefer getAnalyticsSeason() at call time. */
+export const CURRENT_ANALYTICS_SEASON = getAnalyticsSeason();
 
 /**
  * Get trending players from analytics schema (same shape as getTrendingPlayers).
@@ -415,7 +416,7 @@ export async function getTrendingPlayersFromAnalytics(limit: number = 10): Promi
     ORDER BY ABS(((pl5.l5_avg_points - psa.pts_avg) / NULLIF(psa.pts_avg, 0)) * 100) DESC
     LIMIT $2
     `,
-    [CURRENT_ANALYTICS_SEASON, limit]
+    [getAnalyticsSeason(), limit]
   );
 
   const playerIds = result.map((r: any) => r.player_id);
@@ -641,7 +642,7 @@ export async function getTrendingPlayersStrip(
     ORDER BY ABS(${col.l5} - ${col.season}) DESC
     LIMIT $2
     `,
-    [CURRENT_ANALYTICS_SEASON, limit],
+    [getAnalyticsSeason(), limit],
   );
 
   return result.map((row: any) => ({
@@ -691,7 +692,7 @@ export async function getTeamPaceRankings(): Promise<TeamPaceComparison[]> {
       AND tsa.avg_pace IS NOT NULL
     ORDER BY tsa.avg_pace DESC NULLS LAST
     `,
-    [CURRENT_ANALYTICS_SEASON]
+    [getAnalyticsSeason()]
   );
 
   return result.map((row: any) => ({
@@ -721,7 +722,7 @@ export async function getTeamDefensiveRankings() {
       AND tsa.avg_defensive_rating IS NOT NULL
     ORDER BY tsa.avg_defensive_rating ASC NULLS LAST
     `,
-    [CURRENT_ANALYTICS_SEASON]
+    [getAnalyticsSeason()]
   );
 
   return result.map((row: any) => ({
@@ -757,7 +758,7 @@ export async function getDashboardSummary() {
         WHERE season = $1 AND games_played > 0
       ) AS teams_with_stats
     `,
-    [CURRENT_ANALYTICS_SEASON]
+    [getAnalyticsSeason()]
   );
 
   return result[0] || {

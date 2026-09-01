@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
+import { getAnalyticsSeason } from '@/lib/season';
 
 /**
  * List Roster Issues
@@ -38,7 +39,7 @@ async function getRosterIssues(teamAbbr?: string): Promise<RosterIssue[]> {
            GROUP BY season 
            ORDER BY COUNT(*) DESC 
            LIMIT 1),
-          '2025'
+          $1
         ) as current_season
       FROM bbref_player_game_stats bpgs
       JOIN bbref_games bg ON bpgs.game_id = bg.bbref_game_id
@@ -68,14 +69,15 @@ async function getRosterIssues(teamAbbr?: string): Promise<RosterIssue[]> {
             AND ptr.active = true
             AND ptr.season = ts.current_season
         )
-        ${teamAbbr ? `AND t.abbreviation = $1` : ''}
+        ${teamAbbr ? `AND t.abbreviation = $2` : ''}
       GROUP BY bpgs.team_id, t.abbreviation, t.full_name, bpgs.player_id, p.full_name, ts.current_season
     )
     SELECT * FROM players_not_on_roster
     ORDER BY team_abbr, games_played DESC, player_name
   `;
 
-  const result = await pool.query(query, teamAbbr ? [teamAbbr] : []);
+  const fallbackSeason = getAnalyticsSeason();
+  const result = await pool.query(query, teamAbbr ? [fallbackSeason, teamAbbr] : [fallbackSeason]);
   return result.rows;
 }
 

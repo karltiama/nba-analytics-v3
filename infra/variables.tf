@@ -220,3 +220,43 @@ variable "player_props_schedule_crons" {
   type        = list(string)
   default     = []
 }
+
+# -----------------------------------------------------------------------------
+# Lambda: boxscore-scraper (Basketball-Reference HTML; not BallDontLie)
+# -----------------------------------------------------------------------------
+variable "boxscore_lambda_function_name" {
+  description = "Name of the boxscore scraper Lambda function."
+  type        = string
+  default     = "boxscore-scraper"
+}
+
+variable "boxscore_lambda_timeout" {
+  description = "Boxscore Lambda timeout in seconds. Default 900 allows ~50 games with 4s scrape delay."
+  type        = number
+  default     = 900
+}
+
+variable "boxscore_lambda_memory_size" {
+  description = "Boxscore Lambda memory size in MB."
+  type        = number
+  default     = 1024
+}
+
+variable "boxscore_lambda_env" {
+  description = "Environment variables for the boxscore Lambda (SUPABASE_DB_URL). Optional: BBREF_SCRAPE_DELAY_MS, MAX_GAMES_PER_RUN. Do not commit real values."
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}
+
+variable "boxscore_enable_schedule" {
+  description = "Set to true to create an EventBridge rule for the boxscore Lambda (03:00 ET / 08:00 UTC)."
+  type        = bool
+  default     = false
+}
+
+variable "boxscore_schedule_cron" {
+  description = "Cron expression for boxscore Lambda (UTC). Default cron(0 8 * * ? *) = 03:00 ET."
+  type        = string
+  default     = "cron(0 8 * * ? *)"
+}

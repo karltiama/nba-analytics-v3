@@ -1,28 +1,27 @@
-# Terraform – AWS Lambdas (nightly-bdl-updater, odds-pre-game-snapshot)
+# Terraform – AWS Lambdas (ingestion jobs)
 
-Terraform setup to manage the **nightly-bdl-updater** and **odds-pre-game-snapshot** Lambdas and their optional EventBridge schedules.
+Terraform setup to manage the **nightly-bdl-updater**, **odds-pre-game-snapshot**, **injuries-snapshot**, **player-props** (controller + worker), and **boxscore-scraper** Lambdas and their optional schedules.
 
 ## Prerequisites
 
 - **AWS CLI** configured (credentials and region).
 - **Terraform** installed (>= 1.0).
-- **Node.js 20** for building the Lambdas.
+- **Node.js 22** for building the Lambdas.
 
 ## Build the Lambdas before apply
 
-Terraform packages each Lambda from the existing source tree. You must build both before apply:
+Terraform packages each Lambda from the existing source tree. Build before apply (at least the functions you are changing):
 
 ```bash
-cd lambda/nightly-bdl-updater
-npm install
-npm run build
-cd ../odds-pre-game-snapshot
-npm install
-npm run build
+cd lambda/nightly-bdl-updater && npm install && npm run build
+cd ../odds-pre-game-snapshot && npm install && npm run build
+cd ../injuries-snapshot && npm install && npm run build
+cd ../player-props-snapshot && npm install && npm run build
+cd ../boxscore-scraper && npm install && npm run build
 cd ../..
 ```
 
-If you skip this step, the zips may be missing or outdated and the deployed functions may fail. Apply will package and deploy both Lambdas.
+If you skip this step, the zips may be missing or outdated and the deployed functions may fail.
 
 ## Run Terraform
 
@@ -43,7 +42,7 @@ If you don’t use a `terraform.tfvars` file, set variables via `-var` or `TF_VA
 
 **nightly-bdl-updater:** **lambda_function_name**, **lambda_timeout**, **lambda_memory_size**, **lambda_env** (sensitive), **enable_schedule**, **schedule_cron**.
 
-**odds-pre-game-snapshot:** **odds_lambda_function_name**, **odds_lambda_timeout**, **odds_lambda_memory_size**, **odds_lambda_env** (sensitive), **odds_enable_schedule**, **odds_schedule_cron**. Set odds env (e.g. `SUPABASE_DB_URL`, `BALLDONTLIE_API_KEY`, optional `PREFERRED_VENDOR`) in tfvars; don’t commit secrets.
+**boxscore-scraper:** **boxscore_lambda_function_name**, **boxscore_lambda_timeout** (default 900), **boxscore_lambda_memory_size** (default 1024), **boxscore_lambda_env** (sensitive; `SUPABASE_DB_URL` + freeze flags), **boxscore_enable_schedule**, **boxscore_schedule_cron** (`cron(0 8 * * ? *)` = 03:00 ET).
 
 ## Optional: enable EventBridge schedules
 
@@ -77,6 +76,9 @@ After apply:
 - **schedule_rule_name** / **schedule_rule_arn** – Set when `enable_schedule` is true.
 - **odds_lambda_function_name** / **odds_lambda_function_arn** – odds-pre-game-snapshot.
 - **odds_schedule_rule_name** / **odds_schedule_rule_arn** – Set when `odds_enable_schedule` is true.
+- **boxscore_lambda_function_name** / **boxscore_lambda_function_arn** – boxscore-scraper.
+- **boxscore_schedule_rule_name** / **boxscore_schedule_rule_arn** – Set when `boxscore_enable_schedule` is true.
+- **nightly_bdl_errors_alarm_name** / **odds_pre_game_errors_alarm_name** / **boxscore_scraper_errors_alarm_name** – AWS/Lambda Errors alarms.
 
 ## Player props fanout pipeline
 
@@ -112,14 +114,23 @@ Player props now run as **controller + per-game workers**:
 4. Observe CloudWatch alarms:
    - `nba-player-props-worker-failures`
    - `nba-player-props-controller-low-coverage`
+   - `nba-nightly-bdl-updater-errors` / `nba-odds-pre-game-snapshot-errors` / `nba-boxscore-scraper-errors` (`AWS/Lambda` Errors)
 5. Keep old schedule disabled after fanout has stable coverage for at least one slate.
+
+## Boxscore scraper
+
+1. **Build before apply:** `cd lambda/boxscore-scraper && npm install && npm run build`
+2. Set `boxscore_lambda_env` (`SUPABASE_DB_URL`; freeze flags `DATA_MODE` / `OFFSEASON_MODE` / `CRON_DRY_RUN`).
+3. Optional schedule: `boxscore_enable_schedule = true` and `boxscore_schedule_cron = "cron(0 8 * * ? *)"` (03:00 ET).
+4. **Do not full-apply** while `player_props_enable_schedule = true` in live tfvars if those Scheduler rules must stay DISABLED. Use `-target` for boxscore + error alarms.
+
+## Remote state (deferred)
+
+State is still local (`infra/`). Moving to an S3 backend is not required to deploy boxscore; do it before a second environment or shared laptop.
 
 ## Extending to more Lambdas
 
-To add **boxscore**, **player-props**, or **injuries** Lambdas:
-
 1. Add a new `archive_file` data source pointing at `../lambda/<name>`.
-2. Add a new `aws_lambda_function` (and optionally a dedicated IAM role or reuse with a broader policy).
+2. Add a new `aws_lambda_function` (and optionally a dedicated IAM role).
 3. Optionally add an `aws_cloudwatch_event_rule` + target + `aws_lambda_permission` per schedule.
-
-Use the same pattern: build in the Lambda dir, then `terraform apply`. Consider moving to a remote backend (e.g. S3) for shared state before managing multiple environments.
+4. Add an `AWS/Lambda` Errors alarm in `monitoring.tf` unless the function already emits custom metrics.

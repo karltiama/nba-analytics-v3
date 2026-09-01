@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { query } from '@/lib/db';
+import { getAnalyticsSeason } from '@/lib/season';
 
 interface TeamRosterProps {
   teamId: string;
@@ -14,7 +15,7 @@ interface RosterPlayer {
 }
 
 export async function TeamRoster({ teamId, season }: TeamRosterProps) {
-  const currentSeason = season || '2025';
+  const currentSeason = season || getAnalyticsSeason();
 
   const roster = await query<RosterPlayer>(`
     SELECT

@@ -41,6 +41,17 @@ const BASE_DELAY_MS = Number.parseInt(process.env.BBREF_SCRAPE_DELAY_MS || '4000
 const MAX_GAMES_PER_RUN = Number.parseInt(process.env.MAX_GAMES_PER_RUN || '50', 10);
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
+const OFFSEASON_MODE = process.env.OFFSEASON_MODE === '1';
+const CRON_DRY_RUN = process.env.CRON_DRY_RUN === '1';
+
+function getDataMode(): 'live_api' | 'replay' | 'manual_csv' {
+  const raw = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  if (raw === 'replay' || raw === 'manual_csv') return raw;
+  return 'live_api';
+}
+
+const DATA_MODE = getDataMode();
+const SHOULD_SKIP_MUTATIONS = CRON_DRY_RUN || OFFSEASON_MODE || DATA_MODE !== 'live_api';
 
 if (!SUPABASE_DB_URL) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
@@ -834,6 +845,25 @@ export const handler = async (event: LambdaEvent) => {
   try {
     console.log('Starting box score scraping Lambda...');
     console.log('Event:', JSON.stringify(event));
+
+    if (SHOULD_SKIP_MUTATIONS) {
+      console.log(
+        `[offseason] Skipping boxscore scrape and writes (DATA_MODE=${DATA_MODE}, OFFSEASON_MODE=${OFFSEASON_MODE ? '1' : '0'}, CRON_DRY_RUN=${CRON_DRY_RUN ? '1' : '0'}).`
+      );
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: true,
+          skipped: true,
+          reason: 'Boxscore scraper skipped by runtime mode flags',
+          dataMode: DATA_MODE,
+          offseasonMode: OFFSEASON_MODE,
+          cronDryRun: CRON_DRY_RUN,
+          processed: 0,
+          timestamp: new Date().toISOString(),
+        }),
+      };
+    }
     
     // Get games to process
     const games = await getGamesWithoutBoxScores(MAX_GAMES_PER_RUN);

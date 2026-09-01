@@ -14,6 +14,10 @@ schedule_cron   = "cron(0 8 * * ? *)"
 lambda_env = {
   SUPABASE_DB_URL       = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
   BALLDONTLIE_API_KEY   = "your_balldontlie_api_key"
+  # Offseason freeze (no provider calls / writes). Tip-off: live_api / 0 / 0.
+  DATA_MODE             = "replay"
+  OFFSEASON_MODE        = "1"
+  CRON_DRY_RUN          = "1"
   # Optional:
   # BALLDONTLIE_REQUEST_DELAY_MS = "200"
   # MAX_RETRIES                  = "3"
@@ -41,6 +45,9 @@ odds_schedule_crons = [
 odds_lambda_env = {
   SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
   BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
+  DATA_MODE           = "replay"
+  OFFSEASON_MODE      = "1"
+  CRON_DRY_RUN        = "1"
   # Optional:
   # PREFERRED_VENDOR = "draftkings"
 }
@@ -58,6 +65,9 @@ injuries_schedule_cron        = "cron(0 13,18,22 * * ? *)"
 injuries_lambda_env = {
   SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
   BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
+  DATA_MODE           = "replay"
+  OFFSEASON_MODE      = "1"
+  CRON_DRY_RUN        = "1"
 }
 
 # -----------------------------------------------------------------------------
@@ -87,8 +97,30 @@ player_props_schedule_crons = [
 player_props_lambda_env = {
   BALLDONTLIE_API_KEY = "your_balldontlie_api_key"
   SUPABASE_DB_URL     = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+  DATA_MODE           = "replay"
+  OFFSEASON_MODE      = "1"
+  CRON_DRY_RUN        = "1"
   # INCLUDE_TOMORROW   = "true"
   # Optional: override defaults from infra/lambda.tf for raw payload capture policy.
   # STORE_PROP_RAW_JSON       = "false"
   # PROP_RAW_JSON_SAMPLE_RATE = "0"
+}
+
+# -----------------------------------------------------------------------------
+# Boxscore scraper Lambda (Basketball-Reference HTML)
+# Schedule default off. Opening week: boxscore_enable_schedule = true plus live_api / 0 / 0.
+# -----------------------------------------------------------------------------
+boxscore_lambda_function_name = "boxscore-scraper"
+boxscore_lambda_timeout       = 900
+boxscore_lambda_memory_size   = 1024
+boxscore_enable_schedule      = false
+boxscore_schedule_cron        = "cron(0 8 * * ? *)"
+
+boxscore_lambda_env = {
+  SUPABASE_DB_URL      = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"
+  DATA_MODE            = "replay"
+  OFFSEASON_MODE       = "1"
+  CRON_DRY_RUN         = "1"
+  # BBREF_SCRAPE_DELAY_MS = "4000"
+  # MAX_GAMES_PER_RUN     = "50"
 }

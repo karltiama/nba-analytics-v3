@@ -49,6 +49,7 @@ const REQUEST_DELAY_MS = parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '2
 const MAX_RETRIES = parseInt(process.env.MAX_RETRIES || '3', 10);
 const RETRY_BASE_DELAY_MS = 60000;
 const OFFSEASON_MODE = process.env.OFFSEASON_MODE === '1';
+const CRON_DRY_RUN = process.env.CRON_DRY_RUN === '1';
 
 function getDataMode(): 'live_api' | 'replay' | 'manual_csv' {
   const raw = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
@@ -57,7 +58,7 @@ function getDataMode(): 'live_api' | 'replay' | 'manual_csv' {
 }
 
 const DATA_MODE = getDataMode();
-const SHOULD_CALL_LIVE_API = DATA_MODE === 'live_api' && !OFFSEASON_MODE;
+const SHOULD_CALL_LIVE_API = DATA_MODE === 'live_api' && !OFFSEASON_MODE && !CRON_DRY_RUN;
 
 if (!SUPABASE_DB_URL) {
   throw new Error('Missing SUPABASE_DB_URL environment variable');
@@ -566,7 +567,7 @@ async function runPipeline(): Promise<PipelineResult> {
   if (!SHOULD_CALL_LIVE_API) {
     result.skippedProviderCalls = true;
     console.log(
-      `[offseason] Skipping BDL provider calls (DATA_MODE=${DATA_MODE}, OFFSEASON_MODE=${OFFSEASON_MODE ? '1' : '0'}).`
+      `[offseason] Skipping BDL provider calls (DATA_MODE=${DATA_MODE}, OFFSEASON_MODE=${OFFSEASON_MODE ? '1' : '0'}, CRON_DRY_RUN=${CRON_DRY_RUN ? '1' : '0'}).`
     );
     return result;
   }

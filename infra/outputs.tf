@@ -101,3 +101,38 @@ output "player_props_controller_low_coverage_alarm_name" {
   description = "CloudWatch alarm name for low queued-game coverage."
   value       = aws_cloudwatch_metric_alarm.player_props_controller_low_coverage.alarm_name
 }
+
+output "boxscore_lambda_function_name" {
+  description = "Name of the boxscore scraper Lambda."
+  value       = aws_lambda_function.boxscore_scraper.function_name
+}
+
+output "boxscore_lambda_function_arn" {
+  description = "ARN of the boxscore scraper Lambda."
+  value       = aws_lambda_function.boxscore_scraper.arn
+}
+
+output "boxscore_schedule_rule_name" {
+  description = "Name of the EventBridge rule for boxscore (when schedule is enabled)."
+  value       = var.boxscore_enable_schedule ? aws_cloudwatch_event_rule.boxscore_schedule[0].name : null
+}
+
+output "boxscore_schedule_rule_arn" {
+  description = "ARN of the EventBridge rule for boxscore (when schedule is enabled)."
+  value       = var.boxscore_enable_schedule ? aws_cloudwatch_event_rule.boxscore_schedule[0].arn : null
+}
+
+output "nightly_bdl_errors_alarm_name" {
+  description = "CloudWatch alarm name for nightly-bdl-updater invocation errors."
+  value       = aws_cloudwatch_metric_alarm.nightly_bdl_errors.alarm_name
+}
+
+output "odds_pre_game_errors_alarm_name" {
+  description = "CloudWatch alarm name for odds-pre-game-snapshot invocation errors."
+  value       = aws_cloudwatch_metric_alarm.odds_pre_game_errors.alarm_name
+}
+
+output "boxscore_scraper_errors_alarm_name" {
+  description = "CloudWatch alarm name for boxscore-scraper invocation errors."
+  value       = aws_cloudwatch_metric_alarm.boxscore_scraper_errors.alarm_name
+}

@@ -226,6 +226,9 @@ resource "aws_lambda_function" "player_props_controller" {
         BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", "")
         PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
         PREFERRED_VENDOR       = lookup(var.player_props_lambda_env, "PREFERRED_VENDOR", "draftkings")
+        DATA_MODE              = lookup(var.player_props_lambda_env, "DATA_MODE", "live_api")
+        OFFSEASON_MODE         = lookup(var.player_props_lambda_env, "OFFSEASON_MODE", "0")
+        CRON_DRY_RUN           = lookup(var.player_props_lambda_env, "CRON_DRY_RUN", "0")
       }
     )
   }
@@ -275,4 +278,51 @@ resource "aws_lambda_permission" "allow_scheduler_player_props" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.player_props_controller.function_name
   principal     = "scheduler.amazonaws.com"
+}
+
+# -----------------------------------------------------------------------------
+# Lambda: boxscore-scraper (run "npm install && npm run build" in lambda/boxscore-scraper first)
+# -----------------------------------------------------------------------------
+data "archive_file" "boxscore_scraper" {
+  type        = "zip"
+  source_dir  = "${path.module}/../lambda/boxscore-scraper"
+  output_path = "${path.module}/boxscore-scraper.zip"
+}
+
+resource "aws_lambda_function" "boxscore_scraper" {
+  filename         = data.archive_file.boxscore_scraper.output_path
+  function_name    = var.boxscore_lambda_function_name
+  role             = aws_iam_role.lambda_boxscore_execution.arn
+  handler          = "dist/index.handler"
+  runtime          = "nodejs22.x"
+  timeout          = var.boxscore_lambda_timeout
+  memory_size      = var.boxscore_lambda_memory_size
+  source_code_hash = data.archive_file.boxscore_scraper.output_base64sha256
+
+  environment {
+    variables = var.boxscore_lambda_env
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "boxscore_schedule" {
+  count               = var.boxscore_enable_schedule ? 1 : 0
+  name                = "${var.boxscore_lambda_function_name}-daily"
+  description         = "Daily trigger for ${var.boxscore_lambda_function_name} at 08:00 UTC (03:00 ET)"
+  schedule_expression = var.boxscore_schedule_cron
+}
+
+resource "aws_cloudwatch_event_target" "boxscore_scraper" {
+  count     = var.boxscore_enable_schedule ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.boxscore_schedule[0].name
+  target_id = "boxscore-scraper"
+  arn       = aws_lambda_function.boxscore_scraper.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge_boxscore" {
+  count         = var.boxscore_enable_schedule ? 1 : 0
+  statement_id  = "allow-eventbridge-invoke-boxscore"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.boxscore_scraper.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.boxscore_schedule[0].arn
 }

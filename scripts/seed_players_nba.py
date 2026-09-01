@@ -38,7 +38,10 @@ if not SUPABASE_DB_URL:
     logging.error("Missing SUPABASE_DB_URL. Set it in your environment or .env file.")
     sys.exit(1)
 
-TARGET_SEASON = os.getenv("NBA_STATS_SEASON", "2025-26")
+TARGET_SEASON = os.getenv("NBA_STATS_SEASON") or os.getenv("CURRENT_ANALYTICS_SEASON") or "2025"
+if TARGET_SEASON.isdigit() and len(TARGET_SEASON) == 4:
+    _year = int(TARGET_SEASON)
+    TARGET_SEASON = f"{_year}-{str(_year + 1)[-2:]}"
 TARGET_TEAM_ID = os.getenv("NBA_STATS_TEAM_ID")  # Optional override (NBA Stats team id)
 REQUEST_DELAY_SECONDS = float(os.getenv("NBA_STATS_REQUEST_DELAY_SECONDS", "0.7"))
 STAGING_ENABLED = os.getenv("NBA_STATS_STAGE_EVENTS", "true").lower() in {"true", "1", "yes"}

@@ -22,6 +22,7 @@
     "archive:existing": "tsx scripts/archive/archive-existing-season-to-s3.ts",
     "archive:bdl-backfill": "tsx scripts/archive/backfill-balldontlie-season.ts",
     "ingest:previous-season": "tsx scripts/ingestion/ingest-previous-season.ts",
+    "ingest:season-tail": "tsx scripts/ingestion/backfill-season-tail.ts",
     "backtest:recent-form": "tsx scripts/backtesting/run-recent-form-minutes.ts",
     "backtest:points-l5-vs-season": "tsx scripts/backtesting/run-points-l5-vs-season-backtest.ts",
     "report:backtest:points-l5-vs-season": "tsx scripts/backtesting/report-points-l5-vs-season-backtest.ts",

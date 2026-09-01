@@ -7,7 +7,7 @@
  *
  * Local run: executes from each lambda/<name> with npx tsx index.ts so .env in that folder is used.
  * AWS run: requires AWS CLI configured; invokes nightly-bdl-updater, odds-pre-game-snapshot,
- *          injuries-snapshot, nba-player-props-ingestion-lambda (boxscore-scraper not in Terraform).
+ *          injuries-snapshot, nba-player-props-ingestion-lambda, boxscore-scraper.
  */
 
 import { spawn } from 'child_process';
@@ -30,6 +30,7 @@ const AWS_FUNCTIONS = [
   'odds-pre-game-snapshot',
   'injuries-snapshot',
   'nba-player-props-ingestion-lambda',
+  'boxscore-scraper',
 ];
 
 function runLocal(name: string): Promise<number> {

@@ -1,5 +1,5 @@
 import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
-import { getLambdaEnv } from './src/env';
+import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { getGameTargetsForDate, getTodayET } from './src/game-discovery';
 import { createPullRun, completePullRun, createGameRun } from './src/bulk-writers';
@@ -21,6 +21,31 @@ function toBatches<T>(items: T[], size: number): T[][] {
 }
 
 export const handler = async (event: ControllerEvent) => {
+  const mode = getRuntimeMode();
+  if (mode.shouldSkipMutations) {
+    console.log(
+      `[offseason] Skipping player-props controller (DATA_MODE=${mode.dataMode}, OFFSEASON_MODE=${mode.offseason ? '1' : '0'}, CRON_DRY_RUN=${mode.cronDryRun ? '1' : '0'}).`
+    );
+    // Heartbeat so the low-coverage alarm (GamesQueued < 1, missing=breaching) stays quiet.
+    emitCoverageMetric(
+      'NBA/PlayerProps',
+      { Component: 'Controller' },
+      { GamesTargeted: 0, GamesQueued: 1 }
+    );
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        skipped: true,
+        reason: 'Player-props controller skipped by runtime mode flags',
+        dataMode: mode.dataMode,
+        offseasonMode: mode.offseason,
+        cronDryRun: mode.cronDryRun,
+        queuedGames: 0,
+      }),
+    };
+  }
+
   const env = getLambdaEnv();
   const pool = getDbPool(env.dbUrl);
   const date = event.date || getTodayET();

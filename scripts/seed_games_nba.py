@@ -20,7 +20,10 @@ if not SUPABASE_DB_URL:
     logging.error("Missing SUPABASE_DB_URL. Set it in your environment or .env file.")
     sys.exit(1)
 
-TARGET_SEASON = os.getenv("NBA_STATS_SEASON", "2025-26")
+TARGET_SEASON = os.getenv("NBA_STATS_SEASON") or os.getenv("CURRENT_ANALYTICS_SEASON") or "2025"
+if TARGET_SEASON.isdigit() and len(TARGET_SEASON) == 4:
+    _year = int(TARGET_SEASON)
+    TARGET_SEASON = f"{_year}-{str(_year + 1)[-2:]}"
 START_DATE = os.getenv("NBA_STATS_START_DATE")
 END_DATE = os.getenv("NBA_STATS_END_DATE")
 
