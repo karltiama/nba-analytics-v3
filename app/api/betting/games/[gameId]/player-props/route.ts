@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query } from '@/lib/db';
 
 function preferredVendor(): string {
@@ -15,11 +16,15 @@ function preferredVendor(): string {
  * Aggregates over/under rows from analytics.player_props_current (BDL snapshot) for one
  * sportsbook (default DraftKings). Case-insensitive sportsbook match so props still load
  * if legacy player_prop_current was empty due to vendor string casing.
+ * Auth required (private betting API).
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const { gameId } = await params;
     const vendor = preferredVendor();

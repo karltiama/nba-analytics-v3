@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { fetchBetSlipExtractionFromOpenAi } from '@/lib/betting/bet-slip/openai-extract';
 
 const MAX_BYTES = 6 * 1024 * 1024;
@@ -7,8 +8,12 @@ const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 /**
  * POST /api/betting/bet-slip/parse
  * multipart/form-data: field "image" — JPEG/PNG/WebP, max 6MB.
+ * Auth required — OpenAI-backed / expensive.
  */
 export async function POST(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey?.trim()) {
     return NextResponse.json(

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { getInjuryOpportunityCandidates } from '@/lib/betting/queries';
 
 /**
@@ -6,8 +7,12 @@ import { getInjuryOpportunityCandidates } from '@/lib/betting/queries';
  *
  * Injury Opportunity Engine (Beta):
  * Detects low-minute players with plausible injury-created opportunity.
+ * Auth required (private betting API).
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const limitParam = request.nextUrl.searchParams.get('limit');
     const parsed = limitParam ? parseInt(limitParam, 10) : 25;

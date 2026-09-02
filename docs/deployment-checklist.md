@@ -28,6 +28,13 @@ Copy from `.env.example` into your provider (Vercel → Project → Settings →
 
 Never commit `.env` or paste secrets into the repo.
 
+### Credential hygiene (Phase 1A.1)
+
+- Local Terraform secrets belong only in **untracked** `infra/terraform.tfvars` (gitignored via `infra/.gitignore` `*.tfvars`). Use `infra/terraform.tfvars.example` as the template.
+- Do not commit Lambda diagnostic scripts with real connection strings. Use `SUPABASE_DB_URL` from the environment.
+- If a database password or API key was ever committed (including historical commits), **rotate it at the provider** — deleting it from the latest tree does not invalidate the old credential.
+- Offseason freeze flags (`DATA_MODE=replay`, `OFFSEASON_MODE=1`, `CRON_DRY_RUN=1`) are unrelated to auth; keep them until you intentionally re-enable the live pipeline.
+
 ## 3. Supabase (production)
 
 - **Authentication → URL configuration:** Site URL = your production origin (e.g. `https://yourdomain.com`). Add `https://yourdomain.com/auth/callback` to **Redirect URLs** (and `http://localhost:3000/...` for local dev).
@@ -37,15 +44,28 @@ Never commit `.env` or paste secrets into the repo.
 
 ## 4. Vercel Cron and paper settlement
 
-`vercel.json` schedules `GET /api/cron/paper-settle` **once per day** at **12:00 UTC** (`0 12 * * *`).
+`vercel.json` schedules:
 
-**Hobby vs Pro:** On **Vercel Hobby**, cron jobs are limited to **at most one run per day**. Schedules like every 15 minutes require **Pro** (or run settlement manually / via an external scheduler that calls the same URL with your secret). If you upgrade to Pro, you can change the schedule in `vercel.json` (e.g. `*/15 * * * *` for every 15 minutes).
+- `GET /api/cron/paper-settle` daily at **12:00 UTC**
+- `GET /api/cron/prune-props` daily at **13:00 UTC**
 
-In **production**, the route returns **503** if no cron secret is set, and **401** if the request is not authorized.
+Authorization is shared via `lib/auth/cron-auth.ts`:
 
-- Set **`CRON_SECRET`** in Vercel to a long random string. When this variable exists, Vercel sends `Authorization: Bearer <CRON_SECRET>` on cron requests; your handler accepts `CRON_SECRET` or `PAPER_SETTLE_CRON_SECRET` as the bearer token (or `?secret=` for manual testing).
+- Production **requires** `CRON_SECRET` (and optionally `PAPER_SETTLE_CRON_SECRET` for paper-settle).
+- Missing secret in production → **503**.
+- Invalid/missing Authorization → **401**.
+- When `CRON_SECRET` is set in Vercel, cron invocations send `Authorization: Bearer <CRON_SECRET>` automatically.
+- Manual testing may also use `?secret=` (prefer Bearer; query secrets can appear in logs).
 
-After deploy, confirm cron runs in Vercel → project → Cron / Logs, or call the endpoint once with the correct bearer.
+**Hobby vs Pro:** On **Vercel Hobby**, cron jobs are limited to **at most one run per day**. Schedules like every 15 minutes require **Pro**.
+
+AWS EventBridge → Lambda jobs do **not** use these Next.js cron routes; they authenticate via IAM/EventBridge and are unchanged by Phase 1A.1.
+
+### Betting API authentication
+
+Private `/api/betting/*` handlers call `requireBettingAuth` (`lib/auth/require-betting-auth.ts`), which reuses `resolveSupabaseAuth`. Unauthenticated callers receive `{ "error": "Unauthorized" }` with **401**. Page middleware still redirects `/betting/*` HTML routes to login; API protection does **not** rely on that redirect alone.
+
+The public landing page does **not** call private betting APIs — featured games / props / trending previews use static demo data.
 
 ## 5. Domain and HTTPS
 

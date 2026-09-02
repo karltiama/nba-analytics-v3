@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { getMatchupAnalysis } from '@/lib/betting/queries';
 
 /**
@@ -6,11 +7,15 @@ import { getMatchupAnalysis } from '@/lib/betting/queries';
  * 
  * Returns matchup analysis for a game (analytics pace, projected starters).
  * BBRef-based rankings and key-player vs-opponent stats are not included.
+ * Auth required (private betting API).
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const { gameId } = await params;
 

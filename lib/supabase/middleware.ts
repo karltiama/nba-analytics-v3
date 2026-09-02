@@ -28,9 +28,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isBettingRoute = pathname === '/betting' || pathname.startsWith('/betting/');
+  // Page routes only — `/api/betting/*` must return JSON 401 from handlers,
+  // not an HTML login redirect.
+  const isBettingPage =
+    (pathname === '/betting' || pathname.startsWith('/betting/')) &&
+    !pathname.startsWith('/api/');
 
-  if (isBettingRoute && !user) {
+  if (isBettingPage && !user) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`);
     const redirectResponse = NextResponse.redirect(loginUrl);

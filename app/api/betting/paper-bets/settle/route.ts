@@ -1,11 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { runPaperSettlement } from '@/lib/betting/paper-settle-runner';
 
 /**
  * POST /api/betting/paper-bets/settle
  * Settles open bets whose games are Final and player has box score in research.v_player_game_outcomes.
+ * Auth required. Scheduled settlement uses /api/cron/paper-settle instead.
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const out = await runPaperSettlement();
     return NextResponse.json({

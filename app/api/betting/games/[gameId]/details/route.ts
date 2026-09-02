@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { 
   getGameOdds,
   getAllTeamRatings,
@@ -52,12 +53,16 @@ function normalizeInjuryStatus(
 /**
  * GET /api/betting/games/[gameId]/details
  * 
- * Fetches detailed game information for the game details modal
+ * Fetches detailed game information for the game details modal.
+ * Auth required (private betting API).
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const { gameId } = await params;
 

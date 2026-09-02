@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query } from '@/lib/db';
 
 /**
@@ -53,8 +54,11 @@ const BASE_AGG = `
 /**
  * GET /api/betting/paper-bets/analytics
  * Returns aggregates for status = settled only.
+ * Auth required (private betting API).
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
   try {
     const [byPropType, byConfidence, byCalibration, byEvBucket] = await Promise.all([
       query<AggRow>(

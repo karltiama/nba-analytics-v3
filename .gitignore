@@ -34,9 +34,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# Env files (can opt-in for committing if needed)
 .env*
 !.env.example
+
+# Local Terraform var files with secrets (also ignored under infra/)
+*.tfvars
+!**/terraform.tfvars.example
+!infra/terraform.tfvars.example
 
 # vercel
 .vercel

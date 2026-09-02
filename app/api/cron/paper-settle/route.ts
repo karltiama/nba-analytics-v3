@@ -1,20 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeCronRequest } from '@/lib/auth/cron-auth';
 import { runPaperSettlement } from '@/lib/betting/paper-settle-runner';
-
-function cronSecret(): string | undefined {
-  return process.env.PAPER_SETTLE_CRON_SECRET || process.env.CRON_SECRET;
-}
-
-function isAuthorized(request: NextRequest): boolean {
-  const secret = cronSecret();
-  if (!secret) {
-    return process.env.NODE_ENV !== 'production';
-  }
-  const auth = request.headers.get('authorization');
-  const bearer = auth?.startsWith('Bearer ') ? auth.slice(7).trim() : null;
-  const q = request.nextUrl.searchParams.get('secret');
-  return bearer === secret || q === secret;
-}
 
 function runtimeMode() {
   const dataMode = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
@@ -26,18 +12,16 @@ function runtimeMode() {
 
 /**
  * GET /api/cron/paper-settle
- * Scheduled settlement (Vercel Cron or external curl). Requires Bearer or ?secret= matching
- * PAPER_SETTLE_CRON_SECRET or CRON_SECRET. In production, secret must be configured.
+ * Scheduled settlement (Vercel Cron or external curl).
+ * Auth: Bearer or ?secret= matching PAPER_SETTLE_CRON_SECRET or CRON_SECRET.
+ * In production, a secret must be configured (see lib/auth/cron-auth.ts).
  */
 export async function GET(request: NextRequest) {
-  if (process.env.NODE_ENV === 'production' && !cronSecret()) {
-    return NextResponse.json(
-      { ok: false, error: 'PAPER_SETTLE_CRON_SECRET or CRON_SECRET must be set in production' },
-      { status: 503 }
-    );
-  }
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  const auth = authorizeCronRequest(request, {
+    secretEnvKeys: ['PAPER_SETTLE_CRON_SECRET', 'CRON_SECRET'],
+  });
+  if (!auth.ok) {
+    return NextResponse.json({ ok: false, error: auth.error }, { status: auth.status });
   }
 
   const mode = runtimeMode();

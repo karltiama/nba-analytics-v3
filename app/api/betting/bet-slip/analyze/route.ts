@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { betSlipAnalyzeBodySchema } from '@/lib/betting/bet-slip/schema';
 import { assertPlayerExists, resolvePlayerName } from '@/lib/betting/bet-slip/player-resolve';
 import { computeParlaySummary, type LegForParlay } from '@/lib/betting/bet-slip/parlay-summary';
@@ -39,8 +40,12 @@ function serializeEv(ev: PropEvFields) {
 /**
  * POST /api/betting/bet-slip/analyze
  * Confirmed slip (after user edits); returns per-leg EV using computePropEvFields + parlay summary.
+ * Auth required — EV/model compute is expensive.
  */
 export async function POST(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   let json: unknown;
   try {
     json = await request.json();

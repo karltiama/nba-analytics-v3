@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { getTrendingPlayersFromAnalytics } from '@/lib/betting/queries';
 
 /**
@@ -6,11 +7,15 @@ import { getTrendingPlayersFromAnalytics } from '@/lib/betting/queries';
  * 
  * Fetches trending players for the betting dashboard
  * Players performing significantly above/below their season average
+ * Auth required (private betting API).
  * 
  * Query params:
  *   - limit: number (optional, defaults to 10)
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '10');

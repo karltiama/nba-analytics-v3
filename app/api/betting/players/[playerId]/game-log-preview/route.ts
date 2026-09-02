@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import {
   resolveAnalyticsPlayerId,
   getAnalyticsPlayerInfo,
@@ -13,11 +14,15 @@ const MAX_LIMIT = 40;
 /**
  * GET /api/betting/players/[playerId]/game-log-preview
  * Recent games + season averages for Props Explorer sidebar (client fetch).
+ * Auth required (private betting API).
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ playerId: string }> }
 ) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const { playerId } = await params;
     if (!playerId?.trim()) {

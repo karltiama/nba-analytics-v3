@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query, queryOne } from '@/lib/db';
 
 const createBetSchema = z.object({
@@ -85,8 +86,12 @@ function mapBet(r: BetRow) {
 
 /**
  * GET /api/betting/paper-bets?status=open|settled|all&limit=&offset=
+ * Auth required (private betting API).
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const sp = request.nextUrl.searchParams;
     const statusRaw = (sp.get('status') || 'all').toLowerCase();
@@ -145,8 +150,12 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/betting/paper-bets
+ * Auth required (private betting API).
  */
 export async function POST(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const body = await request.json();
     const parsed = createBetSchema.safeParse(body);
@@ -213,8 +222,12 @@ export async function POST(request: NextRequest) {
 /**
  * DELETE /api/betting/paper-bets?id=<bet_id>
  * Removes an open paper bet by id.
+ * Auth required (private betting API).
  */
 export async function DELETE(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const id = (request.nextUrl.searchParams.get('id') || '').trim();
     if (!id) {

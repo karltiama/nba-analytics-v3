@@ -8,6 +8,13 @@ Terraform setup to manage the **nightly-bdl-updater**, **odds-pre-game-snapshot*
 - **Terraform** installed (>= 1.0).
 - **Node.js 22** for building the Lambdas.
 
+## Secrets
+
+- Copy `terraform.tfvars.example` → `terraform.tfvars` and fill real values locally.
+- `*.tfvars` is gitignored (except the `.example`). **Never commit** real DB URLs or API keys.
+- Prefer AWS Secrets Manager / SSM for production Lambda env when you harden further; today vars are injected via `terraform.tfvars` / `TF_VAR_*` at apply time.
+- If credentials were ever committed historically, rotate them at Supabase / BallDontLie / etc. Removing them from the working tree does not invalidate old secrets.
+
 ## Build the Lambdas before apply
 
 Terraform packages each Lambda from the existing source tree. Build before apply (at least the functions you are changing):

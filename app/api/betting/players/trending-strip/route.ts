@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { getTrendingPlayersStrip, type TrendingStat } from '@/lib/betting/queries';
 
 const VALID_STATS = new Set<TrendingStat>(['pts', 'reb', 'ast', '3pm', 'pra']);
@@ -7,12 +8,16 @@ const VALID_STATS = new Set<TrendingStat>(['pts', 'reb', 'ast', '3pm', 'pra']);
  * GET /api/betting/players/trending-strip
  *
  * Returns compact trending player data for the horizontal strip.
+ * Auth required (private betting API). Landing page uses static demo data instead.
  *
  * Query params:
  *   - stat:  'pts' | 'reb' | 'ast' | '3pm' | 'pra' (default 'pts')
  *   - limit: number (default 15)
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const params = request.nextUrl.searchParams;
     const rawStat = params.get('stat') || 'pts';

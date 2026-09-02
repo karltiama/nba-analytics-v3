@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query } from '@/lib/db';
 import { getPlayerPropModelInputs, type PlayerPropModelInputs } from '@/lib/betting/player-prop-inputs';
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
@@ -155,8 +156,11 @@ function sortKey(
  *
  * Paginated props from analytics.player_props_current with optional date (ET) or game_id,
  * plus EV fields (Track B primary via resolveEvTrack; Track A/B diagnostics).
+ * Auth required — EV/model compute is expensive; do not expose publicly.
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
   try {
     const selectedTrack = resolveEvTrack();
     const sp = request.nextUrl.searchParams;

@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import {
   getTeamPaceRankings,
   getTeamDefensiveRankings,
@@ -11,8 +12,12 @@ import {
  * 
  * Fetches insight cards + widgets for the betting dashboard
  * Pace/defense/dashboard from analytics; trending players from analytics L5 vs season
+ * Auth required (private betting API).
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     // Fetch all necessary data in parallel
     const [paceRankings, defenseRankings, summary, trendingPlayers] = await Promise.all([

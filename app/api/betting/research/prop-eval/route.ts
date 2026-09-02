@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query, queryOne } from '@/lib/db';
 
 const MAX_LIMIT = 500;
@@ -61,8 +62,12 @@ function toNum(v: string | number | null | undefined): number | null {
  *
  * Read-only rows from research.v_prop_eval_units (closing-line snapshot + outcome).
  * Query: before=YYYY-MM-DD (exclusive), after=YYYY-MM-DD (inclusive), prop_type, limit, offset.
+ * Auth required (private betting API).
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const sp = request.nextUrl.searchParams;
     const includeMeta = sp.get('include_meta') === '1';

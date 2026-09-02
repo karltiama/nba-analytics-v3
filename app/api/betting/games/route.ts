@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import {
   getGamesForDate,
   getTodaysGames,
@@ -19,12 +20,17 @@ export const dynamic = 'force-dynamic';
  * GET /api/betting/games
  * 
  * Fetches games for the betting dashboard
+ * Auth required (private betting API). Public landing uses static demo cards
+ * in `components/landing/FeaturedGames.tsx` — do not call this unauthenticated.
  * Query params:
  *   - date: YYYY-MM-DD (optional, defaults to today's games)
  *   - mode: 'today' | 'recent' (optional, defaults to 'today')
  *   - limit: number (optional, defaults to 10 for recent mode)
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get('date');

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { buildAiSlateUserContent } from '@/lib/betting/ai-slate-context';
 
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
@@ -90,8 +91,12 @@ async function fetchOpenAiSlateText(
 /**
  * GET /api/betting/ai-slate-insights?date=YYYY-MM-DD
  * Returns an LLM-written slate summary from analytics + odds context (cached).
+ * Auth required — OpenAI-backed / expensive.
  */
 export async function GET(request: NextRequest) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey?.trim()) {
     return NextResponse.json({

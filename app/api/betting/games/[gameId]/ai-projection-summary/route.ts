@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 
 const bodySchema = z.object({
   homeTeamName: z.string().min(1),
@@ -120,11 +121,15 @@ async function fetchOpenAiSummaryText(
  * POST /api/betting/games/[gameId]/ai-projection-summary
  * Body: structured matchup context already shown on the game page; returns a short LLM summary.
  * Identical gameId + body reuses a cached OpenAI result (see AI_PROJECTION_SUMMARY_CACHE_SECONDS).
+ * Auth required — OpenAI-backed / expensive.
  */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey?.trim()) {
     return NextResponse.json(

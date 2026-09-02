@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query } from '@/lib/db';
 import { getPlayerPropModelInputs } from '@/lib/betting/player-prop-inputs';
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
@@ -54,11 +55,15 @@ function median(values: number[]): number | null {
  *
  * Returns current player props for the player from analytics.player_props_current.
  * Optional ?game_id=... to limit to one game.
+ * Auth required — includes EV/model fields.
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ playerId: string }> }
 ) {
+  const gate = await requireBettingAuth(request);
+  if (!gate.ok) return gate.response;
+
   try {
     const selectedTrack = resolveEvTrack();
     const { playerId } = await params;
