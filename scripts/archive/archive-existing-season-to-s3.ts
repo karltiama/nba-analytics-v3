@@ -2,8 +2,8 @@
  * Archive existing 2025-26 NBA season data from Postgres to S3.
  *
  * Read-only against Postgres. Resumable: skips S3 keys that already exist
- * unless --overwrite is passed. Manifest is always rewritten so it reflects
- * the latest known state.
+ * unless --overwrite is passed. Existing objects are verified (row count)
+ * and included in the rewritten manifest so reruns stay idempotent.
  *
  * Usage:
  *   tsx scripts/archive/archive-existing-season-to-s3.ts --season=2025 --dry-run
@@ -29,6 +29,10 @@ import {
   type EntityDef,
   type SeasonContext,
 } from './entity-registry';
+import {
+  archiveEntity,
+  type EntitySummary,
+} from './archive-entity-core';
 
 type CliArgs = {
   season: number;
@@ -36,35 +40,6 @@ type CliArgs = {
   dryRun: boolean;
   overwrite: boolean;
   batchSize: number;
-};
-
-type EntityManifest = {
-  schemaVersion: 1;
-  s3Prefix: string;
-  exportMode: 'full';
-  source: 'existing_ingestion';
-  league: 'nba';
-  season: number;
-  entity: string;
-  sourceTable: string;
-  exportedAt: string;
-  recordCount: number;
-  dateRange: { from: string; to: string } | null;
-  partitions: string[];
-  status: 'success' | 'partial' | 'empty' | 'skipped' | 'error';
-  notes: string | null;
-};
-
-type EntitySummary = {
-  entity: string;
-  status: EntityManifest['status'];
-  recordCount: number;
-  partitions: number;
-  written: number;
-  skipped: number;
-  empty: number;
-  durationMs: number;
-  error?: string;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -150,164 +125,6 @@ async function computeSeasonContext(db: Pool, season: number): Promise<SeasonCon
   return { season, seasonStart: row.start, seasonEnd: row.end };
 }
 
-function buildEntityPrefix(rawPrefix: string, season: number, entity: string): string {
-  return `${rawPrefix}/source=existing_ingestion/league=nba/season=${season}/entity=${entity}`;
-}
-
-function buildPartitionKey(entityPrefix: string, partition: string | null): string {
-  return partition === null
-    ? `${entityPrefix}/data.jsonl`
-    : `${entityPrefix}/dt=${partition}/data.jsonl`;
-}
-
-async function archiveEntity(opts: {
-  entity: EntityDef;
-  db: Pool;
-  s3: S3Storage;
-  rawPrefix: string;
-  args: CliArgs;
-  ctx: SeasonContext;
-}): Promise<EntitySummary> {
-  const { entity, db, s3, rawPrefix, args, ctx } = opts;
-  const start = Date.now();
-  const entityPrefix = buildEntityPrefix(rawPrefix, args.season, entity.entity);
-
-  console.log(`\n[entity] ${entity.entity}  (${entity.sourceTable})`);
-  console.log(`         partition=${entity.partitionStrategy}  paginationKey=${entity.paginationKey}`);
-
-  let partitions: (string | null)[];
-  if (entity.partitionStrategy === 'date') {
-    if (!entity.listPartitions) {
-      throw new Error(`Entity ${entity.entity} declares date partition but no listPartitions`);
-    }
-    const parts = await entity.listPartitions(db, ctx);
-    partitions = parts;
-    console.log(`         discovered ${parts.length} partition(s)`);
-  } else {
-    partitions = [null];
-  }
-
-  let totalRecords = 0;
-  let written = 0;
-  let skipped = 0;
-  let empty = 0;
-  const writtenPartitions: string[] = [];
-
-  for (const partition of partitions) {
-    const key = buildPartitionKey(entityPrefix, partition);
-    const tag = partition === null ? '<single>' : partition;
-
-    // Dry-run path skips S3 round-trips entirely so the user can preview the
-    // plan without AWS credentials. A real run will still resume/skip-existing.
-    if (!args.dryRun && !args.overwrite && (await s3.objectExists(key))) {
-      console.log(`  [skip-existing] ${key}`);
-      skipped += 1;
-      continue;
-    }
-
-    const count = await entity.countRows(db, ctx, partition);
-    if (count === 0) {
-      console.log(`  [skip-empty]    ${key}`);
-      empty += 1;
-      continue;
-    }
-
-    if (args.dryRun) {
-      console.log(`  [dry-run]       would write ${key}  (${count} rows)`);
-      totalRecords += count;
-      written += 1;
-      writtenPartitions.push(tag);
-      continue;
-    }
-
-    let cursor: unknown | null = null;
-    let fetched = 0;
-    const collected: unknown[] = [];
-    while (true) {
-      const { rows, nextCursor } = await entity.fetchBatch(
-        db,
-        ctx,
-        partition,
-        cursor,
-        args.batchSize
-      );
-      if (rows.length === 0) break;
-      collected.push(...rows);
-      fetched += rows.length;
-      cursor = nextCursor;
-      if (cursor === null) break;
-    }
-
-    if (fetched !== count) {
-      console.warn(
-        `  [warn] count mismatch on ${key}: expected ${count}, fetched ${fetched} (table may have changed mid-run)`
-      );
-    }
-
-    const result = await s3.putJsonLines(key, collected, { overwrite: true });
-    totalRecords += result.count ?? fetched;
-    written += 1;
-    writtenPartitions.push(tag);
-    console.log(`  [wrote]         ${key}  (${result.count ?? fetched} rows)`);
-  }
-
-  const status: EntityManifest['status'] =
-    written === 0 && skipped === 0 ? 'empty' : written === 0 && skipped > 0 ? 'skipped' : 'success';
-
-  const dateRange =
-    entity.partitionStrategy === 'date' && writtenPartitions.length > 0
-      ? {
-          from: writtenPartitions[0],
-          to: writtenPartitions[writtenPartitions.length - 1],
-        }
-      : null;
-
-  const manifest: EntityManifest = {
-    schemaVersion: 1,
-    s3Prefix: entityPrefix,
-    exportMode: 'full',
-    source: 'existing_ingestion',
-    league: 'nba',
-    season: args.season,
-    entity: entity.entity,
-    sourceTable: entity.sourceTable,
-    exportedAt: new Date().toISOString(),
-    recordCount: totalRecords,
-    dateRange,
-    partitions: entity.partitionStrategy === 'date' ? writtenPartitions : [],
-    status,
-    notes: entity.notes ?? null,
-  };
-
-  const manifestKey = `${entityPrefix}/_manifest.json`;
-  if (args.dryRun) {
-    console.log(`  [dry-run]       would write ${manifestKey}`);
-    console.log(`  [dry-run]       manifest preview:`);
-    console.log(indent(JSON.stringify(manifest, null, 2), '                  '));
-  } else {
-    await s3.putJson(manifestKey, manifest, { overwrite: true });
-    console.log(`  [manifest]      ${manifestKey}`);
-  }
-
-  return {
-    entity: entity.entity,
-    status,
-    recordCount: totalRecords,
-    partitions: writtenPartitions.length,
-    written,
-    skipped,
-    empty,
-    durationMs: Date.now() - start,
-  };
-}
-
-function indent(text: string, prefix: string): string {
-  return text
-    .split('\n')
-    .map((line) => prefix + line)
-    .join('\n');
-}
-
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
@@ -349,7 +166,19 @@ async function main(): Promise<void> {
 
     for (const entity of selected) {
       try {
-        const summary = await archiveEntity({ entity, db, s3, rawPrefix, args, ctx });
+        const summary = await archiveEntity({
+          entity,
+          db,
+          s3,
+          rawPrefix,
+          args: {
+            season: args.season,
+            dryRun: args.dryRun,
+            overwrite: args.overwrite,
+            batchSize: args.batchSize,
+          },
+          ctx,
+        });
         summaries.push(summary);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -398,10 +227,11 @@ async function main(): Promise<void> {
     for (const s of summaries) {
       const durationSec = (s.durationMs / 1000).toFixed(1);
       const tail = s.error ? `  ERROR: ${s.error}` : '';
+      const preserved = s.preservedManifest ? ' preserved-manifest' : '';
       console.log(
         `  ${s.entity.padEnd(28)} ${s.status.padEnd(8)} rows=${String(s.recordCount).padStart(7)} ` +
           `parts=${String(s.partitions).padStart(3)} wrote=${s.written} skipped=${s.skipped} empty=${s.empty} ` +
-          `(${durationSec}s)${tail}`
+          `(${durationSec}s)${preserved}${tail}`
       );
     }
     console.log(args.dryRun ? '\n[dry-run] no S3 objects were written.' : '\nDone.');

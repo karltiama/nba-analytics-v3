@@ -34,6 +34,7 @@ Never commit `.env` or paste secrets into the repo.
 - Do not commit Lambda diagnostic scripts with real connection strings. Use `SUPABASE_DB_URL` from the environment.
 - If a database password or API key was ever committed (including historical commits), **rotate it at the provider** — deleting it from the latest tree does not invalidate the old credential.
 - Offseason freeze flags (`DATA_MODE=replay`, `OFFSEASON_MODE=1`, `CRON_DRY_RUN=1`) are unrelated to auth; keep them until you intentionally re-enable the live pipeline.
+- **Vercel Production must set those freeze flags explicitly.** Missing `DATA_MODE` no longer defaults prune to live; destructive `/api/cron/prune-props` also requires `PRUNE_ENABLED=1` (leave unset/0 in offseason).
 
 ## 3. Supabase (production)
 
