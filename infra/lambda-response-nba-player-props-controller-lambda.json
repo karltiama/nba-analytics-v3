@@ -1,1 +1,1 @@
-{"statusCode":200,"body":"{\"success\":true,\"pullRunId\":553,\"queuedGames\":3,\"date\":\"2026-04-29\"}"}
+{"statusCode":200,"body":"{\"success\":true,\"skipped\":true,\"reason\":\"Player-props controller skipped by runtime mode flags\",\"dataMode\":\"replay\",\"offseasonMode\":true,\"cronDryRun\":true,\"queuedGames\":0}"}
