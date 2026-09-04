@@ -9,6 +9,9 @@ import {
 } from '@/lib/betting/queries';
 import { query } from '@/lib/db';
 import { getInjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
+import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { buildEnrichedTeamSide, toNullableGameOdds } from '@/lib/betting/enrich-games-response';
 
 /** Normalize provider injury fields to UI-friendly status for injury badges. */
 function normalizeInjuryStatus(
@@ -166,67 +169,77 @@ export async function GET(
       console.error('injury matchup context:', ctxErr);
     }
 
-    // Helper function to format stats to 1 decimal place
-    const formatStat = (value: number | null | undefined): number => {
-      const num = parseFloat(value?.toString() || '0') || 0;
-      return Math.round(num * 10) / 10; // Round to 1 decimal place
+    // Helper: keep null when missing (do not invent 0.0)
+    const formatStatOrNull = (value: number | null | undefined): number | null => {
+      if (value == null) return null;
+      const num = Number(value);
+      if (!Number.isFinite(num)) return null;
+      return Math.round(num * 10) / 10;
     };
 
-    const startTimeFormatted = game.start_time
-      ? new Date(game.start_time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZoneName: 'short',
-        })
-      : '';
+    const homeSide = buildEnrichedTeamSide({
+      id: game.home_team_id,
+      name: game.home_team_name,
+      abbreviation: game.home_team_abbr,
+      ratings: Object.keys(homeRatings).length ? (homeRatings as any) : undefined,
+      defensiveRank: undefined,
+      recentForm: [],
+    });
+    const awaySide = buildEnrichedTeamSide({
+      id: game.away_team_id,
+      name: game.away_team_name,
+      abbreviation: game.away_team_abbr,
+      ratings: Object.keys(awayRatings).length ? (awayRatings as any) : undefined,
+      defensiveRank: undefined,
+      recentForm: [],
+    });
+
+    const startTimeFormatted = formatTipoffEt(game.start_time);
+    const status = normalizeGameStatus(game.status);
 
     const gameDateStr = game.start_time
       ? new Date(game.start_time).toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
       : '';
+
+    const nullableOdds = toNullableGameOdds(odds);
 
     // Build response (include game for page/modal header)
     const response = {
       game: {
         id: resolvedGameId,
         gameDate: gameDateStr,
+        status,
+        statusRaw: game.status ?? null,
         homeTeam: {
           id: game.home_team_id,
           name: game.home_team_name,
           abbreviation: game.home_team_abbr,
-          record: `${homeRatings.wins ?? 0}-${homeRatings.losses ?? 0}`,
+          record: homeSide.record,
         },
         awayTeam: {
           id: game.away_team_id,
           name: game.away_team_name,
           abbreviation: game.away_team_abbr,
-          record: `${awayRatings.wins ?? 0}-${awayRatings.losses ?? 0}`,
+          record: awaySide.record,
         },
         startTime: startTimeFormatted,
       },
       homeTeamStats: {
-        offensiveRating: formatStat(homeRatings.offensive_rating),
-        defensiveRating: formatStat(homeRatings.defensive_rating),
-        pace: formatStat(homeRatings.pace),
+        offensiveRating: formatStatOrNull(homeRatings.offensive_rating),
+        defensiveRating: formatStatOrNull(homeRatings.defensive_rating),
+        pace: formatStatOrNull(homeRatings.pace),
+        hasSeasonAnalytics: homeSide.hasSeasonAnalytics,
         recentForm: transformRecentForm(homeForm),
       },
       awayTeamStats: {
-        offensiveRating: formatStat(awayRatings.offensive_rating),
-        defensiveRating: formatStat(awayRatings.defensive_rating),
-        pace: formatStat(awayRatings.pace),
+        offensiveRating: formatStatOrNull(awayRatings.offensive_rating),
+        defensiveRating: formatStatOrNull(awayRatings.defensive_rating),
+        pace: formatStatOrNull(awayRatings.pace),
+        hasSeasonAnalytics: awaySide.hasSeasonAnalytics,
         recentForm: transformRecentForm(awayForm),
       },
-      spreadMovement: lineMovement.spreadMovement.length > 0 
-        ? lineMovement.spreadMovement 
-        : [
-            { time: 'Open', value: odds.home.spread || 0 },
-            { time: 'Now', value: odds.home.spread || 0 },
-          ],
-      totalMovement: lineMovement.totalMovement.length > 0
-        ? lineMovement.totalMovement
-        : [
-            { time: 'Open', value: odds.overUnder || 220 },
-            { time: 'Now', value: odds.overUnder || 220 },
-          ],
+      spreadMovement: lineMovement.spreadMovement.length > 0 ? lineMovement.spreadMovement : [],
+      totalMovement: lineMovement.totalMovement.length > 0 ? lineMovement.totalMovement : [],
       historicalMatchups: historicalMatchups.map((m: any) => ({
         date: m.date,
         homeTeam: m.homeTeam,
@@ -236,26 +249,26 @@ export async function GET(
         totalPoints: m.totalPoints,
       })),
       currentOdds: {
-        spread: odds.home.spread != null ? odds.home.spread : null,
-        spreadOddsHome: odds.home.spreadOdds != null ? odds.home.spreadOdds : null,
-        spreadOddsAway: odds.away.spreadOdds != null ? odds.away.spreadOdds : null,
-        moneylineHome: odds.home.moneyline != null ? odds.home.moneyline : null,
-        moneylineAway: odds.away.moneyline != null ? odds.away.moneyline : null,
-        overUnder: odds.overUnder != null ? odds.overUnder : null,
-        overOdds: odds.overOdds != null ? odds.overOdds : null,
-        underOdds: odds.underOdds != null ? odds.underOdds : null,
-        bookmaker: odds.bookmaker ?? null,
+        spread: nullableOdds.home.spread,
+        spreadOddsHome: nullableOdds.home.spreadOdds,
+        spreadOddsAway: nullableOdds.away.spreadOdds,
+        moneylineHome: nullableOdds.home.moneyline,
+        moneylineAway: nullableOdds.away.moneyline,
+        overUnder: nullableOdds.overUnder,
+        overOdds: nullableOdds.overOdds,
+        underOdds: nullableOdds.underOdds,
+        bookmaker: nullableOdds.bookmaker,
       },
       injuries: {
         home: injuriesHome,
         away: injuriesAway,
       },
       injuryMatchupContext: injuryMatchupContext ?? { season: '', entries: [] },
-      aiSuggestions: [], // Not available in MVP - can add simple calculations later
+      aiSuggestions: [],
       aiConfidenceScores: {
-        moneyline: 0, // Not available in MVP
-        spread: 0, // Not available in MVP
-        total: 0, // Not available in MVP
+        moneyline: 0,
+        spread: 0,
+        total: 0,
       },
     };
 

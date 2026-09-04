@@ -45,7 +45,11 @@ export async function getTeamById(teamId: string): Promise<TeamInfo | null> {
 }
 
 /**
- * Team season averages + record for the given (or latest) season.
+ * Team season averages + record.
+ *
+ * - Pass explicit `season` for current-product pages (`getAnalyticsSeason()`).
+ * - Omitting `season` returns the latest row by season DESC (historical). That is
+ *   **not** “current season” — do not omit for live product surfaces.
  */
 export async function getTeamSeasonAverages(
   teamId: string,
@@ -105,6 +109,7 @@ export async function getTeamSeasonAverages(
 
 /**
  * Advanced metrics for a team (from analytics.team_season_averages).
+ * Same season contract as `getTeamSeasonAverages`: omit only for historical latest-row.
  */
 export async function getTeamAdvancedMetrics(
   teamId: string,

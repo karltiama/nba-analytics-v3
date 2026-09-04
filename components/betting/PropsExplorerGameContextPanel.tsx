@@ -14,16 +14,16 @@ import {
 type InjuryRow = { player: string; status: string; injury: string };
 
 type TeamStatsBlock = {
-  offensiveRating: number;
-  defensiveRating: number;
-  pace: number;
+  offensiveRating: number | null;
+  defensiveRating: number | null;
+  pace: number | null;
 };
 
 type GameDetailsPayload = {
   game: {
     id: string;
-    homeTeam: { id: string; name: string; abbreviation: string; record: string };
-    awayTeam: { id: string; name: string; abbreviation: string; record: string };
+    homeTeam: { id: string; name: string; abbreviation: string; record: string | null };
+    awayTeam: { id: string; name: string; abbreviation: string; record: string | null };
     startTime: string;
   };
   homeTeamStats: TeamStatsBlock;

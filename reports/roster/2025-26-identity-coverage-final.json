@@ -1,0 +1,234 @@
+{
+  "season": "2025-26",
+  "analytics_season_for_pgl": "2025",
+  "snapshot_note": "CommonTeamRoster / player_team_rosters is a membership SNAPSHOT (player observed on team at fetch), not exact trade/signing transaction history.",
+  "total_roster_players": 530,
+  "teams": 30,
+  "status_counts": {
+    "provider_match": 504,
+    "safe_fallback_match": 10,
+    "unresolved": 10,
+    "ambiguous": 6
+  },
+  "resolved": 514,
+  "percent_resolved": 96.98,
+  "gap_counts": {
+    "none": 514,
+    "conflicting_identities": 6,
+    "analytics_player_absent": 10
+  },
+  "by_team": {
+    "ATL": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 1
+    },
+    "BKN": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "BOS": {
+      "total": 16,
+      "resolved": 16,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "CHA": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "CHI": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "CLE": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "DAL": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 1
+    },
+    "DEN": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "DET": {
+      "total": 17,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "GSW": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "HOU": {
+      "total": 17,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "IND": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "LAC": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "LAL": {
+      "total": 17,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "MEM": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "MIA": {
+      "total": 17,
+      "resolved": 16,
+      "unresolved": 0,
+      "ambiguous": 1
+    },
+    "MIL": {
+      "total": 17,
+      "resolved": 14,
+      "unresolved": 1,
+      "ambiguous": 2
+    },
+    "MIN": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "NOP": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "NYK": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "OKC": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 1
+    },
+    "ORL": {
+      "total": 17,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "PHI": {
+      "total": 17,
+      "resolved": 17,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "PHX": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "POR": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "SAC": {
+      "total": 18,
+      "resolved": 18,
+      "unresolved": 0,
+      "ambiguous": 0
+    },
+    "SAS": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "TOR": {
+      "total": 17,
+      "resolved": 16,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "UTA": {
+      "total": 18,
+      "resolved": 17,
+      "unresolved": 1,
+      "ambiguous": 0
+    },
+    "WAS": {
+      "total": 18,
+      "resolved": 16,
+      "unresolved": 2,
+      "ambiguous": 0
+    }
+  },
+  "players_per_team": {
+    "ATL": 18,
+    "BKN": 18,
+    "BOS": 16,
+    "CHA": 18,
+    "CHI": 18,
+    "CLE": 18,
+    "DAL": 18,
+    "DEN": 18,
+    "DET": 17,
+    "GSW": 18,
+    "HOU": 17,
+    "IND": 18,
+    "LAC": 18,
+    "LAL": 17,
+    "MEM": 18,
+    "MIA": 17,
+    "MIL": 17,
+    "MIN": 18,
+    "NOP": 18,
+    "NYK": 18,
+    "OKC": 18,
+    "ORL": 17,
+    "PHI": 17,
+    "PHX": 18,
+    "POR": 18,
+    "SAC": 18,
+    "SAS": 18,
+    "TOR": 17,
+    "UTA": 18,
+    "WAS": 18
+  }
+}

@@ -5,6 +5,7 @@
 
 import type { PoolClient } from 'pg';
 import pool from '@/lib/db';
+import { resolveIngestionSeasonStartYear } from '@/lib/season';
 
 const BDL_BASE = 'https://api.balldontlie.io/v1';
 
@@ -44,13 +45,6 @@ const upsertAnalyticsGame = `
 function sid(id: number | null | undefined): string {
   if (id == null) return '';
   return String(id);
-}
-
-function getCurrentSeason(): number {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  return month < 6 ? year - 1 : year;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -193,11 +187,15 @@ export function getTodayEtYmd(): string {
 
 /**
  * Fetch BDL games for inclusive ET dates [startDateET, endDateET] and upsert raw + analytics.
+ *
+ * @param season Optional BDL season start year (e.g. 2026 for 2026-27). When omitted,
+ *   uses resolveIngestionSeasonStartYear() → CURRENT_ANALYTICS_SEASON / pin (not calendar).
  * @returns number of BDL rows processed, or null if skipped (no API key).
  */
 export async function refreshBdlScheduleForEtDateRange(
   startDateET: string,
   endDateET: string,
+  season?: number,
 ): Promise<number | null> {
   const apiKey = (process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY)?.trim();
   if (!apiKey) {
@@ -205,8 +203,8 @@ export async function refreshBdlScheduleForEtDateRange(
     return null;
   }
 
-  const season = getCurrentSeason();
-  const games = await fetchGamesPage(startDateET, endDateET, season, apiKey);
+  const resolvedSeason = resolveIngestionSeasonStartYear(season);
+  const games = await fetchGamesPage(startDateET, endDateET, resolvedSeason, apiKey);
   if (games.length === 0) return 0;
 
   const client = await pool.connect();

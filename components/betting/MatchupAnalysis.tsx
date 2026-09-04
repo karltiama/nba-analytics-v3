@@ -79,7 +79,7 @@ interface MatchupAnalysisData {
   away_offense: TeamOffensiveRankings | null;
   home_defense: OpponentDefensiveRankings | null;
   away_defense: OpponentDefensiveRankings | null;
-  pace_analysis: PaceAnalysis;
+  pace_analysis: PaceAnalysis | null;
   key_players: PlayerVsOpponentStats[];
   starting_lineups: {
     home: StartingLineup | null;
@@ -329,7 +329,18 @@ export function OffenseVsDefenseComparison({
   return <div className="glass-card rounded-xl p-4">{content}</div>;
 }
 
-export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis }) {
+export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis | null }) {
+  if (!paceAnalysis) {
+    return (
+      <div className="glass-card rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Zap className="w-4 h-4 text-[#00d4ff]" />
+          <h4 className="text-xs font-semibold text-white">Pace Analysis</h4>
+        </div>
+        <p className="text-xs text-muted-foreground">Not enough season data</p>
+      </div>
+    );
+  }
   const { home_team_pace, away_team_pace, projected_pace, pace_advantage, pace_impact } = paceAnalysis;
   
   const paceColor = pace_impact === 'fast' 
@@ -555,7 +566,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
                   <h5 className="text-xs font-semibold text-white">{awayTeamAbbr} Starting 5</h5>
                 </div>
                 <p className="text-xs text-muted-foreground text-center py-4">
-                  No starting lineup data available
+                  Not enough current-season data
                 </p>
               </div>
             )}
@@ -573,7 +584,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
                   <h5 className="text-xs font-semibold text-white">{homeTeamAbbr} Starting 5</h5>
                 </div>
                 <p className="text-xs text-muted-foreground text-center py-4">
-                  No starting lineup data available
+                  Not enough current-season data
                 </p>
               </div>
             )}
@@ -633,7 +644,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
       
       {lineup.players.length === 0 && (
         <p className="text-xs text-muted-foreground text-center py-4">
-          No starting lineup data available
+          Not enough current-season data
         </p>
       )}
     </>

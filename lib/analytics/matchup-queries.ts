@@ -5,6 +5,7 @@
 
 import { queryOne } from '@/lib/db';
 import { getTeamSeasonAverages } from '@/lib/teams/analytics-queries';
+import { getAnalyticsSeason } from '@/lib/season';
 
 export interface OpponentContext {
   avg_defensive_rating: number | null;
@@ -15,27 +16,23 @@ export interface OpponentContext {
 
 /**
  * Opponent defensive context for a game (defensive rating, pace, points allowed, rebounds allowed).
- * Uses analytics.team_season_averages and analytics.team_game_stats. Assists allowed not in schema.
+ * Defaults to active analytics season when `season` omitted (fail-closed vs latest DESC).
  */
 export async function getOpponentContextForGame(
   opponentTeamId: string,
   season?: string
 ): Promise<OpponentContext | null> {
-  const teamSeason = await getTeamSeasonAverages(opponentTeamId, season ?? undefined);
+  const activeSeason = season || getAnalyticsSeason();
+  const teamSeason = await getTeamSeasonAverages(opponentTeamId, activeSeason);
   if (!teamSeason) return null;
 
   let avgReboundsAllowed: number | null = null;
-  let sql = `
-    SELECT AVG(opponent_offensive_rebounds + opponent_defensive_rebounds)::numeric as avg_reb_allowed
-    FROM analytics.team_game_stats
-    WHERE team_id = $1
-  `;
-  const params: string[] = [opponentTeamId];
-  if (season) {
-    sql += ` AND season = $2`;
-    params.push(season);
-  }
-  const rebRow = await queryOne(sql, params);
+  const rebRow = await queryOne(
+    `SELECT AVG(opponent_offensive_rebounds + opponent_defensive_rebounds)::numeric as avg_reb_allowed
+     FROM analytics.team_game_stats
+     WHERE team_id = $1 AND season = $2`,
+    [opponentTeamId, activeSeason]
+  );
   if (rebRow?.avg_reb_allowed != null) {
     avgReboundsAllowed = Number(rebRow.avg_reb_allowed);
   }

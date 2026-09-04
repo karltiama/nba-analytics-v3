@@ -12,6 +12,7 @@ import {
 } from '@/lib/players/analytics-queries';
 import { getNextGameForPlayer } from '@/lib/analytics/games-queries';
 import { getOpponentContextForGame } from '@/lib/analytics/matchup-queries';
+import { getAnalyticsSeason } from '@/lib/season';
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
@@ -30,14 +31,16 @@ async function loadPlayerAnalysis(playerId: string, season: string | null) {
       opponentContext: null as OpponentContext | null,
       recentForm: null as PlayerRecentForm | null,
       vsOpponentHistory: null as PlayerVsOpponentHistory | null,
+      activeSeason: season || getAnalyticsSeason(),
     };
   }
+  const activeSeason = season || getAnalyticsSeason();
   const [player, seasonStats, gamesData, nextGame, recentForm] = await Promise.all([
     getAnalyticsPlayerInfo(analyticsPlayerId),
-    getAnalyticsPlayerSeasonStats(analyticsPlayerId, season),
-    getAnalyticsPlayerGames(analyticsPlayerId, season, 82),
+    getAnalyticsPlayerSeasonStats(analyticsPlayerId, activeSeason),
+    getAnalyticsPlayerGames(analyticsPlayerId, activeSeason, 82),
     getNextGameForPlayer(analyticsPlayerId),
-    getPlayerRecentForm(analyticsPlayerId, 5),
+    getPlayerRecentForm(analyticsPlayerId, 5, activeSeason),
   ]);
 
   let opponentContext: OpponentContext | null = null;
@@ -58,6 +61,7 @@ async function loadPlayerAnalysis(playerId: string, season: string | null) {
     opponentContext,
     recentForm,
     vsOpponentHistory,
+    activeSeason,
   };
 }
 
@@ -70,7 +74,7 @@ export default async function BettingPlayerPage({
 }) {
   const { playerId } = await params;
   const { season } = await searchParams;
-  const { analyticsPlayerId, player, seasonAverages, games, nextGame, opponentContext, recentForm, vsOpponentHistory } =
+  const { analyticsPlayerId, player, seasonAverages, games, nextGame, opponentContext, recentForm, vsOpponentHistory, activeSeason } =
     await loadPlayerAnalysis(playerId, season || null);
 
   if (!player) {
@@ -154,7 +158,13 @@ export default async function BettingPlayerPage({
                 player={player}
                 seasonAverages={seasonAverages}
                 team={currentTeam}
+                seasonLabel={activeSeason}
               />
+              {!(seasonAverages?.games_played || seasonAverages?.games_active) && (
+                <div className="glass-card rounded-xl border border-white/10 px-4 py-3 text-sm text-muted-foreground">
+                  No {activeSeason} season stats yet. Prior-season numbers are not shown here.
+                </div>
+              )}
               <PlayerPageTabs
                 games={games}
                 seasonAverages={seasonAverages}

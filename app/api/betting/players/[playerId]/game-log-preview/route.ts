@@ -7,6 +7,7 @@ import {
   getAnalyticsPlayerGames,
 } from '@/lib/players/analytics-queries';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
+import { getAnalyticsSeason } from '@/lib/season';
 
 const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 40;
@@ -30,7 +31,7 @@ export async function GET(
     }
 
     const sp = request.nextUrl.searchParams;
-    const season = sp.get('season')?.trim() || null;
+    const season = sp.get('season')?.trim() || getAnalyticsSeason();
     let limit = parseInt(sp.get('limit') || String(DEFAULT_LIMIT), 10);
     if (Number.isNaN(limit)) limit = DEFAULT_LIMIT;
     limit = Math.min(Math.max(limit, 1), MAX_LIMIT);

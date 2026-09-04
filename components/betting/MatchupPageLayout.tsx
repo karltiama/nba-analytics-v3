@@ -30,9 +30,10 @@ interface RecentGameResult {
 }
 
 interface TeamStats {
-  offensiveRating: number;
-  defensiveRating: number;
-  pace: number;
+  offensiveRating: number | null;
+  defensiveRating: number | null;
+  pace: number | null;
+  hasSeasonAnalytics?: boolean;
   recentForm: RecentGameResult[];
 }
 
@@ -699,12 +700,12 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             <Link href={`/teams/${game.awayTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
               <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</span>
-              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.awayTeam.record}</span>
+              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.awayTeam.record ?? '—'}</span>
             </Link>
             <span className="text-xs text-muted-foreground">@</span>
             <Link href={`/teams/${game.homeTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
               <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</span>
-              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.homeTeam.record}</span>
+              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.homeTeam.record ?? '—'}</span>
             </Link>
           </div>
         </div>
@@ -1007,17 +1008,20 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                       <div className="grid grid-cols-3 gap-2 mb-3">
                         <div className="text-center p-2 rounded-lg bg-white/5">
                           <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
-                          <span className="text-sm font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating.toFixed(1)}</span>
+                          <span className="text-sm font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating != null ? awayTeamStats.offensiveRating.toFixed(1) : '—'}</span>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-white/5">
                           <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
-                          <span className="text-sm font-bold text-[#39ff14]">{awayTeamStats.defensiveRating.toFixed(1)}</span>
+                          <span className="text-sm font-bold text-[#39ff14]">{awayTeamStats.defensiveRating != null ? awayTeamStats.defensiveRating.toFixed(1) : '—'}</span>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-white/5">
                           <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
-                          <span className="text-sm font-bold text-[#ff6b35]">{awayTeamStats.pace.toFixed(1)}</span>
+                          <span className="text-sm font-bold text-[#ff6b35]">{awayTeamStats.pace != null ? awayTeamStats.pace.toFixed(1) : '—'}</span>
                         </div>
                       </div>
+                      {!awayTeamStats.hasSeasonAnalytics && awayTeamStats.offensiveRating == null && (
+                        <p className="text-[10px] text-muted-foreground mb-2">Not enough season data</p>
+                      )}
                       <div className="border-t border-white/5 pt-2">
                         <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
                         {awayTeamStats.recentForm.slice(0, 3).map((g, i) => (
@@ -1042,17 +1046,20 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                       <div className="grid grid-cols-3 gap-2 mb-3">
                         <div className="text-center p-2 rounded-lg bg-white/5">
                           <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
-                          <span className="text-sm font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating.toFixed(1)}</span>
+                          <span className="text-sm font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating != null ? homeTeamStats.offensiveRating.toFixed(1) : '—'}</span>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-white/5">
                           <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
-                          <span className="text-sm font-bold text-[#39ff14]">{homeTeamStats.defensiveRating.toFixed(1)}</span>
+                          <span className="text-sm font-bold text-[#39ff14]">{homeTeamStats.defensiveRating != null ? homeTeamStats.defensiveRating.toFixed(1) : '—'}</span>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-white/5">
                           <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
-                          <span className="text-sm font-bold text-[#ff6b35]">{homeTeamStats.pace.toFixed(1)}</span>
+                          <span className="text-sm font-bold text-[#ff6b35]">{homeTeamStats.pace != null ? homeTeamStats.pace.toFixed(1) : '—'}</span>
                         </div>
                       </div>
+                      {!homeTeamStats.hasSeasonAnalytics && homeTeamStats.offensiveRating == null && (
+                        <p className="text-[10px] text-muted-foreground mb-2">Not enough season data</p>
+                      )}
                       <div className="border-t border-white/5 pt-2">
                         <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
                         {homeTeamStats.recentForm.slice(0, 3).map((g, i) => (
@@ -1149,11 +1156,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             <div className="p-3 space-y-3 text-xs">
               <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
                 <span>{game.awayTeam.abbreviation}</span>
-                <span className="text-white font-mono tabular-nums">{game.awayTeam.record}</span>
+                <span className="text-white font-mono tabular-nums">{game.awayTeam.record ?? '—'}</span>
               </div>
               <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
                 <span>{game.homeTeam.abbreviation}</span>
-                <span className="text-white font-mono tabular-nums">{game.homeTeam.record}</span>
+                <span className="text-white font-mono tabular-nums">{game.homeTeam.record ?? '—'}</span>
               </div>
               <div className="border-t border-white/5 pt-3 space-y-2">
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Lines</p>

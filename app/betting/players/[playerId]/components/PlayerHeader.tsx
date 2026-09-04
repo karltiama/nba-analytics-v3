@@ -14,9 +14,11 @@ interface PlayerHeaderProps {
   team?: PlayerTeamInfo | null;
   /** Optional player headshot URL. When missing, initials are shown. */
   headshotUrl?: string | null;
+  /** Active analytics season start year shown in the header. */
+  seasonLabel?: string | null;
 }
 
-export function PlayerHeader({ player, seasonAverages, team, headshotUrl }: PlayerHeaderProps) {
+export function PlayerHeader({ player, seasonAverages, team, headshotUrl, seasonLabel }: PlayerHeaderProps) {
   const gp = seasonAverages?.games_active ?? seasonAverages?.games_played;
   const initials = player.full_name.split(' ').map(n => n[0]).join('');
 
@@ -31,6 +33,11 @@ export function PlayerHeader({ player, seasonAverages, team, headshotUrl }: Play
           &larr; Betting Dashboard
         </Link>
         <div className="flex items-center gap-2">
+          {seasonLabel && (
+            <span className="text-[10px] px-2 py-0.5 bg-white/10 text-muted-foreground rounded-full font-medium">
+              Season {seasonLabel}
+            </span>
+          )}
           {player.active !== null && (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className={`w-1.5 h-1.5 rounded-full ${player.active ? 'bg-[#39ff14] pulse-dot' : 'bg-zinc-500'}`} />

@@ -1,0 +1,1776 @@
+{
+  "note": "PGL is validation/history evidence, not roster truth. No stints reconstructed.",
+  "multi_team_loggers": [
+    {
+      "player_id": "17895854",
+      "full_name": "Charles Bassey",
+      "teams": "BOS,GSW,MEM,PHI",
+      "team_count": 4
+    },
+    {
+      "player_id": "249",
+      "full_name": "Tyus Jones",
+      "teams": "CHA,DAL,DEN,ORL",
+      "team_count": 4
+    },
+    {
+      "player_id": "38017710",
+      "full_name": "Christian Koloko",
+      "teams": "ATL,LAL,MEM",
+      "team_count": 3
+    },
+    {
+      "player_id": "407",
+      "full_name": "Dario Saric",
+      "teams": "CHI,DET,SAC",
+      "team_count": 3
+    },
+    {
+      "player_id": "1028245974",
+      "full_name": "Emanuel Miller",
+      "teams": "CHI,CLE,SAS",
+      "team_count": 3
+    },
+    {
+      "player_id": "12",
+      "full_name": "Kyle Anderson",
+      "teams": "MEM,MIN,UTA",
+      "team_count": 3
+    },
+    {
+      "player_id": "371",
+      "full_name": "Mason Plumlee",
+      "teams": "CHA,OKC,SAS",
+      "team_count": 3
+    },
+    {
+      "player_id": "38017716",
+      "full_name": "Ousmane Dieng",
+      "teams": "CHI,MIL,OKC",
+      "team_count": 3
+    },
+    {
+      "player_id": "38017704",
+      "full_name": "Patrick Baldwin Jr.",
+      "teams": "LAC,PHI,SAC",
+      "team_count": 3
+    },
+    {
+      "player_id": "1028274126",
+      "full_name": "RayJ Dennis",
+      "teams": "ATL,IND,LAC",
+      "team_count": 3
+    },
+    {
+      "player_id": "1028026717",
+      "full_name": "AJ Johnson",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "666511",
+      "full_name": "Amir Coffey",
+      "teams": "MIL,PHX",
+      "team_count": 2
+    },
+    {
+      "player_id": "419",
+      "full_name": "Anfernee Simons",
+      "teams": "BOS,CHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "117",
+      "full_name": "Anthony Davis",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "17895983",
+      "full_name": "Ayo Dosunmu",
+      "teams": "CHI,MIN",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017686",
+      "full_name": "Bennedict Mathurin",
+      "teams": "IND,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "210",
+      "full_name": "Buddy Hield",
+      "teams": "ATL,GSW",
+      "team_count": 2
+    },
+    {
+      "player_id": "17896048",
+      "full_name": "Cam Thomas",
+      "teams": "BKN,MIL",
+      "team_count": 2
+    },
+    {
+      "player_id": "367",
+      "full_name": "Chris Paul",
+      "teams": "LAC,TOR",
+      "team_count": 2
+    },
+    {
+      "player_id": "1057849685",
+      "full_name": "Chris Youngblood",
+      "teams": "OKC,POR",
+      "team_count": 2
+    },
+    {
+      "player_id": "303",
+      "full_name": "CJ McCollum",
+      "teams": "ATL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "666956",
+      "full_name": "Coby White",
+      "teams": "CHA,CHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "3547251",
+      "full_name": "Cole Anthony",
+      "teams": "MIL,PHX",
+      "team_count": 2
+    },
+    {
+      "player_id": "413",
+      "full_name": "Collin Sexton",
+      "teams": "CHA,CHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "17896045",
+      "full_name": "Corey Kispert",
+      "teams": "ATL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "405",
+      "full_name": "D'Angelo Russell",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "17896094",
+      "full_name": "Dalano Banton",
+      "teams": "BOS,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017719",
+      "full_name": "Dalen Terry",
+      "teams": "CHI,PHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "151",
+      "full_name": "Dante Exum",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "666581",
+      "full_name": "Darius Garland",
+      "teams": "CLE,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "666656",
+      "full_name": "De'Andre Hunter",
+      "teams": "CLE,SAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "409",
+      "full_name": "Dennis Schroder",
+      "teams": "CLE,SAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "56783340",
+      "full_name": "Duop Reath",
+      "teams": "ATL,POR",
+      "team_count": 2
+    },
+    {
+      "player_id": "1603383",
+      "full_name": "Gabe Vincent",
+      "teams": "ATL,LAL",
+      "team_count": 2
+    },
+    {
+      "player_id": "344",
+      "full_name": "Georges Niang",
+      "teams": "MEM,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "488",
+      "full_name": "Guerschon Yabusele",
+      "teams": "CHI,NYK",
+      "team_count": 2
+    },
+    {
+      "player_id": "3092",
+      "full_name": "Haywood Highsmith",
+      "teams": "BKN,PHX",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028205331",
+      "full_name": "Isaac Jones",
+      "teams": "DET,SAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "17896035",
+      "full_name": "Isaiah Jackson",
+      "teams": "IND,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "493",
+      "full_name": "Ivica Zubac",
+      "teams": "IND,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017679",
+      "full_name": "Jaden Hardy",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017682",
+      "full_name": "Jaden Ivey",
+      "teams": "CHI,DET",
+      "team_count": 2
+    },
+    {
+      "player_id": "192",
+      "full_name": "James Harden",
+      "teams": "CLE,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028027372",
+      "full_name": "Jared McCain",
+      "teams": "OKC,PHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "231",
+      "full_name": "Jaren Jackson Jr.",
+      "teams": "MEM,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "17896021",
+      "full_name": "Jeremiah Robinson-Earl",
+      "teams": "DAL,IND",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017699",
+      "full_name": "Jeremy Sochan",
+      "teams": "NYK,SAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "87",
+      "full_name": "Jevon Carter",
+      "teams": "CHI,ORL",
+      "team_count": 2
+    },
+    {
+      "player_id": "19465326",
+      "full_name": "Jock Landale",
+      "teams": "ATL,MEM",
+      "team_count": 2
+    },
+    {
+      "player_id": "666703",
+      "full_name": "John Konchar",
+      "teams": "MEM,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "1057396603",
+      "full_name": "John Tonje",
+      "teams": "BOS,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "17553979",
+      "full_name": "Jonathan Kuminga",
+      "teams": "ATL,GSW",
+      "team_count": 2
+    },
+    {
+      "player_id": "17896097",
+      "full_name": "Jose Alvarado",
+      "teams": "NOP,NYK",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017715",
+      "full_name": "Josh Minott",
+      "teams": "BKN,BOS",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677857",
+      "full_name": "Julian Phillips",
+      "teams": "CHI,MIN",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028038474",
+      "full_name": "K.J. Simpson",
+      "teams": "CHA,DEN",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017714",
+      "full_name": "Keon Ellis",
+      "teams": "CLE,SAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "1057846172",
+      "full_name": "Keshon Gilbert",
+      "teams": "ATL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "221",
+      "full_name": "Kevin Huerter",
+      "teams": "CHI,DET",
+      "team_count": 2
+    },
+    {
+      "player_id": "315",
+      "full_name": "Khris Middleton",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677849",
+      "full_name": "Kobe Brown",
+      "teams": "IND,LAC",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677838",
+      "full_name": "Kobe Bufkin",
+      "teams": "LAL,MEM",
+      "team_count": 2
+    },
+    {
+      "player_id": "378",
+      "full_name": "Kristaps Porzingis",
+      "teams": "ATL,GSW",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677782",
+      "full_name": "Leonard Miller",
+      "teams": "CHI,MIN",
+      "team_count": 2
+    },
+    {
+      "player_id": "254",
+      "full_name": "Luke Kennard",
+      "teams": "ATL,LAL",
+      "team_count": 2
+    },
+    {
+      "player_id": "17554005",
+      "full_name": "Mac McClung",
+      "teams": "CHI,IND",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017692",
+      "full_name": "Malaki Branham",
+      "teams": "CHA,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "24",
+      "full_name": "Marvin Bagley III",
+      "teams": "DAL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "28",
+      "full_name": "Mo Bamba",
+      "teams": "TOR,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "3547282",
+      "full_name": "Nick Richards",
+      "teams": "CHI,PHX",
+      "team_count": 2
+    },
+    {
+      "player_id": "460",
+      "full_name": "Nikola Vucevic",
+      "teams": "BOS,CHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017620",
+      "full_name": "Ochai Agbaji",
+      "teams": "BKN,TOR",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028244692",
+      "full_name": "PJ Hall",
+      "teams": "CHA,MEM",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677829",
+      "full_name": "Rayan Rupert",
+      "teams": "MEM,POR",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028245994",
+      "full_name": "Riley Minix",
+      "teams": "CLE,SAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028025639",
+      "full_name": "Rob Dillingham",
+      "teams": "CHI,MIN",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677824",
+      "full_name": "Taylor Hendricks",
+      "teams": "MEM,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "60",
+      "full_name": "Tony Bradley",
+      "teams": "ATL,IND",
+      "team_count": 2
+    },
+    {
+      "player_id": "64268165",
+      "full_name": "Tosan Evbuomwan",
+      "teams": "CHA,NYK",
+      "team_count": 2
+    },
+    {
+      "player_id": "490",
+      "full_name": "Trae Young",
+      "teams": "ATL,WAS",
+      "team_count": 2
+    },
+    {
+      "player_id": "56677799",
+      "full_name": "Trayce Jackson-Davis",
+      "teams": "GSW,TOR",
+      "team_count": 2
+    },
+    {
+      "player_id": "1028038570",
+      "full_name": "Tyler Smith",
+      "teams": "DAL,HOU",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017722",
+      "full_name": "Tyrese Martin",
+      "teams": "BKN,PHI",
+      "team_count": 2
+    },
+    {
+      "player_id": "38017731",
+      "full_name": "Vince Williams Jr.",
+      "teams": "MEM,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "4197387",
+      "full_name": "Vit Krejci",
+      "teams": "ATL,POR",
+      "team_count": 2
+    },
+    {
+      "player_id": "1057271583",
+      "full_name": "Walter Clayton Jr.",
+      "teams": "MEM,UTA",
+      "team_count": 2
+    },
+    {
+      "player_id": "3547285",
+      "full_name": "Xavier Tillman",
+      "teams": "BOS,CHA",
+      "team_count": 2
+    }
+  ],
+  "multi_team_count": 87,
+  "roster_never_appeared_in_pgl": [
+    {
+      "nba_player_id": "1631466",
+      "name": "Nate Williams",
+      "roster_team": "GSW",
+      "analytics_player_id": "46405409",
+      "note": "On NBA.com snapshot roster but no 2025 analytics PGL"
+    }
+  ],
+  "roster_never_appeared_count": 1,
+  "pgl_not_on_nba_snapshot": [
+    {
+      "player_id": "38017733",
+      "full_name": "A.J. Green",
+      "teams": "MIL"
+    },
+    {
+      "player_id": "1060015883",
+      "full_name": "Adama Bal",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "1057260888",
+      "full_name": "Airious Bailey",
+      "teams": "UTA"
+    },
+    {
+      "player_id": "17554004",
+      "full_name": "AJ Lawson",
+      "teams": "TOR"
+    },
+    {
+      "player_id": "1060010671",
+      "full_name": "Alex Antetokounmpo",
+      "teams": "MIL"
+    },
+    {
+      "player_id": "1057396605",
+      "full_name": "Alex Toohey",
+      "teams": "GSW"
+    },
+    {
+      "player_id": "1028028405",
+      "full_name": "Alexandre Sarr",
+      "teams": "WAS"
+    },
+    {
+      "player_id": "38017723",
+      "full_name": "Alondes Williams",
+      "teams": "WAS"
+    },
+    {
+      "player_id": "1077620166",
+      "full_name": "Andersson Garcia",
+      "teams": "UTA"
+    },
+    {
+      "player_id": "1028036878",
+      "full_name": "Bobi Klintman",
+      "teams": "DET"
+    },
+    {
+      "player_id": "24489167",
+      "full_name": "Brandon Williams",
+      "teams": "DAL"
+    },
+    {
+      "player_id": "38017718",
+      "full_name": "Buddy Boeheim",
+      "teams": "OKC"
+    },
+    {
+      "player_id": "38017724",
+      "full_name": "Caleb Houstan",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "17896048",
+      "full_name": "Cam Thomas",
+      "teams": "BKN,MIL"
+    },
+    {
+      "player_id": "368",
+      "full_name": "Cameron Payne",
+      "teams": "PHI"
+    },
+    {
+      "player_id": "1028025235",
+      "full_name": "Carlton Carrington",
+      "teams": "WAS"
+    },
+    {
+      "player_id": "58",
+      "full_name": "Chris Boucher",
+      "teams": "BOS"
+    },
+    {
+      "player_id": "56677854",
+      "full_name": "Chris Livingston",
+      "teams": "CLE"
+    },
+    {
+      "player_id": "367",
+      "full_name": "Chris Paul",
+      "teams": "LAC,TOR"
+    },
+    {
+      "player_id": "666748",
+      "full_name": "Cody Martin",
+      "teams": "IND"
+    },
+    {
+      "player_id": "56677845",
+      "full_name": "Colby Jones",
+      "teams": "DET"
+    },
+    {
+      "player_id": "3547251",
+      "full_name": "Cole Anthony",
+      "teams": "MIL,PHX"
+    },
+    {
+      "player_id": "151",
+      "full_name": "Dante Exum",
+      "teams": "DAL,WAS"
+    },
+    {
+      "player_id": "666675",
+      "full_name": "DaQuan Jeffries",
+      "teams": "SAC"
+    },
+    {
+      "player_id": "407",
+      "full_name": "Dario Saric",
+      "teams": "CHI,DET,SAC"
+    },
+    {
+      "player_id": "56677841",
+      "full_name": "Dariq Whitehead",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "1028268560",
+      "full_name": "Darius Brown",
+      "teams": "CLE"
+    },
+    {
+      "player_id": "1028245237",
+      "full_name": "David Jones",
+      "teams": "SAS"
+    },
+    {
+      "player_id": "17554002",
+      "full_name": "DeJon Jarreau",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "1072110795",
+      "full_name": "Dillon Jones",
+      "teams": "NYK"
+    },
+    {
+      "player_id": "64270311",
+      "full_name": "Drew Peterson",
+      "teams": "CHA"
+    },
+    {
+      "player_id": "19465585",
+      "full_name": "Dru Smith",
+      "teams": "MIA"
+    },
+    {
+      "player_id": "56783340",
+      "full_name": "Duop Reath",
+      "teams": "ATL,POR"
+    },
+    {
+      "player_id": "1057847875",
+      "full_name": "Eli John Ndiaye",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "178",
+      "full_name": "Eric Gordon",
+      "teams": "PHI"
+    },
+    {
+      "player_id": "1028255881",
+      "full_name": "Gabe McGlothan",
+      "teams": "IND"
+    },
+    {
+      "player_id": "666754",
+      "full_name": "Garrison Mathews",
+      "teams": "IND"
+    },
+    {
+      "player_id": "3089",
+      "full_name": "Gary Trent Jr.",
+      "teams": "MIL"
+    },
+    {
+      "player_id": "344",
+      "full_name": "Georges Niang",
+      "teams": "MEM,UTA"
+    },
+    {
+      "player_id": "1059875475",
+      "full_name": "Grant Nelson",
+      "teams": "BKN"
+    },
+    {
+      "player_id": "1057275769",
+      "full_name": "Hansen Yang",
+      "teams": "POR"
+    },
+    {
+      "player_id": "1057848561",
+      "full_name": "Hunter Sallis",
+      "teams": "PHI"
+    },
+    {
+      "player_id": "56677871",
+      "full_name": "Hunter Tyson",
+      "teams": "DEN"
+    },
+    {
+      "player_id": "1028246784",
+      "full_name": "Jackson Rowe",
+      "teams": "GSW"
+    },
+    {
+      "player_id": "56677795",
+      "full_name": "Jacob Toppin",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "38017682",
+      "full_name": "Jaden Ivey",
+      "teams": "CHI,DET"
+    },
+    {
+      "player_id": "17896025",
+      "full_name": "Jaden Springer",
+      "teams": "NOP"
+    },
+    {
+      "player_id": "1057849029",
+      "full_name": "Jahmyl Telfort",
+      "teams": "LAC"
+    },
+    {
+      "player_id": "3547240",
+      "full_name": "James Wiseman",
+      "teams": "IND"
+    },
+    {
+      "player_id": "1058091815",
+      "full_name": "Javonte Cooke",
+      "teams": "POR"
+    },
+    {
+      "player_id": "38017706",
+      "full_name": "Jaylin Williams",
+      "teams": "OKC"
+    },
+    {
+      "player_id": "47738533",
+      "full_name": "Jeenathan Williams",
+      "teams": "GSW"
+    },
+    {
+      "player_id": "17896021",
+      "full_name": "Jeremiah Robinson-Earl",
+      "teams": "DAL,IND"
+    },
+    {
+      "player_id": "38017630",
+      "full_name": "Johnny Juzang",
+      "teams": "MIN"
+    },
+    {
+      "player_id": "64267203",
+      "full_name": "Jules Bernard",
+      "teams": "MIN"
+    },
+    {
+      "player_id": "1028038474",
+      "full_name": "K.J. Simpson",
+      "teams": "CHA,DEN"
+    },
+    {
+      "player_id": "1059542426",
+      "full_name": "Kadary Richmond",
+      "teams": "WAS"
+    },
+    {
+      "player_id": "45088184",
+      "full_name": "Keaton Wallace",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "38017702",
+      "full_name": "Kennedy Chandler",
+      "teams": "UTA"
+    },
+    {
+      "player_id": "38017607",
+      "full_name": "Kevon Harris",
+      "teams": "HOU"
+    },
+    {
+      "player_id": "56677838",
+      "full_name": "Kobe Bufkin",
+      "teams": "LAL,MEM"
+    },
+    {
+      "player_id": "1067112247",
+      "full_name": "Kyle Mangas",
+      "teams": "SAS"
+    },
+    {
+      "player_id": "1057847334",
+      "full_name": "Lawson Lovering",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "27",
+      "full_name": "Lonzo Ball",
+      "teams": "CLE"
+    },
+    {
+      "player_id": "1080034288",
+      "full_name": "Lucas Williamson",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "1028267470",
+      "full_name": "Luke Travers",
+      "teams": "CLE"
+    },
+    {
+      "player_id": "38017692",
+      "full_name": "Malaki Branham",
+      "teams": "CHA,WAS"
+    },
+    {
+      "player_id": "1018685894",
+      "full_name": "Malik Williams",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "1057848654",
+      "full_name": "Mark Sears",
+      "teams": "MIL"
+    },
+    {
+      "player_id": "165",
+      "full_name": "Markelle Fultz",
+      "teams": "TOR"
+    },
+    {
+      "player_id": "1057847026",
+      "full_name": "Miles Kelly",
+      "teams": "DAL"
+    },
+    {
+      "player_id": "28",
+      "full_name": "Mo Bamba",
+      "teams": "TOR,UTA"
+    },
+    {
+      "player_id": "330",
+      "full_name": "Monte Morris",
+      "teams": "IND"
+    },
+    {
+      "player_id": "1028243921",
+      "full_name": "N'Faly Dante",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "17896031",
+      "full_name": "Nah'Shon Hyland",
+      "teams": "MIN"
+    },
+    {
+      "player_id": "666508",
+      "full_name": "Nicolas Claxton",
+      "teams": "BKN"
+    },
+    {
+      "player_id": "2221",
+      "full_name": "Nigel Hayes",
+      "teams": "PHX"
+    },
+    {
+      "player_id": "1028035632",
+      "full_name": "Nikola Durisic",
+      "teams": "ATL"
+    },
+    {
+      "player_id": "11891374",
+      "full_name": "Omer Yurtseven",
+      "teams": "GSW"
+    },
+    {
+      "player_id": "39398582",
+      "full_name": "Orlando Robinson",
+      "teams": "ORL"
+    },
+    {
+      "player_id": "266",
+      "full_name": "Skal Labissiere",
+      "teams": "WAS"
+    },
+    {
+      "player_id": "44477024",
+      "full_name": "Stanley Umude",
+      "teams": "SAS"
+    },
+    {
+      "player_id": "1057844839",
+      "full_name": "Tamar Bates",
+      "teams": "DEN"
+    },
+    {
+      "player_id": "403",
+      "full_name": "Terry Rozier",
+      "teams": "MIA"
+    },
+    {
+      "player_id": "1080278663",
+      "full_name": "Toby Okani",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "1028254340",
+      "full_name": "Trentyn Flowers",
+      "teams": "CHI"
+    },
+    {
+      "player_id": "24102396",
+      "full_name": "Trevon Scott",
+      "teams": "BKN"
+    },
+    {
+      "player_id": "1057845216",
+      "full_name": "Tyler Burton",
+      "teams": "MEM"
+    },
+    {
+      "player_id": "1080636470",
+      "full_name": "Tyreke Key",
+      "teams": "TOR"
+    },
+    {
+      "player_id": "38017731",
+      "full_name": "Vince Williams Jr.",
+      "teams": "MEM,UTA"
+    }
+  ],
+  "pgl_not_on_nba_snapshot_count": 90,
+  "likely_traded_or_temporary": [
+    {
+      "player_id": "17895854",
+      "full_name": "Charles Bassey",
+      "teams": "BOS,GSW,MEM,PHI",
+      "team_count": 4,
+      "on_final_snapshot": true,
+      "snapshot_team": "GSW",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "249",
+      "full_name": "Tyus Jones",
+      "teams": "CHA,DAL,DEN,ORL",
+      "team_count": 4,
+      "on_final_snapshot": true,
+      "snapshot_team": "DEN",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017710",
+      "full_name": "Christian Koloko",
+      "teams": "ATL,LAL,MEM",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "407",
+      "full_name": "Dario Saric",
+      "teams": "CHI,DET,SAC",
+      "team_count": 3,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028245974",
+      "full_name": "Emanuel Miller",
+      "teams": "CHI,CLE,SAS",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "SAS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "12",
+      "full_name": "Kyle Anderson",
+      "teams": "MEM,MIN,UTA",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "MIN",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "371",
+      "full_name": "Mason Plumlee",
+      "teams": "CHA,OKC,SAS",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "SAS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017716",
+      "full_name": "Ousmane Dieng",
+      "teams": "CHI,MIL,OKC",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "MIL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017704",
+      "full_name": "Patrick Baldwin Jr.",
+      "teams": "LAC,PHI,SAC",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "SAC",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028274126",
+      "full_name": "RayJ Dennis",
+      "teams": "ATL,IND,LAC",
+      "team_count": 3,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028026717",
+      "full_name": "AJ Johnson",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "DAL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "666511",
+      "full_name": "Amir Coffey",
+      "teams": "MIL,PHX",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "PHX",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "419",
+      "full_name": "Anfernee Simons",
+      "teams": "BOS,CHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "117",
+      "full_name": "Anthony Davis",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "WAS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17895983",
+      "full_name": "Ayo Dosunmu",
+      "teams": "CHI,MIN",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "MIN",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017686",
+      "full_name": "Bennedict Mathurin",
+      "teams": "IND,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "LAC",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "210",
+      "full_name": "Buddy Hield",
+      "teams": "ATL,GSW",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17896048",
+      "full_name": "Cam Thomas",
+      "teams": "BKN,MIL",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "367",
+      "full_name": "Chris Paul",
+      "teams": "LAC,TOR",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1057849685",
+      "full_name": "Chris Youngblood",
+      "teams": "OKC,POR",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "POR",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "303",
+      "full_name": "CJ McCollum",
+      "teams": "ATL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "666956",
+      "full_name": "Coby White",
+      "teams": "CHA,CHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHA",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "3547251",
+      "full_name": "Cole Anthony",
+      "teams": "MIL,PHX",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "413",
+      "full_name": "Collin Sexton",
+      "teams": "CHA,CHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17896045",
+      "full_name": "Corey Kispert",
+      "teams": "ATL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "405",
+      "full_name": "D'Angelo Russell",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "WAS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17896094",
+      "full_name": "Dalano Banton",
+      "teams": "BOS,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "BOS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017719",
+      "full_name": "Dalen Terry",
+      "teams": "CHI,PHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "PHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "151",
+      "full_name": "Dante Exum",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "666581",
+      "full_name": "Darius Garland",
+      "teams": "CLE,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "LAC",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "666656",
+      "full_name": "De'Andre Hunter",
+      "teams": "CLE,SAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "SAC",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "409",
+      "full_name": "Dennis Schroder",
+      "teams": "CLE,SAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CLE",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56783340",
+      "full_name": "Duop Reath",
+      "teams": "ATL,POR",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1603383",
+      "full_name": "Gabe Vincent",
+      "teams": "ATL,LAL",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "344",
+      "full_name": "Georges Niang",
+      "teams": "MEM,UTA",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "488",
+      "full_name": "Guerschon Yabusele",
+      "teams": "CHI,NYK",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "3092",
+      "full_name": "Haywood Highsmith",
+      "teams": "BKN,PHX",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "PHX",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028205331",
+      "full_name": "Isaac Jones",
+      "teams": "DET,SAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "DET",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17896035",
+      "full_name": "Isaiah Jackson",
+      "teams": "IND,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "LAC",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "493",
+      "full_name": "Ivica Zubac",
+      "teams": "IND,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "IND",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017679",
+      "full_name": "Jaden Hardy",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "WAS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017682",
+      "full_name": "Jaden Ivey",
+      "teams": "CHI,DET",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "192",
+      "full_name": "James Harden",
+      "teams": "CLE,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CLE",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028027372",
+      "full_name": "Jared McCain",
+      "teams": "OKC,PHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "OKC",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "231",
+      "full_name": "Jaren Jackson Jr.",
+      "teams": "MEM,UTA",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "UTA",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17896021",
+      "full_name": "Jeremiah Robinson-Earl",
+      "teams": "DAL,IND",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017699",
+      "full_name": "Jeremy Sochan",
+      "teams": "NYK,SAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "NYK",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "87",
+      "full_name": "Jevon Carter",
+      "teams": "CHI,ORL",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ORL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "19465326",
+      "full_name": "Jock Landale",
+      "teams": "ATL,MEM",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "666703",
+      "full_name": "John Konchar",
+      "teams": "MEM,UTA",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "UTA",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1057396603",
+      "full_name": "John Tonje",
+      "teams": "BOS,UTA",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "BOS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17553979",
+      "full_name": "Jonathan Kuminga",
+      "teams": "ATL,GSW",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17896097",
+      "full_name": "Jose Alvarado",
+      "teams": "NOP,NYK",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "NYK",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017715",
+      "full_name": "Josh Minott",
+      "teams": "BKN,BOS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "BKN",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677857",
+      "full_name": "Julian Phillips",
+      "teams": "CHI,MIN",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "MIN",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028038474",
+      "full_name": "K.J. Simpson",
+      "teams": "CHA,DEN",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017714",
+      "full_name": "Keon Ellis",
+      "teams": "CLE,SAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CLE",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1057846172",
+      "full_name": "Keshon Gilbert",
+      "teams": "ATL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "221",
+      "full_name": "Kevin Huerter",
+      "teams": "CHI,DET",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "DET",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "315",
+      "full_name": "Khris Middleton",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "DAL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677849",
+      "full_name": "Kobe Brown",
+      "teams": "IND,LAC",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "IND",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677838",
+      "full_name": "Kobe Bufkin",
+      "teams": "LAL,MEM",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "378",
+      "full_name": "Kristaps Porzingis",
+      "teams": "ATL,GSW",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "GSW",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677782",
+      "full_name": "Leonard Miller",
+      "teams": "CHI,MIN",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "254",
+      "full_name": "Luke Kennard",
+      "teams": "ATL,LAL",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "LAL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "17554005",
+      "full_name": "Mac McClung",
+      "teams": "CHI,IND",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017692",
+      "full_name": "Malaki Branham",
+      "teams": "CHA,WAS",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "24",
+      "full_name": "Marvin Bagley III",
+      "teams": "DAL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "DAL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "28",
+      "full_name": "Mo Bamba",
+      "teams": "TOR,UTA",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "3547282",
+      "full_name": "Nick Richards",
+      "teams": "CHI,PHX",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "460",
+      "full_name": "Nikola Vucevic",
+      "teams": "BOS,CHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "BOS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017620",
+      "full_name": "Ochai Agbaji",
+      "teams": "BKN,TOR",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "BKN",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028244692",
+      "full_name": "PJ Hall",
+      "teams": "CHA,MEM",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHA",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677829",
+      "full_name": "Rayan Rupert",
+      "teams": "MEM,POR",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "MEM",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028245994",
+      "full_name": "Riley Minix",
+      "teams": "CLE,SAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CLE",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028025639",
+      "full_name": "Rob Dillingham",
+      "teams": "CHI,MIN",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677824",
+      "full_name": "Taylor Hendricks",
+      "teams": "MEM,UTA",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "MEM",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "60",
+      "full_name": "Tony Bradley",
+      "teams": "ATL,IND",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "ATL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "64268165",
+      "full_name": "Tosan Evbuomwan",
+      "teams": "CHA,NYK",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHA",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "490",
+      "full_name": "Trae Young",
+      "teams": "ATL,WAS",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "WAS",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "56677799",
+      "full_name": "Trayce Jackson-Davis",
+      "teams": "GSW,TOR",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "TOR",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1028038570",
+      "full_name": "Tyler Smith",
+      "teams": "DAL,HOU",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "DAL",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017722",
+      "full_name": "Tyrese Martin",
+      "teams": "BKN,PHI",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "PHI",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "38017731",
+      "full_name": "Vince Williams Jr.",
+      "teams": "MEM,UTA",
+      "team_count": 2,
+      "on_final_snapshot": false,
+      "snapshot_team": null,
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "4197387",
+      "full_name": "Vit Krejci",
+      "teams": "ATL,POR",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "POR",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "1057271583",
+      "full_name": "Walter Clayton Jr.",
+      "teams": "MEM,UTA",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "MEM",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    },
+    {
+      "player_id": "3547285",
+      "full_name": "Xavier Tillman",
+      "teams": "BOS,CHA",
+      "team_count": 2,
+      "on_final_snapshot": true,
+      "snapshot_team": "CHA",
+      "interpretation": "Appeared for multiple teams in 2025 PGL — candidate trade/temporary signing for stint model"
+    }
+  ]
+}

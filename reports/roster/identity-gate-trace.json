@@ -1,0 +1,319 @@
+﻿node.exe : npm warn Unknown env config "devdir". This will stop working in the next major version of npm.
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...version of npm.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+{
+  "analytics_player": [
+    {
+      "player_id": "56677722",
+      "full_name": "Jalen Wilson",
+      "first_name": "Jalen",
+      "last_name": "Wilson",
+      "position": "F",
+      "height": "6-6",
+      "weight": "220",
+      "created_at": "2026-03-07T04:43:58.411Z",
+      "updated_at": "2026-04-29T20:55:38.723Z"
+    }
+  ],
+  "raw_player": [
+    {
+      "id": 56677722,
+      "first_name": "Jalen",
+      "last_name": "Wilson",
+      "position": "F",
+      "height": "6-6",
+      "weight": "220",
+      "jersey_number": "22",
+      "college": "Kansas",
+      "country": "USA",
+      "draft_year": 2023,
+      "draft_round": 2,
+      "draft_number": 51,
+      "team_id": null,
+      "created_at": "2026-03-07T03:17:11.386Z"
+    }
+  ],
+  "nba_maps": [
+    {
+      "entity_type": "player",
+      "internal_id": "1630590",
+      "provider": "nba",
+      "provider_id": "1630590",
+      "metadata": {
+        "raw": {
+          "AGE": 25,
+          "NUM": "1",
+          "HEIGHT": "6-2",
+          "PLAYER": "Scotty Pippen Jr.",
+          "SEASON": "2025",
+          "WEIGHT": "170",
+          "team_id": 1610612763,
+          "POSITION": "G",
+          "LAST_NAME": null,
+          "PLAYER_ID": 1630590,
+          "TEAM_CITY": null,
+          "TEAM_NAME": null,
+          "BIRTH_DATE": "2000-11-10",
+          "FIRST_NAME": null,
+          "ROSTERSTATUS": null,
+          "TEAM_ABBREVIATION": null
+        },
+        "jersey": "1",
+        "season": "2025-26",
+        "source": "nba_api",
+        "team_id": "1610612763",
+        "internal_team_id": "15"
+      },
+      "fetched_at": "2026-09-04T21:30:01.496Z",
+      "created_at": "2025-11-11T19:00:28.056Z",
+      "updated_at": "2026-09-04T21:30:01.496Z"
+    },
+    {
+      "entity_type": "player",
+      "internal_id": "1630592",
+      "provider": "nba",
+      "provider_id": "1630592",
+      "metadata": {
+        "raw": {
+          "AGE": 25,
+          "NUM": "22",
+          "HEIGHT": "6-6",
+          "PLAYER": "Jalen Wilson",
+          "SEASON": "2025",
+          "WEIGHT": "220",
+          "team_id": 1610612751,
+          "POSITION": "F",
+          "LAST_NAME": null,
+          "PLAYER_ID": 1630592,
+          "TEAM_CITY": null,
+          "TEAM_NAME": null,
+          "BIRTH_DATE": "2000-11-04",
+          "FIRST_NAME": null,
+          "ROSTERSTATUS": null,
+          "TEAM_ABBREVIATION": null
+        },
+        "jersey": "22",
+        "season": "2025-26",
+        "source": "nba_api",
+        "team_id": "1610612751",
+        "internal_team_id": "3"
+      },
+      "fetched_at": "2026-09-04T21:29:32.682Z",
+      "created_at": "2026-09-04T21:27:22.716Z",
+      "updated_at": "2026-09-04T21:29:32.682Z"
+    }
+  ],
+  "bdl_by_internal": [
+    {
+      "entity_type": "player",
+      "internal_id": "1630590",
+      "provider": "balldontlie",
+      "provider_id": "56677722",
+      "metadata": null,
+      "fetched_at": "2026-03-07T05:36:08.878Z",
+      "created_at": "2026-03-07T05:36:08.878Z",
+      "updated_at": "2026-03-07T05:36:08.878Z"
+    }
+  ],
+  "bdl_by_provider": [
+    {
+      "entity_type": "player",
+      "internal_id": "1630590",
+      "provider": "balldontlie",
+      "provider_id": "56677722",
+      "metadata": null,
+      "fetched_at": "2026-03-07T05:36:08.878Z",
+      "created_at": "2026-03-07T05:36:08.878Z",
+      "updated_at": "2026-03-07T05:36:08.878Z"
+    }
+  ],
+  "public_players": [
+    {
+      "player_id": "1630592",
+      "full_name": "Jalen Wilson",
+      "first_name": null,
+      "last_name": null,
+      "position": "F",
+      "active": null
+    },
+    {
+      "player_id": "1630590",
+      "full_name": "Scotty Pippen Jr.",
+      "first_name": null,
+      "last_name": null,
+      "position": "G",
+      "active": null
+    }
+  ],
+  "ptr": [
+    {
+      "player_id": "1630592",
+      "team_id": "3",
+      "season": "2025",
+      "active": null,
+      "jersey": "22",
+      "created_at": "2026-09-04T21:27:22.716Z",
+      "updated_at": "2026-09-04T21:27:22.716Z",
+      "abbreviation": "BKN"
+    },
+    {
+      "player_id": "1630590",
+      "team_id": "15",
+      "season": "2025",
+      "active": null,
+      "jersey": "1",
+      "created_at": "2025-11-11T20:32:33.969Z",
+      "updated_at": "2026-09-04T21:27:52.616Z",
+      "abbreviation": "MEM"
+    },
+    {
+      "player_id": "1630592",
+      "team_id": "3",
+      "season": "2025-26",
+      "active": null,
+      "jersey": "22",
+      "created_at": "2026-09-04T21:29:32.682Z",
+      "updated_at": "2026-09-04T21:29:32.682Z",
+      "abbreviation": "BKN"
+    },
+    {
+      "player_id": "1630590",
+      "team_id": "15",
+      "season": "2025-26",
+      "active": null,
+      "jersey": "1",
+      "created_at": "2025-12-02T03:12:44.357Z",
+      "updated_at": "2026-09-04T21:30:01.496Z",
+      "abbreviation": "MEM"
+    }
+  ],
+  "pgl_collision": [
+    {
+      "season": "2025",
+      "team_id": "3",
+      "n": 82,
+      "min_d": "2025-10-22",
+      "max_d": "2026-04-12",
+      "abbr": "BKN"
+    }
+  ],
+  "analytics_name_hits": [
+    {
+      "player_id": "56677722",
+      "full_name": "Jalen Wilson",
+      "position": "F"
+    },
+    {
+      "player_id": "2933",
+      "full_name": "Scottie Pippen",
+      "position": ""
+    },
+    {
+      "player_id": "38017656",
+      "full_name": "Scotty Pippen Jr.",
+      "position": "G"
+    }
+  ],
+  "raw_name_hits": [
+    {
+      "id": 2933,
+      "first_name": "Scottie",
+      "last_name": "Pippen",
+      "team_id": 5,
+      "position": ""
+    },
+    {
+      "id": 38017656,
+      "first_name": "Scotty",
+      "last_name": "Pippen Jr.",
+      "team_id": null,
+      "position": "G"
+    },
+    {
+      "id": 56677722,
+      "first_name": "Jalen",
+      "last_name": "Wilson",
+      "team_id": null,
+      "position": "F"
+    }
+  ],
+  "pgl_by_candidates": [
+    {
+      "player_id": "56677722",
+      "full_name": "Jalen Wilson",
+      "season": "2025",
+      "abbreviation": "BKN",
+      "games": 82,
+      "min_d": "2025-10-22",
+      "max_d": "2026-04-12"
+    },
+    {
+      "player_id": "38017656",
+      "full_name": "Scotty Pippen Jr.",
+      "season": "2025",
+      "abbreviation": "MEM",
+      "games": 82,
+      "min_d": "2025-10-22",
+      "max_d": "2026-04-12"
+    }
+  ],
+  "all_maps_touching_collision": [
+    {
+      "entity_type": "player",
+      "internal_id": "1630590",
+      "provider": "balldontlie",
+      "provider_id": "56677722",
+      "metadata": null,
+      "fetched_at": "2026-03-07T05:36:08.878Z",
+      "created_at": "2026-03-07T05:36:08.878Z",
+      "updated_at": "2026-03-07T05:36:08.878Z"
+    }
+  ],
+  "blast": {
+    "analytics_players": {
+      "n": 1
+    },
+    "raw_players": {
+      "n": 1
+    },
+    "provider_id_map": {
+      "n": 1
+    },
+    "player_game_logs": {
+      "n": 82
+    },
+    "player_season_averages": {
+      "n": 1
+    },
+    "player_team_stints": {
+      "n": 1
+    },
+    "team_roster_current": {
+      "n": 1
+    },
+    "analytics_player_prop_lines": {
+      "n": 0
+    },
+    "analytics_player_props_current": {
+      "n": 0
+    }
+  },
+  "stints": [
+    {
+      "stint_id": "25",
+      "season": "2025",
+      "player_id": "56677722",
+      "team_id": "3",
+      "observed_from": "2026-09-04",
+      "observed_to": null,
+      "source": "nba_stats",
+      "source_player_id": "1630592",
+      "jersey": "22",
+      "position": "F"
+    }
+  ]
+}

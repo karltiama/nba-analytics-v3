@@ -9,6 +9,7 @@ import {
   getTeamRecentGames,
   getTeamTrendData,
 } from '@/lib/teams/analytics-queries';
+import { getAnalyticsSeason } from '@/lib/season';
 
 async function loadTeamData(teamId: string) {
   const analyticsTeamId = await resolveAnalyticsTeamId(teamId);
@@ -16,11 +17,12 @@ async function loadTeamData(teamId: string) {
     return { team: null, seasonAverages: null, recentGames: [], trendData: [] };
   }
 
+  const season = getAnalyticsSeason();
   const [team, seasonAverages, recentGames, trendData] = await Promise.all([
     getTeamById(analyticsTeamId),
-    getTeamSeasonAverages(analyticsTeamId),
-    getTeamRecentGames(analyticsTeamId, 82),
-    getTeamTrendData(analyticsTeamId, 82),
+    getTeamSeasonAverages(analyticsTeamId, season),
+    getTeamRecentGames(analyticsTeamId, 82, season),
+    getTeamTrendData(analyticsTeamId, 82, season),
   ]);
 
   return { team, seasonAverages, recentGames, trendData };

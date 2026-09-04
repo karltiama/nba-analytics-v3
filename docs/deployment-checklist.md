@@ -2,6 +2,8 @@
 
 Use this when publishing the site (e.g. Vercel + Supabase).
 
+For Phase 1 security posture (user/API auth, cron auth, prune fail-safes, freeze flags, secrets vs config), see [production-security.md](./production-security.md).
+
 ## 1. Verify the build locally
 
 ```bash

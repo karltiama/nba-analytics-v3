@@ -22,6 +22,7 @@ export { FilterBar } from './FilterBar';
 export type { SortOption } from './FilterBar';
 export { DateNav, getTodayET, addDaysET, getDateLabel } from './DateNav';
 export { TrendingPlayerStrip } from './TrendingPlayerStrip';
+export { UnauthorizedPanel } from './UnauthorizedPanel';
 export {
   GameCardSkeleton,
   PlayerCardSkeleton,

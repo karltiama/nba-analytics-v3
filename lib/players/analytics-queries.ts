@@ -56,6 +56,15 @@ export async function getAnalyticsPlayerInfo(playerId: string): Promise<PlayerPr
   };
 }
 
+/**
+ * Season averages for a player.
+ *
+ * - Pass an explicit `season` (start-year string, e.g. `'2025'`) for current-product /
+ *   betting paths. Prefer `getAnalyticsSeason()` — never pass null to mean “current”.
+ * - `season = null` is retained for historical / explorer use: latest row by
+ *   `ORDER BY season DESC`. That is intentionally **not** “active season” and must
+ *   not be used for projections or live betting decisions.
+ */
 export async function getAnalyticsPlayerSeasonStats(
   playerId: string,
   season: string | null = null
@@ -107,6 +116,12 @@ export async function getAnalyticsPlayerSeasonStats(
   };
 }
 
+/**
+ * Final game logs for a player.
+ *
+ * - Pass an explicit `season` for current-product / betting paths (`getAnalyticsSeason()`).
+ * - `season = null` returns cross-season Finals (historical). Do not use null as “current”.
+ */
 export async function getAnalyticsPlayerGames(
   playerId: string,
   season: string | null = null,
@@ -304,16 +319,28 @@ const GAME_LOG_SELECT = `
 
 /**
  * Last N games aggregated (pts, reb, ast, pra, minutes) for matchup "Recent Form".
+ * Pass `season` for current-product paths so prior-season Finals are not mixed in.
+ * Omitting `season` is historical (any-season Finals).
  */
 export async function getPlayerRecentForm(
   playerId: string,
-  limit: number = 5
+  limit: number = 5,
+  season?: string | null
 ): Promise<PlayerRecentForm> {
+  const params: (string | number)[] = [playerId];
+  let seasonClause = '';
+  if (season) {
+    params.push(season);
+    seasonClause = ` AND l.season = $${params.length}`;
+  }
+  params.push(limit);
+  const limitParam = `$${params.length}`;
   const sql = `
     WITH last_n AS (
       ${GAME_LOG_SELECT}
+      ${seasonClause}
       ORDER BY l.game_date DESC, g.start_time DESC NULLS LAST
-      LIMIT $2
+      LIMIT ${limitParam}
     )
     SELECT
       COUNT(*)::int as games_played,
@@ -324,7 +351,7 @@ export async function getPlayerRecentForm(
       AVG(CASE WHEN minutes IS NOT NULL AND minutes ~ '^[0-9]+\.?[0-9]*$' THEN minutes::numeric ELSE NULL END)::numeric as avg_minutes
     FROM last_n
   `;
-  const row = await queryOne(sql, [playerId, limit]);
+  const row = await queryOne(sql, params);
   if (!row || Number(row.games_played) === 0) {
     return {
       games_played: 0,

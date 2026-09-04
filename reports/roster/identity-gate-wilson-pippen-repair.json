@@ -1,0 +1,62 @@
+{
+  "dry_run": false,
+  "existing": [
+    {
+      "provider": "nba",
+      "providerId": "1630590",
+      "internalId": "1630590"
+    },
+    {
+      "provider": "balldontlie",
+      "providerId": "56677722",
+      "internalId": "1630590"
+    },
+    {
+      "provider": "nba",
+      "providerId": "1630592",
+      "internalId": "1630592"
+    }
+  ],
+  "plan": [
+    {
+      "action": "update_bdl_internal",
+      "providerId": "56677722",
+      "fromInternalId": "1630590",
+      "toInternalId": "1630592",
+      "reason": "Wrong bridge: Pippen NBA id (1630590) pointed at Wilson BDL id (56677722); re-point to Wilson NBA id"
+    },
+    {
+      "action": "insert_bdl_bridge",
+      "providerId": "38017656",
+      "internalId": "1630590",
+      "reason": "Insert correct Pippen NBA→BDL bridge (38017656)"
+    }
+  ],
+  "applied": [
+    {
+      "step": {
+        "action": "update_bdl_internal",
+        "providerId": "56677722",
+        "fromInternalId": "1630590",
+        "toInternalId": "1630592",
+        "reason": "Wrong bridge: Pippen NBA id (1630590) pointed at Wilson BDL id (56677722); re-point to Wilson NBA id"
+      },
+      "result": {
+        "provider_id": "56677722",
+        "internal_id": "1630592"
+      }
+    },
+    {
+      "step": {
+        "action": "insert_bdl_bridge",
+        "providerId": "38017656",
+        "internalId": "1630590",
+        "reason": "Insert correct Pippen NBA→BDL bridge (38017656)"
+      },
+      "result": {
+        "provider_id": "38017656",
+        "internal_id": "1630590"
+      }
+    }
+  ]
+}

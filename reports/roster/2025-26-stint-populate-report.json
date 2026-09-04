@@ -1,0 +1,204 @@
+{
+  "dry_run": false,
+  "snapshot_at": "2026-09-04T21:44:22.029Z",
+  "snapshot_date": "2026-09-04",
+  "season_label": "2025-26",
+  "analytics_season": "2025",
+  "note": "observed_from/observed_to are roster observation dates, not exact signing/trade timestamps. Single-snapshot rehearsal does not reconstruct midseason history.",
+  "roster_rows_from_public": 530,
+  "raw_snapshot_rows_today": 530,
+  "raw_inserted": 0,
+  "raw_updated": 530,
+  "resolved_for_stints": 514,
+  "unique_analytics_players": 513,
+  "duplicate_analytics_resolutions": [
+    {
+      "analyticsPlayerId": "56677722",
+      "rows": [
+        {
+          "nbaPlayerId": "1630592",
+          "analyticsPlayerId": "56677722",
+          "team": "BKN",
+          "name": "Jalen Wilson"
+        },
+        {
+          "nbaPlayerId": "1630590",
+          "analyticsPlayerId": "56677722",
+          "team": "MEM",
+          "name": "Scotty Pippen Jr."
+        }
+      ]
+    }
+  ],
+  "skipped_unresolved_or_ambiguous": 16,
+  "skipped": [
+    {
+      "nba_player_id": "1630811",
+      "name": "Keaton Wallace",
+      "team": "ATL",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630811: 17895703,45088184"
+    },
+    {
+      "nba_player_id": "1629651",
+      "name": "Nic Claxton",
+      "team": "BKN",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"nic claxton\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1630314",
+      "name": "Brandon Williams",
+      "team": "DAL",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630314: 1145,24489167"
+    },
+    {
+      "nba_player_id": "1642354",
+      "name": "KJ Simpson",
+      "team": "DEN",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"kj simpson\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1630696",
+      "name": "Dru Smith",
+      "team": "MIA",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630696: 17553942,19465585"
+    },
+    {
+      "nba_player_id": "1631260",
+      "name": "AJ Green",
+      "team": "MIL",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"aj green\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1630828",
+      "name": "Alex Antetokounmpo",
+      "team": "MIL",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630828: 17553943,1060010671"
+    },
+    {
+      "nba_player_id": "1629018",
+      "name": "Gary Trent Jr.",
+      "team": "MIL",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1629018: 448,3089"
+    },
+    {
+      "nba_player_id": "1630538",
+      "name": "Bones Hyland",
+      "team": "MIN",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"bones hyland\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1631119",
+      "name": "Jaylin Williams",
+      "team": "OKC",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1631119: 38017706,1028257789"
+    },
+    {
+      "nba_player_id": "1642905",
+      "name": "Yang Hansen",
+      "team": "POR",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"yang hansen\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1642357",
+      "name": "David Jones Garcia",
+      "team": "SAS",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"david jones garcia\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1630639",
+      "name": "A.J. Lawson",
+      "team": "TOR",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"a j lawson\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1642846",
+      "name": "Ace Bailey",
+      "team": "UTA",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"ace bailey\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1642259",
+      "name": "Alex Sarr",
+      "team": "WAS",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"alex sarr\" (primary=shared_to_bdl_mapping_missing)"
+    },
+    {
+      "nba_player_id": "1642267",
+      "name": "Bub Carrington",
+      "team": "WAS",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"bub carrington\" (primary=shared_to_bdl_mapping_missing)"
+    }
+  ],
+  "mutations": {
+    "open": 0,
+    "touch": 513,
+    "close": 0
+  },
+  "open_stints_total": 513,
+  "players_with_multiple_open_stints": 0,
+  "teams_represented": 30,
+  "team_counts": {
+    "ATL": 17,
+    "BKN": 17,
+    "BOS": 16,
+    "CHA": 18,
+    "CHI": 18,
+    "CLE": 18,
+    "DAL": 17,
+    "DEN": 17,
+    "DET": 17,
+    "GSW": 18,
+    "HOU": 17,
+    "IND": 18,
+    "LAC": 18,
+    "LAL": 17,
+    "MEM": 17,
+    "MIA": 16,
+    "MIL": 14,
+    "MIN": 17,
+    "NOP": 18,
+    "NYK": 18,
+    "OKC": 17,
+    "ORL": 17,
+    "PHI": 17,
+    "PHX": 18,
+    "POR": 17,
+    "SAC": 18,
+    "SAS": 17,
+    "TOR": 16,
+    "UTA": 17,
+    "WAS": 16
+  }
+}

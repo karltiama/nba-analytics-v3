@@ -1,0 +1,251 @@
+{
+  "count": 16,
+  "items": [
+    {
+      "nba_player_id": "1630811",
+      "nba_name": "Keaton Wallace",
+      "team": "ATL",
+      "jersey": "2",
+      "position": "G",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630811: 17895703,45088184",
+      "candidates": [
+        {
+          "playerId": "17895703",
+          "fullName": "Keaton Wallace"
+        },
+        {
+          "playerId": "45088184",
+          "fullName": "Keaton Wallace"
+        }
+      ],
+      "recommended_next_action": "Manual disambiguation — inspect candidates + game logs; do not auto-map"
+    },
+    {
+      "nba_player_id": "1629651",
+      "nba_name": "Nic Claxton",
+      "team": "BKN",
+      "jersey": "33",
+      "position": "C",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"nic claxton\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1630314",
+      "nba_name": "Brandon Williams",
+      "team": "DAL",
+      "jersey": "10",
+      "position": "G",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630314: 1145,24489167",
+      "candidates": [
+        {
+          "playerId": "1145",
+          "fullName": "Brandon Williams"
+        },
+        {
+          "playerId": "24489167",
+          "fullName": "Brandon Williams"
+        }
+      ],
+      "recommended_next_action": "Manual disambiguation — inspect candidates + game logs; do not auto-map"
+    },
+    {
+      "nba_player_id": "1642354",
+      "nba_name": "KJ Simpson",
+      "team": "DEN",
+      "jersey": "25",
+      "position": "G",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"kj simpson\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1630696",
+      "nba_name": "Dru Smith",
+      "team": "MIA",
+      "jersey": "12",
+      "position": "G",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630696: 17553942,19465585",
+      "candidates": [
+        {
+          "playerId": "17553942",
+          "fullName": "Dru Smith"
+        },
+        {
+          "playerId": "19465585",
+          "fullName": "Dru Smith"
+        }
+      ],
+      "recommended_next_action": "Manual disambiguation — inspect candidates + game logs; do not auto-map"
+    },
+    {
+      "nba_player_id": "1631260",
+      "nba_name": "AJ Green",
+      "team": "MIL",
+      "jersey": "20",
+      "position": "G",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"aj green\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1630828",
+      "nba_name": "Alex Antetokounmpo",
+      "team": "MIL",
+      "jersey": "29",
+      "position": "F",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1630828: 17553943,1060010671",
+      "candidates": [
+        {
+          "playerId": "17553943",
+          "fullName": "Alex Antetokounmpo"
+        },
+        {
+          "playerId": "1060010671",
+          "fullName": "Alex Antetokounmpo"
+        }
+      ],
+      "recommended_next_action": "Manual disambiguation — inspect candidates + game logs; do not auto-map"
+    },
+    {
+      "nba_player_id": "1629018",
+      "nba_name": "Gary Trent Jr.",
+      "team": "MIL",
+      "jersey": "5",
+      "position": "G",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1629018: 448,3089",
+      "candidates": [
+        {
+          "playerId": "448",
+          "fullName": "Gary Trent Jr."
+        },
+        {
+          "playerId": "3089",
+          "fullName": "Gary Trent Jr."
+        }
+      ],
+      "recommended_next_action": "Manual disambiguation — inspect candidates + game logs; do not auto-map"
+    },
+    {
+      "nba_player_id": "1630538",
+      "nba_name": "Bones Hyland",
+      "team": "MIN",
+      "jersey": "8",
+      "position": "G",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"bones hyland\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1631119",
+      "nba_name": "Jaylin Williams",
+      "team": "OKC",
+      "jersey": "6",
+      "position": "F",
+      "status": "ambiguous",
+      "gap_cause": "conflicting_identities",
+      "reason": "Multiple balldontlie provider_ids for internal_id=1631119: 38017706,1028257789",
+      "candidates": [
+        {
+          "playerId": "38017706",
+          "fullName": "Jaylin Williams"
+        },
+        {
+          "playerId": "1028257789",
+          "fullName": "Jaylin Williams"
+        }
+      ],
+      "recommended_next_action": "Manual disambiguation — inspect candidates + game logs; do not auto-map"
+    },
+    {
+      "nba_player_id": "1642905",
+      "nba_name": "Yang Hansen",
+      "team": "POR",
+      "jersey": "16",
+      "position": "C",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"yang hansen\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1642357",
+      "nba_name": "David Jones Garcia",
+      "team": "SAS",
+      "jersey": "25",
+      "position": "G",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"david jones garcia\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1630639",
+      "nba_name": "A.J. Lawson",
+      "team": "TOR",
+      "jersey": "0",
+      "position": "G",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"a j lawson\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1642846",
+      "nba_name": "Ace Bailey",
+      "team": "UTA",
+      "jersey": "19",
+      "position": "F",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"ace bailey\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1642259",
+      "nba_name": "Alex Sarr",
+      "team": "WAS",
+      "jersey": "20",
+      "position": "C",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"alex sarr\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    },
+    {
+      "nba_player_id": "1642267",
+      "nba_name": "Bub Carrington",
+      "team": "WAS",
+      "jersey": "7",
+      "position": "G",
+      "status": "unresolved",
+      "gap_cause": "analytics_player_absent",
+      "reason": "No analytics player with normalized name \"bub carrington\" (primary=shared_to_bdl_mapping_missing)",
+      "candidates": [],
+      "recommended_next_action": "Ensure player exists in analytics.players (BDL id), then add balldontlie bridge"
+    }
+  ]
+}

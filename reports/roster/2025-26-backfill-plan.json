@@ -1,0 +1,107 @@
+{
+  "dry_run": true,
+  "insert": [],
+  "skip_already_present": [],
+  "conflict": [
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1642962",
+        "internalId": "1642962",
+        "analyticsPlayerId": "1057279425",
+        "fullName": "Drake Powell",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=1057279425 already maps to internal_id=1642887, not 1642962"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1631106",
+        "internalId": "1631106",
+        "analyticsPlayerId": "38017695",
+        "fullName": "Tari Eason",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=38017695 already maps to internal_id=bbref_easonta01, not 1631106"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1630679",
+        "internalId": "1630679",
+        "analyticsPlayerId": "17896117",
+        "fullName": "Ethan Thompson",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=17896117 already maps to internal_id=bbref_thompet01, not 1630679"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1630695",
+        "internalId": "1630695",
+        "analyticsPlayerId": "19465584",
+        "fullName": "Micah Potter",
+        "reason": "normalized_name+pgl_team_disambiguation"
+      },
+      "detail": "balldontlie provider_id=19465584 already maps to internal_id=bbref_pottemi01, not 1630695"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1631166",
+        "internalId": "1631166",
+        "analyticsPlayerId": "1046672580",
+        "fullName": "Drew Timme",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=1046672580 already maps to internal_id=timme_d_lal, not 1631166"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1642942",
+        "internalId": "1642942",
+        "analyticsPlayerId": "1057394959",
+        "fullName": "Jahmai Mashack",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=1057394959 already maps to internal_id=1641789, not 1642942"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1631213",
+        "internalId": "1631213",
+        "analyticsPlayerId": "38017722",
+        "fullName": "Tyrese Martin",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=38017722 already maps to internal_id=1631173, not 1631213"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1631123",
+        "internalId": "1631123",
+        "analyticsPlayerId": "44477062",
+        "fullName": "Jamaree Bouyea",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=44477062 already maps to internal_id=1641788, not 1631123"
+    },
+    {
+      "action": "conflict",
+      "proposal": {
+        "nbaPlayerId": "1630249",
+        "internalId": "1630249",
+        "analyticsPlayerId": "4197387",
+        "fullName": "Vít Krejčí",
+        "reason": "normalized_name_unique+pgl_team"
+      },
+      "detail": "balldontlie provider_id=4197387 already maps to internal_id=vit_krejci_2025, not 1630249"
+    }
+  ],
+  "reject": []
+}

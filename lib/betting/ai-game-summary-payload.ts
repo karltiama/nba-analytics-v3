@@ -3,9 +3,9 @@ import type { InjuryMatchupContext } from '@/lib/betting/injury-matchup-context'
 type InjuryReportLine = { player: string; status: string; injury: string };
 
 export type AiSummaryTeamStats = {
-  offensiveRating: number;
-  defensiveRating: number;
-  pace: number;
+  offensiveRating: number | null;
+  defensiveRating: number | null;
+  pace: number | null;
 };
 
 export type AiSummarySpreadPoint = { time: string; value: number };

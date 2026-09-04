@@ -1,9 +1,13 @@
 /**
  * Fetches last-10 and season stats for a player for use by the prop probability model.
+ *
+ * Fail-closed for the active analytics season: never silently uses prior-season rows
+ * or fabricates L10 / sample counts when active-season data is missing.
  */
 
 import { getAnalyticsPlayerSeasonStats, getAnalyticsPlayerGames } from '@/lib/players/analytics-queries';
 import type { GameLog } from '@/lib/players/types';
+import { getAnalyticsSeason } from '@/lib/season';
 import {
   buildStabilitySignals,
   neutralStabilitySignals,
@@ -44,6 +48,12 @@ export interface PlayerPropModelInputs {
   season: ModelInputStats;
   ext: ModelInputStatsExt;
   meta: PropModelStabilityMeta;
+  /** Active analytics season start year used for these inputs. */
+  seasonKey: string;
+  /** Completed Final games in the active season that fed L10/L5 (real count, never padded). */
+  sampleGamesUsed: number;
+  /** Season games_played from player_season_averages for the active season. */
+  seasonGamesPlayed: number;
 }
 
 const STABILITY_STAT_KEYS: PropStatSeriesKey[] = [
@@ -62,13 +72,6 @@ function buildMetaFromGames(games: GameLog[]): PropModelStabilityMeta {
   for (const k of STABILITY_STAT_KEYS) {
     signalsByStat[k] = buildStabilitySignals(games, k);
   }
-  return { signalsByStat };
-}
-
-function neutralMeta(): PropModelStabilityMeta {
-  const n = neutralStabilitySignals();
-  const signalsByStat = {} as Record<PropStatSeriesKey, StabilitySignals>;
-  for (const k of STABILITY_STAT_KEYS) signalsByStat[k] = { ...n };
   return { signalsByStat };
 }
 
@@ -92,18 +95,26 @@ function stddev(values: (number | null)[]): number {
 }
 
 /**
- * Returns last10 and season averages for pts, reb, ast, threes, pra.
- * Season threes = total_3pm / games_played; season PRA = avg_points + avg_rebounds + avg_assists.
+ * Returns last10 and season averages for pts, reb, ast, threes, pra for the **active**
+ * analytics season only. Returns `null` when that season has no usable stats/games
+ * (fail-closed — no prior-season fallback, no invented L10).
  */
 export async function getPlayerPropModelInputs(playerId: string): Promise<PlayerPropModelInputs | null> {
+  const seasonKey = getAnalyticsSeason();
   const [seasonStats, gamesData] = await Promise.all([
-    getAnalyticsPlayerSeasonStats(playerId, null),
-    getAnalyticsPlayerGames(playerId, null, 10),
+    getAnalyticsPlayerSeasonStats(playerId, seasonKey),
+    getAnalyticsPlayerGames(playerId, seasonKey, 10),
   ]);
 
   const games = gamesData.games ?? [];
-  const gp = Math.max(1, seasonStats.games_played ?? seasonStats.games_active ?? 0);
+  const seasonGamesPlayed = seasonStats.games_played ?? seasonStats.games_active ?? 0;
 
+  // Fail closed: need active-season averages and at least one Final log for L-window stats.
+  if (!seasonGamesPlayed || seasonGamesPlayed <= 0 || games.length === 0) {
+    return null;
+  }
+
+  const gp = seasonGamesPlayed;
   const seasonPts = seasonStats.avg_points ?? 0;
   const seasonReb = seasonStats.avg_rebounds ?? 0;
   const seasonAst = seasonStats.avg_assists ?? 0;
@@ -123,18 +134,6 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
     pr: seasonPr,
     ra: seasonRa,
   };
-
-  if (games.length === 0) {
-    return {
-      last10: season,
-      season,
-      ext: {
-        last5: season,
-        std10: { pts: 0, reb: 0, ast: 0, threes: 0, pra: 0, pa: 0, pr: 0, ra: 0 },
-      },
-      meta: neutralMeta(),
-    };
-  }
 
   const last10Pts = avg(games.map((g) => g.points));
   const last10Reb = avg(games.map((g) => g.rebounds));
@@ -180,7 +179,15 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
     ra: stddev(games.slice(0, 10).map((g) => (g.rebounds ?? 0) + (g.assists ?? 0))),
   };
 
-  return { last10, season, ext: { last5, std10 }, meta: buildMetaFromGames(games) };
+  return {
+    last10,
+    season,
+    ext: { last5, std10 },
+    meta: buildMetaFromGames(games),
+    seasonKey,
+    sampleGamesUsed: games.length,
+    seasonGamesPlayed: gp,
+  };
 }
 
 /** Map prop_type (and common aliases) to stat key. Handles "points", "pts", "PRA", "pra", etc. */

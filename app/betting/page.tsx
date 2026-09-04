@@ -10,6 +10,7 @@ import {
   getTodayET,
   getDateLabel,
   TrendingPlayerStrip,
+  UnauthorizedPanel,
   type Game,
   type Insight,
   type SortOption,
@@ -19,6 +20,7 @@ import {
   BettingInsightsSkeleton,
   AIInsightPanelSkeleton,
 } from '@/components/betting/skeletons';
+import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 
 // ================================
 // DATA FETCHING
@@ -29,16 +31,18 @@ interface ApiGame {
   gameDate: string;
   startTime: string;
   status: string;
+  statusRaw?: string | null;
   homeTeam: {
     id: string;
     name: string;
     abbreviation: string;
-    record: string;
-    offensiveRating: number;
-    defensiveRating: number;
-    defensiveRank: number;
-    pace: number;
-    avgPoints: number;
+    record: string | null;
+    offensiveRating: number | null;
+    defensiveRating: number | null;
+    defensiveRank: number | null;
+    pace: number | null;
+    avgPoints: number | null;
+    hasSeasonAnalytics?: boolean;
     recentForm: Array<{
       game_id: string;
       result: 'W' | 'L';
@@ -51,12 +55,13 @@ interface ApiGame {
     id: string;
     name: string;
     abbreviation: string;
-    record: string;
-    offensiveRating: number;
-    defensiveRating: number;
-    defensiveRank: number;
-    pace: number;
-    avgPoints: number;
+    record: string | null;
+    offensiveRating: number | null;
+    defensiveRating: number | null;
+    defensiveRank: number | null;
+    pace: number | null;
+    avgPoints: number | null;
+    hasSeasonAnalytics?: boolean;
     recentForm: Array<{
       game_id: string;
       result: 'W' | 'L';
@@ -68,60 +73,65 @@ interface ApiGame {
   homeScore: number | null;
   awayScore: number | null;
   odds: {
-    home: { moneyline: number; spread: number; spreadOdds: number };
-    away: { moneyline: number; spread: number; spreadOdds: number };
-    overUnder: number;
-    overOdds: number;
-    underOdds: number;
-    bookmaker?: string | null; // Which bookmaker these odds are from
+    home: { moneyline: number | null; spread: number | null; spreadOdds: number | null };
+    away: { moneyline: number | null; spread: number | null; spreadOdds: number | null };
+    overUnder: number | null;
+    overOdds: number | null;
+    underOdds: number | null;
+    bookmaker?: string | null;
   };
+}
+
+function impliedProbFromMoneyline(ml: number | null): number | null {
+  if (ml == null || !Number.isFinite(ml) || ml === 0) return null;
+  if (ml > 0) return (100 / (ml + 100)) * 100;
+  return (Math.abs(ml) / (Math.abs(ml) + 100)) * 100;
 }
 
 // Transform API game to GameCard format
 function transformGame(apiGame: ApiGame): Game {
-  // Use real odds from API (from markets table)
   const odds = apiGame.odds;
-  
-  // Calculate implied probabilities from real moneyline odds
-  const homeProb = odds.home.moneyline 
-    ? odds.home.moneyline > 0 
-      ? 100 / (odds.home.moneyline + 100) * 100
-      : Math.abs(odds.home.moneyline) / (Math.abs(odds.home.moneyline) + 100) * 100
-    : 50;
-  const awayProb = odds.away.moneyline
-    ? odds.away.moneyline > 0
-      ? 100 / (odds.away.moneyline + 100) * 100
-      : Math.abs(odds.away.moneyline) / (Math.abs(odds.away.moneyline) + 100) * 100
-    : 50;
-  
-  // Determine if it's a close matchup
-  const isClose = Math.abs(homeProb - awayProb) < 10;
-  
-  // Determine favorite
-  const isFavorite = homeProb > awayProb ? 'home' : 'away';
+  const homeProb = impliedProbFromMoneyline(odds.home.moneyline);
+  const awayProb = impliedProbFromMoneyline(odds.away.moneyline);
+  const hasOdds =
+    odds.home.moneyline != null ||
+    odds.away.moneyline != null ||
+    odds.home.spread != null ||
+    odds.away.spread != null ||
+    odds.overUnder != null;
 
-  // Pace signal (computed from real team pace values when available)
-  const homePace = apiGame.homeTeam.pace || 0;
-  const awayPace = apiGame.awayTeam.pace || 0;
-  const projectedPace = homePace && awayPace ? (homePace + awayPace) / 2 : 0;
-  const paceSignal = projectedPace > 0
-    ? {
-        label: projectedPace >= 102 ? 'FAST' : projectedPace <= 98 ? 'SLOW' : 'AVG',
-        projected: projectedPace,
-      }
-    : undefined;
+  const isClose =
+    homeProb != null && awayProb != null ? Math.abs(homeProb - awayProb) < 10 : false;
+  const isFavorite =
+    homeProb != null && awayProb != null
+      ? homeProb > awayProb
+        ? 'home'
+        : 'away'
+      : null;
 
-  // Weakness indicator: pick whichever team has worse defensive rating (higher = worse)
-  // Uses real league-wide RANK from the API (1 = best, 30 = worst)
-  const homeDef = apiGame.homeTeam.defensiveRating || 0;
-  const awayDef = apiGame.awayTeam.defensiveRating || 0;
+  const homePace = apiGame.homeTeam.pace;
+  const awayPace = apiGame.awayTeam.pace;
+  const paceSignal =
+    homePace != null && awayPace != null
+      ? {
+          label:
+            (homePace + awayPace) / 2 >= 102
+              ? 'FAST'
+              : (homePace + awayPace) / 2 <= 98
+                ? 'SLOW'
+                : 'AVG',
+          projected: (homePace + awayPace) / 2,
+        }
+      : undefined;
+
+  const homeDef = apiGame.homeTeam.defensiveRating;
+  const awayDef = apiGame.awayTeam.defensiveRating;
   let weakness: Game['weakness'] | undefined;
-  if (homeDef > 0 && awayDef > 0) {
+  if (homeDef != null && awayDef != null) {
     const worseTeam = homeDef > awayDef ? apiGame.homeTeam : apiGame.awayTeam;
-    const worseRank = homeDef > awayDef
-      ? apiGame.homeTeam.defensiveRank
-      : apiGame.awayTeam.defensiveRank;
-    if (worseRank > 0) {
+    const worseRank =
+      homeDef > awayDef ? apiGame.homeTeam.defensiveRank : apiGame.awayTeam.defensiveRank;
+    if (worseRank != null && worseRank > 0) {
       weakness = {
         label: 'Def Rtg',
         team: worseTeam.abbreviation,
@@ -130,8 +140,10 @@ function transformGame(apiGame: ApiGame): Game {
     }
   }
 
+  // Tipoff in ET — slate dates are ET; do not use server/browser local TZ for schedule times.
   return {
     id: apiGame.id,
+    gameDate: apiGame.gameDate,
     homeTeam: {
       id: apiGame.homeTeam.id,
       name: apiGame.homeTeam.name,
@@ -144,26 +156,22 @@ function transformGame(apiGame: ApiGame): Game {
       abbreviation: apiGame.awayTeam.abbreviation,
       record: apiGame.awayTeam.record,
     },
-    startTime: new Date(apiGame.startTime).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      timeZoneName: 'short',
-    }),
+    startTime: formatTipoffEt(apiGame.startTime),
     homeOdds: {
-      moneyline: odds.home.moneyline || 0,
-      spread: odds.home.spread || 0,
-      spreadOdds: odds.home.spreadOdds || 0,
+      moneyline: odds.home.moneyline,
+      spread: odds.home.spread,
+      spreadOdds: odds.home.spreadOdds,
     },
     awayOdds: {
-      moneyline: odds.away.moneyline || 0,
-      spread: odds.away.spread || 0,
-      spreadOdds: odds.away.spreadOdds || 0,
+      moneyline: odds.away.moneyline,
+      spread: odds.away.spread,
+      spreadOdds: odds.away.spreadOdds,
     },
-    overUnder: odds.overUnder || 0,
-    overOdds: odds.overOdds || 0,
-    underOdds: odds.underOdds || 0,
-    homeImpliedProb: Math.round(homeProb),
-    awayImpliedProb: Math.round(awayProb),
+    overUnder: odds.overUnder,
+    overOdds: odds.overOdds,
+    underOdds: odds.underOdds,
+    homeImpliedProb: homeProb != null ? Math.round(homeProb) : null,
+    awayImpliedProb: awayProb != null ? Math.round(awayProb) : null,
     isFavorite,
     isClose,
     paceSignal,
@@ -171,6 +179,7 @@ function transformGame(apiGame: ApiGame): Game {
     status: apiGame.status || undefined,
     homeScore: apiGame.homeScore ?? undefined,
     awayScore: apiGame.awayScore ?? undefined,
+    hasOdds,
   };
 }
 
@@ -214,13 +223,20 @@ export default function BettingDashboard(props: PageProps) {
   const [loadingInsights, setLoadingInsights] = useState(true);
   const [slateSummaryLoading, setSlateSummaryLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [unauthorized, setUnauthorized] = useState(false);
 
   // Fetch games for a given date
   const fetchGames = useCallback(async (date: string) => {
     setLoadingGames(true);
     setError(null);
+    setUnauthorized(false);
     try {
       const res = await fetch(`/api/betting/games?date=${encodeURIComponent(date)}`);
+      if (res.status === 401) {
+        setUnauthorized(true);
+        setGames([]);
+        return;
+      }
       if (!res.ok) throw new Error('Failed to fetch games');
       const data = await res.json();
       const transformedGames = data.games.map(transformGame);
@@ -262,6 +278,10 @@ export default function BettingDashboard(props: PageProps) {
     setLoadingInsights(true);
     try {
       const res = await fetch('/api/betting/insights');
+      if (res.status === 401) {
+        setUnauthorized(true);
+        return;
+      }
       if (!res.ok) throw new Error('Failed to fetch insights');
       const data = await res.json();
       setInsights(data.insights || []);
@@ -337,11 +357,14 @@ export default function BettingDashboard(props: PageProps) {
   const sortedGames = [...filteredGames].sort((a, b) => {
     switch (sortBy) {
       case 'spread':
-        return Math.abs(a.homeOdds.spread) - Math.abs(b.homeOdds.spread);
+        return Math.abs(a.homeOdds.spread ?? 0) - Math.abs(b.homeOdds.spread ?? 0);
       case 'total':
-        return b.overUnder - a.overUnder;
+        return (b.overUnder ?? 0) - (a.overUnder ?? 0);
       case 'probability':
-        return Math.max(b.homeImpliedProb, b.awayImpliedProb) - Math.max(a.homeImpliedProb, a.awayImpliedProb);
+        return (
+          Math.max(b.homeImpliedProb ?? 0, b.awayImpliedProb ?? 0) -
+          Math.max(a.homeImpliedProb ?? 0, a.awayImpliedProb ?? 0)
+        );
       default:
         return 0;
     }
@@ -387,8 +410,11 @@ export default function BettingDashboard(props: PageProps) {
               onDateChange={handleDateChange}
             />
 
-            {/* Error State */}
-            {error && (
+            {/* Auth / Error State */}
+            {unauthorized && (
+              <UnauthorizedPanel onRetry={() => fetchGames(selectedDate)} />
+            )}
+            {error && !unauthorized && (
               <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757]">
                 <p className="text-sm text-[#ff4757]">Error loading data: {error}</p>
                 <button 

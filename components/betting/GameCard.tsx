@@ -8,13 +8,14 @@ interface TeamInfo {
   name: string;
   abbreviation: string;
   logo?: string;
-  record: string;
+  /** null/empty when no active-season record */
+  record: string | null;
 }
 
 interface OddsInfo {
-  moneyline: number;
-  spread: number;
-  spreadOdds: number;
+  moneyline: number | null;
+  spread: number | null;
+  spreadOdds: number | null;
 }
 
 export interface Game {
@@ -26,12 +27,12 @@ export interface Game {
   startTime: string;
   homeOdds: OddsInfo;
   awayOdds: OddsInfo;
-  overUnder: number;
-  overOdds: number;
-  underOdds: number;
-  homeImpliedProb: number;
-  awayImpliedProb: number;
-  isFavorite: 'home' | 'away';
+  overUnder: number | null;
+  overOdds: number | null;
+  underOdds: number | null;
+  homeImpliedProb: number | null;
+  awayImpliedProb: number | null;
+  isFavorite: 'home' | 'away' | null;
   isClose: boolean;
   paceSignal?: {
     label: string;
@@ -42,11 +43,11 @@ export interface Game {
     team: string;
     rank: number;
   };
-  /** Game status: Final, Scheduled, Live, etc. */
+  /** Normalized product status */
   status?: string;
-  /** Final score when status === 'Final' */
   homeScore?: number | null;
   awayScore?: number | null;
+  hasOdds?: boolean;
 }
 
 interface GameCardProps {
@@ -55,13 +56,13 @@ interface GameCardProps {
   onViewDetails?: (gameId: string) => void;
 }
 
-function formatOdds(odds: number): string {
-  if (odds === 0) return '—';
+function formatOdds(odds: number | null | undefined): string {
+  if (odds == null) return '—';
   return odds > 0 ? `+${odds}` : `${odds}`;
 }
 
-function formatSpread(spread: number): string {
-  if (spread === 0) return '—';
+function formatSpread(spread: number | null | undefined): string {
+  if (spread == null) return '—';
   if (spread > 0) return `+${spread}`;
   return `${spread}`;
 }
@@ -85,17 +86,32 @@ function getStatusBadge(status: string | undefined): { label: string; className:
   const s = status.toLowerCase();
   if (s === 'final') return { label: 'FINAL', className: 'bg-white/20 text-white rounded-full font-semibold' };
   if (s === 'scheduled') return { label: 'Scheduled', className: 'bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium' };
-  if (s === 'live' || s.includes('live')) return { label: 'Live', className: 'bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold' };
+  if (s === 'in progress' || s === 'live') {
+    return { label: 'In Progress', className: 'bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold' };
+  }
+  if (s === 'postponed') {
+    return { label: 'Postponed', className: 'bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-medium' };
+  }
+  if (s === 'canceled' || s === 'cancelled') {
+    return { label: 'Canceled', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+  }
+  if (s === 'unknown') {
+    return { label: 'Status TBD', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+  }
   return { label: status, className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
 }
 
 export function GameCard({ game, onViewDetails }: GameCardProps) {
   const gameHref = `/betting/games/${game.id}`;
-  const borderClass = game.isClose
-    ? 'border-l-[#ff6b35]'
-    : 'border-l-[#39ff14]';
+  const borderClass = game.isClose ? 'border-l-[#ff6b35]' : 'border-l-[#39ff14]';
 
-  const hasOdds = game.homeOdds.moneyline !== 0 || game.awayOdds.moneyline !== 0;
+  const hasOdds =
+    game.hasOdds ??
+    (game.homeOdds.moneyline != null ||
+      game.awayOdds.moneyline != null ||
+      game.homeOdds.spread != null ||
+      game.awayOdds.spread != null ||
+      game.overUnder != null);
   const awayIsFav = game.isFavorite === 'away';
   const homeIsFav = game.isFavorite === 'home';
   const isFinal = game.status === 'Final' && game.homeScore != null && game.awayScore != null;
@@ -103,16 +119,13 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
 
   return (
     <div className={`glass-card rounded-xl border-l-4 ${borderClass} card-hover overflow-hidden`}>
-      {/* Header */}
       <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
         <div className="flex items-center gap-2">
           <Clock className="w-3.5 h-3.5 text-[#00d4ff]" />
           <span className="text-xs font-medium text-muted-foreground">{game.startTime}</span>
         </div>
         {statusBadge ? (
-          <span className={`text-[10px] px-2 py-0.5 ${statusBadge.className}`}>
-            {statusBadge.label}
-          </span>
+          <span className={`text-[10px] px-2 py-0.5 ${statusBadge.className}`}>{statusBadge.label}</span>
         ) : game.isClose ? (
           <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
             CLOSE
@@ -120,7 +133,6 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
         ) : null}
       </div>
 
-      {/* Final score (past games) */}
       {isFinal && (
         <div className="px-4 pt-3 pb-1">
           <div className="text-center py-2 rounded-lg bg-white/[0.04] border border-white/5">
@@ -134,14 +146,12 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
         </div>
       )}
 
-      {/* Teams */}
       <div className={`px-4 space-y-2 ${isFinal ? 'pt-2 pb-2' : 'pt-3 pb-2'}`}>
-        {/* Away */}
         <div className="flex items-center gap-3">
           <TeamLogo team={game.awayTeam} />
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-white text-sm truncate">{game.awayTeam.name}</div>
-            <div className="text-[11px] text-muted-foreground">{game.awayTeam.record}</div>
+            <div className="text-[11px] text-muted-foreground">{game.awayTeam.record ?? '—'}</div>
           </div>
           {awayIsFav && (
             <span className="text-[9px] px-1.5 py-0.5 bg-[#39ff14]/15 text-[#39ff14] rounded font-bold shrink-0">
@@ -150,19 +160,17 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
           )}
         </div>
 
-        {/* VS */}
         <div className="flex items-center gap-2">
           <div className="flex-1 h-px bg-white/10" />
           <span className="text-[10px] text-muted-foreground/60 font-medium">VS</span>
           <div className="flex-1 h-px bg-white/10" />
         </div>
 
-        {/* Home */}
         <div className="flex items-center gap-3">
           <TeamLogo team={game.homeTeam} />
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-white text-sm truncate">{game.homeTeam.name}</div>
-            <div className="text-[11px] text-muted-foreground">{game.homeTeam.record}</div>
+            <div className="text-[11px] text-muted-foreground">{game.homeTeam.record ?? '—'}</div>
           </div>
           {homeIsFav && (
             <span className="text-[9px] px-1.5 py-0.5 bg-[#39ff14]/15 text-[#39ff14] rounded font-bold shrink-0">
@@ -172,48 +180,52 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
         </div>
       </div>
 
-      {/* 3-Column Odds Row */}
-      <div className="mx-4 mb-3 grid grid-cols-3 rounded-lg border border-white/5 overflow-hidden bg-white/[0.02]">
-        {/* Spread */}
-        <div className="px-2 py-2 text-center border-r border-white/5">
-          <div className="text-[10px] text-muted-foreground mb-1 font-medium">SPREAD</div>
-          <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
-            {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
+      {hasOdds ? (
+        <div className="mx-4 mb-3 grid grid-cols-3 rounded-lg border border-white/5 overflow-hidden bg-white/[0.02]">
+          <div className="px-2 py-2 text-center border-r border-white/5">
+            <div className="text-[10px] text-muted-foreground mb-1 font-medium">SPREAD</div>
+            <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+              {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
+            </div>
+            <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+              {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
+            </div>
           </div>
-          <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
-            {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
+          <div className="px-2 py-2 text-center border-r border-white/5">
+            <div className="text-[10px] text-muted-foreground mb-1 font-medium">TOTAL</div>
+            <div className="text-xs font-mono font-semibold text-[#00d4ff]">
+              {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
+            </div>
+            <div className="text-[10px] font-mono text-muted-foreground">
+              {game.overUnder != null
+                ? `O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`
+                : ''}
+            </div>
           </div>
-        </div>
-
-        {/* Total */}
-        <div className="px-2 py-2 text-center border-r border-white/5">
-          <div className="text-[10px] text-muted-foreground mb-1 font-medium">TOTAL</div>
-          <div className="text-xs font-mono font-semibold text-[#00d4ff]">
-            {game.overUnder ? `O/U ${game.overUnder}` : '—'}
-          </div>
-          <div className="text-[10px] font-mono text-muted-foreground">
-            {game.overUnder ? `O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}` : ''}
-          </div>
-        </div>
-
-        {/* Moneyline */}
-        <div className="px-2 py-2 text-center">
-          <div className="text-[10px] text-muted-foreground mb-1 font-medium">ML</div>
-          <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
-            {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
-          </div>
-          <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
-            {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
+          <div className="px-2 py-2 text-center">
+            <div className="text-[10px] text-muted-foreground mb-1 font-medium">ML</div>
+            <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+              {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
+            </div>
+            <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+              {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="mx-4 mb-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-3 text-center">
+          <div className="text-[11px] text-muted-foreground">No odds yet</div>
+        </div>
+      )}
 
-      {/* Signals Row: Pace + Weakness */}
       {(game.paceSignal || game.weakness) && (
         <div className="mx-4 mb-3 flex items-stretch gap-2">
           {game.paceSignal && (
             <div className="flex-1 flex flex-col items-center justify-center rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-2">
-              <Gauge className="w-3.5 h-3.5 mb-1" style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }} />
+              <Gauge
+                className="w-3.5 h-3.5 mb-1"
+                style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }}
+              />
               <span
                 className="text-[10px] font-bold leading-none"
                 style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }}
@@ -239,8 +251,7 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
         </div>
       )}
 
-      {/* Implied Probabilities — only show when real odds exist. Bar: left = away %, right = home %. */}
-      {hasOdds ? (
+      {hasOdds && game.homeImpliedProb != null && game.awayImpliedProb != null ? (
         <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="text-center min-w-[2.5rem]">
@@ -263,13 +274,8 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
             </div>
           </div>
         </div>
-      ) : (
-        <div className="px-4 py-2 border-t border-white/5 bg-white/[0.02]">
-          <div className="text-[10px] text-center text-muted-foreground/60">No odds available</div>
-        </div>
-      )}
+      ) : null}
 
-      {/* Action Button */}
       <Link
         href={gameHref}
         onClick={() => onViewDetails?.(game.id)}

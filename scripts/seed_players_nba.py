@@ -45,6 +45,15 @@ if TARGET_SEASON.isdigit() and len(TARGET_SEASON) == 4:
 TARGET_TEAM_ID = os.getenv("NBA_STATS_TEAM_ID")  # Optional override (NBA Stats team id)
 REQUEST_DELAY_SECONDS = float(os.getenv("NBA_STATS_REQUEST_DELAY_SECONDS", "0.7"))
 STAGING_ENABLED = os.getenv("NBA_STATS_STAGE_EVENTS", "true").lower() in {"true", "1", "yes"}
+# Rehearsal-safe: when true, fetch + validate only — no DB writes.
+DRY_RUN = os.getenv("NBA_STATS_DRY_RUN", "false").lower() in {"true", "1", "yes"}
+# After a successful full-season run, delete player_team_rosters rows for TARGET_SEASON
+# whose player_id was not observed in this snapshot (other seasons untouched).
+PRUNE_SEASON_ROSTER = os.getenv("NBA_STATS_PRUNE_SEASON_ROSTER", "true").lower() in {
+    "true",
+    "1",
+    "yes",
+}
 
 _staging_disabled_due_to_error = False
 
@@ -279,7 +288,9 @@ def normalize_player(player: RosterPlayer, team: TeamMapping) -> NormalizedPlaye
         jersey=jersey,
         team_internal_id=team.internal_team_id,
         provider_team_id=team.provider_team_id,
-        season=player.season,
+        # Always persist the configured target season (e.g. 2025-26), not the
+        # raw API SEASON string which may be "2025" / "2025-26" inconsistently.
+        season=TARGET_SEASON,
         raw=player.model_dump(by_alias=True),
     )
 
@@ -363,13 +374,18 @@ def upsert_players(
         )
 
 
-def process_team(conn: psycopg.Connection, team: TeamMapping) -> None:
-    """Fetch, stage, and upsert a single team's roster."""
+def process_team(
+    conn: psycopg.Connection,
+    team: TeamMapping,
+    dry_run: bool = False,
+) -> List[NormalizedPlayer]:
+    """Fetch, stage, and upsert a single team's roster. Returns normalized players."""
     logging.info(
-        "Fetching roster for provider team %s (internal id %s, season %s)",
+        "Fetching roster for provider team %s (internal id %s, season %s)%s",
         team.provider_team_id,
         team.internal_team_id,
         TARGET_SEASON,
+        " [DRY_RUN]" if dry_run else "",
     )
 
     roster_players = fetch_roster(team.provider_team_id, TARGET_SEASON)
@@ -380,9 +396,17 @@ def process_team(conn: psycopg.Connection, team: TeamMapping) -> None:
             team.provider_team_id,
             TARGET_SEASON,
         )
-        return
+        return []
 
     normalized = [normalize_player(player, team) for player in roster_players]
+
+    if dry_run:
+        logging.info(
+            "DRY_RUN: would upsert %s players for provider team %s",
+            len(normalized),
+            team.provider_team_id,
+        )
+        return normalized
 
     stage_roster_payload(
         conn,
@@ -398,6 +422,56 @@ def process_team(conn: psycopg.Connection, team: TeamMapping) -> None:
         len(normalized),
         team.provider_team_id,
     )
+    return normalized
+
+
+def prune_season_roster(
+    conn: psycopg.Connection,
+    season: str,
+    keep_player_ids: List[str],
+    dry_run: bool = False,
+) -> int:
+    """
+    Delete player_team_rosters rows for `season` whose player_id is not in keep set.
+    Other seasons are never touched.
+    """
+    if not keep_player_ids:
+        logging.warning("Refusing season prune: keep_player_ids is empty")
+        return 0
+
+    count_sql = """
+        select count(*)::int
+          from player_team_rosters
+         where season = %s
+           and player_id <> all(%s);
+    """
+    to_delete = conn.execute(count_sql, (season, keep_player_ids)).fetchone()[0]
+    if to_delete == 0:
+        logging.info("Season roster prune: 0 stale rows for season %s", season)
+        return 0
+
+    if dry_run:
+        logging.info(
+            "DRY_RUN: would delete %s stale player_team_rosters rows for season %s",
+            to_delete,
+            season,
+        )
+        return to_delete
+
+    conn.execute(
+        """
+        delete from player_team_rosters
+         where season = %s
+           and player_id <> all(%s);
+        """,
+        (season, keep_player_ids),
+    )
+    logging.info(
+        "Deleted %s stale player_team_rosters rows for season %s only",
+        to_delete,
+        season,
+    )
+    return to_delete
 
 
 def main() -> None:
@@ -406,13 +480,37 @@ def main() -> None:
         format="%(asctime)s %(levelname)s %(message)s",
     )
 
-    logging.info("Starting NBA roster seed (season %s)", TARGET_SEASON)
+    logging.info(
+        "Starting NBA roster seed (season %s)%s",
+        TARGET_SEASON,
+        " [DRY_RUN]" if DRY_RUN else "",
+    )
+
+    summary = {
+        "season": TARGET_SEASON,
+        "dry_run": DRY_RUN,
+        "teams_attempted": 0,
+        "teams_ok": 0,
+        "teams_failed": [],
+        "players_returned": 0,
+        "players_per_team": {},
+        "duplicate_nba_player_ids": [],
+        "pruned_stale_rows": 0,
+        "note": (
+            "CommonTeamRoster is a membership SNAPSHOT observation "
+            "(player observed on team at fetch time), not exact trade/signing timestamps."
+        ),
+    }
+
+    seen_ids: dict[str, str] = {}
+    all_normalized: List[NormalizedPlayer] = []
 
     with psycopg.connect(SUPABASE_DB_URL) as conn:
         team_mappings = fetch_team_mappings(conn)
         logging.info("Seeding %s team(s)", len(team_mappings))
 
         for index, team in enumerate(team_mappings, start=1):
+            summary["teams_attempted"] += 1
             logging.info(
                 "[%d/%d] Processing provider team %s",
                 index,
@@ -421,11 +519,36 @@ def main() -> None:
             )
 
             try:
-                conn.execute("begin;")
-                process_team(conn, team)
-                conn.execute("commit;")
+                if not DRY_RUN:
+                    conn.execute("begin;")
+                normalized = process_team(conn, team, dry_run=DRY_RUN)
+                if not DRY_RUN:
+                    conn.execute("commit;")
+                summary["teams_ok"] += 1
+                summary["players_returned"] += len(normalized)
+                # Prefer team abbreviation from first player payload when present.
+                abbr = None
+                if normalized:
+                    abbr = (normalized[0].raw or {}).get("TEAM_ABBREVIATION")
+                key = abbr or team.internal_team_id
+                summary["players_per_team"][key] = len(normalized)
+                all_normalized.extend(normalized)
+                for p in normalized:
+                    if p.player_id in seen_ids and seen_ids[p.player_id] != key:
+                        summary["duplicate_nba_player_ids"].append(
+                            {
+                                "player_id": p.player_id,
+                                "name": p.full_name,
+                                "teams": [seen_ids[p.player_id], key],
+                            }
+                        )
+                    seen_ids[p.player_id] = key
             except Exception as exc:  # noqa: BLE001
-                conn.execute("rollback;")
+                if not DRY_RUN:
+                    conn.execute("rollback;")
+                summary["teams_failed"].append(
+                    {"provider_team_id": team.provider_team_id, "error": str(exc)}
+                )
                 logging.exception(
                     "Failed processing team %s: %s",
                     team.provider_team_id,
@@ -434,6 +557,28 @@ def main() -> None:
             finally:
                 time.sleep(REQUEST_DELAY_SECONDS)
 
+        if PRUNE_SEASON_ROSTER and summary["teams_ok"] == len(team_mappings):
+            keep_ids = [p.player_id for p in all_normalized]
+            try:
+                if not DRY_RUN:
+                    conn.execute("begin;")
+                pruned = prune_season_roster(
+                    conn, TARGET_SEASON, keep_ids, dry_run=DRY_RUN
+                )
+                if not DRY_RUN:
+                    conn.execute("commit;")
+                summary["pruned_stale_rows"] = pruned
+            except Exception as exc:  # noqa: BLE001
+                if not DRY_RUN:
+                    conn.execute("rollback;")
+                logging.exception("Season roster prune failed: %s", exc)
+
+    # Suspicious sizes: NBA rosters typically ~14-18; flag outside 12-22.
+    summary["suspicious_roster_sizes"] = {
+        k: v for k, v in summary["players_per_team"].items() if v < 12 or v > 22
+    }
+
+    print(json.dumps(summary, indent=2, default=_json_default))
     logging.info("NBA roster seed complete.")
 
 

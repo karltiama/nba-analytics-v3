@@ -120,6 +120,7 @@ export async function getRecentGames(limit: number = 10) {
  * Get team ratings (offensive/defensive) for all teams
  */
 export async function getAllTeamRatings(): Promise<Record<string, TeamRatings>> {
+  const season = getAnalyticsSeason();
   const result = await query(`
     SELECT
       team_id,
@@ -131,8 +132,9 @@ export async function getAllTeamRatings(): Promise<Record<string, TeamRatings>> 
       wins,
       losses
     FROM analytics.team_season_averages
+    WHERE season = $1
     ORDER BY team_id
-  `);
+  `, [season]);
 
   const ratingsMap: Record<string, TeamRatings> = {};
   result.forEach((row: any) => {
@@ -152,9 +154,11 @@ export async function getAllTeamRatings(): Promise<Record<string, TeamRatings>> 
 }
 
 /**
- * Get team's recent form (last 5 games)
+ * Get team's recent form (last N completed games) for the active analytics season only.
+ * Returns [] when the active season has no completed games (fail-closed).
  */
 export async function getTeamRecentForm(teamId: string, limit: number = 5) {
+  const season = getAnalyticsSeason();
   const result = await query(`
     SELECT
       tgs.game_id,
@@ -167,11 +171,12 @@ export async function getTeamRecentForm(teamId: string, limit: number = 5) {
     FROM analytics.team_game_stats tgs
     JOIN analytics.teams opp ON opp.team_id = tgs.opponent_team_id
     WHERE tgs.team_id = $1
+      AND tgs.season = $2
       AND tgs.result IS NOT NULL
       AND tgs.points_allowed IS NOT NULL
     ORDER BY tgs.game_date DESC NULLS LAST
-    LIMIT $2
-  `, [teamId, limit]);
+    LIMIT $3
+  `, [teamId, season, limit]);
 
   return result;
 }
@@ -349,9 +354,7 @@ export async function getTrendingPlayers(limit: number = 10): Promise<TrendingPl
   });
 }
 
-/** Current NBA season start year. Prefer getAnalyticsSeason() at call time. */
-export const CURRENT_ANALYTICS_SEASON = getAnalyticsSeason();
-
+/** Prefer getAnalyticsSeason() at call time — do not snapshot at module load. */
 /**
  * Get trending players from analytics schema (same shape as getTrendingPlayers).
  * Uses analytics.player_season_averages, analytics.player_game_logs, analytics.players, analytics.teams.
@@ -382,6 +385,7 @@ export async function getTrendingPlayersFromAnalytics(limit: number = 10): Promi
         FROM analytics.player_game_logs pgl
         JOIN analytics.games g ON pgl.game_id = g.game_id
         WHERE g.status = 'Final'
+          AND pgl.season = $1
           AND pgl.points IS NOT NULL
       ) pgl
       WHERE rn <= 5
@@ -567,7 +571,7 @@ export async function getTrendingPlayersStrip(
           ROW_NUMBER() OVER (PARTITION BY pgl.player_id ORDER BY pgl.game_date DESC NULLS LAST) AS rn
         FROM analytics.player_game_logs pgl
         JOIN analytics.games g ON pgl.game_id = g.game_id
-        WHERE g.status = 'Final' AND pgl.points IS NOT NULL
+        WHERE g.status = 'Final' AND pgl.season = $1 AND pgl.points IS NOT NULL
       ) sub
       WHERE sub.rn <= 5
       GROUP BY sub.player_id
@@ -804,13 +808,18 @@ export async function getGameOdds(gameId: string, preferredBookmaker: string = '
 
   if (analyticsResult.length > 0) {
     const r = analyticsResult[0];
+    const n = (v: unknown): number | null => {
+      if (v == null || v === '') return null;
+      const x = typeof v === 'number' ? v : Number.parseFloat(String(v));
+      return Number.isFinite(x) ? x : null;
+    };
     return {
-      home: { moneyline: r.home_moneyline, spread: parseFloat(r.home_spread), spreadOdds: r.home_spread_odds },
-      away: { moneyline: r.away_moneyline, spread: parseFloat(r.away_spread), spreadOdds: r.away_spread_odds },
-      overUnder: parseFloat(r.total),
-      overOdds: r.over_odds,
-      underOdds: r.under_odds,
-      bookmaker: r.vendor,
+      home: { moneyline: n(r.home_moneyline), spread: n(r.home_spread), spreadOdds: n(r.home_spread_odds) },
+      away: { moneyline: n(r.away_moneyline), spread: n(r.away_spread), spreadOdds: n(r.away_spread_odds) },
+      overUnder: n(r.total),
+      overOdds: n(r.over_odds),
+      underOdds: n(r.under_odds),
+      bookmaker: r.vendor ?? null,
     };
   }
 
@@ -849,13 +858,18 @@ export async function getGamesOdds(gameIds: string[], preferredBookmaker: string
   const foundInAnalytics = new Set<string>();
   analyticsResult.forEach((r: any) => {
     foundInAnalytics.add(r.game_id);
+    const n = (v: unknown): number | null => {
+      if (v == null || v === '') return null;
+      const x = typeof v === 'number' ? v : Number.parseFloat(String(v));
+      return Number.isFinite(x) ? x : null;
+    };
     oddsMap[r.game_id] = {
-      home: { moneyline: r.home_moneyline, spread: parseFloat(r.home_spread), spreadOdds: r.home_spread_odds },
-      away: { moneyline: r.away_moneyline, spread: parseFloat(r.away_spread), spreadOdds: r.away_spread_odds },
-      overUnder: parseFloat(r.total),
-      overOdds: r.over_odds,
-      underOdds: r.under_odds,
-      bookmaker: r.vendor,
+      home: { moneyline: n(r.home_moneyline), spread: n(r.home_spread), spreadOdds: n(r.home_spread_odds) },
+      away: { moneyline: n(r.away_moneyline), spread: n(r.away_spread), spreadOdds: n(r.away_spread_odds) },
+      overUnder: n(r.total),
+      overOdds: n(r.over_odds),
+      underOdds: n(r.under_odds),
+      bookmaker: r.vendor ?? null,
     };
   });
 
@@ -1119,30 +1133,34 @@ export interface PaceAnalysis {
 }
 
 /**
- * Pace for a matchup from analytics.team_season_averages (latest season row per team).
+ * Pace for a matchup from analytics.team_season_averages for the active season only.
+ * Returns null when either team lacks a pace row for that season (fail-closed).
  */
 export async function getPaceAnalysis(
   homeTeamId: string,
   awayTeamId: string
-): Promise<PaceAnalysis> {
+): Promise<PaceAnalysis | null> {
+  const season = getAnalyticsSeason();
   const result = await query(`
-    WITH latest AS (
-      SELECT DISTINCT ON (team_id)
-        team_id,
-        COALESCE(avg_pace, 100)::double precision AS pace
-      FROM analytics.team_season_averages
-      WHERE team_id IN ($1, $2)
-      ORDER BY team_id, season DESC NULLS LAST
-    )
-    SELECT 
-      MAX(CASE WHEN team_id = $1 THEN pace END) as home_team_pace,
-      MAX(CASE WHEN team_id = $2 THEN pace END) as away_team_pace
-    FROM latest
-  `, [homeTeamId, awayTeamId]);
+    SELECT
+      MAX(CASE WHEN team_id = $1 THEN avg_pace END)::double precision as home_team_pace,
+      MAX(CASE WHEN team_id = $2 THEN avg_pace END)::double precision as away_team_pace
+    FROM analytics.team_season_averages
+    WHERE season = $3
+      AND team_id IN ($1, $2)
+  `, [homeTeamId, awayTeamId, season]);
 
   const row = result[0] || {};
-  const homePace = parseFloat(row.home_team_pace) || 100;
-  const awayPace = parseFloat(row.away_team_pace) || 100;
+  const homePaceRaw = row.home_team_pace;
+  const awayPaceRaw = row.away_team_pace;
+  if (homePaceRaw == null || awayPaceRaw == null) {
+    return null;
+  }
+  const homePace = parseFloat(homePaceRaw);
+  const awayPace = parseFloat(awayPaceRaw);
+  if (!Number.isFinite(homePace) || !Number.isFinite(awayPace)) {
+    return null;
+  }
   const projectedPace = (homePace + awayPace) / 2;
 
   let paceAdvantage: 'home' | 'away' | 'neutral' = 'neutral';
@@ -1190,7 +1208,7 @@ export interface MatchupAnalysis {
   away_offense: TeamOffensiveRankings | null;
   home_defense: OpponentDefensiveRankings | null;
   away_defense: OpponentDefensiveRankings | null;
-  pace_analysis: PaceAnalysis;
+  pace_analysis: PaceAnalysis | null;
   key_players: PlayerVsOpponentStats[];
   starting_lineups: {
     home: StartingLineup | null;
@@ -1207,17 +1225,19 @@ export async function getProjectedStartingLineupFromAnalytics(
   teamId: string,
   options?: { excludeInjuredPlayerIds?: string[] }
 ): Promise<StartingLineup | null> {
+  const season = getAnalyticsSeason();
   const excludeIds = options?.excludeInjuredPlayerIds ?? [];
   const excludeClause = excludeIds.length > 0
-    ? `AND pgl.player_id != ALL($2::text[])`
+    ? `AND pgl.player_id != ALL($3::text[])`
     : '';
-  const params = excludeIds.length > 0 ? [teamId, excludeIds] : [teamId];
+  const params = excludeIds.length > 0 ? [teamId, season, excludeIds] : [teamId, season];
 
   const result = await query(`
     WITH recent_games AS (
       SELECT g.game_id, g.start_time
       FROM analytics.games g
       WHERE g.status = 'Final'
+        AND g.season = $2
         AND (g.home_team_id = $1 OR g.away_team_id = $1)
       ORDER BY COALESCE(g.start_time, '1970-01-01'::timestamptz) DESC
       LIMIT 10

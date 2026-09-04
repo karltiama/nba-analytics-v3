@@ -45,6 +45,28 @@ export function getAnalyticsSeason(
   return PINNED_ANALYTICS_SEASON;
 }
 
+/** Numeric start year for BDL `seasons[]` and ingestion (same source as getAnalyticsSeason). */
+export function getAnalyticsSeasonStartYearNumber(
+  env: NodeJS.ProcessEnv = process.env,
+  now: Date = new Date()
+): number {
+  return Number(getAnalyticsSeason(env, now));
+}
+
+/**
+ * Resolve BDL/ingestion season start year.
+ * Explicit `season` wins (CLI seed). Otherwise uses the app pin / CURRENT_ANALYTICS_SEASON —
+ * never the silent calendar July cutoff, so ingest and product stay aligned during cutover.
+ */
+export function resolveIngestionSeasonStartYear(
+  season: number | undefined | null,
+  env: NodeJS.ProcessEnv = process.env,
+  now: Date = new Date()
+): number {
+  if (season != null && Number.isFinite(season)) return Math.trunc(season);
+  return getAnalyticsSeasonStartYearNumber(env, now);
+}
+
 export function getNbaStatsSeason(
   env: NodeJS.ProcessEnv = process.env,
   now: Date = new Date()
