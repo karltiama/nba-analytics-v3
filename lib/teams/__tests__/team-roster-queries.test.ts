@@ -169,4 +169,18 @@ describe('team-roster-queries (Phase 2.T.3A)', () => {
     );
     expect(groups.map((g) => g.name)).toEqual(['Guards', 'Centers']);
   });
+
+  it('preserves extra player fields through grouping', () => {
+    const grouped = groupRosterByPosition([
+      {
+        ...player({
+          playerEntityId: '1',
+          displayName: 'G',
+          position: 'G',
+        }),
+        availability: { label: 'Out' },
+      },
+    ]);
+    expect(grouped[0]?.players[0]?.availability).toEqual({ label: 'Out' });
+  });
 });

@@ -78,9 +78,9 @@ export function hasAnalyticsPlayerLink(player: {
 
 export type PositionGroupName = 'Guards' | 'Forwards' | 'Centers' | 'Other';
 
-export function groupRosterByPosition(
-  players: CanonicalRosterPlayer[]
-): Array<{ name: PositionGroupName; players: CanonicalRosterPlayer[] }> {
+export function groupRosterByPosition<T extends CanonicalRosterPlayer>(
+  players: T[]
+): Array<{ name: PositionGroupName; players: T[] }> {
   const guards = players.filter(
     (p) => p.position && ['G', 'PG', 'SG'].includes(p.position)
   );
@@ -96,14 +96,12 @@ export function groupRosterByPosition(
       !['G', 'PG', 'SG', 'F', 'PF', 'SF', 'C'].includes(p.position)
   );
 
-  return (
-    [
-      { name: 'Guards' as const, players: guards },
-      { name: 'Forwards' as const, players: forwards },
-      { name: 'Centers' as const, players: centers },
-      { name: 'Other' as const, players: others },
-    ] as const
-  ).filter((g) => g.players.length > 0);
+  return [
+    { name: 'Guards' as const, players: guards },
+    { name: 'Forwards' as const, players: forwards },
+    { name: 'Centers' as const, players: centers },
+    { name: 'Other' as const, players: others },
+  ].filter((g) => g.players.length > 0);
 }
 
 /** Pure assertion helper for season-leak regression tests. */
