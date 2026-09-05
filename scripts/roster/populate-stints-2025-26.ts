@@ -392,9 +392,9 @@ async function main() {
     const openDup = await client.query<{ n: number }>(
       `
       SELECT count(*)::int AS n FROM (
-        SELECT player_id FROM analytics.player_team_stints
-        WHERE season = $1 AND observed_to IS NULL
-        GROUP BY player_id HAVING count(*) > 1
+        SELECT player_entity_id FROM analytics.player_team_stints
+        WHERE season = $1 AND observed_to IS NULL AND player_entity_id IS NOT NULL
+        GROUP BY player_entity_id HAVING count(*) > 1
       ) d
       `,
       [ANALYTICS_SEASON]

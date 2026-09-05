@@ -1,0 +1,323 @@
+{
+  "identity": {
+    "total": 585,
+    "provider_match": 480,
+    "safe_fallback_match": 17,
+    "unresolved": 81,
+    "ambiguous": 7,
+    "resolution_pct": 84.96,
+    "by_team": {
+      "ATL": {
+        "total": 23,
+        "resolved": 19,
+        "unresolved": 3,
+        "ambiguous": 1
+      },
+      "BKN": {
+        "total": 17,
+        "resolved": 14,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "BOS": {
+        "total": 19,
+        "resolved": 15,
+        "unresolved": 4,
+        "ambiguous": 0
+      },
+      "CHA": {
+        "total": 23,
+        "resolved": 18,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "CHI": {
+        "total": 16,
+        "resolved": 12,
+        "unresolved": 4,
+        "ambiguous": 0
+      },
+      "CLE": {
+        "total": 17,
+        "resolved": 14,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "DAL": {
+        "total": 20,
+        "resolved": 15,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "DEN": {
+        "total": 18,
+        "resolved": 16,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "DET": {
+        "total": 20,
+        "resolved": 18,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "GSW": {
+        "total": 21,
+        "resolved": 18,
+        "unresolved": 2,
+        "ambiguous": 1
+      },
+      "HOU": {
+        "total": 21,
+        "resolved": 18,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "IND": {
+        "total": 17,
+        "resolved": 16,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "LAC": {
+        "total": 25,
+        "resolved": 21,
+        "unresolved": 4,
+        "ambiguous": 0
+      },
+      "LAL": {
+        "total": 19,
+        "resolved": 16,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "MEM": {
+        "total": 22,
+        "resolved": 19,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "MIA": {
+        "total": 20,
+        "resolved": 16,
+        "unresolved": 3,
+        "ambiguous": 1
+      },
+      "MIL": {
+        "total": 21,
+        "resolved": 17,
+        "unresolved": 3,
+        "ambiguous": 1
+      },
+      "MIN": {
+        "total": 18,
+        "resolved": 16,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "NOP": {
+        "total": 20,
+        "resolved": 18,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "NYK": {
+        "total": 17,
+        "resolved": 15,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "OKC": {
+        "total": 17,
+        "resolved": 12,
+        "unresolved": 4,
+        "ambiguous": 1
+      },
+      "ORL": {
+        "total": 19,
+        "resolved": 18,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "PHI": {
+        "total": 23,
+        "resolved": 20,
+        "unresolved": 2,
+        "ambiguous": 1
+      },
+      "PHX": {
+        "total": 20,
+        "resolved": 19,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "POR": {
+        "total": 19,
+        "resolved": 18,
+        "unresolved": 0,
+        "ambiguous": 1
+      },
+      "SAC": {
+        "total": 15,
+        "resolved": 12,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "SAS": {
+        "total": 18,
+        "resolved": 13,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "TOR": {
+        "total": 21,
+        "resolved": 18,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "UTA": {
+        "total": 21,
+        "resolved": 20,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "WAS": {
+        "total": 18,
+        "resolved": 16,
+        "unresolved": 2,
+        "ambiguous": 0
+      }
+    }
+  },
+  "readiness": {
+    "ready_for_2T2D2": false,
+    "recommendation": "do_not_proceed",
+    "criteria": {
+      "teams_30_30": true,
+      "realistic_roster_sizes": false,
+      "no_duplicate_nba_ids": true,
+      "no_duplicate_canonical": true,
+      "no_cross_team_collisions": true,
+      "resolution_pct": 84.96,
+      "unresolved_queued": 88,
+      "season_normalization_ok": true,
+      "no_existing_2026_stints": true
+    }
+  },
+  "simulated": {
+    "open_new_2026_stint": 497,
+    "skip_ambiguous": 7,
+    "skip_unresolved": 81
+  },
+  "collisions": {
+    "dup": [],
+    "multi": [],
+    "open_dupes": []
+  },
+  "offseason": {
+    "returning_same_team": 369,
+    "no_prior_open_stint": 112,
+    "offseason_team_change": 104
+  },
+  "queue_count": 88,
+  "sample_remaining": [
+    {
+      "name": "Keaton Wallace",
+      "team": "ATL",
+      "status": "ambiguous",
+      "cause": "conflicting_identities"
+    },
+    {
+      "name": "Kingston Flemings",
+      "team": "ATL",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Henri Veesaar",
+      "team": "ATL",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Zuby Ejiofor",
+      "team": "ATL",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Mikel Brown Jr.",
+      "team": "BKN",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Joshua Jefferson",
+      "team": "BKN",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Tyler Bilodeau",
+      "team": "BKN",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Dillon Mitchell",
+      "team": "BOS",
+      "status": "unresolved",
+      "cause": "rookie_or_new_player"
+    }
+  ],
+  "remaining_non_rookie": [
+    {
+      "name": "Keaton Wallace",
+      "team": "ATL",
+      "cause": "conflicting_identities",
+      "status": "ambiguous"
+    },
+    {
+      "name": "Brandon Williams",
+      "team": "GSW",
+      "cause": "conflicting_identities",
+      "status": "ambiguous"
+    },
+    {
+      "name": "Dru Smith",
+      "team": "MIA",
+      "cause": "conflicting_identities",
+      "status": "ambiguous"
+    },
+    {
+      "name": "Gary Trent Jr.",
+      "team": "MIL",
+      "cause": "conflicting_identities",
+      "status": "ambiguous"
+    },
+    {
+      "name": "Jaylin Williams",
+      "team": "OKC",
+      "cause": "conflicting_identities",
+      "status": "ambiguous"
+    },
+    {
+      "name": "Jameer Nelson Jr.",
+      "team": "PHI",
+      "cause": "duplicate_name_ambiguity",
+      "status": "ambiguous"
+    },
+    {
+      "name": "Micah Potter",
+      "team": "POR",
+      "cause": "duplicate_name_ambiguity",
+      "status": "ambiguous"
+    },
+    {
+      "name": "David Jones Garcia",
+      "team": "SAS",
+      "cause": "analytics_player_absent",
+      "status": "unresolved"
+    }
+  ]
+}

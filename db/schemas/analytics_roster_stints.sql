@@ -44,10 +44,14 @@ comment on table raw.nba_roster_snapshots is
 -- ---------------------------------------------------------------------------
 create schema if not exists analytics;
 
+-- Identity: player_entity_id = person (required after 1cC cutover);
+-- player_id = optional BDL-backed analytics.players row (nullable after 1cC).
+-- FK for player_entity_id is added in analytics_roster_stints_entity.sql (needs player_entities).
 create table if not exists analytics.player_team_stints (
   stint_id           bigserial primary key,
   season             text not null,             -- analytics start-year e.g. '2025'
-  player_id          text not null references analytics.players(player_id),
+  player_id          text null references analytics.players(player_id),
+  player_entity_id   uuid null,
   team_id            text not null references analytics.teams(team_id),
   observed_from      date not null,
   observed_to        date null,                 -- null = open/current observed stint
@@ -62,12 +66,19 @@ create table if not exists analytics.player_team_stints (
     check (observed_to is null or observed_to >= observed_from)
 );
 
-create unique index if not exists analytics_player_team_stints_open_uniq
-  on analytics.player_team_stints (player_id, season)
+-- Entity-based uniqueness (post-1cC). IF NOT EXISTS keeps re-runs safe.
+create unique index if not exists analytics_player_team_stints_open_entity_uniq
+  on analytics.player_team_stints (player_entity_id, season)
   where observed_to is null;
 
-create unique index if not exists analytics_player_team_stints_identity_uniq
-  on analytics.player_team_stints (player_id, team_id, season, observed_from);
+create unique index if not exists analytics_player_team_stints_identity_entity_uniq
+  on analytics.player_team_stints (player_entity_id, team_id, season, observed_from);
+
+create index if not exists analytics_player_team_stints_entity_idx
+  on analytics.player_team_stints (player_entity_id);
+
+create index if not exists analytics_player_team_stints_entity_season_idx
+  on analytics.player_team_stints (player_entity_id, season);
 
 create index if not exists analytics_player_team_stints_current_team_idx
   on analytics.player_team_stints (team_id, season)
@@ -91,19 +102,26 @@ comment on column analytics.player_team_stints.observed_to is
 -- 3. analytics.team_roster_current — open stints only
 -- ---------------------------------------------------------------------------
 create or replace view analytics.team_roster_current as
+-- NOTE: if upgrading from pre-1cC view, DROP VIEW first (column rename not allowed).
 select
-  season,
-  team_id,
-  player_id,
-  jersey,
-  position,
-  membership_type,
-  observed_from,
-  source,
-  source_player_id,
-  stint_id
-from analytics.player_team_stints
-where observed_to is null;
+  s.season,
+  s.team_id,
+  s.player_entity_id,
+  s.player_id,
+  e.display_name,
+  e.first_name,
+  e.last_name,
+  coalesce(s.position, e.position) as position,
+  s.jersey,
+  s.membership_type,
+  s.observed_from,
+  s.source,
+  s.source_player_id,
+  s.stint_id
+from analytics.player_team_stints s
+join analytics.player_entities e
+  on e.player_entity_id = s.player_entity_id
+where s.observed_to is null;
 
 comment on view analytics.team_roster_current is
-  'Open (current) observed roster membership by team/season. Availability/injuries are separate.';
+  'Open roster by team/season keyed by player_entity_id. player_id (BDL) is optional; NBA-only rookies included.';

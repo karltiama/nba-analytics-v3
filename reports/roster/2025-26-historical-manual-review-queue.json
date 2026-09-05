@@ -1,0 +1,5 @@
+{
+  "note": "Separate from identity unresolved/ambiguous queue. Fail-closed; do not auto-resolve.",
+  "conflicts": [],
+  "manual_queue": []
+}

@@ -1,0 +1,30 @@
+{
+  "phase": "2.T.2C step 0",
+  "ran_at": "2026-09-04T22:04:56.005Z",
+  "command": "npx tsx scripts/roster/populate-stints-2025-26.ts",
+  "result": {
+    "resolved_for_stints": 514,
+    "unique_analytics_players": 514,
+    "duplicate_analytics_resolutions": [],
+    "skipped_unresolved_or_ambiguous": 16,
+    "mutations": { "open": 1, "touch": 513, "close": 0 },
+    "open_stints_total": 514,
+    "players_with_multiple_open_stints": 0,
+    "teams_represented": 30
+  },
+  "wilson": {
+    "player_id": "56677722",
+    "team": "BKN",
+    "observed_to": null,
+    "source": "nba_stats",
+    "ok": true
+  },
+  "pippen": {
+    "player_id": "38017656",
+    "team": "MEM",
+    "observed_to": null,
+    "source": "nba_stats",
+    "ok": true
+  },
+  "note": "Pippen open MEM stint created by the single open mutation after identity repair."
+}

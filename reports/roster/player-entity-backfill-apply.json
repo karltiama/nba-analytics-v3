@@ -1,0 +1,87 @@
+{
+  "phase": "2.T.2D.1cB",
+  "mode": "apply",
+  "plan_stats": {
+    "analyticsPlayersScanned": 5534,
+    "entitiesProposed": 0,
+    "entitiesReused": 5534,
+    "bdlMappingsProposed": 0,
+    "nbaMappingsProposed": 0,
+    "noSafeNbaMapping": 4967,
+    "nbaConflicts": 14
+  },
+  "apply_result": {
+    "entitiesCreated": 0,
+    "bdlCreated": 0,
+    "nbaCreated": 0,
+    "playersLinked": 5534
+  },
+  "idempotent_rerun": {
+    "plan2_stats": {
+      "analyticsPlayersScanned": 5534,
+      "entitiesProposed": 0,
+      "entitiesReused": 5534,
+      "bdlMappingsProposed": 0,
+      "nbaMappingsProposed": 0,
+      "noSafeNbaMapping": 4967,
+      "nbaConflicts": 14
+    },
+    "apply2": {
+      "entitiesCreated": 0,
+      "bdlCreated": 0,
+      "nbaCreated": 0,
+      "playersLinked": 5534
+    },
+    "no_new_entities_on_rerun": true,
+    "no_new_bdl_on_rerun": true,
+    "no_new_nba_on_rerun": true
+  },
+  "validation": {
+    "counts": {
+      "entities": 5534,
+      "provider_rows": 6087,
+      "bdl_maps": 5534,
+      "nba_maps": 553,
+      "players_total": 5534,
+      "players_with_entity": 5534,
+      "players_missing_entity": 0
+    },
+    "entities_with_multiple_bdl": [],
+    "entities_with_multiple_nba": [],
+    "wilson_pippen": [
+      {
+        "player_id": "38017656",
+        "full_name": "Scotty Pippen Jr.",
+        "player_entity_id": "bbb03e57-8d14-55fd-a890-81ec0cbbad69",
+        "nba_id": "1630590"
+      },
+      {
+        "player_id": "56677722",
+        "full_name": "Jalen Wilson",
+        "player_entity_id": "d791287d-44fd-5c33-84ab-968a29205e12",
+        "nba_id": "1630592"
+      }
+    ],
+    "compatibility_wilson_sample": {
+      "pgl": 82,
+      "psa": 1,
+      "injuries": 0,
+      "props": 0,
+      "stints_2025": 697,
+      "stints_2026": 0
+    },
+    "nba_only_entities_without_bdl": 0,
+    "class_c_unresolved_from_queue": 81
+  },
+  "coverage_pct": 100,
+  "wilson_pippen_ok": true,
+  "ready_for_1cC": true,
+  "out_of_scope_confirmed": {
+    "no_stint_schema_change": true,
+    "no_2026_stints": true,
+    "no_nba_only_rookies_created": true,
+    "no_team_roster_ui": true,
+    "no_production_config": true,
+    "provider_id_map_unchanged": true
+  }
+}

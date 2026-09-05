@@ -1,0 +1,99 @@
+{
+  "phase": "2.T.2D.2",
+  "mode": "dry-run",
+  "source": {
+    "fetch_path": "C:\\Users\\tiama\\Desktop\\Coding\\nba-analytics-v3\\reports\\roster\\2026-27-nba-fetch.json",
+    "fetched_at": "2026-09-04T23:11:42.823316Z",
+    "observed_from": "2026-09-04",
+    "season_label": "2026-27",
+    "analytics_season": "2026",
+    "source": "nba_stats",
+    "observation_count": 585
+  },
+  "pre_apply_gate": {
+    "ok": true,
+    "total": 585,
+    "resolved": 578,
+    "ambiguous": 7,
+    "unresolved": 0,
+    "duplicateEntities": 0,
+    "multiTeamNbaIds": 0,
+    "stints2026Before": 0,
+    "classDMatch": true,
+    "classDActual": [
+      {
+        "nbaPlayerId": "1629018",
+        "fullName": "Gary Trent Jr.",
+        "teamAbbr": "MIL"
+      },
+      {
+        "nbaPlayerId": "1630314",
+        "fullName": "Brandon Williams",
+        "teamAbbr": "GSW"
+      },
+      {
+        "nbaPlayerId": "1630695",
+        "fullName": "Micah Potter",
+        "teamAbbr": "POR"
+      },
+      {
+        "nbaPlayerId": "1630696",
+        "fullName": "Dru Smith",
+        "teamAbbr": "MIA"
+      },
+      {
+        "nbaPlayerId": "1630811",
+        "fullName": "Keaton Wallace",
+        "teamAbbr": "ATL"
+      },
+      {
+        "nbaPlayerId": "1631119",
+        "fullName": "Jaylin Williams",
+        "teamAbbr": "OKC"
+      },
+      {
+        "nbaPlayerId": "1642392",
+        "fullName": "Jameer Nelson Jr.",
+        "teamAbbr": "PHI"
+      }
+    ],
+    "failures": []
+  },
+  "plan_counts": {
+    "open": 578,
+    "touch": 0,
+    "skip_ambiguous": 7,
+    "skip_unresolved": 0,
+    "conflict": 0,
+    "open_bdl": 497,
+    "open_nba_only": 81
+  },
+  "first_run": {
+    "opened": 0,
+    "touched": 0
+  },
+  "rerun": {
+    "opened": 0,
+    "touched": 0,
+    "plan_counts": {
+      "open": 578,
+      "touch": 0,
+      "skip_ambiguous": 7,
+      "skip_unresolved": 0,
+      "conflict": 0,
+      "open_bdl": 497,
+      "open_nba_only": 81
+    }
+  },
+  "validation": {
+    "note": "Validation after apply only"
+  },
+  "out_of_scope": {
+    "no_2025_mutation": true,
+    "no_class_d_auto_resolve": true,
+    "no_team_roster_ui": true,
+    "no_production_config": true,
+    "no_live_bdl": true
+  },
+  "trustworthy_for_ui_refresh": false
+}

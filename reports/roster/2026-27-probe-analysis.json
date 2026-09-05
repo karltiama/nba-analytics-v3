@@ -1,0 +1,402 @@
+{
+  "resolution": {
+    "total": 585,
+    "provider_match": 471,
+    "safe_fallback_match": 17,
+    "unresolved": 90,
+    "ambiguous": 7,
+    "resolution_pct": 83.42,
+    "by_team": {
+      "ATL": {
+        "total": 23,
+        "resolved": 19,
+        "unresolved": 3,
+        "ambiguous": 1
+      },
+      "BKN": {
+        "total": 17,
+        "resolved": 14,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "BOS": {
+        "total": 19,
+        "resolved": 15,
+        "unresolved": 4,
+        "ambiguous": 0
+      },
+      "CHA": {
+        "total": 23,
+        "resolved": 18,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "CHI": {
+        "total": 16,
+        "resolved": 11,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "CLE": {
+        "total": 17,
+        "resolved": 14,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "DAL": {
+        "total": 20,
+        "resolved": 15,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "DEN": {
+        "total": 18,
+        "resolved": 15,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "DET": {
+        "total": 20,
+        "resolved": 18,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "GSW": {
+        "total": 21,
+        "resolved": 18,
+        "unresolved": 2,
+        "ambiguous": 1
+      },
+      "HOU": {
+        "total": 21,
+        "resolved": 18,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "IND": {
+        "total": 17,
+        "resolved": 16,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "LAC": {
+        "total": 25,
+        "resolved": 21,
+        "unresolved": 4,
+        "ambiguous": 0
+      },
+      "LAL": {
+        "total": 19,
+        "resolved": 16,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "MEM": {
+        "total": 22,
+        "resolved": 19,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "MIA": {
+        "total": 20,
+        "resolved": 16,
+        "unresolved": 3,
+        "ambiguous": 1
+      },
+      "MIL": {
+        "total": 21,
+        "resolved": 16,
+        "unresolved": 4,
+        "ambiguous": 1
+      },
+      "MIN": {
+        "total": 18,
+        "resolved": 15,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "NOP": {
+        "total": 20,
+        "resolved": 18,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "NYK": {
+        "total": 17,
+        "resolved": 15,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "OKC": {
+        "total": 17,
+        "resolved": 12,
+        "unresolved": 4,
+        "ambiguous": 1
+      },
+      "ORL": {
+        "total": 19,
+        "resolved": 18,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "PHI": {
+        "total": 23,
+        "resolved": 20,
+        "unresolved": 2,
+        "ambiguous": 1
+      },
+      "PHX": {
+        "total": 20,
+        "resolved": 19,
+        "unresolved": 1,
+        "ambiguous": 0
+      },
+      "POR": {
+        "total": 19,
+        "resolved": 17,
+        "unresolved": 1,
+        "ambiguous": 1
+      },
+      "SAC": {
+        "total": 15,
+        "resolved": 12,
+        "unresolved": 3,
+        "ambiguous": 0
+      },
+      "SAS": {
+        "total": 18,
+        "resolved": 13,
+        "unresolved": 5,
+        "ambiguous": 0
+      },
+      "TOR": {
+        "total": 21,
+        "resolved": 17,
+        "unresolved": 4,
+        "ambiguous": 0
+      },
+      "UTA": {
+        "total": 21,
+        "resolved": 19,
+        "unresolved": 2,
+        "ambiguous": 0
+      },
+      "WAS": {
+        "total": 18,
+        "resolved": 14,
+        "unresolved": 4,
+        "ambiguous": 0
+      }
+    }
+  },
+  "readiness": {
+    "ready_for_2T2D2": false,
+    "recommendation": "do_not_proceed",
+    "criteria": {
+      "teams_30_30": true,
+      "realistic_roster_sizes": false,
+      "no_duplicate_nba_ids": true,
+      "no_duplicate_canonical": true,
+      "no_cross_team_collisions": true,
+      "resolution_pct": 83.42,
+      "unresolved_queued": 97,
+      "season_normalization_ok": true,
+      "no_existing_2026_stints": true
+    }
+  },
+  "gap_causes": {
+    "conflicting_identities": 5,
+    "rookie_or_new_player": 80,
+    "analytics_player_absent": 10,
+    "duplicate_name_ambiguity": 2
+  },
+  "recommended_actions": {
+    "manual_identity_disambiguation": 7,
+    "canonical_player_upsert_then_provider_bridge": 90
+  },
+  "by_team": {
+    "ATL": 4,
+    "BKN": 3,
+    "BOS": 4,
+    "CHA": 5,
+    "CHI": 5,
+    "CLE": 3,
+    "DAL": 5,
+    "DEN": 3,
+    "DET": 2,
+    "GSW": 3,
+    "HOU": 3,
+    "IND": 1,
+    "LAC": 4,
+    "LAL": 3,
+    "MEM": 3,
+    "MIA": 4,
+    "MIL": 5,
+    "MIN": 3,
+    "NOP": 2,
+    "NYK": 2,
+    "OKC": 5,
+    "ORL": 1,
+    "PHI": 3,
+    "PHX": 1,
+    "POR": 2,
+    "SAC": 3,
+    "SAS": 5,
+    "TOR": 4,
+    "UTA": 2,
+    "WAS": 4
+  },
+  "sample_upsert": [
+    {
+      "name": "Kingston Flemings",
+      "team": "ATL",
+      "nba": "1643412",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Henri Veesaar",
+      "team": "ATL",
+      "nba": "1643539",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Zuby Ejiofor",
+      "team": "ATL",
+      "nba": "1643544",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Mikel Brown Jr.",
+      "team": "BKN",
+      "nba": "1643414",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Joshua Jefferson",
+      "team": "BKN",
+      "nba": "1643538",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Tyler Bilodeau",
+      "team": "BKN",
+      "nba": "1643548",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Dillon Mitchell",
+      "team": "BOS",
+      "nba": "1641759",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Milos Uzan",
+      "team": "BOS",
+      "nba": "1642870",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Tucker DeVries",
+      "team": "BOS",
+      "nba": "1643620",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Chris Cenac Jr.",
+      "team": "BOS",
+      "nba": "1643416",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Jarkel Joiner",
+      "team": "CHA",
+      "nba": "1641935",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Michael Ajayi",
+      "team": "CHA",
+      "nba": "1642369",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Kylan Boswell",
+      "team": "CHA",
+      "nba": "1643573",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Christian Anderson",
+      "team": "CHA",
+      "nba": "1643515",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Hannes Steinbach",
+      "team": "CHA",
+      "nba": "1643419",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Tobe Awaka",
+      "team": "CHI",
+      "nba": "1643591",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Jaylin Sellers",
+      "team": "CHI",
+      "nba": "1643637",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Dailyn Swain",
+      "team": "CHI",
+      "nba": "1643517",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Caleb Wilson",
+      "team": "CHI",
+      "nba": "1643410",
+      "cause": "rookie_or_new_player"
+    },
+    {
+      "name": "Nic Claxton",
+      "team": "CHI",
+      "nba": "1629651",
+      "cause": "analytics_player_absent"
+    }
+  ],
+  "sample_bridge": [],
+  "collisions": {
+    "dup": [],
+    "multi": []
+  },
+  "schema_diff": {
+    "availability": {
+      "PLAYER_ID": true,
+      "PLAYER": true,
+      "NUM": true,
+      "POSITION": true,
+      "HEIGHT": true,
+      "WEIGHT": true,
+      "BIRTH_DATE": true,
+      "AGE": true,
+      "EXP": true,
+      "SCHOOL": true,
+      "ROSTERSTATUS": false,
+      "TEAM_ID": false,
+      "TEAM_ABBREVIATION": false,
+      "SEASON": true
+    },
+    "api_season": [
+      "2026"
+    ],
+    "new_keys": [
+      "HOW_ACQUIRED",
+      "SUPPLEMENTAL_STATUS",
+      "TeamID"
+    ]
+  }
+}

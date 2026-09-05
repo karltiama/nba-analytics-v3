@@ -1,0 +1,15 @@
+{
+  "phase": "2.T.2D.1cC",
+  "note": "Class D / ambiguous remaining after NBA-only Class C onboarding. Fail-closed; do not auto-create entities that could duplicate existing people.",
+  "count": 7,
+  "rows": [
+    { "nba_player_id": "1630811", "name": "Keaton Wallace", "team": "ATL" },
+    { "nba_player_id": "1630314", "name": "Brandon Williams", "team": "GSW" },
+    { "nba_player_id": "1630696", "name": "Dru Smith", "team": "MIA" },
+    { "nba_player_id": "1629018", "name": "Gary Trent Jr.", "team": "MIL" },
+    { "nba_player_id": "1631119", "name": "Jaylin Williams", "team": "OKC" },
+    { "nba_player_id": "1642392", "name": "Jameer Nelson Jr.", "team": "PHI" },
+    { "nba_player_id": "1630695", "name": "Micah Potter", "team": "POR" }
+  ],
+  "recommended_next_action": "manual_identity_disambiguation"
+}

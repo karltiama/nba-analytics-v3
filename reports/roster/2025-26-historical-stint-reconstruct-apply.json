@@ -1,0 +1,752 @@
+{
+  "phase": "2.T.2C",
+  "mode": "apply",
+  "season_label": "2025-26",
+  "analytics_season": "2025",
+  "semantics": {
+    "observed_from_to": "appearance/observation evidence windows — NOT signing/trade timestamps",
+    "no_transaction_records": true,
+    "source_precedence": [
+      "nba_stats open final roster (authoritative current membership)",
+      "inferred_pgl closed historical appearance windows",
+      "on agreement: reconcile nba_stats.observed_from to earliest matching PGL",
+      "on disagreement: conflict queue; keep nba_stats open; closed PGL for non-final teams only"
+    ]
+  },
+  "plan_stats": {
+    "playersWithPgl": 603,
+    "multiTeamPlayers": 87,
+    "pglOnlyHistoricalPlayers": 84,
+    "segmentsTotal": 696,
+    "confidence": {
+      "nba_plus_pgl": 513,
+      "pgl_inferred": 183,
+      "unresolved": 6,
+      "nba_snapshot_confirmed": 1
+    }
+  },
+  "planned_inferred_stints": 183,
+  "planned_reconcile_opens": 513,
+  "conflicts": [],
+  "manual_queue": [],
+  "skipped_unresolved_player_ids": [
+    "1060010671",
+    "19465585",
+    "24489167",
+    "3089",
+    "38017706",
+    "45088184"
+  ],
+  "before": {
+    "totals": {
+      "total": 514,
+      "open": 514,
+      "closed": 0,
+      "players": 514,
+      "teams": 30
+    },
+    "players_with_multiple_stints": 0,
+    "players_with_multiple_open": [],
+    "source_breakdown": {
+      "nba_stats": 514
+    },
+    "wilson_pippen": [
+      {
+        "player_id": "38017656",
+        "full_name": "Scotty Pippen Jr.",
+        "abbreviation": "MEM",
+        "observed_from": "2026-09-04",
+        "observed_to": null,
+        "source": "nba_stats"
+      },
+      {
+        "player_id": "56677722",
+        "full_name": "Jalen Wilson",
+        "abbreviation": "BKN",
+        "observed_from": "2026-09-04",
+        "observed_to": null,
+        "source": "nba_stats"
+      }
+    ],
+    "team_sanity": [
+      {
+        "abbreviation": "AND",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "ATL",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "BAL",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "BKN",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "BOM",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "BOS",
+        "any_stint_players": 16,
+        "open_roster": 16,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "CHA",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "CHI",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "CHS",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "CLE",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "CLR",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DAL",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DEF",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DEN",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DET",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DN",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "GSW",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "HOU",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "HUS",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "IND",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "INO",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "JET",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "LAC",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "LAL",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "MEM",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "MIA",
+        "any_stint_players": 16,
+        "open_roster": 16,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "MIL",
+        "any_stint_players": 14,
+        "open_roster": 14,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "MIN",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "NOP",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "NYK",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "OKC",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "ORL",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "PHI",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "PHX",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "PIT",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "POR",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "PRO",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "SAC",
+        "any_stint_players": 18,
+        "open_roster": 18,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "SAS",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "SHE",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "TOR",
+        "any_stint_players": 16,
+        "open_roster": 16,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "UTA",
+        "any_stint_players": 17,
+        "open_roster": 17,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "WAS",
+        "any_stint_players": 16,
+        "open_roster": 16,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "WAT",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      }
+    ],
+    "overlapping_stint_anomalies": []
+  },
+  "after": {
+    "totals": {
+      "total": 697,
+      "open": 514,
+      "closed": 183,
+      "players": 598,
+      "teams": 30
+    },
+    "players_with_multiple_stints": 87,
+    "players_with_multiple_open": [],
+    "source_breakdown": {
+      "inferred_pgl": 183,
+      "nba_stats": 514
+    },
+    "wilson_pippen": [
+      {
+        "player_id": "38017656",
+        "full_name": "Scotty Pippen Jr.",
+        "abbreviation": "MEM",
+        "observed_from": "2025-10-22",
+        "observed_to": null,
+        "source": "nba_stats"
+      },
+      {
+        "player_id": "56677722",
+        "full_name": "Jalen Wilson",
+        "abbreviation": "BKN",
+        "observed_from": "2025-10-22",
+        "observed_to": null,
+        "source": "nba_stats"
+      }
+    ],
+    "team_sanity": [
+      {
+        "abbreviation": "AND",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "ATL",
+        "any_stint_players": 28,
+        "open_roster": 17,
+        "historical_only": 11
+      },
+      {
+        "abbreviation": "BAL",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "BKN",
+        "any_stint_players": 23,
+        "open_roster": 17,
+        "historical_only": 6
+      },
+      {
+        "abbreviation": "BOM",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "BOS",
+        "any_stint_players": 21,
+        "open_roster": 16,
+        "historical_only": 5
+      },
+      {
+        "abbreviation": "CHA",
+        "any_stint_players": 24,
+        "open_roster": 18,
+        "historical_only": 6
+      },
+      {
+        "abbreviation": "CHI",
+        "any_stint_players": 30,
+        "open_roster": 18,
+        "historical_only": 12
+      },
+      {
+        "abbreviation": "CHS",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "CLE",
+        "any_stint_players": 25,
+        "open_roster": 18,
+        "historical_only": 7
+      },
+      {
+        "abbreviation": "CLR",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DAL",
+        "any_stint_players": 24,
+        "open_roster": 17,
+        "historical_only": 7
+      },
+      {
+        "abbreviation": "DEF",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "DEN",
+        "any_stint_players": 20,
+        "open_roster": 17,
+        "historical_only": 3
+      },
+      {
+        "abbreviation": "DET",
+        "any_stint_players": 21,
+        "open_roster": 17,
+        "historical_only": 4
+      },
+      {
+        "abbreviation": "DN",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "GSW",
+        "any_stint_players": 25,
+        "open_roster": 18,
+        "historical_only": 7
+      },
+      {
+        "abbreviation": "HOU",
+        "any_stint_players": 19,
+        "open_roster": 17,
+        "historical_only": 2
+      },
+      {
+        "abbreviation": "HUS",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "IND",
+        "any_stint_players": 29,
+        "open_roster": 18,
+        "historical_only": 11
+      },
+      {
+        "abbreviation": "INO",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "JET",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "LAC",
+        "any_stint_players": 26,
+        "open_roster": 18,
+        "historical_only": 8
+      },
+      {
+        "abbreviation": "LAL",
+        "any_stint_players": 20,
+        "open_roster": 17,
+        "historical_only": 3
+      },
+      {
+        "abbreviation": "MEM",
+        "any_stint_players": 35,
+        "open_roster": 18,
+        "historical_only": 17
+      },
+      {
+        "abbreviation": "MIA",
+        "any_stint_players": 17,
+        "open_roster": 16,
+        "historical_only": 1
+      },
+      {
+        "abbreviation": "MIL",
+        "any_stint_players": 19,
+        "open_roster": 14,
+        "historical_only": 5
+      },
+      {
+        "abbreviation": "MIN",
+        "any_stint_players": 22,
+        "open_roster": 17,
+        "historical_only": 5
+      },
+      {
+        "abbreviation": "NOP",
+        "any_stint_players": 20,
+        "open_roster": 18,
+        "historical_only": 2
+      },
+      {
+        "abbreviation": "NYK",
+        "any_stint_players": 21,
+        "open_roster": 18,
+        "historical_only": 3
+      },
+      {
+        "abbreviation": "OKC",
+        "any_stint_players": 21,
+        "open_roster": 17,
+        "historical_only": 4
+      },
+      {
+        "abbreviation": "ORL",
+        "any_stint_players": 19,
+        "open_roster": 17,
+        "historical_only": 2
+      },
+      {
+        "abbreviation": "PHI",
+        "any_stint_players": 23,
+        "open_roster": 17,
+        "historical_only": 6
+      },
+      {
+        "abbreviation": "PHX",
+        "any_stint_players": 21,
+        "open_roster": 18,
+        "historical_only": 3
+      },
+      {
+        "abbreviation": "PIT",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "POR",
+        "any_stint_players": 21,
+        "open_roster": 17,
+        "historical_only": 4
+      },
+      {
+        "abbreviation": "PRO",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "SAC",
+        "any_stint_players": 23,
+        "open_roster": 18,
+        "historical_only": 5
+      },
+      {
+        "abbreviation": "SAS",
+        "any_stint_players": 22,
+        "open_roster": 17,
+        "historical_only": 5
+      },
+      {
+        "abbreviation": "SHE",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      },
+      {
+        "abbreviation": "TOR",
+        "any_stint_players": 22,
+        "open_roster": 16,
+        "historical_only": 6
+      },
+      {
+        "abbreviation": "UTA",
+        "any_stint_players": 27,
+        "open_roster": 17,
+        "historical_only": 10
+      },
+      {
+        "abbreviation": "WAS",
+        "any_stint_players": 29,
+        "open_roster": 16,
+        "historical_only": 13
+      },
+      {
+        "abbreviation": "WAT",
+        "any_stint_players": 0,
+        "open_roster": 0,
+        "historical_only": 0
+      }
+    ],
+    "overlapping_stint_anomalies": []
+  },
+  "idempotent_rerun": {
+    "first_inferred_count": 183,
+    "second_inferred_count": 183,
+    "totals_after_first": {
+      "total": 697,
+      "open": 514,
+      "closed": 183,
+      "players": 598,
+      "teams": 30
+    },
+    "totals_after_second": {
+      "total": 697,
+      "open": 514,
+      "closed": 183,
+      "players": 598,
+      "teams": 30
+    },
+    "identical_totals": true,
+    "identical_inferred_count": true
+  },
+  "suspicious_team_counts": [
+    {
+      "abbreviation": "AND",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "BAL",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "BOM",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "CHS",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "CLR",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "DEF",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "DN",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "HUS",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "INO",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "JET",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "PIT",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "PRO",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "SHE",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    },
+    {
+      "abbreviation": "WAT",
+      "any_stint_players": 0,
+      "open_roster": 0,
+      "historical_only": 0
+    }
+  ],
+  "trustworthiness_note": "Historical Explorer can use closed inferred_pgl + open nba_stats with observation semantics; do not present as exact transaction history. Conflicts and identity queue remain fail-closed.",
+  "ready_for_2T2D_2026_seed": false,
+  "out_of_scope_confirmed": {
+    "no_2026_seed": true,
+    "no_team_roster_ui": true,
+    "no_production_config_change": true
+  }
+}

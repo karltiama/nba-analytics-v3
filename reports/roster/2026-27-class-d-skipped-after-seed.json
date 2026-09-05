@@ -1,0 +1,167 @@
+{
+  "phase": "2.T.2D.2",
+  "note": "Class D skipped after seed — fail-closed; identities not invented.",
+  "count": 7,
+  "expected": [
+    {
+      "nbaPlayerId": "1630811",
+      "name": "Keaton Wallace",
+      "team": "ATL"
+    },
+    {
+      "nbaPlayerId": "1630314",
+      "name": "Brandon Williams",
+      "team": "GSW"
+    },
+    {
+      "nbaPlayerId": "1630696",
+      "name": "Dru Smith",
+      "team": "MIA"
+    },
+    {
+      "nbaPlayerId": "1629018",
+      "name": "Gary Trent Jr.",
+      "team": "MIL"
+    },
+    {
+      "nbaPlayerId": "1631119",
+      "name": "Jaylin Williams",
+      "team": "OKC"
+    },
+    {
+      "nbaPlayerId": "1642392",
+      "name": "Jameer Nelson Jr.",
+      "team": "PHI"
+    },
+    {
+      "nbaPlayerId": "1630695",
+      "name": "Micah Potter",
+      "team": "POR"
+    }
+  ],
+  "rows": [
+    {
+      "nba_player_id": "1630811",
+      "name": "Keaton Wallace",
+      "team": "ATL",
+      "reason": "Multiple entities named \"Keaton Wallace\"",
+      "candidates": [
+        {
+          "playerEntityId": "fe85e13c-2122-58f5-be3f-abf603189f27",
+          "displayName": "Keaton Wallace"
+        },
+        {
+          "playerEntityId": "21813f49-786d-5e39-bce9-b0fe0c1b62cb",
+          "displayName": "Keaton Wallace"
+        }
+      ],
+      "action": "skip_ambiguous"
+    },
+    {
+      "nba_player_id": "1630314",
+      "name": "Brandon Williams",
+      "team": "GSW",
+      "reason": "Multiple entities named \"Brandon Williams\"",
+      "candidates": [
+        {
+          "playerEntityId": "5b54308b-6ad4-52ef-8dd2-aa840a0a36d3",
+          "displayName": "Brandon Williams"
+        },
+        {
+          "playerEntityId": "11860ff7-f610-5901-b7a2-efce6263d0a4",
+          "displayName": "Brandon Williams"
+        }
+      ],
+      "action": "skip_ambiguous"
+    },
+    {
+      "nba_player_id": "1630696",
+      "name": "Dru Smith",
+      "team": "MIA",
+      "reason": "Multiple entities named \"Dru Smith\"",
+      "candidates": [
+        {
+          "playerEntityId": "49a34be5-6dfd-55f2-98d6-95699a59cd44",
+          "displayName": "Dru Smith"
+        },
+        {
+          "playerEntityId": "336b3af6-8dac-5f50-96d7-7a53152bfa27",
+          "displayName": "Dru Smith"
+        }
+      ],
+      "action": "skip_ambiguous"
+    },
+    {
+      "nba_player_id": "1629018",
+      "name": "Gary Trent Jr.",
+      "team": "MIL",
+      "reason": "Multiple entities named \"Gary Trent Jr.\"",
+      "candidates": [
+        {
+          "playerEntityId": "8ec68ebb-109a-5fe3-baba-7900e6890f64",
+          "displayName": "Gary Trent Jr."
+        },
+        {
+          "playerEntityId": "ed4d6499-4689-5e5c-aa6f-dbcc5623a255",
+          "displayName": "Gary Trent Jr."
+        },
+        {
+          "playerEntityId": "6aff20d8-9be2-59cd-a0cb-0acde7dd30fd",
+          "displayName": "Gary Trent"
+        }
+      ],
+      "action": "skip_ambiguous"
+    },
+    {
+      "nba_player_id": "1631119",
+      "name": "Jaylin Williams",
+      "team": "OKC",
+      "reason": "Multiple entities named \"Jaylin Williams\"",
+      "candidates": [
+        {
+          "playerEntityId": "14c5f0f4-2984-5cac-913a-2a1637f1a9a8",
+          "displayName": "Jaylin Williams"
+        },
+        {
+          "playerEntityId": "716894f1-debe-5b89-9ad0-a4ab17e75094",
+          "displayName": "Jaylin Williams"
+        }
+      ],
+      "action": "skip_ambiguous"
+    },
+    {
+      "nba_player_id": "1642392",
+      "name": "Jameer Nelson Jr.",
+      "team": "PHI",
+      "reason": "Multiple entities named \"Jameer Nelson Jr.\"",
+      "candidates": [
+        {
+          "playerEntityId": "77baaf02-d47a-5d8e-b502-8934ad9bd83c",
+          "displayName": "Jameer Nelson Jr."
+        },
+        {
+          "playerEntityId": "728d740b-8cfb-520f-8d55-9382d112c07f",
+          "displayName": "Jameer Nelson"
+        }
+      ],
+      "action": "skip_ambiguous"
+    },
+    {
+      "nba_player_id": "1630695",
+      "name": "Micah Potter",
+      "team": "POR",
+      "reason": "Multiple entities named \"Micah Potter\"",
+      "candidates": [
+        {
+          "playerEntityId": "75f988f2-7ac1-57f3-b374-e2d81c3ca357",
+          "displayName": "Micah Potter"
+        },
+        {
+          "playerEntityId": "3f862dde-d720-5dd3-b28f-ad3b62b6de70",
+          "displayName": "Micah Potter"
+        }
+      ],
+      "action": "skip_ambiguous"
+    }
+  ]
+}

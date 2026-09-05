@@ -1,0 +1,5274 @@
+{
+  "counts": {
+    "returning_same_team": 369,
+    "no_prior_open_stint": 112,
+    "offseason_team_change": 104
+  },
+  "rows": [
+    {
+      "nbaPlayerId": "1642933",
+      "fullName": "Keshon Gilbert",
+      "team2026": "ATL",
+      "analyticsPlayerId": "1057846172",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642484",
+      "fullName": "RayJ Dennis",
+      "team2026": "ATL",
+      "analyticsPlayerId": "1028274126",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630552",
+      "fullName": "Jalen Johnson",
+      "team2026": "ATL",
+      "analyticsPlayerId": "17896040",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630811",
+      "fullName": "Keaton Wallace",
+      "team2026": "ATL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "203468",
+      "fullName": "CJ McCollum",
+      "team2026": "ATL",
+      "analyticsPlayerId": "303",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629216",
+      "fullName": "Gabe Vincent",
+      "team2026": "ATL",
+      "analyticsPlayerId": "1603383",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643412",
+      "fullName": "Kingston Flemings",
+      "team2026": "ATL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630700",
+      "fullName": "Dyson Daniels",
+      "team2026": "ATL",
+      "analyticsPlayerId": "38017677",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629652",
+      "fullName": "Luguentz Dort",
+      "team2026": "ATL",
+      "analyticsPlayerId": "666541",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629638",
+      "fullName": "Nickeil Alexander-Walker",
+      "team2026": "ATL",
+      "analyticsPlayerId": "666400",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627741",
+      "fullName": "Buddy Hield",
+      "team2026": "ATL",
+      "analyticsPlayerId": "210",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642948",
+      "fullName": "Ryan Nembhard",
+      "team2026": "ATL",
+      "analyticsPlayerId": "1057847894",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643539",
+      "fullName": "Henri Veesaar",
+      "team2026": "ATL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628396",
+      "fullName": "Tony Bradley",
+      "team2026": "ATL",
+      "analyticsPlayerId": "60",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642854",
+      "fullName": "Asa Newell",
+      "team2026": "ATL",
+      "analyticsPlayerId": "1057279093",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630168",
+      "fullName": "Onyeka Okongwu",
+      "team2026": "ATL",
+      "analyticsPlayerId": "3547244",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631243",
+      "fullName": "Mouhamed Gueye",
+      "team2026": "ATL",
+      "analyticsPlayerId": "56677806",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643544",
+      "fullName": "Zuby Ejiofor",
+      "team2026": "ATL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630598",
+      "fullName": "Aaron Wiggins",
+      "team2026": "ATL",
+      "analyticsPlayerId": "17896078",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630592",
+      "fullName": "Jalen Wilson",
+      "team2026": "ATL",
+      "analyticsPlayerId": "56677722",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642269",
+      "fullName": "Devin Carter",
+      "team2026": "ATL",
+      "analyticsPlayerId": "1028025242",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630557",
+      "fullName": "Corey Kispert",
+      "team2026": "ATL",
+      "analyticsPlayerId": "17896045",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629111",
+      "fullName": "Jock Landale",
+      "team2026": "ATL",
+      "analyticsPlayerId": "19465326",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631169",
+      "fullName": "Josh Minott",
+      "team2026": "BKN",
+      "analyticsPlayerId": "38017715",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643414",
+      "fullName": "Mikel Brown Jr.",
+      "team2026": "BKN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642874",
+      "fullName": "Danny Wolf",
+      "team2026": "BKN",
+      "analyticsPlayerId": "1057280779",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642962",
+      "fullName": "Drake Powell",
+      "team2026": "BKN",
+      "analyticsPlayerId": "1057279425",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642856",
+      "fullName": "Egor Dëmin",
+      "team2026": "BKN",
+      "analyticsPlayerId": "1057266813",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643538",
+      "fullName": "Joshua Jefferson",
+      "team2026": "BKN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642849",
+      "fullName": "Nolan Traore",
+      "team2026": "BKN",
+      "analyticsPlayerId": "1057275262",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631165",
+      "fullName": "Keon Ellis",
+      "team2026": "BKN",
+      "analyticsPlayerId": "38017714",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629611",
+      "fullName": "Terance Mann",
+      "team2026": "BKN",
+      "analyticsPlayerId": "666743",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629008",
+      "fullName": "Michael Porter Jr.",
+      "team2026": "BKN",
+      "analyticsPlayerId": "375",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630549",
+      "fullName": "Day'Ron Sharpe",
+      "team2026": "BKN",
+      "analyticsPlayerId": "17896038",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629021",
+      "fullName": "Moritz Wagner",
+      "team2026": "BKN",
+      "analyticsPlayerId": "462",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641730",
+      "fullName": "Noah Clowney",
+      "team2026": "BKN",
+      "analyticsPlayerId": "56677843",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203944",
+      "fullName": "Julius Randle",
+      "team2026": "BKN",
+      "analyticsPlayerId": "387",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643052",
+      "fullName": "Chaney Johnson",
+      "team2026": "BKN",
+      "analyticsPlayerId": "1057846840",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643548",
+      "fullName": "Tyler Bilodeau",
+      "team2026": "BKN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642879",
+      "fullName": "Ben Saraf",
+      "team2026": "BKN",
+      "analyticsPlayerId": "1057279760",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641759",
+      "fullName": "Dillon Mitchell",
+      "team2026": "BOS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642870",
+      "fullName": "Milos Uzan",
+      "team2026": "BOS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643620",
+      "fullName": "Tucker DeVries",
+      "team2026": "BOS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628369",
+      "fullName": "Jayson Tatum",
+      "team2026": "BOS",
+      "analyticsPlayerId": "434",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629011",
+      "fullName": "Mitchell Robinson",
+      "team2026": "BOS",
+      "analyticsPlayerId": "399",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "202331",
+      "fullName": "Paul George",
+      "team2026": "BOS",
+      "analyticsPlayerId": "172",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1628401",
+      "fullName": "Derrick White",
+      "team2026": "BOS",
+      "analyticsPlayerId": "473",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630202",
+      "fullName": "Payton Pritchard",
+      "team2026": "BOS",
+      "analyticsPlayerId": "3547276",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643416",
+      "fullName": "Chris Cenac Jr.",
+      "team2026": "BOS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631199",
+      "fullName": "Ron Harper Jr.",
+      "team2026": "BOS",
+      "analyticsPlayerId": "38017717",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641775",
+      "fullName": "Jordan Walsh",
+      "team2026": "BOS",
+      "analyticsPlayerId": "56677864",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642864",
+      "fullName": "Hugo González",
+      "team2026": "BOS",
+      "analyticsPlayerId": "1057277425",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630573",
+      "fullName": "Sam Hauser",
+      "team2026": "BOS",
+      "analyticsPlayerId": "17896060",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642917",
+      "fullName": "Max Shulga",
+      "team2026": "BOS",
+      "analyticsPlayerId": "1057396191",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201144",
+      "fullName": "Mike Conley",
+      "team2026": "BOS",
+      "analyticsPlayerId": "104",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630568",
+      "fullName": "Luka Garza",
+      "team2026": "BOS",
+      "analyticsPlayerId": "17896056",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631248",
+      "fullName": "Baylor Scheierman",
+      "team2026": "BOS",
+      "analyticsPlayerId": "1028028434",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642873",
+      "fullName": "Amari Williams",
+      "team2026": "BOS",
+      "analyticsPlayerId": "1057396966",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629674",
+      "fullName": "Neemias Queta",
+      "team2026": "BOS",
+      "analyticsPlayerId": "17553967",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641935",
+      "fullName": "Jarkel Joiner",
+      "team2026": "CHA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642369",
+      "fullName": "Michael Ajayi",
+      "team2026": "CHA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643573",
+      "fullName": "Kylan Boswell",
+      "team2026": "CHA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1626220",
+      "fullName": "Royce O'Neale",
+      "team2026": "CHA",
+      "analyticsPlayerId": "351",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1627827",
+      "fullName": "Dorian Finney-Smith",
+      "team2026": "CHA",
+      "analyticsPlayerId": "158",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629684",
+      "fullName": "Grant Williams",
+      "team2026": "CHA",
+      "analyticsPlayerId": "666965",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629632",
+      "fullName": "Coby White",
+      "team2026": "CHA",
+      "analyticsPlayerId": "666956",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642883",
+      "fullName": "Sion James",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1057384156",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643515",
+      "fullName": "Christian Anderson",
+      "team2026": "CHA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642851",
+      "fullName": "Kon Knueppel",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1057263194",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628960",
+      "fullName": "Grayson Allen",
+      "team2026": "CHA",
+      "analyticsPlayerId": "8",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203471",
+      "fullName": "Dennis Schröder",
+      "team2026": "CHA",
+      "analyticsPlayerId": "409",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629675",
+      "fullName": "Naz Reid",
+      "team2026": "CHA",
+      "analyticsPlayerId": "667378",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641750",
+      "fullName": "Ryan Kalkbrenner",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1057384362",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641810",
+      "fullName": "Antonio Reeves",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1028038100",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631217",
+      "fullName": "Moussa Diabaté",
+      "team2026": "CHA",
+      "analyticsPlayerId": "38017725",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641790",
+      "fullName": "PJ Hall",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1028244692",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626192",
+      "fullName": "Pat Connaughton",
+      "team2026": "CHA",
+      "analyticsPlayerId": "105",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643419",
+      "fullName": "Hannes Steinbach",
+      "team2026": "CHA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641706",
+      "fullName": "Brandon Miller",
+      "team2026": "CHA",
+      "analyticsPlayerId": "56677823",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630214",
+      "fullName": "Xavier Tillman",
+      "team2026": "CHA",
+      "analyticsPlayerId": "3547285",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642275",
+      "fullName": "Tidjane Salaün",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1028028379",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642862",
+      "fullName": "Liam McNeeley",
+      "team2026": "CHA",
+      "analyticsPlayerId": "1057278805",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643591",
+      "fullName": "Tobe Awaka",
+      "team2026": "CHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643637",
+      "fullName": "Jaylin Sellers",
+      "team2026": "CHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630581",
+      "fullName": "Josh Giddey",
+      "team2026": "CHI",
+      "analyticsPlayerId": "17896065",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643517",
+      "fullName": "Dailyn Swain",
+      "team2026": "CHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642265",
+      "fullName": "Rob Dillingham",
+      "team2026": "CHI",
+      "analyticsPlayerId": "1028025639",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643410",
+      "fullName": "Caleb Wilson",
+      "team2026": "CHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1629651",
+      "fullName": "Nic Claxton",
+      "team2026": "CHI",
+      "analyticsPlayerId": "666508",
+      "open2025Team": null,
+      "lastPgl2025Team": "BKN",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631159",
+      "fullName": "Leonard Miller",
+      "team2026": "CHI",
+      "analyticsPlayerId": "56677782",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628380",
+      "fullName": "Zach Collins",
+      "team2026": "CHI",
+      "analyticsPlayerId": "102",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641824",
+      "fullName": "Matas Buzelis",
+      "team2026": "CHI",
+      "analyticsPlayerId": "1028025177",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626181",
+      "fullName": "Norman Powell",
+      "team2026": "CHI",
+      "analyticsPlayerId": "380",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642855",
+      "fullName": "Noa Essengue",
+      "team2026": "CHI",
+      "analyticsPlayerId": "1057272081",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630188",
+      "fullName": "Jalen Smith",
+      "team2026": "CHI",
+      "analyticsPlayerId": "3547264",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630200",
+      "fullName": "Tre Jones",
+      "team2026": "CHI",
+      "analyticsPlayerId": "3547274",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630171",
+      "fullName": "Isaac Okoro",
+      "team2026": "CHI",
+      "analyticsPlayerId": "3547247",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630172",
+      "fullName": "Patrick Williams",
+      "team2026": "CHI",
+      "analyticsPlayerId": "3547248",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201935",
+      "fullName": "James Harden",
+      "team2026": "CLE",
+      "analyticsPlayerId": "192",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628418",
+      "fullName": "Thomas Bryant",
+      "team2026": "CLE",
+      "analyticsPlayerId": "74",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630596",
+      "fullName": "Evan Mobley",
+      "team2026": "CLE",
+      "analyticsPlayerId": "17896076",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630241",
+      "fullName": "Sam Merrill",
+      "team2026": "CLE",
+      "analyticsPlayerId": "3547299",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631212",
+      "fullName": "Peyton Watson",
+      "team2026": "CLE",
+      "analyticsPlayerId": "38017721",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641854",
+      "fullName": "Craig Porter Jr.",
+      "team2026": "CLE",
+      "analyticsPlayerId": "56677872",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642434",
+      "fullName": "Riley Minix",
+      "team2026": "CLE",
+      "analyticsPlayerId": "1028245994",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643509",
+      "fullName": "Meleek Thomas",
+      "team2026": "CLE",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631215",
+      "fullName": "Khalifa Diop",
+      "team2026": "CLE",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642281",
+      "fullName": "Jaylon Tyson",
+      "team2026": "CLE",
+      "analyticsPlayerId": "1028028993",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642400",
+      "fullName": "Tristan Enaruna",
+      "team2026": "CLE",
+      "analyticsPlayerId": "1028244219",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642878",
+      "fullName": "Tyrese Proctor",
+      "team2026": "CLE",
+      "analyticsPlayerId": "1057395754",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628386",
+      "fullName": "Jarrett Allen",
+      "team2026": "CLE",
+      "analyticsPlayerId": "9",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626209",
+      "fullName": "Mario Hezonja",
+      "team2026": "CLE",
+      "analyticsPlayerId": "208",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641772",
+      "fullName": "Nae'Qwan Tomlin",
+      "team2026": "CLE",
+      "analyticsPlayerId": "1042560902",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643640",
+      "fullName": "Ernest Udeh, Jr.",
+      "team2026": "CLE",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628378",
+      "fullName": "Donovan Mitchell",
+      "team2026": "CLE",
+      "analyticsPlayerId": "322",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641844",
+      "fullName": "Tarik Biberovic",
+      "team2026": "DAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643585",
+      "fullName": "Vsevolod Ishchenko",
+      "team2026": "DAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631108",
+      "fullName": "Max Christie",
+      "team2026": "DAL",
+      "analyticsPlayerId": "38017697",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642967",
+      "fullName": "John Poulakidas",
+      "team2026": "DAL",
+      "analyticsPlayerId": "1057848244",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641726",
+      "fullName": "Dereck Lively II",
+      "team2026": "DAL",
+      "analyticsPlayerId": "56677840",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630230",
+      "fullName": "Naji Marshall",
+      "team2026": "DAL",
+      "analyticsPlayerId": "3547293",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203939",
+      "fullName": "Dwight Powell",
+      "team2026": "DAL",
+      "analyticsPlayerId": "379",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631204",
+      "fullName": "Marcus Sasser",
+      "team2026": "DAL",
+      "analyticsPlayerId": "56677792",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642258",
+      "fullName": "Zaccharie Risacher",
+      "team2026": "DAL",
+      "analyticsPlayerId": "1028028244",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "202681",
+      "fullName": "Kyrie Irving",
+      "team2026": "DAL",
+      "analyticsPlayerId": "228",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641724",
+      "fullName": "Jett Howard",
+      "team2026": "DAL",
+      "analyticsPlayerId": "56677839",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643516",
+      "fullName": "Morez Johnson",
+      "team2026": "DAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628997",
+      "fullName": "Caleb Martin",
+      "team2026": "DAL",
+      "analyticsPlayerId": "666747",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629655",
+      "fullName": "Daniel Gafford",
+      "team2026": "DAL",
+      "analyticsPlayerId": "666577",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629023",
+      "fullName": "P.J. Washington",
+      "team2026": "DAL",
+      "analyticsPlayerId": "666950",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630619",
+      "fullName": "Moussa Cisse",
+      "team2026": "DAL",
+      "analyticsPlayerId": "1057845382",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642843",
+      "fullName": "Cooper Flagg",
+      "team2026": "DAL",
+      "analyticsPlayerId": "1057262088",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643588",
+      "fullName": "Tobi Lawal",
+      "team2026": "DAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630583",
+      "fullName": "Santi Aldama",
+      "team2026": "DAL",
+      "analyticsPlayerId": "17896067",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643547",
+      "fullName": "Sergio de Larrea",
+      "team2026": "DAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642350",
+      "fullName": "Trevon Brazile",
+      "team2026": "DEN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643624",
+      "fullName": "Bryce Hopkins",
+      "team2026": "DEN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643813",
+      "fullName": "Alpha Diallo",
+      "team2026": "DEN",
+      "analyticsPlayerId": "17895740",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631128",
+      "fullName": "Christian Braun",
+      "team2026": "DEN",
+      "analyticsPlayerId": "38017709",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642938",
+      "fullName": "Curtis Jones",
+      "team2026": "DEN",
+      "analyticsPlayerId": "1057846921",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631124",
+      "fullName": "Julian Strawther",
+      "team2026": "DEN",
+      "analyticsPlayerId": "56677776",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626145",
+      "fullName": "Tyus Jones",
+      "team2026": "DEN",
+      "analyticsPlayerId": "249",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628971",
+      "fullName": "Bruce Brown",
+      "team2026": "DEN",
+      "analyticsPlayerId": "69",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641747",
+      "fullName": "DaRon Holmes II",
+      "team2026": "DEN",
+      "analyticsPlayerId": "1028026514",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203999",
+      "fullName": "Nikola Jokić",
+      "team2026": "DEN",
+      "analyticsPlayerId": "246",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642461",
+      "fullName": "Spencer Jones",
+      "team2026": "DEN",
+      "analyticsPlayerId": "1028255289",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630192",
+      "fullName": "Zeke Nnaji",
+      "team2026": "DEN",
+      "analyticsPlayerId": "3547268",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629661",
+      "fullName": "Cameron Johnson",
+      "team2026": "DEN",
+      "analyticsPlayerId": "666679",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642354",
+      "fullName": "KJ Simpson",
+      "team2026": "DEN",
+      "analyticsPlayerId": "1028038474",
+      "open2025Team": null,
+      "lastPgl2025Team": "DEN",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1627750",
+      "fullName": "Jamal Murray",
+      "team2026": "DEN",
+      "analyticsPlayerId": "335",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203932",
+      "fullName": "Aaron Gordon",
+      "team2026": "DEN",
+      "analyticsPlayerId": "177",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628963",
+      "fullName": "Marvin Bagley III",
+      "team2026": "DEN",
+      "analyticsPlayerId": "24",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631223",
+      "fullName": "David Roddy",
+      "team2026": "DEN",
+      "analyticsPlayerId": "38017729",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642391",
+      "fullName": "Ugonna Onyenso",
+      "team2026": "DET",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643536",
+      "fullName": "Ebuka Okorie",
+      "team2026": "DET",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631105",
+      "fullName": "Jalen Duren",
+      "team2026": "DET",
+      "analyticsPlayerId": "38017694",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630595",
+      "fullName": "Cade Cunningham",
+      "team2026": "DET",
+      "analyticsPlayerId": "17896075",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642403",
+      "fullName": "Isaac Jones",
+      "team2026": "DET",
+      "analyticsPlayerId": "1028205331",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641842",
+      "fullName": "Ronald Holland II",
+      "team2026": "DET",
+      "analyticsPlayerId": "1028026508",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630194",
+      "fullName": "Paul Reed",
+      "team2026": "DET",
+      "analyticsPlayerId": "3547270",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641709",
+      "fullName": "Ausar Thompson",
+      "team2026": "DET",
+      "analyticsPlayerId": "56677826",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630198",
+      "fullName": "Isaiah Joe",
+      "team2026": "DET",
+      "analyticsPlayerId": "3547272",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203914",
+      "fullName": "Gary Harris",
+      "team2026": "DET",
+      "analyticsPlayerId": "196",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1627752",
+      "fullName": "Taurean Prince",
+      "team2026": "DET",
+      "analyticsPlayerId": "383",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631111",
+      "fullName": "Wendell Moore Jr.",
+      "team2026": "DET",
+      "analyticsPlayerId": "38017700",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641989",
+      "fullName": "Elijah Harkless",
+      "team2026": "DET",
+      "analyticsPlayerId": "1028264794",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642404",
+      "fullName": "Chaz Lanier",
+      "team2026": "DET",
+      "analyticsPlayerId": "1057389625",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628381",
+      "fullName": "John Collins",
+      "team2026": "DET",
+      "analyticsPlayerId": "101",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642450",
+      "fullName": "Daniss Jenkins",
+      "team2026": "DET",
+      "analyticsPlayerId": "1028240128",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628989",
+      "fullName": "Kevin Huerter",
+      "team2026": "DET",
+      "analyticsPlayerId": "221",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629750",
+      "fullName": "Javonte Green",
+      "team2026": "DET",
+      "analyticsPlayerId": "666604",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642449",
+      "fullName": "Tolu Smith",
+      "team2026": "DET",
+      "analyticsPlayerId": "1028267166",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629130",
+      "fullName": "Duncan Robinson",
+      "team2026": "DET",
+      "analyticsPlayerId": "397",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627780",
+      "fullName": "Gary Payton II",
+      "team2026": "GSW",
+      "analyticsPlayerId": "2189",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642865",
+      "fullName": "Yaxel Lendeborg",
+      "team2026": "GSW",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641764",
+      "fullName": "Brandin Podziemski",
+      "team2026": "GSW",
+      "analyticsPlayerId": "56677858",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642954",
+      "fullName": "Will Richard",
+      "team2026": "GSW",
+      "analyticsPlayerId": "1057395872",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630541",
+      "fullName": "Moses Moody",
+      "team2026": "GSW",
+      "analyticsPlayerId": "17553992",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "204001",
+      "fullName": "Kristaps Porziņģis",
+      "team2026": "GSW",
+      "analyticsPlayerId": "378",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629001",
+      "fullName": "De'Anthony Melton",
+      "team2026": "GSW",
+      "analyticsPlayerId": "313",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "202710",
+      "fullName": "Jimmy Butler III",
+      "team2026": "GSW",
+      "analyticsPlayerId": "79",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630314",
+      "fullName": "Brandon Williams",
+      "team2026": "GSW",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630611",
+      "fullName": "Gui Santos",
+      "team2026": "GSW",
+      "analyticsPlayerId": "57875092",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643018",
+      "fullName": "LJ Cryer",
+      "team2026": "GSW",
+      "analyticsPlayerId": "1057968644",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631466",
+      "fullName": "Nate Williams",
+      "team2026": "GSW",
+      "analyticsPlayerId": "46405409",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": null,
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201143",
+      "fullName": "Al Horford",
+      "team2026": "GSW",
+      "analyticsPlayerId": "219",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631207",
+      "fullName": "Dalen Terry",
+      "team2026": "GSW",
+      "analyticsPlayerId": "38017719",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203110",
+      "fullName": "Draymond Green",
+      "team2026": "GSW",
+      "analyticsPlayerId": "185",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643650",
+      "fullName": "Lajae Jones",
+      "team2026": "GSW",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1629646",
+      "fullName": "Charles Bassey",
+      "team2026": "GSW",
+      "analyticsPlayerId": "17895854",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201939",
+      "fullName": "Stephen Curry",
+      "team2026": "GSW",
+      "analyticsPlayerId": "115",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203552",
+      "fullName": "Seth Curry",
+      "team2026": "GSW",
+      "analyticsPlayerId": "114",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627777",
+      "fullName": "Georges Niang",
+      "team2026": "GSW",
+      "analyticsPlayerId": "344",
+      "open2025Team": null,
+      "lastPgl2025Team": "MEM",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642502",
+      "fullName": "Malevy Leons",
+      "team2026": "GSW",
+      "analyticsPlayerId": "1028265620",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642951",
+      "fullName": "Sean Pedulla",
+      "team2026": "HOU",
+      "analyticsPlayerId": "1058921044",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643570",
+      "fullName": "Bruce Thornton",
+      "team2026": "HOU",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643572",
+      "fullName": "Rafael Castro",
+      "team2026": "HOU",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643595",
+      "fullName": "Quadir Copeland",
+      "team2026": "HOU",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628988",
+      "fullName": "Aaron Holiday",
+      "team2026": "HOU",
+      "analyticsPlayerId": "213",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641708",
+      "fullName": "Amen Thompson",
+      "team2026": "HOU",
+      "analyticsPlayerId": "56677825",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641763",
+      "fullName": "Julian Phillips",
+      "team2026": "HOU",
+      "analyticsPlayerId": "56677857",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1627832",
+      "fullName": "Fred VanVleet",
+      "team2026": "HOU",
+      "analyticsPlayerId": "458",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201142",
+      "fullName": "Kevin Durant",
+      "team2026": "HOU",
+      "analyticsPlayerId": "140",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630256",
+      "fullName": "Jae'Sean Tate",
+      "team2026": "HOU",
+      "analyticsPlayerId": "3547301",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631095",
+      "fullName": "Jabari Smith Jr.",
+      "team2026": "HOU",
+      "analyticsPlayerId": "38017684",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203500",
+      "fullName": "Steven Adams",
+      "team2026": "HOU",
+      "analyticsPlayerId": "3",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642263",
+      "fullName": "Reed Sheppard",
+      "team2026": "HOU",
+      "analyticsPlayerId": "1028028519",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631106",
+      "fullName": "Tari Eason",
+      "team2026": "HOU",
+      "analyticsPlayerId": "38017695",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642384",
+      "fullName": "Isaiah Crawford",
+      "team2026": "HOU",
+      "analyticsPlayerId": "1028203948",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630578",
+      "fullName": "Alperen Sengun",
+      "team2026": "HOU",
+      "analyticsPlayerId": "17896062",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203991",
+      "fullName": "Clint Capela",
+      "team2026": "HOU",
+      "analyticsPlayerId": "83",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203992",
+      "fullName": "Bogdan Bogdanović",
+      "team2026": "HOU",
+      "analyticsPlayerId": "53",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "201145",
+      "fullName": "Jeff Green",
+      "team2026": "HOU",
+      "analyticsPlayerId": "188",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631131",
+      "fullName": "Oscar Tshiebwe",
+      "team2026": "HOU",
+      "analyticsPlayerId": "56677778",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203935",
+      "fullName": "Marcus Smart",
+      "team2026": "HOU",
+      "analyticsPlayerId": "420",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630169",
+      "fullName": "Tyrese Haliburton",
+      "team2026": "IND",
+      "analyticsPlayerId": "3547245",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630167",
+      "fullName": "Obi Toppin",
+      "team2026": "IND",
+      "analyticsPlayerId": "3547243",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629614",
+      "fullName": "Andrew Nembhard",
+      "team2026": "IND",
+      "analyticsPlayerId": "38017507",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643552",
+      "fullName": "Braden Smith",
+      "team2026": "IND",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641716",
+      "fullName": "Jarace Walker",
+      "team2026": "IND",
+      "analyticsPlayerId": "56677832",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "204456",
+      "fullName": "T.J. McConnell",
+      "team2026": "IND",
+      "analyticsPlayerId": "304",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626162",
+      "fullName": "Kelly Oubre Jr.",
+      "team2026": "IND",
+      "analyticsPlayerId": "360",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642277",
+      "fullName": "Johnny Furphy",
+      "team2026": "IND",
+      "analyticsPlayerId": "1028035897",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641771",
+      "fullName": "Jalen Slawson",
+      "team2026": "IND",
+      "analyticsPlayerId": "56677862",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626204",
+      "fullName": "Larry Nance Jr.",
+      "team2026": "IND",
+      "analyticsPlayerId": "340",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630174",
+      "fullName": "Aaron Nesmith",
+      "team2026": "IND",
+      "analyticsPlayerId": "3547250",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641738",
+      "fullName": "Kobe Brown",
+      "team2026": "IND",
+      "analyticsPlayerId": "56677849",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641767",
+      "fullName": "Ben Sheppard",
+      "team2026": "IND",
+      "analyticsPlayerId": "56677861",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631245",
+      "fullName": "Quenton Jackson",
+      "team2026": "IND",
+      "analyticsPlayerId": "44477085",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630643",
+      "fullName": "Jay Huff",
+      "team2026": "IND",
+      "analyticsPlayerId": "17896103",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627826",
+      "fullName": "Ivica Zubac",
+      "team2026": "IND",
+      "analyticsPlayerId": "493",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627783",
+      "fullName": "Pascal Siakam",
+      "team2026": "IND",
+      "analyticsPlayerId": "416",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641807",
+      "fullName": "Norchad Omier",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1057848025",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642394",
+      "fullName": "Baba Miller",
+      "team2026": "LAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643568",
+      "fullName": "Nick Martinelli",
+      "team2026": "LAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643712",
+      "fullName": "Narcisse Ngoy",
+      "team2026": "LAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "203078",
+      "fullName": "Bradley Beal",
+      "team2026": "LAC",
+      "analyticsPlayerId": "37",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643413",
+      "fullName": "Keaton Wagler",
+      "team2026": "LAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "202695",
+      "fullName": "Kawhi Leonard",
+      "team2026": "LAC",
+      "analyticsPlayerId": "274",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629622",
+      "fullName": "Max Strus",
+      "team2026": "LAC",
+      "analyticsPlayerId": "666908",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642920",
+      "fullName": "Kobe Sanders",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1057396055",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627884",
+      "fullName": "Derrick Jones Jr.",
+      "team2026": "LAC",
+      "analyticsPlayerId": "247",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627739",
+      "fullName": "Kris Dunn",
+      "team2026": "LAC",
+      "analyticsPlayerId": "139",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642530",
+      "fullName": "Yuki Kawamura",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1028265377",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631097",
+      "fullName": "Bennedict Mathurin",
+      "team2026": "LAC",
+      "analyticsPlayerId": "38017686",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629636",
+      "fullName": "Darius Garland",
+      "team2026": "LAC",
+      "analyticsPlayerId": "666581",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201572",
+      "fullName": "Brook Lopez",
+      "team2026": "LAC",
+      "analyticsPlayerId": "283",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631102",
+      "fullName": "TyTy Washington Jr.",
+      "team2026": "LAC",
+      "analyticsPlayerId": "38017691",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642949",
+      "fullName": "Yanic Konan Niederhäuser",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1057279105",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641757",
+      "fullName": "Jordan Miller",
+      "team2026": "LAC",
+      "analyticsPlayerId": "56677856",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641780",
+      "fullName": "Johni Broome",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1057382509",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630543",
+      "fullName": "Isaiah Jackson",
+      "team2026": "LAC",
+      "analyticsPlayerId": "17896035",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642353",
+      "fullName": "Cam Christie",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1028035215",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629618",
+      "fullName": "Jalen Pickett",
+      "team2026": "LAC",
+      "analyticsPlayerId": "56677582",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629060",
+      "fullName": "Rui Hachimura",
+      "team2026": "LAC",
+      "analyticsPlayerId": "666609",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "201587",
+      "fullName": "Nicolas Batum",
+      "team2026": "LAC",
+      "analyticsPlayerId": "33",
+      "open2025Team": "LAC",
+      "lastPgl2025Team": "LAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642481",
+      "fullName": "Jamarion Sharp",
+      "team2026": "LAC",
+      "analyticsPlayerId": "1028256970",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641751",
+      "fullName": "Arthur Kaluma",
+      "team2026": "LAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642876",
+      "fullName": "Adou Thiero",
+      "team2026": "LAL",
+      "analyticsPlayerId": "1057386376",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629020",
+      "fullName": "Jarred Vanderbilt",
+      "team2026": "LAL",
+      "analyticsPlayerId": "457",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629680",
+      "fullName": "Matisse Thybulle",
+      "team2026": "LAL",
+      "analyticsPlayerId": "666923",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642261",
+      "fullName": "Dalton Knecht",
+      "team2026": "LAL",
+      "analyticsPlayerId": "1028026974",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629656",
+      "fullName": "Quentin Grimes",
+      "team2026": "LAL",
+      "analyticsPlayerId": "17895858",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630702",
+      "fullName": "Jaden Hardy",
+      "team2026": "LAL",
+      "analyticsPlayerId": "38017679",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642355",
+      "fullName": "Bronny James",
+      "team2026": "LAL",
+      "analyticsPlayerId": "1028046517",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629012",
+      "fullName": "Collin Sexton",
+      "team2026": "LAL",
+      "analyticsPlayerId": "413",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630533",
+      "fullName": "Ziaire Williams",
+      "team2026": "LAL",
+      "analyticsPlayerId": "17896027",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631222",
+      "fullName": "Jake LaRavia",
+      "team2026": "LAL",
+      "analyticsPlayerId": "38017728",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631117",
+      "fullName": "Walker Kessler",
+      "team2026": "LAL",
+      "analyticsPlayerId": "38017705",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630559",
+      "fullName": "Austin Reaves",
+      "team2026": "LAL",
+      "analyticsPlayerId": "17553995",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643024",
+      "fullName": "Chris Mañon",
+      "team2026": "LAL",
+      "analyticsPlayerId": "1057847504",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643758",
+      "fullName": "AK Okereke",
+      "team2026": "LAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643418",
+      "fullName": "Cameron Carr",
+      "team2026": "LAL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630572",
+      "fullName": "Sandro Mamukelashvili",
+      "team2026": "LAL",
+      "analyticsPlayerId": "17896059",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1626172",
+      "fullName": "Kevon Looney",
+      "team2026": "LAL",
+      "analyticsPlayerId": "282",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629029",
+      "fullName": "Luka Dončić",
+      "team2026": "LAL",
+      "analyticsPlayerId": "132",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642942",
+      "fullName": "Jahmai Mashack",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1057394959",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643563",
+      "fullName": "Richie Saunders",
+      "team2026": "MEM",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642377",
+      "fullName": "Jaylen Wells",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1028039105",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630590",
+      "fullName": "Scotty Pippen Jr.",
+      "team2026": "MEM",
+      "analyticsPlayerId": "38017656",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629660",
+      "fullName": "Ty Jerome",
+      "team2026": "MEM",
+      "analyticsPlayerId": "666676",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642383",
+      "fullName": "Walter Clayton Jr.",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1057271583",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626156",
+      "fullName": "D'Angelo Russell",
+      "team2026": "MEM",
+      "analyticsPlayerId": "405",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642358",
+      "fullName": "AJ Johnson",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1028026717",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203924",
+      "fullName": "Jerami Grant",
+      "team2026": "MEM",
+      "analyticsPlayerId": "182",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642914",
+      "fullName": "Javon Small",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1057396260",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641744",
+      "fullName": "Zach Edey",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1028025754",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641765",
+      "fullName": "Olivier-Maxence Prosper",
+      "team2026": "MEM",
+      "analyticsPlayerId": "56677859",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642366",
+      "fullName": "Quinten Post",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1028047928",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641707",
+      "fullName": "Taylor Hendricks",
+      "team2026": "MEM",
+      "analyticsPlayerId": "56677824",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642907",
+      "fullName": "Cedric Coward",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1057266649",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642285",
+      "fullName": "Cam Spencer",
+      "team2026": "MEM",
+      "analyticsPlayerId": "1028048549",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631200",
+      "fullName": "Kris Murray",
+      "team2026": "MEM",
+      "analyticsPlayerId": "56677791",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643409",
+      "fullName": "Cameron Boozer",
+      "team2026": "MEM",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630191",
+      "fullName": "Isaiah Stewart",
+      "team2026": "MEM",
+      "analyticsPlayerId": "3547267",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643510",
+      "fullName": "Karim Lopez",
+      "team2026": "MEM",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641713",
+      "fullName": "GG Jackson",
+      "team2026": "MEM",
+      "analyticsPlayerId": "56677830",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201959",
+      "fullName": "Taj Gibson",
+      "team2026": "MEM",
+      "analyticsPlayerId": "173",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643727",
+      "fullName": "J'Vonne Hadley",
+      "team2026": "MIA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631323",
+      "fullName": "Simone Fontecchio",
+      "team2026": "MIA",
+      "analyticsPlayerId": "38017739",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630558",
+      "fullName": "Davion Mitchell",
+      "team2026": "MIA",
+      "analyticsPlayerId": "17553994",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631211",
+      "fullName": "Trevor Keels",
+      "team2026": "MIA",
+      "analyticsPlayerId": "38017720",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643553",
+      "fullName": "Ryan Conwell",
+      "team2026": "MIA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631107",
+      "fullName": "Nikola Jović",
+      "team2026": "MIA",
+      "analyticsPlayerId": "38017696",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203507",
+      "fullName": "Giannis Antetokounmpo",
+      "team2026": "MIA",
+      "analyticsPlayerId": "15",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630208",
+      "fullName": "Nick Richards",
+      "team2026": "MIA",
+      "analyticsPlayerId": "3547282",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641796",
+      "fullName": "Pelle Larsson",
+      "team2026": "MIA",
+      "analyticsPlayerId": "1028036986",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203501",
+      "fullName": "Tim Hardaway Jr.",
+      "team2026": "MIA",
+      "analyticsPlayerId": "191",
+      "open2025Team": "DEN",
+      "lastPgl2025Team": "DEN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "202691",
+      "fullName": "Klay Thompson",
+      "team2026": "MIA",
+      "analyticsPlayerId": "443",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630696",
+      "fullName": "Dru Smith",
+      "team2026": "MIA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628389",
+      "fullName": "Bam Adebayo",
+      "team2026": "MIA",
+      "analyticsPlayerId": "4",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642066",
+      "fullName": "Myron Gardner",
+      "team2026": "MIA",
+      "analyticsPlayerId": "1057846109",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642352",
+      "fullName": "Keshad Johnson",
+      "team2026": "MIA",
+      "analyticsPlayerId": "1028125584",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642443",
+      "fullName": "Jahmir Young",
+      "team2026": "MIA",
+      "analyticsPlayerId": "1028257937",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203952",
+      "fullName": "Andrew Wiggins",
+      "team2026": "MIA",
+      "analyticsPlayerId": "475",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643621",
+      "fullName": "Tre Donaldson",
+      "team2026": "MIA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642884",
+      "fullName": "Vladislav Goldin",
+      "team2026": "MIA",
+      "analyticsPlayerId": "1057846206",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626171",
+      "fullName": "Bobby Portis Jr.",
+      "team2026": "MIA",
+      "analyticsPlayerId": "377",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641831",
+      "fullName": "Malique Lewis",
+      "team2026": "MIL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643417",
+      "fullName": "Nate Ament",
+      "team2026": "MIL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643415",
+      "fullName": "Brayden Burries",
+      "team2026": "MIL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630579",
+      "fullName": "Jericho Sims",
+      "team2026": "MIL",
+      "analyticsPlayerId": "17896063",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626167",
+      "fullName": "Myles Turner",
+      "team2026": "MIL",
+      "analyticsPlayerId": "452",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629018",
+      "fullName": "Gary Trent Jr.",
+      "team2026": "MIL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1629645",
+      "fullName": "Kevin Porter Jr.",
+      "team2026": "MIL",
+      "analyticsPlayerId": "666849",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642880",
+      "fullName": "Kam Jones",
+      "team2026": "MIL",
+      "analyticsPlayerId": "1057389374",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1627747",
+      "fullName": "Caris LeVert",
+      "team2026": "MIL",
+      "analyticsPlayerId": "277",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642276",
+      "fullName": "Kel'el Ware",
+      "team2026": "MIL",
+      "analyticsPlayerId": "1028029127",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629639",
+      "fullName": "Tyler Herro",
+      "team2026": "MIL",
+      "analyticsPlayerId": "666633",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631157",
+      "fullName": "Ryan Rollins",
+      "team2026": "MIL",
+      "analyticsPlayerId": "38017712",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628398",
+      "fullName": "Kyle Kuzma",
+      "team2026": "MIL",
+      "analyticsPlayerId": "265",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631219",
+      "fullName": "John Butler Jr.",
+      "team2026": "MIL",
+      "analyticsPlayerId": "38124126",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631260",
+      "fullName": "AJ Green",
+      "team2026": "MIL",
+      "analyticsPlayerId": "38017733",
+      "open2025Team": null,
+      "lastPgl2025Team": "MIL",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631172",
+      "fullName": "Ousmane Dieng",
+      "team2026": "MIL",
+      "analyticsPlayerId": "38017716",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642881",
+      "fullName": "Bogoljub Marković",
+      "team2026": "MIL",
+      "analyticsPlayerId": "1057394921",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631170",
+      "fullName": "Jaime Jaquez Jr.",
+      "team2026": "MIL",
+      "analyticsPlayerId": "56677785",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642857",
+      "fullName": "Kasparas Jakučionis",
+      "team2026": "MIL",
+      "analyticsPlayerId": "1057272939",
+      "open2025Team": "MIA",
+      "lastPgl2025Team": "MIA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642504",
+      "fullName": "Cormac Ryan",
+      "team2026": "MIL",
+      "analyticsPlayerId": "1028266882",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631250",
+      "fullName": "Pete Nance",
+      "team2026": "MIL",
+      "analyticsPlayerId": "64270026",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628978",
+      "fullName": "Donte DiVincenzo",
+      "team2026": "MIN",
+      "analyticsPlayerId": "131",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630228",
+      "fullName": "Jonathan Kuminga",
+      "team2026": "MIN",
+      "analyticsPlayerId": "17553979",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630163",
+      "fullName": "LaMelo Ball",
+      "team2026": "MIN",
+      "analyticsPlayerId": "3547239",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630183",
+      "fullName": "Jaden McDaniels",
+      "team2026": "MIN",
+      "analyticsPlayerId": "3547259",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630545",
+      "fullName": "Terrence Shannon Jr",
+      "team2026": "MIN",
+      "analyticsPlayerId": "1028028501",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642262",
+      "fullName": "Cody Williams",
+      "team2026": "MIN",
+      "analyticsPlayerId": "1028029291",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630162",
+      "fullName": "Anthony Edwards",
+      "team2026": "MIN",
+      "analyticsPlayerId": "3547238",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641740",
+      "fullName": "Jaylen Clark",
+      "team2026": "MIN",
+      "analyticsPlayerId": "56677851",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630538",
+      "fullName": "Bones Hyland",
+      "team2026": "MIN",
+      "analyticsPlayerId": "17896031",
+      "open2025Team": null,
+      "lastPgl2025Team": "MIN",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630245",
+      "fullName": "Ayo Dosunmu",
+      "team2026": "MIN",
+      "analyticsPlayerId": "17895983",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643626",
+      "fullName": "Trey Kaufman-Renn",
+      "team2026": "MIN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642389",
+      "fullName": "Zyon Pullin",
+      "team2026": "MIN",
+      "analyticsPlayerId": "1028112004",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642866",
+      "fullName": "Joan Beringer",
+      "team2026": "MIN",
+      "analyticsPlayerId": "1057271099",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642402",
+      "fullName": "Enrique Freeman",
+      "team2026": "MIN",
+      "analyticsPlayerId": "1028045812",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203497",
+      "fullName": "Rudy Gobert",
+      "team2026": "MIN",
+      "analyticsPlayerId": "176",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642912",
+      "fullName": "Isaiah Evans",
+      "team2026": "MIN",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1626168",
+      "fullName": "Trey Lyles",
+      "team2026": "MIN",
+      "analyticsPlayerId": "290",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642911",
+      "fullName": "Rocco Zikarsky",
+      "team2026": "MIN",
+      "analyticsPlayerId": "1057397172",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642847",
+      "fullName": "Jeremiah Fears",
+      "team2026": "NOP",
+      "analyticsPlayerId": "1057267077",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629627",
+      "fullName": "Zion Williamson",
+      "team2026": "NOP",
+      "analyticsPlayerId": "666969",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630529",
+      "fullName": "Herbert Jones",
+      "team2026": "NOP",
+      "analyticsPlayerId": "17896024",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629673",
+      "fullName": "Jordan Poole",
+      "team2026": "NOP",
+      "analyticsPlayerId": "666848",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641723",
+      "fullName": "Kobe Bufkin",
+      "team2026": "NOP",
+      "analyticsPlayerId": "56677838",
+      "open2025Team": null,
+      "lastPgl2025Team": "LAL",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1627749",
+      "fullName": "Dejounte Murray",
+      "team2026": "NOP",
+      "analyticsPlayerId": "334",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201599",
+      "fullName": "DeAndre Jordan",
+      "team2026": "NOP",
+      "analyticsPlayerId": "250",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643738",
+      "fullName": "Malik Dia",
+      "team2026": "NOP",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630570",
+      "fullName": "Trendon Watford",
+      "team2026": "NOP",
+      "analyticsPlayerId": "17896058",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643555",
+      "fullName": "Jaron Pierre Jr.",
+      "team2026": "NOP",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631121",
+      "fullName": "Bryce McGowens",
+      "team2026": "NOP",
+      "analyticsPlayerId": "38017708",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642877",
+      "fullName": "Micah Peavy",
+      "team2026": "NOP",
+      "analyticsPlayerId": "1057390538",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631255",
+      "fullName": "Karlo Matković",
+      "team2026": "NOP",
+      "analyticsPlayerId": "1028245777",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642274",
+      "fullName": "Yves Missi",
+      "team2026": "NOP",
+      "analyticsPlayerId": "1028027567",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642852",
+      "fullName": "Derik Queen",
+      "team2026": "NOP",
+      "analyticsPlayerId": "1057274415",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641722",
+      "fullName": "Jordan Hawkins",
+      "team2026": "NOP",
+      "analyticsPlayerId": "56677837",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630530",
+      "fullName": "Trey Murphy III",
+      "team2026": "NOP",
+      "analyticsPlayerId": "18677986",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631216",
+      "fullName": "Caleb Houstan",
+      "team2026": "NOP",
+      "analyticsPlayerId": "38017724",
+      "open2025Team": null,
+      "lastPgl2025Team": "ATL",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631132",
+      "fullName": "Christian Koloko",
+      "team2026": "NOP",
+      "analyticsPlayerId": "38017710",
+      "open2025Team": "ATL",
+      "lastPgl2025Team": "ATL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630180",
+      "fullName": "Saddiq Bey",
+      "team2026": "NOP",
+      "analyticsPlayerId": "3547256",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643583",
+      "fullName": "Jack Kayil",
+      "team2026": "NYK",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643589",
+      "fullName": "Tyler Nickel",
+      "team2026": "NYK",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641794",
+      "fullName": "Dillon Jones",
+      "team2026": "NYK",
+      "analyticsPlayerId": "1028026812",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203083",
+      "fullName": "Andre Drummond",
+      "team2026": "NYK",
+      "analyticsPlayerId": "137",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203903",
+      "fullName": "Jordan Clarkson",
+      "team2026": "NYK",
+      "analyticsPlayerId": "100",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630540",
+      "fullName": "Miles McBride",
+      "team2026": "NYK",
+      "analyticsPlayerId": "17896033",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628404",
+      "fullName": "Josh Hart",
+      "team2026": "NYK",
+      "analyticsPlayerId": "202",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642359",
+      "fullName": "Pacôme Dadiet",
+      "team2026": "NYK",
+      "analyticsPlayerId": "1028025498",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630631",
+      "fullName": "Jose Alvarado",
+      "team2026": "NYK",
+      "analyticsPlayerId": "17896097",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628384",
+      "fullName": "OG Anunoby",
+      "team2026": "NYK",
+      "analyticsPlayerId": "18",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641755",
+      "fullName": "Kevin McCullar Jr.",
+      "team2026": "NYK",
+      "analyticsPlayerId": "1028047255",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628973",
+      "fullName": "Jalen Brunson",
+      "team2026": "NYK",
+      "analyticsPlayerId": "73",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642278",
+      "fullName": "Tyler Kolek",
+      "team2026": "NYK",
+      "analyticsPlayerId": "1028036898",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628969",
+      "fullName": "Mikal Bridges",
+      "team2026": "NYK",
+      "analyticsPlayerId": "61",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626157",
+      "fullName": "Karl-Anthony Towns",
+      "team2026": "NYK",
+      "analyticsPlayerId": "447",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629013",
+      "fullName": "Landry Shamet",
+      "team2026": "NYK",
+      "analyticsPlayerId": "414",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642885",
+      "fullName": "Mohamed Diawara",
+      "team2026": "NYK",
+      "analyticsPlayerId": "1057393207",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643717",
+      "fullName": "Josh Dix",
+      "team2026": "OKC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628983",
+      "fullName": "Shai Gilgeous-Alexander",
+      "team2026": "OKC",
+      "analyticsPlayerId": "175",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642272",
+      "fullName": "Jared McCain",
+      "team2026": "OKC",
+      "analyticsPlayerId": "1028027372",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631119",
+      "fullName": "Jaylin Williams",
+      "team2026": "OKC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631096",
+      "fullName": "Chet Holmgren",
+      "team2026": "OKC",
+      "analyticsPlayerId": "38017685",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631114",
+      "fullName": "Jalen Williams",
+      "team2026": "OKC",
+      "analyticsPlayerId": "38017703",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627936",
+      "fullName": "Alex Caruso",
+      "team2026": "OKC",
+      "analyticsPlayerId": "89",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642850",
+      "fullName": "Thomas Sorber",
+      "team2026": "OKC",
+      "analyticsPlayerId": "1057274983",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642923",
+      "fullName": "Otega Oweh",
+      "team2026": "OKC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642892",
+      "fullName": "Bennett Stirtz",
+      "team2026": "OKC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643530",
+      "fullName": "Aday Mara",
+      "team2026": "OKC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641717",
+      "fullName": "Cason Wallace",
+      "team2026": "OKC",
+      "analyticsPlayerId": "56677833",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642964",
+      "fullName": "Brooks Barnhizer",
+      "team2026": "OKC",
+      "analyticsPlayerId": "1057392335",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642349",
+      "fullName": "Ajay Mitchell",
+      "team2026": "OKC",
+      "analyticsPlayerId": "1028037477",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629026",
+      "fullName": "Kenrich Williams",
+      "team2026": "OKC",
+      "analyticsPlayerId": "480",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642260",
+      "fullName": "Nikola Topić",
+      "team2026": "OKC",
+      "analyticsPlayerId": "1028028932",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628392",
+      "fullName": "Isaiah Hartenstein",
+      "team2026": "OKC",
+      "analyticsPlayerId": "201",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641710",
+      "fullName": "Anthony Black",
+      "team2026": "ORL",
+      "analyticsPlayerId": "56677827",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628371",
+      "fullName": "Jonathan Isaac",
+      "team2026": "ORL",
+      "analyticsPlayerId": "229",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628975",
+      "fullName": "Jevon Carter",
+      "team2026": "ORL",
+      "analyticsPlayerId": "87",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630217",
+      "fullName": "Desmond Bane",
+      "team2026": "ORL",
+      "analyticsPlayerId": "3547287",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630591",
+      "fullName": "Jalen Suggs",
+      "team2026": "ORL",
+      "analyticsPlayerId": "17896073",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631120",
+      "fullName": "JD Davison",
+      "team2026": "ORL",
+      "analyticsPlayerId": "38017707",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631094",
+      "fullName": "Paolo Banchero",
+      "team2026": "ORL",
+      "analyticsPlayerId": "38017683",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631103",
+      "fullName": "Malaki Branham",
+      "team2026": "ORL",
+      "analyticsPlayerId": "38017692",
+      "open2025Team": null,
+      "lastPgl2025Team": "CHA",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631288",
+      "fullName": "Jamal Cain",
+      "team2026": "ORL",
+      "analyticsPlayerId": "38017734",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "202696",
+      "fullName": "Nikola Vučević",
+      "team2026": "ORL",
+      "analyticsPlayerId": "460",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642859",
+      "fullName": "Jase Richardson",
+      "team2026": "ORL",
+      "analyticsPlayerId": "1057279571",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630658",
+      "fullName": "Colin Castleton",
+      "team2026": "ORL",
+      "analyticsPlayerId": "56677738",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630532",
+      "fullName": "Franz Wagner",
+      "team2026": "ORL",
+      "analyticsPlayerId": "17896026",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641783",
+      "fullName": "Tristan da Silva",
+      "team2026": "ORL",
+      "analyticsPlayerId": "1028025497",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643593",
+      "fullName": "Izaiyah Nelson",
+      "team2026": "ORL",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631457",
+      "fullName": "Alex Morales",
+      "team2026": "ORL",
+      "analyticsPlayerId": "1028271147",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628976",
+      "fullName": "Wendell Carter Jr.",
+      "team2026": "ORL",
+      "analyticsPlayerId": "85",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629048",
+      "fullName": "Goga Bitadze",
+      "team2026": "ORL",
+      "analyticsPlayerId": "666442",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642869",
+      "fullName": "Noah Penda",
+      "team2026": "ORL",
+      "analyticsPlayerId": "1057385481",
+      "open2025Team": "ORL",
+      "lastPgl2025Team": "ORL",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642392",
+      "fullName": "Jameer Nelson Jr.",
+      "team2026": "PHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643148",
+      "fullName": "Saint Thomas",
+      "team2026": "PHI",
+      "analyticsPlayerId": "1057849072",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643575",
+      "fullName": "Duke Miles",
+      "team2026": "PHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642889",
+      "fullName": "Labaron Philon",
+      "team2026": "PHI",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630178",
+      "fullName": "Tyrese Maxey",
+      "team2026": "PHI",
+      "analyticsPlayerId": "3547254",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631126",
+      "fullName": "Caleb Love",
+      "team2026": "PHI",
+      "analyticsPlayerId": "1057847330",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203484",
+      "fullName": "Kentavious Caldwell-Pope",
+      "team2026": "PHI",
+      "analyticsPlayerId": "81",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "200768",
+      "fullName": "Kyle Lowry",
+      "team2026": "PHI",
+      "analyticsPlayerId": "286",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627759",
+      "fullName": "Jaylen Brown",
+      "team2026": "PHI",
+      "analyticsPlayerId": "70",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642348",
+      "fullName": "Justin Edwards",
+      "team2026": "PHI",
+      "analyticsPlayerId": "1028214238",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630699",
+      "fullName": "MarJon Beauchamp",
+      "team2026": "PHI",
+      "analyticsPlayerId": "38017676",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641712",
+      "fullName": "Rayan Rupert",
+      "team2026": "PHI",
+      "analyticsPlayerId": "56677829",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203954",
+      "fullName": "Joel Embiid",
+      "team2026": "PHI",
+      "analyticsPlayerId": "145",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629014",
+      "fullName": "Anfernee Simons",
+      "team2026": "PHI",
+      "analyticsPlayerId": "419",
+      "open2025Team": "CHI",
+      "lastPgl2025Team": "CHI",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "2544",
+      "fullName": "LeBron James",
+      "team2026": "PHI",
+      "analyticsPlayerId": "237",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631213",
+      "fullName": "Tyrese Martin",
+      "team2026": "PHI",
+      "analyticsPlayerId": "38017722",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631230",
+      "fullName": "Dominick Barlow",
+      "team2026": "PHI",
+      "analyticsPlayerId": "38017730",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641737",
+      "fullName": "Adem Bona",
+      "team2026": "PHI",
+      "analyticsPlayerId": "1028034846",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629731",
+      "fullName": "Dean Wade",
+      "team2026": "PHI",
+      "analyticsPlayerId": "666940",
+      "open2025Team": "CLE",
+      "lastPgl2025Team": "CLE",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1631133",
+      "fullName": "Jabari Walker",
+      "team2026": "PHI",
+      "analyticsPlayerId": "38017711",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630574",
+      "fullName": "Ariel Hukporti",
+      "team2026": "PHI",
+      "analyticsPlayerId": "1028046422",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642845",
+      "fullName": "VJ Edgecombe",
+      "team2026": "PHI",
+      "analyticsPlayerId": "1057261935",
+      "open2025Team": "PHI",
+      "lastPgl2025Team": "PHI",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629605",
+      "fullName": "Tacko Fall",
+      "team2026": "PHI",
+      "analyticsPlayerId": "666560",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628970",
+      "fullName": "Miles Bridges",
+      "team2026": "PHX",
+      "analyticsPlayerId": "62",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642346",
+      "fullName": "Ryan Dunn",
+      "team2026": "PHX",
+      "analyticsPlayerId": "1028025723",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629599",
+      "fullName": "Amir Coffey",
+      "team2026": "PHX",
+      "analyticsPlayerId": "666511",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628415",
+      "fullName": "Dillon Brooks",
+      "team2026": "PHX",
+      "analyticsPlayerId": "66",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630224",
+      "fullName": "Jalen Green",
+      "team2026": "PHX",
+      "analyticsPlayerId": "17895966",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629312",
+      "fullName": "Haywood Highsmith",
+      "team2026": "PHX",
+      "analyticsPlayerId": "3092",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628379",
+      "fullName": "Luke Kennard",
+      "team2026": "PHX",
+      "analyticsPlayerId": "254",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642863",
+      "fullName": "Khaman Maluach",
+      "team2026": "PHX",
+      "analyticsPlayerId": "1057268513",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642345",
+      "fullName": "Oso Ighodaro",
+      "team2026": "PHX",
+      "analyticsPlayerId": "1028036515",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631221",
+      "fullName": "Collin Gillespie",
+      "team2026": "PHX",
+      "analyticsPlayerId": "38017727",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642886",
+      "fullName": "Koby Brea",
+      "team2026": "PHX",
+      "analyticsPlayerId": "1057387526",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631109",
+      "fullName": "Mark Williams",
+      "team2026": "PHX",
+      "analyticsPlayerId": "38017698",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1626164",
+      "fullName": "Devin Booker",
+      "team2026": "PHX",
+      "analyticsPlayerId": "57",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631123",
+      "fullName": "Jamaree Bouyea",
+      "team2026": "PHX",
+      "analyticsPlayerId": "44477062",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630587",
+      "fullName": "Isaiah Livers",
+      "team2026": "PHX",
+      "analyticsPlayerId": "17896071",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643520",
+      "fullName": "Koa Peat",
+      "team2026": "PHX",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642853",
+      "fullName": "Rasheer Fleming",
+      "team2026": "PHX",
+      "analyticsPlayerId": "1057383369",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643047",
+      "fullName": "CJ Huntley",
+      "team2026": "PHX",
+      "analyticsPlayerId": "1057846700",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630692",
+      "fullName": "Jordan Goodwin",
+      "team2026": "PHX",
+      "analyticsPlayerId": "18678058",
+      "open2025Team": "PHX",
+      "lastPgl2025Team": "PHX",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630311",
+      "fullName": "Pat Spencer",
+      "team2026": "PHX",
+      "analyticsPlayerId": "795959473",
+      "open2025Team": "GSW",
+      "lastPgl2025Team": "GSW",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643257",
+      "fullName": "Jayson Kent",
+      "team2026": "POR",
+      "analyticsPlayerId": "1076658911",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203081",
+      "fullName": "Damian Lillard",
+      "team2026": "POR",
+      "analyticsPlayerId": "278",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630703",
+      "fullName": "Scoot Henderson",
+      "team2026": "POR",
+      "analyticsPlayerId": "56677747",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631104",
+      "fullName": "Blake Wesley",
+      "team2026": "POR",
+      "analyticsPlayerId": "38017693",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642959",
+      "fullName": "Chris Youngblood",
+      "team2026": "POR",
+      "analyticsPlayerId": "1057849685",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201950",
+      "fullName": "Jrue Holiday",
+      "team2026": "POR",
+      "analyticsPlayerId": "214",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630166",
+      "fullName": "Deni Avdija",
+      "team2026": "POR",
+      "analyticsPlayerId": "3547242",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642910",
+      "fullName": "John Tonje",
+      "team2026": "POR",
+      "analyticsPlayerId": "1057396603",
+      "open2025Team": "BOS",
+      "lastPgl2025Team": "BOS",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630695",
+      "fullName": "Micah Potter",
+      "team2026": "POR",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1629630",
+      "fullName": "Ja Morant",
+      "team2026": "POR",
+      "analyticsPlayerId": "666786",
+      "open2025Team": "MEM",
+      "lastPgl2025Team": "MEM",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642382",
+      "fullName": "Branden Carlson",
+      "team2026": "POR",
+      "analyticsPlayerId": "1028218679",
+      "open2025Team": "OKC",
+      "lastPgl2025Team": "OKC",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642905",
+      "fullName": "Yang Hansen",
+      "team2026": "POR",
+      "analyticsPlayerId": "1057275769",
+      "open2025Team": null,
+      "lastPgl2025Team": "POR",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1631101",
+      "fullName": "Shaedon Sharpe",
+      "team2026": "POR",
+      "analyticsPlayerId": "38017690",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631110",
+      "fullName": "Jeremy Sochan",
+      "team2026": "POR",
+      "analyticsPlayerId": "38017699",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642270",
+      "fullName": "Donovan Clingan",
+      "team2026": "POR",
+      "analyticsPlayerId": "1028025344",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630249",
+      "fullName": "Vít Krejčí",
+      "team2026": "POR",
+      "analyticsPlayerId": "4197387",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641739",
+      "fullName": "Toumani Camara",
+      "team2026": "POR",
+      "analyticsPlayerId": "56677850",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629057",
+      "fullName": "Robert Williams III",
+      "team2026": "POR",
+      "analyticsPlayerId": "476",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631321",
+      "fullName": "Sidy Cissoko",
+      "team2026": "POR",
+      "analyticsPlayerId": "56677817",
+      "open2025Team": "POR",
+      "lastPgl2025Team": "POR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628370",
+      "fullName": "Malik Monk",
+      "team2026": "SAC",
+      "analyticsPlayerId": "324",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642367",
+      "fullName": "Jonathan Mogbo",
+      "team2026": "SAC",
+      "analyticsPlayerId": "1028037494",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643411",
+      "fullName": "Darius Acuff Jr.",
+      "team2026": "SAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "203897",
+      "fullName": "Zach LaVine",
+      "team2026": "SAC",
+      "analyticsPlayerId": "268",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630173",
+      "fullName": "Precious Achiuwa",
+      "team2026": "SAC",
+      "analyticsPlayerId": "3547249",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642363",
+      "fullName": "Nique Clifford",
+      "team2026": "SAC",
+      "analyticsPlayerId": "1057276634",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627734",
+      "fullName": "Domantas Sabonis",
+      "team2026": "SAC",
+      "analyticsPlayerId": "406",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631099",
+      "fullName": "Keegan Murray",
+      "team2026": "SAC",
+      "analyticsPlayerId": "38017688",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641745",
+      "fullName": "Adam Flagler",
+      "team2026": "SAC",
+      "analyticsPlayerId": "436846673",
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1629631",
+      "fullName": "De'Andre Hunter",
+      "team2026": "SAC",
+      "analyticsPlayerId": "666656",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631342",
+      "fullName": "Daeqwon Plowden",
+      "team2026": "SAC",
+      "analyticsPlayerId": "1028246478",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642928",
+      "fullName": "Dylan Cardwell",
+      "team2026": "SAC",
+      "analyticsPlayerId": "1057845274",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642284",
+      "fullName": "Alex Karaban",
+      "team2026": "SAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643567",
+      "fullName": "Emanuel Sharp",
+      "team2026": "SAC",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642875",
+      "fullName": "Maxime Raynaud",
+      "team2026": "SAC",
+      "analyticsPlayerId": "1057390745",
+      "open2025Team": "SAC",
+      "lastPgl2025Team": "SAC",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643551",
+      "fullName": "Ja'Kobi Gillespie",
+      "team2026": "SAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643576",
+      "fullName": "Maliq Brown",
+      "team2026": "SAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1629162",
+      "fullName": "Jordan McLaughlin",
+      "team2026": "SAS",
+      "analyticsPlayerId": "666767",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641705",
+      "fullName": "Victor Wembanyama",
+      "team2026": "SAS",
+      "analyticsPlayerId": "56677822",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642844",
+      "fullName": "Dylan Harper",
+      "team2026": "SAS",
+      "analyticsPlayerId": "1057262518",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629640",
+      "fullName": "Keldon Johnson",
+      "team2026": "SAS",
+      "analyticsPlayerId": "666682",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628368",
+      "fullName": "De'Aaron Fox",
+      "team2026": "SAS",
+      "analyticsPlayerId": "161",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643007",
+      "fullName": "Taelon Peter",
+      "team2026": "SAS",
+      "analyticsPlayerId": "1057395638",
+      "open2025Team": "IND",
+      "lastPgl2025Team": "IND",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642264",
+      "fullName": "Stephon Castle",
+      "team2026": "SAS",
+      "analyticsPlayerId": "1028025261",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1628436",
+      "fullName": "Luke Kornet",
+      "team2026": "SAS",
+      "analyticsPlayerId": "261",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643542",
+      "fullName": "Tarris Reed Jr.",
+      "team2026": "SAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642868",
+      "fullName": "Carter Bryant",
+      "team2026": "SAS",
+      "analyticsPlayerId": "1057271360",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643519",
+      "fullName": "Jayden Quaintance",
+      "team2026": "SAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "202699",
+      "fullName": "Tobias Harris",
+      "team2026": "SAS",
+      "analyticsPlayerId": "200",
+      "open2025Team": "DET",
+      "lastPgl2025Team": "DET",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1630170",
+      "fullName": "Devin Vassell",
+      "team2026": "SAS",
+      "analyticsPlayerId": "3547246",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642357",
+      "fullName": "David Jones Garcia",
+      "team2026": "SAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630577",
+      "fullName": "Julian Champagnie",
+      "team2026": "SAS",
+      "analyticsPlayerId": "38017649",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203084",
+      "fullName": "Harrison Barnes",
+      "team2026": "SAS",
+      "analyticsPlayerId": "30",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642927",
+      "fullName": "Nate Bittle",
+      "team2026": "TOR",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1643558",
+      "fullName": "Jaden Bradley",
+      "team2026": "TOR",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630639",
+      "fullName": "A.J. Lawson",
+      "team2026": "TOR",
+      "analyticsPlayerId": "17554004",
+      "open2025Team": null,
+      "lastPgl2025Team": "TOR",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641711",
+      "fullName": "Gradey Dick",
+      "team2026": "TOR",
+      "analyticsPlayerId": "56677828",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1627742",
+      "fullName": "Brandon Ingram",
+      "team2026": "TOR",
+      "analyticsPlayerId": "227",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630567",
+      "fullName": "Scottie Barnes",
+      "team2026": "TOR",
+      "analyticsPlayerId": "17896055",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630193",
+      "fullName": "Immanuel Quickley",
+      "team2026": "TOR",
+      "analyticsPlayerId": "3547269",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629628",
+      "fullName": "RJ Barrett",
+      "team2026": "TOR",
+      "analyticsPlayerId": "666423",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203937",
+      "fullName": "Kyle Anderson",
+      "team2026": "TOR",
+      "analyticsPlayerId": "12",
+      "open2025Team": "MIN",
+      "lastPgl2025Team": "MIN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642266",
+      "fullName": "Ja'Kobe Walter",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1028029111",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641869",
+      "fullName": "Malachi Smith",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1059753274",
+      "open2025Team": "BKN",
+      "lastPgl2025Team": "BKN",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1627751",
+      "fullName": "Jakob Poeltl",
+      "team2026": "TOR",
+      "analyticsPlayerId": "373",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643512",
+      "fullName": "Allen Graves",
+      "team2026": "TOR",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642347",
+      "fullName": "Jamal Shead",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1028038426",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642935",
+      "fullName": "Chucky Hepburn",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1057846535",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642867",
+      "fullName": "Collin Murray-Boyles",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1057268940",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631218",
+      "fullName": "Trayce Jackson-Davis",
+      "team2026": "TOR",
+      "analyticsPlayerId": "56677799",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641748",
+      "fullName": "Andre Jackson Jr.",
+      "team2026": "TOR",
+      "analyticsPlayerId": "56677852",
+      "open2025Team": "MIL",
+      "lastPgl2025Team": "MIL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1641998",
+      "fullName": "Trey Jemison III",
+      "team2026": "TOR",
+      "analyticsPlayerId": "64269023",
+      "open2025Team": "NYK",
+      "lastPgl2025Team": "NYK",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642918",
+      "fullName": "Alijah Martin",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1057389862",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642419",
+      "fullName": "Jamison Battle",
+      "team2026": "TOR",
+      "analyticsPlayerId": "1028243201",
+      "open2025Team": "TOR",
+      "lastPgl2025Team": "TOR",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643060",
+      "fullName": "Hayden Gray",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1081266162",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642271",
+      "fullName": "Kyle Filipowski",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1028035794",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642396",
+      "fullName": "Blake Hinson",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1028214958",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641718",
+      "fullName": "Keyonte George",
+      "team2026": "UTA",
+      "analyticsPlayerId": "56677834",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642926",
+      "fullName": "Tamar Bates",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1057844839",
+      "open2025Team": null,
+      "lastPgl2025Team": "DEN",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642268",
+      "fullName": "Isaiah Collier",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1028025362",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630182",
+      "fullName": "Josh Green",
+      "team2026": "UTA",
+      "analyticsPlayerId": "3547258",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1629004",
+      "fullName": "Svi Mykhailiuk",
+      "team2026": "UTA",
+      "analyticsPlayerId": "338",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629637",
+      "fullName": "Jaxson Hayes",
+      "team2026": "UTA",
+      "analyticsPlayerId": "666626",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1628964",
+      "fullName": "Mo Bamba",
+      "team2026": "UTA",
+      "analyticsPlayerId": "28",
+      "open2025Team": null,
+      "lastPgl2025Team": "UTA",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642846",
+      "fullName": "Ace Bailey",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1057260888",
+      "open2025Team": null,
+      "lastPgl2025Team": "UTA",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1628991",
+      "fullName": "Jaren Jackson Jr.",
+      "team2026": "UTA",
+      "analyticsPlayerId": "231",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629006",
+      "fullName": "Josh Okogie",
+      "team2026": "UTA",
+      "analyticsPlayerId": "356",
+      "open2025Team": "HOU",
+      "lastPgl2025Team": "HOU",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643016",
+      "fullName": "Bez Mbeng",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1059992972",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643408",
+      "fullName": "Darryn Peterson",
+      "team2026": "UTA",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641725",
+      "fullName": "Trey Alexander",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1028203085",
+      "open2025Team": "NOP",
+      "lastPgl2025Team": "NOP",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1628374",
+      "fullName": "Lauri Markkanen",
+      "team2026": "UTA",
+      "analyticsPlayerId": "297",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641729",
+      "fullName": "Brice Sensabaugh",
+      "team2026": "UTA",
+      "analyticsPlayerId": "56677842",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203994",
+      "fullName": "Jusuf Nurkić",
+      "team2026": "UTA",
+      "analyticsPlayerId": "349",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "201567",
+      "fullName": "Kevin Love",
+      "team2026": "UTA",
+      "analyticsPlayerId": "285",
+      "open2025Team": "UTA",
+      "lastPgl2025Team": "UTA",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1631127",
+      "fullName": "Harrison Ingram",
+      "team2026": "UTA",
+      "analyticsPlayerId": "1028046464",
+      "open2025Team": "SAS",
+      "lastPgl2025Team": "SAS",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1643590",
+      "fullName": "Felix Okpara",
+      "team2026": "WAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1641731",
+      "fullName": "Bilal Coulibaly",
+      "team2026": "WAS",
+      "analyticsPlayerId": "56677844",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1641774",
+      "fullName": "Tristan Vukcevic",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1016384149",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629027",
+      "fullName": "Trae Young",
+      "team2026": "WAS",
+      "analyticsPlayerId": "490",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1643407",
+      "fullName": "AJ Dybantsa",
+      "team2026": "WAS",
+      "analyticsPlayerId": null,
+      "open2025Team": null,
+      "lastPgl2025Team": null,
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1642364",
+      "fullName": "Jamir Watkins",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1057391756",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1629028",
+      "fullName": "Deandre Ayton",
+      "team2026": "WAS",
+      "analyticsPlayerId": "22",
+      "open2025Team": "LAL",
+      "lastPgl2025Team": "LAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642267",
+      "fullName": "Bub Carrington",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1028025235",
+      "open2025Team": null,
+      "lastPgl2025Team": "WAS",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630551",
+      "fullName": "Justin Champagnie",
+      "team2026": "WAS",
+      "analyticsPlayerId": "17896039",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642848",
+      "fullName": "Tre Johnson",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1057262985",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630536",
+      "fullName": "Sharife Cooper",
+      "team2026": "WAS",
+      "analyticsPlayerId": "17896029",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1630264",
+      "fullName": "Anthony Gill",
+      "team2026": "WAS",
+      "analyticsPlayerId": "3547302",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642273",
+      "fullName": "Kyshawn George",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1028026060",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "203114",
+      "fullName": "Khris Middleton",
+      "team2026": "WAS",
+      "analyticsPlayerId": "315",
+      "open2025Team": "DAL",
+      "lastPgl2025Team": "DAL",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "1642259",
+      "fullName": "Alex Sarr",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1028028405",
+      "open2025Team": null,
+      "lastPgl2025Team": "WAS",
+      "classification": "no_prior_open_stint"
+    },
+    {
+      "nbaPlayerId": "1630544",
+      "fullName": "Tre Mann",
+      "team2026": "WAS",
+      "analyticsPlayerId": "17896036",
+      "open2025Team": "CHA",
+      "lastPgl2025Team": "CHA",
+      "classification": "offseason_team_change"
+    },
+    {
+      "nbaPlayerId": "203076",
+      "fullName": "Anthony Davis",
+      "team2026": "WAS",
+      "analyticsPlayerId": "117",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    },
+    {
+      "nbaPlayerId": "1642860",
+      "fullName": "Will Riley",
+      "team2026": "WAS",
+      "analyticsPlayerId": "1057279594",
+      "open2025Team": "WAS",
+      "lastPgl2025Team": "WAS",
+      "classification": "returning_same_team"
+    }
+  ]
+}

@@ -117,6 +117,8 @@ export function decideBdlBridgeBackfill(args: {
     args.resolutionMethod.startsWith('normalized_name_unique') ||
     args.resolutionMethod.startsWith('normalized_name+pgl_team') ||
     args.resolutionMethod.startsWith('normalized_name+position') ||
+    args.resolutionMethod.startsWith('high_confidence_alias_unique') ||
+    args.resolutionMethod.startsWith('unique_normalized_name') ||
     args.resolutionMethod.includes('provider_id_map');
 
   if (!allowed) {

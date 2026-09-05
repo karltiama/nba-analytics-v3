@@ -1,6 +1,6 @@
 {
   "dry_run": false,
-  "snapshot_at": "2026-09-04T21:44:22.029Z",
+  "snapshot_at": "2026-09-04T22:04:56.005Z",
   "snapshot_date": "2026-09-04",
   "season_label": "2025-26",
   "analytics_season": "2025",
@@ -10,26 +10,8 @@
   "raw_inserted": 0,
   "raw_updated": 530,
   "resolved_for_stints": 514,
-  "unique_analytics_players": 513,
-  "duplicate_analytics_resolutions": [
-    {
-      "analyticsPlayerId": "56677722",
-      "rows": [
-        {
-          "nbaPlayerId": "1630592",
-          "analyticsPlayerId": "56677722",
-          "team": "BKN",
-          "name": "Jalen Wilson"
-        },
-        {
-          "nbaPlayerId": "1630590",
-          "analyticsPlayerId": "56677722",
-          "team": "MEM",
-          "name": "Scotty Pippen Jr."
-        }
-      ]
-    }
-  ],
+  "unique_analytics_players": 514,
+  "duplicate_analytics_resolutions": [],
   "skipped_unresolved_or_ambiguous": 16,
   "skipped": [
     {
@@ -162,11 +144,11 @@
     }
   ],
   "mutations": {
-    "open": 0,
+    "open": 1,
     "touch": 513,
     "close": 0
   },
-  "open_stints_total": 513,
+  "open_stints_total": 514,
   "players_with_multiple_open_stints": 0,
   "teams_represented": 30,
   "team_counts": {
@@ -184,7 +166,7 @@
     "IND": 18,
     "LAC": 18,
     "LAL": 17,
-    "MEM": 17,
+    "MEM": 18,
     "MIA": 16,
     "MIL": 14,
     "MIN": 17,

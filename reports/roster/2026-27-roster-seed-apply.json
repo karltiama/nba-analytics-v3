@@ -1,0 +1,347 @@
+{
+  "phase": "2.T.2D.2",
+  "mode": "apply",
+  "source": {
+    "fetch_path": "C:\\Users\\tiama\\Desktop\\Coding\\nba-analytics-v3\\reports\\roster\\2026-27-nba-fetch.json",
+    "fetched_at": "2026-09-04T23:11:42.823316Z",
+    "observed_from": "2026-09-04",
+    "season_label": "2026-27",
+    "analytics_season": "2026",
+    "source": "nba_stats",
+    "observation_count": 585
+  },
+  "pre_apply_gate": {
+    "ok": true,
+    "total": 585,
+    "resolved": 578,
+    "ambiguous": 7,
+    "unresolved": 0,
+    "duplicateEntities": 0,
+    "multiTeamNbaIds": 0,
+    "stints2026Before": 0,
+    "classDMatch": true,
+    "classDActual": [
+      {
+        "nbaPlayerId": "1629018",
+        "fullName": "Gary Trent Jr.",
+        "teamAbbr": "MIL"
+      },
+      {
+        "nbaPlayerId": "1630314",
+        "fullName": "Brandon Williams",
+        "teamAbbr": "GSW"
+      },
+      {
+        "nbaPlayerId": "1630695",
+        "fullName": "Micah Potter",
+        "teamAbbr": "POR"
+      },
+      {
+        "nbaPlayerId": "1630696",
+        "fullName": "Dru Smith",
+        "teamAbbr": "MIA"
+      },
+      {
+        "nbaPlayerId": "1630811",
+        "fullName": "Keaton Wallace",
+        "teamAbbr": "ATL"
+      },
+      {
+        "nbaPlayerId": "1631119",
+        "fullName": "Jaylin Williams",
+        "teamAbbr": "OKC"
+      },
+      {
+        "nbaPlayerId": "1642392",
+        "fullName": "Jameer Nelson Jr.",
+        "teamAbbr": "PHI"
+      }
+    ],
+    "failures": []
+  },
+  "plan_counts": {
+    "open": 578,
+    "touch": 0,
+    "skip_ambiguous": 7,
+    "skip_unresolved": 0,
+    "conflict": 0,
+    "open_bdl": 497,
+    "open_nba_only": 81
+  },
+  "first_run": {
+    "opened": 578,
+    "touched": 0
+  },
+  "rerun": {
+    "opened": 0,
+    "touched": 578,
+    "plan_counts": {
+      "open": 0,
+      "touch": 578,
+      "skip_ambiguous": 7,
+      "skip_unresolved": 0,
+      "conflict": 0,
+      "open_bdl": 0,
+      "open_nba_only": 0
+    }
+  },
+  "validation": {
+    "open2026": {
+      "total": 578,
+      "with_bdl": 497,
+      "nba_only": 81,
+      "teams": 30,
+      "dup_entities": 0,
+      "multi_team_entities": 0,
+      "missing_display": 0
+    },
+    "view_count": 578,
+    "by_team": [
+      {
+        "abbreviation": "ATL",
+        "total": 22,
+        "bdl": 19,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "BKN",
+        "total": 17,
+        "bdl": 14,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "BOS",
+        "total": 19,
+        "bdl": 15,
+        "nba_only": 4
+      },
+      {
+        "abbreviation": "CHA",
+        "total": 23,
+        "bdl": 18,
+        "nba_only": 5
+      },
+      {
+        "abbreviation": "CHI",
+        "total": 16,
+        "bdl": 12,
+        "nba_only": 4
+      },
+      {
+        "abbreviation": "CLE",
+        "total": 17,
+        "bdl": 14,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "DAL",
+        "total": 20,
+        "bdl": 15,
+        "nba_only": 5
+      },
+      {
+        "abbreviation": "DEN",
+        "total": 18,
+        "bdl": 16,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "DET",
+        "total": 20,
+        "bdl": 18,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "GSW",
+        "total": 20,
+        "bdl": 18,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "HOU",
+        "total": 21,
+        "bdl": 18,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "IND",
+        "total": 17,
+        "bdl": 16,
+        "nba_only": 1
+      },
+      {
+        "abbreviation": "LAC",
+        "total": 25,
+        "bdl": 21,
+        "nba_only": 4
+      },
+      {
+        "abbreviation": "LAL",
+        "total": 19,
+        "bdl": 16,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "MEM",
+        "total": 22,
+        "bdl": 19,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "MIA",
+        "total": 19,
+        "bdl": 16,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "MIL",
+        "total": 20,
+        "bdl": 17,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "MIN",
+        "total": 18,
+        "bdl": 16,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "NOP",
+        "total": 20,
+        "bdl": 18,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "NYK",
+        "total": 17,
+        "bdl": 15,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "OKC",
+        "total": 16,
+        "bdl": 12,
+        "nba_only": 4
+      },
+      {
+        "abbreviation": "ORL",
+        "total": 19,
+        "bdl": 18,
+        "nba_only": 1
+      },
+      {
+        "abbreviation": "PHI",
+        "total": 22,
+        "bdl": 20,
+        "nba_only": 2
+      },
+      {
+        "abbreviation": "PHX",
+        "total": 20,
+        "bdl": 19,
+        "nba_only": 1
+      },
+      {
+        "abbreviation": "POR",
+        "total": 18,
+        "bdl": 18,
+        "nba_only": 0
+      },
+      {
+        "abbreviation": "SAC",
+        "total": 15,
+        "bdl": 12,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "SAS",
+        "total": 18,
+        "bdl": 13,
+        "nba_only": 5
+      },
+      {
+        "abbreviation": "TOR",
+        "total": 21,
+        "bdl": 18,
+        "nba_only": 3
+      },
+      {
+        "abbreviation": "UTA",
+        "total": 21,
+        "bdl": 20,
+        "nba_only": 1
+      },
+      {
+        "abbreviation": "WAS",
+        "total": 18,
+        "bdl": 16,
+        "nba_only": 2
+      }
+    ],
+    "hist2025": {
+      "total": 697,
+      "open": 514,
+      "closed": 183,
+      "multi_stint": 87,
+      "multi_open": 0
+    },
+    "cross": {
+      "returning_same_team": 369,
+      "offseason_team_change": 104,
+      "no_prior_2025_open_stint": 105
+    },
+    "wilson_pippen": [
+      {
+        "season": "2025",
+        "player_id": "38017656",
+        "abbreviation": "MEM",
+        "display_name": "Scotty Pippen Jr.",
+        "nba_id": "1630590"
+      },
+      {
+        "season": "2026",
+        "player_id": "38017656",
+        "abbreviation": "MEM",
+        "display_name": "Scotty Pippen Jr.",
+        "nba_id": "1630590"
+      },
+      {
+        "season": "2025",
+        "player_id": "56677722",
+        "abbreviation": "BKN",
+        "display_name": "Jalen Wilson",
+        "nba_id": "1630592"
+      },
+      {
+        "season": "2026",
+        "player_id": "56677722",
+        "abbreviation": "ATL",
+        "display_name": "Jalen Wilson",
+        "nba_id": "1630592"
+      }
+    ],
+    "nba_only_in_view": 81,
+    "fabrication": {
+      "seed_tagged_bdl_maps": 0,
+      "nba_only_stints_with_player_id": 0
+    },
+    "expected_nba_ids": {
+      "wilson": {
+        "nbaId": "1630592",
+        "bdlId": "56677722"
+      },
+      "pippen": {
+        "nbaId": "1630590",
+        "bdlId": "38017656"
+      }
+    }
+  },
+  "out_of_scope": {
+    "no_2025_mutation": true,
+    "no_class_d_auto_resolve": true,
+    "no_team_roster_ui": true,
+    "no_production_config": true,
+    "no_live_bdl": true
+  },
+  "trustworthy_for_ui_refresh": true
+}

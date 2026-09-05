@@ -1,0 +1,152 @@
+{
+  "note": "Fail-closed legacy conflicts; no auto-merge",
+  "conflicts": [
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "1629018",
+      "bdlPlayerIds": [
+        "3089",
+        "448"
+      ],
+      "detail": "Legacy provider_id_map internal_id=1629018 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "1630314",
+      "bdlPlayerIds": [
+        "1145",
+        "24489167"
+      ],
+      "detail": "Legacy provider_id_map internal_id=1630314 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "1630696",
+      "bdlPlayerIds": [
+        "17553942",
+        "19465585"
+      ],
+      "detail": "Legacy provider_id_map internal_id=1630696 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "1630811",
+      "bdlPlayerIds": [
+        "17895703",
+        "45088184"
+      ],
+      "detail": "Legacy provider_id_map internal_id=1630811 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "1630828",
+      "bdlPlayerIds": [
+        "1060010671",
+        "17553943"
+      ],
+      "detail": "Legacy provider_id_map internal_id=1630828 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "1631119",
+      "bdlPlayerIds": [
+        "1028257789",
+        "38017706"
+      ],
+      "detail": "Legacy provider_id_map internal_id=1631119 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "multi_bdl_same_nba_internal",
+      "nbaPlayerId": "bbref_pottemi01",
+      "bdlPlayerIds": [
+        "17553941",
+        "19465584"
+      ],
+      "detail": "Legacy provider_id_map internal_id=bbref_pottemi01 maps to multiple BDL ids; will not merge entities"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "1028257789",
+      "nbaPlayerId": "1631119",
+      "detail": "internal_id=1631119 has multiple BDL ids: 1028257789,38017706"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "1060010671",
+      "nbaPlayerId": "1630828",
+      "detail": "internal_id=1630828 has multiple BDL ids: 1060010671,17553943"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "1145",
+      "nbaPlayerId": "1630314",
+      "detail": "internal_id=1630314 has multiple BDL ids: 1145,24489167"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "17553941",
+      "nbaPlayerId": "bbref_pottemi01",
+      "detail": "internal_id=bbref_pottemi01 has multiple BDL ids: 17553941,19465584"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "17553942",
+      "nbaPlayerId": "1630696",
+      "detail": "internal_id=1630696 has multiple BDL ids: 17553942,19465585"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "17553943",
+      "nbaPlayerId": "1630828",
+      "detail": "internal_id=1630828 has multiple BDL ids: 1060010671,17553943"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "17895703",
+      "nbaPlayerId": "1630811",
+      "detail": "internal_id=1630811 has multiple BDL ids: 17895703,45088184"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "19465584",
+      "nbaPlayerId": "bbref_pottemi01",
+      "detail": "internal_id=bbref_pottemi01 has multiple BDL ids: 17553941,19465584"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "19465585",
+      "nbaPlayerId": "1630696",
+      "detail": "internal_id=1630696 has multiple BDL ids: 17553942,19465585"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "24489167",
+      "nbaPlayerId": "1630314",
+      "detail": "internal_id=1630314 has multiple BDL ids: 1145,24489167"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "3089",
+      "nbaPlayerId": "1629018",
+      "detail": "internal_id=1629018 has multiple BDL ids: 3089,448"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "38017706",
+      "nbaPlayerId": "1631119",
+      "detail": "internal_id=1631119 has multiple BDL ids: 1028257789,38017706"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "448",
+      "nbaPlayerId": "1629018",
+      "detail": "internal_id=1629018 has multiple BDL ids: 3089,448"
+    },
+    {
+      "kind": "nba_maps_to_multiple_bdl",
+      "analyticsPlayerId": "45088184",
+      "nbaPlayerId": "1630811",
+      "detail": "internal_id=1630811 has multiple BDL ids: 17895703,45088184"
+    }
+  ]
+}
