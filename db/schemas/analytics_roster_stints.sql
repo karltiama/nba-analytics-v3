@@ -124,4 +124,4 @@ join analytics.player_entities e
 where s.observed_to is null;
 
 comment on view analytics.team_roster_current is
-  'Open roster by team/season keyed by player_entity_id. player_id (BDL) is optional; NBA-only rookies included.';
+  'Open (observed_to IS NULL) roster membership across seasons. Callers MUST filter by season (e.g. season=''2026''). Do not treat unfiltered results as a single current league roster. player_id (BDL) is optional; NBA-only rookies included via player_entities.';

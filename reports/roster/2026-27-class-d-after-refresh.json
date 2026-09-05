@@ -1,0 +1,48 @@
+{
+  "phase": "2.T.2E",
+  "count": 7,
+  "rows": [
+    {
+      "nba_player_id": "1630811",
+      "name": "Keaton Wallace",
+      "team": "ATL",
+      "reason": "Multiple entities named \"Keaton Wallace\""
+    },
+    {
+      "nba_player_id": "1630314",
+      "name": "Brandon Williams",
+      "team": "GSW",
+      "reason": "Multiple entities named \"Brandon Williams\""
+    },
+    {
+      "nba_player_id": "1630696",
+      "name": "Dru Smith",
+      "team": "MIA",
+      "reason": "Multiple entities named \"Dru Smith\""
+    },
+    {
+      "nba_player_id": "1629018",
+      "name": "Gary Trent Jr.",
+      "team": "MIL",
+      "reason": "Multiple entities named \"Gary Trent Jr.\""
+    },
+    {
+      "nba_player_id": "1631119",
+      "name": "Jaylin Williams",
+      "team": "OKC",
+      "reason": "Multiple entities named \"Jaylin Williams\""
+    },
+    {
+      "nba_player_id": "1642392",
+      "name": "Jameer Nelson Jr.",
+      "team": "PHI",
+      "reason": "Multiple entities named \"Jameer Nelson Jr.\""
+    },
+    {
+      "nba_player_id": "1630695",
+      "name": "Micah Potter",
+      "team": "POR",
+      "reason": "Multiple entities named \"Micah Potter\""
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "phase": "2.T.2D.1",
   "mode": "fetch_only",
   "requested_season": "2026-27",
-  "fetched_at": "2026-09-04T23:11:42.823316Z",
+  "fetched_at": "2026-09-05T00:14:09.363317Z",
   "writes": {
     "analytics_player_team_stints": false,
     "public_player_team_rosters": false,

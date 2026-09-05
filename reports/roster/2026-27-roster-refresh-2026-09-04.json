@@ -1,0 +1,224 @@
+{
+  "phase": "2.T.2E",
+  "mode": "apply",
+  "lineage": {
+    "snapshot_at": "2026-09-04T23:11:42.823316Z",
+    "snapshot_date": "2026-09-04",
+    "provider": "nba_stats",
+    "provider_season": "2026-27",
+    "analytics_season": "2026",
+    "teams_fetched": 30,
+    "teams_attempted": 30,
+    "observations_fetched": 585,
+    "fetch_path": "C:\\Users\\tiama\\Desktop\\Coding\\nba-analytics-v3\\reports\\roster\\2026-27-nba-fetch.json",
+    "skip_fetch": true
+  },
+  "fetch_integrity": {
+    "ok": true,
+    "failures": [],
+    "allowsCloses": true
+  },
+  "raw_snapshots": {
+    "inserted": 585,
+    "updated": 0
+  },
+  "resolution": {
+    "resolved_bdl_backed": 497,
+    "resolved_nba_only": 81,
+    "ambiguous": 7,
+    "unresolved": 0
+  },
+  "plan_counts": {
+    "touch": 578,
+    "open_new": 0,
+    "team_change": 0,
+    "close_missing": 0,
+    "skip_ambiguous": 0,
+    "skip_unresolved": 0,
+    "conflict": 0,
+    "protected_no_close": 0
+  },
+  "skip_counts": {
+    "ambiguous": 7,
+    "unresolved": 0
+  },
+  "mass_close_guard": {
+    "ok": true,
+    "openCount": 578,
+    "proposedCloses": 0,
+    "proposedCloseRatio": 0,
+    "maxCloseAbs": 30,
+    "maxCloseRatio": 0.05,
+    "reason": null
+  },
+  "safe_to_apply": true,
+  "apply_blocked_reason": null,
+  "applied": {
+    "opened": 0,
+    "touched": 578,
+    "closed": 0,
+    "teamChanges": 0
+  },
+  "open_stints_after": {
+    "n": 578,
+    "nba_only": 81,
+    "bdl": 497
+  },
+  "hist_2025": {
+    "total": 697,
+    "open": 514,
+    "closed": 183
+  },
+  "class_d": [
+    {
+      "nba_player_id": "1630811",
+      "name": "Keaton Wallace",
+      "team": "ATL",
+      "reason": "Multiple entities named \"Keaton Wallace\""
+    },
+    {
+      "nba_player_id": "1630314",
+      "name": "Brandon Williams",
+      "team": "GSW",
+      "reason": "Multiple entities named \"Brandon Williams\""
+    },
+    {
+      "nba_player_id": "1630696",
+      "name": "Dru Smith",
+      "team": "MIA",
+      "reason": "Multiple entities named \"Dru Smith\""
+    },
+    {
+      "nba_player_id": "1629018",
+      "name": "Gary Trent Jr.",
+      "team": "MIL",
+      "reason": "Multiple entities named \"Gary Trent Jr.\""
+    },
+    {
+      "nba_player_id": "1631119",
+      "name": "Jaylin Williams",
+      "team": "OKC",
+      "reason": "Multiple entities named \"Jaylin Williams\""
+    },
+    {
+      "nba_player_id": "1642392",
+      "name": "Jameer Nelson Jr.",
+      "team": "PHI",
+      "reason": "Multiple entities named \"Jameer Nelson Jr.\""
+    },
+    {
+      "nba_player_id": "1630695",
+      "name": "Micah Potter",
+      "team": "POR",
+      "reason": "Multiple entities named \"Micah Potter\""
+    }
+  ],
+  "expected_class_d": [
+    {
+      "nbaPlayerId": "1630811",
+      "name": "Keaton Wallace",
+      "team": "ATL"
+    },
+    {
+      "nbaPlayerId": "1630314",
+      "name": "Brandon Williams",
+      "team": "GSW"
+    },
+    {
+      "nbaPlayerId": "1630696",
+      "name": "Dru Smith",
+      "team": "MIA"
+    },
+    {
+      "nbaPlayerId": "1629018",
+      "name": "Gary Trent Jr.",
+      "team": "MIL"
+    },
+    {
+      "nbaPlayerId": "1631119",
+      "name": "Jaylin Williams",
+      "team": "OKC"
+    },
+    {
+      "nbaPlayerId": "1642392",
+      "name": "Jameer Nelson Jr.",
+      "team": "PHI"
+    },
+    {
+      "nbaPlayerId": "1630695",
+      "name": "Micah Potter",
+      "team": "POR"
+    }
+  ],
+  "view_semantics": "analytics.team_roster_current = all open stints (observed_to IS NULL). Always filter by season.",
+  "scheduling_recommendation": {
+    "offseason_training_camp": "daily",
+    "active_season_trade_period": "daily (higher frequency later if needed)",
+    "production_scheduler": "not enabled in this phase"
+  },
+  "out_of_scope": {
+    "no_team_roster_ui": true,
+    "no_production_config": true,
+    "no_class_d_auto_resolve": true,
+    "no_other_season_mutation": true
+  },
+  "trustworthy_for_ui": true,
+  "sample_mutations": [
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1630811",
+      "playerEntityId": null,
+      "fullName": "Keaton Wallace",
+      "teamAbbr": "ATL",
+      "reason": "Multiple entities named \"Keaton Wallace\""
+    },
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1630314",
+      "playerEntityId": null,
+      "fullName": "Brandon Williams",
+      "teamAbbr": "GSW",
+      "reason": "Multiple entities named \"Brandon Williams\""
+    },
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1630696",
+      "playerEntityId": null,
+      "fullName": "Dru Smith",
+      "teamAbbr": "MIA",
+      "reason": "Multiple entities named \"Dru Smith\""
+    },
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1629018",
+      "playerEntityId": null,
+      "fullName": "Gary Trent Jr.",
+      "teamAbbr": "MIL",
+      "reason": "Multiple entities named \"Gary Trent Jr.\""
+    },
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1631119",
+      "playerEntityId": null,
+      "fullName": "Jaylin Williams",
+      "teamAbbr": "OKC",
+      "reason": "Multiple entities named \"Jaylin Williams\""
+    },
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1642392",
+      "playerEntityId": null,
+      "fullName": "Jameer Nelson Jr.",
+      "teamAbbr": "PHI",
+      "reason": "Multiple entities named \"Jameer Nelson Jr.\""
+    },
+    {
+      "type": "skip_ambiguous",
+      "nbaPlayerId": "1630695",
+      "playerEntityId": null,
+      "fullName": "Micah Potter",
+      "teamAbbr": "POR",
+      "reason": "Multiple entities named \"Micah Potter\""
+    }
+  ]
+}

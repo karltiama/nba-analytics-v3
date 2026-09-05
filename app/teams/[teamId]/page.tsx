@@ -14,7 +14,7 @@ import { getAnalyticsSeason } from '@/lib/season';
 async function loadTeamData(teamId: string) {
   const analyticsTeamId = await resolveAnalyticsTeamId(teamId);
   if (!analyticsTeamId) {
-    return { team: null, seasonAverages: null, recentGames: [], trendData: [] };
+    return { team: null, seasonAverages: null, recentGames: [], trendData: [], season: null };
   }
 
   const season = getAnalyticsSeason();
@@ -25,7 +25,7 @@ async function loadTeamData(teamId: string) {
     getTeamTrendData(analyticsTeamId, 82, season),
   ]);
 
-  return { team, seasonAverages, recentGames, trendData };
+  return { team, seasonAverages, recentGames, trendData, season };
 }
 
 export default async function TeamPage({
@@ -34,7 +34,7 @@ export default async function TeamPage({
   params: Promise<{ teamId: string }>;
 }) {
   const { teamId } = await params;
-  const { team, seasonAverages, recentGames, trendData } = await loadTeamData(teamId);
+  const { team, seasonAverages, recentGames, trendData, season } = await loadTeamData(teamId);
 
   if (!team) {
     return (
@@ -113,7 +113,7 @@ export default async function TeamPage({
 
           <aside className="w-full xl:w-80 shrink-0">
             <div className="xl:sticky xl:top-20">
-              <TeamRoster teamId={team.team_id} />
+              <TeamRoster teamId={team.team_id} season={season} />
             </div>
           </aside>
         </div>
