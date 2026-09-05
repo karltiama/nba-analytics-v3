@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { TeamInfo, TeamGameStats, TeamSeasonAverages, TeamTrendPoint } from '@/lib/teams/types';
+import type { CompactScheduleGame } from '@/lib/teams/team-compact-schedule';
+import type { TeamSeasonSnapshot } from '@/lib/teams/team-season-snapshot';
+import type { TeamRosterContinuity } from '@/lib/teams/team-roster-continuity';
+import type { PreviousSeasonBaseline } from '@/lib/teams/team-previous-season-baseline';
 import { RecentGamesTable } from './RecentGamesTimeline';
 import {
   TeamTrendChart,
@@ -15,6 +19,10 @@ import {
   type TeamTrendMetric,
 } from './TeamTrendChart';
 import { TeamTrendLinePanel } from './TeamTrendLinePanel';
+import { TeamSeasonSwitcher } from './TeamSeasonSwitcher';
+import { TeamCompactSchedule } from './TeamCompactSchedule';
+import { TeamSeasonSnapshotPanel } from './TeamSeasonSnapshotPanel';
+import type { TeamPageSeasonChoice } from '@/lib/teams/team-page-season';
 
 function StatPill({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
@@ -27,16 +35,44 @@ function StatPill({ label, value, color }: { label: string; value: string; color
 
 interface TeamPageClientProps {
   team: TeamInfo;
+  /** Analytics start-year (queries already scoped to this). */
+  season: string;
+  /** User-facing label e.g. "2025–26". */
+  seasonLabel: string;
   seasonAverages: TeamSeasonAverages | null;
   recentGames: TeamGameStats[];
   trendData: TeamTrendPoint[];
+  upcomingGames: CompactScheduleGame[];
+  recentScheduleGames: CompactScheduleGame[];
+  seasonSnapshot: TeamSeasonSnapshot;
+  rosterContinuity: TeamRosterContinuity;
+  previousBaseline: PreviousSeasonBaseline;
+  seasonChoices: TeamPageSeasonChoice[];
+  defaultSeason: string;
+  /** Route param team id (for season switcher links). */
+  routeTeamId: string;
 }
 
 const buttonBase = 'rounded-lg text-xs font-medium transition-all';
 const buttonActive = 'bg-[#bf5af2] text-white shadow-[0_0_12px_rgba(191,90,242,0.4)] font-semibold';
 const buttonInactive = 'glass-card text-muted-foreground hover:text-white hover:bg-white/10';
 
-export function TeamPageClient({ team, seasonAverages, recentGames, trendData }: TeamPageClientProps) {
+export function TeamPageClient({
+  team,
+  season,
+  seasonLabel,
+  seasonAverages,
+  recentGames,
+  trendData,
+  upcomingGames,
+  recentScheduleGames,
+  seasonSnapshot,
+  rosterContinuity,
+  previousBaseline,
+  seasonChoices,
+  defaultSeason,
+  routeTeamId,
+}: TeamPageClientProps) {
   const [trendTimeframe, setTrendTimeframe] = useState<Timeframe>(20);
   const [trendLocation, setTrendLocation] = useState<LocationFilter>('all');
   const [trendMetric, setTrendMetric] = useState<TeamTrendMetric>('team_total');
@@ -106,23 +142,33 @@ export function TeamPageClient({ team, seasonAverages, recentGames, trendData }:
   return (
     <>
       {/* Team header card */}
-      <section className="glass-card rounded-xl p-4">
+      <section className="glass-card rounded-xl p-4" data-analytics-season={season}>
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-3 shrink-0">
             <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-[#00d4ff] to-[#bf5af2] flex items-center justify-center border border-white/10">
               <span className="text-sm font-bold text-white">{team.abbreviation}</span>
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white leading-tight">{team.full_name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-bold text-white leading-tight">{team.full_name}</h1>
+                <TeamSeasonSwitcher
+                  teamId={routeTeamId}
+                  currentSeason={season}
+                  defaultSeason={defaultSeason}
+                  choices={seasonChoices}
+                />
+              </div>
               <p className="text-[10px] text-muted-foreground">
                 {team.conference} • {team.division}
+                <span className="mx-1.5 text-white/20">·</span>
+                {seasonLabel} Season
               </p>
             </div>
           </div>
 
           <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-          {seasonAverages && (
+          {seasonAverages ? (
             <div className="flex items-center gap-4 flex-wrap">
               <StatPill label="Record" value={`${wins}-${losses}`} />
               <StatPill
@@ -157,9 +203,27 @@ export function TeamPageClient({ team, seasonAverages, recentGames, trendData }:
                 </span>
               )}
             </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">Not enough season data</p>
           )}
         </div>
       </section>
+
+      <TeamCompactSchedule
+        routeTeamId={routeTeamId}
+        season={season}
+        seasonLabel={seasonLabel}
+        upcoming={upcomingGames}
+        recent={recentScheduleGames}
+      />
+
+      <TeamSeasonSnapshotPanel
+        season={season}
+        seasonLabel={seasonLabel}
+        snapshot={seasonSnapshot}
+        continuity={rosterContinuity}
+        previousBaseline={previousBaseline}
+      />
 
       {/* Team Trends: filters outside chart (match player page) */}
       {chartData.length > 0 && (
@@ -275,7 +339,7 @@ export function TeamPageClient({ team, seasonAverages, recentGames, trendData }:
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white">Advanced metrics</h2>
             <p className="text-xs text-muted-foreground">
-              Season averages (Offensive/Defensive Rating, Pace, eFG%, TOV%, ORB%)
+              {seasonLabel} averages (Offensive/Defensive Rating, Pace, eFG%, TOV%, ORB%)
             </p>
           </div>
           <div className="glass-card rounded-xl p-4">

@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   calendarSeasonStartYear,
+  formatNbaSeasonLabel,
   getAnalyticsSeason,
+  getLiveAvailabilitySeason,
   getNbaStatsSeason,
   PINNED_ANALYTICS_SEASON,
+  shouldShowCurrentAvailability,
   toNbaStatsSeason,
 } from '@/lib/season';
 
@@ -39,10 +42,15 @@ describe('getAnalyticsSeason', () => {
   });
 });
 
-describe('toNbaStatsSeason / getNbaStatsSeason', () => {
+describe('toNbaStatsSeason / getNbaStatsSeason / formatNbaSeasonLabel', () => {
   it('formats start year as NBA stats season', () => {
     expect(toNbaStatsSeason('2025')).toBe('2025-26');
     expect(getNbaStatsSeason(env({ CURRENT_ANALYTICS_SEASON: '2025' }))).toBe('2025-26');
+  });
+
+  it('formats display labels with an en dash', () => {
+    expect(formatNbaSeasonLabel('2025')).toBe('2025–26');
+    expect(formatNbaSeasonLabel('2026')).toBe('2026–27');
   });
 });
 
@@ -51,5 +59,19 @@ describe('calendarSeasonStartYear', () => {
     expect(calendarSeasonStartYear(new Date('2026-01-15T12:00:00.000Z'))).toBe(2025);
     expect(calendarSeasonStartYear(new Date('2026-06-30T12:00:00.000Z'))).toBe(2025);
     expect(calendarSeasonStartYear(new Date('2026-07-01T12:00:00.000Z'))).toBe(2026);
+  });
+});
+
+describe('live availability season (injuries)', () => {
+  it('uses calendar season, not Production pin', () => {
+    const sep2026 = new Date('2026-09-05T12:00:00.000Z');
+    expect(getLiveAvailabilitySeason({} as NodeJS.ProcessEnv, sep2026)).toBe('2026');
+    expect(getAnalyticsSeason({} as NodeJS.ProcessEnv, sep2026)).toBe('2025');
+    expect(
+      shouldShowCurrentAvailability(
+        '2025',
+        getLiveAvailabilitySeason({} as NodeJS.ProcessEnv, sep2026)
+      )
+    ).toBe(false);
   });
 });

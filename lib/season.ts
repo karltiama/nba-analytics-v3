@@ -36,6 +36,16 @@ export function toNbaStatsSeason(startYear: string): string {
   return `${year}-${String(year + 1).slice(-2)}`;
 }
 
+/**
+ * User-facing NBA season label with an en dash.
+ * Storage/query season stays the start year (e.g. "2026").
+ * Display: 2025 → "2025–26", 2026 → "2026–27".
+ */
+export function formatNbaSeasonLabel(startYear: string): string {
+  const ascii = toNbaStatsSeason(startYear);
+  return ascii.replace('-', '–');
+}
+
 export function getAnalyticsSeason(
   env: NodeJS.ProcessEnv = process.env,
   _now: Date = new Date()
@@ -72,4 +82,31 @@ export function getNbaStatsSeason(
   now: Date = new Date()
 ): string {
   return toNbaStatsSeason(getAnalyticsSeason(env, now));
+}
+
+/**
+ * Real-world NBA season for live availability (injuries), independent of the
+ * Production analytics pin. Sep 2026 → "2026".
+ *
+ * Override: LIVE_AVAILABILITY_SEASON=2026 (or 2026-27) for tests/ops.
+ * Do NOT use getAnalyticsSeason()/pin here — that would show today's injuries
+ * on historical 2025 pages while Production remains pinned to 2025.
+ */
+export const LIVE_AVAILABILITY_SEASON_ENV = 'LIVE_AVAILABILITY_SEASON';
+
+export function getLiveAvailabilitySeason(
+  env: NodeJS.ProcessEnv = process.env,
+  now: Date = new Date()
+): string {
+  const fromEnv = parseSeasonStartYear(env[LIVE_AVAILABILITY_SEASON_ENV]);
+  if (fromEnv) return fromEnv;
+  return String(calendarSeasonStartYear(now));
+}
+
+/** Show current injury badges only when the viewed season is the live NBA season. */
+export function shouldShowCurrentAvailability(
+  viewedSeason: string,
+  liveAvailabilitySeason: string
+): boolean {
+  return viewedSeason === liveAvailabilitySeason;
 }

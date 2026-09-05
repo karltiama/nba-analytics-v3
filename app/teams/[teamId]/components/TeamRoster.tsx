@@ -1,23 +1,35 @@
 import Link from 'next/link';
-import { getAnalyticsSeason } from '@/lib/season';
 import {
   getTeamCanonicalRoster,
   groupRosterByPosition,
   rosterPlayerHref,
-  type CanonicalRosterPlayer,
 } from '@/lib/teams/team-roster-queries';
+import { getInjuriesForPlayerIds } from '@/lib/teams/team-injury-queries';
+import {
+  mergeRosterAvailability,
+  type RosterPlayerWithAvailability,
+} from '@/lib/teams/roster-availability';
+import { getLiveAvailabilitySeason } from '@/lib/season';
+import { cn } from '@/lib/utils';
 
 interface TeamRosterProps {
   teamId: string;
-  /** Analytics start-year. Defaults to getAnalyticsSeason() (Production pin). */
-  season?: string | null;
+  /** Required analytics start-year from the team page season context. */
+  season: string;
 }
 
-function RosterRow({ player }: { player: CanonicalRosterPlayer }) {
+function availabilityClass(priority: 'high' | 'moderate' | 'low'): string {
+  if (priority === 'high') return 'text-[#ff6b35]';
+  if (priority === 'moderate') return 'text-[#f5a623]';
+  return 'text-muted-foreground';
+}
+
+function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
   const href = rosterPlayerHref(player);
   const jerseyLabel =
     player.jersey != null && player.jersey !== '' ? `#${player.jersey}` : '—';
   const showStatsPending = player.playerId == null;
+  const availability = player.availability;
 
   const inner = (
     <>
@@ -34,7 +46,16 @@ function RosterRow({ player }: { player: CanonicalRosterPlayer }) {
         >
           {player.displayName}
         </span>
-        {showStatsPending ? (
+        {availability ? (
+          <span
+            className={cn(
+              'block text-[10px] font-medium truncate',
+              availabilityClass(availability.priority)
+            )}
+          >
+            {availability.label}
+          </span>
+        ) : showStatsPending ? (
           <span className="block text-[10px] text-muted-foreground/50">
             Stats pending
           </span>
@@ -65,8 +86,7 @@ function RosterRow({ player }: { player: CanonicalRosterPlayer }) {
 }
 
 export async function TeamRoster({ teamId, season }: TeamRosterProps) {
-  const currentSeason = season || getAnalyticsSeason();
-  const roster = await getTeamCanonicalRoster(teamId, currentSeason);
+  const roster = await getTeamCanonicalRoster(teamId, season);
 
   if (!roster || roster.length === 0) {
     return (
@@ -76,7 +96,35 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
     );
   }
 
-  const positionGroups = groupRosterByPosition(roster);
+  const liveSeason = getLiveAvailabilitySeason();
+  let playersWithAvailability: RosterPlayerWithAvailability[] = roster.map(
+    (p) => ({ ...p, availability: null })
+  );
+
+  try {
+    const showAvailability = liveSeason === season;
+    const bdlIds = showAvailability
+      ? roster
+          .map((p) => p.playerId)
+          .filter((id): id is string => id != null && id !== '')
+      : [];
+    // 1 roster query (already done) + at most 1 injury query when viewing live season.
+    const injuries =
+      bdlIds.length > 0 ? await getInjuriesForPlayerIds(bdlIds) : [];
+    const merged = mergeRosterAvailability({
+      roster,
+      injuries,
+      rosterTeamId: teamId,
+      viewedSeason: season,
+      liveAvailabilitySeason: liveSeason,
+    });
+    playersWithAvailability = merged.players;
+  } catch (err) {
+    // Prefer roster without badges over losing membership UI.
+    console.error('TeamRoster injury merge failed; rendering roster only', err);
+  }
+
+  const positionGroups = groupRosterByPosition(playersWithAvailability);
 
   return (
     <div className="glass-card rounded-xl overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]">
@@ -85,7 +133,7 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
           Roster
         </h3>
         <span className="text-[10px] px-2 py-0.5 bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium">
-          {roster.length}
+          {playersWithAvailability.length}
         </span>
       </div>
       <div className="flex-1 min-h-0">
