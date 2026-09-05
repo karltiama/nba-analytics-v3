@@ -59,7 +59,7 @@ function averages(
 }
 
 function p(id: string, name: string): ContinuityPlayer {
-  return { playerEntityId: id, displayName: name };
+  return { playerEntityId: id, displayName: name, playerId: null };
 }
 
 describe('team-season-snapshot + roster continuity (Phase 2.T.3D)', () => {

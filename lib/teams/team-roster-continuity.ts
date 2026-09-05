@@ -9,7 +9,8 @@ import { assertAnalyticsSeason } from '@/lib/teams/team-roster-presentation';
 export const TEAM_ROSTER_ENTITY_SQL = `
   SELECT
     player_entity_id::text AS player_entity_id,
-    display_name
+    display_name,
+    player_id
   FROM analytics.team_roster_current
   WHERE team_id = $1
     AND season = $2
@@ -25,11 +26,14 @@ export const ROSTER_SEASON_EXISTS_SQL = `
   ) AS ok
 `;
 
-export const CONTINUITY_LIST_PREVIEW = 5;
+/** Compact default: show a few names, then “+ N more”. */
+export const CONTINUITY_LIST_PREVIEW = 3;
 
 export type ContinuityPlayer = {
   playerEntityId: string;
   displayName: string;
+  /** BDL analytics player id when known; null for NBA-only entities. */
+  playerId: string | null;
 };
 
 export type TeamRosterContinuity = {

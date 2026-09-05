@@ -4,8 +4,12 @@ import {
   formatNetRating,
 } from '@/lib/teams/team-season-snapshot';
 import type { TeamRosterContinuity } from '@/lib/teams/team-roster-continuity';
-import { previewContinuityList } from '@/lib/teams/team-roster-continuity';
 import type { PreviousSeasonBaseline } from '@/lib/teams/team-previous-season-baseline';
+import type { RosterChangeStory } from '@/lib/teams/roster-change-story';
+import {
+  formatChangeContextLine,
+  type RosterChangePlayerStory,
+} from '@/lib/teams/roster-change-story';
 import { formatNbaSeasonLabel } from '@/lib/season';
 
 type TeamSeasonSnapshotPanelProps = {
@@ -13,6 +17,7 @@ type TeamSeasonSnapshotPanelProps = {
   seasonLabel: string;
   snapshot: TeamSeasonSnapshot;
   continuity: TeamRosterContinuity;
+  rosterChangeStory: RosterChangeStory;
   previousBaseline: PreviousSeasonBaseline;
 };
 
@@ -26,7 +31,7 @@ function StatCell({
   accent?: string;
 }) {
   return (
-    <div className="min-w-[4.5rem]">
+    <div className="min-w-18">
       <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
@@ -40,13 +45,14 @@ function StatCell({
   );
 }
 
-/** Shared metric grid for current + previous (same formatting, no deltas). */
 function SnapshotMetricsGrid({
   snap,
   showSampleLabel,
+  muted,
 }: {
   snap: TeamSeasonSnapshot;
   showSampleLabel: boolean;
+  muted?: boolean;
 }) {
   const record =
     snap.hasData && snap.wins != null && snap.losses != null
@@ -54,7 +60,7 @@ function SnapshotMetricsGrid({
       : '—';
 
   const netAccent =
-    snap.netRating == null
+    muted || snap.netRating == null
       ? undefined
       : snap.netRating > 0
         ? '#39ff14'
@@ -63,8 +69,8 @@ function SnapshotMetricsGrid({
           : undefined;
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-4">
+    <div className={`space-y-2 ${muted ? 'opacity-90' : ''}`}>
+      <div className="flex flex-wrap gap-3 sm:gap-4">
         <StatCell label="Record" value={record} />
         <StatCell label="PPG" value={formatMetric(snap.ppg)} />
         <StatCell label="ORTG" value={formatMetric(snap.ortg)} />
@@ -98,43 +104,46 @@ function SnapshotMetricsGrid({
   );
 }
 
-function ContinuityNameList({
-  title,
-  prefix,
+function KeyChangeRow({
+  story,
+  teamPrefix,
+}: {
+  story: RosterChangePlayerStory;
+  teamPrefix: 'From' | 'Now';
+}) {
+  return (
+    <li className="py-1.5 border-b border-white/5 last:border-0">
+      <div className="text-sm text-white font-medium truncate">
+        {story.displayName}
+      </div>
+      <div className="text-[10px] text-muted-foreground leading-snug">
+        {formatChangeContextLine(story)}
+        {story.otherTeamAbbr && (
+          <span>
+            {' · '}
+            {teamPrefix} {story.otherTeamAbbr}
+          </span>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function OtherNames({
   players,
 }: {
-  title: string;
-  prefix: '+' | '–';
   players: { playerEntityId: string; displayName: string }[];
 }) {
-  const { shown, more } = previewContinuityList(players);
-  if (players.length === 0) {
-    return (
-      <div>
-        <h4 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
-          {title}
-        </h4>
-        <p className="text-xs text-muted-foreground">None</p>
-      </div>
-    );
-  }
+  if (players.length === 0) return null;
+  const shown = players.slice(0, 4);
+  const more = players.length - shown.length;
   return (
-    <div>
-      <h4 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
-        {title}
-      </h4>
-      <ul className="space-y-0.5">
-        {shown.map((p) => (
-          <li key={p.playerEntityId} className="text-xs text-white/90 truncate">
-            <span className="text-muted-foreground mr-1">{prefix}</span>
-            {p.displayName}
-          </li>
-        ))}
-      </ul>
-      {more > 0 && (
-        <p className="text-[10px] text-muted-foreground mt-1">+ {more} more</p>
-      )}
-    </div>
+    <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed">
+      <span className="uppercase tracking-wide">Other</span>
+      {' · '}
+      {shown.map((p) => p.displayName).join(' · ')}
+      {more > 0 && <span> · +{more} more</span>}
+    </p>
   );
 }
 
@@ -143,10 +152,12 @@ export function TeamSeasonSnapshotPanel({
   seasonLabel,
   snapshot,
   continuity,
+  rosterChangeStory,
   previousBaseline,
 }: TeamSeasonSnapshotPanelProps) {
   const continuityPrevLabel = formatNbaSeasonLabel(continuity.previousSeason);
   const baselineLabel = formatNbaSeasonLabel(previousBaseline.baselineSeason);
+  const story = rosterChangeStory.available ? rosterChangeStory : null;
 
   return (
     <section
@@ -154,17 +165,14 @@ export function TeamSeasonSnapshotPanel({
       data-analytics-season={season}
       aria-label={`${seasonLabel} team snapshot`}
     >
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h2 className="text-sm font-semibold text-white">Team Snapshot</h2>
-        <span className="text-[10px] text-muted-foreground">{seasonLabel}</span>
-      </div>
+      <h2 className="text-sm font-semibold text-white">Team Snapshot</h2>
 
       <div data-snapshot-role="current" data-snapshot-season={season}>
-        <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-2">
+        <h3 className="text-xs font-semibold text-white mb-2">
           Current Season — {seasonLabel}
         </h3>
         {!snapshot.hasData ? (
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             <p className="text-sm text-muted-foreground">
               Not enough season data yet
             </p>
@@ -176,9 +184,7 @@ export function TeamSeasonSnapshotPanel({
       </div>
 
       <div className="border-t border-white/5 pt-3">
-        <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-2">
-          Roster Continuity
-        </h3>
+        <h3 className="text-xs font-semibold text-white mb-2">Roster Changes</h3>
         {!continuity.available ? (
           <p className="text-xs text-muted-foreground">
             {continuity.unavailableReason ?? 'Roster continuity unavailable'}
@@ -186,50 +192,77 @@ export function TeamSeasonSnapshotPanel({
         ) : (
           <div className="space-y-3">
             <p className="text-[10px] text-muted-foreground">
-              {seasonLabel} vs {continuityPrevLabel} final roster
+              vs {continuityPrevLabel} roster
             </p>
-            <div className="flex flex-wrap gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground text-xs mr-1.5">
-                  Returning
-                </span>
-                <span className="font-mono font-semibold text-white">
-                  {continuity.returningCount}
-                </span>
+            <p className="text-sm text-white/90">
+              <span className="font-mono font-semibold">
+                {continuity.returningCount}
+              </span>
+              <span className="text-muted-foreground text-xs ml-1 mr-3">
+                Returning
+              </span>
+              <span className="font-mono font-semibold text-[#39ff14]">
+                {continuity.addedCount}
+              </span>
+              <span className="text-muted-foreground text-xs ml-1 mr-3">
+                Added
+              </span>
+              <span className="font-mono font-semibold text-[#ff6b35]">
+                {continuity.departedCount}
+              </span>
+              <span className="text-muted-foreground text-xs ml-1">
+                Departed
+              </span>
+            </p>
+
+            {story && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
+                    Key Additions
+                  </h4>
+                  {story.addedKey.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">None</p>
+                  ) : (
+                    <ul>
+                      {story.addedKey.map((s) => (
+                        <KeyChangeRow
+                          key={s.playerEntityId}
+                          story={s}
+                          teamPrefix="From"
+                        />
+                      ))}
+                    </ul>
+                  )}
+                  <OtherNames players={story.addedOther} />
+                </div>
+                <div>
+                  <h4 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
+                    Key Departures
+                  </h4>
+                  {story.departedKey.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">None</p>
+                  ) : (
+                    <ul>
+                      {story.departedKey.map((s) => (
+                        <KeyChangeRow
+                          key={s.playerEntityId}
+                          story={s}
+                          teamPrefix="Now"
+                        />
+                      ))}
+                    </ul>
+                  )}
+                  <OtherNames players={story.departedOther} />
+                </div>
               </div>
-              <div>
-                <span className="text-muted-foreground text-xs mr-1.5">Added</span>
-                <span className="font-mono font-semibold text-[#39ff14]">
-                  {continuity.addedCount}
-                </span>
-              </div>
-              <div>
-                <span className="text-muted-foreground text-xs mr-1.5">
-                  Departed
-                </span>
-                <span className="font-mono font-semibold text-[#ff6b35]">
-                  {continuity.departedCount}
-                </span>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <ContinuityNameList
-                title="Added"
-                prefix="+"
-                players={continuity.added}
-              />
-              <ContinuityNameList
-                title="Departed"
-                prefix="–"
-                players={continuity.departed}
-              />
-            </div>
+            )}
           </div>
         )}
       </div>
 
       <div
-        className="border-t border-white/5 pt-3"
+        className="rounded-lg border border-white/5 bg-white/[0.02] p-3"
         data-snapshot-role="previous"
         data-snapshot-season={previousBaseline.baselineSeason}
       >
@@ -245,6 +278,7 @@ export function TeamSeasonSnapshotPanel({
           <SnapshotMetricsGrid
             snap={previousBaseline.snapshot}
             showSampleLabel={false}
+            muted
           />
         )}
       </div>

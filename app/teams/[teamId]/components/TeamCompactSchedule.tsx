@@ -63,7 +63,9 @@ function RecentRow({ game }: { game: CompactScheduleGame }) {
     >
       <span className="text-xs text-muted-foreground tabular-nums">{date}</span>
       <span className="text-white font-medium truncate">{opp}</span>
-      <span className={`text-xs font-mono font-semibold text-right whitespace-nowrap ${resultColor}`}>
+      <span
+        className={`text-xs font-mono font-semibold text-right whitespace-nowrap ${resultColor}`}
+      >
         {score}
       </span>
     </Link>
@@ -77,6 +79,12 @@ export function TeamCompactSchedule({
   upcoming,
   recent,
 }: TeamCompactScheduleProps) {
+  const showRecentColumn = recent.length > 0;
+  // Preseason: don't leave a loud empty half-column beside upcoming.
+  const gridClass = showRecentColumn
+    ? 'grid grid-cols-1 md:grid-cols-2 gap-4'
+    : 'grid grid-cols-1 gap-2';
+
   return (
     <section
       className="glass-card rounded-xl p-4"
@@ -84,17 +92,26 @@ export function TeamCompactSchedule({
       aria-label={`${seasonLabel} upcoming and recent games`}
     >
       <div className="flex items-center justify-between gap-2 mb-3">
-        <h2 className="text-sm font-semibold text-white">Upcoming / Recent</h2>
-        <span className="text-[10px] text-muted-foreground">{seasonLabel}</span>
+        <h2 className="text-sm font-semibold text-white">
+          {showRecentColumn ? 'Upcoming / Recent' : 'Upcoming'}
+        </h2>
+        <Link
+          href={fullScheduleHref(routeTeamId, season)}
+          className="text-xs text-[#00d4ff] hover:underline shrink-0"
+        >
+          Full schedule →
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={gridClass}>
         <div>
-          <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1.5">
-            Upcoming
-          </h3>
+          {showRecentColumn && (
+            <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1.5">
+              Upcoming
+            </h3>
+          )}
           {upcoming.length === 0 ? (
-            <p className="text-xs text-muted-foreground py-2">No upcoming games</p>
+            <p className="text-xs text-muted-foreground py-1">No upcoming games</p>
           ) : (
             <div className="divide-y divide-white/5">
               {upcoming.map((g) => (
@@ -104,29 +121,22 @@ export function TeamCompactSchedule({
           )}
         </div>
 
-        <div>
-          <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1.5">
-            Recent
-          </h3>
-          {recent.length === 0 ? (
-            <p className="text-xs text-muted-foreground py-2">No completed games yet</p>
-          ) : (
+        {showRecentColumn ? (
+          <div>
+            <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1.5">
+              Recent
+            </h3>
             <div className="divide-y divide-white/5">
               {recent.map((g) => (
                 <RecentRow key={g.game_id} game={g} />
               ))}
             </div>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-3 pt-2 border-t border-white/5">
-        <Link
-          href={fullScheduleHref(routeTeamId, season)}
-          className="text-xs text-[#00d4ff] hover:underline"
-        >
-          View full schedule →
-        </Link>
+          </div>
+        ) : (
+          <p className="text-[10px] text-muted-foreground">
+            No completed games yet
+          </p>
+        )}
       </div>
     </section>
   );

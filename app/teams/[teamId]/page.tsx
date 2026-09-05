@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { Zap } from 'lucide-react';
 import { TeamPageClient } from './components/TeamPageContent';
 import { TeamRoster } from './components/TeamRoster';
-import { TeamSeasonSwitcher } from './components/TeamSeasonSwitcher';
 import {
   resolveAnalyticsTeamId,
   getTeamById,
@@ -13,6 +12,8 @@ import {
 import { getTeamCompactSchedule } from '@/lib/teams/team-compact-schedule-queries';
 import { getTeamSeasonSnapshot } from '@/lib/teams/team-season-snapshot-queries';
 import { getTeamRosterContinuity } from '@/lib/teams/team-roster-continuity-queries';
+import { getRosterChangeStory } from '@/lib/teams/roster-change-story-queries';
+import { emptyRosterChangeStory } from '@/lib/teams/roster-change-story';
 import {
   getPreviousSeasonBaseline,
   emptyPreviousSeasonBaseline,
@@ -35,6 +36,13 @@ async function loadTeamData(teamId: string, selectedSeason: string | null) {
 
   if (!analyticsTeamId) {
     const prev = previousAnalyticsSeason(season);
+    const rosterContinuity = computeRosterContinuity({
+      season,
+      previousSeason: prev,
+      current: [],
+      previous: [],
+      previousSeasonAvailable: false,
+    });
     return {
       team: null,
       seasonAverages: null,
@@ -46,13 +54,8 @@ async function loadTeamData(teamId: string, selectedSeason: string | null) {
         recent: [],
       } as Awaited<ReturnType<typeof getTeamCompactSchedule>>,
       seasonSnapshot: emptyTeamSeasonSnapshot(season),
-      rosterContinuity: computeRosterContinuity({
-        season,
-        previousSeason: prev,
-        current: [],
-        previous: [],
-        previousSeasonAvailable: false,
-      }),
+      rosterContinuity,
+      rosterChangeStory: emptyRosterChangeStory(rosterContinuity),
       previousBaseline: emptyPreviousSeasonBaseline(season),
       season,
       seasonLabel,
@@ -82,6 +85,11 @@ async function loadTeamData(teamId: string, selectedSeason: string | null) {
     getPreviousSeasonBaseline(analyticsTeamId, season),
   ]);
 
+  const rosterChangeStory = await getRosterChangeStory(
+    analyticsTeamId,
+    rosterContinuity
+  );
+
   return {
     team,
     seasonAverages,
@@ -90,6 +98,7 @@ async function loadTeamData(teamId: string, selectedSeason: string | null) {
     compactSchedule,
     seasonSnapshot,
     rosterContinuity,
+    rosterChangeStory,
     previousBaseline,
     season,
     seasonLabel,
@@ -115,6 +124,7 @@ export default async function TeamPage({
     compactSchedule,
     seasonSnapshot,
     rosterContinuity,
+    rosterChangeStory,
     previousBaseline,
     season,
     seasonLabel,
@@ -177,47 +187,33 @@ export default async function TeamPage({
                 <p className="text-[10px] text-muted-foreground -mt-0.5">Team Analysis</p>
               </div>
             </Link>
-            <div className="flex items-center gap-2 flex-wrap justify-end">
-              <TeamSeasonSwitcher
-                teamId={teamId}
-                currentSeason={season}
-                defaultSeason={defaultSeason}
-                choices={seasonChoices}
-              />
-              <span className="text-[10px] px-2 py-0.5 bg-white/10 text-muted-foreground rounded-full font-semibold">
-                TEAM PROFILE
-              </span>
-            </div>
+            <span className="text-[10px] px-2 py-0.5 bg-white/10 text-muted-foreground rounded-full font-semibold">
+              {seasonLabel}
+            </span>
           </div>
         </div>
       </header>
 
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-        <div className="flex flex-col xl:flex-row gap-6">
-          <div className="flex-1 space-y-6 min-w-0">
-            <TeamPageClient
-              team={team}
-              season={season}
-              seasonLabel={seasonLabel}
-              seasonAverages={seasonAverages}
-              recentGames={recentGames}
-              trendData={trendData}
-              upcomingGames={compactSchedule.upcoming}
-              recentScheduleGames={compactSchedule.recent}
-              seasonSnapshot={seasonSnapshot}
-              rosterContinuity={rosterContinuity}
-              previousBaseline={previousBaseline}
-              seasonChoices={seasonChoices}
-              defaultSeason={defaultSeason}
-              routeTeamId={teamId}
-            />
-          </div>
-
-          <aside className="w-full xl:w-80 shrink-0">
-            <div className="xl:sticky xl:top-20">
-              <TeamRoster teamId={team.team_id} season={season} />
-            </div>
-          </aside>
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_20rem] gap-6">
+          <TeamPageClient
+            team={team}
+            season={season}
+            seasonLabel={seasonLabel}
+            seasonAverages={seasonAverages}
+            recentGames={recentGames}
+            trendData={trendData}
+            upcomingGames={compactSchedule.upcoming}
+            recentScheduleGames={compactSchedule.recent}
+            seasonSnapshot={seasonSnapshot}
+            rosterContinuity={rosterContinuity}
+            rosterChangeStory={rosterChangeStory}
+            previousBaseline={previousBaseline}
+            seasonChoices={seasonChoices}
+            defaultSeason={defaultSeason}
+            routeTeamId={teamId}
+            roster={<TeamRoster teamId={team.team_id} season={season} />}
+          />
         </div>
       </main>
     </div>

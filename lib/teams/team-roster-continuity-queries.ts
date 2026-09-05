@@ -22,6 +22,7 @@ function mapRows(rows: unknown[]): ContinuityPlayer[] {
     return {
       playerEntityId: String(r.player_entity_id),
       displayName: String(r.display_name ?? '—'),
+      playerId: r.player_id != null && String(r.player_id) !== '' ? String(r.player_id) : null,
     };
   });
 }

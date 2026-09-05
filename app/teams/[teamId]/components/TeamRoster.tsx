@@ -52,6 +52,7 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
               'block text-[10px] font-medium truncate',
               availabilityClass(availability.priority)
             )}
+            title={availability.label}
           >
             {availability.label}
           </span>
