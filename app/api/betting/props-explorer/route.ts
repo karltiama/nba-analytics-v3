@@ -5,6 +5,7 @@ import { getPlayerPropModelInputs, type PlayerPropModelInputs } from '@/lib/bett
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
 import { computePropEvFields } from '@/lib/betting/player-prop-ev-row';
+import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
 
 type DbRow = {
   game_id: string | number;
@@ -300,6 +301,7 @@ export async function GET(request: NextRequest) {
         evFetchCap: COMPUTED_SORTS.has(sort) ? EV_FETCH_CAP : null,
         sort,
         dir: dirAsc ? 'asc' : 'desc',
+        ingestionFrozen: isIngestionFrozen(),
       },
     });
   } catch (error: unknown) {

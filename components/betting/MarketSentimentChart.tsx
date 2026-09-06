@@ -4,7 +4,7 @@ import type { MarketSentimentSnapshot } from '@/lib/betting/market-sentiment-typ
 
 export type SentimentHistoryPoint = { time: string; homeWinPct: number };
 
-export type SentimentChartMode = 'history' | 'snapshot' | 'demo';
+export type SentimentChartMode = 'history' | 'snapshot' | 'demo' | 'none';
 
 function hashString(s: string): number {
   let h = 0;
@@ -35,11 +35,13 @@ export function demoSentimentHistory(gameId: string): SentimentHistoryPoint[] {
 }
 
 /**
- * Prefer API history → snapshot (flat line) → demo series so the chart always has something to draw.
+ * Prefer API history → snapshot (flat line). Demo series is opt-in only
+ * (`allowDemo` / NEXT_PUBLIC_SHOW_DEMO_SENTIMENT) so empty feeds stay hidden.
  */
 export function resolveSentimentChartData(
   gameId: string,
-  sentiment: MarketSentimentSnapshot | null | undefined
+  sentiment: MarketSentimentSnapshot | null | undefined,
+  options?: { allowDemo?: boolean }
 ): { points: SentimentHistoryPoint[]; mode: SentimentChartMode } {
   const h = sentiment?.history;
   if (h && h.length >= 2) {
@@ -63,7 +65,13 @@ export function resolveSentimentChartData(
     };
   }
 
-  return { points: demoSentimentHistory(gameId), mode: 'demo' };
+  const allowDemo =
+    options?.allowDemo === true || process.env.NEXT_PUBLIC_SHOW_DEMO_SENTIMENT === '1';
+  if (allowDemo) {
+    return { points: demoSentimentHistory(gameId), mode: 'demo' };
+  }
+
+  return { points: [], mode: 'none' };
 }
 
 const W = 480;
@@ -78,13 +86,13 @@ export function MarketSentimentChart({
   homeTeamAbbr: string;
   color?: string;
 }) {
-  const safeData: SentimentHistoryPoint[] =
-    data.length >= 2
-      ? data
-      : [
-          { time: '—', homeWinPct: 50 },
-          { time: '—', homeWinPct: 50 },
-        ];
+  if (data.length < 2) {
+    return (
+      <p className="text-xs text-muted-foreground py-6 text-center">No sentiment data</p>
+    );
+  }
+
+  const safeData = data;
 
   const values = safeData.map((d) => d.homeWinPct);
   const rawMin = Math.min(...values);

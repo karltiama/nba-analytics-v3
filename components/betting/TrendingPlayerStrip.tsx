@@ -44,9 +44,9 @@ function getBadge(player: StripPlayer, stat: TrendingStat): { label: string; col
   const score = player.trend_score;
   const t = player.trends;
 
-  // "HOT" badge when trend_score is large relative to season avg
+  // Season-wide L5 vs season average — not a tonight-slate "HOT" claim.
   if (player.season_avg > 0 && score / player.season_avg >= 0.20) {
-    return { label: 'HOT', color: '#ff6b35' };
+    return { label: 'L5 trend', color: '#ff6b35' };
   }
 
   // Secondary badges for other stats trending up alongside the primary
@@ -223,7 +223,7 @@ export function TrendingPlayerStrip() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-[#ff6b35]" />
-          <h2 className="text-lg font-semibold text-white">Trending Players</h2>
+          <h2 className="text-lg font-semibold text-white">Recent form</h2>
           <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/15 text-[#ff6b35] rounded-full font-medium leading-none">
             L5 vs SZN
           </span>

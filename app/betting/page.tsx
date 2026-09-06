@@ -219,6 +219,7 @@ export default function BettingDashboard(props: PageProps) {
   const [widgets, setWidgets] = useState<any[]>([]);
   const [slateSummary, setSlateSummary] = useState<string | null>(null);
   const [slateSummaryHint, setSlateSummaryHint] = useState<string | null>(null);
+  const [slateBriefingEligible, setSlateBriefingEligible] = useState(false);
 
   // Loading states
   const [loadingGames, setLoadingGames] = useState(true);
@@ -331,11 +332,19 @@ export default function BettingDashboard(props: PageProps) {
           { signal: ac.signal }
         );
         const data = await res.json();
-        if (data.summary && typeof data.summary === 'string') {
+        if (data.eligible === false || data.code === 'OFFSEASON' || data.code === 'NO_SLATE') {
+          setSlateSummary(null);
+          setSlateBriefingEligible(false);
+          setSlateSummaryHint(
+            typeof data.message === 'string' ? data.message : 'Slate briefing unavailable.'
+          );
+        } else if (data.summary && typeof data.summary === 'string') {
           setSlateSummary(data.summary);
+          setSlateBriefingEligible(true);
           setSlateSummaryHint(null);
         } else {
           setSlateSummary(null);
+          setSlateBriefingEligible(false);
           setSlateSummaryHint(
             typeof data.message === 'string'
               ? data.message
@@ -408,12 +417,6 @@ export default function BettingDashboard(props: PageProps) {
         <div className="flex flex-col xl:flex-row gap-6">
           {/* Main Content */}
           <div className="flex-1 min-w-0 pt-8 space-y-6">
-            <div className="glass-card rounded-xl p-4 border border-white/10">
-              <p className="text-sm text-muted-foreground">
-                Offseason mode is active. Live props and automated slate refreshes are currently paused while we
-                improve next season tooling.
-              </p>
-            </div>
             {/* Date + Filters (single bar) */}
             <FilterBar
               searchValue={searchValue}
@@ -498,6 +501,7 @@ export default function BettingDashboard(props: PageProps) {
                 slateSummary={slateSummary}
                 slateSummaryLoading={slateSummaryLoading}
                 slateSummaryHint={slateSummaryHint}
+                briefingEligible={slateBriefingEligible}
               />
             </div>
           </aside>

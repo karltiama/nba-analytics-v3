@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, type ReactNode } from 'react';
 
 interface PlayerTrendChartProps {
   data: number[];
-  seasonAvg: number;
+  seasonAvg: number | null;
   labels: string[];
   bettingLine?: number | null;
   metricLabel: string;
@@ -79,12 +79,16 @@ export function PlayerTrendChart({
         className="glass-card rounded-xl p-8 flex items-center justify-center"
         style={{ minHeight: CHART_HEIGHT + 60 }}
       >
-        <span className="text-muted-foreground">No data to chart</span>
+        <span className="text-muted-foreground">Not enough data yet</span>
       </div>
     );
   }
 
-  const allValues = [...data, seasonAvg, ...(bettingLine != null ? [bettingLine] : [])];
+  const allValues = [
+    ...data,
+    ...(seasonAvg != null ? [seasonAvg] : []),
+    ...(bettingLine != null ? [bettingLine] : []),
+  ];
   const minVal = Math.min(...allValues);
   const maxVal = Math.max(...allValues);
   const range = maxVal - minVal || 1;
@@ -187,26 +191,30 @@ export function PlayerTrendChart({
             );
           })}
 
-          <line
-            x1={PADDING.left}
-            y1={toY(seasonAvg)}
-            x2={svgWidth - PADDING.right}
-            y2={toY(seasonAvg)}
-            stroke="#bf5af2"
-            strokeWidth={1.5}
-            strokeDasharray="6 4"
-            strokeOpacity={0.7}
-          />
-          <text
-            x={svgWidth - 8}
-            y={toY(seasonAvg) + 4}
-            textAnchor="end"
-            fill="#bf5af2"
-            fontSize={11}
-            fontFamily="var(--font-geist-mono)"
-          >
-            Avg {seasonAvg.toFixed(1)}
-          </text>
+          {seasonAvg != null && (
+            <>
+              <line
+                x1={PADDING.left}
+                y1={toY(seasonAvg)}
+                x2={svgWidth - PADDING.right}
+                y2={toY(seasonAvg)}
+                stroke="#bf5af2"
+                strokeWidth={1.5}
+                strokeDasharray="6 4"
+                strokeOpacity={0.7}
+              />
+              <text
+                x={svgWidth - 8}
+                y={toY(seasonAvg) + 4}
+                textAnchor="end"
+                fill="#bf5af2"
+                fontSize={11}
+                fontFamily="var(--font-geist-mono)"
+              >
+                Avg {seasonAvg.toFixed(1)}
+              </text>
+            </>
+          )}
 
           {bettingLine != null && (
             <>

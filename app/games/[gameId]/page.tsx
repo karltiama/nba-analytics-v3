@@ -10,7 +10,7 @@ import {
 import { GameMatchupInfo } from './components/GameMatchupInfo';
 import { query } from '@/lib/db';
 import { getGameBoxScoreFromAnalytics } from '@/lib/analytics/games-queries';
-import { isFinalStatus, normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { resolveDisplayGameStatus, displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
 
 async function getGameBoxScore(gameId: string) {
   // Analytics (BDL) first for non-BBRef game IDs
@@ -89,6 +89,12 @@ export default async function GameBoxScorePage({
   const { game, boxscore } = data;
   const homeTeamStats = boxscore.filter((s: any) => s.team_id === game.home_team_id);
   const awayTeamStats = boxscore.filter((s: any) => s.team_id === game.away_team_id);
+  const displayStatus = resolveDisplayGameStatus({
+    statusRaw: game.status,
+    startTime: game.start_time,
+    homeScore: game.home_score,
+    awayScore: game.away_score,
+  });
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
@@ -128,12 +134,12 @@ export default async function GameBoxScorePage({
                 year: 'numeric',
               })}
             </p>
-            {isFinalStatus(game.status) && game.home_score !== null && game.away_score !== null && (
+            {displayStatus === 'Final' && game.home_score !== null && game.away_score !== null && (
               <p className="text-2xl font-bold text-black dark:text-zinc-50 mt-2">
                 {game.away_score} - {game.home_score}
               </p>
             )}
-            <p className="text-sm mt-1">{normalizeGameStatus(game.status)}</p>
+            <p className="text-sm mt-1">{displayGameStatusLabel(displayStatus)}</p>
           </div>
         </div>
 

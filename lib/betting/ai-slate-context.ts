@@ -18,6 +18,7 @@ export function hashSlatePayload(payload: unknown): string {
 export async function buildAiSlateUserContent(dateEt: string): Promise<{
   userContent: string;
   payloadHash: string;
+  gameCount: number;
 }> {
   const [games, ratings, paceRankings, defRankings, trending] = await Promise.all([
     getGamesForDate(dateEt),
@@ -121,5 +122,6 @@ export async function buildAiSlateUserContent(dateEt: string): Promise<{
   return {
     userContent: lines.join('\n'),
     payloadHash: hashSlatePayload(payloadForHash),
+    gameCount: games.length,
   };
 }

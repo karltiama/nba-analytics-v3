@@ -1,5 +1,7 @@
 'use client';
 
+import { resolveLineMovementChartData } from '@/lib/betting/line-movement-series';
+
 interface DataPoint {
   time: string;
   value: number;
@@ -23,16 +25,20 @@ export function LineMovementChart({
   width = 400,
   embedded = false,
 }: LineMovementChartProps) {
-  // Normalize to at least 2 points so the chart always renders (e.g. one snapshot = flat line)
-  const safeData: DataPoint[] =
-    !data?.length
-      ? [{ time: 'Open', value: 0 }, { time: 'Now', value: 0 }]
-      : data.length === 1
-        ? [
-            { time: 'Open', value: data[0].value },
-            { time: 'Now', value: data[0].value },
-          ]
-        : data;
+  const resolved = resolveLineMovementChartData(data);
+
+  if (resolved.kind === 'empty') {
+    const empty = (
+      <div className="py-6 px-2 text-center">
+        <h4 className="text-xs font-medium text-white mb-1">{label}</h4>
+        <p className="text-xs text-muted-foreground">No movement data</p>
+      </div>
+    );
+    if (embedded) return empty;
+    return <div className="glass-card rounded-xl p-4">{empty}</div>;
+  }
+
+  const safeData = resolved.points;
 
   const values = safeData.map(d => d.value);
   const min = Math.min(...values) - 0.5;

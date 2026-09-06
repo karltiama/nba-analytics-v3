@@ -13,6 +13,7 @@ import {
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
+import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
 
 type ExplorerRow = {
   gameId: number;
@@ -43,6 +44,7 @@ type ExplorerMeta = {
   evFetchCap: number | null;
   sort: string;
   dir: string;
+  ingestionFrozen?: boolean;
 };
 
 type SavedProp = {
@@ -286,6 +288,7 @@ export default function PropsExplorerPage(props: PageProps) {
         if (!res.ok) throw new Error('Failed to load props');
         const data = await res.json();
         if (!cancelled) {
+          const frozen = Boolean(data.meta?.ingestionFrozen);
           const hasExplicitDate = Boolean(searchParams.get('date'));
           const noFiltersApplied =
             !gameId.trim() &&
@@ -294,8 +297,14 @@ export default function PropsExplorerPage(props: PageProps) {
             side === 'all' &&
             !sportsbook.trim() &&
             minEv.trim() === '';
-          // If default "today" has no props yet, fall back once to yesterday.
-          if (Array.isArray(data.rows) && data.rows.length === 0 && !hasExplicitDate && noFiltersApplied) {
+          // Live mode only: if default "today" has no props yet, fall back once to yesterday.
+          if (
+            !frozen &&
+            Array.isArray(data.rows) &&
+            data.rows.length === 0 &&
+            !hasExplicitDate &&
+            noFiltersApplied
+          ) {
             updateParams({ date: addDaysET(date, -1), offset: '0' });
             return;
           }
@@ -696,7 +705,18 @@ export default function PropsExplorerPage(props: PageProps) {
               {rows.length === 0 ? (
                 <tr>
                   <td colSpan={showAdvancedMetrics ? 15 : 11} className="py-8 text-center text-muted-foreground">
-                    No rows. Adjust filters or date.
+                    {(() => {
+                      const copy = propsExplorerEmptyCopy({
+                        frozen: Boolean(meta?.ingestionFrozen),
+                        dateLabel: getDateLabel(date),
+                      });
+                      return (
+                        <div className="space-y-1 px-4">
+                          <p className="text-sm text-white/80">{copy.title}</p>
+                          <p className="text-xs text-muted-foreground">{copy.detail}</p>
+                        </div>
+                      );
+                    })()}
                   </td>
                 </tr>
               ) : (

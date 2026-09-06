@@ -159,7 +159,7 @@ export function PropsExplorerPlayerPanel({ selection, onClose, variant }: PropsE
   const chartDataChronological = useMemo(() => [...values].reverse(), [values]);
   const chartLabelsChronological = useMemo(() => [...chartLabels].reverse(), [chartLabels]);
   const seasonAvgValue = useMemo(() => {
-    if (!data?.seasonAverages) return 0;
+    if (!data?.seasonAverages) return null;
     return getSeasonAvgForMetric(data.seasonAverages, activeMetric);
   }, [data?.seasonAverages, activeMetric]);
 

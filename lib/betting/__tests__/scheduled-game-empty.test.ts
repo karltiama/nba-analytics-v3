@@ -14,7 +14,9 @@ function enrichScheduledGameStub() {
     defensiveRank: undefined,
     recentForm: [],
   });
-  const { status } = enrichGameStatus('2026-11-01T00:00:00Z');
+  const { status } = enrichGameStatus('2026-11-01T00:00:00Z', {
+    now: new Date('2026-09-06T18:00:00.000Z'),
+  });
   return {
     status,
     odds,

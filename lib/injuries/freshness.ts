@@ -82,3 +82,26 @@ export function filterAuthoritativeInjuries<T extends InjuryServingRow>(
 ): T[] {
   return rows.filter((row) => isInjuryAuthoritativeForServing(row, env, now));
 }
+
+export type InjuryFeedAvailability = 'authoritative_present' | 'authoritative_empty' | 'not_current';
+
+/**
+ * Frozen/stale/unavailable feed is not the same as a fresh feed with zero injuries.
+ * Frozen always wins so leftover current-table rows are never presented as live.
+ */
+export function describeInjuryFeedAvailability(input: {
+  frozen: boolean;
+  rawRowCount: number;
+  authoritativeCount: number;
+}): InjuryFeedAvailability {
+  if (input.frozen) return 'not_current';
+  if (input.authoritativeCount > 0) return 'authoritative_present';
+  if (input.rawRowCount > 0) return 'not_current';
+  return 'authoritative_empty';
+}
+
+export function injuryAbsenceCopy(availability: InjuryFeedAvailability): string {
+  return availability === 'not_current'
+    ? 'Injury status not current'
+    : 'No injuries listed';
+}

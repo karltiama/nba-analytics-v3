@@ -11,7 +11,7 @@ import { resolveAnalyticsTeamId, getTeamById } from '@/lib/teams/analytics-queri
 import { getScheduleForTeam } from '@/lib/analytics/games-queries';
 import { resolveTeamScheduleSeason } from '@/lib/analytics/team-schedule-season';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
-import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { displayGameStatusLabel, resolveDisplayGameStatus } from '@/lib/betting/normalize-game-status';
 import { formatNbaSeasonLabel, getAnalyticsSeason } from '@/lib/season';
 import { teamPageSeasonHref } from '@/lib/teams/team-page-season';
 
@@ -180,7 +180,14 @@ export default async function TeamSchedulePage({
                         </TableCell>
                         <TableCell>
                           <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            {normalizeGameStatus(game.status)}
+                            {displayGameStatusLabel(
+                            resolveDisplayGameStatus({
+                              statusRaw: game.status,
+                              startTime: game.start_time,
+                              homeScore: game.is_home === 'home' ? game.team_score : game.opponent_score,
+                              awayScore: game.is_home === 'home' ? game.opponent_score : game.team_score,
+                            })
+                          )}
                           </span>
                         </TableCell>
                       </TableRow>

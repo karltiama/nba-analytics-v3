@@ -60,7 +60,9 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey 
         )}
       </div>
 
-      {bettingLine !== null && hr && margin !== null && stk ? (
+      {bettingLine !== null && values.length === 0 ? (
+        <p className="text-sm text-zinc-500">Not enough data yet</p>
+      ) : bettingLine !== null && hr && margin !== null && stk ? (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCell
             label="Hit Rate L10"

@@ -6,7 +6,7 @@
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import {
   isFinalStatus,
-  normalizeGameStatus,
+  resolveDisplayGameStatus,
   type NormalizedGameStatus,
 } from '@/lib/betting/normalize-game-status';
 import { assertAnalyticsSeason } from '@/lib/teams/team-roster-presentation';
@@ -143,7 +143,13 @@ export function mapCompactScheduleRow(
   const statusRaw = r.status != null ? String(r.status) : null;
   const teamScoreRaw = isHome ? r.home_score : r.away_score;
   const oppScoreRaw = isHome ? r.away_score : r.home_score;
-  const decided = isFinalStatus(statusRaw);
+  const status = resolveDisplayGameStatus({
+    statusRaw,
+    startTime: r.start_time != null ? String(r.start_time) : null,
+    homeScore: r.home_score == null ? null : Number(r.home_score),
+    awayScore: r.away_score == null ? null : Number(r.away_score),
+  });
+  const decided = status === 'Final';
   const teamScore =
     decided && teamScoreRaw != null ? Number(teamScoreRaw) : null;
   const opponentScore =
@@ -157,7 +163,7 @@ export function mapCompactScheduleRow(
       ? new Date(r.start_time as string).toISOString()
       : null,
     status_raw: statusRaw,
-    status: normalizeGameStatus(statusRaw),
+    status,
     is_home: isHome,
     opponent_id: String(isHome ? r.away_team_id : r.home_team_id),
     opponent_abbr: String(isHome ? r.away_abbr : r.home_abbr),

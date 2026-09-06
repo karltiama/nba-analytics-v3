@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils';
 import type { SummaryResult } from '@/lib/players/types';
+import {
+  formatNullableStat,
+  formatStatDiffVsAvg,
+  hasSummarySample,
+} from '@/lib/players/stat-display';
 
 type TimeframeKey = 5 | 10 | 20 | 'season';
 
@@ -36,14 +41,23 @@ function getCardLabel(key: keyof SummaryResult, timeframe: TimeframeKey): string
 }
 
 export function SummaryCardsRow({ summary, metricLabel, timeframe = 'season' }: SummaryCardsRowProps) {
+  if (!hasSummarySample(summary)) {
+    return (
+      <div className="glass-card rounded-xl p-4">
+        <p className="text-sm text-muted-foreground">Not enough data yet</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {CARD_KEYS.map(({ key, accent }, index) => {
         const label = getCardLabel(key, timeframe);
         const val = summary[key];
-        const diff = key !== 'avg' && key !== 'high' && key !== 'low'
-          ? val - summary.avg
-          : null;
+        const diffLabel =
+          key !== 'avg' && key !== 'high' && key !== 'low'
+            ? formatStatDiffVsAvg(val, summary.avg)
+            : null;
 
         return (
           <div
@@ -59,16 +73,20 @@ export function SummaryCardsRow({ summary, metricLabel, timeframe = 'season' }: 
             </div>
             <div className="flex items-baseline justify-between mt-1.5">
               <div className={cn('text-2xl font-bold font-mono', accent ?? 'text-white')}>
-                {val.toFixed(1)}
+                {formatNullableStat(val)}
               </div>
-              {diff !== null && (
+              {diffLabel !== null && (
                 <div
                   className={cn(
                     'text-xs font-medium font-mono',
-                    diff > 0 ? 'text-[#39ff14]' : diff < 0 ? 'text-[#ff4757]' : 'text-muted-foreground'
+                    val != null && summary.avg != null && val - summary.avg > 0
+                      ? 'text-[#39ff14]'
+                      : val != null && summary.avg != null && val - summary.avg < 0
+                        ? 'text-[#ff4757]'
+                        : 'text-muted-foreground'
                   )}
                 >
-                  {diff > 0 ? '+' : ''}{diff.toFixed(1)} vs avg
+                  {diffLabel}
                 </div>
               )}
             </div>

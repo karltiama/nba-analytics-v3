@@ -96,7 +96,7 @@ function getStatusBadge(status: string | undefined): { label: string; className:
     return { label: 'Canceled', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
   }
   if (s === 'unknown') {
-    return { label: 'Status TBD', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+    return { label: 'Status unavailable', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
   }
   return { label: status, className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
 }

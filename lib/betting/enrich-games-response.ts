@@ -3,7 +3,7 @@
  */
 
 import type { GameOdds } from '@/lib/betting/queries';
-import { normalizeGameStatus, type NormalizedGameStatus } from '@/lib/betting/normalize-game-status';
+import { resolveDisplayGameStatus, type NormalizedGameStatus } from '@/lib/betting/normalize-game-status';
 
 export type NullableOddsSide = {
   moneyline: number | null;
@@ -144,12 +144,26 @@ export function buildEnrichedTeamSide(input: {
   };
 }
 
-export function enrichGameStatus(raw: string | null | undefined): {
+export function enrichGameStatus(
+  raw: string | null | undefined,
+  extras?: {
+    startTime?: string | Date | null;
+    homeScore?: number | null;
+    awayScore?: number | null;
+    now?: Date;
+  }
+): {
   status: NormalizedGameStatus;
   statusRaw: string | null;
 } {
   return {
-    status: normalizeGameStatus(raw),
+    status: resolveDisplayGameStatus({
+      statusRaw: raw,
+      startTime: extras?.startTime,
+      homeScore: extras?.homeScore,
+      awayScore: extras?.awayScore,
+      now: extras?.now,
+    }),
     statusRaw: raw == null ? null : String(raw),
   };
 }

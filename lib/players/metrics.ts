@@ -20,24 +20,33 @@ export function extractMetric(games: GameLog[], key: MetricKey): number[] {
 export function getSeasonAvgForMetric(
   seasonAvg: { avg_points?: number; avg_rebounds?: number; avg_assists?: number; total_3pm?: number; games_active?: number },
   key: MetricKey
-): number {
+): number | null {
   switch (key) {
     case 'pts':
-      return Number(seasonAvg.avg_points ?? 0);
+      return seasonAvg.avg_points == null ? null : Number(seasonAvg.avg_points);
     case 'reb':
-      return Number(seasonAvg.avg_rebounds ?? 0);
+      return seasonAvg.avg_rebounds == null ? null : Number(seasonAvg.avg_rebounds);
     case 'ast':
-      return Number(seasonAvg.avg_assists ?? 0);
+      return seasonAvg.avg_assists == null ? null : Number(seasonAvg.avg_assists);
     case '3pm': {
       const gp = Number(seasonAvg.games_active ?? 0);
-      return gp > 0 ? Number(seasonAvg.total_3pm ?? 0) / gp : 0;
+      if (!(gp > 0) || seasonAvg.total_3pm == null) return null;
+      return Number(seasonAvg.total_3pm) / gp;
     }
-    case 'pra':
+    case 'pra': {
+      if (
+        seasonAvg.avg_points == null &&
+        seasonAvg.avg_rebounds == null &&
+        seasonAvg.avg_assists == null
+      ) {
+        return null;
+      }
       return (
         Number(seasonAvg.avg_points ?? 0) +
         Number(seasonAvg.avg_rebounds ?? 0) +
         Number(seasonAvg.avg_assists ?? 0)
       );
+    }
   }
 }
 
@@ -91,14 +100,14 @@ export function rollingAvg(values: number[], window: number): number[] {
 
 export function summaryStats(values: number[]): SummaryResult {
   if (values.length === 0) {
-    return { avg: 0, last5: 0, last10: 0, high: 0, low: 0 };
+    return { avg: null, last5: null, last10: null, high: null, low: null };
   }
 
   const avg = values.reduce((a, b) => a + b, 0) / values.length;
   const last5 = values.slice(0, 5);
   const last10 = values.slice(0, 10);
-  const l5Avg = last5.length > 0 ? last5.reduce((a, b) => a + b, 0) / last5.length : 0;
-  const l10Avg = last10.length > 0 ? last10.reduce((a, b) => a + b, 0) / last10.length : 0;
+  const l5Avg = last5.reduce((a, b) => a + b, 0) / last5.length;
+  const l10Avg = last10.reduce((a, b) => a + b, 0) / last10.length;
   const high = Math.max(...values);
   const low = Math.min(...values);
 

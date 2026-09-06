@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils';
 import type { SummaryResult } from '@/lib/players/types';
+import {
+  formatNullableStat,
+  formatStatDiffVsAvg,
+  hasSummarySample,
+} from '@/lib/players/stat-display';
 
 interface SummaryCardsRowProps {
   summary: SummaryResult;
@@ -15,13 +20,22 @@ const CARDS: { key: keyof SummaryResult; label: string; accent?: string }[] = [
 ];
 
 export function SummaryCardsRow({ summary, metricLabel }: SummaryCardsRowProps) {
+  if (!hasSummarySample(summary)) {
+    return (
+      <div className="rounded-lg border p-4 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">Not enough data yet</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {CARDS.map(({ key, label, accent }) => {
         const val = summary[key];
-        const diff = key !== 'avg' && key !== 'high' && key !== 'low'
-          ? val - summary.avg
-          : null;
+        const diffLabel =
+          key !== 'avg' && key !== 'high' && key !== 'low'
+            ? formatStatDiffVsAvg(val, summary.avg)
+            : null;
 
         return (
           <div
@@ -36,20 +50,20 @@ export function SummaryCardsRow({ summary, metricLabel }: SummaryCardsRowProps) 
               {label}
             </div>
             <div className={cn('text-2xl font-bold', accent)}>
-              {val.toFixed(1)}
+              {formatNullableStat(val)}
             </div>
-            {diff !== null && (
+            {diffLabel !== null && (
               <div
                 className={cn(
                   'text-xs mt-1 font-medium',
-                  diff > 0
+                  val != null && summary.avg != null && val - summary.avg > 0
                     ? 'text-green-600 dark:text-green-400'
-                    : diff < 0
+                    : val != null && summary.avg != null && val - summary.avg < 0
                     ? 'text-red-500 dark:text-red-400'
                     : 'text-zinc-400'
                 )}
               >
-                {diff > 0 ? '+' : ''}{diff.toFixed(1)} vs avg
+                {diffLabel}
               </div>
             )}
             <div className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">{metricLabel}</div>

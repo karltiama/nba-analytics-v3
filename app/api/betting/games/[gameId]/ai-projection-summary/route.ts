@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
+import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
 
 const bodySchema = z.object({
   homeTeamName: z.string().min(1),
@@ -129,6 +130,15 @@ export async function POST(
 ) {
   const gate = await requireBettingAuth(request);
   if (!gate.ok) return gate.response;
+
+  if (isIngestionFrozen()) {
+    return NextResponse.json({
+      summary: null,
+      eligible: false,
+      code: 'OFFSEASON' as const,
+      message: 'Matchup briefing unavailable during offseason freeze.',
+    });
+  }
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey?.trim()) {

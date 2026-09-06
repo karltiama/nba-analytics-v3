@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { buildAiSlateUserContent } from '@/lib/betting/ai-slate-context';
+import {
+  aiBriefingUnavailableCopy,
+  isAiSlateBriefingEligible,
+  isIngestionFrozen,
+} from '@/lib/betting/ai-briefing-eligibility';
 
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -97,20 +102,31 @@ export async function GET(request: NextRequest) {
   const gate = await requireBettingAuth(request);
   if (!gate.ok) return gate.response;
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey?.trim()) {
-    return NextResponse.json({
-      summary: null,
-      code: 'NO_OPENAI_KEY' as const,
-      message: 'Set OPENAI_API_KEY on the server to enable AI slate summaries.',
-    });
-  }
-
   const dateParam = request.nextUrl.searchParams.get('date');
   const dateEt =
     dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
       ? dateParam
       : new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+
+  if (isIngestionFrozen()) {
+    return NextResponse.json({
+      summary: null,
+      eligible: false,
+      code: 'OFFSEASON' as const,
+      message: aiBriefingUnavailableCopy(true),
+      meta: { date: dateEt },
+    });
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey?.trim()) {
+    return NextResponse.json({
+      summary: null,
+      eligible: false,
+      code: 'NO_OPENAI_KEY' as const,
+      message: 'Set OPENAI_API_KEY on the server to enable AI slate summaries.',
+    });
+  }
 
   const model = process.env.OPENAI_MODEL?.trim() || 'gpt-4o-mini';
   const promptVersion = 'v3-finish-reason-retry';
@@ -123,7 +139,17 @@ export async function GET(request: NextRequest) {
   );
 
   try {
-    const { userContent, payloadHash } = await buildAiSlateUserContent(dateEt);
+    const { userContent, payloadHash, gameCount } = await buildAiSlateUserContent(dateEt);
+
+    if (!isAiSlateBriefingEligible({ frozen: false, gameCount })) {
+      return NextResponse.json({
+        summary: null,
+        eligible: false,
+        code: 'NO_SLATE' as const,
+        message: aiBriefingUnavailableCopy(false),
+        meta: { date: dateEt },
+      });
+    }
 
     const text = await unstable_cache(
       () => fetchOpenAiSlateText(apiKey, model, userContent),
@@ -133,6 +159,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       summary: text,
+      eligible: true,
       code: null,
       meta: { date: dateEt, model },
     });

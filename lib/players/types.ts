@@ -122,11 +122,11 @@ export interface SeasonAverages {
 }
 
 export interface SummaryResult {
-  avg: number;
-  last5: number;
-  last10: number;
-  high: number;
-  low: number;
+  avg: number | null;
+  last5: number | null;
+  last10: number | null;
+  high: number | null;
+  low: number | null;
 }
 
 export interface HitRateResult {

@@ -11,7 +11,7 @@ import { resolveAnalyticsTeamId } from '@/lib/teams/analytics-queries';
 import { getScheduleForTeam, type ScheduleGameRow } from '@/lib/analytics/games-queries';
 import { resolveTeamScheduleSeason } from '@/lib/analytics/team-schedule-season';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
-import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { displayGameStatusLabel, resolveDisplayGameStatus } from '@/lib/betting/normalize-game-status';
 
 interface TeamScheduleProps {
   teamId: string;
@@ -130,7 +130,14 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
                       </TableCell>
                       <TableCell>
                         <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                          {normalizeGameStatus(game.status)}
+                          {displayGameStatusLabel(
+                            resolveDisplayGameStatus({
+                              statusRaw: game.status,
+                              startTime: game.start_time,
+                              homeScore: game.is_home === 'home' ? game.team_score : game.opponent_score,
+                              awayScore: game.is_home === 'home' ? game.opponent_score : game.team_score,
+                            })
+                          )}
                         </span>
                       </TableCell>
                     </TableRow>

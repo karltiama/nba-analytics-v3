@@ -3,6 +3,7 @@ import { query } from '@/lib/db';
 import { fetchLineupsFromBallDontLie } from '@/lib/balldontlie/lineups';
 import { getAnalyticsSeason } from '@/lib/season';
 import { filterAuthoritativeInjuries } from '@/lib/injuries/freshness';
+import { seriesFromOddsHistoryRows } from '@/lib/betting/line-movement-series';
 import type {
   PlayerPropLineComparisonRow,
   PlayerPropLineShoppingResponse,
@@ -1002,23 +1003,7 @@ export async function getLineMovement(gameId: string, preferredBookmaker: string
 function formatLineMovementFromAnalytics(
   rows: { snapshot_at: string; home_spread: number | null; total: number | null }[]
 ): { spreadMovement: { time: string; value: number }[]; totalMovement: { time: string; value: number }[] } {
-  const spreadMovement: { time: string; value: number }[] = [];
-  const totalMovement: { time: string; value: number }[] = [];
-
-  rows.forEach((row, index) => {
-    const timeLabel =
-      index === 0 ? 'Open' :
-      index === rows.length - 1 ? 'Now' :
-      new Date(row.snapshot_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-
-    const spreadVal = row.home_spread != null ? parseFloat(String(row.home_spread)) : 0;
-    const totalVal = row.total != null ? parseFloat(String(row.total)) : 0;
-
-    spreadMovement.push({ time: timeLabel, value: spreadVal });
-    totalMovement.push({ time: timeLabel, value: totalVal });
-  });
-
-  return { spreadMovement, totalMovement };
+  return seriesFromOddsHistoryRows(rows);
 }
 
 /**
@@ -1050,9 +1035,11 @@ function formatLineMovement(data: any[]) {
                          minute: '2-digit',
                          hour12: true 
                        });
+      const lineVal = Number(row.line);
+      if (!Number.isFinite(lineVal)) return;
       spreadData.push({
         time: timeLabel,
-        value: parseFloat(row.line) || 0,
+        value: lineVal,
       });
     });
   }
@@ -1067,9 +1054,11 @@ function formatLineMovement(data: any[]) {
                          minute: '2-digit',
                          hour12: true 
                        });
+      const lineVal = Number(row.line);
+      if (!Number.isFinite(lineVal)) return;
       totalData.push({
         time: timeLabel,
-        value: parseFloat(row.line) || 0,
+        value: lineVal,
       });
     });
   }

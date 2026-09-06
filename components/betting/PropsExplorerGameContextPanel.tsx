@@ -10,6 +10,7 @@ import {
   formatOddsHintForAiSummary,
   buildAiSupplementalLines,
 } from '@/lib/betting/ai-game-summary-payload';
+import { injuryAbsenceCopy, type InjuryFeedAvailability } from '@/lib/injuries/freshness';
 
 type InjuryRow = { player: string; status: string; injury: string };
 
@@ -37,6 +38,8 @@ type GameDetailsPayload = {
   } | null;
   injuryMatchupContext: InjuryMatchupContext;
   injuries?: { home: InjuryRow[]; away: InjuryRow[] };
+  injuryFeed?: InjuryFeedAvailability;
+  ingestionFrozen?: boolean;
 };
 
 function GameContextPlaceholder({ message }: { message: string }) {
@@ -194,6 +197,11 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
     let cancelled = false;
 
     async function loadAi(d: GameDetailsPayload) {
+      if (d.ingestionFrozen) {
+        setAiSummaryStatus('unavailable');
+        setAiSummaryText(null);
+        return;
+      }
       setAiSummaryStatus('loading');
       setAiSummaryText(null);
       const game = d.game;
@@ -306,7 +314,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
 
   if (!data) return null;
 
-  const { game, injuryMatchupContext, injuries } = data;
+  const { game, injuryMatchupContext, injuries, injuryFeed = 'authoritative_empty', ingestionFrozen = false } = data;
   const matchupLabel = `${game.awayTeam.abbreviation} @ ${game.homeTeam.abbreviation}`;
   const hasSplitTables = Boolean(injuryMatchupContext.entries?.length);
 
@@ -371,8 +379,14 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
         )}
         {aiSummaryStatus === 'unavailable' && (
           <p className="text-[10px] text-muted-foreground">
-            Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server for the AI-written
-            summary (same as full matchup page).
+            {ingestionFrozen
+              ? 'Matchup briefing unavailable during offseason freeze.'
+              : (
+                <>
+                  Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server for the AI-written
+                  summary (same as full matchup page).
+                </>
+              )}
           </p>
         )}
         {aiSummaryStatus === 'error' && (
@@ -414,7 +428,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
                 ) : null}
               </div>
             ) : (
-              <p className="text-[10px] text-muted-foreground">No injuries listed for this game.</p>
+              <p className="text-[10px] text-muted-foreground">{injuryAbsenceCopy(injuryFeed)}</p>
             )}
           </div>
         ) : null}

@@ -20,6 +20,7 @@ import {
 } from '@/lib/betting/enrich-games-response';
 import { isFinalStatus } from '@/lib/betting/normalize-game-status';
 import { isLiveBdlScheduleRefreshEnabled } from '@/lib/runtime/ingestion-mode';
+import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
 
 export const dynamic = 'force-dynamic';
 
@@ -111,7 +112,12 @@ export async function GET(request: NextRequest) {
       const homeForm = recentFormMap[String(game.home_team_id)] || [];
       const awayForm = recentFormMap[String(game.away_team_id)] || [];
       const { status, statusRaw } = enrichGameStatus(
-        game.status == null ? null : String(game.status)
+        game.status == null ? null : String(game.status),
+        {
+          startTime: game.start_time == null ? null : String(game.start_time),
+          homeScore: game.home_score == null ? null : Number(game.home_score),
+          awayScore: game.away_score == null ? null : Number(game.away_score),
+        }
       );
 
       return {
@@ -156,6 +162,7 @@ export async function GET(request: NextRequest) {
         date: displayDate,
         mode: mode,
         dataSource: 'analytics.games',
+        ingestionFrozen: isIngestionFrozen(),
       },
     });
   } catch (error: unknown) {

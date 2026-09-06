@@ -120,8 +120,17 @@ describe('getSeasonAvgForMetric', () => {
     expect(getSeasonAvgForMetric(seasonAvg, 'pra')).toBeCloseTo(37.5);
   });
 
-  it('handles zero games for 3pm', () => {
-    expect(getSeasonAvgForMetric({ ...seasonAvg, games_active: 0 }, '3pm')).toBe(0);
+  it('handles zero games for 3pm as no sample, not 0.0', () => {
+    expect(getSeasonAvgForMetric({ ...seasonAvg, games_active: 0 }, '3pm')).toBeNull();
+  });
+
+  it('returns null when season averages are missing', () => {
+    expect(getSeasonAvgForMetric({}, 'pts')).toBeNull();
+    expect(getSeasonAvgForMetric({}, 'pra')).toBeNull();
+  });
+
+  it('preserves a real season average of zero', () => {
+    expect(getSeasonAvgForMetric({ avg_points: 0, games_active: 12 }, 'pts')).toBe(0);
   });
 });
 
@@ -288,9 +297,18 @@ describe('summaryStats', () => {
     expect(result.low).toBe(18);
   });
 
-  it('handles empty array', () => {
+  it('treats empty array as no sample, not zero', () => {
     const result = summaryStats([]);
-    expect(result).toEqual({ avg: 0, last5: 0, last10: 0, high: 0, low: 0 });
+    expect(result).toEqual({ avg: null, last5: null, last10: null, high: null, low: null });
+  });
+
+  it('preserves a real statistical zero', () => {
+    const result = summaryStats([0, 0, 0]);
+    expect(result.avg).toBe(0);
+    expect(result.last5).toBe(0);
+    expect(result.last10).toBe(0);
+    expect(result.high).toBe(0);
+    expect(result.low).toBe(0);
   });
 
   it('handles single value', () => {

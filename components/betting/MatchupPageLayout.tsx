@@ -17,6 +17,9 @@ import {
 } from '@/lib/betting/ai-game-summary-payload';
 import type { MarketSentimentSnapshot } from '@/lib/betting/market-sentiment-types';
 import { MarketSentimentChart, resolveSentimentChartData } from '@/components/betting/MarketSentimentChart';
+import type { InjuryFeedAvailability } from '@/lib/injuries/freshness';
+import { injuryAbsenceCopy } from '@/lib/injuries/freshness';
+import { displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
 
 // --- Types (migrated from GameDetailsModal) ---
 interface RecentGameResult {
@@ -105,6 +108,8 @@ export interface GameDetailsData {
   currentOdds?: CurrentOdds | null;
   historicalMatchups: HistoricalMatchup[];
   injuries: { home: InjuryReport[]; away: InjuryReport[] };
+  injuryFeed?: InjuryFeedAvailability;
+  ingestionFrozen?: boolean;
   aiSuggestions: AIBetSuggestion[];
   aiConfidenceScores: { moneyline: number; spread: number; total: number };
   matchupAnalysis?: MatchupAnalysisData | null;
@@ -451,6 +456,9 @@ function MarketSentimentPanel({
   sentiment?: MarketSentimentSnapshot | null;
 }) {
   const { points, mode } = resolveSentimentChartData(game.id, sentiment);
+  if (mode === 'none' || points.length < 2) {
+    return null;
+  }
   const lastHome = points[points.length - 1].homeWinPct;
   const lastAway = Math.max(0, Math.min(100, 100 - lastHome));
 
@@ -548,6 +556,14 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     marketSentiment,
   } = data;
 
+  const ingestionFrozen = Boolean(data.ingestionFrozen);
+  const injuryFeed =
+    data.injuryFeed ?? (ingestionFrozen ? 'not_current' : 'authoritative_empty');
+
+  const sentimentResolved = resolveSentimentChartData(game.id, marketSentiment);
+  const showSentiment =
+    sentimentResolved.mode !== 'none' && sentimentResolved.points.length >= 2;
+
   const summaryBullets = getGameSummaryBulletsForAi({
     matchupAnalysis: data.matchupAnalysis,
     homeTeamStats: data.homeTeamStats,
@@ -604,6 +620,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     let cancelled = false;
 
     async function loadAiSummary() {
+      if (ingestionFrozen) {
+        setAiSummaryStatus('unavailable');
+        setAiSummaryText(null);
+        return;
+      }
       setAiSummaryStatus('loading');
       setAiSummaryText(null);
       const bullets = getGameSummaryBulletsForAi({
@@ -696,6 +717,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           <div className="flex items-center gap-2 min-w-0 shrink-0">
             <Calendar className="w-4 h-4 text-[#00d4ff] shrink-0" />
             <span className="text-sm font-medium text-muted-foreground truncate">{game.startTime}</span>
+            {game.status ? (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-medium">
+                {displayGameStatusLabel(game.status)}
+              </span>
+            ) : null}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             <Link href={`/teams/${game.awayTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
@@ -767,8 +793,14 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             )}
             {aiSummaryStatus === 'unavailable' && (
               <p className="text-xs text-muted-foreground mt-3">
-                Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
-                AI-written summary.
+                {ingestionFrozen
+                  ? 'Matchup briefing unavailable during offseason freeze.'
+                  : (
+                    <>
+                      Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
+                      AI-written summary.
+                    </>
+                  )}
               </p>
             )}
             {aiSummaryStatus === 'error' && (
@@ -865,7 +897,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               <p className="text-[10px] text-muted-foreground mt-0.5">Sportsbook lines and crowd sentiment side by side</p>
             </div>
             <div className="p-2.5 sm:p-3">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:items-stretch">
+              <div className={`grid grid-cols-1 gap-3 lg:items-stretch ${showSentiment ? 'lg:grid-cols-2' : ''}`}>
                 <div className="space-y-3 min-w-0 flex flex-col">
                   <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5">
                     <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Odds & lines</p>
@@ -930,9 +962,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                   </div>
                 </div>
 
+                {showSentiment ? (
                 <div className="min-w-0 lg:border-l lg:border-white/5 lg:pl-3 flex flex-col">
                   <MarketSentimentPanel game={game} sentiment={marketSentiment} />
                 </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -1123,7 +1157,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 )}
               </div>
               <div className="p-3">
-                {(injuries?.away?.length ?? 0) > 0 ? injuries.away.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">No injuries reported</p>}
+                {(injuries?.away?.length ?? 0) > 0 ? injuries.away.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">{injuryAbsenceCopy(injuryFeed)}</p>}
               </div>
             </div>
             <div className="glass-card rounded-xl overflow-hidden border border-white/5">
@@ -1137,7 +1171,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 )}
               </div>
               <div className="p-3">
-                {(injuries?.home?.length ?? 0) > 0 ? injuries.home.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">No injuries reported</p>}
+                {(injuries?.home?.length ?? 0) > 0 ? injuries.home.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">{injuryAbsenceCopy(injuryFeed)}</p>}
               </div>
             </div>
           </div>

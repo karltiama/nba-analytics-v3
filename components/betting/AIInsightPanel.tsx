@@ -27,6 +27,8 @@ interface AIInsightPanelProps {
   slateSummaryLoading?: boolean;
   /** When summary is null: optional hint (e.g. missing API key). */
   slateSummaryHint?: string | null;
+  /** False under freeze/offseason or when there is no current slate. */
+  briefingEligible?: boolean;
 }
 
 function getInsightIcon(type: Insight['type']) {
@@ -84,6 +86,7 @@ export function AIInsightPanel({
   slateSummary = null,
   slateSummaryLoading = false,
   slateSummaryHint = null,
+  briefingEligible = true,
 }: AIInsightPanelProps) {
   void insights;
   return (
@@ -99,10 +102,14 @@ export function AIInsightPanel({
             <p className="text-[10px] text-muted-foreground">Slate + analytics signals</p>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-[#39ff14] pulse-dot" />
-          <span className="text-[10px] text-[#39ff14] font-medium">LIVE</span>
-        </div>
+        {slateSummaryLoading ? null : briefingEligible && slateSummary ? (
+          <div className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#39ff14] pulse-dot" />
+            <span className="text-[10px] text-[#39ff14] font-medium">LIVE</span>
+          </div>
+        ) : (
+          <span className="text-[10px] text-muted-foreground font-medium">Unavailable</span>
+        )}
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">

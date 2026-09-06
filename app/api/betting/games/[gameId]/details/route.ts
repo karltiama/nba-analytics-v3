@@ -10,9 +10,14 @@ import {
 import { query } from '@/lib/db';
 import { getInjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
-import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { resolveDisplayGameStatus } from '@/lib/betting/normalize-game-status';
 import { buildEnrichedTeamSide, toNullableGameOdds } from '@/lib/betting/enrich-games-response';
-import { filterAuthoritativeInjuries } from '@/lib/injuries/freshness';
+import {
+  describeInjuryFeedAvailability,
+  filterAuthoritativeInjuries,
+  isFrozenInjuryServing,
+} from '@/lib/injuries/freshness';
+import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
 
 /** Normalize provider injury fields to UI-friendly status for injury badges. */
 function normalizeInjuryStatus(
@@ -156,6 +161,11 @@ export async function GET(
         snapshotAt: r.snapshot_at,
       }))
     );
+    const injuryFeed = describeInjuryFeedAvailability({
+      frozen: isFrozenInjuryServing(),
+      rawRowCount: injuryRows.length,
+      authoritativeCount: liveInjuryRows.length,
+    });
     const injuriesHome = liveInjuryRows
       .filter((r) => r.team_id === game.home_team_id)
       .map((r) => ({
@@ -204,7 +214,12 @@ export async function GET(
     });
 
     const startTimeFormatted = formatTipoffEt(game.start_time);
-    const status = normalizeGameStatus(game.status);
+    const status = resolveDisplayGameStatus({
+      statusRaw: game.status,
+      startTime: game.start_time,
+      homeScore: game.home_score,
+      awayScore: game.away_score,
+    });
 
     const gameDateStr = game.start_time
       ? new Date(game.start_time).toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
@@ -272,6 +287,8 @@ export async function GET(
         home: injuriesHome,
         away: injuriesAway,
       },
+      injuryFeed,
+      ingestionFrozen: isIngestionFrozen(),
       injuryMatchupContext: injuryMatchupContext ?? { season: '', entries: [] },
       aiSuggestions: [],
       aiConfidenceScores: {

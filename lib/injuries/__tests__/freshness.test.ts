@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_INJURY_FRESHNESS_HOURS,
+  describeInjuryFeedAvailability,
   filterAuthoritativeInjuries,
+  injuryAbsenceCopy,
   isFrozenInjuryServing,
   isInjuryAuthoritativeForServing,
   isInjurySnapshotFresh,
@@ -82,5 +84,33 @@ describe('injury freshness policy', () => {
       'fresh',
     ]);
     expect(filterAuthoritativeInjuries(rows, freezeEnv, now)).toEqual([]);
+  });
+});
+
+describe('describeInjuryFeedAvailability', () => {
+  it('frozen feed is not_current even when there are zero rows', () => {
+    expect(
+      describeInjuryFeedAvailability({ frozen: true, rawRowCount: 0, authoritativeCount: 0 })
+    ).toBe('not_current');
+    expect(injuryAbsenceCopy('not_current')).toBe('Injury status not current');
+  });
+
+  it('authoritative empty feed is No injuries listed', () => {
+    expect(
+      describeInjuryFeedAvailability({ frozen: false, rawRowCount: 0, authoritativeCount: 0 })
+    ).toBe('authoritative_empty');
+    expect(injuryAbsenceCopy('authoritative_empty')).toBe('No injuries listed');
+  });
+
+  it('stale leftover rows are not_current, not an empty injury report', () => {
+    expect(
+      describeInjuryFeedAvailability({ frozen: false, rawRowCount: 3, authoritativeCount: 0 })
+    ).toBe('not_current');
+  });
+
+  it('authoritative present stays present', () => {
+    expect(
+      describeInjuryFeedAvailability({ frozen: false, rawRowCount: 2, authoritativeCount: 2 })
+    ).toBe('authoritative_present');
   });
 });
