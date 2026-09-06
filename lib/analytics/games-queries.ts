@@ -204,7 +204,7 @@ export async function getScheduleForTeam(
     ORDER BY g.start_time ASC NULLS LAST
   `;
   const rows = await query(sql, [teamId, season]);
-  const mapped = rows.map((r: Record<string, unknown>) => {
+  const mapped: ScheduleGameRow[] = rows.map((r: Record<string, unknown>): ScheduleGameRow => {
     const isHome = r.home_team_id === teamId;
     const teamScoreRaw = isHome ? r.home_score : r.away_score;
     const oppScoreRaw = isHome ? r.away_score : r.home_score;
