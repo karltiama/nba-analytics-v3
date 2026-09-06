@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeCronRequest } from '@/lib/auth/cron-auth';
 import { runPaperSettlement } from '@/lib/betting/paper-settle-runner';
+import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
 
 function runtimeMode() {
-  const dataMode = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
-  const offseason = process.env.OFFSEASON_MODE === '1';
-  const cronDryRun = process.env.CRON_DRY_RUN === '1';
-  const shouldSkipMutations = cronDryRun || offseason || dataMode !== 'live_api';
-  return { dataMode, offseason, cronDryRun, shouldSkipMutations };
+  const mode = readIngestionMode();
+  return {
+    dataMode: mode.dataMode || 'unset',
+    offseason: mode.offseason,
+    cronDryRun: mode.cronDryRun,
+    shouldSkipMutations: mode.shouldSkipMutations,
+  };
 }
 
 /**

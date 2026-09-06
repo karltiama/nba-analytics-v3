@@ -1,3 +1,13 @@
+# Fail-closed freeze defaults. Explicit tfvars values always win (merge last).
+# Missing DATA_MODE / OFFSEASON_MODE / CRON_DRY_RUN must not become live_api / 0 / 0.
+locals {
+  ingestion_freeze_defaults = {
+    DATA_MODE      = "replay"
+    OFFSEASON_MODE = "1"
+    CRON_DRY_RUN   = "1"
+  }
+}
+
 # Package Lambda from source: run "npm install && npm run build" in lambda/nightly-bdl-updater first.
 data "archive_file" "nightly_bdl" {
   type        = "zip"
@@ -16,7 +26,7 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
   source_code_hash = data.archive_file.nightly_bdl.output_base64sha256
 
   environment {
-    variables = var.lambda_env
+    variables = merge(local.ingestion_freeze_defaults, var.lambda_env)
   }
 }
 
@@ -66,7 +76,7 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
   source_code_hash = data.archive_file.odds_pre_game.output_base64sha256
 
   environment {
-    variables = var.odds_lambda_env
+    variables = merge(local.ingestion_freeze_defaults, var.odds_lambda_env)
   }
 }
 
@@ -121,7 +131,7 @@ resource "aws_lambda_function" "injuries_snapshot" {
   source_code_hash = data.archive_file.injuries_snapshot.output_base64sha256
 
   environment {
-    variables = var.injuries_lambda_env
+    variables = merge(local.ingestion_freeze_defaults, var.injuries_lambda_env)
   }
 }
 
@@ -189,6 +199,7 @@ resource "aws_lambda_function" "player_props_worker" {
         STORE_PROP_RAW_JSON       = "false"
         PROP_RAW_JSON_SAMPLE_RATE = "0"
       },
+      local.ingestion_freeze_defaults,
       var.player_props_lambda_env,
       {
         PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
@@ -220,15 +231,14 @@ resource "aws_lambda_function" "player_props_controller" {
         STORE_PROP_RAW_JSON       = "false"
         PROP_RAW_JSON_SAMPLE_RATE = "0"
       },
+      local.ingestion_freeze_defaults,
+      var.player_props_lambda_env,
       var.player_props_controller_env,
       {
-        SUPABASE_DB_URL        = lookup(var.player_props_lambda_env, "SUPABASE_DB_URL", "")
-        BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", "")
+        SUPABASE_DB_URL        = lookup(var.player_props_lambda_env, "SUPABASE_DB_URL", lookup(var.player_props_controller_env, "SUPABASE_DB_URL", ""))
+        BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", lookup(var.player_props_controller_env, "BALLDONTLIE_API_KEY", ""))
         PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
         PREFERRED_VENDOR       = lookup(var.player_props_lambda_env, "PREFERRED_VENDOR", "draftkings")
-        DATA_MODE              = lookup(var.player_props_lambda_env, "DATA_MODE", "live_api")
-        OFFSEASON_MODE         = lookup(var.player_props_lambda_env, "OFFSEASON_MODE", "0")
-        CRON_DRY_RUN           = lookup(var.player_props_lambda_env, "CRON_DRY_RUN", "0")
       }
     )
   }
@@ -300,7 +310,7 @@ resource "aws_lambda_function" "boxscore_scraper" {
   source_code_hash = data.archive_file.boxscore_scraper.output_base64sha256
 
   environment {
-    variables = var.boxscore_lambda_env
+    variables = merge(local.ingestion_freeze_defaults, var.boxscore_lambda_env)
   }
 }
 

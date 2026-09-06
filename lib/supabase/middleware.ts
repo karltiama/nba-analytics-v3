@@ -1,12 +1,46 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+export function isBettingHtmlPath(pathname: string): boolean {
+  return (
+    (pathname === '/betting' || pathname.startsWith('/betting/')) &&
+    !pathname.startsWith('/api/')
+  );
+}
+
+export function isSupabaseBrowserAuthConfigured(
+  env: Record<string, string | undefined> = process.env
+): boolean {
+  const url = env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  return Boolean(url && anonKey);
+}
+
+function redirectToLogin(request: NextRequest, extraParams?: Record<string, string>) {
+  const pathname = request.nextUrl.pathname;
+  const loginUrl = new URL('/login', request.url);
+  loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`);
+  if (extraParams) {
+    for (const [key, value] of Object.entries(extraParams)) {
+      loginUrl.searchParams.set(key, value);
+    }
+  }
+  return NextResponse.redirect(loginUrl);
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const pathname = request.nextUrl.pathname;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+  // Betting HTML must not render when auth config is missing (fail-closed).
+  // `/api/betting/*` stays unblocked here so handlers can return JSON 401.
   if (!url || !anonKey) {
+    if (isBettingHtmlPath(pathname)) {
+      return redirectToLogin(request, { error: 'auth_config' });
+    }
     return supabaseResponse;
   }
 
@@ -27,17 +61,8 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-  // Page routes only — `/api/betting/*` must return JSON 401 from handlers,
-  // not an HTML login redirect.
-  const isBettingPage =
-    (pathname === '/betting' || pathname.startsWith('/betting/')) &&
-    !pathname.startsWith('/api/');
-
-  if (isBettingPage && !user) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`);
-    const redirectResponse = NextResponse.redirect(loginUrl);
+  if (isBettingHtmlPath(pathname) && !user) {
+    const redirectResponse = redirectToLogin(request);
     for (const c of supabaseResponse.cookies.getAll()) {
       redirectResponse.cookies.set(c.name, c.value);
     }

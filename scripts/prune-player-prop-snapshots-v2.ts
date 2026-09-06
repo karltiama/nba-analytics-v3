@@ -1,91 +1,78 @@
+/**
+ * Props prune CLI — same job as /api/cron/prune-props.
+ *
+ * Does NOT delete unless:
+ *   --execute  AND  PRUNE_ENABLED=1  AND  DATA_MODE=live_api
+ *   AND OFFSEASON_MODE=0  AND  CRON_DRY_RUN=0
+ *   AND archive verification / closing-line completeness / max-delete gates pass
+ *   (see lib/prune/run-prune-props.ts).
+ *
+ * Without --execute, PRUNE_ENABLED is forced off (no delete even if env is live).
+ * Missing or malformed prune env => no delete.
+ *
+ * Usage:
+ *   tsx scripts/prune-player-prop-snapshots-v2.ts
+ *   tsx scripts/prune-player-prop-snapshots-v2.ts --execute
+ *
+ * Do not use this to bypass cron safeguards. Retention window is the job default
+ * (not --days). --days / --batch-size / --sleep-ms are rejected.
+ */
+
 import 'dotenv/config';
 import { Pool } from 'pg';
+import { overlayPruneCliEnv } from '@/lib/prune/cli-env';
+import { runPrunePropsJob } from '@/lib/prune/run-prune-props';
 
-function getArg(name: string): string | undefined {
-  const idx = process.argv.indexOf(name);
-  if (idx === -1) return undefined;
-  return process.argv[idx + 1];
+function hasFlag(name: string, argv: string[] = process.argv): boolean {
+  return argv.includes(name);
 }
 
-function hasFlag(name: string): boolean {
-  return process.argv.includes(name);
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function assertNoLegacyDestructiveFlags(argv: string[] = process.argv): void {
+  const blocked = ['--days', '--batch-size', '--sleep-ms'];
+  const found = blocked.filter((flag) => argv.includes(flag));
+  if (found.length > 0) {
+    throw new Error(
+      `Removed flags ${found.join(', ')}: this CLI uses the cron prune job (3-day retention + gates). Do not pass a custom delete window.`
+    );
+  }
 }
 
 async function main() {
-  const dbUrl = process.env.SUPABASE_DB_URL;
-  if (!dbUrl) {
-    throw new Error('Missing SUPABASE_DB_URL');
-  }
+  assertNoLegacyDestructiveFlags();
 
-  const retentionDays = Number(getArg('--days') ?? '30');
-  const batchSize = Number(getArg('--batch-size') ?? '50000');
-  const sleepMs = Number(getArg('--sleep-ms') ?? '200');
   const execute = hasFlag('--execute');
+  const env = overlayPruneCliEnv(process.env, execute);
 
-  if (!Number.isFinite(retentionDays) || retentionDays < 1) {
-    throw new Error(`Invalid --days value: ${retentionDays}`);
+  const dbUrl = env.SUPABASE_DB_URL ?? process.env.SUPABASE_DB_URL;
+  if (!dbUrl) {
+    console.error('Missing SUPABASE_DB_URL; no delete performed.');
+    process.exit(1);
   }
-  if (!Number.isFinite(batchSize) || batchSize < 1000) {
-    throw new Error(`Invalid --batch-size value: ${batchSize}`);
-  }
-  if (!Number.isFinite(sleepMs) || sleepMs < 0) {
-    throw new Error(`Invalid --sleep-ms value: ${sleepMs}`);
+
+  if (!execute) {
+    console.log(
+      'No --execute: prune env is forced skip (PRUNE_ENABLED=0). Re-run with --execute only when cron safety env is intentionally set.'
+    );
   }
 
   const pool = new Pool({ connectionString: dbUrl });
-  const client = await pool.connect();
   try {
-    const cutoff = await client.query<{ cutoff: string }>(
-      `select (now() - ($1::text || ' days')::interval)::timestamptz as cutoff`,
-      [String(retentionDays)]
-    );
-    const cutoffTs = cutoff.rows[0]?.cutoff;
-    console.log(`Retention cutoff: ${cutoffTs}`);
-
-    const estimate = await client.query<{ rows_to_delete: string }>(
-      `select count(*)::text as rows_to_delete
-       from raw.player_prop_snapshots_v2
-       where fetched_at < now() - ($1::text || ' days')::interval`,
-      [String(retentionDays)]
-    );
-    const toDelete = Number(estimate.rows[0]?.rows_to_delete ?? '0');
-    console.log(`Rows older than ${retentionDays} days: ${toDelete}`);
-
-    if (!execute) {
-      console.log('Dry run only. Re-run with --execute to delete rows.');
-      return;
+    const result = await runPrunePropsJob({
+      pool,
+      env,
+      authenticated: true,
+    });
+    console.log(JSON.stringify(result.body, null, 2));
+    if (result.body.ok === false || result.httpStatus >= 500) {
+      process.exit(1);
     }
-
-    let totalDeleted = 0;
-    while (true) {
-      const deleted = await client.query<{ deleted_rows: string }>(
-        `with doomed as (
-           select ctid
-           from raw.player_prop_snapshots_v2
-           where fetched_at < now() - ($1::text || ' days')::interval
-           limit $2
-         )
-         delete from raw.player_prop_snapshots_v2 t
-         using doomed d
-         where t.ctid = d.ctid
-         returning 1`,
-        [String(retentionDays), batchSize]
-      );
-      const count = deleted.rowCount ?? 0;
-      totalDeleted += count;
-      console.log(`Deleted batch: ${count} (total: ${totalDeleted})`);
-      if (count === 0) break;
-      if (sleepMs > 0) await sleep(sleepMs);
+    const deletedRaw = result.audit.rowsDeleted.rawV2;
+    const deletedCurrent = result.audit.rowsDeleted.analyticsCurrent;
+    if (!execute && (deletedRaw > 0 || deletedCurrent > 0)) {
+      console.error('Refusing: dry CLI path deleted rows. This is a bug.');
+      process.exit(1);
     }
-
-    await client.query(`vacuum (analyze) raw.player_prop_snapshots_v2`);
-    console.log(`Done. Total rows deleted: ${totalDeleted}`);
   } finally {
-    client.release();
     await pool.end();
   }
 }

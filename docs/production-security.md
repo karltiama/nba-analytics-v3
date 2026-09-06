@@ -4,7 +4,7 @@ Concise reference for auth, cron, destructive prune, and the offseason freeze. O
 
 ## User / API auth
 
-- **Pages** under `/betting/*`: session middleware (`proxy.ts` → `lib/supabase/middleware.ts`) redirects unauthenticated browsers to `/login`.
+- **Pages** under `/betting/*`: session middleware (`proxy.ts` → `lib/supabase/middleware.ts`) redirects unauthenticated browsers to `/login`. If `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is missing, betting HTML still redirects to `/login?error=auth_config` (does not render as public). `/api/betting/*` is not redirected so handlers can return JSON 401.
 - **APIs** under `/api/betting/*`: handlers call `requireBettingAuth` → `resolveSupabaseAuth` (cookie session or `Authorization: Bearer`). Failure → **401** JSON `{ "error": "Unauthorized" }`. Do not rely on the HTML redirect for APIs.
 - Same-origin browser `fetch('/api/betting/...')` sends cookies by default. Prefer `credentials: 'include'` when calling user profile/settings routes.
 - **Logout**: `supabase.auth.signOut()` clears the session; subsequent `/betting` hits require login again.
@@ -42,6 +42,8 @@ Until intentionally thawed for in-season ops:
 | `PRUNE_ENABLED` | **unset** (do not set to `1`) |
 
 Schedulers may still fire; jobs should no-op. Do not run a destructive prune to “test” safety.
+
+Terraform (`infra/lambda.tf`) merges freeze defaults (`DATA_MODE=replay`, `OFFSEASON_MODE=1`, `CRON_DRY_RUN=1`) under each Lambda env map. Explicit tfvars values win. Missing keys must not become `live_api` / in-season. Lambda runtimes treat missing `DATA_MODE` as not live (skip mutations). Thaw only by setting `DATA_MODE=live_api` with `OFFSEASON_MODE=0` and `CRON_DRY_RUN=0`.
 
 ## Secrets vs ordinary configuration
 

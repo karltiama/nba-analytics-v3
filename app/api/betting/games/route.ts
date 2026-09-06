@@ -19,6 +19,7 @@ import {
   toNullableGameOdds,
 } from '@/lib/betting/enrich-games-response';
 import { isFinalStatus } from '@/lib/betting/normalize-game-status';
+import { isLiveBdlScheduleRefreshEnabled } from '@/lib/runtime/ingestion-mode';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
 
     const todayEt = getTodayEtYmd();
-    const liveRefreshEnabled = process.env.DISABLE_BDL_LIVE_SCHEDULE_REFRESH !== '1';
+    const liveRefreshEnabled = isLiveBdlScheduleRefreshEnabled();
 
     async function maybeRefreshScheduleForEtDay(ymd: string) {
       if (!liveRefreshEnabled || ymd !== todayEt) return;

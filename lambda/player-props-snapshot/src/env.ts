@@ -24,9 +24,10 @@ export type RuntimeMode = {
   shouldSkipMutations: boolean;
 };
 
-/** Same skip rule as Vercel crons: dry-run, offseason, or non-live data mode. */
+/** Same skip rule as Vercel crons: dry-run, offseason, or non-live data mode.
+ * Missing DATA_MODE is not live_api (fail-closed). */
 export function getRuntimeMode(): RuntimeMode {
-  const dataMode = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
+  const dataMode = (process.env.DATA_MODE || '').trim().toLowerCase();
   const offseason = process.env.OFFSEASON_MODE === '1';
   const cronDryRun = process.env.CRON_DRY_RUN === '1';
   const shouldSkipMutations = cronDryRun || offseason || dataMode !== 'live_api';

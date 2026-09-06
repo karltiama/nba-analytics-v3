@@ -51,10 +51,9 @@ const RETRY_BASE_DELAY_MS = 60000;
 const OFFSEASON_MODE = process.env.OFFSEASON_MODE === '1';
 const CRON_DRY_RUN = process.env.CRON_DRY_RUN === '1';
 
-function getDataMode(): 'live_api' | 'replay' | 'manual_csv' {
-  const raw = (process.env.DATA_MODE || 'live_api').trim().toLowerCase();
-  if (raw === 'replay' || raw === 'manual_csv') return raw;
-  return 'live_api';
+function getDataMode(): string {
+  // Missing / unknown is not live. Only exact live_api enables provider calls.
+  return (process.env.DATA_MODE || '').trim().toLowerCase();
 }
 
 const DATA_MODE = getDataMode();
@@ -541,7 +540,7 @@ async function syncUpcomingScheduleFromBdl(
 // ============================================
 
 interface PipelineResult {
-  dataMode: 'live_api' | 'replay' | 'manual_csv';
+  dataMode: string;
   offseasonMode: boolean;
   skippedProviderCalls: boolean;
   scheduleGamesSynced: number;
