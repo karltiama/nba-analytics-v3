@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["index.ts"],
+  "include": ["index.ts", "leave-report.ts", "ingest-plan.ts"],
   "exclude": ["node_modules", "dist"]
 }

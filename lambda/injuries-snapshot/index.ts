@@ -30,6 +30,8 @@ try {
 
 import { Pool } from 'pg';
 import { z } from 'zod';
+import { REMOVED_FROM_REPORT_STATUS } from './leave-report';
+import { planInjuryIngest, type InjuryFieldSnapshot, type InjuryPullRow } from './ingest-plan';
 
 // ============================================
 // CONFIGURATION
@@ -197,9 +199,9 @@ async function insertRawSnapshot(
 // ============================================
 
 async function transformToAnalytics(
-  pullRunId: number
-): Promise<{ current: number; history: number; removed: number }> {
-  // Build provider_team_id -> analytics team_id map (same logic as transform-raw-to-analytics)
+  pullRunId: number,
+  opts: { rowsStored: number; rowsReturned: number }
+): Promise<{ current: number; history: number; removed: number; massClearBlocked: boolean; completenessReason: string }> {
   const teamMapRes = await pool.query(
     `SELECT r.id as raw_id, t.team_id
      FROM raw.teams r
@@ -215,7 +217,23 @@ async function transformToAnalytics(
     return providerTeamIdToAnalytics.get(providerTeamId) ?? null;
   };
 
-  // Latest raw row per player in this pull (one per player)
+  const prevCompleteRes = await pool.query<{ rows_stored: number | string }>(
+    `SELECT rows_stored
+     FROM raw.injury_pull_runs
+     WHERE pull_run_id < $1
+       AND status = 'success'
+       AND completed_at IS NOT NULL
+       AND rows_stored IS NOT NULL
+       AND rows_returned IS NOT NULL
+       AND rows_stored = rows_returned
+       AND rows_stored > 0
+     ORDER BY pull_run_id DESC
+     LIMIT 1`,
+    [pullRunId]
+  );
+  const previousCompleteRowCount =
+    prevCompleteRes.rows[0] != null ? Number(prevCompleteRes.rows[0].rows_stored) : null;
+
   const rawRows = await pool.query(
     `SELECT DISTINCT ON (provider_player_id)
        provider_player_id, provider_team_id, status, description, return_date_raw, created_at
@@ -226,54 +244,90 @@ async function transformToAnalytics(
     [pullRunId]
   );
 
-  let currentCount = 0;
-  let historyCount = 0;
-  const currentPlayerIds = new Set<string>();
+  const pullRows: InjuryPullRow[] = rawRows.rows.map((row) => ({
+    playerId: String(row.provider_player_id),
+    teamId: mapTeamId(row.provider_team_id ?? null),
+    status: row.status ?? null,
+    description: row.description ?? null,
+    returnDateRaw: row.return_date_raw ?? null,
+    snapshotAt:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : String(row.created_at),
+  }));
 
-  for (const row of rawRows.rows) {
-    const playerId = String(row.provider_player_id);
-    currentPlayerIds.add(playerId);
-    const teamId = mapTeamId(row.provider_team_id ?? null);
-    const status = row.status ?? null;
-    const description = row.description ?? null;
-    const returnDateRaw = row.return_date_raw ?? null;
-    const snapshotAt = row.created_at;
+  const observedAt =
+    pullRows[0]?.snapshotAt ?? new Date().toISOString();
 
-    // Previous current row (before upsert)
-    const prev = await pool.query(
-      `SELECT status, description, return_date_raw, team_id
-       FROM analytics.player_injury_status_current
-       WHERE player_id = $1`,
-      [playerId]
+  const prevCurrentRes = await pool.query<{
+    player_id: string;
+    team_id: string | null;
+    status: string | null;
+    description: string | null;
+    return_date_raw: string | null;
+  }>(
+    `SELECT player_id, team_id, status, description, return_date_raw
+     FROM analytics.player_injury_status_current`
+  );
+  const previousCurrent = new Map<string, InjuryFieldSnapshot>();
+  for (const row of prevCurrentRes.rows) {
+    previousCurrent.set(String(row.player_id), {
+      playerId: String(row.player_id),
+      teamId: row.team_id,
+      status: row.status,
+      description: row.description,
+      returnDateRaw: row.return_date_raw,
+    });
+  }
+
+  const existingLeaveRes = await pool.query<{ player_id: string }>(
+    `SELECT player_id
+     FROM analytics.player_injury_status_history
+     WHERE pull_run_id = $1
+       AND status = $2`,
+    [pullRunId, REMOVED_FROM_REPORT_STATUS]
+  );
+
+  const plan = planInjuryIngest({
+    pullRunId,
+    pullStatus: 'success',
+    completed: true,
+    rowsStored: opts.rowsStored,
+    rowsReturned: opts.rowsReturned,
+    previousCompleteRowCount,
+    observedAt,
+    pullRows,
+    previousCurrent,
+    existingLeaveReportPlayerIds: existingLeaveRes.rows.map((r) => String(r.player_id)),
+  });
+
+  if (plan.massClearBlocked) {
+    console.warn(
+      `[injuries] mass-clear blocked for pull ${pullRunId}: ${plan.completenessReason}`
     );
-    const prevRow = prev.rows[0];
-    const changed =
-      !prevRow ||
-      prevRow.status !== status ||
-      prevRow.description !== description ||
-      prevRow.return_date_raw !== returnDateRaw ||
-      prevRow.team_id !== teamId;
+  }
 
-    if (changed && prevRow) {
-      await pool.query(
-        `INSERT INTO analytics.player_injury_status_history (
-           player_id, team_id, status, description, return_date_raw, snapshot_at, pull_run_id
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [playerId, teamId, status, description, returnDateRaw, snapshotAt, pullRunId]
-      );
-      historyCount += 1;
-    }
-    if (changed && !prevRow) {
-      // First time we see this player on injury report — still insert history for audit
-      await pool.query(
-        `INSERT INTO analytics.player_injury_status_history (
-           player_id, team_id, status, description, return_date_raw, snapshot_at, pull_run_id
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [playerId, teamId, status, description, returnDateRaw, snapshotAt, pullRunId]
-      );
-      historyCount += 1;
-    }
+  let historyCount = 0;
+  for (const insert of plan.historyInserts) {
+    await pool.query(
+      `INSERT INTO analytics.player_injury_status_history (
+         player_id, team_id, status, description, return_date_raw, snapshot_at, pull_run_id
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [
+        insert.playerId,
+        insert.teamId,
+        insert.status,
+        insert.description,
+        insert.returnDateRaw,
+        insert.snapshotAt,
+        insert.pullRunId,
+      ]
+    );
+    historyCount += 1;
+  }
 
+  let currentCount = 0;
+  for (const row of plan.currentUpserts) {
     await pool.query(
       `INSERT INTO analytics.player_injury_status_current (
          player_id, team_id, status, description, return_date_raw, snapshot_at, pull_run_id, updated_at
@@ -286,30 +340,37 @@ async function transformToAnalytics(
          snapshot_at = excluded.snapshot_at,
          pull_run_id = excluded.pull_run_id,
          updated_at = now()`,
-      [playerId, teamId, status, description, returnDateRaw, snapshotAt, pullRunId]
+      [
+        row.playerId,
+        row.teamId,
+        row.status,
+        row.description,
+        row.returnDateRaw,
+        row.snapshotAt,
+        pullRunId,
+      ]
     );
     currentCount += 1;
   }
 
-  const latestPlayerIds = Array.from(currentPlayerIds);
   let removedCount = 0;
-  if (latestPlayerIds.length > 0) {
+  if (!plan.massClearBlocked && plan.currentDeletes.length > 0) {
     const removed = await pool.query(
       `DELETE FROM analytics.player_injury_status_current c
-       WHERE c.player_id != ALL($1::text[])
+       WHERE c.player_id = ANY($1::text[])
        RETURNING c.player_id`,
-      [latestPlayerIds]
-    );
-    removedCount = removed.rowCount ?? 0;
-  } else {
-    const removed = await pool.query(
-      `DELETE FROM analytics.player_injury_status_current c
-       RETURNING c.player_id`
+      [plan.currentDeletes]
     );
     removedCount = removed.rowCount ?? 0;
   }
 
-  return { current: currentCount, history: historyCount, removed: removedCount };
+  return {
+    current: currentCount,
+    history: historyCount,
+    removed: removedCount,
+    massClearBlocked: plan.massClearBlocked,
+    completenessReason: plan.completenessReason,
+  };
 }
 
 // ============================================
@@ -356,7 +417,10 @@ export const handler = async () => {
     }
     console.log('Stored', stored, '/', rows.length, 'raw snapshots');
 
-    const transformResult = await transformToAnalytics(pullRunId);
+    const transformResult = await transformToAnalytics(pullRunId, {
+      rowsStored: stored,
+      rowsReturned: rows.length,
+    });
     console.log(
       'Transform — current:',
       transformResult.current,

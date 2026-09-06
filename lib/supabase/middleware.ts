@@ -8,6 +8,14 @@ export function isBettingHtmlPath(pathname: string): boolean {
   );
 }
 
+export function isOpsHtmlPath(pathname: string): boolean {
+  return pathname === '/ops' || pathname.startsWith('/ops/');
+}
+
+export function isSessionProtectedHtmlPath(pathname: string): boolean {
+  return isBettingHtmlPath(pathname) || isOpsHtmlPath(pathname);
+}
+
 export function isSupabaseBrowserAuthConfigured(
   env: Record<string, string | undefined> = process.env
 ): boolean {
@@ -35,10 +43,10 @@ export async function updateSession(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-  // Betting HTML must not render when auth config is missing (fail-closed).
-  // `/api/betting/*` stays unblocked here so handlers can return JSON 401.
+  // Protected HTML must not render when auth config is missing (fail-closed).
+  // `/api/betting/*` and `/api/ops/*` stay unblocked here so handlers can return JSON 401.
   if (!url || !anonKey) {
-    if (isBettingHtmlPath(pathname)) {
+    if (isSessionProtectedHtmlPath(pathname)) {
       return redirectToLogin(request, { error: 'auth_config' });
     }
     return supabaseResponse;
@@ -61,7 +69,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (isBettingHtmlPath(pathname) && !user) {
+  if (isSessionProtectedHtmlPath(pathname) && !user) {
     const redirectResponse = redirectToLogin(request);
     for (const c of supabaseResponse.cookies.getAll()) {
       redirectResponse.cookies.set(c.name, c.value);

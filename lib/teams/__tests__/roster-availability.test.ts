@@ -17,6 +17,22 @@ import {
   type CanonicalRosterPlayer,
 } from '../team-roster-presentation';
 
+const LIVE_INJURY_ENV = {
+  DATA_MODE: 'live_api',
+  OFFSEASON_MODE: '0',
+  CRON_DRY_RUN: '0',
+} as NodeJS.ProcessEnv;
+
+const FREEZE_INJURY_ENV = {
+  DATA_MODE: 'replay',
+  OFFSEASON_MODE: '1',
+  CRON_DRY_RUN: '1',
+} as NodeJS.ProcessEnv;
+
+const NOW = new Date('2026-09-06T18:00:00.000Z');
+const FRESH_SNAPSHOT = '2026-09-06T06:00:00.000Z';
+const FRANZ_STALE_SNAPSHOT = '2026-05-06T18:00:27.355Z';
+
 function player(
   partial: Partial<CanonicalRosterPlayer> &
     Pick<CanonicalRosterPlayer, 'playerEntityId' | 'displayName'>
@@ -46,13 +62,15 @@ describe('roster availability (Phase 2.T.3B)', () => {
           status: 'Out',
           description: 'Ankle',
           returnDateRaw: null,
-          snapshotAt: '2026-05-06',
-          updatedAt: '2026-05-06',
+          snapshotAt: FRESH_SNAPSHOT,
+          updatedAt: FRESH_SNAPSHOT,
         },
       ],
       rosterTeamId: 't1',
       viewedSeason: '2026',
       liveAvailabilitySeason: '2026',
+      env: LIVE_INJURY_ENV,
+      now: NOW,
     });
     expect(merged.players).toHaveLength(1);
     expect(merged.players[0]!.availability?.status).toBe('Out');
@@ -102,13 +120,15 @@ describe('roster availability (Phase 2.T.3B)', () => {
           status: 'Doubtful',
           description: 'Hamstring',
           returnDateRaw: null,
-          snapshotAt: 'x',
-          updatedAt: 'y',
+          snapshotAt: FRESH_SNAPSHOT,
+          updatedAt: FRESH_SNAPSHOT,
         },
       ],
       rosterTeamId: 't1',
       viewedSeason: '2026',
       liveAvailabilitySeason: '2026',
+      env: LIVE_INJURY_ENV,
+      now: NOW,
     });
     expect(merged.players[0]!.availability?.label).toBe('Doubtful — Hamstring');
   });
@@ -222,13 +242,15 @@ describe('roster availability (Phase 2.T.3B)', () => {
           status: 'Questionable',
           description: null,
           returnDateRaw: null,
-          snapshotAt: 'x',
-          updatedAt: 'y',
+          snapshotAt: FRESH_SNAPSHOT,
+          updatedAt: FRESH_SNAPSHOT,
         },
       ],
       rosterTeamId: 't1',
       viewedSeason: '2026',
       liveAvailabilitySeason: '2026',
+      env: LIVE_INJURY_ENV,
+      now: NOW,
     });
     expect(merged.players[0]!.availability?.status).toBe('Questionable');
   });
@@ -306,5 +328,59 @@ describe('roster availability (Phase 2.T.3B)', () => {
         new Date('2026-09-05T12:00:00.000Z')
       )
     ).toBe('2025');
+  });
+
+  it('stale current injury is omitted from projected availability', () => {
+    const merged = mergeRosterAvailability({
+      roster: [player({ playerEntityId: 'e-stale', displayName: 'Stale' })],
+      injuries: [
+        {
+          playerId: '111',
+          teamId: 't1',
+          status: 'Out',
+          description: 'Calf',
+          returnDateRaw: '2026-10-01',
+          snapshotAt: FRANZ_STALE_SNAPSHOT,
+          updatedAt: FRANZ_STALE_SNAPSHOT,
+        },
+      ],
+      rosterTeamId: 't1',
+      viewedSeason: '2026',
+      liveAvailabilitySeason: '2026',
+      env: LIVE_INJURY_ENV,
+      now: NOW,
+    });
+    expect(merged.showAvailability).toBe(true);
+    expect(merged.players[0]!.availability).toBeNull();
+  });
+
+  it('Franz Wagner May 2026 Out is not treated as current in freeze/offseason', () => {
+    const merged = mergeRosterAvailability({
+      roster: [
+        player({
+          playerEntityId: 'franz',
+          displayName: 'Franz Wagner',
+          playerId: '17896026',
+        }),
+      ],
+      injuries: [
+        {
+          playerId: '17896026',
+          teamId: '22',
+          status: 'Out',
+          description: 'Calf',
+          returnDateRaw: '2026-10-01',
+          snapshotAt: FRANZ_STALE_SNAPSHOT,
+          updatedAt: FRANZ_STALE_SNAPSHOT,
+        },
+      ],
+      rosterTeamId: '22',
+      viewedSeason: '2026',
+      liveAvailabilitySeason: '2026',
+      env: FREEZE_INJURY_ENV,
+      now: NOW,
+    });
+    expect(merged.players[0]!.availability).toBeNull();
+    expect(merged.players[0]!.availability?.status).not.toBe('Out');
   });
 });

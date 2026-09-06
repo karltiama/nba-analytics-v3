@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
 import { fetchLineupsFromBallDontLie } from '@/lib/balldontlie/lineups';
 import { getAnalyticsSeason } from '@/lib/season';
+import { filterAuthoritativeInjuries } from '@/lib/injuries/freshness';
 import type {
   PlayerPropLineComparisonRow,
   PlayerPropLineShoppingResponse,
@@ -1413,16 +1414,19 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
   const paceAnalysis = await getPaceAnalysis(homeTeamId, awayTeamId);
 
   // Get injured player IDs per team (Out, Doubtful) so we exclude them from projected lineup
-  const injuryRows = await query<{ player_id: string; team_id: string }>(
-    `SELECT player_id, team_id
+  const injuryRows = await query<{ player_id: string; team_id: string; snapshot_at: string; status: string | null }>(
+    `SELECT player_id, team_id, snapshot_at::text AS snapshot_at, status
      FROM analytics.player_injury_status_current
      WHERE team_id IN ($1, $2)
        AND (LOWER(COALESCE(status, '')) LIKE 'out%' OR LOWER(COALESCE(status, '')) LIKE 'doubtful%')
      ORDER BY team_id`,
     [homeTeamId, awayTeamId]
   );
-  const homeInjuredIds = injuryRows.filter((r) => r.team_id === homeTeamId).map((r) => r.player_id);
-  const awayInjuredIds = injuryRows.filter((r) => r.team_id === awayTeamId).map((r) => r.player_id);
+  const liveInjuryRows = filterAuthoritativeInjuries(
+    injuryRows.map((r) => ({ ...r, snapshotAt: r.snapshot_at }))
+  );
+  const homeInjuredIds = liveInjuryRows.filter((r) => r.team_id === homeTeamId).map((r) => r.player_id);
+  const awayInjuredIds = liveInjuryRows.filter((r) => r.team_id === awayTeamId).map((r) => r.player_id);
 
   // Prefer BallDontLie lineups when available (game must have started; 2025+ season)
   let startingLineups: { home: StartingLineup | null; away: StartingLineup | null } = {
@@ -1880,6 +1884,7 @@ export async function getInjuryOpportunityCandidates(limit: number = 25): Promis
     full_name: string;
     position: string | null;
     status: string | null;
+    snapshot_at: string;
     baseline_minutes: number;
     usage_proxy: number;
   }>(
@@ -1900,6 +1905,7 @@ export async function getInjuryOpportunityCandidates(limit: number = 25): Promis
        GROUP BY pgl.player_id, pgl.team_id
      )
      SELECT i.team_id, i.player_id, p.full_name, p.position, i.status,
+            i.snapshot_at::text AS snapshot_at,
             COALESCE(l10.avg_minutes, 0)::float AS baseline_minutes,
             COALESCE(l10.usage_proxy, 0)::float AS usage_proxy
      FROM analytics.player_injury_status_current i
@@ -1910,13 +1916,17 @@ export async function getInjuryOpportunityCandidates(limit: number = 25): Promis
     [teamIds]
   );
 
-  const injuredByTeam = new Map<string, typeof injuredRows>();
-  for (const row of injuredRows) {
+  const liveInjuredRows = filterAuthoritativeInjuries(
+    injuredRows.map((r) => ({ ...r, snapshotAt: r.snapshot_at }))
+  );
+
+  const injuredByTeam = new Map<string, typeof liveInjuredRows>();
+  for (const row of liveInjuredRows) {
     if (!injuredByTeam.has(row.team_id)) injuredByTeam.set(row.team_id, []);
     injuredByTeam.get(row.team_id)!.push(row);
   }
 
-  const injuredPlayerIds = new Set(injuredRows.map((r) => r.player_id));
+  const injuredPlayerIds = new Set(liveInjuredRows.map((r) => r.player_id));
   const candidates = await query<{
     team_id: string;
     player_id: string;

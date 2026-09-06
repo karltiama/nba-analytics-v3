@@ -7,6 +7,7 @@
  */
 
 import { query, queryOne } from '@/lib/db';
+import { filterAuthoritativeInjuries } from '@/lib/injuries/freshness';
 
 /** SQL: parse minutes text to numeric (matches lib/betting/queries patterns). */
 export const MINUTES_NUM_SQL = `NULLIF(TRIM(REGEXP_REPLACE(COALESCE(pgl.minutes, '0'), '[^0-9.]', '', 'g')), '')::numeric`;
@@ -72,6 +73,7 @@ async function getInjuredWithBaseline(
     team_id: string;
     full_name: string;
     status: string | null;
+    snapshot_at: string;
     baseline_minutes: number;
   }>
 > {
@@ -87,6 +89,7 @@ async function getInjuredWithBaseline(
        GROUP BY pgl.player_id, pgl.team_id
      )
      SELECT i.player_id, i.team_id, p.full_name, i.status,
+            i.snapshot_at::text AS snapshot_at,
             COALESCE(l10.avg_minutes, 0)::float AS baseline_minutes
      FROM analytics.player_injury_status_current i
      JOIN analytics.players p ON p.player_id = i.player_id
@@ -283,7 +286,10 @@ export async function getInjuryMatchupContext(gameId: string): Promise<InjuryMat
   const meta = await getGameMeta(gameId);
   if (!meta?.season) return null;
 
-  const injured = await getInjuredWithBaseline([meta.home_team_id, meta.away_team_id], meta.season);
+  const injuredRaw = await getInjuredWithBaseline([meta.home_team_id, meta.away_team_id], meta.season);
+  const injured = filterAuthoritativeInjuries(
+    injuredRaw.map((r) => ({ ...r, snapshotAt: r.snapshot_at }))
+  );
   if (injured.length === 0) {
     return { season: meta.season, entries: [] };
   }

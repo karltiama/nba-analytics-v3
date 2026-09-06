@@ -35,7 +35,8 @@
     "transform:player-logs:curated": "tsx scripts/transform/raw-player-game-logs-to-curated-parquet.ts",
     "transform:games:curated": "tsx scripts/transform/raw-games-to-curated-parquet.ts",
     "build:player-game-features": "tsx scripts/features/build-player-game-features-v1.ts",
-    "audit:bdl-coverage": "tsx scripts/audit/audit-bdl-data-coverage.ts"
+    "audit:bdl-coverage": "tsx scripts/audit/audit-bdl-data-coverage.ts",
+    "ops:health-snapshot": "tsx scripts/ops/platform-health-snapshot.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1024.0",

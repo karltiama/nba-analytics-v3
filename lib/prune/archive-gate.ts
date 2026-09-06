@@ -1,5 +1,6 @@
 /**
- * Verify S3 archive readiness before deleting raw.player_prop_snapshots_v2 rows.
+ * Verify S3 archive readiness before deleting raw snapshot rows.
+ * Entity/source-table are passed in so props and odds share one gate.
  */
 
 import {
@@ -9,8 +10,31 @@ import {
   type EntityManifest,
 } from '@/scripts/archive/archive-entity-core';
 
+export type ArchiveEntitySpec = {
+  entity: string;
+  sourceTable: string;
+};
+
 export const RAW_PROPS_ARCHIVE_ENTITY = 'player_props_raw_v2';
 export const RAW_PROPS_SOURCE_TABLE = 'raw.player_prop_snapshots_v2';
+export const RAW_PROPS_ARCHIVE_SPEC: ArchiveEntitySpec = {
+  entity: RAW_PROPS_ARCHIVE_ENTITY,
+  sourceTable: RAW_PROPS_SOURCE_TABLE,
+};
+
+export const RAW_ODDS_ARCHIVE_ENTITY = 'raw_odds_snapshots';
+export const RAW_ODDS_SOURCE_TABLE = 'raw.odds_snapshots';
+export const RAW_ODDS_ARCHIVE_SPEC: ArchiveEntitySpec = {
+  entity: RAW_ODDS_ARCHIVE_ENTITY,
+  sourceTable: RAW_ODDS_SOURCE_TABLE,
+};
+
+export const RAW_INJURIES_ARCHIVE_ENTITY = 'raw_player_injuries';
+export const RAW_INJURIES_SOURCE_TABLE = 'raw.player_injuries';
+export const RAW_INJURIES_ARCHIVE_SPEC: ArchiveEntitySpec = {
+  entity: RAW_INJURIES_ARCHIVE_ENTITY,
+  sourceTable: RAW_INJURIES_SOURCE_TABLE,
+};
 
 export type ArchiveS3Reader = {
   objectExists: (key: string) => Promise<boolean>;
@@ -39,7 +63,8 @@ export function buildManifestKey(entityPrefix: string): string {
 
 export function validateManifestMetadata(
   manifest: EntityManifest | null,
-  season: number
+  season: number,
+  spec: ArchiveEntitySpec = RAW_PROPS_ARCHIVE_SPEC
 ): { ok: true } | { ok: false; reason: string } {
   if (!manifest) {
     return { ok: false, reason: 'manifest missing' };
@@ -50,10 +75,10 @@ export function validateManifestMetadata(
       reason: `manifest not successful/complete (status=${manifest.status}, recordCount=${manifest.recordCount})`,
     };
   }
-  if (manifest.entity !== RAW_PROPS_ARCHIVE_ENTITY) {
+  if (manifest.entity !== spec.entity) {
     return {
       ok: false,
-      reason: `manifest entity mismatch (expected ${RAW_PROPS_ARCHIVE_ENTITY}, got ${manifest.entity})`,
+      reason: `manifest entity mismatch (expected ${spec.entity}, got ${manifest.entity})`,
     };
   }
   if (manifest.season !== season) {
@@ -62,10 +87,10 @@ export function validateManifestMetadata(
       reason: `manifest season mismatch (expected ${season}, got ${manifest.season})`,
     };
   }
-  if (manifest.sourceTable !== RAW_PROPS_SOURCE_TABLE) {
+  if (manifest.sourceTable !== spec.sourceTable) {
     return {
       ok: false,
-      reason: `manifest sourceTable mismatch (expected ${RAW_PROPS_SOURCE_TABLE}, got ${manifest.sourceTable})`,
+      reason: `manifest sourceTable mismatch (expected ${spec.sourceTable}, got ${manifest.sourceTable})`,
     };
   }
   if (!Array.isArray(manifest.partitions) || manifest.partitions.length === 0) {
@@ -74,13 +99,14 @@ export function validateManifestMetadata(
   return { ok: true };
 }
 
-export async function verifySeasonRawPropsArchive(opts: {
+export async function verifySeasonArchive(opts: {
   s3: ArchiveS3Reader;
   rawPrefix: string;
   season: number;
+  spec: ArchiveEntitySpec;
 }): Promise<SeasonArchiveCheck> {
-  const { s3, rawPrefix, season } = opts;
-  const entityPrefix = buildEntityPrefix(rawPrefix, season, RAW_PROPS_ARCHIVE_ENTITY);
+  const { s3, rawPrefix, season, spec } = opts;
+  const entityPrefix = buildEntityPrefix(rawPrefix, season, spec.entity);
   const manifestKey = buildManifestKey(entityPrefix);
 
   let manifest: EntityManifest | null;
@@ -99,7 +125,7 @@ export async function verifySeasonRawPropsArchive(opts: {
     };
   }
 
-  const meta = validateManifestMetadata(manifest, season);
+  const meta = validateManifestMetadata(manifest, season, spec);
   if (!meta.ok) {
     return {
       season,
@@ -143,16 +169,25 @@ export async function verifySeasonRawPropsArchive(opts: {
   };
 }
 
+export async function verifySeasonRawPropsArchive(opts: {
+  s3: ArchiveS3Reader;
+  rawPrefix: string;
+  season: number;
+}): Promise<SeasonArchiveCheck> {
+  return verifySeasonArchive({ ...opts, spec: RAW_PROPS_ARCHIVE_SPEC });
+}
+
 /**
  * Verify archive for every season that has prune-eligible raw rows.
  * If seasons is empty, returns ok (nothing to delete for raw).
  */
-export async function verifyRawPropsArchiveGate(opts: {
+export async function verifyRawArchiveGate(opts: {
   s3: ArchiveS3Reader | null;
   rawPrefix: string;
   seasons: number[];
+  spec: ArchiveEntitySpec;
 }): Promise<ArchiveGateResult> {
-  const { s3, rawPrefix, seasons } = opts;
+  const { s3, rawPrefix, seasons, spec } = opts;
   if (seasons.length === 0) {
     return { ok: true, reason: 'no seasons with eligible raw rows', seasons: [] };
   }
@@ -175,7 +210,7 @@ export async function verifyRawPropsArchiveGate(opts: {
 
   const checks: SeasonArchiveCheck[] = [];
   for (const season of seasons) {
-    checks.push(await verifySeasonRawPropsArchive({ s3, rawPrefix, season }));
+    checks.push(await verifySeasonArchive({ s3, rawPrefix, season, spec }));
   }
 
   const failed = checks.filter((c) => !c.ok);
@@ -188,4 +223,28 @@ export async function verifyRawPropsArchiveGate(opts: {
   }
 
   return { ok: true, reason: 'all season archives verified', seasons: checks };
+}
+
+export async function verifyRawPropsArchiveGate(opts: {
+  s3: ArchiveS3Reader | null;
+  rawPrefix: string;
+  seasons: number[];
+}): Promise<ArchiveGateResult> {
+  return verifyRawArchiveGate({ ...opts, spec: RAW_PROPS_ARCHIVE_SPEC });
+}
+
+export async function verifyRawOddsArchiveGate(opts: {
+  s3: ArchiveS3Reader | null;
+  rawPrefix: string;
+  seasons: number[];
+}): Promise<ArchiveGateResult> {
+  return verifyRawArchiveGate({ ...opts, spec: RAW_ODDS_ARCHIVE_SPEC });
+}
+
+export async function verifyRawInjuriesArchiveGate(opts: {
+  s3: ArchiveS3Reader | null;
+  rawPrefix: string;
+  seasons: number[];
+}): Promise<ArchiveGateResult> {
+  return verifyRawArchiveGate({ ...opts, spec: RAW_INJURIES_ARCHIVE_SPEC });
 }

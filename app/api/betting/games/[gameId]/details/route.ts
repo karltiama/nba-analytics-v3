@@ -12,6 +12,7 @@ import { getInjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
 import { buildEnrichedTeamSide, toNullableGameOdds } from '@/lib/betting/enrich-games-response';
+import { filterAuthoritativeInjuries } from '@/lib/injuries/freshness';
 
 /** Normalize provider injury fields to UI-friendly status for injury badges. */
 function normalizeInjuryStatus(
@@ -139,22 +140,30 @@ export async function GET(
       status: string | null;
       description: string | null;
       full_name: string;
+      snapshot_at: string;
     }>(
-      `SELECT i.player_id, i.team_id, i.status, i.description, p.full_name
+      `SELECT i.player_id, i.team_id, i.status, i.description, p.full_name,
+              i.snapshot_at::text AS snapshot_at
        FROM analytics.player_injury_status_current i
        JOIN analytics.players p ON p.player_id = i.player_id
        WHERE i.team_id IN ($1, $2)
        ORDER BY i.team_id, p.full_name`,
       [game.home_team_id, game.away_team_id]
     );
-    const injuriesHome = injuryRows
+    const liveInjuryRows = filterAuthoritativeInjuries(
+      injuryRows.map((r) => ({
+        ...r,
+        snapshotAt: r.snapshot_at,
+      }))
+    );
+    const injuriesHome = liveInjuryRows
       .filter((r) => r.team_id === game.home_team_id)
       .map((r) => ({
         player: r.full_name,
         status: normalizeInjuryStatus(r.status, r.description),
         injury: r.description ?? '',
       }));
-    const injuriesAway = injuryRows
+    const injuriesAway = liveInjuryRows
       .filter((r) => r.team_id === game.away_team_id)
       .map((r) => ({
         player: r.full_name,

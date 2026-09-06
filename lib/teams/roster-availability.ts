@@ -5,6 +5,7 @@
 
 import type { CanonicalRosterPlayer } from './team-roster-presentation';
 import type { TeamInjuryRow } from './team-injury-queries';
+import { isInjuryAuthoritativeForServing } from '@/lib/injuries/freshness';
 import {
   getLiveAvailabilitySeason,
   shouldShowCurrentAvailability,
@@ -126,6 +127,15 @@ export function mergeRosterAvailability(args: {
         playerId: p.playerId,
         injuryTeamId: injury.teamId,
       });
+      return { ...p, availability: null };
+    }
+    if (
+      !isInjuryAuthoritativeForServing(
+        { snapshotAt: injury.snapshotAt, status: injury.status },
+        args.env,
+        args.now
+      )
+    ) {
       return { ...p, availability: null };
     }
     const status = normalizeAvailabilityStatus(injury.status);

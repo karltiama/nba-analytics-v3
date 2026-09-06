@@ -1,1 +1,1 @@
-{"errorType":"TypeError","errorMessage":"event.Records is not iterable","trace":["TypeError: event.Records is not iterable","    at Runtime.handler (/var/task/dist/worker.js:22:32)","    at Runtime.handleOnceNonStreaming (file:///var/runtime/index.mjs:1306:29)"]}
+{"errorType":"TypeError","errorMessage":"Cannot read properties of undefined (reading 'length')","trace":["TypeError: Cannot read properties of undefined (reading 'length')","    at Runtime.handler (/var/task/dist/worker.js:20:209)","    at Runtime.handleOnceNonStreaming (file:///var/runtime/index.mjs:1306:29)"]}
