@@ -2,7 +2,11 @@
 
 import { BettingAppShell } from '@/components/betting/BettingAppShell';
 
-export default function BettingLayout({
+/**
+ * Teams routes live outside /betting/* but are primary-nav destinations.
+ * Reuse the betting shell so Header/nav do not disappear on /teams.
+ */
+export default function TeamsLayout({
   children,
 }: {
   children: React.ReactNode;

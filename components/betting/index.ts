@@ -1,4 +1,6 @@
 export { Header } from './Header';
+export { BettingAppShell } from './BettingAppShell';
+export { shouldShowLayoutHeader } from './betting-shell-paths';
 export { OnboardingGate } from './OnboardingGate';
 export { OnboardingModal } from './OnboardingModal';
 export { GameCard } from './GameCard';
