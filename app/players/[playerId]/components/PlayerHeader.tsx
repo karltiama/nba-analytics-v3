@@ -12,9 +12,15 @@ interface PlayerHeaderProps {
     dob?: string | null;
     active?: boolean | null;
   };
+  seasonLabel: string;
+  sourceLabel?: string;
 }
 
-export function PlayerHeader({ player }: PlayerHeaderProps) {
+export function PlayerHeader({
+  player,
+  seasonLabel,
+  sourceLabel = 'BBRef',
+}: PlayerHeaderProps) {
   return (
     <div>
       <Link
@@ -28,6 +34,9 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
           <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-2">
             {player.full_name}
           </h1>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+            {sourceLabel} · {seasonLabel}
+          </p>
           <div className="flex flex-wrap gap-4 text-zinc-600 dark:text-zinc-400">
             {player.position && (
               <span>Position: {player.position}</span>

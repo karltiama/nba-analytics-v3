@@ -10,6 +10,7 @@ import {
 import { GameMatchupInfo } from './components/GameMatchupInfo';
 import { query } from '@/lib/db';
 import { getGameBoxScoreFromAnalytics } from '@/lib/analytics/games-queries';
+import { isFinalStatus, normalizeGameStatus } from '@/lib/betting/normalize-game-status';
 
 async function getGameBoxScore(gameId: string) {
   // Analytics (BDL) first for non-BBRef game IDs
@@ -127,11 +128,12 @@ export default async function GameBoxScorePage({
                 year: 'numeric',
               })}
             </p>
-            {game.home_score !== null && game.away_score !== null && (
+            {isFinalStatus(game.status) && game.home_score !== null && game.away_score !== null && (
               <p className="text-2xl font-bold text-black dark:text-zinc-50 mt-2">
                 {game.away_score} - {game.home_score}
               </p>
             )}
+            <p className="text-sm mt-1">{normalizeGameStatus(game.status)}</p>
           </div>
         </div>
 

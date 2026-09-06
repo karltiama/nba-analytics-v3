@@ -179,7 +179,7 @@ export function TeamPageClient({
               </div>
             </div>
 
-            {seasonAverages && seasonAverages.games_played > 0 && (
+            {seasonSnapshot.hasData ? (
               <>
                 <div className="h-8 w-px bg-white/10 hidden md:block" />
                 <div className="flex items-center gap-4 flex-wrap">
@@ -204,6 +204,13 @@ export function TeamPageClient({
                     </span>
                   )}
                 </div>
+              </>
+            ) : (
+              <>
+                <div className="h-8 w-px bg-white/10 hidden md:block" />
+                <p className="text-xs text-muted-foreground">
+                  No season data yet
+                </p>
               </>
             )}
           </div>

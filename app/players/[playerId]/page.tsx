@@ -12,9 +12,10 @@ import {
   getBBRefPlayerSplits,
   getBBRefPlayerGames,
 } from '@/lib/players/bbref-queries';
+import { resolveTeamPageSeason } from '@/lib/teams/team-page-season';
 import Link from 'next/link';
 
-async function getPlayerStats(playerId: string, season: string | null = null) {
+async function getPlayerStats(playerId: string, season: string) {
   const [seasonStats, paceAdjusted, usageRate, recentForm, splits] = await Promise.all([
     getBBRefPlayerSeasonStats(playerId, season),
     getBBRefPlayerPaceAdjustedStats(playerId, season),
@@ -41,13 +42,13 @@ export default async function PlayerPage({
   searchParams: Promise<{ season?: string }>;
 }) {
   const { playerId } = await params;
-  const { season } = await searchParams;
-  const seasonParam = season || null;
+  const { season: seasonParam } = await searchParams;
+  const { season, seasonLabel } = resolveTeamPageSeason({ selectedSeason: seasonParam });
 
   const [player, statsData, gamesData] = await Promise.all([
     getBBRefPlayerInfo(playerId),
-    getPlayerStats(playerId, seasonParam),
-    getBBRefPlayerGames(playerId, seasonParam, 20),
+    getPlayerStats(playerId, season),
+    getBBRefPlayerGames(playerId, season, 20),
   ]);
 
   if (!player) {
@@ -69,15 +70,15 @@ export default async function PlayerPage({
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <PlayerHeader player={player} />
-        <PlayerSeasonStats seasonStats={season_stats} />
+        <PlayerHeader player={player} seasonLabel={seasonLabel} sourceLabel="BBRef" />
+        <PlayerSeasonStats seasonStats={season_stats} seasonLabel={seasonLabel} />
         <PlayerAdvancedStats 
           seasonStats={season_stats}
           paceAdjusted={pace_adjusted}
           usageRate={usage_rate}
         />
-        <PlayerRecentForm recentForm={recent_form} />
-        <PlayerGameLogs games={games} />
+        <PlayerRecentForm recentForm={recent_form} seasonLabel={seasonLabel} />
+        <PlayerGameLogs games={games} seasonLabel={seasonLabel} />
       </div>
     </div>
   );

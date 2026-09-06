@@ -117,6 +117,18 @@ describe('team-compact-schedule (Phase 2.T.3C)', () => {
       formatCompactScoreLine(mapped.result, mapped.team_score, mapped.opponent_score)
     ).toBe('—');
     expect(formatCompactScoreLine(null, 0, 0)).toBe('—');
+
+    const placeholderZeros = mapCompactScheduleRow(
+      '14',
+      baseRow({
+        status: '2026-10-22T23:30:00Z',
+        home_score: 0,
+        away_score: 0,
+      })
+    );
+    expect(placeholderZeros.result).toBeNull();
+    expect(placeholderZeros.team_score).toBeNull();
+    expect(placeholderZeros.opponent_score).toBeNull();
   });
 
   it('10. tipoff uses existing ET formatter', () => {

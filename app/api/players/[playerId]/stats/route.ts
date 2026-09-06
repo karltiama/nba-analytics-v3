@@ -7,6 +7,7 @@ import {
   getPlayerSplits,
 } from '@/lib/players/queries';
 import { query } from '@/lib/db';
+import { resolveTeamPageSeason } from '@/lib/teams/team-page-season';
 
 /**
  * Player Detail Stats API
@@ -28,7 +29,9 @@ export async function GET(
   try {
     const { playerId } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const season = searchParams.get('season') || null;
+    const { season } = resolveTeamPageSeason({
+      selectedSeason: searchParams.get('season'),
+    });
 
     // Get player info
     const playerResult = await query(
@@ -57,7 +60,7 @@ export async function GET(
 
     return NextResponse.json({
       player,
-      season: season || 'all',
+      season,
       season_stats: seasonStats,
       pace_adjusted: paceAdjusted,
       usage_rate: usageRate,

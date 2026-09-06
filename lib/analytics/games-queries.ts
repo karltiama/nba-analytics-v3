@@ -17,6 +17,9 @@
  */
 
 import { query, queryOne } from '@/lib/db';
+import { filterScheduleRowsToSeason } from '@/lib/analytics/team-schedule-season';
+import { isFinalStatus } from '@/lib/betting/normalize-game-status';
+import { getAnalyticsSeason } from '@/lib/season';
 
 export interface TeamMatchupGame {
   game_id: string;
@@ -82,14 +85,16 @@ const TEAM_GAME_SELECT = `
  * Future = start_time > now() and status IS DISTINCT FROM 'Final'.
  */
 export async function getNextGameForTeam(teamId: string): Promise<TeamMatchupGame | null> {
+  const season = getAnalyticsSeason();
   const row = await queryOne(
     `${TEAM_GAME_SELECT}
      WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+       AND g.season = $2
        AND g.start_time > now()
        AND (g.status IS NULL OR g.status IS DISTINCT FROM 'Final')
      ORDER BY g.start_time ASC NULLS LAST
      LIMIT 1`,
-    [teamId]
+    [teamId, season]
   );
   if (!row) return null;
   return rowToMatchup(row as Record<string, unknown>, teamId);
@@ -97,7 +102,8 @@ export async function getNextGameForTeam(teamId: string): Promise<TeamMatchupGam
 
 /**
  * Current team is derived from the player's most recent game in analytics.player_game_logs
- * (analytics.players does not have team_id). Then returns getNextGameForTeam(teamId).
+ * (analytics.players does not have team_id; 2026 logs may not exist yet).
+ * Next game is then scoped to the active analytics season.
  */
 export async function getNextGameForPlayer(playerId: string): Promise<TeamMatchupGame | null> {
   const latest = await queryOne(
@@ -120,14 +126,16 @@ export async function getUpcomingGamesForTeam(
   teamId: string,
   limit: number = 5
 ): Promise<TeamMatchupGame[]> {
+  const season = getAnalyticsSeason();
   const rows = await query(
     `${TEAM_GAME_SELECT}
      WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+       AND g.season = $2
        AND g.start_time > now()
        AND (g.status IS NULL OR g.status IS DISTINCT FROM 'Final')
      ORDER BY g.start_time ASC NULLS LAST
-     LIMIT $2`,
-    [teamId, limit]
+     LIMIT $3`,
+    [teamId, season, limit]
   );
   return rows.map((r) => rowToMatchup(r as Record<string, unknown>, teamId));
 }
@@ -167,12 +175,13 @@ export interface ScheduleGameRow {
 
 /**
  * Full schedule for a team from analytics.games (past + upcoming), ordered by start_time ASC.
+ * `season` is required (NBA start-year). Callers must resolve via resolveTeamScheduleSeason.
  */
 export async function getScheduleForTeam(
   teamId: string,
-  season?: string
+  season: string
 ): Promise<ScheduleGameRow[]> {
-  let sql = `
+  const sql = `
     SELECT
       g.game_id,
       g.season,
@@ -191,28 +200,29 @@ export async function getScheduleForTeam(
     JOIN analytics.teams t_home ON g.home_team_id = t_home.team_id
     JOIN analytics.teams t_away ON g.away_team_id = t_away.team_id
     WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+      AND g.season = $2
+    ORDER BY g.start_time ASC NULLS LAST
   `;
-  const params: (string | number)[] = [teamId];
-  if (season) {
-    sql += ` AND g.season = $2`;
-    params.push(season);
-  }
-  sql += ` ORDER BY g.start_time ASC NULLS LAST`;
-
-  const rows = await query(sql, params);
-  return rows.map((r: Record<string, unknown>) => {
+  const rows = await query(sql, [teamId, season]);
+  const mapped = rows.map((r: Record<string, unknown>) => {
     const isHome = r.home_team_id === teamId;
-    const teamScore = isHome ? r.home_score : r.away_score;
-    const oppScore = isHome ? r.away_score : r.home_score;
+    const teamScoreRaw = isHome ? r.home_score : r.away_score;
+    const oppScoreRaw = isHome ? r.away_score : r.home_score;
+    const status = r.status != null ? String(r.status) : null;
+    const decided = isFinalStatus(status);
+    const teamScore =
+      decided && teamScoreRaw != null ? Number(teamScoreRaw) : null;
+    const oppScore =
+      decided && oppScoreRaw != null ? Number(oppScoreRaw) : null;
     let result: 'W' | 'L' | null = null;
-    if (r.status === 'Final' && teamScore != null && oppScore != null) {
+    if (decided && teamScore != null && oppScore != null) {
       result = Number(teamScore) > Number(oppScore) ? 'W' : 'L';
     }
     return {
       game_id: String(r.game_id),
       season: String(r.season ?? ''),
       start_time: r.start_time ? new Date(r.start_time as string).toISOString() : null,
-      status: r.status != null ? String(r.status) : null,
+      status,
       is_home: isHome ? 'home' : 'away',
       opponent_id: String(isHome ? r.away_team_id : r.home_team_id),
       opponent_abbr: String(isHome ? r.away_abbr : r.home_abbr),
@@ -223,6 +233,7 @@ export async function getScheduleForTeam(
       venue: r.venue != null ? String(r.venue) : null,
     };
   });
+  return filterScheduleRowsToSeason(mapped, season);
 }
 
 export interface GameListRow {

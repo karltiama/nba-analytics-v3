@@ -326,7 +326,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
             {game.startTime ? ` · ${game.startTime}` : ''}
           </p>
           <p className="text-[10px] text-muted-foreground/80 mt-0.5">
-            {game.awayTeam.record} — {game.homeTeam.record}
+            {game.awayTeam.record ?? '—'} — {game.homeTeam.record ?? '—'}
           </p>
         </div>
         <Link

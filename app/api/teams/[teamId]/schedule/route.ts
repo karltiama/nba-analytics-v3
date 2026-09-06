@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getScheduleForTeam } from '@/lib/analytics/games-queries';
+import { resolveTeamScheduleSeason } from '@/lib/analytics/team-schedule-season';
 import { resolveAnalyticsTeamId, getTeamById } from '@/lib/teams/analytics-queries';
 
 /**
@@ -15,7 +16,7 @@ export async function GET(
   try {
     const { teamId } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const season = searchParams.get('season') || null;
+    const season = resolveTeamScheduleSeason(searchParams.get('season'));
     const status = searchParams.get('status') || null;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : null;
     const upcoming = searchParams.get('upcoming') === 'true';
@@ -26,7 +27,7 @@ export async function GET(
       return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     }
 
-    let schedule = await getScheduleForTeam(analyticsTeamId, season ?? undefined);
+    let schedule = await getScheduleForTeam(analyticsTeamId, season);
 
     if (status) {
       schedule = schedule.filter((g) => g.status === status);
@@ -56,7 +57,7 @@ export async function GET(
 
     return NextResponse.json({
       team: teamForApi,
-      season: season || 'all',
+      season,
       total_games: schedule.length,
       schedule,
     });

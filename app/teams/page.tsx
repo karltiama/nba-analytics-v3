@@ -57,7 +57,7 @@ export default async function TeamsPage({
 
   const [{ groups, integrity }, rankings] = await Promise.all([
     listCurrentNbaTeams(),
-    getAllTeamsDefensiveRankings(seasonParam ? season : null),
+    getAllTeamsDefensiveRankings(season),
   ]);
 
   return (

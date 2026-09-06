@@ -176,7 +176,9 @@ export function TeamSeasonSnapshotPanel({
             <p className="text-sm text-muted-foreground">
               Not enough season data yet
             </p>
-            <p className="text-xs text-muted-foreground">0 GP</p>
+            <p className="text-xs text-muted-foreground">
+              Preseason — no completed games
+            </p>
           </div>
         ) : (
           <SnapshotMetricsGrid snap={snapshot} showSampleLabel />

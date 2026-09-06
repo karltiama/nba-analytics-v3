@@ -126,12 +126,14 @@ export function buildEnrichedTeamSide(input: {
 
   const wins = r!.wins ?? 0;
   const losses = r!.losses ?? 0;
+  const decidedGames = wins + losses;
+  const record = decidedGames > 0 ? `${wins}-${losses}` : null;
 
   return {
     id: input.id,
     name: input.name,
     abbreviation: input.abbreviation,
-    record: `${wins}-${losses}`,
+    record,
     offensiveRating: numOrNull(r!.offensive_rating),
     defensiveRating: numOrNull(r!.defensive_rating),
     defensiveRank: input.defensiveRank != null && input.defensiveRank > 0 ? input.defensiveRank : null,

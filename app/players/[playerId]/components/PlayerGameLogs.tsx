@@ -42,14 +42,15 @@ interface Game {
 
 interface PlayerGameLogsProps {
   games: Game[];
+  seasonLabel: string;
 }
 
-export function PlayerGameLogs({ games }: PlayerGameLogsProps) {
+export function PlayerGameLogs({ games, seasonLabel }: PlayerGameLogsProps) {
   if (games.length === 0) {
     return (
       <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
         <p className="text-zinc-600 dark:text-zinc-400">
-          No games found for this player.
+          No BBRef game logs for {seasonLabel} yet.
         </p>
       </div>
     );

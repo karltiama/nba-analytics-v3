@@ -108,30 +108,34 @@ export async function GET(request: NextRequest) {
         id: 'w-1',
         title: 'Games Analyzed',
         value: summary.total_games?.toString() || '0',
-        description: 'Total games with full stats in database',
+        description: 'Completed games in the active season',
         type: 'general',
       },
       {
         id: 'w-2',
         title: 'Fastest Pace',
-        value: paceRankings[0]?.team_abbr || 'N/A',
-        description: `${paceRankings[0]?.pace.toFixed(1) || 0} possessions/game`,
+        value: paceRankings[0]?.team_abbr || '—',
+        description: paceRankings[0]
+          ? `${paceRankings[0].pace.toFixed(1)} possessions/game`
+          : 'No pace data yet',
         type: 'pace',
       },
       {
         id: 'w-3',
         title: 'Best Defense',
-        value: defenseRankings[0]?.team_abbr || 'N/A',
-        description: `${defenseRankings[0]?.defensive_rating.toFixed(1) || 0} DRTG`,
+        value: defenseRankings[0]?.team_abbr || '—',
+        description: defenseRankings[0]
+          ? `${defenseRankings[0].defensive_rating.toFixed(1)} DRTG`
+          : 'No defensive rating yet',
         type: 'defense',
       },
       {
         id: 'w-4',
         title: 'Hot Player',
-        value: trendingPlayers[0]?.full_name.split(' ').pop() || 'N/A',
-        description: trendingPlayers[0] 
-          ? `+${Math.abs(trendingPlayers[0].points_trend_pct).toFixed(0)}% trend` 
-          : 'No data',
+        value: trendingPlayers[0]?.full_name.split(' ').pop() || '—',
+        description: trendingPlayers[0]
+          ? `+${Math.abs(trendingPlayers[0].points_trend_pct).toFixed(0)}% trend`
+          : 'No recent-form data yet',
         type: 'props',
         change: trendingPlayers[0] ? `${trendingPlayers[0].trend_direction === 'up' ? '+' : ''}${trendingPlayers[0].points_trend_pct.toFixed(0)}%` : undefined,
         changeDirection: trendingPlayers[0]?.trend_direction,
@@ -140,7 +144,7 @@ export async function GET(request: NextRequest) {
         id: 'w-5',
         title: 'Players Tracked',
         value: summary.total_players?.toString() || '0',
-        description: 'Active players with game logs',
+        description: 'Players with active-season game logs',
         type: 'general',
       },
     ];

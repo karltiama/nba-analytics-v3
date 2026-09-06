@@ -69,4 +69,16 @@ describe('buildEnrichedTeamSide', () => {
     expect(side.defensiveRank).toBeNull();
     expect(side.pace).toBe(100);
   });
+
+  it('does not present 0-0 as a real record when no games are decided', () => {
+    const side = buildEnrichedTeamSide({
+      id: '1',
+      name: 'Team',
+      abbreviation: 'T',
+      ratings: { wins: 0, losses: 0, pace: 0, offensive_rating: 0, defensive_rating: 0 },
+      defensiveRank: undefined,
+      recentForm: [],
+    });
+    expect(side.record).toBeNull();
+  });
 });

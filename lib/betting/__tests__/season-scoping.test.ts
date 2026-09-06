@@ -18,6 +18,8 @@ import { getAnalyticsSeason } from '@/lib/season';
 import { getAnalyticsPlayerSeasonStats } from '@/lib/players/analytics-queries';
 import {
   getAllTeamRatings,
+  getDashboardSummary,
+  getGamesForDate,
   getPaceAnalysis,
   getProjectedStartingLineupFromAnalytics,
   getTeamRecentForm,
@@ -91,6 +93,23 @@ describe('betting season scoping (Phase 2.2)', () => {
     const [sql, params] = mockQuery.mock.calls[0];
     expect(String(sql)).toMatch(/tgs\.season = \$2/);
     expect(params).toEqual(['t1', '2026', 5]);
+  });
+
+  it('getDashboardSummary scopes completed-game counts to the active season', async () => {
+    mockQuery.mockResolvedValue([]);
+    await getDashboardSummary();
+    const [sql, params] = mockQuery.mock.calls[0];
+    expect(String(sql)).toMatch(/status = 'Final' AND season = \$1/);
+    expect(String(sql)).not.toMatch(/FROM analytics\.games WHERE status = 'Final'\)/);
+    expect(params).toEqual(['2026']);
+  });
+
+  it('getGamesForDate scopes to the active analytics season', async () => {
+    mockQuery.mockResolvedValue([]);
+    await getGamesForDate('2026-04-10');
+    const [sql, params] = mockQuery.mock.calls[0];
+    expect(String(sql)).toMatch(/g\.season = \$2/);
+    expect(params).toEqual(['2026-04-10', '2026']);
   });
 
   it('trending L5 CTE scopes game logs to active season', async () => {

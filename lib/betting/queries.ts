@@ -54,6 +54,7 @@ export interface TeamRatings {
 export async function getGamesForDate(date: string) {
   // Use ET timezone range so late-night ET games (stored as next-day UTC) are included
   // and early-morning UTC games from the prior ET day are excluded.
+  const season = getAnalyticsSeason();
   const gamesResult = await query(`
     SELECT
       g.game_id,
@@ -73,8 +74,9 @@ export async function getGamesForDate(date: string) {
     JOIN analytics.teams at ON g.away_team_id = at.team_id
     WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
       AND g.start_time <  (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')
+      AND g.season = $2
     ORDER BY g.start_time ASC
-  `, [date]);
+  `, [date, season]);
 
   return gamesResult;
 }
@@ -91,6 +93,7 @@ export async function getTodaysGames() {
  * Get recent completed games for the dashboard
  */
 export async function getRecentGames(limit: number = 10) {
+  const season = getAnalyticsSeason();
   const result = await query(`
     SELECT
       g.game_id,
@@ -109,9 +112,10 @@ export async function getRecentGames(limit: number = 10) {
     JOIN analytics.teams ht ON g.home_team_id = ht.team_id
     JOIN analytics.teams at ON g.away_team_id = at.team_id
     WHERE g.status = 'Final'
+      AND g.season = $2
     ORDER BY g.start_time DESC
     LIMIT $1
-  `, [limit]);
+  `, [limit, season]);
 
   return result;
 }
@@ -745,7 +749,7 @@ export async function getDashboardSummary() {
   const result = await query(
     `
     SELECT
-      (SELECT COUNT(*)::bigint FROM analytics.games WHERE status = 'Final') AS total_games,
+      (SELECT COUNT(*)::bigint FROM analytics.games WHERE status = 'Final' AND season = $1) AS total_games,
       (
         SELECT COUNT(DISTINCT player_id)::bigint
         FROM analytics.player_season_averages
@@ -754,7 +758,7 @@ export async function getDashboardSummary() {
       (
         SELECT MAX((start_time AT TIME ZONE 'America/New_York')::date)
         FROM analytics.games
-        WHERE status = 'Final'
+        WHERE status = 'Final' AND season = $1
       ) AS latest_game_date,
       (
         SELECT COUNT(*)::bigint

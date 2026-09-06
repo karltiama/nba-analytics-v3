@@ -136,8 +136,8 @@ export async function GET(request: NextRequest) {
           defensiveRank: defRankMap[String(game.away_team_id)],
           recentForm: awayForm,
         }),
-        homeScore: game.home_score ?? null,
-        awayScore: game.away_score ?? null,
+        homeScore: isFinalStatus(status) ? (game.home_score ?? null) : null,
+        awayScore: isFinalStatus(status) ? (game.away_score ?? null) : null,
         odds: toNullableGameOdds(oddsMap[String(game.game_id)]),
       };
     });

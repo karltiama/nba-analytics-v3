@@ -21,6 +21,7 @@ import {
   AIInsightPanelSkeleton,
 } from '@/components/betting/skeletons';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { filterSlateGames } from '@/lib/betting/slate-filters';
 
 // ================================
 // DATA FETCHING
@@ -203,6 +204,7 @@ export default function BettingDashboard(props: PageProps) {
   const [sortBy, setSortBy] = useState<SortOption>('time');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showCloseMatchups, setShowCloseMatchups] = useState(false);
+  const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
 
   // Selected date from URL (ET, YYYY-MM-DD); default today
   const selectedDate = useMemo(() => {
@@ -273,6 +275,25 @@ export default function BettingDashboard(props: PageProps) {
     fetchGames(selectedDate);
   }, [selectedDate, fetchGames]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/user/settings', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = (await res.json()) as { settings?: { favoriteTeams?: string[] } };
+        if (!cancelled && Array.isArray(data.settings?.favoriteTeams)) {
+          setFavoriteTeams(data.settings.favoriteTeams);
+        }
+      } catch {
+        /* unauthenticated / no settings — Favorites filter stays empty */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Fetch insights
   const fetchInsights = useCallback(async () => {
     setLoadingInsights(true);
@@ -341,16 +362,13 @@ export default function BettingDashboard(props: PageProps) {
   }, [selectedDate]);
 
   // Filter games
-  const filteredGames = games.filter(game => {
-    const matchesSearch = searchValue === '' || 
-      game.homeTeam.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      game.awayTeam.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      game.homeTeam.abbreviation.toLowerCase().includes(searchValue.toLowerCase()) ||
-      game.awayTeam.abbreviation.toLowerCase().includes(searchValue.toLowerCase());
-    
-    const matchesClose = !showCloseMatchups || game.isClose;
-    
-    return matchesSearch && matchesClose;
+  const filteredGames = filterSlateGames({
+    games,
+    searchValue,
+    showCloseMatchups,
+    isClose: (game) => game.isClose,
+    showFavoritesOnly,
+    favoriteTeams,
   });
 
   // Sort games

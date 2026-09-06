@@ -1,3 +1,5 @@
+import { hasCompletedSeasonStats } from '@/lib/players/season-stats-empty';
+
 interface PlayerSeasonStatsProps {
   seasonStats: {
     games_played?: number;
@@ -29,14 +31,18 @@ interface PlayerSeasonStatsProps {
     total_minutes?: number;
     avg_plus_minus?: number;
   };
+  seasonLabel: string;
 }
 
-export function PlayerSeasonStats({ seasonStats }: PlayerSeasonStatsProps) {
-  if (!seasonStats.games_played || seasonStats.games_played === 0) {
+export function PlayerSeasonStats({ seasonStats, seasonLabel }: PlayerSeasonStatsProps) {
+  if (!hasCompletedSeasonStats(seasonStats.games_played)) {
     return (
       <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+        <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-2">
+          Season Stats
+        </h2>
         <p className="text-zinc-600 dark:text-zinc-400">
-          No statistics available for this player.
+          No BBRef statistics for {seasonLabel} yet.
         </p>
       </div>
     );
@@ -45,7 +51,7 @@ export function PlayerSeasonStats({ seasonStats }: PlayerSeasonStatsProps) {
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
       <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-        Season Stats
+        Season Stats · {seasonLabel}
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>

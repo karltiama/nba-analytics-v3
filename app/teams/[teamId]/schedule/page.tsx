@@ -9,13 +9,17 @@ import {
 } from '@/components/ui/table';
 import { resolveAnalyticsTeamId, getTeamById } from '@/lib/teams/analytics-queries';
 import { getScheduleForTeam } from '@/lib/analytics/games-queries';
+import { resolveTeamScheduleSeason } from '@/lib/analytics/team-schedule-season';
+import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { formatNbaSeasonLabel, getAnalyticsSeason } from '@/lib/season';
+import { teamPageSeasonHref } from '@/lib/teams/team-page-season';
 
 const GAME_DISPLAY_TZ = 'America/New_York';
 
 function toDisplayTime(startTime: string | null): string {
-  if (!startTime) return 'TBD';
-  const d = new Date(startTime);
-  return isNaN(d.getTime()) ? 'TBD' : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: GAME_DISPLAY_TZ });
+  const formatted = formatTipoffEt(startTime);
+  return formatted || 'TBD';
 }
 
 function toDisplayDate(startTime: string | null, now: Date): string {
@@ -39,7 +43,11 @@ export default async function TeamSchedulePage({
   searchParams: Promise<{ season?: string; status?: string }>;
 }) {
   const { teamId } = await params;
-  const { season } = await searchParams; // status filter can be added later if needed
+  const { season: seasonParam } = await searchParams;
+  const season = resolveTeamScheduleSeason(seasonParam);
+  const seasonLabel = formatNbaSeasonLabel(season);
+  const defaultSeason = getAnalyticsSeason();
+  const teamHref = teamPageSeasonHref({ teamId, season, defaultSeason });
 
   const analyticsTeamId = await resolveAnalyticsTeamId(teamId);
   if (!analyticsTeamId) {
@@ -79,7 +87,7 @@ export default async function TeamSchedulePage({
         <div className="max-w-7xl mx-auto space-y-6">
           <div>
             <Link
-              href={`/teams/${teamId}`}
+              href={teamHref}
               className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block"
             >
               ← Back to {team.full_name}
@@ -87,6 +95,7 @@ export default async function TeamSchedulePage({
             <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-2">
               {team.full_name} Schedule
             </h1>
+            <p className="text-zinc-600 dark:text-zinc-400">{seasonLabel}</p>
           </div>
           <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
             <p className="text-zinc-600 dark:text-zinc-400">
@@ -110,7 +119,7 @@ export default async function TeamSchedulePage({
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
           <Link
-            href={`/teams/${teamId}`}
+            href={teamHref}
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block"
           >
             ← Back to {team.full_name}
@@ -118,7 +127,8 @@ export default async function TeamSchedulePage({
           <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-2">
             {team.full_name} Schedule
           </h1>
-          {pastGames.length > 0 && (
+          <p className="text-zinc-600 dark:text-zinc-400">{seasonLabel}</p>
+          {pastGames.some((g) => g.result === 'W' || g.result === 'L') && (
             <p className="text-zinc-600 dark:text-zinc-400">
               Record: <span className="font-bold text-black dark:text-zinc-50">{wins}-{losses}</span>
             </p>
@@ -170,7 +180,7 @@ export default async function TeamSchedulePage({
                         </TableCell>
                         <TableCell>
                           <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            {game.status ?? 'Scheduled'}
+                            {normalizeGameStatus(game.status)}
                           </span>
                         </TableCell>
                       </TableRow>

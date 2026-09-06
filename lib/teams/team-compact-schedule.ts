@@ -143,8 +143,11 @@ export function mapCompactScheduleRow(
   const statusRaw = r.status != null ? String(r.status) : null;
   const teamScoreRaw = isHome ? r.home_score : r.away_score;
   const oppScoreRaw = isHome ? r.away_score : r.home_score;
-  const teamScore = teamScoreRaw != null ? Number(teamScoreRaw) : null;
-  const opponentScore = oppScoreRaw != null ? Number(oppScoreRaw) : null;
+  const decided = isFinalStatus(statusRaw);
+  const teamScore =
+    decided && teamScoreRaw != null ? Number(teamScoreRaw) : null;
+  const opponentScore =
+    decided && oppScoreRaw != null ? Number(oppScoreRaw) : null;
   const result = computeCompactResult(statusRaw, teamScore, opponentScore);
 
   return {

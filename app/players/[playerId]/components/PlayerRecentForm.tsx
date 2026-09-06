@@ -15,14 +15,24 @@ interface PlayerRecentFormProps {
       avg_minutes?: number;
     };
   };
+  seasonLabel: string;
 }
 
-export function PlayerRecentForm({ recentForm }: PlayerRecentFormProps) {
+export function PlayerRecentForm({ recentForm, seasonLabel }: PlayerRecentFormProps) {
   const l5 = recentForm.last_5 || {};
   const l10 = recentForm.last_10 || {};
 
   if (!l5.avg_points && !l10.avg_points) {
-    return null;
+    return (
+      <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+        <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-2">
+          Recent Form
+        </h2>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          No recent BBRef games for {seasonLabel} yet.
+        </p>
+      </div>
+    );
   }
 
   return (
