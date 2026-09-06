@@ -4,9 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
-import { Sun, Moon, User, Zap, LogIn, LogOut, ChevronDown, Settings } from 'lucide-react';
+import { Sun, Moon, User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu } from 'lucide-react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { PRIMARY_NAV } from '@/components/betting/primary-nav';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -21,6 +22,28 @@ type ProfilePayload = {
   email: string | null;
   timezone: string;
 };
+
+function NavLink({
+  href,
+  label,
+  className,
+}: {
+  href: string;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'hover:text-[#00d4ff] transition-colors text-muted-foreground',
+        className
+      )}
+    >
+      {label}
+    </Link>
+  );
+}
 
 export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
   const router = useRouter();
@@ -128,27 +151,56 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
           </div>
 
           {!teamName && (
-            <nav className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
-              <Link href="/betting" className="hover:text-white transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/betting/props-explorer" className="hover:text-[#00d4ff] transition-colors">
-                Props Explorer
-              </Link>
-              <Link href="/betting/research" className="hover:text-[#00d4ff]/90 transition-colors text-muted-foreground">
-                Research
-              </Link>
-              <Link href="/betting/paper" className="hover:text-[#00d4ff]/90 transition-colors text-muted-foreground">
-                Paper
-              </Link>
-              <Link href="/betting/profile" className="hover:text-[#00d4ff]/90 transition-colors text-muted-foreground">
-                Profile
-              </Link>
+            <nav
+              className="hidden md:flex items-center gap-4 text-sm"
+              aria-label="Primary"
+            >
+              {PRIMARY_NAV.map((item) => (
+                <NavLink key={item.href} href={item.href} label={item.label} />
+              ))}
             </nav>
           )}
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
+            {!teamName && (
+              <DropdownMenu.Root modal={false}>
+                <DropdownMenu.Trigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      'md:hidden p-2.5 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors',
+                      'outline-none focus-visible:ring-2 focus-visible:ring-[#00d4ff]/40'
+                    )}
+                    aria-label="Open primary navigation"
+                    aria-haspopup="menu"
+                  >
+                    <Menu className="w-4 h-4 text-white" aria-hidden />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content
+                    sideOffset={8}
+                    align="end"
+                    className={cn(
+                      'min-w-[200px] rounded-xl border border-white/10 bg-zinc-950/95 backdrop-blur-md p-1 shadow-xl z-[300]',
+                      'data-[state=open]:animate-in data-[state=closed]:animate-out'
+                    )}
+                  >
+                    {PRIMARY_NAV.map((item) => (
+                      <DropdownMenu.Item
+                        key={item.href}
+                        className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        asChild
+                      >
+                        <Link href={item.href}>{item.label}</Link>
+                      </DropdownMenu.Item>
+                    ))}
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
+            )}
+
             <button
               type="button"
               onClick={onThemeToggle}
