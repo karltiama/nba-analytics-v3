@@ -20,6 +20,7 @@ import { MarketSentimentChart, resolveSentimentChartData } from '@/components/be
 import type { InjuryFeedAvailability } from '@/lib/injuries/freshness';
 import { injuryAbsenceCopy } from '@/lib/injuries/freshness';
 import { displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
+import { playerResearchHref, propsExplorerHref, slateHref } from '@/lib/betting/research-journey';
 
 // --- Types (migrated from GameDetailsModal) ---
 interface RecentGameResult {
@@ -185,7 +186,15 @@ function groupPropsByPlayer(props: PlayerPropItem[]): Array<{
     .sort((a, b) => a.playerName.localeCompare(b.playerName));
 }
 
-function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropItem[] }) {
+function PlayerPropsFilterableList({
+  props: playerProps,
+  gameId,
+  date,
+}: {
+  props: PlayerPropItem[];
+  gameId: string;
+  date?: string;
+}) {
   const [filterPlayer, setFilterPlayer] = useState<string>('all');
   const [filterPropType, setFilterPropType] = useState<string>('all');
   const [filterLine, setFilterLine] = useState<string>('all');
@@ -327,7 +336,14 @@ function PlayerPropsFilterableList({ props: playerProps }: { props: PlayerPropIt
                               <span className="w-4 shrink-0" aria-hidden />
                             )}
                             <Link
-                              href={`/betting/players/${prop.playerId}`}
+                              href={playerResearchHref({
+                                playerId: prop.playerId,
+                                date,
+                                gameId,
+                                propType: prop.propType,
+                                lineValue: prop.lineValue,
+                                sportsbook: prop.vendor,
+                              })}
                               className="hover:text-[#00d4ff] transition-colors truncate"
                             >
                               {prop.playerName}
@@ -708,7 +724,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
         <div className="px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-center gap-x-4 gap-y-2 min-w-0 bg-white/[0.02] relative">
           <button
             type="button"
-            onClick={() => router.push('/betting')}
+            onClick={() =>
+              router.push(
+                slateHref(typeof game.gameDate === 'string' ? game.gameDate : undefined)
+              )
+            }
             className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-[#00d4ff] hover:bg-white/10 transition-colors"
             aria-label="Back to Betting"
           >
@@ -750,6 +770,15 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               {SECTION_LABELS[id]}
             </button>
           ))}
+          <Link
+            href={propsExplorerHref({
+              gameId: game.id,
+              date: typeof game.gameDate === 'string' ? game.gameDate : undefined,
+            })}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#00d4ff]/15 text-[#00d4ff] border border-[#00d4ff]/40 hover:bg-[#00d4ff]/25"
+          >
+            View props
+          </Link>
         </div>
       </div>
 
@@ -877,14 +906,9 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               </div>
             ) : null}
             <p className="text-xs text-muted-foreground mt-3">
-              {aiSummaryStatus === 'success' && aiSummaryText ? (
-                <>
-                  Generated from on-page signals; not betting advice.{' '}
-                  <span className="text-white/35">·</span> Full AI projection — coming soon
-                </>
-              ) : (
-                'Full AI projection — coming soon'
-              )}
+              {aiSummaryStatus === 'success' && aiSummaryText
+                ? 'Generated from on-page signals; not betting advice.'
+                : 'Matchup briefing uses on-page signals when available. It is not a full projection model.'}
             </p>
             </div>
           </div>
@@ -1139,8 +1163,29 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
         </section>
 
         <section id="section-players" className="space-y-4 scroll-mt-[10rem]">
-          {playerProps.length > 0 && (
-            <PlayerPropsFilterableList props={playerProps} />
+          {playerProps.length > 0 ? (
+            <PlayerPropsFilterableList
+              props={playerProps}
+              gameId={game.id}
+              date={typeof game.gameDate === 'string' ? game.gameDate : undefined}
+            />
+          ) : (
+            <div className="glass-card rounded-xl border border-white/5 p-4 space-y-2">
+              <h2 className="text-sm font-semibold text-white">Player props</h2>
+              <p className="text-xs text-muted-foreground">
+                Prop research for this game is in Props Explorer. This page does not keep a separate
+                live-only prop board.
+              </p>
+              <Link
+                href={propsExplorerHref({
+                  gameId: game.id,
+                  date: typeof game.gameDate === 'string' ? game.gameDate : undefined,
+                })}
+                className="inline-flex text-xs text-[#00d4ff] hover:underline"
+              >
+                Open Props Explorer
+              </Link>
+            </div>
           )}
         </section>
 

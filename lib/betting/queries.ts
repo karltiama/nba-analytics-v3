@@ -84,6 +84,37 @@ export async function getGamesForDate(date: string) {
 }
 
 /**
+ * Games on an ET calendar date without the active-season pin.
+ * Explorer historical picker only — do not use for the live slate.
+ */
+export async function getGamesForCalendarDate(date: string) {
+  return query(
+    `
+    SELECT
+      g.game_id,
+      (g.start_time AT TIME ZONE 'America/New_York')::date AS game_date,
+      g.start_time,
+      g.home_team_id,
+      g.away_team_id,
+      ht.full_name AS home_team_name,
+      at.full_name AS away_team_name,
+      ht.abbreviation AS home_team_abbr,
+      at.abbreviation AS away_team_abbr,
+      g.home_score,
+      g.away_score,
+      g.status
+    FROM analytics.games g
+    JOIN analytics.teams ht ON g.home_team_id = ht.team_id
+    JOIN analytics.teams at ON g.away_team_id = at.team_id
+    WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
+      AND g.start_time <  (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')
+    ORDER BY g.start_time ASC
+  `,
+    [date]
+  );
+}
+
+/**
  * Get today's games (ET timezone)
  */
 export async function getTodaysGames() {

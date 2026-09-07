@@ -20,6 +20,7 @@ import {
   getAllTeamRatings,
   getDashboardSummary,
   getGamesForDate,
+  getGamesForCalendarDate,
   getPaceAnalysis,
   getProjectedStartingLineupFromAnalytics,
   getTeamRecentForm,
@@ -110,6 +111,17 @@ describe('betting season scoping (Phase 2.2)', () => {
     const [sql, params] = mockQuery.mock.calls[0];
     expect(String(sql)).toMatch(/g\.season = \$2/);
     expect(params).toEqual(['2026-04-10', '2026']);
+  });
+
+  it('getGamesForCalendarDate lists only the requested ET date and does not pin season', async () => {
+    mockQuery.mockResolvedValue([]);
+    await getGamesForCalendarDate('2026-05-01');
+    const [sql, params] = mockQuery.mock.calls[0];
+    expect(String(sql)).not.toMatch(/g\.season =/);
+    expect(String(sql)).toMatch(/g\.start_time >= \(\$1::timestamp AT TIME ZONE 'America\/New_York'\)/);
+    expect(params).toEqual(['2026-05-01']);
+    expect(params).not.toContain('2026');
+    expect(params).not.toContain('2025');
   });
 
   it('trending L5 CTE scopes game logs to active season', async () => {

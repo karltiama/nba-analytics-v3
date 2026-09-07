@@ -15,6 +15,7 @@ import { getOpponentContextForGame } from '@/lib/analytics/matchup-queries';
 import { getAnalyticsSeason } from '@/lib/season';
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
+import { PlayerResearchReturnBar, playerReturnContextFromSearch } from './components/PlayerResearchReturnBar';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 import type { OpponentContext } from '@/lib/analytics/matchup-queries';
 import type { PlayerRecentForm, PlayerVsOpponentHistory } from '@/lib/players/types';
@@ -70,10 +71,21 @@ export default async function BettingPlayerPage({
   searchParams,
 }: {
   params: Promise<{ playerId: string }>;
-  searchParams: Promise<{ season?: string }>;
+  searchParams: Promise<{
+    season?: string;
+    from?: string;
+    date?: string;
+    game_id?: string;
+    prop_type?: string;
+    side?: string;
+    sportsbook?: string;
+    line?: string;
+  }>;
 }) {
   const { playerId } = await params;
-  const { season } = await searchParams;
+  const sp = await searchParams;
+  const { season } = sp;
+  const returnCtx = playerReturnContextFromSearch(sp);
   const { analyticsPlayerId, player, seasonAverages, games, nextGame, opponentContext, recentForm, vsOpponentHistory, activeSeason } =
     await loadPlayerAnalysis(playerId, season || null);
 
@@ -154,6 +166,7 @@ export default async function BettingPlayerPage({
         <PlayerAnalysisProvider>
           <div className="flex flex-col xl:flex-row gap-6">
             <div className="flex-1 min-w-0 space-y-6 fade-in">
+              <PlayerResearchReturnBar ctx={returnCtx} />
               <PlayerHeader
                 player={player}
                 seasonAverages={seasonAverages}

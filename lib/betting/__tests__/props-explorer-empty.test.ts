@@ -15,4 +15,17 @@ describe('propsExplorerEmptyCopy', () => {
     expect(copy.title).toMatch(/No prop data is available for Sep 6/);
     expect(copy.detail).toMatch(/no player-prop rows/i);
   });
+
+  it('labels a historical empty date as missing archived closing lines, not a live board', () => {
+    const copy = propsExplorerEmptyCopy({
+      frozen: true,
+      dateLabel: 'May 6',
+      marketContext: 'historical',
+    });
+    expect(copy.title).toMatch(/No prop data is available for May 6/);
+    expect(copy.detail).toMatch(/archived closing lines/i);
+    expect(copy.detail).toMatch(/not a live sportsbook board/i);
+    expect(copy.detail).toMatch(/do not pull lines from another date/i);
+    expect(copy.detail).not.toMatch(/currently being refreshed/i);
+  });
 });

@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { query, queryOne } from '@/lib/db';
 import { resolveSupabaseAuth } from '@/lib/auth/supabase-user';
+import { etCalendarDate } from '@/lib/betting/props-market-context';
+import {
+  clampSavedResearchLimit,
+  deleteSavedResearchForUser,
+  insertSavedResearchForUser,
+  listSavedResearchForUser,
+  mapSavedResearchRow,
+} from '@/lib/betting/saved-research-queries';
 
 const savedPropSchema = z.object({
   gameId: z.union([z.number(), z.string()]),
@@ -16,50 +23,16 @@ const savedPropSchema = z.object({
   impliedProbability: z.number().nullable().optional(),
   snapshotAt: z.string().datetime().nullable().optional(),
   note: z.string().max(2000).nullable().optional(),
+  marketContext: z.enum(['live', 'historical']).nullable().optional(),
+  dateEt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
 });
 
 function toStrId(v: number | string): string {
   return typeof v === 'number' ? String(v) : String(v).trim();
 }
 
-type SavedPropRow = {
-  id: string;
-  user_id: string;
-  game_id: string;
-  player_id: string | number;
-  player_name: string | null;
-  sportsbook: string | null;
-  prop_type: string | null;
-  market_type: string | null;
-  side: string | null;
-  line_value: string | number | null;
-  odds_american: number | null;
-  implied_probability: string | number | null;
-  snapshot_at: string | null;
-  note: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-function mapSavedProp(row: SavedPropRow) {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    gameId: row.game_id,
-    playerId: Number(row.player_id),
-    playerName: row.player_name,
-    sportsbook: row.sportsbook,
-    propType: row.prop_type,
-    marketType: row.market_type,
-    side: row.side,
-    lineValue: row.line_value != null ? Number(row.line_value) : null,
-    oddsAmerican: row.odds_american,
-    impliedProbability: row.implied_probability != null ? Number(row.implied_probability) : null,
-    snapshotAt: row.snapshot_at,
-    note: row.note,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
+function mapSavedProp(row: Parameters<typeof mapSavedResearchRow>[0], todayEt = etCalendarDate()) {
+  return mapSavedResearchRow(row, todayEt);
 }
 
 export async function GET(request: NextRequest) {
@@ -68,17 +41,9 @@ export async function GET(request: NextRequest) {
   const { auth, withAuthCookies } = ar;
 
   try {
-    const limit = Math.min(200, Math.max(1, parseInt(request.nextUrl.searchParams.get('limit') || '100', 10) || 100));
-    const rows = await query<SavedPropRow>(
-      `SELECT id, user_id, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
-              line_value, odds_american, implied_probability, snapshot_at, note, created_at, updated_at
-       FROM public.user_saved_props
-       WHERE user_id = $1::uuid
-       ORDER BY created_at DESC
-       LIMIT $2`,
-      [auth.userId, limit]
-    );
-    return withAuthCookies(NextResponse.json({ rows: rows.map(mapSavedProp) }));
+    const limit = clampSavedResearchLimit(request.nextUrl.searchParams.get('limit'));
+    const rows = await listSavedResearchForUser({ userId: auth.userId, limit });
+    return withAuthCookies(NextResponse.json({ rows }));
   } catch (error: unknown) {
     return withAuthCookies(
       NextResponse.json(
@@ -107,42 +72,23 @@ export async function POST(request: NextRequest) {
     }
     const d = parsed.data;
 
-    const row = await queryOne<SavedPropRow>(
-      `INSERT INTO public.user_saved_props (
-         user_id, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
-         line_value, odds_american, implied_probability, snapshot_at, note
-       ) VALUES (
-         $1::uuid, $2, $3::bigint, $4, $5, $6, $7, $8, $9, $10, $11, $12::timestamptz, $13
-       )
-       ON CONFLICT (
-         user_id,
-         game_id,
-         player_id,
-         coalesce(sportsbook, ''),
-         coalesce(prop_type, ''),
-         coalesce(side, ''),
-         coalesce(line_value, -999999.999),
-         coalesce(snapshot_at, '1970-01-01 00:00:00+00'::timestamptz)
-       )
-       DO UPDATE SET note = COALESCE(EXCLUDED.note, public.user_saved_props.note)
-       RETURNING id, user_id, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
-                 line_value, odds_american, implied_probability, snapshot_at, note, created_at, updated_at`,
-      [
-        auth.userId,
-        toStrId(d.gameId),
-        toStrId(d.playerId),
-        d.playerName ?? null,
-        d.sportsbook ?? null,
-        d.propType ?? null,
-        d.marketType ?? null,
-        d.side ?? null,
-        d.lineValue ?? null,
-        d.oddsAmerican ?? null,
-        d.impliedProbability ?? null,
-        d.snapshotAt ?? null,
-        d.note ?? null,
-      ]
-    );
+    const row = await insertSavedResearchForUser({
+      userId: auth.userId,
+      gameId: toStrId(d.gameId),
+      playerId: toStrId(d.playerId),
+      playerName: d.playerName ?? null,
+      sportsbook: d.sportsbook ?? null,
+      propType: d.propType ?? null,
+      marketType: d.marketType ?? null,
+      side: d.side ?? null,
+      lineValue: d.lineValue ?? null,
+      oddsAmerican: d.oddsAmerican ?? null,
+      impliedProbability: d.impliedProbability ?? null,
+      snapshotAt: d.snapshotAt ?? null,
+      note: d.note ?? null,
+      marketContext: d.marketContext ?? null,
+      dateEt: d.dateEt ?? null,
+    });
 
     if (!row) {
       return withAuthCookies(NextResponse.json({ error: 'Failed to save prop' }, { status: 500 }));
@@ -170,16 +116,11 @@ export async function DELETE(request: NextRequest) {
     const id = request.nextUrl.searchParams.get('id');
     if (!id) return withAuthCookies(NextResponse.json({ error: 'Missing id' }, { status: 400 }));
 
-    const row = await queryOne<{ id: string }>(
-      `DELETE FROM public.user_saved_props
-       WHERE id = $1::uuid AND user_id = $2::uuid
-       RETURNING id`,
-      [id, auth.userId]
-    );
-    if (!row) {
+    const deleted = await deleteSavedResearchForUser({ userId: auth.userId, id });
+    if (!deleted) {
       return withAuthCookies(NextResponse.json({ error: 'Saved prop not found' }, { status: 404 }));
     }
-    return withAuthCookies(NextResponse.json({ ok: true, id: row.id }));
+    return withAuthCookies(NextResponse.json({ ok: true, id: deleted }));
   } catch (error: unknown) {
     return withAuthCookies(
       NextResponse.json(

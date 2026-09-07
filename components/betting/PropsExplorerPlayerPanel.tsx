@@ -8,7 +8,7 @@ import { PlayerTrendChart } from '@/app/betting/players/[playerId]/components/Pl
 import { GameLogTable } from '@/app/betting/players/[playerId]/components/GameLogTable';
 import type { GameLog, MetricKey, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 import { METRIC_LABELS, propTypeToMetricKey } from '@/lib/players/types';
-import { extractMetric, getSeasonAvgForMetric } from '@/lib/players/metrics';
+import { playerResearchHref } from '@/lib/betting/research-journey';
 
 const PREVIEW_GAMES = 25;
 const CHART_GAMES = 20;
@@ -101,9 +101,15 @@ interface PropsExplorerPlayerPanelProps {
   selection: PropsExplorerSelection;
   onClose: () => void;
   variant: 'sidebar' | 'drawer';
+  researchDate?: string;
 }
 
-export function PropsExplorerPlayerPanel({ selection, onClose, variant }: PropsExplorerPlayerPanelProps) {
+export function PropsExplorerPlayerPanel({
+  selection,
+  onClose,
+  variant,
+  researchDate,
+}: PropsExplorerPlayerPanelProps) {
   const [data, setData] = useState<PreviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -184,7 +190,13 @@ export function PropsExplorerPlayerPanel({ selection, onClose, variant }: PropsE
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-white truncate">{displayName}</h2>
           <Link
-            href={`/betting/players/${profileId}`}
+            href={playerResearchHref({
+              playerId: profileId,
+              date: researchDate,
+              gameId: selection.gameId,
+              propType: selection.propType,
+              lineValue: selection.lineValue,
+            })}
             className="inline-flex items-center gap-1 text-[11px] text-[#00d4ff] hover:underline mt-0.5"
           >
             Full profile

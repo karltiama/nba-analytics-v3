@@ -8,6 +8,7 @@ import {
   getTeamRecentForm,
   getGamesOdds,
   getTeamDefensiveRankings,
+  getGamesForCalendarDate,
 } from '@/lib/betting/queries';
 import {
   getTodayEtYmd,
@@ -21,6 +22,7 @@ import {
 import { isFinalStatus } from '@/lib/betting/normalize-game-status';
 import { isLiveBdlScheduleRefreshEnabled } from '@/lib/runtime/ingestion-mode';
 import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
+import { resolvePropsMarketContext } from '@/lib/betting/props-market-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,6 +49,8 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get('date');
     const mode = searchParams.get('mode') || 'today';
     const limit = parseInt(searchParams.get('limit') || '10');
+    const scope = (searchParams.get('scope') || '').trim().toLowerCase();
+    const picker = (searchParams.get('picker') || '').trim().toLowerCase();
 
     const todayEt = getTodayEtYmd();
     const liveRefreshEnabled = isLiveBdlScheduleRefreshEnabled();
@@ -65,7 +69,10 @@ export async function GET(request: NextRequest) {
 
     if (date) {
       await maybeRefreshScheduleForEtDay(date);
-      games = await getGamesForDate(date);
+      const marketContext = resolvePropsMarketContext({ dateEt: date, todayEt });
+      const useCalendarPicker =
+        scope === 'explorer' && (picker === 'calendar' || marketContext === 'historical');
+      games = useCalendarPicker ? await getGamesForCalendarDate(date) : await getGamesForDate(date);
       displayDate = date;
     } else if (mode === 'recent') {
       games = await getRecentGames(limit);
@@ -163,6 +170,13 @@ export async function GET(request: NextRequest) {
         mode: mode,
         dataSource: 'analytics.games',
         ingestionFrozen: isIngestionFrozen(),
+        gamePicker:
+          date &&
+          scope === 'explorer' &&
+          (picker === 'calendar' ||
+            resolvePropsMarketContext({ dateEt: date, todayEt }) === 'historical')
+            ? 'calendar'
+            : 'season',
       },
     });
   } catch (error: unknown) {

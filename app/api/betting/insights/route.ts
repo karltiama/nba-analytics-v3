@@ -131,10 +131,10 @@ export async function GET(request: NextRequest) {
       },
       {
         id: 'w-4',
-        title: 'Hot Player',
+        title: 'Recent form',
         value: trendingPlayers[0]?.full_name.split(' ').pop() || '—',
         description: trendingPlayers[0]
-          ? `+${Math.abs(trendingPlayers[0].points_trend_pct).toFixed(0)}% trend`
+          ? `Season L5 vs average, not a tonight slate pick · ${Math.abs(trendingPlayers[0].points_trend_pct).toFixed(0)}%`
           : 'No recent-form data yet',
         type: 'props',
         change: trendingPlayers[0] ? `${trendingPlayers[0].trend_direction === 'up' ? '+' : ''}${trendingPlayers[0].points_trend_pct.toFixed(0)}%` : undefined,

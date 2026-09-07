@@ -58,7 +58,7 @@ export function GameDetailsPageClient({ gameId }: { gameId: string }) {
           <div className="glass-card rounded-xl border-l-4 border-l-[#ff4757] p-8 text-center">
             <h1 className="text-xl font-bold text-white mb-2">Game not found</h1>
             <p className="text-muted-foreground mb-4">{error || 'This game could not be loaded.'}</p>
-            <Link href="/betting" className="text-[#00d4ff] hover:underline text-sm">
+            <Link href={slateHref(typeof game.gameDate === 'string' ? game.gameDate : undefined)} className="text-[#00d4ff] hover:underline text-sm">
               ← Back to Betting
             </Link>
           </div>

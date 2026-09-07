@@ -10,10 +10,20 @@ import {
   PropsExplorerPlayerSidebarPlaceholder,
   type PropsExplorerSelection,
 } from '@/components/betting/PropsExplorerPlayerPanel';
+import {
+  PropsExplorerMarketPanel,
+  type PropsExplorerMarketSelection,
+} from '@/components/betting/PropsExplorerMarketPanel';
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
+import {
+  explorerGamesApiHref,
+  gameDetailHref,
+  playerResearchHref,
+} from '@/lib/betting/research-journey';
+import { savedResearchHref } from '@/lib/betting/saved-research';
 
 type ExplorerRow = {
   gameId: number;
@@ -31,20 +41,28 @@ type ExplorerRow = {
   ev: number | null;
   projection: number | null;
   evSelectedTrack: string;
-  calibrationVersion: string;
+  calibrationVersion: string | null;
   confidenceTier?: 'high' | 'medium' | 'low' | null;
   anchorDeltaAbsTrackB?: number | null;
+  marketContext?: 'live' | 'historical';
+  lineLabel?: string;
+  paperBetAllowed?: boolean;
+  sourceTable?: string;
 };
 
 type ExplorerMeta = {
   totalMatching: number;
   evSelectedTrack: string;
-  calibrationVersion: string;
+  calibrationVersion: string | null;
   computedAt: string;
   evFetchCap: number | null;
   sort: string;
   dir: string;
   ingestionFrozen?: boolean;
+  marketContext?: 'live' | 'historical';
+  sourceTable?: string;
+  lineLabel?: string;
+  dateEt?: string;
 };
 
 type SavedProp = {
@@ -77,7 +95,11 @@ function getValueGrade(ev: number | null | undefined): ValueGrade {
   return 'fair';
 }
 
-function getValueCopy(ev: number | null | undefined): string {
+function getValueCopy(
+  ev: number | null | undefined,
+  marketContext?: 'live' | 'historical'
+): string {
+  if (marketContext === 'historical') return 'Unavailable';
   const grade = getValueGrade(ev);
   if (grade === 'good') return 'Good Value';
   if (grade === 'bad') return 'Bad Value';
@@ -168,16 +190,25 @@ export default function PropsExplorerPage(props: PageProps) {
   const [addingPaperKey, setAddingPaperKey] = useState<string | null>(null);
   const [savedPropIdByKey, setSavedPropIdByKey] = useState<Record<string, string>>({});
   const [savingPropKey, setSavingPropKey] = useState<string | null>(null);
+  const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<PropsExplorerSelection | null>(null);
+  const [selectedMarket, setSelectedMarket] = useState<PropsExplorerMarketSelection | null>(null);
   const [isXlViewport, setIsXlViewport] = useState(false);
   const [showAdvancedMetrics, setShowAdvancedMetrics] = useState(false);
+
+  const marketContext: 'live' | 'historical' =
+    meta?.marketContext ?? (date < getTodayET() ? 'historical' : 'live');
+  const lineLabel =
+    meta?.lineLabel ??
+    (marketContext === 'historical' ? 'Historical closing line' : 'Current market');
 
   const effectiveGameId = useMemo(() => {
     const fromFilter = gameId.trim();
     if (fromFilter) return fromFilter;
     if (selectedPlayer?.gameId != null) return String(selectedPlayer.gameId);
+    if (selectedMarket?.gameId != null) return String(selectedMarket.gameId);
     return null;
-  }, [gameId, selectedPlayer]);
+  }, [gameId, selectedPlayer, selectedMarket]);
 
   useLayoutEffect(() => {
     const mq = window.matchMedia('(min-width: 1280px)');
@@ -186,6 +217,10 @@ export default function PropsExplorerPage(props: PageProps) {
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
   }, []);
+
+  useEffect(() => {
+    setSelectedMarket(null);
+  }, [date, gameId]);
 
   const buildSavedPropKey = useCallback((v: SavedProp | ExplorerRow) => {
     return [
@@ -215,7 +250,9 @@ export default function PropsExplorerPage(props: PageProps) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/betting/games?date=${encodeURIComponent(date)}`);
+        const res = await fetch(
+          explorerGamesApiHref({ dateEt: date, todayEt: getTodayET() })
+        );
         if (!res.ok) return;
         const data = await res.json();
         const list = (data.games || []).map(
@@ -281,7 +318,11 @@ export default function PropsExplorerPage(props: PageProps) {
         if (propType.trim()) u.searchParams.set('prop_type', propType.trim());
         if (side && side !== 'all') u.searchParams.set('side', side);
         if (sportsbook.trim()) u.searchParams.set('sportsbook', sportsbook.trim());
-        if (minEv.trim() !== '' && !Number.isNaN(parseFloat(minEv))) {
+        if (
+          date >= getTodayET() &&
+          minEv.trim() !== '' &&
+          !Number.isNaN(parseFloat(minEv))
+        ) {
           u.searchParams.set('min_ev', minEv.trim());
         }
         const res = await fetch(u.toString());
@@ -337,6 +378,10 @@ export default function PropsExplorerPage(props: PageProps) {
 
   const addToPaper = useCallback(
     async (r: ExplorerRow) => {
+      if (r.paperBetAllowed === false || r.marketContext === 'historical') {
+        setError('Paper bets cannot be placed on completed historical games');
+        return;
+      }
       const key = `${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}`;
       setAddingPaperKey(key);
       setError(null);
@@ -381,6 +426,7 @@ export default function PropsExplorerPage(props: PageProps) {
       const key = buildSavedPropKey(r);
       setSavingPropKey(key);
       setError(null);
+      setSaveNotice(null);
       try {
         const existingId = savedPropIdByKey[key];
         if (existingId) {
@@ -394,6 +440,7 @@ export default function PropsExplorerPage(props: PageProps) {
             delete copy[key];
             return copy;
           });
+          setSaveNotice('Removed from saved research');
           return;
         }
 
@@ -412,6 +459,8 @@ export default function PropsExplorerPage(props: PageProps) {
             oddsAmerican: r.oddsAmerican,
             impliedProbability: r.impliedProbability,
             snapshotAt: r.snapshotAt,
+            marketContext: r.marketContext,
+            dateEt: date,
           }),
         });
         const data = await res.json().catch(() => ({}));
@@ -420,13 +469,14 @@ export default function PropsExplorerPage(props: PageProps) {
         if (savedId) {
           setSavedPropIdByKey((prev) => ({ ...prev, [key]: String(savedId) }));
         }
+        setSaveNotice('Saved for research');
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Could not save prop');
       } finally {
         setSavingPropKey(null);
       }
     },
-    [buildSavedPropKey, savedPropIdByKey]
+    [buildSavedPropKey, savedPropIdByKey, date]
   );
 
   return (
@@ -435,7 +485,12 @@ export default function PropsExplorerPage(props: PageProps) {
         <div>
           <h1 className="text-xl font-semibold text-white">Props Explorer</h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Simple mode highlights Good/Fair/Bad value from your model edge.
+            {marketContext === 'historical'
+              ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Model EV is not computed for historical dates.'
+              : 'Simple mode highlights Good/Fair/Bad value from your model edge.'}
+          </p>
+          <p className="mt-1.5 inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/80">
+            {lineLabel}
           </p>
         </div>
         {showAdvancedMetrics && meta ? (
@@ -493,6 +548,9 @@ export default function PropsExplorerPage(props: PageProps) {
                 {g.label}
               </option>
             ))}
+            {gameId.trim() && !games.some((g) => g.id === gameId.trim()) ? (
+              <option value={gameId.trim()}>Selected game</option>
+            ) : null}
           </select>
         </div>
 
@@ -550,6 +608,12 @@ export default function PropsExplorerPage(props: PageProps) {
                 value={minEv}
                 onChange={(e) => updateParams({ min_ev: e.target.value || null, offset: '0' })}
                 aria-label="Minimum EV"
+                disabled={marketContext === 'historical'}
+                title={
+                  marketContext === 'historical'
+                    ? 'EV filters do not apply to historical closing lines'
+                    : undefined
+                }
               />
               <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
                 <span className="text-muted-foreground text-xs font-medium">EV+</span>
@@ -563,9 +627,15 @@ export default function PropsExplorerPage(props: PageProps) {
                 onChange={(e) => updateParams({ sort: e.target.value, offset: '0' })}
                 aria-label="Sort by"
               >
-                {SORT_OPTIONS.map((o) => (
+                {SORT_OPTIONS.filter((o) =>
+                  marketContext === 'historical'
+                    ? o.value === 'snapshot_at' || o.value === 'odds_american'
+                    : true
+                ).map((o) => (
                   <option key={o.value} value={o.value}>
-                    {o.label}
+                    {o.value === 'snapshot_at' && marketContext === 'historical'
+                      ? 'Closing time'
+                      : o.label}
                   </option>
                 ))}
               </select>
@@ -627,6 +697,21 @@ export default function PropsExplorerPage(props: PageProps) {
       {error && (
         <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757] mb-4">
           <p className="text-sm text-[#ff4757]">{error}</p>
+        </div>
+      )}
+      {saveNotice && (
+        <div className="glass-card rounded-xl p-3 border-l-4 border-l-[#39ff14] mb-4">
+          <p className="text-sm text-[#39ff14]">
+            {saveNotice}
+            {saveNotice.startsWith('Saved') ? (
+              <>
+                {' '}
+                <Link href={savedResearchHref()} className="underline hover:text-white">
+                  View saved
+                </Link>
+              </>
+            ) : null}
+          </p>
         </div>
       )}
 
@@ -696,24 +781,38 @@ export default function PropsExplorerPage(props: PageProps) {
                     <th className="py-2 px-2 font-medium text-right">Proj</th>
                   </>
                 ) : null}
-                <th className="py-2 px-2 font-medium">Updated</th>
+                <th className="py-2 px-2 font-medium">
+                  {marketContext === 'historical' ? 'Closed' : 'Updated'}
+                </th>
                 <th className="py-2 px-2 font-medium w-[72px]">Save</th>
+                <th className="py-2 px-2 font-medium w-[88px]">Compare</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={showAdvancedMetrics ? 15 : 11} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={showAdvancedMetrics ? 16 : 12} className="py-8 text-center text-muted-foreground">
                     {(() => {
                       const copy = propsExplorerEmptyCopy({
                         frozen: Boolean(meta?.ingestionFrozen),
                         dateLabel: getDateLabel(date),
+                        marketContext,
                       });
                       return (
-                        <div className="space-y-1 px-4">
+                        <div className="space-y-2 px-4">
                           <p className="text-sm text-white/80">{copy.title}</p>
                           <p className="text-xs text-muted-foreground">{copy.detail}</p>
+                          {gameId.trim() ? (
+                            <p className="text-xs">
+                              <Link
+                                href={gameDetailHref(gameId.trim())}
+                                className="text-[#00d4ff] hover:underline"
+                              >
+                                Back to game
+                              </Link>
+                            </p>
+                          ) : null}
                         </div>
                       );
                     })()}
@@ -747,7 +846,15 @@ export default function PropsExplorerPage(props: PageProps) {
                           {formatPlayerLabel(r.playerName, r.playerId)}
                         </button>
                         <Link
-                          href={`/betting/players/${r.playerId}`}
+                          href={playerResearchHref({
+                            playerId: r.playerId,
+                            date,
+                            gameId: r.gameId,
+                            propType: r.propType,
+                            side: r.side,
+                            sportsbook: r.sportsbook,
+                            lineValue: r.lineValue,
+                          })}
                           className="shrink-0 p-0.5 rounded text-muted-foreground hover:text-white"
                           title="Open full profile"
                           onClick={(e) => e.stopPropagation()}
@@ -771,14 +878,16 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="py-1.5 px-2">
                       <span
-                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${getValueToneClass(r.ev)}`}
+                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${getValueToneClass(r.marketContext === 'historical' ? null : r.ev)}`}
                         title={
-                          r.ev != null && Number.isFinite(r.ev)
-                            ? `Model edge: ${(r.ev * 100).toFixed(1)}%`
-                            : 'No model edge available'
+                          r.marketContext === 'historical'
+                            ? 'Historical closing line — model EV is not computed'
+                            : r.ev != null && Number.isFinite(r.ev)
+                              ? `Model edge: ${(r.ev * 100).toFixed(1)}%`
+                              : 'No model edge available'
                         }
                       >
-                        {getValueCopy(r.ev)}
+                        {getValueCopy(r.ev, r.marketContext)}
                       </span>
                     </td>
                     <td
@@ -826,10 +935,40 @@ export default function PropsExplorerPage(props: PageProps) {
                     <td className="py-1.5 px-1">
                       <button
                         type="button"
-                        disabled={addingPaperKey !== null}
+                        onClick={() =>
+                          setSelectedMarket({
+                            gameId: r.gameId,
+                            playerId: r.playerId,
+                            playerName: r.playerName,
+                            propType: r.propType,
+                            side: r.side,
+                            lineValue: r.lineValue,
+                            sportsbook: r.sportsbook,
+                            oddsAmerican: r.oddsAmerican,
+                            snapshotAt: r.snapshotAt,
+                          })
+                        }
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-white/20 text-white hover:bg-white/10"
+                        title="Compare books"
+                      >
+                        Compare
+                      </button>
+                    </td>
+                    <td className="py-1.5 px-1">
+                      <button
+                        type="button"
+                        disabled={
+                          addingPaperKey !== null ||
+                          r.paperBetAllowed === false ||
+                          r.marketContext === 'historical'
+                        }
                         onClick={() => addToPaper(r)}
                         className="text-[10px] px-1.5 py-0.5 rounded border border-[#00d4ff]/40 text-[#8fefff] hover:bg-[#00d4ff]/15 disabled:opacity-40"
-                        title="Add to paper bets"
+                        title={
+                          r.paperBetAllowed === false || r.marketContext === 'historical'
+                            ? 'Paper bets cannot be placed on completed historical games'
+                            : 'Add to paper bets'
+                        }
                       >
                         {addingPaperKey === paperKey ? '…' : 'Add'}
                       </button>
@@ -847,16 +986,24 @@ export default function PropsExplorerPage(props: PageProps) {
 
         <aside className="hidden xl:flex xl:flex-col gap-3 w-full xl:w-96 shrink-0 xl:sticky xl:top-16 xl:self-start xl:max-h-[calc(100vh-5rem)]">
           <PropsExplorerGameContextPanel gameId={effectiveGameId} />
-          <div className="flex-1 min-h-0 flex flex-col min-h-[12rem]">
+          <div className="flex-1 min-h-0 flex flex-col min-h-[12rem] gap-3">
+            {selectedMarket && isXlViewport ? (
+              <PropsExplorerMarketPanel
+                variant="sidebar"
+                selection={selectedMarket}
+                dateEt={date}
+                onClose={() => setSelectedMarket(null)}
+              />
+            ) : null}
             {selectedPlayer && isXlViewport ? (
               <PropsExplorerPlayerPanel
                 variant="sidebar"
                 selection={selectedPlayer}
+                researchDate={date}
                 onClose={() => setSelectedPlayer(null)}
               />
-            ) : (
-              <PropsExplorerPlayerSidebarPlaceholder />
-            )}
+            ) : null}
+            {!selectedPlayer && !selectedMarket ? <PropsExplorerPlayerSidebarPlaceholder /> : null}
           </div>
         </aside>
       </div>
@@ -865,7 +1012,16 @@ export default function PropsExplorerPage(props: PageProps) {
         <PropsExplorerPlayerPanel
           variant="drawer"
           selection={selectedPlayer}
+          researchDate={date}
           onClose={() => setSelectedPlayer(null)}
+        />
+      ) : null}
+      {selectedMarket && !isXlViewport ? (
+        <PropsExplorerMarketPanel
+          variant="drawer"
+          selection={selectedMarket}
+          dateEt={date}
+          onClose={() => setSelectedMarket(null)}
         />
       ) : null}
     </main>

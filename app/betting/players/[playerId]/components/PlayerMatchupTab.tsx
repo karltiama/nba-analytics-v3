@@ -7,7 +7,9 @@ import type { OpponentContext } from '@/lib/analytics/matchup-queries';
 import { NextGameOverviewCard } from './matchup/NextGameOverviewCard';
 import { PlayerRecentFormCard } from './matchup/PlayerRecentFormCard';
 import { PlayerVsOpponentHistoryCard } from './matchup/PlayerVsOpponentHistoryCard';
-import { FutureOddsPlaceholderCard } from './matchup/FutureOddsPlaceholderCard';
+import Link from 'next/link';
+import { propsExplorerHref } from '@/lib/betting/research-journey';
+import { etCalendarDateFromInstant } from '@/lib/betting/props-market-context';
 
 export interface PlayerMatchupTabProps {
   games: GameLog[];
@@ -49,7 +51,17 @@ export function PlayerMatchupTab({
         vsOpponentHistory={nextGame ? vsOpponentHistory : null}
         opponentAbbr={nextGame?.opponent_abbr ?? null}
       />
-      <FutureOddsPlaceholderCard />
+      {nextGame ? (
+        <Link
+          href={propsExplorerHref({
+            gameId: nextGame.game_id,
+            date: etCalendarDateFromInstant(nextGame.start_time),
+          })}
+          className="text-sm text-[#00d4ff] hover:underline"
+        >
+          Open Props Explorer for this matchup
+        </Link>
+      ) : null}
     </div>
   );
 }

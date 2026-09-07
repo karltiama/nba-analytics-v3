@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Clock, TrendingUp, ChevronRight, Gauge, ShieldAlert } from 'lucide-react';
+import { Clock, TrendingUp, ChevronRight, Gauge, ShieldAlert, ListFilter } from 'lucide-react';
+import { gameDetailHref, propsExplorerHref } from '@/lib/betting/research-journey';
 
 interface TeamInfo {
   id: string;
@@ -54,6 +55,8 @@ interface GameCardProps {
   game: Game;
   /** Optional: if not provided, card links to /betting/games/[gameId] */
   onViewDetails?: (gameId: string) => void;
+  /** ET YYYY-MM-DD used for Props Explorer deep links when game.gameDate is missing */
+  researchDate?: string;
 }
 
 function formatOdds(odds: number | null | undefined): string {
@@ -101,8 +104,13 @@ function getStatusBadge(status: string | undefined): { label: string; className:
   return { label: status, className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
 }
 
-export function GameCard({ game, onViewDetails }: GameCardProps) {
-  const gameHref = `/betting/games/${game.id}`;
+export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
+  const dateForProps =
+    (game.gameDate && /^\d{4}-\d{2}-\d{2}/.test(String(game.gameDate))
+      ? String(game.gameDate).slice(0, 10)
+      : null) ?? researchDate ?? undefined;
+  const gameHref = gameDetailHref(game.id);
+  const propsHref = propsExplorerHref({ gameId: game.id, date: dateForProps });
   const borderClass = game.isClose ? 'border-l-[#ff6b35]' : 'border-l-[#39ff14]';
 
   const hasOdds =
@@ -276,15 +284,24 @@ export function GameCard({ game, onViewDetails }: GameCardProps) {
         </div>
       ) : null}
 
-      <Link
-        href={gameHref}
-        onClick={() => onViewDetails?.(game.id)}
-        className="w-full px-4 py-2 flex items-center justify-center gap-2 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 transition-colors group"
-      >
-        <TrendingUp className="w-3.5 h-3.5 text-[#00d4ff]" />
-        <span className="text-xs font-medium text-[#00d4ff]">View Game Details</span>
-        <ChevronRight className="w-3.5 h-3.5 text-[#00d4ff] group-hover:translate-x-0.5 transition-transform" />
-      </Link>
+      <div className="grid grid-cols-2 border-t border-white/5">
+        <Link
+          href={gameHref}
+          onClick={() => onViewDetails?.(game.id)}
+          className="px-3 py-2 flex items-center justify-center gap-1.5 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 transition-colors group"
+        >
+          <TrendingUp className="w-3.5 h-3.5 text-[#00d4ff]" />
+          <span className="text-xs font-medium text-[#00d4ff]">View matchup</span>
+          <ChevronRight className="w-3.5 h-3.5 text-[#00d4ff] group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+        <Link
+          href={propsHref}
+          className="px-3 py-2 flex items-center justify-center gap-1.5 bg-white/[0.03] hover:bg-white/[0.07] transition-colors border-l border-white/5"
+        >
+          <ListFilter className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-xs font-medium text-white/80">View props</span>
+        </Link>
+      </div>
     </div>
   );
 }

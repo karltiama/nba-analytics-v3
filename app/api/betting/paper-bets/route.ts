@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
-import { query, queryOne } from '@/lib/db';
+import { queryOne } from '@/lib/db';
+import { etCalendarDate, shouldBlockActivePaperBet } from '@/lib/betting/props-market-context';
+import {
+  deleteOpenPaperBetForUser,
+  insertPaperBetForUser,
+  listPaperBetsForUser,
+  normalizePaperBetStatus,
+} from '@/lib/betting/paper-bets-queries';
 
 const createBetSchema = z.object({
   gameId: z.union([z.number(), z.string()]),
@@ -28,65 +35,9 @@ function toStrId(v: number | string): string {
   return typeof v === 'number' ? String(v) : String(v).trim();
 }
 
-type BetRow = {
-  id: string;
-  created_at: string;
-  status: string;
-  game_id: string;
-  player_id: string;
-  player_name: string | null;
-  sportsbook: string | null;
-  prop_type: string | null;
-  market_type: string | null;
-  side: string | null;
-  line_value: string | number | null;
-  odds_american: number | null;
-  implied_probability: string | number | null;
-  stake_units: string | number;
-  ev: string | number | null;
-  confidence_tier: string | null;
-  calibration_version: string | null;
-  decision_snapshot_at: string;
-  model_probability: string | number | null;
-  projection: string | number | null;
-  ev_selected_track: string | null;
-  result: string | null;
-  profit_units: string | number | null;
-  settled_at: string | null;
-};
-
-function mapBet(r: BetRow) {
-  return {
-    id: r.id,
-    createdAt: r.created_at,
-    status: r.status,
-    gameId: r.game_id,
-    playerId: r.player_id,
-    playerName: r.player_name,
-    sportsbook: r.sportsbook,
-    propType: r.prop_type,
-    marketType: r.market_type,
-    side: r.side,
-    lineValue: r.line_value != null ? Number(r.line_value) : null,
-    oddsAmerican: r.odds_american,
-    impliedProbability: r.implied_probability != null ? Number(r.implied_probability) : null,
-    stakeUnits: Number(r.stake_units),
-    ev: r.ev != null ? Number(r.ev) : null,
-    confidenceTier: r.confidence_tier,
-    calibrationVersion: r.calibration_version,
-    decisionSnapshotAt: r.decision_snapshot_at,
-    modelProbability: r.model_probability != null ? Number(r.model_probability) : null,
-    projection: r.projection != null ? Number(r.projection) : null,
-    evSelectedTrack: r.ev_selected_track ?? null,
-    result: r.result,
-    profitUnits: r.profit_units != null ? Number(r.profit_units) : null,
-    settledAt: r.settled_at,
-  };
-}
-
 /**
  * GET /api/betting/paper-bets?status=open|settled|all&limit=&offset=
- * Auth required (private betting API).
+ * Auth required. Lists only the authenticated user's bets.
  */
 export async function GET(request: NextRequest) {
   const gate = await requireBettingAuth(request);
@@ -94,63 +45,46 @@ export async function GET(request: NextRequest) {
 
   try {
     const sp = request.nextUrl.searchParams;
-    const statusRaw = (sp.get('status') || 'all').toLowerCase();
+    const status = normalizePaperBetStatus(sp.get('status'));
     const limit = Math.min(500, Math.max(1, parseInt(sp.get('limit') || '100', 10) || 100));
     const offset = Math.max(0, parseInt(sp.get('offset') || '0', 10) || 0);
 
-    let where = '';
-    const params: unknown[] = [];
-    if (statusRaw === 'open') {
-      where = `WHERE status = 'open'`;
-    } else if (statusRaw === 'settled') {
-      where = `WHERE status = 'settled'`;
-    }
-
-    const countRow = await queryOne<{ c: string }>(
-      `SELECT count(*)::text AS c FROM paper.bets ${where}`,
-      params
-    );
-    const total = parseInt(countRow?.c ?? '0', 10) || 0;
-
-    const lim = params.length + 1;
-    const off = params.length + 2;
-    const rows = await query<BetRow>(
-      `SELECT id, created_at, status, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
-              line_value, odds_american, implied_probability, stake_units, ev, confidence_tier, calibration_version,
-              decision_snapshot_at, model_probability, projection, ev_selected_track,
-              result, profit_units, settled_at
-       FROM paper.bets
-       ${where}
-       ORDER BY
-         CASE WHEN status = 'open' THEN 0 ELSE 1 END,
-         COALESCE(settled_at, created_at) DESC
-       LIMIT $${lim} OFFSET $${off}`,
-      [...params, limit, offset]
-    );
-
-    return NextResponse.json({
-      bets: rows.map(mapBet),
-      meta: { total, limit, offset, status: statusRaw },
+    const { bets, total } = await listPaperBetsForUser({
+      userId: gate.auth.userId,
+      status,
+      limit,
+      offset,
     });
+
+    return gate.withAuthCookies(
+      NextResponse.json({
+        bets,
+        meta: { total, limit, offset, status },
+      })
+    );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     const missing = message.includes('paper.bets') && message.includes('does not exist');
     console.error('[paper-bets GET]', error);
-    return NextResponse.json(
-      {
-        error: missing ? 'Paper bets table missing. Apply db/schemas/paper_schema.sql in Supabase.' : 'Failed to load paper bets',
-        message,
-        bets: [],
-        meta: { total: 0, limit: 0, offset: 0, status: 'all' },
-      },
-      { status: missing ? 503 : 500 }
+    return gate.withAuthCookies(
+      NextResponse.json(
+        {
+          error: missing
+            ? 'Paper bets table missing. Apply db/schemas/paper_schema.sql in Supabase.'
+            : 'Failed to load paper bets',
+          message,
+          bets: [],
+          meta: { total: 0, limit: 0, offset: 0, status: 'all' },
+        },
+        { status: missing ? 503 : 500 }
+      )
     );
   }
 }
 
 /**
  * POST /api/betting/paper-bets
- * Auth required (private betting API).
+ * Auth required. Owner is always the session user (client user_id is ignored).
  */
 export async function POST(request: NextRequest) {
   const gate = await requireBettingAuth(request);
@@ -160,69 +94,85 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = createBetSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid body', details: parsed.error.flatten() }, { status: 400 });
+      return gate.withAuthCookies(
+        NextResponse.json({ error: 'Invalid body', details: parsed.error.flatten() }, { status: 400 })
+      );
     }
     const d = parsed.data;
     const gameId = toStrId(d.gameId);
     const playerId = toStrId(d.playerId);
 
-    const inserted = await queryOne<BetRow>(
-      `INSERT INTO paper.bets (
-         status, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
-         line_value, odds_american, implied_probability, stake_units, ev, confidence_tier, calibration_version,
-         decision_snapshot_at, model_probability, projection, ev_selected_track
-       ) VALUES (
-         'open', $1, $2, $3, $4, $5, $6, $7,
-         $8, $9, $10, $11, $12, $13, $14,
-         $15::timestamptz, $16, $17, $18
-       )
-       RETURNING id, created_at, status, game_id, player_id, player_name, sportsbook, prop_type, market_type, side,
-                 line_value, odds_american, implied_probability, stake_units, ev, confidence_tier, calibration_version,
-                 decision_snapshot_at, model_probability, projection, ev_selected_track,
-                 result, profit_units, settled_at`,
-      [
-        gameId,
-        playerId,
-        d.playerName ?? null,
-        d.sportsbook ?? null,
-        d.propType ?? null,
-        d.marketType ?? null,
-        d.side ?? null,
-        d.lineValue ?? null,
-        d.oddsAmerican ?? null,
-        d.impliedProbability ?? null,
-        d.stakeUnits,
-        d.ev ?? null,
-        d.confidenceTier ?? null,
-        d.calibrationVersion ?? null,
-        d.decisionSnapshotAt,
-        d.modelProbability ?? null,
-        d.projection ?? null,
-        d.evSelectedTrack ?? null,
-      ]
+    const game = await queryOne<{ start_time: string | Date | null; status: string | null }>(
+      `SELECT start_time, status FROM analytics.games WHERE game_id = $1`,
+      [gameId]
     );
-
-    if (!inserted) {
-      return NextResponse.json({ error: 'Insert failed' }, { status: 500 });
+    if (!game) {
+      return gate.withAuthCookies(
+        NextResponse.json({ error: 'Game not found', code: 'GAME_NOT_FOUND' }, { status: 404 })
+      );
+    }
+    if (
+      shouldBlockActivePaperBet({
+        gameStartTime: game.start_time,
+        gameStatus: game.status,
+        todayEt: etCalendarDate(),
+      })
+    ) {
+      return gate.withAuthCookies(
+        NextResponse.json(
+          {
+            error: 'Paper bets cannot be placed on completed historical games',
+            code: 'HISTORICAL_GAME',
+          },
+          { status: 409 }
+        )
+      );
     }
 
-    return NextResponse.json({ bet: mapBet(inserted) });
+    const bet = await insertPaperBetForUser({
+      userId: gate.auth.userId,
+      gameId,
+      playerId,
+      playerName: d.playerName ?? null,
+      sportsbook: d.sportsbook ?? null,
+      propType: d.propType ?? null,
+      marketType: d.marketType ?? null,
+      side: d.side ?? null,
+      lineValue: d.lineValue ?? null,
+      oddsAmerican: d.oddsAmerican ?? null,
+      impliedProbability: d.impliedProbability ?? null,
+      stakeUnits: d.stakeUnits,
+      ev: d.ev ?? null,
+      confidenceTier: d.confidenceTier ?? null,
+      calibrationVersion: d.calibrationVersion ?? null,
+      decisionSnapshotAt: d.decisionSnapshotAt,
+      modelProbability: d.modelProbability ?? null,
+      projection: d.projection ?? null,
+      evSelectedTrack: d.evSelectedTrack ?? null,
+    });
+
+    if (!bet) {
+      return gate.withAuthCookies(NextResponse.json({ error: 'Insert failed' }, { status: 500 }));
+    }
+
+    return gate.withAuthCookies(NextResponse.json({ bet }));
   } catch (error: unknown) {
     console.error('[paper-bets POST]', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to create paper bet',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
+    return gate.withAuthCookies(
+      NextResponse.json(
+        {
+          error: 'Failed to create paper bet',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 500 }
+      )
     );
   }
 }
 
 /**
  * DELETE /api/betting/paper-bets?id=<bet_id>
- * Removes an open paper bet by id.
- * Auth required (private betting API).
+ * Removes an open paper bet owned by the authenticated user.
  */
 export async function DELETE(request: NextRequest) {
   const gate = await requireBettingAuth(request);
@@ -231,29 +181,25 @@ export async function DELETE(request: NextRequest) {
   try {
     const id = (request.nextUrl.searchParams.get('id') || '').trim();
     if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+      return gate.withAuthCookies(NextResponse.json({ error: 'Missing id' }, { status: 400 }));
     }
 
-    const deleted = await queryOne<{ id: string }>(
-      `DELETE FROM paper.bets
-       WHERE id = $1 AND status = 'open'
-       RETURNING id`,
-      [id]
-    );
-
+    const deleted = await deleteOpenPaperBetForUser({ userId: gate.auth.userId, id });
     if (!deleted) {
-      return NextResponse.json({ error: 'Open bet not found' }, { status: 404 });
+      return gate.withAuthCookies(NextResponse.json({ error: 'Open bet not found' }, { status: 404 }));
     }
 
-    return NextResponse.json({ ok: true, id: deleted.id });
+    return gate.withAuthCookies(NextResponse.json({ ok: true, id: deleted }));
   } catch (error: unknown) {
     console.error('[paper-bets DELETE]', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to remove paper bet',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
+    return gate.withAuthCookies(
+      NextResponse.json(
+        {
+          error: 'Failed to remove paper bet',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 500 }
+      )
     );
   }
 }

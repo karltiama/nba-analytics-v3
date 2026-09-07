@@ -476,7 +476,7 @@ export default function BettingDashboard(props: PageProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {sortedGames.map((game, index) => (
                     <div key={game.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                      <GameCard game={game} />
+                      <GameCard game={game} researchDate={selectedDate} />
                     </div>
                   ))}
                 </div>
