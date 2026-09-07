@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { summarizeSettledPaperPortfolio } from '@/lib/betting/paper-portfolio';
 
 type PaperBet = {
   id: string;
@@ -187,26 +188,7 @@ function PaperBetsContent() {
     router.replace(`/betting/paper?${next.toString()}`, { scroll: false });
   };
 
-  const summary = useMemo(() => {
-    const settled = historyBets;
-    const n = settled.length;
-    let wins = 0;
-    let losses = 0;
-    let pushes = 0;
-    let voids = 0;
-    let profitStaked = 0;
-    let stakeStaked = 0;
-    for (const b of settled) {
-      stakeStaked += b.stakeUnits;
-      if (b.result === 'win') wins++;
-      else if (b.result === 'loss') losses++;
-      else if (b.result === 'push') pushes++;
-      else if (b.result === 'void') voids++;
-      profitStaked += b.profitUnits ?? 0;
-    }
-    const roi = stakeStaked > 0 ? profitStaked / stakeStaked : null;
-    return { n, wins, losses, pushes, voids, profitStaked, stakeStaked, roi };
-  }, [historyBets]);
+  const summary = useMemo(() => summarizeSettledPaperPortfolio(historyBets), [historyBets]);
 
   const handleSettle = async () => {
     setSettling(true);

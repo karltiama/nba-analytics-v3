@@ -7,8 +7,47 @@ import {
   type PlayerGameOutcomeStats,
 } from '@/lib/betting/paper-settlement';
 
+export const PAPER_SETTLE_SELECT_SQL = `
+SELECT
+  b.id,
+  b.user_id,
+  b.game_id,
+  b.player_id,
+  b.market_type,
+  b.prop_type,
+  b.side,
+  b.line_value,
+  b.odds_american,
+  b.stake_units,
+  o.pts,
+  o.reb,
+  o.ast,
+  o.threes,
+  o.pra,
+  o.pa,
+  o.pr,
+  o.ra
+FROM paper.bets b
+INNER JOIN analytics.games g ON g.game_id = b.game_id AND g.status = 'Final'
+LEFT JOIN research.v_player_game_outcomes o
+  ON o.game_id = b.game_id AND o.player_id = b.player_id
+WHERE b.status = 'open'
+  AND ($1::uuid IS NULL OR b.user_id = $1::uuid)
+`;
+
+export const PAPER_SETTLE_UPDATE_SQL = `
+UPDATE paper.bets
+SET status = 'settled',
+    result = $2,
+    profit_units = $3,
+    settled_at = now()
+WHERE id = $1 AND status = 'open'
+RETURNING id, user_id
+`;
+
 type OpenBetRow = {
   id: string;
+  user_id: string | null;
   game_id: string;
   player_id: string;
   market_type: string | null;
@@ -41,35 +80,21 @@ export type PaperSettlementResult = {
   errors?: string[];
 };
 
+export type PaperSettlementOptions = {
+  /** When set, only that owner's open bets are settled. Cron omits this to settle all owners. */
+  userId?: string | null;
+};
+
 /**
  * Settles open bets whose games are Final and player has box score in research.v_player_game_outcomes.
+ * System/cron may settle across owners. User-facing settle must pass the session user_id.
+ * Never overwrites user_id.
  */
-export async function runPaperSettlement(): Promise<PaperSettlementResult> {
-  const rows = await query<OpenBetRow>(
-    `SELECT
-       b.id,
-       b.game_id,
-       b.player_id,
-       b.market_type,
-       b.prop_type,
-       b.side,
-       b.line_value,
-       b.odds_american,
-       b.stake_units,
-       o.pts,
-       o.reb,
-       o.ast,
-       o.threes,
-       o.pra,
-       o.pa,
-       o.pr,
-       o.ra
-     FROM paper.bets b
-     INNER JOIN analytics.games g ON g.game_id = b.game_id AND g.status = 'Final'
-     LEFT JOIN research.v_player_game_outcomes o
-       ON o.game_id = b.game_id AND o.player_id = b.player_id
-     WHERE b.status = 'open'`
-  );
+export async function runPaperSettlement(
+  options?: PaperSettlementOptions
+): Promise<PaperSettlementResult> {
+  const ownerFilter = options?.userId ?? null;
+  const rows = await query<OpenBetRow>(PAPER_SETTLE_SELECT_SQL, [ownerFilter]);
 
   let settled = 0;
   let skipped = 0;
@@ -126,15 +151,7 @@ export async function runPaperSettlement(): Promise<PaperSettlementResult> {
     }
 
     try {
-      await query(
-        `UPDATE paper.bets
-         SET status = 'settled',
-             result = $2,
-             profit_units = $3,
-             settled_at = now()
-         WHERE id = $1 AND status = 'open'`,
-        [r.id, result, profit]
-      );
+      await query(PAPER_SETTLE_UPDATE_SQL, [r.id, result, profit]);
       settled++;
     } catch (e) {
       errors.push(`${r.id}: ${e instanceof Error ? e.message : 'update failed'}`);
