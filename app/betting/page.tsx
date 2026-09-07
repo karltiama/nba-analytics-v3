@@ -332,7 +332,13 @@ export default function BettingDashboard(props: PageProps) {
           { signal: ac.signal }
         );
         const data = await res.json();
-        if (data.eligible === false || data.code === 'OFFSEASON' || data.code === 'NO_SLATE') {
+        if (data.error === 'ENTITLEMENT_REQUIRED' || res.status === 403) {
+          setSlateSummary(null);
+          setSlateBriefingEligible(false);
+          setSlateSummaryHint(
+            typeof data.message === 'string' ? data.message : 'AI briefings available with Founding Pro'
+          );
+        } else if (data.eligible === false || data.code === 'OFFSEASON' || data.code === 'NO_SLATE') {
           setSlateSummary(null);
           setSlateBriefingEligible(false);
           setSlateSummaryHint(

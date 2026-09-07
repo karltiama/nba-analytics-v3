@@ -687,8 +687,15 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
         const j = (await res.json().catch(() => ({}))) as {
           summary?: string;
           code?: string;
+          error?: string;
+          message?: string;
         };
         if (cancelled) return;
+        if (j?.error === 'ENTITLEMENT_REQUIRED' || res.status === 403) {
+          setAiSummaryText(typeof j.message === 'string' ? j.message : null);
+          setAiSummaryStatus('unavailable');
+          return;
+        }
         if (res.status === 503 && j?.code === 'NO_OPENAI_KEY') {
           setAiSummaryStatus('unavailable');
           return;
@@ -822,14 +829,16 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             )}
             {aiSummaryStatus === 'unavailable' && (
               <p className="text-xs text-muted-foreground mt-3">
-                {ingestionFrozen
-                  ? 'Matchup briefing unavailable during offseason freeze.'
-                  : (
-                    <>
-                      Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
-                      AI-written summary.
-                    </>
-                  )}
+                {aiSummaryText
+                  ? aiSummaryText
+                  : ingestionFrozen
+                    ? 'Matchup briefing unavailable during offseason freeze.'
+                    : (
+                      <>
+                        Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
+                        AI-written summary.
+                      </>
+                    )}
               </p>
             )}
             {aiSummaryStatus === 'error' && (

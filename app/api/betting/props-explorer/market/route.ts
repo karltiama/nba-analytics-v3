@@ -3,6 +3,8 @@ import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
 import { etCalendarDate } from '@/lib/betting/props-market-context';
 import { getPropMarketResearch } from '@/lib/betting/prop-market-serving';
+import { getUserEntitlements } from '@/lib/entitlements/queries';
+import { sanitizePropMarketResearch } from '@/lib/entitlements/sanitize-prop-market';
 
 /**
  * GET /api/betting/props-explorer/market
@@ -32,18 +34,22 @@ export async function GET(request: NextRequest) {
     });
 
     if ('error' in result) {
-      return NextResponse.json({ error: result.error }, { status: result.status });
+      return gate.withAuthCookies(NextResponse.json({ error: result.error }, { status: result.status }));
     }
 
-    return NextResponse.json(result);
+    const entitlement = await getUserEntitlements(gate.auth.userId);
+    const payload = sanitizePropMarketResearch(result, entitlement);
+    return gate.withAuthCookies(NextResponse.json(payload));
   } catch (error: unknown) {
     console.error('props-explorer-market:', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch prop market comparison',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
+    return gate.withAuthCookies(
+      NextResponse.json(
+        {
+          error: 'Failed to fetch prop market comparison',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
+        { status: 500 }
+      )
     );
   }
 }

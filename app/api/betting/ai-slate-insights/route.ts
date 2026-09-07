@@ -7,6 +7,8 @@ import {
   isAiSlateBriefingEligible,
   isIngestionFrozen,
 } from '@/lib/betting/ai-briefing-eligibility';
+import { requireEntitlement } from '@/lib/entitlements/queries';
+import { entitlementRequiredResponse } from '@/lib/entitlements/http';
 
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -101,6 +103,9 @@ async function fetchOpenAiSlateText(
 export async function GET(request: NextRequest) {
   const gate = await requireBettingAuth(request);
   if (!gate.ok) return gate.response;
+
+  const access = await requireEntitlement(gate.auth.userId, 'ai_briefing');
+  if (!access.ok) return entitlementRequiredResponse('ai_briefing', gate.withAuthCookies);
 
   const dateParam = request.nextUrl.searchParams.get('date');
   const dateEt =

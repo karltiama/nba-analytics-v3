@@ -4,6 +4,8 @@ import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
+import { requireEntitlement } from '@/lib/entitlements/queries';
+import { entitlementRequiredResponse } from '@/lib/entitlements/http';
 
 const bodySchema = z.object({
   homeTeamName: z.string().min(1),
@@ -130,6 +132,9 @@ export async function POST(
 ) {
   const gate = await requireBettingAuth(request);
   if (!gate.ok) return gate.response;
+
+  const access = await requireEntitlement(gate.auth.userId, 'ai_briefing');
+  if (!access.ok) return entitlementRequiredResponse('ai_briefing', gate.withAuthCookies);
 
   if (isIngestionFrozen()) {
     return NextResponse.json({

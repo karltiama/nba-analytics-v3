@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
+import { UPGRADE_COPY } from '@/lib/entitlements/types';
 
 export type PropsExplorerMarketSelection = {
   gameId: string | number;
@@ -14,6 +15,17 @@ export type PropsExplorerMarketSelection = {
   sportsbook: string | null;
   oddsAmerican: number | null;
   snapshotAt: string;
+};
+
+type MarketPayload = PropMarketResearch & {
+  entitlement?: {
+    plan: 'free' | 'founding_pro';
+    isPro: boolean;
+    features?: {
+      line_shopping_detail?: boolean;
+      market_movement?: boolean;
+    };
+  };
 };
 
 type Props = {
@@ -52,7 +64,7 @@ function MarketBody({
   loading,
   error,
 }: {
-  data: PropMarketResearch | null;
+  data: MarketPayload | null;
   loading: boolean;
   error: string | null;
 }) {
@@ -70,6 +82,8 @@ function MarketBody({
 
   const shopping = data.shopping;
   const movement = data.movement;
+  const showLineShoppingUpgrade = data.entitlement?.features?.line_shopping_detail === false;
+  const showMovementUpgrade = movement.reason === 'entitlement';
 
   return (
     <div className="space-y-3">
@@ -110,20 +124,31 @@ function MarketBody({
             className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
           >
             <h3 className="text-[11px] font-medium text-white">Best available line</h3>
-            {shopping.bestAvailableOverLine ? (
-              <p className="text-xs text-white">
-                Over {formatBook(shopping.bestAvailableOverLine.sportsbook)}{' '}
-                {formatLine(shopping.bestAvailableOverLine.lineValue)}{' '}
-                {formatOdds(shopping.bestAvailableOverLine.oddsAmerican)}
+            {showLineShoppingUpgrade ? (
+              <p className="text-xs text-muted-foreground">
+                {UPGRADE_COPY.line_shopping_detail.title}. {UPGRADE_COPY.line_shopping_detail.detail}{' '}
+                <span className="text-white/70">Upgrade</span>
               </p>
-            ) : null}
-            {shopping.bestAvailableUnderLine ? (
-              <p className="text-xs text-white">
-                Under {formatBook(shopping.bestAvailableUnderLine.sportsbook)}{' '}
-                {formatLine(shopping.bestAvailableUnderLine.lineValue)}{' '}
-                {formatOdds(shopping.bestAvailableUnderLine.oddsAmerican)}
-              </p>
-            ) : null}
+            ) : shopping.bestAvailableOverLine || shopping.bestAvailableUnderLine ? (
+              <>
+                {shopping.bestAvailableOverLine ? (
+                  <p className="text-xs text-white">
+                    Over {formatBook(shopping.bestAvailableOverLine.sportsbook)}{' '}
+                    {formatLine(shopping.bestAvailableOverLine.lineValue)}{' '}
+                    {formatOdds(shopping.bestAvailableOverLine.oddsAmerican)}
+                  </p>
+                ) : null}
+                {shopping.bestAvailableUnderLine ? (
+                  <p className="text-xs text-white">
+                    Under {formatBook(shopping.bestAvailableUnderLine.sportsbook)}{' '}
+                    {formatLine(shopping.bestAvailableUnderLine.lineValue)}{' '}
+                    {formatOdds(shopping.bestAvailableUnderLine.oddsAmerican)}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <p className="text-xs text-muted-foreground">No comparable best line</p>
+            )}
           </section>
 
           <section
@@ -132,7 +157,12 @@ function MarketBody({
             className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
           >
             <h3 className="text-[11px] font-medium text-white">Best price at this line</h3>
-            {shopping.bestPriceAtSelectedLine ? (
+            {showLineShoppingUpgrade ? (
+              <p className="text-xs text-muted-foreground">
+                {UPGRADE_COPY.line_shopping_detail.title}.{' '}
+                <span className="text-white/70">Upgrade</span>
+              </p>
+            ) : shopping.bestPriceAtSelectedLine ? (
               <p className="text-xs text-white">
                 {formatBook(shopping.bestPriceAtSelectedLine.sportsbook)} {shopping.bestPriceAtSelectedLine.side}{' '}
                 {formatLine(shopping.bestPriceAtSelectedLine.lineValue)}{' '}
@@ -152,7 +182,16 @@ function MarketBody({
       >
         <h3 className="text-[11px] font-medium text-white">Line moved</h3>
         {movement.status !== 'ok' ? (
-          <p className="text-xs text-muted-foreground">{movement.message}</p>
+          <p className="text-xs text-muted-foreground">
+            {showMovementUpgrade ? (
+              <>
+                {UPGRADE_COPY.market_movement.title}. {UPGRADE_COPY.market_movement.detail}{' '}
+                <span className="text-white/70">Upgrade</span>
+              </>
+            ) : (
+              movement.message
+            )}
+          </p>
         ) : (
           <p className="text-xs text-white">
             Opened {formatLine(movement.openedLine)} → Closed {formatLine(movement.closedLine)}
@@ -165,7 +204,7 @@ function MarketBody({
 }
 
 export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }: Props) {
-  const [data, setData] = useState<PropMarketResearch | null>(null);
+  const [data, setData] = useState<MarketPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -189,7 +228,7 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
         u.searchParams.set('date', dateEt);
         const res = await fetch(u.toString());
         if (!res.ok) throw new Error('Failed to load market comparison');
-        const json = (await res.json()) as PropMarketResearch;
+        const json = (await res.json()) as MarketPayload;
         if (!cancelled) setData(json);
       } catch (e) {
         if (!cancelled) {
