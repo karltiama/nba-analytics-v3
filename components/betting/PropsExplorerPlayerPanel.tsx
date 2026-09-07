@@ -8,6 +8,7 @@ import { PlayerTrendChart } from '@/app/betting/players/[playerId]/components/Pl
 import { GameLogTable } from '@/app/betting/players/[playerId]/components/GameLogTable';
 import type { GameLog, MetricKey, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 import { METRIC_LABELS, propTypeToMetricKey } from '@/lib/players/types';
+import { extractMetric, getSeasonAvgForMetric } from '@/lib/players/metrics';
 import { playerResearchHref } from '@/lib/betting/research-journey';
 
 const PREVIEW_GAMES = 25;

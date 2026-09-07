@@ -164,9 +164,9 @@ async function loadInputsForPlayers(playerIds: number[]): Promise<Map<number, Pl
 
 function sortKey(
   row: {
-    ev: number | null;
-    evTrackA: number | null;
-    evTrackB: number | null;
+    ev?: number | null;
+    evTrackA?: number | null;
+    evTrackB?: number | null;
     confidenceTier?: string | null;
     snapshotAt: string;
   },
