@@ -173,5 +173,7 @@ describe('saved research navigation item', () => {
     expect(PRIMARY_NAV.some((n) => n.href === '/betting/saved' && n.label === 'Saved')).toBe(true);
     expect(PRIMARY_NAV.some((n) => n.href === '/betting/research')).toBe(false);
     expect(shouldShowLayoutHeader('/betting/saved')).toBe(true);
+    expect(shouldShowLayoutHeader('/billing')).toBe(true);
+    expect(shouldShowLayoutHeader('/billing/success')).toBe(true);
   });
 });

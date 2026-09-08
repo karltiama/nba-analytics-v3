@@ -241,7 +241,12 @@ export default function BettingProfilePage() {
       </Link>
 
       <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Profile & preferences</h1>
-      <p className="text-sm text-muted-foreground mb-8">Update how you appear and how odds and paper trading are shown.</p>
+      <p className="text-sm text-muted-foreground mb-2">Update how you appear and how odds and paper trading are shown.</p>
+      <p className="text-sm text-muted-foreground mb-8">
+        <Link href="/billing" className="text-[#00d4ff] hover:underline">
+          Billing and plan
+        </Link>
+      </p>
 
       <section className={cn(cardCls, 'mb-6')}>
         <h2 className="text-sm font-semibold text-white mb-4">Account</h2>

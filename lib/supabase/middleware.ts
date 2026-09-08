@@ -12,8 +12,12 @@ export function isOpsHtmlPath(pathname: string): boolean {
   return pathname === '/ops' || pathname.startsWith('/ops/');
 }
 
+export function isBillingHtmlPath(pathname: string): boolean {
+  return pathname === '/billing' || pathname.startsWith('/billing/');
+}
+
 export function isSessionProtectedHtmlPath(pathname: string): boolean {
-  return isBettingHtmlPath(pathname) || isOpsHtmlPath(pathname);
+  return isBettingHtmlPath(pathname) || isOpsHtmlPath(pathname) || isBillingHtmlPath(pathname);
 }
 
 export function isSupabaseBrowserAuthConfigured(

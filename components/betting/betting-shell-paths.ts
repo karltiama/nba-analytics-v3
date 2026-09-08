@@ -8,6 +8,7 @@ export function shouldShowLayoutHeader(pathname: string): boolean {
   if (pathname.startsWith('/betting/research')) return true;
   if (pathname.startsWith('/betting/paper')) return true;
   if (pathname.startsWith('/betting/profile')) return true;
+  if (pathname === '/billing' || pathname.startsWith('/billing/')) return true;
   // Teams directory + profiles (outside /betting/* but part of primary nav)
   if (pathname === '/teams' || pathname.startsWith('/teams/')) return true;
   return false;

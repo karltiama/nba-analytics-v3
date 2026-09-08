@@ -15,5 +15,12 @@ export const config = {
     '/api/betting/:path*',
     '/api/ops/:path*',
     '/api/user/:path*',
+    '/billing',
+    '/billing/:path*',
+    // Cookie refresh for authenticated billing APIs only.
+    // Webhook authority is Stripe signature — do not session-gate it.
+    '/api/billing/checkout',
+    '/api/billing/portal',
+    '/api/billing/status',
   ],
 };

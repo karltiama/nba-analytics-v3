@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import {
   isBettingHtmlPath,
   isOpsHtmlPath,
+  isBillingHtmlPath,
   isSessionProtectedHtmlPath,
   isSupabaseBrowserAuthConfigured,
   updateSession,
@@ -38,6 +39,16 @@ describe('ops HTML protection', () => {
     expect(isSessionProtectedHtmlPath('/ops')).toBe(true);
     expect(isBettingHtmlPath('/ops')).toBe(false);
     expect(isOpsHtmlPath('/api/ops/health')).toBe(false);
+  });
+});
+
+describe('billing HTML protection', () => {
+  it('matches /billing pages and not the JSON API', () => {
+    expect(isBillingHtmlPath('/billing')).toBe(true);
+    expect(isBillingHtmlPath('/billing/success')).toBe(true);
+    expect(isSessionProtectedHtmlPath('/billing')).toBe(true);
+    expect(isBillingHtmlPath('/api/billing/checkout')).toBe(false);
+    expect(isBillingHtmlPath('/api/billing/webhook')).toBe(false);
   });
 });
 
@@ -120,6 +131,29 @@ describe('updateSession', () => {
     const response = await updateSession(makeRequest('/api/ops/health'));
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('does not redirect /api/billing when public auth config is missing', async () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const webhook = await updateSession(makeRequest('/api/billing/webhook'));
+    const checkout = await updateSession(makeRequest('/api/billing/checkout'));
+    expect(webhook.status).toBe(200);
+    expect(checkout.status).toBe(200);
+    expect(webhook.headers.get('location')).toBeNull();
+  });
+
+  it('redirects unauthenticated /billing HTML when auth config is present', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon-key');
+    getUser.mockResolvedValue({ data: { user: null } });
+
+    const response = await updateSession(makeRequest('/billing'));
+    expect(response.status).toBe(307);
+    const location = response.headers.get('location') ?? '';
+    expect(location).toContain('/login');
+    expect(location).toContain('next=%2Fbilling');
   });
 
   it('allows authenticated betting HTML when auth config is present', async () => {
