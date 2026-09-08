@@ -1,0 +1,331 @@
+{
+  "generatedAt": "2026-09-08T12:10:59.422Z",
+  "writes": {
+    "postgres": false,
+    "s3": false,
+    "diagnosticReport": "reports/trial/goat-access-probe.json"
+  },
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "delaySource": "trial-default",
+    "concurrency": 1,
+    "acquisitionLockAvailable": true,
+    "acquisitionLockPid": null,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "shouldSkipMutations": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlTrialModeEnv": "1",
+    "envDelayMs": null
+  },
+  "propsQueue": {
+    "gameId": "18447934",
+    "distinctCount": 129
+  },
+  "statsGameId": 18447793,
+  "lineupsGameId": "18447793",
+  "openingOddsGameId": "18447934",
+  "stoppedFor429": false,
+  "probes": [
+    {
+      "name": "/v1/stats",
+      "endpoint": "/v1/stats?game_ids%5B%5D=18447793&per_page=5",
+      "requestNumber": 1,
+      "enforcedDelayMs": 0,
+      "httpStatus": 200,
+      "ok": true,
+      "recordCount": 5,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "retryAfterUsed": false,
+      "hit429": false,
+      "historicalDataConfirmed": true,
+      "readyForAcquisition": true,
+      "sampleKeys": [
+        "id",
+        "min",
+        "fgm",
+        "fga",
+        "fg_pct",
+        "fg3m",
+        "fg3a",
+        "fg3_pct",
+        "ftm",
+        "fta",
+        "ft_pct",
+        "oreb",
+        "dreb",
+        "reb",
+        "ast",
+        "stl",
+        "blk",
+        "turnover",
+        "pf",
+        "pts",
+        "plus_minus",
+        "player",
+        "team",
+        "game"
+      ],
+      "fieldChecks": {
+        "envelope_data": true,
+        "meta_present": true,
+        "player": true,
+        "game": true,
+        "pts": true,
+        "min": true,
+        "team": true
+      },
+      "notes": [
+        "repair game_id=18447793; response not persisted"
+      ]
+    },
+    {
+      "name": "Advanced Stats V2",
+      "endpoint": "/nba/v2/stats/advanced?seasons%5B%5D=2024&period=0&per_page=1",
+      "requestNumber": 2,
+      "enforcedDelayMs": 13000,
+      "httpStatus": 200,
+      "ok": true,
+      "recordCount": 1,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "retryAfterUsed": false,
+      "hit429": false,
+      "historicalDataConfirmed": true,
+      "readyForAcquisition": true,
+      "sampleKeys": [
+        "id",
+        "period",
+        "player",
+        "team",
+        "game",
+        "pie",
+        "assist_percentage",
+        "assist_ratio",
+        "assist_to_turnover",
+        "defensive_rating",
+        "defensive_rebound_percentage",
+        "effective_field_goal_percentage",
+        "estimated_defensive_rating",
+        "estimated_net_rating",
+        "estimated_offensive_rating",
+        "estimated_pace",
+        "estimated_usage_percentage",
+        "net_rating",
+        "offensive_rating",
+        "offensive_rebound_percentage",
+        "pace",
+        "pace_per_40",
+        "possessions",
+        "rebound_percentage",
+        "true_shooting_percentage",
+        "turnover_ratio",
+        "usage_percentage",
+        "blocks_against",
+        "fouls_drawn",
+        "points_fast_break",
+        "points_off_turnovers",
+        "points_paint",
+        "points_second_chance",
+        "opp_points_fast_break",
+        "opp_points_off_turnovers",
+        "opp_points_paint",
+        "opp_points_second_chance",
+        "pct_assisted_2pt",
+        "pct_assisted_3pt",
+        "pct_assisted_fgm"
+      ],
+      "fieldChecks": {
+        "http_envelope": true,
+        "meta_next_cursor": true,
+        "meta_per_page": true,
+        "period": true,
+        "pie": true,
+        "offensive_rating": true,
+        "defensive_rating": true,
+        "true_shooting_percentage": true,
+        "usage_percentage": true,
+        "player": true,
+        "game": true,
+        "team": true
+      },
+      "notes": [
+        "season=2024 period=0 per_page=1; not archived"
+      ]
+    },
+    {
+      "name": "Opening Player Props",
+      "endpoint": "/nba/v2/odds/player_props/opening?game_id=18447934",
+      "requestNumber": 3,
+      "enforcedDelayMs": 13000,
+      "httpStatus": 200,
+      "ok": true,
+      "recordCount": 443,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "retryAfterUsed": false,
+      "hit429": false,
+      "historicalDataConfirmed": true,
+      "readyForAcquisition": true,
+      "sampleKeys": [
+        "id",
+        "game_id",
+        "player_id",
+        "vendor",
+        "prop_type",
+        "line_value",
+        "market",
+        "opened_at"
+      ],
+      "fieldChecks": {
+        "game_id": true,
+        "player_id": true,
+        "vendor": true,
+        "prop_type": true,
+        "line_value": true,
+        "market": true,
+        "opened_at": true,
+        "updated_at": false,
+        "over_odds": true,
+        "under_odds": true
+      },
+      "notes": [
+        "game_id=18447934 from research.prop_decision_lines (distinct=129); 129-game crawl not started"
+      ]
+    },
+    {
+      "name": "Opening Game Odds",
+      "endpoint": "/nba/v2/odds/opening?game_ids%5B%5D=18447934&per_page=5",
+      "requestNumber": 4,
+      "enforcedDelayMs": 13000,
+      "httpStatus": 200,
+      "ok": true,
+      "recordCount": 0,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "retryAfterUsed": false,
+      "hit429": false,
+      "historicalDataConfirmed": false,
+      "readyForAcquisition": false,
+      "sampleKeys": [],
+      "fieldChecks": {
+        "vendor": false,
+        "game_id": false,
+        "spread_home_value": false,
+        "spread_away_value": false,
+        "total_value": false,
+        "moneyline_home_odds": false,
+        "moneyline_away_odds": false,
+        "opened_at": false,
+        "updated_at": false
+      },
+      "notes": [
+        "game_ids[]=18447934; no bulk fetch"
+      ]
+    },
+    {
+      "name": "Lineups",
+      "endpoint": "/nba/v1/lineups?game_ids[]=18447793",
+      "requestNumber": 5,
+      "enforcedDelayMs": 13000,
+      "httpStatus": 200,
+      "ok": true,
+      "recordCount": 19,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "retryAfterUsed": false,
+      "hit429": false,
+      "historicalDataConfirmed": true,
+      "readyForAcquisition": true,
+      "sampleKeys": [
+        "id",
+        "game_id",
+        "starter",
+        "position",
+        "player",
+        "team"
+      ],
+      "fieldChecks": {
+        "players_returned": true,
+        "team_id": true,
+        "starter": true,
+        "position": true,
+        "player_id": true
+      },
+      "notes": [
+        "used fetchLineupsFromBallDontLie for 2025 completed game 18447793; 1,297-game crawl not started"
+      ]
+    }
+  ],
+  "followUps": [
+    {
+      "name": "Opening Game Odds param diagnostic",
+      "endpoint": "/nba/v2/odds/opening?game_ids=18447934&per_page=5",
+      "requestNumber": 6,
+      "enforcedDelayMs": 13000,
+      "httpStatus": 400,
+      "recordCount": 0,
+      "hit429": false,
+      "retryAfterPresent": false,
+      "notes": [
+        "OpenAPI-style game_ids (no brackets) is rejected: game_ids must be an array (use game_ids[]=value)"
+      ]
+    },
+    {
+      "name": "Opening Game Odds opening-night confirm",
+      "endpoint": "/nba/v2/odds/opening?game_ids[]=18446819&per_page=5",
+      "requestNumber": 7,
+      "enforcedDelayMs": 13000,
+      "httpStatus": 200,
+      "recordCount": 1,
+      "hit429": false,
+      "retryAfterPresent": false,
+      "historicalDataConfirmed": true,
+      "readyForAcquisition": true,
+      "sampleKeys": [
+        "id",
+        "game_id",
+        "vendor",
+        "spread_home_value",
+        "spread_home_odds",
+        "spread_away_value",
+        "spread_away_odds",
+        "moneyline_home_odds",
+        "moneyline_away_odds",
+        "total_value",
+        "total_over_odds",
+        "total_under_odds",
+        "opened_at"
+      ],
+      "notes": [
+        "18447934 (decision-line queue) returned 0 opening game-odds rows; 18446819 (2025-10-21 opening night) confirmed historical vendor/spread/total/moneyline/opened_at"
+      ]
+    }
+  ],
+  "productionFreeze": {
+    "lambdas": {
+      "nightly-bdl-updater": { "DATA_MODE": "replay", "OFFSEASON_MODE": "1", "CRON_DRY_RUN": "1" },
+      "odds-pre-game-snapshot": { "DATA_MODE": "replay", "OFFSEASON_MODE": "1", "CRON_DRY_RUN": "1" },
+      "injuries-snapshot": { "DATA_MODE": "replay", "OFFSEASON_MODE": "1", "CRON_DRY_RUN": "1" },
+      "boxscore-scraper": { "DATA_MODE": "replay", "OFFSEASON_MODE": "1", "CRON_DRY_RUN": "1" },
+      "nba-player-props-ingestion-lambda": { "DATA_MODE": "replay", "OFFSEASON_MODE": "1", "CRON_DRY_RUN": "1" },
+      "nba-player-props-controller-lambda": { "DATA_MODE": "replay", "OFFSEASON_MODE": "1", "CRON_DRY_RUN": "1" }
+    },
+    "eventBridgeRules": {
+      "nightly-bdl-updater-daily": "DISABLED",
+      "odds-pre-game-snapshot-schedule-0_to_8": "DISABLED",
+      "injuries-snapshot-schedule": "DISABLED",
+      "boxscore-scraper-daily": "ENABLED"
+    },
+    "eventBridgeScheduler": {
+      "nba-player-props-0": "ENABLED",
+      "nba-player-props-1": "ENABLED",
+      "nba-player-props-2": "ENABLED"
+    },
+    "note": "Schedulers staying up with freeze flags is the documented offseason model. Lambdas no-op provider calls. Production was not changed."
+  }
+}
+

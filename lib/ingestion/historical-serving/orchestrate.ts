@@ -144,6 +144,8 @@ export async function runHistoricalServingBackfill(
   });
   log(`  s3 games      : ${plan.s3GamesPrefix}`);
   log(`  s3 stats      : ${plan.s3StatsPrefix}`);
+  log(`  skip-probe    : ${args.skipProbe}`);
+  log(`  skip-archive  : ${args.skipArchive}`);
   log('  steps:');
   for (const step of plan.steps) log(`    - ${step}`);
 
@@ -154,8 +156,9 @@ export async function runHistoricalServingBackfill(
     return { exitCode: 0, dryRun: true, season: args.season };
   }
 
-  assertTrialExecuteAllowed();
-  const lock = acquireBdlAcquisitionLock();
+  const needsProvider = !args.skipArchive || !args.skipProbe;
+  if (needsProvider) assertTrialExecuteAllowed();
+  const lock = needsProvider ? acquireBdlAcquisitionLock() : null;
   try {
     let blockedReason: string | null = null;
     if (!args.skipProbe) {
@@ -182,8 +185,12 @@ export async function runHistoricalServingBackfill(
     if (!bucket) throw new Error('Missing NBA_DATA_BUCKET');
     const s3 = new S3Storage({ bucket });
 
-    log('[archive] running season-scoped BDL → S3 backfill (games + player_stats)');
-    await spawnArchive(args.season, args.overwrite);
+    if (args.skipArchive) {
+      log('[archive] skipped — using existing S3 objects (no BDL HTTP)');
+    } else {
+      log('[archive] running season-scoped BDL → S3 backfill (games + player_stats)');
+      await spawnArchive(args.season, args.overwrite);
+    }
 
     const gamesManifest = await s3.getJson<BdlEntityManifest>(`${plan.s3GamesPrefix}/_manifest.json`);
     const statsManifest = await s3.getJson<BdlEntityManifest>(`${plan.s3StatsPrefix}/_manifest.json`);
@@ -238,6 +245,6 @@ export async function runHistoricalServingBackfill(
     await spawnCheckpoint(`after-${args.season}`);
     return { exitCode: 0, dryRun: false, season: args.season };
   } finally {
-    lock.release();
+    lock?.release();
   }
 }

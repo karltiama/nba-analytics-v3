@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-08T04:14:53.641Z",
+  "generatedAt": "2026-09-08T12:21:37.524Z",
   "season": 2025,
   "skipBdl": false,
   "postgres": {
-    "bytes": 318712979,
+    "bytes": 318721171,
     "pretty": "304 MB"
   },
   "providerTotals": {
@@ -11,9 +11,9 @@
     "all": 1322
   },
   "localInventory": {
-    "analyticsGamesAll": 2497,
-    "analyticsGames2025": 1297,
-    "analyticsFinal2025": 1290,
+    "analyticsGamesAll": 2523,
+    "analyticsGames2025": 1323,
+    "analyticsFinal2025": 1322,
     "playerGameLogs": 45066,
     "distinctLogGames": 1289,
     "teamGameStatsRows": 2578,
@@ -48,170 +48,22 @@
       }
     ],
     "gamesBySeason": {
-      "2025": 1297,
+      "2025": 1323,
       "2026": 1200
     }
   },
   "diffs": {
-    "bdlMissingInAnalytics": [
-      "21708303",
-      "21709227",
-      "21707975",
-      "21708680",
-      "21708305",
-      "21709231",
-      "21709235",
-      "21707977",
-      "21709238",
-      "21709241",
-      "21713528",
-      "21713895",
-      "21713529",
-      "21713897",
-      "21713530",
-      "21713899",
-      "21713531",
-      "21713901",
-      "21713532",
-      "21713533",
-      "21713534",
-      "21716134",
-      "21716135",
-      "21716136",
-      "21716137",
-      "21716138"
-    ],
+    "bdlMissingInAnalytics": [],
     "analyticsUnexpectedVsBdl": [
       {
         "game_id": "21681993",
         "status": "2026-04-30T04:00:00Z"
       }
     ],
-    "lifecycleMismatches": [
-      {
-        "gameId": "21707973",
-        "bdlLifecycle": "final",
-        "bdlStatus": "Final",
-        "bdlStatusState": "final",
-        "localStatus": "2026-05-07T01:30:00Z"
-      },
-      {
-        "gameId": "21708674",
-        "bdlLifecycle": "final",
-        "bdlStatus": "Final",
-        "bdlStatusState": "final",
-        "localStatus": "2026-05-06T23:00:00Z"
-      },
-      {
-        "gameId": "21708301",
-        "bdlLifecycle": "final",
-        "bdlStatus": "Final",
-        "bdlStatusState": "final",
-        "localStatus": "2026-05-08T01:30:00Z"
-      },
-      {
-        "gameId": "21709223",
-        "bdlLifecycle": "final",
-        "bdlStatus": "Final",
-        "bdlStatusState": "final",
-        "localStatus": "2nd Qtr"
-      },
-      {
-        "gameId": "21707974",
-        "bdlLifecycle": "final",
-        "bdlStatus": "Final",
-        "bdlStatusState": "final",
-        "localStatus": "1st Qtr"
-      },
-      {
-        "gameId": "21707976",
-        "bdlLifecycle": "final",
-        "bdlStatus": "Final",
-        "bdlStatusState": "final",
-        "localStatus": "2026-05-13T00:00:00Z"
-      }
-    ],
+    "lifecycleMismatches": [],
     "teamMismatches": [],
     "dateMismatches": [],
-    "scoreMismatches": [
-      {
-        "gameId": "18446941",
-        "bdl": [
-          115,
-          148
-        ],
-        "local": [
-          114,
-          148
-        ]
-      },
-      {
-        "gameId": "21707973",
-        "bdl": [
-          133,
-          95
-        ],
-        "local": [
-          0,
-          0
-        ]
-      },
-      {
-        "gameId": "21708674",
-        "bdl": [
-          108,
-          102
-        ],
-        "local": [
-          0,
-          0
-        ]
-      },
-      {
-        "gameId": "21708301",
-        "bdl": [
-          125,
-          107
-        ],
-        "local": [
-          0,
-          0
-        ]
-      },
-      {
-        "gameId": "21709223",
-        "bdl": [
-          107,
-          97
-        ],
-        "local": [
-          54,
-          43
-        ]
-      },
-      {
-        "gameId": "21707974",
-        "bdl": [
-          108,
-          115
-        ],
-        "local": [
-          1,
-          11
-        ]
-      },
-      {
-        "gameId": "21707976",
-        "bdl": [
-          126,
-          97
-        ],
-        "local": [
-          0,
-          0
-        ]
-      }
-    ]
+    "scoreMismatches": []
   },
   "finalGames": {
     "providerFinal": 1322,
@@ -363,17 +215,6 @@
   },
   "matrix": [
     {
-      "game_id": "18446941",
-      "date": "2025-11-07",
-      "matchup": "CLE @ WAS",
-      "bdl_final": true,
-      "analytics_games": true,
-      "raw_stats": 35,
-      "player_logs": 35,
-      "team_stats": 2,
-      "problem": "SCORE_MISMATCH"
-    },
-    {
       "game_id": "18447793",
       "date": "2026-03-14",
       "matchup": "SAC @ LAC",
@@ -393,7 +234,7 @@
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "STATUS_MISMATCH,SCORE_MISMATCH,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21708674",
@@ -404,7 +245,7 @@
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "STATUS_MISMATCH,SCORE_MISMATCH,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21708301",
@@ -415,7 +256,7 @@
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "STATUS_MISMATCH,SCORE_MISMATCH,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21709223",
@@ -426,7 +267,7 @@
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "STATUS_MISMATCH,SCORE_MISMATCH,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21707974",
@@ -437,7 +278,7 @@
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "STATUS_MISMATCH,SCORE_MISMATCH,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21708677",
@@ -455,66 +296,66 @@
       "date": "2026-05-09",
       "matchup": "OKC @ LAL",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21709227",
       "date": "2026-05-09",
       "matchup": "DET @ CLE",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21707975",
       "date": "2026-05-10",
       "matchup": "SAS @ MIN",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21708680",
       "date": "2026-05-10",
       "matchup": "NYK @ PHI",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21708305",
       "date": "2026-05-11",
       "matchup": "OKC @ LAL",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21709231",
       "date": "2026-05-11",
       "matchup": "DET @ CLE",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21707976",
@@ -525,227 +366,227 @@
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "STATUS_MISMATCH,SCORE_MISMATCH,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21709235",
       "date": "2026-05-13",
       "matchup": "CLE @ DET",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21707977",
       "date": "2026-05-15",
       "matchup": "SAS @ MIN",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21709238",
       "date": "2026-05-15",
       "matchup": "DET @ CLE",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21709241",
       "date": "2026-05-17",
       "matchup": "CLE @ DET",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713528",
       "date": "2026-05-18",
       "matchup": "SAS @ OKC",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713895",
       "date": "2026-05-19",
       "matchup": "CLE @ NYK",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713529",
       "date": "2026-05-20",
       "matchup": "SAS @ OKC",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713897",
       "date": "2026-05-21",
       "matchup": "CLE @ NYK",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713530",
       "date": "2026-05-22",
       "matchup": "OKC @ SAS",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713899",
       "date": "2026-05-23",
       "matchup": "NYK @ CLE",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713531",
       "date": "2026-05-24",
       "matchup": "OKC @ SAS",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713901",
       "date": "2026-05-25",
       "matchup": "NYK @ CLE",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713532",
       "date": "2026-05-26",
       "matchup": "SAS @ OKC",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713533",
       "date": "2026-05-28",
       "matchup": "OKC @ SAS",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21713534",
       "date": "2026-05-30",
       "matchup": "SAS @ OKC",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21716134",
       "date": "2026-06-03",
       "matchup": "NYK @ SAS",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21716135",
       "date": "2026-06-05",
       "matchup": "NYK @ SAS",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21716136",
       "date": "2026-06-08",
       "matchup": "SAS @ NYK",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21716137",
       "date": "2026-06-10",
       "matchup": "SAS @ NYK",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     },
     {
       "game_id": "21716138",
       "date": "2026-06-13",
       "matchup": "NYK @ SAS",
       "bdl_final": true,
-      "analytics_games": false,
+      "analytics_games": true,
       "raw_stats": 0,
       "player_logs": 0,
       "team_stats": 0,
-      "problem": "MISSING_GAME,MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
+      "problem": "MISSING_ANALYTICS_PLAYER_LOGS,MISSING_RAW_PLAYER_STATS,MISSING_TEAM_STATS"
     }
   ]
 }

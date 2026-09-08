@@ -6,6 +6,7 @@ export type HistoricalServingCliArgs = {
   overwrite: boolean;
   execute: boolean;
   skipProbe: boolean;
+  skipArchive: boolean;
 };
 
 export function parseHistoricalServingArgs(argv: string[]): HistoricalServingCliArgs {
@@ -28,6 +29,7 @@ export function parseHistoricalServingArgs(argv: string[]): HistoricalServingCli
     overwrite: flags.overwrite === true,
     execute: flags.execute === true,
     skipProbe: flags['skip-probe'] === true,
+    skipArchive: flags['skip-archive'] === true,
   };
 }
 

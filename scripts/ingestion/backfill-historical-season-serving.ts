@@ -8,6 +8,9 @@
  *   npx tsx scripts/ingestion/backfill-historical-season-serving.ts --season=2024 --dry-run
  *   npx tsx scripts/ingestion/backfill-historical-season-serving.ts --season=2023 --dry-run
  *   BDL_TRIAL_MODE=1 npx tsx scripts/ingestion/backfill-historical-season-serving.ts --season=2024 --execute
+ *   npx tsx scripts/ingestion/backfill-historical-season-serving.ts --season=2024 --execute --skip-probe --skip-archive
+ *     (Step 3C: existing S3 only — no BDL HTTP)
+
  */
 import 'dotenv/config';
 import { runHistoricalServingBackfill } from '@/lib/ingestion/historical-serving/orchestrate';

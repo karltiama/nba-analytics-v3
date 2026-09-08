@@ -1,0 +1,288 @@
+{
+  "generatedAt": "2026-09-08T13:40:12.005Z",
+  "step": "3A",
+  "dryRun": false,
+  "safety": {
+    "bdlTrialMode": true,
+    "delayMs": 13000,
+    "minSpacingMs": 12000,
+    "concurrency": 1,
+    "delaySource": "trial-default",
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "lockIdleBefore": true,
+    "stagingMode": "none",
+    "s3GamesPrefix": "raw/source=balldontlie/league=nba/season=2024/entity=games",
+    "s3StatsPrefix": "raw/source=balldontlie/league=nba/season=2024/entity=player_stats",
+    "entities": [
+      "games",
+      "player_stats"
+    ],
+    "postgresMaterialize": false,
+    "season2023NotStarted": true,
+    "lockAcquiredDuringExecute": true
+  },
+  "stagingMode": "none",
+  "gamesAcquisition": {
+    "status": {
+      "entity": "games",
+      "status": "success",
+      "pageCount": 14,
+      "recordCount": 1321,
+      "written": 14,
+      "skipped": 0,
+      "durationMs": 178018
+    },
+    "totalGames": 1321,
+    "finalGames": 1321,
+    "postseasonGames": 84,
+    "pages": 14,
+    "manifestCount": 1321,
+    "manifestStatus": "success",
+    "retries": 1,
+    "status429": 1
+  },
+  "statsAcquisition": {
+    "status": {
+      "entity": "player_stats",
+      "status": "success",
+      "pageCount": 462,
+      "recordCount": 46150,
+      "written": 462,
+      "skipped": 0,
+      "durationMs": 6322320
+    },
+    "httpRequests": 477,
+    "httpSuccess": 476,
+    "pages": 462,
+    "playerStatRecords": 46150,
+    "distinctGameIds": 1321,
+    "distinctPlayers": 587,
+    "firstGameDate": "2024-10-22",
+    "lastGameDate": "2025-06-22",
+    "status429": 1,
+    "retries": 1,
+    "retryAfterUsed": 1
+  },
+  "rateLimiting": {
+    "delayMs": 13000,
+    "trialMode": true,
+    "concurrency": 1,
+    "status429": 1,
+    "retries": 1,
+    "retryAfterUsed": 1,
+    "httpAttempts": 477,
+    "avgSpacingMs": 13654,
+    "minSpacingMs": 621,
+    "maxSpacingMs": 16327
+  },
+  "manifestStatus": {
+    "games": {
+      "manifest": {
+        "schemaVersion": 1,
+        "s3Prefix": "raw/source=balldontlie/league=nba/season=2024/entity=games",
+        "exportMode": "backfill",
+        "source": "balldontlie",
+        "league": "nba",
+        "season": 2024,
+        "entity": "games",
+        "endpoint": "/games",
+        "paginationStyle": "cursor",
+        "perPage": 100,
+        "fetchedAt": "2026-09-08T13:43:10.988Z",
+        "pageCount": 14,
+        "recordCount": 1321,
+        "status": "success",
+        "notes": "Raw BallDontLie API response archive before access expires. Filtered by seasons[]=<season>."
+      },
+      "pageKeys": 14,
+      "sequenceIssues": [],
+      "cursorCompletedNaturally": true,
+      "lastNextCursor": null,
+      "total": 1321,
+      "finals": 1321,
+      "postseason": 84,
+      "duplicateProviderGameIds": []
+    },
+    "playerStats": {
+      "manifest": {
+        "schemaVersion": 1,
+        "s3Prefix": "raw/source=balldontlie/league=nba/season=2024/entity=player_stats",
+        "exportMode": "backfill",
+        "source": "balldontlie",
+        "league": "nba",
+        "season": 2024,
+        "entity": "player_stats",
+        "endpoint": "/stats",
+        "paginationStyle": "cursor",
+        "perPage": 100,
+        "fetchedAt": "2026-09-08T15:28:33.316Z",
+        "pageCount": 462,
+        "recordCount": 46150,
+        "status": "success",
+        "notes": "Raw BallDontLie API response archive before access expires. BDL endpoint is /stats; we expose it under entity=player_stats for naming clarity."
+      },
+      "pageKeys": 462,
+      "sequenceIssues": [],
+      "cursorCompletedNaturally": true,
+      "lastNextCursor": null,
+      "records": 46150,
+      "distinctGameIds": 1321,
+      "distinctPlayers": 587,
+      "duplicateProviderStatIds": 0,
+      "firstDate": "2024-10-22",
+      "lastDate": "2025-06-22",
+      "unknownNonSeasonGameIds": [],
+      "missingPlayerId": 0,
+      "missingTeamId": 0,
+      "missingGameId": 0,
+      "logicalPlayerGameDuplicates": 0,
+      "logicalPlayerGameDuplicateSample": []
+    },
+    "archiveGate": {
+      "ok": true,
+      "games": {
+        "pages": 14,
+        "records": 1321,
+        "status": "success"
+      },
+      "playerStats": {
+        "pages": 462,
+        "records": 46150,
+        "status": "success"
+      }
+    }
+  },
+  "coverage": {
+    "authoritativeFinals": 1321,
+    "finalsRepresentedInStats": 1321,
+    "finalsWithZeroPlayerStats": [],
+    "oneTeamOnlyFinals": [],
+    "statsReferencingUnknownGames": []
+  },
+  "structuralAnomalies": {
+    "duplicateGameIds": [],
+    "duplicateStatIds": 0,
+    "missingPlayerId": 0,
+    "missingTeamId": 0,
+    "missingGameId": 0,
+    "logicalPlayerGameDuplicates": 0,
+    "oneTeamOnlyFinals": [],
+    "unknownGameIds": [],
+    "finalsWithZeroPlayerStats": []
+  },
+  "s3Growth": {
+    "before": {
+      "bucketTotal": {
+        "bytes": 564327607,
+        "objects": 933
+      },
+      "season2024": {
+        "bytes": 0,
+        "objects": 0
+      },
+      "games": {
+        "bytes": 0,
+        "objects": 0
+      },
+      "playerStats": {
+        "bytes": 0,
+        "objects": 0
+      }
+    },
+    "after": {
+      "bucketTotal": {
+        "bytes": 657166150,
+        "objects": 1412
+      },
+      "season2024": {
+        "bytes": 92838543,
+        "objects": 479
+      },
+      "games": {
+        "bytes": 1735507,
+        "objects": 15
+      },
+      "playerStats": {
+        "bytes": 91095952,
+        "objects": 463
+      }
+    },
+    "gamesBytes": 1735507,
+    "playerStatsBytes": 91095952,
+    "totalAddedBytes": 92838543,
+    "objectCountAdded": 479,
+    "season2024After": {
+      "bytes": 92838543,
+      "objects": 479
+    }
+  },
+  "postgresUnchanged": {
+    "ok": true,
+    "before": {
+      "dbBytes": 318844051,
+      "games_2024": 0,
+      "logs_2024": 0,
+      "tgs_2024": 0,
+      "psa_2024": 0,
+      "tsa_2024": 0,
+      "stints_2024": 0,
+      "rawPgs": 46056,
+      "rawPgsSeason2024": 0,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "box184": {
+        "home": 109,
+        "away": 118
+      },
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578
+    },
+    "after": {
+      "dbBytes": 318844051,
+      "games_2024": 0,
+      "logs_2024": 0,
+      "tgs_2024": 0,
+      "psa_2024": 0,
+      "tsa_2024": 0,
+      "stints_2024": 0,
+      "rawPgs": 46056,
+      "rawPgsSeason2024": 0,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "box184": {
+        "home": 109,
+        "away": 118
+      },
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578
+    },
+    "dbBytesDelta": 0,
+    "dbBytesDeltaNote": "exact match"
+  },
+  "isolation": {
+    "games2025": 1323,
+    "logs2025": 46056,
+    "tgs2025": 2644,
+    "box18447793": {
+      "home": 109,
+      "away": 118
+    },
+    "games2026": 1200,
+    "stints2026": 578,
+    "logs2026": 0,
+    "expected2025CompleteGames": 1322,
+    "localOnlyExtraGame": true,
+    "isolation2025ok": true
+  },
+  "verdict": "GREEN — 2024 S3 archive complete; proceed to read-only materialization preflight"
+}

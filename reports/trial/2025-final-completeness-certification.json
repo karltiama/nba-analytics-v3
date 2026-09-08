@@ -1,0 +1,271 @@
+{
+  "generatedAt": "2026-09-08T13:29:10.512Z",
+  "step": "2D",
+  "readOnly": true,
+  "bdlHttpRequests": 0,
+  "postgresWrites": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlLockActive": false,
+    "bdlLockPid": null,
+    "bdlHttpRequests": 0,
+    "postgresWrites": false,
+    "season2026UntouchedByThisStep": true,
+    "note": "This script never imports BdlArchiveClient and opens Postgres BEGIN READ ONLY."
+  },
+  "unsafe": [],
+  "inventory": {
+    "cachePath": "reports/trial/bdl-games-2025.json",
+    "cacheGeneratedAt": "2026-09-08T12:21:37.524Z",
+    "cachedSeasonGames": 1322,
+    "authoritativeFinals": 1322,
+    "expected": 1322,
+    "localOnlyInCache": false
+  },
+  "games": {
+    "missingBdlToAnalytics": [],
+    "lifecycleMismatches": [],
+    "scoreMismatches": [],
+    "teamMismatches": [],
+    "dateMismatches": [],
+    "duplicateGameIds": [],
+    "expected": {
+      "missing": 0,
+      "lifecycle": 0,
+      "score": 0,
+      "team": 0,
+      "date": 0
+    }
+  },
+  "rawPlayerStats": {
+    "completeGames": 1322,
+    "missingGames": [],
+    "incompleteGames": [],
+    "scoreReconciliationFailures": [],
+    "identityIssues": [],
+    "foreignTeamIds": [],
+    "duplicatePlayerGameKeys": [],
+    "expectedComplete": 1322
+  },
+  "analyticsPlayerLogs": {
+    "completeGames": 1322,
+    "missingGames": [],
+    "incompleteGames": [],
+    "scoreReconciliationFailures": [],
+    "foreignTeamIds": [],
+    "duplicatePlayerGameKeys": [],
+    "rawOnlyKeys": [],
+    "analyticsOnlyKeys": [],
+    "expectedComplete": 1322,
+    "expectedRawOnly": 0,
+    "expectedAnalyticsOnly": 0
+  },
+  "teamGameStats": {
+    "completeGames": 1322,
+    "totalRowsForAuthoritativeFinals": 2644,
+    "expectedRows": 2644,
+    "zeroRowGames": [],
+    "oneRowGames": [],
+    "overTwoRowGames": [],
+    "wrongTeamIds": [],
+    "duplicateTeamGameKeys": [],
+    "scoreMismatches": []
+  },
+  "box18447793": {
+    "expected": {
+      "home": 109,
+      "away": 118,
+      "matchup": "LAC vs SAC"
+    },
+    "game": {
+      "game_id": "18447793",
+      "season": "2025",
+      "status": "Final",
+      "start_time": "2026-03-15 02:30:00+00",
+      "home_team_id": "13",
+      "away_team_id": "26",
+      "home_score": 109,
+      "away_score": 118,
+      "updated_at": "2026-04-29 20:58:20.902546+00"
+    },
+    "rawPtsByTeam": {
+      "13": 109,
+      "26": 118
+    },
+    "analyticsPts": {
+      "home": 109,
+      "away": 118,
+      "rows": 36
+    },
+    "teamStats": [
+      {
+        "game_id": "18447793",
+        "team_id": "13",
+        "is_home": true,
+        "team_points": 109,
+        "points_allowed": 118,
+        "result": "L"
+      },
+      {
+        "game_id": "18447793",
+        "team_id": "26",
+        "is_home": false,
+        "team_points": 118,
+        "points_allowed": 109,
+        "result": "W"
+      }
+    ],
+    "remnant88_99": false,
+    "fullyCorrected": true
+  },
+  "playoffTail": {
+    "expected": 33,
+    "repaired": 33,
+    "result": "33 / 33 repaired",
+    "failed": []
+  },
+  "seasonAverages": {
+    "player_2025": 603,
+    "player_2025_distinct": 603,
+    "player_2025_null": 0,
+    "team_2025": 30,
+    "team_2025_distinct": 30,
+    "player_hist": 0,
+    "team_hist": 0,
+    "player_2026": 0,
+    "team_2026": 0
+  },
+  "stints": {
+    "bySeasonSource": [
+      {
+        "season": "2025",
+        "source": "inferred_pgl",
+        "n": 184
+      },
+      {
+        "season": "2025",
+        "source": "nba_stats",
+        "n": 514
+      },
+      {
+        "season": "2026",
+        "source": "nba_stats",
+        "n": 578
+      }
+    ],
+    "inferred_pgl_2025": 184,
+    "nba_stats_2025": 514,
+    "nba_stats_2026": 578,
+    "expected": {
+      "inferred_pgl_2025": 184,
+      "nba_stats_2025": 514,
+      "nba_stats_2026": 578
+    },
+    "player38017706_team21": [
+      {
+        "stint_id": "1460",
+        "season": "2025",
+        "player_id": "38017706",
+        "team_id": "21",
+        "source": "inferred_pgl",
+        "observed_from": "2025-10-21",
+        "observed_to": "2026-05-30"
+      }
+    ]
+  },
+  "isolation": {
+    "games_2026": 1200,
+    "logs_2026": 0,
+    "tgs_2026": 0,
+    "stints_2026": 578,
+    "logs_2024": 0,
+    "tgs_2024": 0,
+    "logs_2023": 0,
+    "tgs_2023": 0,
+    "db_bytes": "318844051"
+  },
+  "localOnlyUnresolved": {
+    "gameId": "21681993",
+    "classification": "LOCAL_ONLY_UNRESOLVED",
+    "inCachedBdlInventory": false,
+    "localGame": {
+      "game_id": "21681993",
+      "season": "2025",
+      "status": "2026-04-30T04:00:00Z",
+      "start_time": "2026-04-30 04:00:00+00",
+      "home_team_id": "25",
+      "away_team_id": "27",
+      "home_score": 0,
+      "away_score": 0,
+      "updated_at": "2026-04-29 20:58:20.902546+00"
+    },
+    "playerLogs": 0,
+    "rawRows": 0,
+    "teamStatRows": 0,
+    "notDeleted": true,
+    "notRelabeled": true,
+    "excludedFromAuthoritative1322": true,
+    "bdlIdBasedQueriesExcludeNaturally": "Yes. Completeness queries keyed by cached BDL season-2025 game IDs never include 21681993. Season-wide SELECT on analytics.games WHERE season=2025 still sees 1,323 rows (1,322 BDL + this local-only row)."
+  },
+  "storage": {
+    "bytes": 318844051,
+    "mb": 304.07,
+    "previousCheckpointBytes": 318844051,
+    "previousCheckpointMb": 304.07,
+    "deltaBytes": 0,
+    "headroomTo400Mb": 95.93,
+    "headroomTo450Mb": 145.93
+  },
+  "s3": {
+    "skipped": false,
+    "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats",
+    "expectedGameObjects": 34,
+    "present": 34,
+    "missing": [],
+    "repair3gameManifest": true,
+    "repairRemaining31Manifest": true,
+    "seasonWideManifestPresent": false,
+    "seasonWideManifestOverwrittenByRepair": false,
+    "seasonWideManifestKind": null,
+    "seasonWideManifestKeys": []
+  },
+  "gates": {
+    "BDL Final inventory": "GREEN",
+    "Games metadata": "GREEN",
+    "Raw player stats": "GREEN",
+    "Analytics player logs": "GREEN",
+    "Team stats": "GREEN",
+    "Score reconciliation": "GREEN",
+    "Raw ↔ analytics parity": "GREEN",
+    "33 playoff-tail repairs": "GREEN",
+    "18447793 replacement": "GREEN",
+    "Season averages sanity": "GREEN",
+    "Stints sanity": "GREEN",
+    "2026 isolation": "GREEN",
+    "2024/2023 still empty": "GREEN",
+    "S3 repair archive": "GREEN",
+    "Storage": "GREEN",
+    "Production freeze": "GREEN"
+  },
+  "blockingRed": [],
+  "yellows": [],
+  "answers": {
+    "1": 1322,
+    "2": 1322,
+    "3": 1322,
+    "4": 1322,
+    "5": 0,
+    "6": "33 / 33 repaired",
+    "7": true,
+    "8": true,
+    "9": "No 2024/2023/2026 serving-data change detected (read-only counts match expected isolation).",
+    "10": "No",
+    "11": true,
+    "12": true
+  },
+  "verdict": "GREEN — 2025–26 certified complete; proceed to 2024 historical backfill"
+}

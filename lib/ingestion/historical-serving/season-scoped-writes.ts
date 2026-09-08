@@ -178,9 +178,15 @@ export const REBUILD_TEAM_AVERAGES_FOR_SEASON_SQL = `
 
 export const INSERT_INFERRED_STINT_SQL = `
   insert into analytics.player_team_stints (
-    season, player_id, team_id, observed_from, observed_to,
+    season, player_id, player_entity_id, team_id, observed_from, observed_to,
     source, source_player_id, jersey, position, membership_type
-  ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+  ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+`;
+
+export const LOAD_BDL_PLAYER_ENTITY_SQL = `
+  select provider_player_id, player_entity_id::text as player_entity_id
+  from analytics.player_provider_ids
+  where provider = 'balldontlie' and provider_player_id = any($1::text[])
 `;
 
 export const LOAD_TEAM_CATALOG_SQL = `
@@ -349,6 +355,134 @@ export function applyHistoricalServingToMemoryStore(
   return { inferredStints: planned.inferredStints };
 }
 
+const GAME_UPSERT_COLS = 8;
+const LOG_UPSERT_COLS = 25;
+const GAME_UPSERT_CHUNK = 100;
+const LOG_UPSERT_CHUNK = 80;
+
+function placeholders(rows: number, cols: number): string {
+  return Array.from({ length: rows }, (_, row) => {
+    const base = row * cols;
+    return `(${Array.from({ length: cols }, (__, c) => `$${base + c + 1}`).join(',')})`;
+  }).join(',');
+}
+
+async function upsertServingGames(
+  client: PoolClient,
+  games: TransformReport['games']
+): Promise<void> {
+  const conflict = `
+    on conflict (game_id) do update set
+      season = excluded.season,
+      start_time = excluded.start_time,
+      status = excluded.status,
+      home_team_id = excluded.home_team_id,
+      away_team_id = excluded.away_team_id,
+      home_score = excluded.home_score,
+      away_score = excluded.away_score,
+      updated_at = now()
+    where analytics.games.season = excluded.season
+  `;
+  for (let i = 0; i < games.length; i += GAME_UPSERT_CHUNK) {
+    const chunk = games.slice(i, i + GAME_UPSERT_CHUNK);
+    const params: unknown[] = [];
+    for (const g of chunk) {
+      params.push(
+        g.game_id,
+        g.season,
+        g.start_time,
+        g.status,
+        g.home_team_id,
+        g.away_team_id,
+        g.home_score,
+        g.away_score
+      );
+    }
+    await client.query(
+      `insert into analytics.games (game_id, season, start_time, status, home_team_id, away_team_id, home_score, away_score)
+       values ${placeholders(chunk.length, GAME_UPSERT_COLS)} ${conflict}`,
+      params
+    );
+  }
+}
+
+async function upsertServingLogs(client: PoolClient, logs: TransformReport['logs']): Promise<void> {
+  const conflict = `
+    on conflict (game_id, player_id) do update set
+      team_id = excluded.team_id,
+      minutes = excluded.minutes,
+      points = excluded.points,
+      rebounds = excluded.rebounds,
+      offensive_rebounds = excluded.offensive_rebounds,
+      defensive_rebounds = excluded.defensive_rebounds,
+      assists = excluded.assists,
+      steals = excluded.steals,
+      blocks = excluded.blocks,
+      turnovers = excluded.turnovers,
+      personal_fouls = excluded.personal_fouls,
+      field_goals_made = excluded.field_goals_made,
+      field_goals_attempted = excluded.field_goals_attempted,
+      three_pointers_made = excluded.three_pointers_made,
+      three_pointers_attempted = excluded.three_pointers_attempted,
+      free_throws_made = excluded.free_throws_made,
+      free_throws_attempted = excluded.free_throws_attempted,
+      plus_minus = excluded.plus_minus,
+      opponent_team_id = excluded.opponent_team_id,
+      is_home = excluded.is_home,
+      game_date = excluded.game_date,
+      season = excluded.season,
+      pra = excluded.pra,
+      updated_at = now()
+    where analytics.player_game_logs.season = excluded.season
+  `;
+  for (let i = 0; i < logs.length; i += LOG_UPSERT_CHUNK) {
+    const chunk = logs.slice(i, i + LOG_UPSERT_CHUNK);
+    const params: unknown[] = [];
+    for (const log of chunk) {
+      params.push(
+        log.game_id,
+        log.player_id,
+        log.team_id,
+        log.minutes,
+        log.points,
+        log.rebounds,
+        log.offensive_rebounds,
+        log.defensive_rebounds,
+        log.assists,
+        log.steals,
+        log.blocks,
+        log.turnovers,
+        log.personal_fouls,
+        log.field_goals_made,
+        log.field_goals_attempted,
+        log.three_pointers_made,
+        log.three_pointers_attempted,
+        log.free_throws_made,
+        log.free_throws_attempted,
+        log.plus_minus,
+        log.opponent_team_id,
+        log.is_home,
+        log.game_date,
+        log.season,
+        log.pra
+      );
+    }
+    await client.query(
+      `insert into analytics.player_game_logs (
+        game_id, player_id, team_id,
+        minutes, points, rebounds, offensive_rebounds, defensive_rebounds,
+        assists, steals, blocks, turnovers, personal_fouls,
+        field_goals_made, field_goals_attempted,
+        three_pointers_made, three_pointers_attempted,
+        free_throws_made, free_throws_attempted,
+        plus_minus,
+        opponent_team_id, is_home, game_date, season, pra
+      ) values ${placeholders(chunk.length, LOG_UPSERT_COLS)} ${conflict}`,
+      params
+    );
+  }
+}
+
 export async function applyHistoricalServingToPostgres(
   client: PoolClient,
   report: TransformReport
@@ -367,6 +501,9 @@ export async function applyHistoricalServingToPostgres(
   assertSeasonScopedWriterSql(REBUILD_TEAM_AVERAGES_FOR_SEASON_SQL);
   assertSeasonScopedWriterSql(DELETE_INFERRED_STINTS_FOR_SEASON_SQL);
 
+  await client.query(`set local statement_timeout = '900s'`);
+  await client.query(`set local idle_in_transaction_session_timeout = '900s'`);
+
   for (const p of report.players) {
     await client.query(UPSERT_SERVING_PLAYER_SQL, [
       p.player_id,
@@ -378,47 +515,8 @@ export async function applyHistoricalServingToPostgres(
       p.weight,
     ]);
   }
-  for (const g of report.games) {
-    await client.query(UPSERT_SERVING_GAME_SQL, [
-      g.game_id,
-      g.season,
-      g.start_time,
-      g.status,
-      g.home_team_id,
-      g.away_team_id,
-      g.home_score,
-      g.away_score,
-    ]);
-  }
-  for (const log of report.logs) {
-    await client.query(UPSERT_SERVING_LOG_SQL, [
-      log.game_id,
-      log.player_id,
-      log.team_id,
-      log.minutes,
-      log.points,
-      log.rebounds,
-      log.offensive_rebounds,
-      log.defensive_rebounds,
-      log.assists,
-      log.steals,
-      log.blocks,
-      log.turnovers,
-      log.personal_fouls,
-      log.field_goals_made,
-      log.field_goals_attempted,
-      log.three_pointers_made,
-      log.three_pointers_attempted,
-      log.free_throws_made,
-      log.free_throws_attempted,
-      log.plus_minus,
-      log.opponent_team_id,
-      log.is_home,
-      log.game_date,
-      log.season,
-      log.pra,
-    ]);
-  }
+  await upsertServingGames(client, report.games);
+  await upsertServingLogs(client, report.logs);
 
   await client.query(DELETE_TEAM_GAME_STATS_FOR_SEASON_SQL, [season]);
   await client.query(REBUILD_TEAM_GAME_STATS_FOR_SEASON_SQL, [season]);
@@ -443,10 +541,25 @@ export async function applyHistoricalServingToPostgres(
       gameId: r.game_id,
     })),
   });
+  const playerIds = [...new Set(planned.inferredStints.map((s) => s.playerId))];
+  const ents = playerIds.length
+    ? await client.query<{ provider_player_id: string; player_entity_id: string }>(
+        LOAD_BDL_PLAYER_ENTITY_SQL,
+        [playerIds]
+      )
+    : { rows: [] as Array<{ provider_player_id: string; player_entity_id: string }> };
+  const entityByPlayer = new Map(ents.rows.map((r) => [r.provider_player_id, r.player_entity_id]));
+  const missingEntity = playerIds.filter((id) => !entityByPlayer.has(id));
+  if (missingEntity.length) {
+    throw new Error(
+      `Refusing inferred_pgl stints without player_entity_id (${missingEntity.length}): ${missingEntity.slice(0, 20).join(',')}`
+    );
+  }
   for (const s of planned.inferredStints) {
     await client.query(INSERT_INFERRED_STINT_SQL, [
       s.season,
       s.playerId,
+      entityByPlayer.get(s.playerId),
       s.teamId,
       s.observedFrom,
       s.observedTo,

@@ -71,6 +71,16 @@ export type BdlClientOpts = {
   logger?: (msg: string) => void;
 };
 
+export type BdlClientMetrics = {
+  httpAttempts: number;
+  httpSuccess: number;
+  status429: number;
+  status5xx: number;
+  retries: number;
+  retryAfterUsed: number;
+  spacingSamplesMs: number[];
+};
+
 export type PaginateOpts = {
   /** Endpoint path under baseUrl, e.g. `/games`. */
   path: string;
@@ -126,6 +136,16 @@ export class BdlArchiveClient {
   private readonly fetchImpl: typeof fetch;
   private readonly logger: (msg: string) => void;
   private requestNumber = 0;
+  private lastAttemptAt: number | null = null;
+  private readonly metrics: BdlClientMetrics = {
+    httpAttempts: 0,
+    httpSuccess: 0,
+    status429: 0,
+    status5xx: 0,
+    retries: 0,
+    retryAfterUsed: 0,
+    spacingSamplesMs: [],
+  };
 
   constructor(opts: BdlClientOpts) {
     if (!opts.apiKey) throw new Error('BdlArchiveClient: apiKey is required');
@@ -140,6 +160,13 @@ export class BdlArchiveClient {
     this.logger = opts.logger ?? ((msg: string) => console.log(msg));
   }
 
+  getMetrics(): BdlClientMetrics {
+    return {
+      ...this.metrics,
+      spacingSamplesMs: [...this.metrics.spacingSamplesMs],
+    };
+  }
+
   /**
    * Fetch a single URL with 429/5xx retry + exponential backoff.
    * Authorization header matches existing BDL scripts (raw key, not Bearer).
@@ -149,6 +176,10 @@ export class BdlArchiveClient {
       for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
         this.requestNumber += 1;
         const n = this.requestNumber;
+        const now = Date.now();
+        if (this.lastAttemptAt != null) this.metrics.spacingSamplesMs.push(now - this.lastAttemptAt);
+        this.lastAttemptAt = now;
+        this.metrics.httpAttempts += 1;
         if (this.trialMode) {
           this.logger(
             `[bdl-trial] request #${n} delayMs=${this.requestDelayMs} (no API key logged) ${redactUrl(url)}`
@@ -156,33 +187,40 @@ export class BdlArchiveClient {
         }
         const res = await this.fetchImpl(url, { headers: { Authorization: this.apiKey } });
         if (res.status === 429) {
+          this.metrics.status429 += 1;
           const { delayMs, source } = delayForRateLimit({
             retryAfterHeader: res.headers.get('retry-after'),
             attempt,
             retryBaseDelayMs: this.retryBaseDelayMs,
           });
+          if (source === 'retry-after') this.metrics.retryAfterUsed += 1;
           this.logger(
             `[bdl] 429 rate-limited; ${source} backoff ${Math.round(delayMs / 1000)}s ` +
               `(attempt ${attempt + 1}/${this.maxRetries + 1} request #${n}) ${redactUrl(url)}`
           );
           if (attempt >= this.maxRetries) return res;
+          this.metrics.retries += 1;
           await sleep(delayMs);
           continue;
         }
         if (res.status >= 500 && res.status < 600) {
+          this.metrics.status5xx += 1;
           const { delayMs, source } = delayForRateLimit({
             retryAfterHeader: res.headers.get('retry-after'),
             attempt,
             retryBaseDelayMs: this.retryBaseDelayMs,
           });
+          if (source === 'retry-after') this.metrics.retryAfterUsed += 1;
           this.logger(
             `[bdl] ${res.status} server error; ${source} backoff ${Math.round(delayMs / 1000)}s ` +
               `(attempt ${attempt + 1}/${this.maxRetries + 1} request #${n}) ${redactUrl(url)}`
           );
           if (attempt >= this.maxRetries) return res;
+          this.metrics.retries += 1;
           await sleep(delayMs);
           continue;
         }
+        if (res.ok) this.metrics.httpSuccess += 1;
         return res;
       }
       throw new Error(`BDL exhausted retries: ${redactUrl(url)}`);

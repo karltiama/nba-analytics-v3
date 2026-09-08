@@ -23,6 +23,7 @@ import {
   buildServingBackfillPlan,
   parseHistoricalServingArgs,
 } from '../plan';
+import { INSERT_INFERRED_STINT_SQL } from '../season-scoped-writes';
 
 const TEAMS: TeamCatalogRow[] = [
   { team_id: '1', abbreviation: 'ATL' },
@@ -292,6 +293,7 @@ describe('season-average isolation SQL', () => {
     expect(PLAYER_SEASON_AVERAGES_SQL).toMatch(/where season = \$1/i);
     expect(PLAYER_SEASON_AVERAGES_SQL).not.toMatch(/where season is not null and season <> ''/i);
     expect(TEAM_GAME_STATS_SEASON_PREDICATE).toBe('g.season = $1');
+    expect(INSERT_INFERRED_STINT_SQL).toMatch(/player_entity_id/);
   });
 });
 
@@ -300,6 +302,12 @@ describe('WP7.2 orchestrator plan', () => {
     const args = parseHistoricalServingArgs(['--season=2024', '--dry-run']);
     expect(args.season).toBe(2024);
     expect(args.dryRun).toBe(true);
+    expect(args.skipArchive).toBe(false);
+    expect(parseHistoricalServingArgs(['--season=2024', '--execute', '--skip-probe', '--skip-archive'])).toMatchObject({
+      execute: true,
+      skipProbe: true,
+      skipArchive: true,
+    });
     const plan = buildServingBackfillPlan({
       season: 2024,
       blockedReason: 'BDL GET /v1/stats is unauthorized',

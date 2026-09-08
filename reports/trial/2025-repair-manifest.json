@@ -1,32 +1,11 @@
 {
   "season": 2025,
-  "generatedAt": "2026-09-08T04:14:53.641Z",
+  "generatedAt": "2026-09-08T12:21:37.524Z",
   "providerFinalGames": 1322,
-  "localCompleteGames": 1287,
-  "repairGameCount": 35,
+  "localCompleteGames": 1288,
+  "repairGameCount": 34,
   "requiresGoatCount": 34,
   "repairGames": [
-    {
-      "gameId": 18446941,
-      "gameIdText": "18446941",
-      "date": "2025-11-07",
-      "datetime": "2025-11-08T00:00:00.000Z",
-      "homeTeamId": 30,
-      "visitorTeamId": 6,
-      "matchup": "CLE @ WAS",
-      "postseason": false,
-      "issues": [
-        "SCORE_MISMATCH"
-      ],
-      "requiresGoat": false,
-      "hasRawStats": true,
-      "hasPlayerLogs": true,
-      "teamStatRows": 2,
-      "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
-        "recompute_affected_averages"
-      ]
-    },
     {
       "gameId": 18447793,
       "gameIdText": "18447793",
@@ -61,8 +40,6 @@
       "matchup": "MIN @ SAS",
       "postseason": true,
       "issues": [
-        "STATUS_MISMATCH",
-        "SCORE_MISMATCH",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -72,7 +49,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -90,8 +66,6 @@
       "matchup": "PHI @ NYK",
       "postseason": true,
       "issues": [
-        "STATUS_MISMATCH",
-        "SCORE_MISMATCH",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -101,7 +75,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -119,8 +92,6 @@
       "matchup": "LAL @ OKC",
       "postseason": true,
       "issues": [
-        "STATUS_MISMATCH",
-        "SCORE_MISMATCH",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -130,7 +101,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -148,8 +118,6 @@
       "matchup": "CLE @ DET",
       "postseason": true,
       "issues": [
-        "STATUS_MISMATCH",
-        "SCORE_MISMATCH",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -159,7 +127,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -177,8 +144,6 @@
       "matchup": "SAS @ MIN",
       "postseason": true,
       "issues": [
-        "STATUS_MISMATCH",
-        "SCORE_MISMATCH",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -188,7 +153,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -232,7 +196,6 @@
       "matchup": "OKC @ LAL",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -242,7 +205,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -260,7 +222,6 @@
       "matchup": "DET @ CLE",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -270,7 +231,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -288,7 +248,6 @@
       "matchup": "SAS @ MIN",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -298,7 +257,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -316,7 +274,6 @@
       "matchup": "NYK @ PHI",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -326,7 +283,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -344,7 +300,6 @@
       "matchup": "OKC @ LAL",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -354,7 +309,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -372,7 +326,6 @@
       "matchup": "DET @ CLE",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -382,7 +335,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -400,8 +352,6 @@
       "matchup": "MIN @ SAS",
       "postseason": true,
       "issues": [
-        "STATUS_MISMATCH",
-        "SCORE_MISMATCH",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -411,7 +361,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -429,7 +378,6 @@
       "matchup": "CLE @ DET",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -439,7 +387,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -457,7 +404,6 @@
       "matchup": "SAS @ MIN",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -467,7 +413,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -485,7 +430,6 @@
       "matchup": "DET @ CLE",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -495,7 +439,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -513,7 +456,6 @@
       "matchup": "CLE @ DET",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -523,7 +465,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -541,7 +482,6 @@
       "matchup": "SAS @ OKC",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -551,7 +491,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -569,7 +508,6 @@
       "matchup": "CLE @ NYK",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -579,7 +517,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -597,7 +534,6 @@
       "matchup": "SAS @ OKC",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -607,7 +543,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -625,7 +560,6 @@
       "matchup": "CLE @ NYK",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -635,7 +569,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -653,7 +586,6 @@
       "matchup": "OKC @ SAS",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -663,7 +595,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -681,7 +612,6 @@
       "matchup": "NYK @ CLE",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -691,7 +621,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -709,7 +638,6 @@
       "matchup": "OKC @ SAS",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -719,7 +647,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -737,7 +664,6 @@
       "matchup": "NYK @ CLE",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -747,7 +673,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -765,7 +690,6 @@
       "matchup": "SAS @ OKC",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -775,7 +699,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -793,7 +716,6 @@
       "matchup": "OKC @ SAS",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -803,7 +725,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -821,7 +742,6 @@
       "matchup": "SAS @ OKC",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -831,7 +751,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -849,7 +768,6 @@
       "matchup": "NYK @ SAS",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -859,7 +777,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -877,7 +794,6 @@
       "matchup": "NYK @ SAS",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -887,7 +803,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -905,7 +820,6 @@
       "matchup": "SAS @ NYK",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -915,7 +829,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -933,7 +846,6 @@
       "matchup": "SAS @ NYK",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -943,7 +855,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",
@@ -961,7 +872,6 @@
       "matchup": "NYK @ SAS",
       "postseason": true,
       "issues": [
-        "MISSING_GAME",
         "MISSING_ANALYTICS_PLAYER_LOGS",
         "MISSING_RAW_PLAYER_STATS",
         "MISSING_TEAM_STATS"
@@ -971,7 +881,6 @@
       "hasPlayerLogs": false,
       "teamStatRows": 0,
       "plannedRepair": [
-        "upsert_analytics_game_from_bdl",
         "fetch_player_stats",
         "archive_raw",
         "materialize_player_logs",

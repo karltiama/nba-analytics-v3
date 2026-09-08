@@ -1,0 +1,254 @@
+{
+  "generatedAt": "2026-09-08T12:31:25.509Z",
+  "writes": {
+    "postgres": false,
+    "s3Prefix": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats",
+    "diagnosticReport": "reports/trial/goat-stats-3game-batch.json"
+  },
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "concurrency": 1,
+    "lockAvailable": true,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "currentAnalyticsSeason": "2025",
+    "batch": [
+      "18447793",
+      "21707973",
+      "21716138"
+    ],
+    "remainingQueueNotFetched": [
+      "21708674",
+      "21708301",
+      "21709223",
+      "21707974",
+      "21708677",
+      "21708303",
+      "21709227",
+      "21707975",
+      "21708680",
+      "21708305",
+      "21709231",
+      "21707976",
+      "21709235",
+      "21707977",
+      "21709238",
+      "21709241",
+      "21713528",
+      "21713895",
+      "21713529",
+      "21713897",
+      "21713530",
+      "21713899",
+      "21713531",
+      "21713901",
+      "21713532",
+      "21713533",
+      "21713534",
+      "21716134",
+      "21716135",
+      "21716136",
+      "21716137"
+    ]
+  },
+  "httpHits": [
+    {
+      "gameId": "18447793",
+      "endpoint": "/v1/stats?game_ids[]=18447793",
+      "requestNumber": 1,
+      "httpStatus": 200,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "recordCountOnPage": 36
+    },
+    {
+      "gameId": "21707973",
+      "endpoint": "/v1/stats?game_ids[]=21707973",
+      "requestNumber": 2,
+      "httpStatus": 200,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "recordCountOnPage": 30
+    },
+    {
+      "gameId": "21716138",
+      "endpoint": "/v1/stats?game_ids[]=21716138",
+      "requestNumber": 3,
+      "httpStatus": 200,
+      "retryAfterPresent": false,
+      "retryAfterValue": null,
+      "recordCountOnPage": 30
+    }
+  ],
+  "rateLimit": {
+    "httpRequests": 3,
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "count429": 0,
+    "retriesLogged": 0,
+    "retryAfterUsed": 0,
+    "enforcedSpacingMs": 13000,
+    "concurrency": 1
+  },
+  "s3": {
+    "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats",
+    "written": 3,
+    "skipped": 0,
+    "manifest": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/_repair_3game_manifest.json"
+  },
+  "games": [
+    {
+      "gameId": "18447793",
+      "matchup": "SAC @ LAC",
+      "recordsReturned": 36,
+      "distinctPlayers": 36,
+      "homeTeamId": "13",
+      "awayTeamId": "26",
+      "homeAbbr": "LAC",
+      "awayAbbr": "SAC",
+      "homeRepresented": true,
+      "awayRepresented": true,
+      "homePlayerCount": 18,
+      "awayPlayerCount": 18,
+      "summedPointsByTeam": {
+        "home": 109,
+        "away": 118
+      },
+      "officialFinalScore": {
+        "home": 109,
+        "away": 118
+      },
+      "scoreReconciliation": "MATCH",
+      "duplicateGamePlayerKeys": 0,
+      "unexpectedTeamIds": 0,
+      "missingPlayerIds": 0,
+      "missingTeamIds": 0,
+      "missingOrMismatchedGameIds": 0,
+      "archiveComplete": true,
+      "classification": "READY_TO_REPLACE_INCOMPLETE_LOCAL_BOX",
+      "skippedExisting": false,
+      "s3Key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=18447793.json"
+    },
+    {
+      "gameId": "21707973",
+      "matchup": "MIN @ SAS",
+      "recordsReturned": 30,
+      "distinctPlayers": 30,
+      "homeTeamId": "27",
+      "awayTeamId": "18",
+      "homeAbbr": "SAS",
+      "awayAbbr": "MIN",
+      "homeRepresented": true,
+      "awayRepresented": true,
+      "homePlayerCount": 15,
+      "awayPlayerCount": 15,
+      "summedPointsByTeam": {
+        "home": 133,
+        "away": 95
+      },
+      "officialFinalScore": {
+        "home": 133,
+        "away": 95
+      },
+      "scoreReconciliation": "MATCH",
+      "duplicateGamePlayerKeys": 0,
+      "unexpectedTeamIds": 0,
+      "missingPlayerIds": 0,
+      "missingTeamIds": 0,
+      "missingOrMismatchedGameIds": 0,
+      "archiveComplete": true,
+      "classification": "READY_TO_MATERIALIZE",
+      "skippedExisting": false,
+      "s3Key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21707973.json"
+    },
+    {
+      "gameId": "21716138",
+      "matchup": "NYK @ SAS",
+      "recordsReturned": 30,
+      "distinctPlayers": 30,
+      "homeTeamId": "27",
+      "awayTeamId": "20",
+      "homeAbbr": "SAS",
+      "awayAbbr": "NYK",
+      "homeRepresented": true,
+      "awayRepresented": true,
+      "homePlayerCount": 15,
+      "awayPlayerCount": 15,
+      "summedPointsByTeam": {
+        "home": 90,
+        "away": 94
+      },
+      "officialFinalScore": {
+        "home": 90,
+        "away": 94
+      },
+      "scoreReconciliation": "MATCH",
+      "duplicateGamePlayerKeys": 0,
+      "unexpectedTeamIds": 0,
+      "missingPlayerIds": 0,
+      "missingTeamIds": 0,
+      "missingOrMismatchedGameIds": 0,
+      "archiveComplete": true,
+      "classification": "READY_TO_MATERIALIZE",
+      "skippedExisting": false,
+      "s3Key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21716138.json"
+    }
+  ],
+  "postgresBefore": {
+    "raw_stats": "45066",
+    "logs": "45066",
+    "team_stats": "2578",
+    "player_avgs": "603",
+    "team_avgs": "30",
+    "stints": "1275",
+    "db_bytes": "318721171"
+  },
+  "postgresAfter": {
+    "raw_stats": "45066",
+    "logs": "45066",
+    "team_stats": "2578",
+    "player_avgs": "603",
+    "team_avgs": "30",
+    "stints": "1275",
+    "db_bytes": "318721171"
+  },
+  "postgresUnchanged": true,
+  "remaining31NotFetched": [
+    "21708674",
+    "21708301",
+    "21709223",
+    "21707974",
+    "21708677",
+    "21708303",
+    "21709227",
+    "21707975",
+    "21708680",
+    "21708305",
+    "21709231",
+    "21707976",
+    "21709235",
+    "21707977",
+    "21709238",
+    "21709241",
+    "21713528",
+    "21713895",
+    "21713529",
+    "21713897",
+    "21713530",
+    "21713899",
+    "21713531",
+    "21713901",
+    "21713532",
+    "21713533",
+    "21713534",
+    "21716134",
+    "21716135",
+    "21716136",
+    "21716137"
+  ]
+}

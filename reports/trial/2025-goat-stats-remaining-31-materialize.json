@@ -1,0 +1,1968 @@
+{
+  "generatedAt": "2026-09-08T13:20:10.715Z",
+  "dryRun": false,
+  "postgresMaterialize": true,
+  "bdlHttpRequests": 0,
+  "trialLimiterConsumed": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlLockActive": false,
+    "bdlHttpRequests": 0,
+    "trialLimiterConsumed": false,
+    "remaining31Mode": true,
+    "batch": [
+      "21708674",
+      "21708301",
+      "21709223",
+      "21707974",
+      "21708677",
+      "21708303",
+      "21709227",
+      "21707975",
+      "21708680",
+      "21708305",
+      "21709231",
+      "21707976",
+      "21709235",
+      "21707977",
+      "21709238",
+      "21709241",
+      "21713528",
+      "21713895",
+      "21713529",
+      "21713897",
+      "21713530",
+      "21713899",
+      "21713531",
+      "21713901",
+      "21713532",
+      "21713533",
+      "21713534",
+      "21716134",
+      "21716135",
+      "21716136",
+      "21716137"
+    ]
+  },
+  "queue": {
+    "requested": 31,
+    "materialized": 31,
+    "excluded": 0
+  },
+  "s3Validation": [
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21708674.json",
+      "gameId": "21708674",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 108,
+        "away": 102
+      },
+      "official": {
+        "home": 108,
+        "away": 102
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21708301.json",
+      "gameId": "21708301",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 125,
+        "away": 107
+      },
+      "official": {
+        "home": 125,
+        "away": 107
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21709223.json",
+      "gameId": "21709223",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 107,
+        "away": 97
+      },
+      "official": {
+        "home": 107,
+        "away": 97
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21707974.json",
+      "gameId": "21707974",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 108,
+        "away": 115
+      },
+      "official": {
+        "home": 108,
+        "away": 115
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21708677.json",
+      "gameId": "21708677",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 94,
+        "away": 108
+      },
+      "official": {
+        "home": 94,
+        "away": 108
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21708303.json",
+      "gameId": "21708303",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 108,
+        "away": 131
+      },
+      "official": {
+        "home": 108,
+        "away": 131
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21709227.json",
+      "gameId": "21709227",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 116,
+        "away": 109
+      },
+      "official": {
+        "home": 116,
+        "away": 109
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21707975.json",
+      "gameId": "21707975",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 114,
+        "away": 109
+      },
+      "official": {
+        "home": 114,
+        "away": 109
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21708680.json",
+      "gameId": "21708680",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 114,
+        "away": 144
+      },
+      "official": {
+        "home": 114,
+        "away": 144
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21708305.json",
+      "gameId": "21708305",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 110,
+        "away": 115
+      },
+      "official": {
+        "home": 110,
+        "away": 115
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21709231.json",
+      "gameId": "21709231",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 112,
+        "away": 103
+      },
+      "official": {
+        "home": 112,
+        "away": 103
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21707976.json",
+      "gameId": "21707976",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 126,
+        "away": 97
+      },
+      "official": {
+        "home": 126,
+        "away": 97
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21709235.json",
+      "gameId": "21709235",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 113,
+        "away": 117
+      },
+      "official": {
+        "home": 113,
+        "away": 117
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21707977.json",
+      "gameId": "21707977",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 109,
+        "away": 139
+      },
+      "official": {
+        "home": 109,
+        "away": 139
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21709238.json",
+      "gameId": "21709238",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 94,
+        "away": 115
+      },
+      "official": {
+        "home": 94,
+        "away": 115
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21709241.json",
+      "gameId": "21709241",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 94,
+        "away": 125
+      },
+      "official": {
+        "home": 94,
+        "away": 125
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713528.json",
+      "gameId": "21713528",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 115,
+        "away": 122
+      },
+      "official": {
+        "home": 115,
+        "away": 122
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713895.json",
+      "gameId": "21713895",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 115,
+        "away": 104
+      },
+      "official": {
+        "home": 115,
+        "away": 104
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713529.json",
+      "gameId": "21713529",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 122,
+        "away": 113
+      },
+      "official": {
+        "home": 122,
+        "away": 113
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713897.json",
+      "gameId": "21713897",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 109,
+        "away": 93
+      },
+      "official": {
+        "home": 109,
+        "away": 93
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713530.json",
+      "gameId": "21713530",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 108,
+        "away": 123
+      },
+      "official": {
+        "home": 108,
+        "away": 123
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713899.json",
+      "gameId": "21713899",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 108,
+        "away": 121
+      },
+      "official": {
+        "home": 108,
+        "away": 121
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713531.json",
+      "gameId": "21713531",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 103,
+        "away": 82
+      },
+      "official": {
+        "home": 103,
+        "away": 82
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713901.json",
+      "gameId": "21713901",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 93,
+        "away": 130
+      },
+      "official": {
+        "home": 93,
+        "away": 130
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713532.json",
+      "gameId": "21713532",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 127,
+        "away": 114
+      },
+      "official": {
+        "home": 127,
+        "away": 114
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713533.json",
+      "gameId": "21713533",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 118,
+        "away": 91
+      },
+      "official": {
+        "home": 118,
+        "away": 91
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21713534.json",
+      "gameId": "21713534",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 103,
+        "away": 111
+      },
+      "official": {
+        "home": 103,
+        "away": 111
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21716134.json",
+      "gameId": "21716134",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 95,
+        "away": 105
+      },
+      "official": {
+        "home": 95,
+        "away": 105
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21716135.json",
+      "gameId": "21716135",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 104,
+        "away": 105
+      },
+      "official": {
+        "home": 104,
+        "away": 105
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21716136.json",
+      "gameId": "21716136",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 111,
+        "away": 115
+      },
+      "official": {
+        "home": 111,
+        "away": 115
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21716137.json",
+      "gameId": "21716137",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 107,
+        "away": 106
+      },
+      "official": {
+        "home": 107,
+        "away": 106
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    }
+  ],
+  "excluded": [],
+  "exceptions": [],
+  "beforeByGame": {
+    "21707974": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707975": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707976": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707977": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708301": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708303": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708305": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708674": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708677": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708680": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709223": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709227": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709231": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709235": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709238": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709241": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713528": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713529": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713530": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713531": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713532": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713533": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713534": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713895": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713897": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713899": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713901": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716134": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716135": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716136": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716137": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    }
+  },
+  "afterByGame": {
+    "21707974": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 108,
+      "awayPts": 115,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "18",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707975": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 114,
+      "awayPts": 109,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "18",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707976": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 126,
+      "awayPts": 97,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "18",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707977": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 109,
+      "awayPts": 139,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "18",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708301": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 125,
+      "awayPts": 107,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "14",
+        "21"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708303": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 108,
+      "awayPts": 131,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "14",
+        "21"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708305": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 110,
+      "awayPts": 115,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "14",
+        "21"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708674": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 108,
+      "awayPts": 102,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "23"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708677": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 94,
+      "awayPts": 108,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "23"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21708680": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 114,
+      "awayPts": 144,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "23"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709223": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 107,
+      "awayPts": 97,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "6",
+        "9"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709227": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 116,
+      "awayPts": 109,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "6",
+        "9"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709231": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 112,
+      "awayPts": 103,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "6",
+        "9"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709235": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 113,
+      "awayPts": 117,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "6",
+        "9"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709238": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 94,
+      "awayPts": 115,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "6",
+        "9"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21709241": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 94,
+      "awayPts": 125,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "6",
+        "9"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713528": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 115,
+      "awayPts": 122,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713529": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 122,
+      "awayPts": 113,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713530": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 108,
+      "awayPts": 123,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713531": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 103,
+      "awayPts": 82,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713532": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 127,
+      "awayPts": 114,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713533": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 118,
+      "awayPts": 91,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713534": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 103,
+      "awayPts": 111,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "21",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713895": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 115,
+      "awayPts": 104,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "6"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713897": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 109,
+      "awayPts": 93,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "6"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713899": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 108,
+      "awayPts": 121,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "6"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21713901": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 93,
+      "awayPts": 130,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "6"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716134": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 95,
+      "awayPts": 105,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716135": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 104,
+      "awayPts": 105,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716136": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 111,
+      "awayPts": 115,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716137": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 107,
+      "awayPts": 106,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    }
+  },
+  "teamStatsRowsWritten": 62,
+  "averages": {
+    "playersRecomputed": 120,
+    "teamsRecomputed": 8,
+    "playerIds": [
+      "18",
+      "202",
+      "447",
+      "61",
+      "73",
+      "17896097",
+      "100",
+      "1028025498",
+      "1057393207",
+      "1028046422",
+      "1028036898",
+      "17896033",
+      "399",
+      "414",
+      "38017699",
+      "172",
+      "360",
+      "137",
+      "1057261935",
+      "3547254",
+      "38017730",
+      "1028034846",
+      "1057382509",
+      "1028214238",
+      "17895858",
+      "286",
+      "38017719",
+      "38017711",
+      "17896058",
+      "145",
+      "666541",
+      "38017685",
+      "201",
+      "1028037477",
+      "175",
+      "89",
+      "3547272",
+      "1028027372",
+      "1028028932",
+      "56677833",
+      "17896078",
+      "38017706",
+      "480",
+      "1057274983",
+      "38017703",
+      "237",
+      "666609",
+      "22",
+      "17553995",
+      "420",
+      "666626",
+      "1028046517",
+      "254",
+      "257",
+      "1028026974",
+      "38017728",
+      "56677846",
+      "1057386376",
+      "132",
+      "457",
+      "56677826",
+      "200",
+      "38017694",
+      "397",
+      "17896075",
+      "666604",
+      "1028026508",
+      "1028240128",
+      "1057389625",
+      "277",
+      "3547270",
+      "56677792",
+      "1028267166",
+      "3547267",
+      "221",
+      "666940",
+      "17896076",
+      "9",
+      "322",
+      "192",
+      "74",
+      "38017714",
+      "3547299",
+      "340",
+      "56677872",
+      "1057395754",
+      "409",
+      "666908",
+      "1042560902",
+      "1028028993",
+      "3547259",
+      "387",
+      "176",
+      "3547238",
+      "104",
+      "12",
+      "1057271099",
+      "56677851",
+      "17895983",
+      "17896031",
+      "226",
+      "56677857",
+      "667378",
+      "1028028501",
+      "131",
+      "3547246",
+      "38017649",
+      "56677822",
+      "161",
+      "1028025261",
+      "30",
+      "48",
+      "1057271360",
+      "1057262518",
+      "666682",
+      "261",
+      "666767",
+      "358",
+      "371",
+      "27924547"
+    ],
+    "teamIds": [
+      "20",
+      "23",
+      "21",
+      "14",
+      "9",
+      "6",
+      "18",
+      "27"
+    ],
+    "seasonsTouched": [
+      "2025"
+    ]
+  },
+  "stintDecision": {
+    "rebuilt": false,
+    "inferredInserted": 1,
+    "unresolved": [],
+    "reason": "Inserted inferred_pgl rows only for missing 2025 player-team pairs with a resolvable player_entity_id. Did not delete nba_stats or 2026 stints.",
+    "missingPlayerTeamPairs": [
+      {
+        "player_id": "38017706",
+        "team_id": "21",
+        "observed_from": "2025-10-21",
+        "observed_to": "2026-05-30"
+      }
+    ]
+  },
+  "stintsBefore": [
+    {
+      "season": "2025",
+      "source": "inferred_pgl",
+      "n": 183
+    },
+    {
+      "season": "2025",
+      "source": "nba_stats",
+      "n": 514
+    },
+    {
+      "season": "2026",
+      "source": "nba_stats",
+      "n": 578
+    }
+  ],
+  "stintsAfter": [
+    {
+      "season": "2025",
+      "source": "inferred_pgl",
+      "n": 184
+    },
+    {
+      "season": "2025",
+      "source": "nba_stats",
+      "n": 514
+    },
+    {
+      "season": "2026",
+      "source": "nba_stats",
+      "n": 578
+    }
+  ],
+  "isolationBefore": {
+    "games_2026": "1200",
+    "logs_2026": "0",
+    "tgs_2026": "0",
+    "pav_2026": "0",
+    "tav_2026": "0",
+    "stints_2026": "578",
+    "hist_logs": "0",
+    "hist_tgs": "0",
+    "db_bytes": "318819475"
+  },
+  "isolationAfter": {
+    "games_2026": "1200",
+    "logs_2026": "0",
+    "tgs_2026": "0",
+    "pav_2026": "0",
+    "tav_2026": "0",
+    "stints_2026": "578",
+    "hist_logs": "0",
+    "hist_tgs": "0",
+    "db_bytes": "318844051"
+  },
+  "isolationUnchanged": true,
+  "completeness": {
+    "providerFinals": 1322,
+    "distinctLogGames": 1322,
+    "distinctTeamStatGames": 1322,
+    "logsAndTeamStats": 1322,
+    "missingRawStats": [],
+    "missingAnalyticsLogs": [],
+    "missingTeamStats": [],
+    "missingAnalyticsGame": [],
+    "scoreReconciliationFailures": [],
+    "duplicatePlayerGameRows": [],
+    "teamIdentityMismatches": [],
+    "completeLogGamesVsProvider": 1322,
+    "completeTeamStatGamesVsProvider": 1322,
+    "doNotTouch21681993LogsBefore": 0,
+    "doNotTouch21681993LogsAfter": 0
+  },
+  "remainingGaps": [],
+  "remainingGapCount": 0,
+  "stepVerdict": "GREEN — all 2025 repair games materialized; proceed to full 2025 completeness audit"
+}

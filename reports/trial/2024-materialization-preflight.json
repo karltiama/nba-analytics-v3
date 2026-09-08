@@ -1,0 +1,331 @@
+{
+  "generatedAt": "2026-09-08T15:44:58.082Z",
+  "step": "3B",
+  "readOnly": true,
+  "bdlHttpRequests": 0,
+  "postgresWrites": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlHttpRequests": 0,
+    "lockRequired": false,
+    "lockActive": false,
+    "stagingMode": "none",
+    "seasonWindow": {
+      "min": "2024-10-15",
+      "max": "2025-06-30",
+      "storedSeason": "2024"
+    },
+    "postgresWrites": false,
+    "servingBefore": {
+      "db_bytes": "318844051",
+      "games_2024": 0,
+      "logs_2024": 0,
+      "tgs_2024": 0,
+      "psa_2024": 0,
+      "tsa_2024": 0,
+      "stints_2024": 0,
+      "games_2023": 0,
+      "logs_2023": 0,
+      "tgs_2023": 0,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "stints_2026": 578
+    },
+    "box184": {
+      "home_score": 109,
+      "away_score": 118
+    }
+  },
+  "archiveVerification": {
+    "gate": {
+      "ok": true,
+      "games": {
+        "pages": 14,
+        "records": 1321,
+        "status": "success"
+      },
+      "playerStats": {
+        "pages": 462,
+        "records": 46150,
+        "status": "success"
+      }
+    },
+    "games": {
+      "manifestStatus": "success",
+      "pages": 14,
+      "records": 1321,
+      "uniqueGameIds": 1321,
+      "cursorExhausted": true
+    },
+    "playerStats": {
+      "manifestStatus": "success",
+      "pages": 462,
+      "records": 46150,
+      "distinctGameIds": 1321,
+      "cursorExhausted": true,
+      "lastNextCursor": null
+    },
+    "matchesStep3A": true
+  },
+  "mapper": {
+    "fn": "transformBdlArchiveToServing",
+    "stagingMode": "none",
+    "season": "2024",
+    "stats": {
+      "gamesFetched": 1321,
+      "gamesInWindow": 1321,
+      "gamesSkippedWindow": 0,
+      "statsFetched": 46150,
+      "logsBuilt": 46150,
+      "unresolvedTeams": 0,
+      "unresolvedPlayers": 0,
+      "unresolvedGames": 0,
+      "crossSeasonConflicts": 0
+    },
+    "issueCounts": {
+      "missing_team": 0,
+      "ambiguous_team": 0,
+      "missing_player": 0,
+      "missing_game": 0,
+      "cross_season_game": 0,
+      "out_of_window": 0
+    },
+    "issueSample": []
+  },
+  "projectedGames": {
+    "rows": 1321,
+    "expectedApprox": 1321
+  },
+  "projectedPlayerLogs": {
+    "rows": 46150,
+    "statsFetched": 46150,
+    "droppedVsArchive": 0
+  },
+  "projectedTeamStats": {
+    "rows": 2642,
+    "expectedIfComplete": 2642,
+    "zeroRowGames": [],
+    "oneRowGames": [],
+    "overTwoRowGames": [],
+    "wrongTeamIds": []
+  },
+  "projectedAverages": {
+    "playerRows": 587,
+    "playerDuplicateKeys": 0,
+    "playerNullIds": 0,
+    "teamRows": 30,
+    "expectedTeams": 30,
+    "teamDuplicateKeys": 0,
+    "teamNullIds": 0,
+    "sqlScope": {
+      "teamGameStatsPredicate": "g.season = $1",
+      "playerAveragesSqlContainsSeasonBind": true,
+      "deleteTeamStats": "delete from analytics.team_game_stats where season = $1",
+      "deletePlayerAverages": "delete from analytics.player_season_averages where season = $1",
+      "deleteTeamAverages": "delete from analytics.team_season_averages where season = $1",
+      "deleteInferredStints": "delete from analytics.player_team_stints where season = $1 and source = 'inferred_pgl'",
+      "rebuildTeamAveragesWhereSeasonBind": true,
+      "inferredSourceOnly": "inferred_pgl",
+      "cannotUpdate2025": true
+    }
+  },
+  "projectedStints": {
+    "inferredRows": 699,
+    "distinctPlayerTeam": 694,
+    "multiTeamPlayers": 96,
+    "unusualTransitions": 5,
+    "unusualTransitionsNote": "A→B→A appearance sequences (waive/re-sign or two-way returns). Reported, not a mapping failure. Does not block materialization by itself.",
+    "manualQueueSample": [
+      {
+        "kind": "unusual_team_transition",
+        "playerId": "1028026974",
+        "detail": "Team sequence 14→4→14 revisits 14"
+      },
+      {
+        "kind": "unusual_team_transition",
+        "playerId": "369",
+        "detail": "Team sequence 19→4→19 revisits 19"
+      },
+      {
+        "kind": "unusual_team_transition",
+        "playerId": "38017698",
+        "detail": "Team sequence 4→14→4 revisits 4"
+      },
+      {
+        "kind": "unusual_team_transition",
+        "playerId": "56677738",
+        "detail": "Team sequence 15→28→23→28 revisits 28"
+      },
+      {
+        "kind": "unusual_team_transition",
+        "playerId": "666860",
+        "detail": "Team sequence 14→4→14 revisits 14"
+      }
+    ],
+    "conflicts": [],
+    "skippedUnresolved": [],
+    "existing2024Inferred": 0,
+    "otherSeasonInferredUntouched": 184,
+    "applyWouldOnlyDelete": "delete from analytics.player_team_stints where season = $1 and source = 'inferred_pgl'"
+  },
+  "teamIdentity": {
+    "exactIdMatches": 2642,
+    "abbreviationFallbackMatches": 0,
+    "ambiguous": 0,
+    "unmapped": 0,
+    "ambiguousTeams": [],
+    "unmappedTeams": [],
+    "mappedCurrentTeams": 30,
+    "defunctLegacy": []
+  },
+  "playerIdentity": {
+    "providerPlayerIds": 587,
+    "existingAnalyticsPlayerIds": 587,
+    "newAnalyticsPlayerInserts": 0,
+    "newPlayerIdSample": [],
+    "unmappedInvalidPlayers": [],
+    "duplicateProviderMappings": [],
+    "bdlProviderMapsFound": 587,
+    "conflictingPlayerIdentities": [],
+    "nameGuessing": false
+  },
+  "crossSeasonCollisions": {
+    "existingLookups": 0,
+    "crossSeason": [],
+    "sameSeasonExisting": [],
+    "unexpectedLocal": [],
+    "mapperSkippedCrossSeason": 0
+  },
+  "scoreReconciliation": {
+    "finals": 1321,
+    "matches": 1321,
+    "mismatches": 0,
+    "mismatchGameIds": [],
+    "mismatchSample": [],
+    "expected": "1321 / 1321 match"
+  },
+  "structuralValidation": {
+    "duplicatePlayerGameKeys": 0,
+    "logsOutsideMappedGames": 0,
+    "foreignTeamIds": 0,
+    "foreignTeamSample": [],
+    "nullCoreIds": 0,
+    "unusualMinutes": [],
+    "oneTeamOnlyFinals": []
+  },
+  "projectedStorageDelta": {
+    "method": "Scale 2025 compact serving bytes/row to projected 2024 row counts. Low/base/high apply index overhead.",
+    "projectedHeapBytes": 18139646,
+    "projectedHeapMb": 17.3,
+    "lowMb": 19.03,
+    "baseMb": 21.62,
+    "highMb": 25.95,
+    "highExceeds35Mb": false
+  },
+  "projectedDbAfter2024": {
+    "currentMb": 304.07,
+    "deltaLowMb": 19.03,
+    "deltaBaseMb": 21.62,
+    "deltaHighMb": 25.95,
+    "projectedLowMb": 323.1,
+    "projectedBaseMb": 325.69,
+    "projectedHighMb": 330.02,
+    "headroomTo340Base": 14.31,
+    "headroomTo400Base": 74.31,
+    "headroomTo450Base": 124.31,
+    "stop2023IfDbOver340": true,
+    "stop2023IfDeltaOver35": true
+  },
+  "updatedTrialTimeBudget": {
+    "note": "No BDL HTTP in this preflight. 2023 core scaled from Step 3A 477 attempts × 13.654s. 6-hour end-of-trial reserve must be kept. Do not start any acquisition from this table.",
+    "step3A": {
+      "httpAttempts": 477,
+      "avgSpacingMs": 13654,
+      "apiHours": 1.81
+    },
+    "phases": [
+      {
+        "phase": "2024 materialize",
+        "expectedApiRequests": 0,
+        "estimatedApiTime": "0 API time",
+        "priority": "MUST"
+      },
+      {
+        "phase": "2023 core archive",
+        "expectedApiRequests": "~450–500",
+        "estimatedApiTime": "~1.8–2.0 h",
+        "priority": "MUST"
+      },
+      {
+        "phase": "2023 materialize",
+        "expectedApiRequests": 0,
+        "estimatedApiTime": "0 API time",
+        "priority": "MUST"
+      },
+      {
+        "phase": "Advanced 2025",
+        "expectedApiRequests": "~350–550",
+        "estimatedApiTime": "~1.3–2.1 h",
+        "priority": "HIGH"
+      },
+      {
+        "phase": "Advanced 2024",
+        "expectedApiRequests": "~350–550",
+        "estimatedApiTime": "~1.3–2.1 h",
+        "priority": "HIGH"
+      },
+      {
+        "phase": "Advanced 2023",
+        "expectedApiRequests": "~350–550",
+        "estimatedApiTime": "~1.3–2.1 h",
+        "priority": "HIGH"
+      },
+      {
+        "phase": "Opening props",
+        "expectedApiRequests": "~800–1400",
+        "estimatedApiTime": "~3.0–5.3 h",
+        "priority": "HIGH"
+      },
+      {
+        "phase": "Opening odds",
+        "expectedApiRequests": "~200–1320",
+        "estimatedApiTime": "~0.8–5.0 h",
+        "priority": "HIGH"
+      },
+      {
+        "phase": "Lineups",
+        "expectedApiRequests": "~1300",
+        "estimatedApiTime": "~5 h",
+        "priority": "OPTIONAL"
+      },
+      {
+        "phase": "2022 core",
+        "expectedApiRequests": "~2024 scale",
+        "estimatedApiTime": "~1.8–2.0 h",
+        "priority": "OPTIONAL"
+      }
+    ],
+    "endOfTrialReserveHours": 6
+  },
+  "isolation": {
+    "games2025": 1323,
+    "logs2025": 46056,
+    "tgs2025": 2644,
+    "box18447793": {
+      "home_score": 109,
+      "away_score": 118
+    },
+    "games2026": 1200,
+    "logs2026": 0,
+    "stints2026": 578
+  },
+  "materializationBlockers": [],
+  "verdict": "GREEN — 2024 materialization preflight clean; proceed to controlled 2024 Postgres materialization"
+}

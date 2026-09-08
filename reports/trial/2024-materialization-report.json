@@ -1,0 +1,285 @@
+{
+  "generatedAt": "2026-09-08T16:25:16.224Z",
+  "step": "3C",
+  "dryRun": false,
+  "bdlHttpRequests": 0,
+  "mapper": "transformBdlArchiveToServing",
+  "stagingMode": "none",
+  "season": "2024",
+  "seasonWindow": {
+    "min": "2024-10-15",
+    "max": "2025-06-30"
+  },
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlHttpRequests": 0,
+    "lockRequired": false,
+    "lockActive": false,
+    "stagingMode": "none",
+    "seasonWindow": {
+      "min": "2024-10-15",
+      "max": "2025-06-30",
+      "storedSeason": "2024"
+    },
+    "dbHost": "aws-1-us-east-2.pooler.supabase.com",
+    "expectedDbHost": "aws-1-us-east-2.pooler.supabase.com",
+    "productionFrozen": true,
+    "postgresWrites": true,
+    "servingBefore": {
+      "dbBytes": 318844051,
+      "dbName": "postgres",
+      "games_2024": 0,
+      "distinct_games_2024": 0,
+      "logs_2024": 0,
+      "log_games_2024": 0,
+      "tgs_2024": 0,
+      "tgs_games_2024": 0,
+      "psa_2024": 0,
+      "tsa_2024": 0,
+      "inferred_2024": 0,
+      "other_stints_2024": 0,
+      "games_2023": 0,
+      "logs_2023": 0,
+      "tgs_2023": 0,
+      "psa_2023": 0,
+      "tsa_2023": 0,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "psa_2025": 603,
+      "tsa_2025": 30,
+      "inferred_2025": 184,
+      "nba_stats_2025": 514,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "psa_2026": 0,
+      "tsa_2026": 0,
+      "stints_2026": 578,
+      "raw_pgs": 46056,
+      "raw_pgs_2024": 0,
+      "raw_pgs_2025": 46056,
+      "box184": {
+        "game_id": "18447793",
+        "season": "2025",
+        "home_team_id": "13",
+        "away_team_id": "26",
+        "home_score": 109,
+        "away_score": 118
+      },
+      "localOnly": {
+        "game_id": "21681993",
+        "season": "2025",
+        "home_score": 0,
+        "away_score": 0,
+        "logs": 0
+      },
+      "structural": {
+        "dupLogKeys": 0,
+        "nullCore": 0,
+        "foreignTeam": 0,
+        "missingFinals": 0,
+        "missingHomeLogs": 0,
+        "missingAwayLogs": 0
+      },
+      "score": {
+        "finals": 0,
+        "matches": 0
+      },
+      "abaStints": {}
+    }
+  },
+  "sourceArchive": {
+    "prefix": "raw/source=balldontlie/league=nba/season=2024/...",
+    "gamesPrefix": "raw/source=balldontlie/league=nba/season=2024/entity=games",
+    "statsPrefix": "raw/source=balldontlie/league=nba/season=2024/entity=player_stats",
+    "stagingMode": "none",
+    "gate": {
+      "ok": true,
+      "games": {
+        "pages": 14,
+        "records": 1321,
+        "status": "success"
+      },
+      "playerStats": {
+        "pages": 462,
+        "records": 46150,
+        "status": "success"
+      }
+    },
+    "games": {
+      "pages": 14,
+      "records": 1321,
+      "uniqueGameIds": 1321,
+      "manifestStatus": "success"
+    },
+    "playerStats": {
+      "pages": 462,
+      "records": 46150,
+      "distinctGameIds": 1321,
+      "manifestStatus": "success",
+      "distinctGameIdsNote": "certified in Step 3A/3B; driver does not re-download 462 pages"
+    },
+    "matchesStep3A": true,
+    "mapper": "transformBdlArchiveToServing",
+    "skipArchive": true,
+    "skipProbe": true
+  },
+  "games": {
+    "expected": 1321,
+    "actual": 1321,
+    "distinct": 1321,
+    "allSeason2024": true
+  },
+  "playerLogs": {
+    "expected": 46150,
+    "actual": 46150,
+    "distinctGames": 1321
+  },
+  "teamStats": {
+    "expected": 2642,
+    "actual": 2642,
+    "distinctGames": 1321
+  },
+  "seasonAverages": {
+    "playerExpected": 587,
+    "playerActual": 587,
+    "teamExpected": 30,
+    "teamActual": 30
+  },
+  "stints": {
+    "expectedApprox": 699,
+    "actual": 699,
+    "source": "inferred_pgl",
+    "otherSources": 0,
+    "advisoryAbaPlayers": [
+      "1028026974",
+      "369",
+      "38017698",
+      "56677738",
+      "666860"
+    ],
+    "abaStintCounts": {
+      "369": 3,
+      "666860": 3,
+      "38017698": 3,
+      "56677738": 4,
+      "1028026974": 3
+    }
+  },
+  "scoreReconciliation": {
+    "finals": 1321,
+    "matches": 1321,
+    "status": "MATCH"
+  },
+  "structural": {
+    "dupLogKeys": 0,
+    "nullCore": 0,
+    "foreignTeam": 0,
+    "missingFinals": 0,
+    "missingHomeLogs": 0,
+    "missingAwayLogs": 0
+  },
+  "rawStagingIsolation": {
+    "total": 46056,
+    "season2024": 0,
+    "season2025": 46056,
+    "ok": true
+  },
+  "isolation2025": {
+    "games": 1323,
+    "logs": 46056,
+    "teamStats": 2644,
+    "inferredStints": 184,
+    "nbaStatsStints": 514,
+    "box184": {
+      "game_id": "18447793",
+      "season": "2025",
+      "home_team_id": "13",
+      "away_team_id": "26",
+      "home_score": 109,
+      "away_score": 118
+    },
+    "localOnly21681993": {
+      "game_id": "21681993",
+      "season": "2025",
+      "home_score": 0,
+      "away_score": 0,
+      "logs": 0
+    },
+    "unchanged": true
+  },
+  "isolation2026": {
+    "games": 1200,
+    "logs": 0,
+    "teamStats": 0,
+    "stints": 578,
+    "unchanged": true
+  },
+  "isolationFailures": [],
+  "actualStorageDelta": {
+    "beforePath": "reports/storage/after-31game-materialize.json",
+    "afterPath": "reports/storage/after-2024.json",
+    "beforeMb": 304.07,
+    "afterMb": 315.02,
+    "deltaMb": 10.95,
+    "thresholds": {
+      "dbAfter2024Mb": 315.02,
+      "deltaMb": 10.95,
+      "headroomTo340Mb": 24.98,
+      "headroomTo400Mb": 84.98,
+      "headroomTo450Mb": 134.98,
+      "after2024MaxDbMb": 340,
+      "after2024MaxDeltaMb": 35
+    }
+  },
+  "storageGate": {
+    "command": "npm run ops:trial-storage-gate -- --previous=reports/storage/after-31game-materialize.json --current=reports/storage/after-2024.json --phase=after-2024",
+    "ok": true,
+    "spawnedOk": true,
+    "result": {
+      "ok": true,
+      "phase": "after-2024",
+      "previousMb": 304.07,
+      "currentMb": 315.02,
+      "deltaMb": 10.95,
+      "failures": []
+    },
+    "spawnedStdout": "npm warn Unknown env config \"devdir\". This will stop working in the next major version of npm.\n{\n  \"ok\": true,\n  \"phase\": \"after-2024\",\n  \"previousMb\": 304.07,\n  \"currentMb\": 315.02,\n  \"deltaMb\": 10.95,\n  \"failures\": []\n}"
+  },
+  "eligibility2023S3": {
+    "eligibility": "likely still safe / recommended",
+    "estimatedRequests": "450-500",
+    "estimatedHours": "1.8-2.0",
+    "basis": {
+      "season2024HttpAttempts": 477,
+      "season2024ApiHours": 1.81,
+      "avgSecondsPerRequest": 13.654
+    },
+    "started": false
+  },
+  "eligibility2023Postgres": {
+    "eligible": true,
+    "dependsOn": "actual 2024 storage result",
+    "gateOk": true,
+    "note": "Do not start 2023 Postgres in this step. 2023 S3 acquisition is a separate decision."
+  },
+  "trialTimeBudget": {
+    "thisStepBdlHttp": 0,
+    "season2024Archive": {
+      "attempts": 477,
+      "apiHours": 1.81,
+      "avgSecondsPerRequest": 13.654
+    },
+    "planned2023S3": {
+      "requests": "450-500",
+      "hours": "1.8-2.0",
+      "started": false
+    }
+  },
+  "verdict": "GREEN — 2024 materialized successfully; storage gate passes"
+}

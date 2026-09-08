@@ -1,0 +1,427 @@
+{
+  "generatedAt": "2026-09-08T13:08:08.752Z",
+  "dryRun": false,
+  "postgresMaterialize": true,
+  "bdlHttpRequests": 0,
+  "trialLimiterConsumed": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlLockActive": false,
+    "bdlHttpRequests": 0,
+    "trialLimiterConsumed": false,
+    "batch": [
+      "18447793",
+      "21707973",
+      "21716138"
+    ]
+  },
+  "s3Validation": [
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=18447793.json",
+      "gameId": "18447793",
+      "records": 36,
+      "distinctPlayers": 36,
+      "homeN": 18,
+      "awayN": 18,
+      "summed": {
+        "home": 109,
+        "away": 118
+      },
+      "official": {
+        "home": 109,
+        "away": 118
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_REPLACE_INCOMPLETE_LOCAL_BOX"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21707973.json",
+      "gameId": "21707973",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 133,
+        "away": 95
+      },
+      "official": {
+        "home": 133,
+        "away": 95
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats/game_id=21716138.json",
+      "gameId": "21716138",
+      "records": 30,
+      "distinctPlayers": 30,
+      "homeN": 15,
+      "awayN": 15,
+      "summed": {
+        "home": 90,
+        "away": 94
+      },
+      "official": {
+        "home": 90,
+        "away": 94
+      },
+      "scoreOk": true,
+      "duplicateCount": 0,
+      "unexpectedTeamCount": 0,
+      "identityIssues": 0,
+      "classification": "READY_TO_MATERIALIZE"
+    }
+  ],
+  "beforeByGame": {
+    "18447793": {
+      "rawRows": 36,
+      "rawPlayers": 36,
+      "logRows": 36,
+      "logPlayers": 36,
+      "uniqueKeys": 36,
+      "logTeams": 2,
+      "homePts": 88,
+      "awayPts": 99,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "13",
+        "26"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707973": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716138": {
+      "rawRows": 0,
+      "rawPlayers": 0,
+      "logRows": 0,
+      "logPlayers": 0,
+      "uniqueKeys": 0,
+      "logTeams": 0,
+      "homePts": 0,
+      "awayPts": 0,
+      "logOtherSeason": 0,
+      "teamRows": 0,
+      "teamIds": [],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    }
+  },
+  "afterByGame": {
+    "18447793": {
+      "rawRows": 36,
+      "rawPlayers": 36,
+      "logRows": 36,
+      "logPlayers": 36,
+      "uniqueKeys": 36,
+      "logTeams": 2,
+      "homePts": 109,
+      "awayPts": 118,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "13",
+        "26"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21707973": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 133,
+      "awayPts": 95,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "18",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    },
+    "21716138": {
+      "rawRows": 30,
+      "rawPlayers": 30,
+      "logRows": 30,
+      "logPlayers": 30,
+      "uniqueKeys": 30,
+      "logTeams": 2,
+      "homePts": 90,
+      "awayPts": 94,
+      "logOtherSeason": 0,
+      "teamRows": 2,
+      "teamIds": [
+        "20",
+        "27"
+      ],
+      "teamOtherSeason": 0,
+      "duplicatePlayers": 0
+    }
+  },
+  "teamStatsRowsWritten": 6,
+  "averages": {
+    "playersRecomputed": 81,
+    "teamsRecomputed": 5,
+    "playerIds": [
+      "101",
+      "1028025242",
+      "1028035215",
+      "1028242168",
+      "1028246478",
+      "1057276634",
+      "1057279105",
+      "1057390745",
+      "1057396055",
+      "1057845274",
+      "1057848025",
+      "1058921044",
+      "125",
+      "139",
+      "147",
+      "17896035",
+      "247",
+      "268",
+      "274",
+      "283",
+      "305",
+      "324",
+      "33",
+      "3547241",
+      "3547249",
+      "37",
+      "38017686",
+      "38017688",
+      "38017691",
+      "38017704",
+      "406",
+      "472",
+      "53",
+      "56677856",
+      "666581",
+      "666656",
+      "3547246",
+      "38017649",
+      "56677822",
+      "161",
+      "1028025261",
+      "30",
+      "48",
+      "1057271360",
+      "1057262518",
+      "666682",
+      "261",
+      "666767",
+      "358",
+      "371",
+      "27924547",
+      "3547259",
+      "387",
+      "176",
+      "1028028501",
+      "104",
+      "12",
+      "1057271099",
+      "56677851",
+      "17895983",
+      "3547238",
+      "17896031",
+      "226",
+      "56677857",
+      "667378",
+      "131",
+      "202",
+      "18",
+      "447",
+      "61",
+      "73",
+      "17896097",
+      "100",
+      "1028025498",
+      "1057393207",
+      "1028046422",
+      "1028036898",
+      "17896033",
+      "399",
+      "414",
+      "38017699"
+    ],
+    "teamIds": [
+      "13",
+      "26",
+      "27",
+      "18",
+      "20"
+    ],
+    "seasonsTouched": [
+      "2025"
+    ]
+  },
+  "stintDecision": {
+    "rebuilt": false,
+    "inferredInserted": 0,
+    "reason": "All repaired appearances already have a 2025 player-team stint; season-wide inferred_pgl rebuild not required. nba_stats and 2026 stints left unchanged.",
+    "missingPlayerTeamPairs": []
+  },
+  "stintsBefore": [
+    {
+      "season": "2025",
+      "source": "inferred_pgl",
+      "n": 183
+    },
+    {
+      "season": "2025",
+      "source": "nba_stats",
+      "n": 514
+    },
+    {
+      "season": "2026",
+      "source": "nba_stats",
+      "n": 578
+    }
+  ],
+  "stintsAfter": [
+    {
+      "season": "2025",
+      "source": "inferred_pgl",
+      "n": 183
+    },
+    {
+      "season": "2025",
+      "source": "nba_stats",
+      "n": 514
+    },
+    {
+      "season": "2026",
+      "source": "nba_stats",
+      "n": 578
+    }
+  ],
+  "isolationBefore": {
+    "games_2026": "1200",
+    "logs_2026": "0",
+    "tgs_2026": "0",
+    "pav_2026": "0",
+    "tav_2026": "0",
+    "stints_2026": "578",
+    "hist_logs": "0",
+    "hist_tgs": "0",
+    "db_bytes": "318721171"
+  },
+  "isolationAfter": {
+    "games_2026": "1200",
+    "logs_2026": "0",
+    "tgs_2026": "0",
+    "pav_2026": "0",
+    "tav_2026": "0",
+    "stints_2026": "578",
+    "hist_logs": "0",
+    "hist_tgs": "0",
+    "db_bytes": "318721171"
+  },
+  "isolationUnchanged": true,
+  "completeness": {
+    "providerFinals": 1322,
+    "distinctLogGames": 1291,
+    "distinctTeamStatGames": 1291,
+    "logsAndTeamStats": 1291,
+    "remainingGoatIds": [
+      "21708674",
+      "21708301",
+      "21709223",
+      "21707974",
+      "21708677",
+      "21708303",
+      "21709227",
+      "21707975",
+      "21708680",
+      "21708305",
+      "21709231",
+      "21707976",
+      "21709235",
+      "21707977",
+      "21709238",
+      "21709241",
+      "21713528",
+      "21713895",
+      "21713529",
+      "21713897",
+      "21713530",
+      "21713899",
+      "21713531",
+      "21713901",
+      "21713532",
+      "21713533",
+      "21713534",
+      "21716134",
+      "21716135",
+      "21716136",
+      "21716137"
+    ]
+  },
+  "remaining31": [
+    "21708674",
+    "21708301",
+    "21709223",
+    "21707974",
+    "21708677",
+    "21708303",
+    "21709227",
+    "21707975",
+    "21708680",
+    "21708305",
+    "21709231",
+    "21707976",
+    "21709235",
+    "21707977",
+    "21709238",
+    "21709241",
+    "21713528",
+    "21713895",
+    "21713529",
+    "21713897",
+    "21713530",
+    "21713899",
+    "21713531",
+    "21713901",
+    "21713532",
+    "21713533",
+    "21713534",
+    "21716134",
+    "21716135",
+    "21716136",
+    "21716137"
+  ],
+  "remaining31Count": 31,
+  "stepVerdict": "GREEN — 3-game Postgres repair proven; proceed to remaining 31 materializations"
+}

@@ -23,11 +23,19 @@
 import 'dotenv/config';
 import { S3Storage } from '@/lib/aws/s3';
 import {
+  acquireBdlAcquisitionLock,
+  type AcquisitionLockHandle,
+} from '@/lib/balldontlie/acquisition-lock';
+import {
   BdlArchiveClient,
   readBdlApiKey,
+  type BdlClientMetrics,
   type BdlEnvelope,
   type PaginationStyle,
 } from '@/lib/balldontlie/archive-client';
+import { assertTrialExecuteAllowed, resolveBdlRequestDelayMs } from '@/lib/balldontlie/trial-limiter';
+import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
+import { getAnalyticsSeason } from '@/lib/season';
 
 type EntityName = 'teams' | 'players' | 'games' | 'player_stats';
 
@@ -83,6 +91,18 @@ type CliArgs = {
   perPage: number;
   requestDelayMs?: number;
   maxRetries?: number;
+};
+
+export type BackfillRunResult = {
+  exitCode: number;
+  season: number;
+  dryRun: boolean;
+  summaries: EntitySummary[];
+  metrics: BdlClientMetrics;
+  delayMs: number;
+  trialMode: boolean;
+  concurrency: 1 | 'unbounded';
+  runLogKey: string;
 };
 
 type EntityManifest = {
@@ -430,18 +450,33 @@ async function finalize(
   };
 }
 
-async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
+export async function runBackfillBalldontlieSeason(
+  argv: string[],
+  opts?: { skipLock?: boolean }
+): Promise<BackfillRunResult> {
+  const args = parseArgs(argv);
 
   const bucket = requireEnv('NBA_DATA_BUCKET');
   const rawPrefix = (process.env.NBA_RAW_PREFIX ?? 'raw').replace(/^\/+|\/+$/g, '') || 'raw';
   const region = process.env.AWS_REGION?.trim() || 'us-east-1';
+  const delay = resolveBdlRequestDelayMs({ requestedDelayMs: args.requestDelayMs });
+
+  if (!args.dryRun) {
+    assertTrialExecuteAllowed();
+    const mode = readIngestionMode();
+    const pin = getAnalyticsSeason();
+    const unsafe: string[] = [];
+    if (mode.dataMode !== 'replay') unsafe.push(`DATA_MODE=${mode.dataMode || '(empty)'}`);
+    if (!mode.offseason) unsafe.push('OFFSEASON_MODE not 1');
+    if (!mode.cronDryRun) unsafe.push('CRON_DRY_RUN not 1');
+    if (pin !== '2025') unsafe.push(`season pin ${pin}`);
+    if (unsafe.length) {
+      throw new Error(`Refusing BDL archive execute: ${unsafe.join('; ')}`);
+    }
+  }
 
   const apiKey = args.dryRun
-    ? // Dry-run never calls BDL, but the client still requires a non-empty key
-      // to construct. If the user has BALLDONTLIE_API_KEY set we use it; if not,
-      // a placeholder lets dry-run proceed without forcing them to set the env.
-      (process.env.BALLDONTLIE_API_KEY?.trim() ||
+    ? (process.env.BALLDONTLIE_API_KEY?.trim() ||
         process.env.BALDONTLIE_API_KEY?.trim() ||
         'dry-run-placeholder')
     : readBdlApiKey();
@@ -454,89 +489,116 @@ async function main(): Promise<void> {
   console.log(`  dry-run           : ${args.dryRun}`);
   console.log(`  overwrite         : ${args.overwrite}`);
   console.log(`  per-page          : ${args.perPage}`);
-  console.log(
-    `  request-delay-ms  : ${args.requestDelayMs ?? process.env.BALLDONTLIE_REQUEST_DELAY_MS ?? '200 (default)'}`
-  );
+  console.log(`  request-delay-ms  : ${delay.delayMs} (${delay.source})`);
+  console.log(`  trial-mode        : ${delay.trialMode}`);
+  console.log(`  concurrency       : ${delay.concurrency}`);
   console.log(`  max-retries       : ${args.maxRetries ?? process.env.MAX_RETRIES ?? '3 (default)'}`);
+  console.log(`  postgres          : none (S3 archive only)`);
 
-  const s3 = new S3Storage({ bucket, region });
-  const client = new BdlArchiveClient({
-    apiKey,
-    requestDelayMs: args.requestDelayMs,
-    maxRetries: args.maxRetries,
-  });
+  let lock: AcquisitionLockHandle | null = null;
+  if (!args.dryRun && !opts?.skipLock) {
+    lock = acquireBdlAcquisitionLock();
+    console.log(`  lock              : acquired ${lock.path}`);
+  }
 
-  const selected: EntityDef[] = args.entities
-    ? args.entities
-        .map((n) => ENTITIES.find((e) => e.entity === n))
-        .filter((e): e is EntityDef => e !== undefined)
-    : [...ENTITIES];
+  try {
+    const s3 = new S3Storage({ bucket, region });
+    const client = new BdlArchiveClient({
+      apiKey,
+      requestDelayMs: args.requestDelayMs,
+      maxRetries: args.maxRetries,
+    });
 
-  const startedAt = new Date().toISOString();
-  const summaries: EntitySummary[] = [];
-  let exitCode = 0;
+    const selected: EntityDef[] = args.entities
+      ? args.entities
+          .map((n) => ENTITIES.find((e) => e.entity === n))
+          .filter((e): e is EntityDef => e !== undefined)
+      : [...ENTITIES];
 
-  for (const entity of selected) {
-    try {
-      const summary = await backfillEntity({ entity, args, s3, client, rawPrefix });
-      summaries.push(summary);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[error] entity=${entity.entity}: ${msg}`);
-      summaries.push({
-        entity: entity.entity,
-        status: 'error',
-        pageCount: 0,
-        recordCount: 0,
-        written: 0,
-        skipped: 0,
-        durationMs: 0,
-        error: msg,
-      });
-      exitCode = 1;
+    const startedAt = new Date().toISOString();
+    const summaries: EntitySummary[] = [];
+    let exitCode = 0;
+
+    for (const entity of selected) {
+      try {
+        const summary = await backfillEntity({ entity, args, s3, client, rawPrefix });
+        summaries.push(summary);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`[error] entity=${entity.entity}: ${msg}`);
+        summaries.push({
+          entity: entity.entity,
+          status: 'error',
+          pageCount: 0,
+          recordCount: 0,
+          written: 0,
+          skipped: 0,
+          durationMs: 0,
+          error: msg,
+        });
+        exitCode = 1;
+      }
     }
-  }
 
-  const runLog = {
-    schemaVersion: 1,
-    source: 'balldontlie' as const,
-    league: 'nba' as const,
-    season: args.season,
-    startedAt,
-    completedAt: new Date().toISOString(),
-    args: {
-      entities: args.entities ?? '(all)',
+    const runLog = {
+      schemaVersion: 1,
+      source: 'balldontlie' as const,
+      league: 'nba' as const,
+      season: args.season,
+      startedAt,
+      completedAt: new Date().toISOString(),
+      args: {
+        entities: args.entities ?? '(all)',
+        dryRun: args.dryRun,
+        overwrite: args.overwrite,
+        perPage: args.perPage,
+      },
+      metrics: client.getMetrics(),
+      entities: summaries,
+    };
+
+    const runLogKey = `${rawPrefix}/source=balldontlie/league=nba/season=${args.season}/_run_log.json`;
+    if (args.dryRun) {
+      console.log(`\n[dry-run] would write ${runLogKey}`);
+    } else {
+      await s3.putJson(runLogKey, runLog, { overwrite: true });
+      console.log(`\n[run-log] ${runLogKey}`);
+    }
+
+    console.log('\n=== Summary ===');
+    for (const s of summaries) {
+      const durationSec = (s.durationMs / 1000).toFixed(1);
+      const tail = s.error ? `  ERROR: ${s.error}` : '';
+      console.log(
+        `  ${s.entity.padEnd(14)} ${s.status.padEnd(8)} pages=${String(s.pageCount).padStart(4)} ` +
+          `records=${String(s.recordCount).padStart(7)} wrote=${s.written} skipped=${s.skipped} ` +
+          `(${durationSec}s)${tail}`
+      );
+    }
+    console.log(args.dryRun ? '\n[dry-run] no S3 objects were written and BDL was not called.' : '\nDone.');
+
+    return {
+      exitCode,
+      season: args.season,
       dryRun: args.dryRun,
-      overwrite: args.overwrite,
-      perPage: args.perPage,
-    },
-    entities: summaries,
-  };
-
-  const runLogKey = `${rawPrefix}/source=balldontlie/league=nba/season=${args.season}/_run_log.json`;
-  if (args.dryRun) {
-    console.log(`\n[dry-run] would write ${runLogKey}`);
-  } else {
-    await s3.putJson(runLogKey, runLog, { overwrite: true });
-    console.log(`\n[run-log] ${runLogKey}`);
+      summaries,
+      metrics: client.getMetrics(),
+      delayMs: delay.delayMs,
+      trialMode: delay.trialMode,
+      concurrency: delay.concurrency,
+      runLogKey,
+    };
+  } finally {
+    lock?.release();
   }
-
-  console.log('\n=== Summary ===');
-  for (const s of summaries) {
-    const durationSec = (s.durationMs / 1000).toFixed(1);
-    const tail = s.error ? `  ERROR: ${s.error}` : '';
-    console.log(
-      `  ${s.entity.padEnd(14)} ${s.status.padEnd(8)} pages=${String(s.pageCount).padStart(4)} ` +
-        `records=${String(s.recordCount).padStart(7)} wrote=${s.written} skipped=${s.skipped} ` +
-        `(${durationSec}s)${tail}`
-    );
-  }
-  console.log(args.dryRun ? '\n[dry-run] no S3 objects were written and BDL was not called.' : '\nDone.');
-
-  process.exit(exitCode);
 }
 
-main().catch((err) => {
-  console.error('[fatal] unhandled error:', err);
-  process.exit(1);
-});
+const invokedDirectly = process.argv[1]?.replace(/\\/g, '/').includes('backfill-balldontlie-season');
+if (invokedDirectly) {
+  runBackfillBalldontlieSeason(process.argv.slice(2))
+    .then((r) => process.exit(r.exitCode))
+    .catch((err) => {
+      console.error('[fatal] unhandled error:', err);
+      process.exit(1);
+    });
+}
