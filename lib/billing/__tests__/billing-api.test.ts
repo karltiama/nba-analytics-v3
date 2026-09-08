@@ -38,7 +38,7 @@ import { POST as checkoutPost } from '@/app/api/billing/checkout/route';
 import { POST as portalPost } from '@/app/api/billing/portal/route';
 import { GET as statusGet } from '@/app/api/billing/status/route';
 import { POST as webhookPost } from '@/app/api/billing/webhook/route';
-import { freeEntitlement } from '@/lib/entitlements/resolve';
+import { foundingProEntitlement, freeEntitlement } from '@/lib/entitlements/resolve';
 
 const USER_A = '11111111-1111-1111-1111-111111111111';
 const USER_B = '22222222-2222-2222-2222-222222222222';
@@ -154,6 +154,35 @@ describe('billing API auth and IDOR', () => {
     expect(JSON.stringify(body)).not.toContain('cus_secret');
     expect(JSON.stringify(body)).not.toContain('sub_secret');
     expect(JSON.stringify(body)).not.toContain('price_');
+  });
+
+  it('does not unlock Pro from a Checkout success session_id query param', async () => {
+    requireBettingAuth.mockResolvedValue(authed(USER_A));
+    getUserEntitlements.mockResolvedValue(freeEntitlement());
+    getEntitlementBillingRow.mockResolvedValue(null);
+    const res = await statusGet(
+      new NextRequest('http://localhost/api/billing/status?session_id=cs_test_paid')
+    );
+    const body = await res.json();
+    expect(body.isPro).toBe(false);
+    expect(body.plan).toBe('free');
+  });
+
+  it('manual Pro without Stripe customer stays Pro and cannot open portal management', async () => {
+    requireBettingAuth.mockResolvedValue(authed(USER_A));
+    getUserEntitlements.mockResolvedValue(
+      foundingProEntitlement({ status: 'active', currentPeriodEnd: null, source: 'row' })
+    );
+    getEntitlementBillingRow.mockResolvedValue({
+      provider: 'manual',
+      provider_customer_id: null,
+      provider_subscription_id: null,
+    });
+    const res = await statusGet(new NextRequest('http://localhost/api/billing/status'));
+    const body = await res.json();
+    expect(body.isPro).toBe(true);
+    expect(body.canManageBilling).toBe(false);
+    expect(body.provider).toBeNull();
   });
 });
 

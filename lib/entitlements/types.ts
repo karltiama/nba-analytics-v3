@@ -44,16 +44,16 @@ export const FOUNDING_PRO_PRICE_CONCEPT = '$10/month';
 
 export const UPGRADE_COPY: Record<FeatureKey, { title: string; detail: string }> = {
   line_shopping_detail: {
-    title: 'Best sportsbook available with Founding Pro',
-    detail: 'Unlock exact best book, best Over/Under line, and best same-line price.',
+    title: 'Find the best book',
+    detail: 'See the exact sportsbook offering the strongest line and price with Founding Pro.',
   },
   market_movement: {
-    title: 'Line movement history available with Founding Pro',
+    title: 'Movement history available with Founding Pro',
     detail: 'See open-to-close movement when snapshot history exists.',
   },
   ai_briefing: {
-    title: 'AI briefings available with Founding Pro',
-    detail: 'Unlock slate and matchup briefings written from the research context you already see.',
+    title: 'AI research briefing — Founding Pro',
+    detail: 'Founding Pro adds a synthesized slate and matchup briefing from the research context you already see.',
   },
   advanced_history: {
     title: 'Deeper historical research available with Founding Pro',

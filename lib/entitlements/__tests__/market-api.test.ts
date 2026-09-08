@@ -117,6 +117,8 @@ describe('props-explorer market entitlement contract', () => {
     expect(body.shopping.bestAvailableOverLine).toBeNull();
     expect(body.shopping.books).toEqual([]);
     expect(body.shopping.bookCount).toBe(2);
+    expect(body.shopping.marketMinLine).toBe(10.5);
+    expect(body.shopping.marketMaxLine).toBe(11.5);
     expect(body.entitlement.isPro).toBe(false);
   });
 
@@ -133,6 +135,19 @@ describe('props-explorer market entitlement contract', () => {
     expect(body.shopping.bestPriceAtSelectedLine.sportsbook).toBe('fanduel');
     expect(body.shopping.books).toHaveLength(1);
     expect(body.entitlement.isPro).toBe(true);
+  });
+
+  it('past_due is treated as Free and sanitizes premium fields', async () => {
+    getUserEntitlements.mockResolvedValue(freeEntitlement('past_due', 'row', '2026-10-01T00:00:00.000Z'));
+    const res = await GET(
+      new NextRequest(
+        'http://localhost/api/betting/props-explorer/market?game_id=1&player_id=9&prop_type=points&side=over&line_value=10.5&sportsbook=draftkings'
+      )
+    );
+    const body = await res.json();
+    expect(body.shopping.bestAvailableOverLine).toBeNull();
+    expect(body.shopping.books).toEqual([]);
+    expect(body.entitlement.isPro).toBe(false);
   });
 
   it('unauthenticated market requests are 401', async () => {

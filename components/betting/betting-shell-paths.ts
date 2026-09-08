@@ -1,4 +1,6 @@
 /** Pathnames that should show the shared betting Header. */
+export const FOUNDING_PRO_UPGRADE_HREF = '/billing';
+
 export function shouldShowLayoutHeader(pathname: string): boolean {
   if (pathname === '/betting') return true;
   if (pathname.startsWith('/betting/games/')) return true;

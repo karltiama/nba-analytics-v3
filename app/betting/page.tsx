@@ -219,6 +219,7 @@ export default function BettingDashboard(props: PageProps) {
   const [widgets, setWidgets] = useState<any[]>([]);
   const [slateSummary, setSlateSummary] = useState<string | null>(null);
   const [slateSummaryHint, setSlateSummaryHint] = useState<string | null>(null);
+  const [slateEntitlementRequired, setSlateEntitlementRequired] = useState(false);
   const [slateBriefingEligible, setSlateBriefingEligible] = useState(false);
 
   // Loading states
@@ -324,6 +325,7 @@ export default function BettingDashboard(props: PageProps) {
     const ac = new AbortController();
     setSlateSummaryLoading(true);
     setSlateSummaryHint(null);
+    setSlateEntitlementRequired(false);
 
     (async () => {
       try {
@@ -335,14 +337,14 @@ export default function BettingDashboard(props: PageProps) {
         if (data.error === 'ENTITLEMENT_REQUIRED' || res.status === 403) {
           setSlateSummary(null);
           setSlateBriefingEligible(false);
-          setSlateSummaryHint(
-            typeof data.message === 'string' ? data.message : 'AI briefings available with Founding Pro'
-          );
+          setSlateEntitlementRequired(true);
+          setSlateSummaryHint(null);
         } else if (data.eligible === false || data.code === 'OFFSEASON' || data.code === 'NO_SLATE') {
           setSlateSummary(null);
           setSlateBriefingEligible(false);
+          setSlateEntitlementRequired(false);
           setSlateSummaryHint(
-            typeof data.message === 'string' ? data.message : 'Slate briefing unavailable.'
+            typeof data.message === 'string' ? data.message : 'Briefing unavailable during offseason'
           );
         } else if (data.summary && typeof data.summary === 'string') {
           setSlateSummary(data.summary);
@@ -507,6 +509,7 @@ export default function BettingDashboard(props: PageProps) {
                 slateSummary={slateSummary}
                 slateSummaryLoading={slateSummaryLoading}
                 slateSummaryHint={slateSummaryHint}
+                slateEntitlementRequired={slateEntitlementRequired}
                 briefingEligible={slateBriefingEligible}
               />
             </div>

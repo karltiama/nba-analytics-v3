@@ -1,4 +1,5 @@
 import { getUserEntitlements } from '@/lib/entitlements/queries';
+import { getBillingAvailability } from './availability';
 import { getStripeBillingConfig } from './config';
 import { getStripeClient } from './stripe-client';
 import { getOrCreateStripeCustomer } from './customers';
@@ -12,6 +13,16 @@ export async function createFoundingProCheckout(input: {
   userId: string;
   email?: string | null;
 }): Promise<CheckoutCreateResult> {
+  const availability = getBillingAvailability();
+  if (!availability.checkoutEnabled) {
+    return {
+      ok: false,
+      status: availability.mode === 'disabled' ? 503 : 403,
+      error: availability.notice ?? 'Billing is not available.',
+      code: availability.mode === 'disabled' ? 'BILLING_UNCONFIGURED' : 'BILLING_NOT_PUBLIC',
+    };
+  }
+
   const cfg = getStripeBillingConfig();
   if (!cfg.ok) return { ok: false, status: 503, error: cfg.error, code: 'BILLING_UNCONFIGURED' };
 

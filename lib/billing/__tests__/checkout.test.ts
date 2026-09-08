@@ -96,4 +96,14 @@ describe('createFoundingProCheckout', () => {
     expect(result.code).toBe('ALREADY_PRO');
     expect(sessionsCreate).not.toHaveBeenCalled();
   });
+
+  it('refuses Checkout on Vercel Production even with test keys', async () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    getUserEntitlements.mockResolvedValue(freeEntitlement());
+    const result = await createFoundingProCheckout({ userId: USER_A });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.code).toBe('BILLING_NOT_PUBLIC');
+    expect(sessionsCreate).not.toHaveBeenCalled();
+  });
 });

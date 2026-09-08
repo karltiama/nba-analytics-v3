@@ -21,6 +21,8 @@ import type { InjuryFeedAvailability } from '@/lib/injuries/freshness';
 import { injuryAbsenceCopy } from '@/lib/injuries/freshness';
 import { displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
 import { playerResearchHref, propsExplorerHref, slateHref } from '@/lib/betting/research-journey';
+import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
+import { UPGRADE_COPY } from '@/lib/entitlements/types';
 
 // --- Types (migrated from GameDetailsModal) ---
 interface RecentGameResult {
@@ -553,7 +555,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
   const [activeSection, setActiveSection] = useState<(typeof SECTION_IDS)[number]>(SECTION_IDS[0]);
   const [aiSummaryText, setAiSummaryText] = useState<string | null>(null);
   const [aiSummaryStatus, setAiSummaryStatus] = useState<
-    'idle' | 'loading' | 'success' | 'unavailable' | 'error'
+    'idle' | 'loading' | 'success' | 'unavailable' | 'entitlement' | 'error'
   >('idle');
   const {
     game,
@@ -636,11 +638,6 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     let cancelled = false;
 
     async function loadAiSummary() {
-      if (ingestionFrozen) {
-        setAiSummaryStatus('unavailable');
-        setAiSummaryText(null);
-        return;
-      }
       setAiSummaryStatus('loading');
       setAiSummaryText(null);
       const bullets = getGameSummaryBulletsForAi({
@@ -689,10 +686,18 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           code?: string;
           error?: string;
           message?: string;
+          eligible?: boolean;
         };
         if (cancelled) return;
         if (j?.error === 'ENTITLEMENT_REQUIRED' || res.status === 403) {
-          setAiSummaryText(typeof j.message === 'string' ? j.message : null);
+          setAiSummaryText(null);
+          setAiSummaryStatus('entitlement');
+          return;
+        }
+        if (j?.code === 'OFFSEASON' || j?.eligible === false) {
+          setAiSummaryText(
+            typeof j.message === 'string' ? j.message : 'Briefing unavailable during offseason'
+          );
           setAiSummaryStatus('unavailable');
           return;
         }
@@ -819,7 +824,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             {aiSummaryStatus === 'loading' && (
               <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#bf5af2]/90" aria-hidden />
-                <span>Generating summary…</span>
+                <span>Loading briefing…</span>
               </div>
             )}
             {aiSummaryStatus === 'success' && aiSummaryText && (
@@ -827,13 +832,18 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 {aiSummaryText}
               </p>
             )}
+            {aiSummaryStatus === 'entitlement' && (
+              <div className="mt-3 space-y-2">
+                <p className="text-xs font-medium text-white">{UPGRADE_COPY.ai_briefing.title}</p>
+                <p className="text-xs text-muted-foreground">{UPGRADE_COPY.ai_briefing.detail}</p>
+                <FoundingProUpgradeLink />
+              </div>
+            )}
             {aiSummaryStatus === 'unavailable' && (
               <p className="text-xs text-muted-foreground mt-3">
                 {aiSummaryText
                   ? aiSummaryText
-                  : ingestionFrozen
-                    ? 'Matchup briefing unavailable during offseason freeze.'
-                    : (
+                  : (
                       <>
                         Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
                         AI-written summary.

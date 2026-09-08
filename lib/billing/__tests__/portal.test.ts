@@ -70,4 +70,18 @@ describe('createBillingPortalSession', () => {
     expect(result.code).toBe('NO_BILLING_CUSTOMER');
     expect(portalCreate).not.toHaveBeenCalled();
   });
+
+  it('refuses portal on Vercel Production even with a Stripe customer', async () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    getEntitlementBillingRow.mockResolvedValue({
+      user_id: USER_A,
+      provider: 'stripe',
+      provider_customer_id: 'cus_A',
+    });
+    const result = await createBillingPortalSession(USER_A);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.code).toBe('BILLING_NOT_PUBLIC');
+    expect(portalCreate).not.toHaveBeenCalled();
+  });
 });

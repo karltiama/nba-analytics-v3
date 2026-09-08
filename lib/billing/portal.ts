@@ -1,3 +1,4 @@
+import { getBillingAvailability } from './availability';
 import { getStripeBillingConfig } from './config';
 import { getStripeClient } from './stripe-client';
 import { getEntitlementBillingRow } from './entitlement-store';
@@ -7,6 +8,16 @@ export type PortalCreateResult =
   | { ok: false; status: number; error: string; code?: string };
 
 export async function createBillingPortalSession(userId: string): Promise<PortalCreateResult> {
+  const availability = getBillingAvailability();
+  if (!availability.portalEnabled) {
+    return {
+      ok: false,
+      status: availability.mode === 'disabled' ? 503 : 403,
+      error: availability.notice ?? 'Billing management is not available.',
+      code: availability.mode === 'disabled' ? 'BILLING_UNCONFIGURED' : 'BILLING_NOT_PUBLIC',
+    };
+  }
+
   const cfg = getStripeBillingConfig();
   if (!cfg.ok) return { ok: false, status: 503, error: cfg.error, code: 'BILLING_UNCONFIGURED' };
 

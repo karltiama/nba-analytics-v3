@@ -84,7 +84,28 @@ describe('sanitizePropMarketResearch', () => {
     expect(out.movement.openedLine).toBeNull();
     expect(out.movement.closedLine).toBeNull();
     expect(out.movement.reason).toBe('entitlement');
+    expect(out.movement.message).toBe('Movement history available with Founding Pro');
     expect(out.entitlement.isPro).toBe(false);
+  });
+
+  it('does not turn missing movement into a premium lock', () => {
+    const noHistory: PropMarketResearch = {
+      ...FULL,
+      movement: {
+        status: 'unavailable',
+        reason: 'single_snapshot',
+        message: 'Movement history unavailable',
+        openedLine: null,
+        closedLine: null,
+        delta: null,
+        from: null,
+        to: null,
+      },
+    };
+    const out = sanitizePropMarketResearch(noHistory, freeEntitlement());
+    expect(out.movement.status).toBe('unavailable');
+    expect(out.movement.reason).toBe('single_snapshot');
+    expect(out.movement.message).toBe('Movement history unavailable');
   });
 
   it('keeps premium fields for Founding Pro', () => {
@@ -94,6 +115,8 @@ describe('sanitizePropMarketResearch', () => {
     );
     expect(out.shopping.bestPriceAtSelectedLine?.sportsbook).toBe('fanduel');
     expect(out.shopping.books).toHaveLength(1);
+    expect(out.shopping.bestAvailableOverLine?.sportsbook).toBe('draftkings');
+    expect(out.shopping.bestAvailableUnderLine?.sportsbook).toBe('fanduel');
     expect(out.movement.openedLine).toBe(10.5);
     expect(out.entitlement.isPro).toBe(true);
   });

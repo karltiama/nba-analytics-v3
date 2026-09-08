@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 type BillingStatus = {
@@ -13,6 +14,7 @@ type BillingStatus = {
 type Phase = 'confirming' | 'pro' | 'incomplete' | 'error';
 
 export default function BillingSuccessPage() {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>('confirming');
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function BillingSuccessPage() {
         const data = (await res.json()) as BillingStatus;
         if (data.isPro) {
           setPhase('pro');
+          router.refresh();
           return;
         }
         attempts += 1;
@@ -57,7 +60,7 @@ export default function BillingSuccessPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [router]);
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
@@ -71,9 +74,14 @@ export default function BillingSuccessPage() {
       <h1 className="text-2xl font-bold text-white tracking-tight mb-3">Checkout</h1>
 
       {phase === 'confirming' ? (
-        <div className="flex items-start gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin mt-0.5" />
-          <p>Payment received. Your subscription is being confirmed.</p>
+        <div className="space-y-2">
+          <div className="flex items-start gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin mt-0.5" />
+            <p>Payment received. Waiting for billing confirmation.</p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            This page does not unlock Founding Pro by itself. Access updates after confirmation.
+          </p>
         </div>
       ) : null}
 

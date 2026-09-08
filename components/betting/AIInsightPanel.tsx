@@ -10,6 +10,7 @@ import {
   Sparkles,
   Loader2,
 } from 'lucide-react';
+import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
 
 export interface Insight {
   id: string;
@@ -27,6 +28,8 @@ interface AIInsightPanelProps {
   slateSummaryLoading?: boolean;
   /** When summary is null: optional hint (e.g. missing API key). */
   slateSummaryHint?: string | null;
+  /** True when the user is Free and AI is Founding Pro. */
+  slateEntitlementRequired?: boolean;
   /** False under freeze/offseason or when there is no current slate. */
   briefingEligible?: boolean;
 }
@@ -86,6 +89,7 @@ export function AIInsightPanel({
   slateSummary = null,
   slateSummaryLoading = false,
   slateSummaryHint = null,
+  slateEntitlementRequired = false,
   briefingEligible = true,
 }: AIInsightPanelProps) {
   void insights;
@@ -102,7 +106,9 @@ export function AIInsightPanel({
             <p className="text-[10px] text-muted-foreground">Slate + analytics signals</p>
           </div>
         </div>
-        {slateSummaryLoading ? null : briefingEligible && slateSummary ? (
+        {slateSummaryLoading ? null : slateEntitlementRequired ? (
+          <span className="text-[10px] text-[#bf5af2] font-medium">Founding Pro</span>
+        ) : briefingEligible && slateSummary ? (
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-[#39ff14] pulse-dot" />
             <span className="text-[10px] text-[#39ff14] font-medium">LIVE</span>
@@ -122,16 +128,23 @@ export function AIInsightPanel({
           {slateSummaryLoading ? (
             <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin text-[#00d4ff] shrink-0" />
-              Generating summary…
+              Loading briefing…
             </div>
           ) : slateSummary ? (
             <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
               {slateSummary}
             </p>
+          ) : slateEntitlementRequired ? (
+            <div className="space-y-2 py-1">
+              <p className="text-xs font-medium text-white">AI research briefing — Founding Pro</p>
+              <p className="text-xs text-muted-foreground">
+                Founding Pro adds a synthesized slate briefing from the research context you already see.
+              </p>
+              <FoundingProUpgradeLink />
+            </div>
           ) : (
             <p className="text-xs text-muted-foreground/80 py-1">
-              {slateSummaryHint ||
-                'No AI summary for this slate. Add OPENAI_API_KEY on the server to enable.'}
+              {slateSummaryHint || 'Briefing unavailable during offseason'}
             </p>
           )}
         </div>

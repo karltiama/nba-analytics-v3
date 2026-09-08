@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
 import { UPGRADE_COPY } from '@/lib/entitlements/types';
+import { formatMarketRangePreview } from '@/lib/entitlements/market-preview';
+import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
 
 export type PropsExplorerMarketSelection = {
   gameId: string | number;
@@ -82,8 +84,9 @@ function MarketBody({
 
   const shopping = data.shopping;
   const movement = data.movement;
-  const showLineShoppingUpgrade = data.entitlement?.features?.line_shopping_detail === false;
-  const showMovementUpgrade = movement.reason === 'entitlement';
+  const isPro = data.entitlement?.isPro === true;
+  const lineShoppingOn = data.entitlement?.features?.line_shopping_detail === true;
+  const movementIsEntitlementGate = movement.reason === 'entitlement';
 
   return (
     <div className="space-y-3">
@@ -107,9 +110,8 @@ function MarketBody({
             className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
           >
             <h3 className="text-[11px] font-medium text-white">Market range</h3>
-            <p className="text-xs text-muted-foreground">
-              {formatLine(shopping.marketMinLine)} – {formatLine(shopping.marketMaxLine)} · {shopping.bookCount}{' '}
-              books
+            <p className="text-xs text-white">
+              {formatMarketRangePreview(shopping.bookCount, shopping.marketMinLine, shopping.marketMaxLine)}
             </p>
             {shopping.latestSnapshotAt ? (
               <p className="text-[11px] text-muted-foreground">
@@ -118,60 +120,86 @@ function MarketBody({
             ) : null}
           </section>
 
-          <section
-            data-market-section="best-line"
-            data-premium-candidate="best-line"
-            className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
-          >
-            <h3 className="text-[11px] font-medium text-white">Best available line</h3>
-            {showLineShoppingUpgrade ? (
-              <p className="text-xs text-muted-foreground">
-                {UPGRADE_COPY.line_shopping_detail.title}. {UPGRADE_COPY.line_shopping_detail.detail}{' '}
-                <span className="text-white/70">Upgrade</span>
-              </p>
-            ) : shopping.bestAvailableOverLine || shopping.bestAvailableUnderLine ? (
-              <>
-                {shopping.bestAvailableOverLine ? (
-                  <p className="text-xs text-white">
-                    Over {formatBook(shopping.bestAvailableOverLine.sportsbook)}{' '}
-                    {formatLine(shopping.bestAvailableOverLine.lineValue)}{' '}
-                    {formatOdds(shopping.bestAvailableOverLine.oddsAmerican)}
-                  </p>
-                ) : null}
-                {shopping.bestAvailableUnderLine ? (
-                  <p className="text-xs text-white">
-                    Under {formatBook(shopping.bestAvailableUnderLine.sportsbook)}{' '}
-                    {formatLine(shopping.bestAvailableUnderLine.lineValue)}{' '}
-                    {formatOdds(shopping.bestAvailableUnderLine.oddsAmerican)}
-                  </p>
-                ) : null}
-              </>
-            ) : (
-              <p className="text-xs text-muted-foreground">No comparable best line</p>
-            )}
-          </section>
+          {lineShoppingOn ? (
+            <>
+              <section
+                data-market-section="best-line"
+                data-premium-candidate="best-line"
+                className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
+              >
+                <h3 className="text-[11px] font-medium text-white">Best available line</h3>
+                {shopping.bestAvailableOverLine || shopping.bestAvailableUnderLine ? (
+                  <>
+                    {shopping.bestAvailableOverLine ? (
+                      <p className="text-xs text-white">
+                        Over {formatBook(shopping.bestAvailableOverLine.sportsbook)}{' '}
+                        {formatLine(shopping.bestAvailableOverLine.lineValue)}{' '}
+                        {formatOdds(shopping.bestAvailableOverLine.oddsAmerican)}
+                      </p>
+                    ) : null}
+                    {shopping.bestAvailableUnderLine ? (
+                      <p className="text-xs text-white">
+                        Under {formatBook(shopping.bestAvailableUnderLine.sportsbook)}{' '}
+                        {formatLine(shopping.bestAvailableUnderLine.lineValue)}{' '}
+                        {formatOdds(shopping.bestAvailableUnderLine.oddsAmerican)}
+                      </p>
+                    ) : null}
+                  </>
+                ) : (
+                  <p className="text-xs text-muted-foreground">No comparable best line</p>
+                )}
+              </section>
 
-          <section
-            data-market-section="best-price"
-            data-premium-candidate="best-price"
-            className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
-          >
-            <h3 className="text-[11px] font-medium text-white">Best price at this line</h3>
-            {showLineShoppingUpgrade ? (
-              <p className="text-xs text-muted-foreground">
-                {UPGRADE_COPY.line_shopping_detail.title}.{' '}
-                <span className="text-white/70">Upgrade</span>
-              </p>
-            ) : shopping.bestPriceAtSelectedLine ? (
-              <p className="text-xs text-white">
-                {formatBook(shopping.bestPriceAtSelectedLine.sportsbook)} {shopping.bestPriceAtSelectedLine.side}{' '}
-                {formatLine(shopping.bestPriceAtSelectedLine.lineValue)}{' '}
-                {formatOdds(shopping.bestPriceAtSelectedLine.oddsAmerican)}
-              </p>
-            ) : (
-              <p className="text-xs text-muted-foreground">No other book at this line</p>
-            )}
-          </section>
+              <section
+                data-market-section="best-price"
+                data-premium-candidate="best-price"
+                className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
+              >
+                <h3 className="text-[11px] font-medium text-white">Best price at this line</h3>
+                {shopping.bestPriceAtSelectedLine ? (
+                  <p className="text-xs text-white">
+                    {formatBook(shopping.bestPriceAtSelectedLine.sportsbook)} {shopping.bestPriceAtSelectedLine.side}{' '}
+                    {formatLine(shopping.bestPriceAtSelectedLine.lineValue)}{' '}
+                    {formatOdds(shopping.bestPriceAtSelectedLine.oddsAmerican)}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">No other book at this line</p>
+                )}
+              </section>
+
+              {shopping.books.length > 0 ? (
+                <section
+                  data-market-section="books"
+                  className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1.5"
+                >
+                  <h3 className="text-[11px] font-medium text-white">Sportsbook comparison</h3>
+                  <ul className="space-y-1">
+                    {shopping.books.map((book) => (
+                      <li
+                        key={`${book.sportsbook}-${book.side}-${book.lineValue}-${book.oddsAmerican}`}
+                        className="text-xs text-white flex justify-between gap-2"
+                      >
+                        <span className="truncate">{formatBook(book.sportsbook)}</span>
+                        <span className="shrink-0 text-muted-foreground">
+                          {book.side} {formatLine(book.lineValue)} {formatOdds(book.oddsAmerican)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+            </>
+          ) : (
+            <section
+              data-market-section="upgrade"
+              data-premium-candidate="line-shopping"
+              className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-2"
+            >
+              <h3 className="text-[11px] font-medium text-white">{UPGRADE_COPY.line_shopping_detail.title}</h3>
+              <p className="text-xs text-muted-foreground">{UPGRADE_COPY.line_shopping_detail.detail}</p>
+              <FoundingProUpgradeLink />
+            </section>
+          )}
         </>
       )}
 
@@ -181,22 +209,15 @@ function MarketBody({
         className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
       >
         <h3 className="text-[11px] font-medium text-white">Line moved</h3>
-        {movement.status !== 'ok' ? (
-          <p className="text-xs text-muted-foreground">
-            {showMovementUpgrade ? (
-              <>
-                {UPGRADE_COPY.market_movement.title}. {UPGRADE_COPY.market_movement.detail}{' '}
-                <span className="text-white/70">Upgrade</span>
-              </>
-            ) : (
-              movement.message
-            )}
-          </p>
-        ) : (
+        {movement.status === 'ok' && isPro ? (
           <p className="text-xs text-white">
             Opened {formatLine(movement.openedLine)} → Closed {formatLine(movement.closedLine)}
             <span className="block text-muted-foreground mt-0.5">{formatDelta(movement.delta)}</span>
           </p>
+        ) : movementIsEntitlementGate ? (
+          <p className="text-xs text-muted-foreground">{UPGRADE_COPY.market_movement.title}</p>
+        ) : (
+          <p className="text-xs text-muted-foreground">{movement.message || 'Movement history unavailable'}</p>
         )}
       </section>
     </div>
@@ -212,6 +233,7 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
     let cancelled = false;
     (async () => {
       setLoading(true);
+      setData(null);
       setError(null);
       try {
         const u = new URL('/api/betting/props-explorer/market', window.location.origin);
@@ -257,9 +279,9 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
         </div>
         <button
           type="button"
-          onClick={onClose}
           className="p-1.5 rounded-lg text-muted-foreground hover:text-white hover:bg-white/10 shrink-0"
           aria-label="Close market comparison"
+          onClick={onClose}
         >
           <X className="w-4 h-4" />
         </button>

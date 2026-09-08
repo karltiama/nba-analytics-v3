@@ -11,6 +11,8 @@ import {
   buildAiSupplementalLines,
 } from '@/lib/betting/ai-game-summary-payload';
 import { injuryAbsenceCopy, type InjuryFeedAvailability } from '@/lib/injuries/freshness';
+import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
+import { UPGRADE_COPY } from '@/lib/entitlements/types';
 
 type InjuryRow = { player: string; status: string; injury: string };
 
@@ -142,7 +144,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
   const [error, setError] = useState<string | null>(null);
   const [aiSummaryText, setAiSummaryText] = useState<string | null>(null);
   const [aiSummaryStatus, setAiSummaryStatus] = useState<
-    'idle' | 'loading' | 'success' | 'unavailable' | 'error'
+    'idle' | 'loading' | 'success' | 'unavailable' | 'entitlement' | 'error'
   >('idle');
 
   useEffect(() => {
@@ -197,11 +199,6 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
     let cancelled = false;
 
     async function loadAi(d: GameDetailsPayload) {
-      if (d.ingestionFrozen) {
-        setAiSummaryStatus('unavailable');
-        setAiSummaryText(null);
-        return;
-      }
       setAiSummaryStatus('loading');
       setAiSummaryText(null);
       const game = d.game;
@@ -247,8 +244,25 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
           body: JSON.stringify(body),
           signal: ac.signal,
         });
-        const j = (await res.json().catch(() => ({}))) as { summary?: string; code?: string };
+        const j = (await res.json().catch(() => ({}))) as {
+          summary?: string;
+          code?: string;
+          error?: string;
+          message?: string;
+          eligible?: boolean;
+        };
         if (cancelled) return;
+        if (j?.error === 'ENTITLEMENT_REQUIRED' || res.status === 403) {
+          setAiSummaryStatus('entitlement');
+          return;
+        }
+        if (j?.code === 'OFFSEASON' || j?.eligible === false) {
+          setAiSummaryText(
+            typeof j.message === 'string' ? j.message : 'Briefing unavailable during offseason'
+          );
+          setAiSummaryStatus('unavailable');
+          return;
+        }
         if (res.status === 503 && j?.code === 'NO_OPENAI_KEY') {
           setAiSummaryStatus('unavailable');
           return;
@@ -314,7 +328,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
 
   if (!data) return null;
 
-  const { game, injuryMatchupContext, injuries, injuryFeed = 'authoritative_empty', ingestionFrozen = false } = data;
+  const { game, injuryMatchupContext, injuries, injuryFeed = 'authoritative_empty' } = data;
   const matchupLabel = `${game.awayTeam.abbreviation} @ ${game.homeTeam.abbreviation}`;
   const hasSplitTables = Boolean(injuryMatchupContext.entries?.length);
 
@@ -369,7 +383,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
         {aiSummaryStatus === 'loading' && (
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
             <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#bf5af2]/90" aria-hidden />
-            <span>Generating summary…</span>
+            <span>Loading briefing…</span>
           </div>
         )}
         {aiSummaryStatus === 'success' && aiSummaryText && (
@@ -377,10 +391,17 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
             {aiSummaryText}
           </p>
         )}
+        {aiSummaryStatus === 'entitlement' && (
+          <div className="space-y-2">
+            <p className="text-[11px] font-medium text-white">{UPGRADE_COPY.ai_briefing.title}</p>
+            <p className="text-[10px] text-muted-foreground">{UPGRADE_COPY.ai_briefing.detail}</p>
+            <FoundingProUpgradeLink />
+          </div>
+        )}
         {aiSummaryStatus === 'unavailable' && (
           <p className="text-[10px] text-muted-foreground">
-            {ingestionFrozen
-              ? 'Matchup briefing unavailable during offseason freeze.'
+            {aiSummaryText
+              ? aiSummaryText
               : (
                 <>
                   Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server for the AI-written
