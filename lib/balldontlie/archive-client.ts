@@ -10,12 +10,21 @@
  *   - `cursor`: BDL v1 style for `/players`, `/games`, `/stats` (next_cursor).
  *   - `page`: BDL v1 style for `/teams` (next_page).
  *
- * Retry behavior matches the existing scripts: 429/5xx -> exponential backoff
- * with a 60s base; configurable via `MAX_RETRIES`. Between successful pages,
- * sleep `BALLDONTLIE_REQUEST_DELAY_MS` (default 200ms; free-tier 12000ms).
+ * Retry behavior matches the existing scripts: 429/5xx honor Retry-After when
+ * present, otherwise exponential backoff with a 60s base (`MAX_RETRIES`).
+ * Between successful pages, sleep `BALLDONTLIE_REQUEST_DELAY_MS` (default 200ms).
+ * BDL_TRIAL_MODE=1 forces concurrency 1 and >=12s spacing (prefer 13s).
  */
 
+import { delayForRateLimit } from './retry-after';
+import {
+  isBdlTrialMode,
+  resolveBdlRequestDelayMs,
+  withBdlTrialExclusive,
+} from './trial-limiter';
+
 export const BDL_BASE_URL = 'https://api.balldontlie.io/v1';
+export const BDL_NBA_BASE_URL = 'https://api.balldontlie.io';
 
 export type PaginationStyle = 'cursor' | 'page';
 
@@ -109,18 +118,22 @@ function buildParams(
 
 export class BdlArchiveClient {
   readonly baseUrl: string;
+  readonly requestDelayMs: number;
+  readonly trialMode: boolean;
   private readonly apiKey: string;
-  private readonly requestDelayMs: number;
   private readonly maxRetries: number;
   private readonly retryBaseDelayMs: number;
   private readonly fetchImpl: typeof fetch;
   private readonly logger: (msg: string) => void;
+  private requestNumber = 0;
 
   constructor(opts: BdlClientOpts) {
     if (!opts.apiKey) throw new Error('BdlArchiveClient: apiKey is required');
     this.apiKey = opts.apiKey;
     this.baseUrl = (opts.baseUrl ?? BDL_BASE_URL).replace(/\/+$/, '');
-    this.requestDelayMs = opts.requestDelayMs ?? envInt('BALLDONTLIE_REQUEST_DELAY_MS', 200);
+    const delay = resolveBdlRequestDelayMs({ requestedDelayMs: opts.requestDelayMs });
+    this.requestDelayMs = delay.delayMs;
+    this.trialMode = delay.trialMode;
     this.maxRetries = opts.maxRetries ?? envInt('MAX_RETRIES', 3);
     this.retryBaseDelayMs = opts.retryBaseDelayMs ?? 60_000;
     this.fetchImpl = opts.fetchImpl ?? globalThis.fetch;
@@ -132,31 +145,49 @@ export class BdlArchiveClient {
    * Authorization header matches existing BDL scripts (raw key, not Bearer).
    */
   async fetchWithRetry(url: string): Promise<Response> {
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      const res = await this.fetchImpl(url, { headers: { Authorization: this.apiKey } });
-      if (res.status === 429) {
-        const delayMs = this.retryBaseDelayMs * Math.pow(2, attempt);
-        this.logger(
-          `[bdl] 429 rate-limited; backing off ${Math.round(delayMs / 1000)}s ` +
-            `(attempt ${attempt + 1}/${this.maxRetries + 1}) ${url}`
-        );
-        if (attempt >= this.maxRetries) return res;
-        await sleep(delayMs);
-        continue;
+    const run = async () => {
+      for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+        this.requestNumber += 1;
+        const n = this.requestNumber;
+        if (this.trialMode) {
+          this.logger(
+            `[bdl-trial] request #${n} delayMs=${this.requestDelayMs} (no API key logged) ${redactUrl(url)}`
+          );
+        }
+        const res = await this.fetchImpl(url, { headers: { Authorization: this.apiKey } });
+        if (res.status === 429) {
+          const { delayMs, source } = delayForRateLimit({
+            retryAfterHeader: res.headers.get('retry-after'),
+            attempt,
+            retryBaseDelayMs: this.retryBaseDelayMs,
+          });
+          this.logger(
+            `[bdl] 429 rate-limited; ${source} backoff ${Math.round(delayMs / 1000)}s ` +
+              `(attempt ${attempt + 1}/${this.maxRetries + 1} request #${n}) ${redactUrl(url)}`
+          );
+          if (attempt >= this.maxRetries) return res;
+          await sleep(delayMs);
+          continue;
+        }
+        if (res.status >= 500 && res.status < 600) {
+          const { delayMs, source } = delayForRateLimit({
+            retryAfterHeader: res.headers.get('retry-after'),
+            attempt,
+            retryBaseDelayMs: this.retryBaseDelayMs,
+          });
+          this.logger(
+            `[bdl] ${res.status} server error; ${source} backoff ${Math.round(delayMs / 1000)}s ` +
+              `(attempt ${attempt + 1}/${this.maxRetries + 1} request #${n}) ${redactUrl(url)}`
+          );
+          if (attempt >= this.maxRetries) return res;
+          await sleep(delayMs);
+          continue;
+        }
+        return res;
       }
-      if (res.status >= 500 && res.status < 600) {
-        const delayMs = this.retryBaseDelayMs * Math.pow(2, attempt);
-        this.logger(
-          `[bdl] ${res.status} server error; backing off ${Math.round(delayMs / 1000)}s ` +
-            `(attempt ${attempt + 1}/${this.maxRetries + 1}) ${url}`
-        );
-        if (attempt >= this.maxRetries) return res;
-        await sleep(delayMs);
-        continue;
-      }
-      return res;
-    }
-    throw new Error(`BDL exhausted retries: ${url}`);
+      throw new Error(`BDL exhausted retries: ${redactUrl(url)}`);
+    };
+    return this.trialMode ? withBdlTrialExclusive(run) : run();
   }
 
   /**
@@ -254,4 +285,19 @@ export function readBdlApiKey(): string {
     );
   }
   return k;
+}
+
+function redactUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete('api_key');
+    u.searchParams.delete('apiKey');
+    return `${u.origin}${u.pathname}?${u.searchParams.toString()}`;
+  } catch {
+    return url.split('?')[0] ?? url;
+  }
+}
+
+export function isTrialLimiterActive(env: Record<string, string | undefined> = process.env): boolean {
+  return isBdlTrialMode(env);
 }

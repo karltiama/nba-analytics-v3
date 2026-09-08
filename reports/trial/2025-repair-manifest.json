@@ -1,0 +1,983 @@
+{
+  "season": 2025,
+  "generatedAt": "2026-09-08T04:14:53.641Z",
+  "providerFinalGames": 1322,
+  "localCompleteGames": 1287,
+  "repairGameCount": 35,
+  "requiresGoatCount": 34,
+  "repairGames": [
+    {
+      "gameId": 18446941,
+      "gameIdText": "18446941",
+      "date": "2025-11-07",
+      "datetime": "2025-11-08T00:00:00.000Z",
+      "homeTeamId": 30,
+      "visitorTeamId": 6,
+      "matchup": "CLE @ WAS",
+      "postseason": false,
+      "issues": [
+        "SCORE_MISMATCH"
+      ],
+      "requiresGoat": false,
+      "hasRawStats": true,
+      "hasPlayerLogs": true,
+      "teamStatRows": 2,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 18447793,
+      "gameIdText": "18447793",
+      "date": "2026-03-14",
+      "datetime": "2026-03-15T02:30:00.000Z",
+      "homeTeamId": 13,
+      "visitorTeamId": 26,
+      "matchup": "SAC @ LAC",
+      "postseason": false,
+      "issues": [
+        "SCORE_RECONCILIATION_SUSPECT"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": true,
+      "hasPlayerLogs": true,
+      "teamStatRows": 2,
+      "plannedRepair": [
+        "fetch_player_stats",
+        "archive_raw",
+        "rematerialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21707973,
+      "gameIdText": "21707973",
+      "date": "2026-05-06",
+      "datetime": "2026-05-07T01:30:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 18,
+      "matchup": "MIN @ SAS",
+      "postseason": true,
+      "issues": [
+        "STATUS_MISMATCH",
+        "SCORE_MISMATCH",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21708674,
+      "gameIdText": "21708674",
+      "date": "2026-05-06",
+      "datetime": "2026-05-06T23:00:00.000Z",
+      "homeTeamId": 20,
+      "visitorTeamId": 23,
+      "matchup": "PHI @ NYK",
+      "postseason": true,
+      "issues": [
+        "STATUS_MISMATCH",
+        "SCORE_MISMATCH",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21708301,
+      "gameIdText": "21708301",
+      "date": "2026-05-07",
+      "datetime": "2026-05-08T01:30:00.000Z",
+      "homeTeamId": 21,
+      "visitorTeamId": 14,
+      "matchup": "LAL @ OKC",
+      "postseason": true,
+      "issues": [
+        "STATUS_MISMATCH",
+        "SCORE_MISMATCH",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21709223,
+      "gameIdText": "21709223",
+      "date": "2026-05-07",
+      "datetime": "2026-05-07T23:00:00.000Z",
+      "homeTeamId": 9,
+      "visitorTeamId": 6,
+      "matchup": "CLE @ DET",
+      "postseason": true,
+      "issues": [
+        "STATUS_MISMATCH",
+        "SCORE_MISMATCH",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21707974,
+      "gameIdText": "21707974",
+      "date": "2026-05-08",
+      "datetime": "2026-05-09T01:30:00.000Z",
+      "homeTeamId": 18,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ MIN",
+      "postseason": true,
+      "issues": [
+        "STATUS_MISMATCH",
+        "SCORE_MISMATCH",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21708677,
+      "gameIdText": "21708677",
+      "date": "2026-05-08",
+      "datetime": "2026-05-08T23:00:00.000Z",
+      "homeTeamId": 23,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ PHI",
+      "postseason": true,
+      "issues": [
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21708303,
+      "gameIdText": "21708303",
+      "date": "2026-05-09",
+      "datetime": "2026-05-10T00:30:00.000Z",
+      "homeTeamId": 14,
+      "visitorTeamId": 21,
+      "matchup": "OKC @ LAL",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21709227,
+      "gameIdText": "21709227",
+      "date": "2026-05-09",
+      "datetime": "2026-05-09T19:00:00.000Z",
+      "homeTeamId": 6,
+      "visitorTeamId": 9,
+      "matchup": "DET @ CLE",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21707975,
+      "gameIdText": "21707975",
+      "date": "2026-05-10",
+      "datetime": "2026-05-10T23:30:00.000Z",
+      "homeTeamId": 18,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ MIN",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21708680,
+      "gameIdText": "21708680",
+      "date": "2026-05-10",
+      "datetime": "2026-05-10T19:30:00.000Z",
+      "homeTeamId": 23,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ PHI",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21708305,
+      "gameIdText": "21708305",
+      "date": "2026-05-11",
+      "datetime": "2026-05-12T02:30:00.000Z",
+      "homeTeamId": 14,
+      "visitorTeamId": 21,
+      "matchup": "OKC @ LAL",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21709231,
+      "gameIdText": "21709231",
+      "date": "2026-05-11",
+      "datetime": "2026-05-12T00:00:00.000Z",
+      "homeTeamId": 6,
+      "visitorTeamId": 9,
+      "matchup": "DET @ CLE",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21707976,
+      "gameIdText": "21707976",
+      "date": "2026-05-12",
+      "datetime": "2026-05-13T00:00:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 18,
+      "matchup": "MIN @ SAS",
+      "postseason": true,
+      "issues": [
+        "STATUS_MISMATCH",
+        "SCORE_MISMATCH",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21709235,
+      "gameIdText": "21709235",
+      "date": "2026-05-13",
+      "datetime": "2026-05-14T00:00:00.000Z",
+      "homeTeamId": 9,
+      "visitorTeamId": 6,
+      "matchup": "CLE @ DET",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21707977,
+      "gameIdText": "21707977",
+      "date": "2026-05-15",
+      "datetime": "2026-05-16T01:30:00.000Z",
+      "homeTeamId": 18,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ MIN",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21709238,
+      "gameIdText": "21709238",
+      "date": "2026-05-15",
+      "datetime": "2026-05-15T23:00:00.000Z",
+      "homeTeamId": 6,
+      "visitorTeamId": 9,
+      "matchup": "DET @ CLE",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21709241,
+      "gameIdText": "21709241",
+      "date": "2026-05-17",
+      "datetime": "2026-05-18T00:00:00.000Z",
+      "homeTeamId": 9,
+      "visitorTeamId": 6,
+      "matchup": "CLE @ DET",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713528,
+      "gameIdText": "21713528",
+      "date": "2026-05-18",
+      "datetime": "2026-05-19T00:30:00.000Z",
+      "homeTeamId": 21,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ OKC",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713895,
+      "gameIdText": "21713895",
+      "date": "2026-05-19",
+      "datetime": "2026-05-20T00:00:00.000Z",
+      "homeTeamId": 20,
+      "visitorTeamId": 6,
+      "matchup": "CLE @ NYK",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713529,
+      "gameIdText": "21713529",
+      "date": "2026-05-20",
+      "datetime": "2026-05-21T00:30:00.000Z",
+      "homeTeamId": 21,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ OKC",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713897,
+      "gameIdText": "21713897",
+      "date": "2026-05-21",
+      "datetime": "2026-05-22T00:00:00.000Z",
+      "homeTeamId": 20,
+      "visitorTeamId": 6,
+      "matchup": "CLE @ NYK",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713530,
+      "gameIdText": "21713530",
+      "date": "2026-05-22",
+      "datetime": "2026-05-23T00:30:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 21,
+      "matchup": "OKC @ SAS",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713899,
+      "gameIdText": "21713899",
+      "date": "2026-05-23",
+      "datetime": "2026-05-24T00:00:00.000Z",
+      "homeTeamId": 6,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ CLE",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713531,
+      "gameIdText": "21713531",
+      "date": "2026-05-24",
+      "datetime": "2026-05-25T00:00:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 21,
+      "matchup": "OKC @ SAS",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713901,
+      "gameIdText": "21713901",
+      "date": "2026-05-25",
+      "datetime": "2026-05-26T00:00:00.000Z",
+      "homeTeamId": 6,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ CLE",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713532,
+      "gameIdText": "21713532",
+      "date": "2026-05-26",
+      "datetime": "2026-05-27T00:30:00.000Z",
+      "homeTeamId": 21,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ OKC",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713533,
+      "gameIdText": "21713533",
+      "date": "2026-05-28",
+      "datetime": "2026-05-29T00:30:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 21,
+      "matchup": "OKC @ SAS",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21713534,
+      "gameIdText": "21713534",
+      "date": "2026-05-30",
+      "datetime": "2026-05-31T00:00:00.000Z",
+      "homeTeamId": 21,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ OKC",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21716134,
+      "gameIdText": "21716134",
+      "date": "2026-06-03",
+      "datetime": "2026-06-04T00:30:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ SAS",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21716135,
+      "gameIdText": "21716135",
+      "date": "2026-06-05",
+      "datetime": "2026-06-06T00:30:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ SAS",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21716136,
+      "gameIdText": "21716136",
+      "date": "2026-06-08",
+      "datetime": "2026-06-09T00:30:00.000Z",
+      "homeTeamId": 20,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ NYK",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21716137,
+      "gameIdText": "21716137",
+      "date": "2026-06-10",
+      "datetime": "2026-06-11T00:30:00.000Z",
+      "homeTeamId": 20,
+      "visitorTeamId": 27,
+      "matchup": "SAS @ NYK",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    },
+    {
+      "gameId": 21716138,
+      "gameIdText": "21716138",
+      "date": "2026-06-13",
+      "datetime": "2026-06-14T00:30:00.000Z",
+      "homeTeamId": 27,
+      "visitorTeamId": 20,
+      "matchup": "NYK @ SAS",
+      "postseason": true,
+      "issues": [
+        "MISSING_GAME",
+        "MISSING_ANALYTICS_PLAYER_LOGS",
+        "MISSING_RAW_PLAYER_STATS",
+        "MISSING_TEAM_STATS"
+      ],
+      "requiresGoat": true,
+      "hasRawStats": false,
+      "hasPlayerLogs": false,
+      "teamStatRows": 0,
+      "plannedRepair": [
+        "upsert_analytics_game_from_bdl",
+        "fetch_player_stats",
+        "archive_raw",
+        "materialize_player_logs",
+        "materialize_team_stats",
+        "recompute_affected_averages"
+      ]
+    }
+  ]
+}

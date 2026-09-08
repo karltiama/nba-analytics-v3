@@ -9,6 +9,9 @@
  *   npx tsx scripts/seed-raw-balldontlie.ts --season 2025       # games for season 2025
  *   npx tsx scripts/seed-raw-balldontlie.ts --start 2025-10-01 --end 2025-11-01
  *   npx tsx scripts/seed-raw-balldontlie.ts --stats              # also fetch player_game_stats for games in raw.games
+ *   npx tsx scripts/seed-raw-balldontlie.ts --season 2025 --stats  # 2025 live/repair path
+ *   Historical 2024/2023 --stats is refused (use backfill-historical-season-serving).
+ *   Override only with --allow-historical-raw-stats or ALLOW_HISTORICAL_RAW_STATS=1.
  *   npx tsx scripts/seed-raw-balldontlie.ts --season-averages --season 2025  # also fetch season_averages for players in raw.players
  *
  * Env: BALLDONTLIE_REQUEST_DELAY_MS — delay between API calls (ms). Default 200 (GOAT 600/min). Free tier: set to 12000.
@@ -16,6 +19,7 @@
 
 import 'dotenv/config';
 import { Pool } from 'pg';
+import { parseSeedRawArgs, assertLegacyRawStatsPathAllowed } from '@/lib/ingestion/legacy-raw-guard';
 
 const BDL_BASE = 'https://api.balldontlie.io/v1';
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
@@ -241,38 +245,10 @@ const upsertRawSeasonAvg = `
     oreb = excluded.oreb, dreb = excluded.dreb;
 `;
 
-function parseArgs(): {
-  season: number;
-  startDate: string;
-  endDate: string;
-  withStats: boolean;
-  withSeasonAverages: boolean;
-} {
-  const args = process.argv.slice(2);
-  let season = new Date().getFullYear();
-  const now = new Date();
-  const month = now.getMonth();
-  if (month < 6) season -= 1; // Jan–Jun → previous season
-  let startDate = `${season}-10-01`;
-  let endDate = `${season + 1}-04-15`;
-  let withStats = false;
-  let withSeasonAverages = false;
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--season' && args[i + 1]) {
-      season = Number(args[++i]);
-      startDate = `${season}-10-01`;
-      endDate = `${season + 1}-04-15`;
-    } else if (args[i] === '--start' && args[i + 1]) startDate = args[++i];
-    else if (args[i] === '--end' && args[i + 1]) endDate = args[++i];
-    else if (args[i] === '--stats') withStats = true;
-    else if (args[i] === '--season-averages') withSeasonAverages = true;
-  }
-  return { season, startDate, endDate, withStats, withSeasonAverages };
-}
-
 async function main() {
-  const { season, startDate, endDate, withStats, withSeasonAverages } = parseArgs();
+  const parsed = parseSeedRawArgs(process.argv.slice(2));
+  assertLegacyRawStatsPathAllowed(parsed);
+  const { season, startDate, endDate, withStats, withSeasonAverages } = parsed;
   const client = await pool.connect();
 
   try {

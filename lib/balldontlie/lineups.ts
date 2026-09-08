@@ -4,8 +4,9 @@
  * Lineup data is only available from 2025 season and once the game has begun.
  */
 
-const BDL_BASE = 'https://api.balldontlie.io';
-const LINEUPS_PATH = '/nba/v1/lineups';
+export const BDL_LINEUPS_BASE = 'https://api.balldontlie.io';
+export const LINEUPS_PATH = '/nba/v1/lineups';
+const BDL_BASE = BDL_LINEUPS_BASE;
 
 export interface BdlLineupEntry {
   id: number;
