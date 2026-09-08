@@ -1,0 +1,871 @@
+{
+  "capturedAt": "2026-09-08T19:35:22.021Z",
+  "label": "after-2023",
+  "readOnly": true,
+  "analyticsSeason": "2025",
+  "freeze": {
+    "dataMode": "replay",
+    "offseason": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "pruneEnabled": "(unset)",
+    "note": "Local/process env only. This script does not change Production freeze."
+  },
+  "postgres": {
+    "database": "postgres",
+    "bytes": 342846611,
+    "pretty": "327 MB",
+    "mb": 326.96,
+    "budgetMb": 500,
+    "percentOf500Mb": 65.39,
+    "headroomTo500Mb": 173.04,
+    "headroomTo400MbSoft": 73.04,
+    "thresholds": {
+      "softWarningMb": 400,
+      "strongWarningMb": 425,
+      "hardStopMb": 450,
+      "remainingToSoftMb": 73.04,
+      "remainingToStrongMb": 98.04,
+      "remainingToHardMb": 123.04,
+      "remainingTo500Mb": 173.04
+    }
+  },
+  "schemas": [
+    {
+      "schema": "raw",
+      "tables": 13,
+      "indexes": 41,
+      "matviews": 0,
+      "heapBytes": 150020096,
+      "indexBytes": 11436032,
+      "totalBytes": 161972224,
+      "pretty": "154.5 MB",
+      "mb": 154.47
+    },
+    {
+      "schema": "analytics",
+      "tables": 20,
+      "indexes": 68,
+      "matviews": 0,
+      "heapBytes": 59170816,
+      "indexBytes": 52510720,
+      "totalBytes": 112484352,
+      "pretty": "107.3 MB",
+      "mb": 107.27
+    },
+    {
+      "schema": "public",
+      "tables": 25,
+      "indexes": 89,
+      "matviews": 1,
+      "heapBytes": 17891328,
+      "indexBytes": 10379264,
+      "totalBytes": 29171712,
+      "pretty": "27.8 MB",
+      "mb": 27.82
+    },
+    {
+      "schema": "research",
+      "tables": 1,
+      "indexes": 2,
+      "matviews": 0,
+      "heapBytes": 14000128,
+      "indexBytes": 9707520,
+      "totalBytes": 23748608,
+      "pretty": "22.6 MB",
+      "mb": 22.65
+    },
+    {
+      "schema": "auth",
+      "tables": 23,
+      "indexes": 87,
+      "matviews": 0,
+      "heapBytes": 65536,
+      "indexBytes": 1024000,
+      "totalBytes": 1351680,
+      "pretty": "1.3 MB",
+      "mb": 1.29
+    },
+    {
+      "schema": "storage",
+      "tables": 8,
+      "indexes": 17,
+      "matviews": 0,
+      "heapBytes": 16384,
+      "indexBytes": 155648,
+      "totalBytes": 253952,
+      "pretty": "248.0 KB",
+      "mb": 0.24
+    },
+    {
+      "schema": "paper",
+      "tables": 1,
+      "indexes": 6,
+      "matviews": 0,
+      "heapBytes": 16384,
+      "indexBytes": 98304,
+      "totalBytes": 147456,
+      "pretty": "144.0 KB",
+      "mb": 0.14
+    },
+    {
+      "schema": "realtime",
+      "tables": 2,
+      "indexes": 4,
+      "matviews": 0,
+      "heapBytes": 8192,
+      "indexBytes": 40960,
+      "totalBytes": 57344,
+      "pretty": "56.0 KB",
+      "mb": 0.05
+    },
+    {
+      "schema": "supabase_migrations",
+      "tables": 1,
+      "indexes": 2,
+      "matviews": 0,
+      "heapBytes": 8192,
+      "indexBytes": 32768,
+      "totalBytes": 49152,
+      "pretty": "48.0 KB",
+      "mb": 0.05
+    },
+    {
+      "schema": "vault",
+      "tables": 1,
+      "indexes": 2,
+      "matviews": 0,
+      "heapBytes": 0,
+      "indexBytes": 16384,
+      "totalBytes": 24576,
+      "pretty": "24.0 KB",
+      "mb": 0.02
+    },
+    {
+      "schema": "extensions",
+      "tables": 0,
+      "indexes": 0,
+      "matviews": 0,
+      "heapBytes": 0,
+      "indexBytes": 0,
+      "totalBytes": 0,
+      "pretty": "0 B",
+      "mb": 0
+    }
+  ],
+  "topRelations": [
+    {
+      "relation": "raw.player_game_stats",
+      "rows": 46056,
+      "rowsExact": 46056,
+      "heap": "82.1 MB",
+      "indexes": "2.5 MB",
+      "toast": "0 B",
+      "total": "84.7 MB",
+      "totalBytes": 88817664,
+      "classification": "raw/archive candidate",
+      "highlighted": true
+    },
+    {
+      "relation": "raw.odds_snapshots",
+      "rows": 65735,
+      "rowsExact": 65735,
+      "heap": "34.0 MB",
+      "indexes": "4.9 MB",
+      "toast": "0 B",
+      "total": "38.9 MB",
+      "totalBytes": 40837120,
+      "classification": "raw/archive candidate",
+      "highlighted": true
+    },
+    {
+      "relation": "analytics.player_game_logs",
+      "rows": 138296,
+      "rowsExact": 138296,
+      "heap": "21.3 MB",
+      "indexes": "14.1 MB",
+      "toast": "0 B",
+      "total": "35.4 MB",
+      "totalBytes": 37142528,
+      "classification": "historical compact",
+      "highlighted": true
+    },
+    {
+      "relation": "analytics.player_prop_history",
+      "rows": 93246,
+      "rowsExact": 93246,
+      "heap": "13.3 MB",
+      "indexes": "14.8 MB",
+      "toast": "0 B",
+      "total": "28.1 MB",
+      "totalBytes": 29491200,
+      "classification": "serving",
+      "highlighted": true
+    },
+    {
+      "relation": "raw.player_injuries",
+      "rows": 24469,
+      "rowsExact": 24469,
+      "heap": "22.0 MB",
+      "indexes": "1.5 MB",
+      "toast": "8.0 KB",
+      "total": "23.5 MB",
+      "totalBytes": 24690688,
+      "classification": "raw/archive candidate",
+      "highlighted": true
+    },
+    {
+      "relation": "research.prop_decision_lines",
+      "rows": 94086,
+      "rowsExact": 94086,
+      "heap": "13.4 MB",
+      "indexes": "9.3 MB",
+      "toast": "0 B",
+      "total": "22.6 MB",
+      "totalBytes": 23748608,
+      "classification": "serving",
+      "highlighted": true
+    },
+    {
+      "relation": "analytics.game_odds_history",
+      "rows": 63380,
+      "rowsExact": 63380,
+      "heap": "7.9 MB",
+      "indexes": "8.3 MB",
+      "toast": "0 B",
+      "total": "16.2 MB",
+      "totalBytes": 17006592,
+      "classification": "serving",
+      "highlighted": true
+    },
+    {
+      "relation": "analytics.player_prop_current",
+      "rows": 25812,
+      "rowsExact": 25812,
+      "heap": "4.0 MB",
+      "indexes": "5.8 MB",
+      "toast": "0 B",
+      "total": "9.9 MB",
+      "totalBytes": 10362880,
+      "classification": "current-only",
+      "highlighted": false
+    },
+    {
+      "relation": "public.scraped_boxscores",
+      "rows": 7465,
+      "rowsExact": 7465,
+      "heap": "4.5 MB",
+      "indexes": "1.8 MB",
+      "toast": "0 B",
+      "total": "6.3 MB",
+      "totalBytes": 6643712,
+      "classification": "dead/empty leftover",
+      "highlighted": true
+    },
+    {
+      "relation": "public.bbref_player_game_stats",
+      "rows": 17875,
+      "rowsExact": 17875,
+      "heap": "3.4 MB",
+      "indexes": "2.4 MB",
+      "toast": "0 B",
+      "total": "5.8 MB",
+      "totalBytes": 6119424,
+      "classification": "fixed/reference",
+      "highlighted": false
+    },
+    {
+      "relation": "public.markets",
+      "rows": 4302,
+      "rowsExact": 4302,
+      "heap": "4.0 MB",
+      "indexes": "1.4 MB",
+      "toast": "104.0 KB",
+      "total": "5.5 MB",
+      "totalBytes": 5816320,
+      "classification": "fixed/reference",
+      "highlighted": false
+    },
+    {
+      "relation": "analytics.players",
+      "rows": 5534,
+      "rowsExact": 5534,
+      "heap": "2.1 MB",
+      "indexes": "1.2 MB",
+      "toast": "0 B",
+      "total": "3.3 MB",
+      "totalBytes": 3432448,
+      "classification": "fixed/reference",
+      "highlighted": false
+    },
+    {
+      "relation": "public.player_game_stats",
+      "rows": 6161,
+      "rowsExact": 6161,
+      "heap": "1.9 MB",
+      "indexes": "960.0 KB",
+      "toast": "0 B",
+      "total": "2.9 MB",
+      "totalBytes": 3055616,
+      "classification": "dead/empty leftover",
+      "highlighted": true
+    },
+    {
+      "relation": "analytics.player_prop_lines",
+      "rows": 7168,
+      "rowsExact": 7168,
+      "heap": "1.1 MB",
+      "indexes": "1.3 MB",
+      "toast": "0 B",
+      "total": "2.4 MB",
+      "totalBytes": 2482176,
+      "classification": "serving",
+      "highlighted": false
+    },
+    {
+      "relation": "analytics.team_game_stats",
+      "rows": 7924,
+      "rowsExact": 7924,
+      "heap": "1.6 MB",
+      "indexes": "648.0 KB",
+      "toast": "0 B",
+      "total": "2.3 MB",
+      "totalBytes": 2367488,
+      "classification": "historical compact",
+      "highlighted": false
+    },
+    {
+      "relation": "analytics.player_injury_status_history",
+      "rows": 4801,
+      "rowsExact": 4801,
+      "heap": "1.8 MB",
+      "indexes": "424.0 KB",
+      "toast": "0 B",
+      "total": "2.2 MB",
+      "totalBytes": 2342912,
+      "classification": "serving",
+      "highlighted": false
+    },
+    {
+      "relation": "analytics.player_provider_ids",
+      "rows": 6168,
+      "rowsExact": 6168,
+      "heap": "1.0 MB",
+      "indexes": "1.1 MB",
+      "toast": "0 B",
+      "total": "2.1 MB",
+      "totalBytes": 2252800,
+      "classification": "serving",
+      "highlighted": false
+    },
+    {
+      "relation": "raw.games",
+      "rows": 2523,
+      "rowsExact": 2523,
+      "heap": "1.6 MB",
+      "indexes": "320.0 KB",
+      "toast": "0 B",
+      "total": "2.0 MB",
+      "totalBytes": 2064384,
+      "classification": "raw/archive candidate",
+      "highlighted": false
+    },
+    {
+      "relation": "public.game_validation_results",
+      "rows": 5827,
+      "rowsExact": 5827,
+      "heap": "752.0 KB",
+      "indexes": "824.0 KB",
+      "toast": "0 B",
+      "total": "1.6 MB",
+      "totalBytes": 1654784,
+      "classification": "fixed/reference",
+      "highlighted": false
+    },
+    {
+      "relation": "raw.players",
+      "rows": 5534,
+      "rowsExact": 5534,
+      "heap": "1.1 MB",
+      "indexes": "368.0 KB",
+      "toast": "0 B",
+      "total": "1.5 MB",
+      "totalBytes": 1572864,
+      "classification": "fixed/reference",
+      "highlighted": false
+    }
+  ],
+  "highlighted": [
+    {
+      "relation": "raw.player_game_stats",
+      "rows": 46056,
+      "heap": "82.1 MB",
+      "indexes": "2.5 MB",
+      "toast": "0 B",
+      "total": "84.7 MB",
+      "totalBytes": 88817664,
+      "classification": "raw/archive candidate"
+    },
+    {
+      "relation": "raw.odds_snapshots",
+      "rows": 65735,
+      "heap": "34.0 MB",
+      "indexes": "4.9 MB",
+      "toast": "0 B",
+      "total": "38.9 MB",
+      "totalBytes": 40837120,
+      "classification": "raw/archive candidate"
+    },
+    {
+      "relation": "raw.player_injuries",
+      "rows": 24469,
+      "heap": "22.0 MB",
+      "indexes": "1.5 MB",
+      "toast": "8.0 KB",
+      "total": "23.5 MB",
+      "totalBytes": 24690688,
+      "classification": "raw/archive candidate"
+    },
+    {
+      "relation": "analytics.player_game_logs",
+      "rows": 138296,
+      "heap": "21.3 MB",
+      "indexes": "14.1 MB",
+      "toast": "0 B",
+      "total": "35.4 MB",
+      "totalBytes": 37142528,
+      "classification": "historical compact"
+    },
+    {
+      "relation": "analytics.game_odds_history",
+      "rows": 63380,
+      "heap": "7.9 MB",
+      "indexes": "8.3 MB",
+      "toast": "0 B",
+      "total": "16.2 MB",
+      "totalBytes": 17006592,
+      "classification": "serving"
+    },
+    {
+      "relation": "analytics.player_prop_history",
+      "rows": 93246,
+      "heap": "13.3 MB",
+      "indexes": "14.8 MB",
+      "toast": "0 B",
+      "total": "28.1 MB",
+      "totalBytes": 29491200,
+      "classification": "serving"
+    },
+    {
+      "relation": "research.prop_decision_lines",
+      "rows": 94086,
+      "heap": "13.4 MB",
+      "indexes": "9.3 MB",
+      "toast": "0 B",
+      "total": "22.6 MB",
+      "totalBytes": 23748608,
+      "classification": "serving"
+    },
+    {
+      "relation": "public.scraped_boxscores",
+      "rows": 7465,
+      "heap": "4.5 MB",
+      "indexes": "1.8 MB",
+      "toast": "0 B",
+      "total": "6.3 MB",
+      "totalBytes": 6643712,
+      "classification": "dead/empty leftover"
+    },
+    {
+      "relation": "public.player_game_stats",
+      "rows": 6161,
+      "heap": "1.9 MB",
+      "indexes": "960.0 KB",
+      "toast": "0 B",
+      "total": "2.9 MB",
+      "totalBytes": 3055616,
+      "classification": "dead/empty leftover"
+    }
+  ],
+  "reclaimable": {
+    "deferredLifecycle": {
+      "raw_odds_snapshots": {
+        "totalRows": 65735,
+        "olderThan30dRows": 65735,
+        "last30dRows": 0,
+        "oldest": "2026-03-09 13:55:14.873331+00",
+        "newest": "2026-05-06 21:30:07.382498+00",
+        "tableBytes": 40837120,
+        "estimatedOldBytes": 40837120,
+        "estimatedOldPretty": "38.9 MB"
+      },
+      "raw_player_injuries": {
+        "totalRows": 24469,
+        "olderThan7dRows": 24469,
+        "last7dRows": 0,
+        "oldest": "2026-03-10 23:43:43.097085+00",
+        "newest": "2026-05-06 18:00:27.460586+00",
+        "tableBytes": 24690688,
+        "estimatedOldBytes": 24690688,
+        "estimatedOldPretty": "23.5 MB"
+      }
+    },
+    "deadEmptyLeftovers": [
+      {
+        "relation": "public.scraped_boxscores",
+        "rowsExact": 7465,
+        "total": "6.3 MB",
+        "totalBytes": 6643712
+      },
+      {
+        "relation": "public.player_game_stats",
+        "rowsExact": 6161,
+        "total": "2.9 MB",
+        "totalBytes": 3055616
+      },
+      {
+        "relation": "public.team_game_stats",
+        "rowsExact": 89,
+        "total": "256.0 KB",
+        "totalBytes": 262144
+      },
+      {
+        "relation": "public.teams",
+        "rowsExact": 30,
+        "total": "104.0 KB",
+        "totalBytes": 106496
+      }
+    ],
+    "historicalRawGameStats": {
+      "tableBytes": 88817664,
+      "pretty": "84.7 MB",
+      "bySeason": [
+        {
+          "season": "2025",
+          "rows": 46056
+        }
+      ],
+      "note": "Do not classify current-season raw.player_game_stats as immediately reclaimable; nightly transform still reads it."
+    },
+    "definitelyReclaimableLaterBytes": 65527808,
+    "definitelyReclaimableLaterPretty": "62.5 MB",
+    "potentiallyReclaimableAfterDependencyChangeBytes": 88817664,
+    "potentiallyReclaimableAfterDependencyChangePretty": "84.7 MB",
+    "mustRetainForNow": [
+      "analytics.* current 2025 serving set",
+      "raw.player_game_stats (2025 transform dependency)",
+      "raw.player_prop_snapshots_v2 current window",
+      "research.prop_decision_lines",
+      "auth / storage / reference dimensions"
+    ]
+  },
+  "compactServing": {
+    "relations": [
+      {
+        "name": "analytics.player_team_stints",
+        "totalBytes": 1409024,
+        "pretty": "1.3 MB",
+        "mb": 1.34
+      },
+      {
+        "name": "analytics.player_season_averages",
+        "totalBytes": 491520,
+        "pretty": "480.0 KB",
+        "mb": 0.47
+      },
+      {
+        "name": "analytics.team_game_stats",
+        "totalBytes": 2367488,
+        "pretty": "2.3 MB",
+        "mb": 2.26
+      },
+      {
+        "name": "analytics.team_season_averages",
+        "totalBytes": 114688,
+        "pretty": "112.0 KB",
+        "mb": 0.11
+      },
+      {
+        "name": "analytics.games",
+        "totalBytes": 1130496,
+        "pretty": "1.1 MB",
+        "mb": 1.08
+      },
+      {
+        "name": "analytics.player_game_logs",
+        "totalBytes": 37142528,
+        "pretty": "35.4 MB",
+        "mb": 35.42
+      }
+    ],
+    "totalBytes": 42655744,
+    "pretty": "40.7 MB",
+    "mb": 40.68,
+    "wp71LeanMb": 17,
+    "wp71ConservativeMb": 25,
+    "vsWp71": "above-conservative"
+  },
+  "seasonRowState": {
+    "games": [
+      {
+        "season": "2023",
+        "rows": 1319
+      },
+      {
+        "season": "2024",
+        "rows": 1321
+      },
+      {
+        "season": "2025",
+        "rows": 1323
+      },
+      {
+        "season": "2026",
+        "rows": 1200
+      }
+    ],
+    "player_game_logs": [
+      {
+        "season": "2023",
+        "rows": 46090
+      },
+      {
+        "season": "2024",
+        "rows": 46150
+      },
+      {
+        "season": "2025",
+        "rows": 46056
+      }
+    ],
+    "team_game_stats": [
+      {
+        "season": "2023",
+        "rows": 2638
+      },
+      {
+        "season": "2024",
+        "rows": 2642
+      },
+      {
+        "season": "2025",
+        "rows": 2644
+      }
+    ],
+    "player_season_averages": [
+      {
+        "season": "2023",
+        "rows": 595
+      },
+      {
+        "season": "2024",
+        "rows": 587
+      },
+      {
+        "season": "2025",
+        "rows": 603
+      }
+    ],
+    "team_season_averages": [
+      {
+        "season": "2023",
+        "rows": 30
+      },
+      {
+        "season": "2024",
+        "rows": 30
+      },
+      {
+        "season": "2025",
+        "rows": 30
+      }
+    ],
+    "player_team_stints": [
+      {
+        "season": "2023",
+        "rows": 695
+      },
+      {
+        "season": "2024",
+        "rows": 699
+      },
+      {
+        "season": "2025",
+        "rows": 698
+      },
+      {
+        "season": "2026",
+        "rows": 578
+      }
+    ]
+  },
+  "seasonConfirmation": {
+    "2022": {
+      "games": 0,
+      "player_logs": 0,
+      "team_stats": 0,
+      "player_season_averages": 0,
+      "team_season_averages": 0,
+      "stints": 0
+    },
+    "2023": {
+      "games": 1319,
+      "player_logs": 46090,
+      "team_stats": 2638,
+      "player_season_averages": 595,
+      "team_season_averages": 30,
+      "stints": 695
+    },
+    "2024": {
+      "games": 1321,
+      "player_logs": 46150,
+      "team_stats": 2642,
+      "player_season_averages": 587,
+      "team_season_averages": 30,
+      "stints": 699
+    },
+    "2025": {
+      "games": 1323,
+      "player_logs": 46056,
+      "team_stats": 2644,
+      "player_season_averages": 603,
+      "team_season_averages": 30,
+      "stints": 698
+    }
+  },
+  "liveReserve": {
+    "assumptionMb": 80,
+    "suggestedMb": 80,
+    "currentRelatedBytes": 124977152,
+    "currentRelatedPretty": "119.2 MB",
+    "componentsMb": {
+      "playerGameLogs": 35.42,
+      "teamGameStats": 2.26,
+      "currentProps": 0.11,
+      "currentOdds": 16.4,
+      "currentInjuries": 2.51
+    },
+    "projections": {
+      "plus2024": {
+        "dbLowMb": 343.96,
+        "dbHighMb": 351.96,
+        "withLiveLowMb": 423.96,
+        "withLiveHighMb": 431.96
+      },
+      "plus2024_2023": {
+        "dbLowMb": 360.96,
+        "dbHighMb": 376.96,
+        "withLiveLowMb": 440.96,
+        "withLiveHighMb": 456.96
+      },
+      "plus2024_2023_2022": {
+        "dbLowMb": 377.96,
+        "dbHighMb": 401.96,
+        "withLiveLowMb": 457.96,
+        "withLiveHighMb": 481.96,
+        "recommendation": "S3 archive only unless first two season deltas stay inside budget and DB remains comfortably below 350 MB"
+      }
+    }
+  },
+  "hypotheticalCleanup": {
+    "currentDbMb": 326.96,
+    "reclaimableLaterMb": 62.49,
+    "afterReclaimDbMb": 264.47,
+    "note": "Row-fraction estimate for odds/injuries; empty leftovers use measured relation size. VACUUM FULL not applied; actual reclaim needs prune + vacuum."
+  },
+  "s3": {
+    "status": "OK",
+    "label": "after-2023",
+    "approximate": true,
+    "note": "ListObjectsV2 size sums only. No writes. Bucket name omitted.",
+    "totalBytes": 751200567,
+    "totalPretty": "716.4 MB",
+    "objectCount": 1904,
+    "topLevelPrefixes": [
+      "backtests/",
+      "raw/"
+    ],
+    "byFamily": {
+      "props": {
+        "bytes": 408482715,
+        "objects": 29,
+        "pretty": "389.6 MB"
+      },
+      "games/stats": {
+        "bytes": 216543442,
+        "objects": 1569,
+        "pretty": "206.5 MB"
+      },
+      "odds": {
+        "bytes": 70578158,
+        "objects": 121,
+        "pretty": "67.3 MB"
+      },
+      "other": {
+        "bytes": 29243631,
+        "objects": 67,
+        "pretty": "27.9 MB"
+      },
+      "injuries": {
+        "bytes": 26352621,
+        "objects": 118,
+        "pretty": "25.1 MB"
+      }
+    },
+    "seasonPrefixesPresent": [
+      "balldontlie/season=2023",
+      "balldontlie/season=2024",
+      "balldontlie/season=2025",
+      "existing_ingestion/season=2025",
+      "other/season=2023",
+      "other/season=2024"
+    ],
+    "existingIngestionSeasons": [
+      "2025"
+    ],
+    "balldontlieSeasons": [
+      "2023",
+      "2024",
+      "2025"
+    ],
+    "bdlSeason2024RawAbsent": false,
+    "bdlRawSeasonBytes": {
+      "2022": {
+        "bytes": 0,
+        "objects": 0,
+        "pretty": "0 B"
+      },
+      "2023": {
+        "bytes": 94034417,
+        "objects": 492,
+        "pretty": "89.7 MB"
+      },
+      "2024": {
+        "bytes": 92838543,
+        "objects": 479,
+        "pretty": "88.5 MB"
+      },
+      "2025": {
+        "bytes": 2373987,
+        "objects": 36,
+        "pretty": "2.3 MB"
+      }
+    }
+  },
+  "checkpointCommands": {
+    "preTrial": "npx tsx scripts/ops/storage-checkpoint.ts --label=pre-trial --out=reports/storage/pre-trial.json",
+    "after2025Repair": "npx tsx scripts/ops/storage-checkpoint.ts --label=after-2025-repair --out=reports/storage/after-2025-repair.json",
+    "after2024": "npx tsx scripts/ops/storage-checkpoint.ts --label=after-2024 --out=reports/storage/after-2024.json",
+    "after2023": "npx tsx scripts/ops/storage-checkpoint.ts --label=after-2023 --out=reports/storage/after-2023.json",
+    "endOfTrial": "npx tsx scripts/ops/storage-checkpoint.ts --label=end-of-trial --out=reports/storage/end-of-trial.json",
+    "companionHealth": "npx tsx scripts/ops/platform-health-snapshot.ts --s3-bytes",
+    "companionHealthNpm": "npm run ops:health-snapshot"
+  },
+  "unused": {
+    "headroomTo500": {
+      "bytes": 181441389,
+      "mb": 173.04,
+      "percentUsed": 65.39280147552489
+    }
+  }
+}

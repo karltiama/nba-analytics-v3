@@ -1,0 +1,216 @@
+{
+  "generatedAt": "2026-09-08T19:33:18.564Z",
+  "step": "4F",
+  "dryRun": false,
+  "bdlHttpRequests": 0,
+  "mapper": "transformBdlArchiveToServing",
+  "stagingMode": "none",
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlHttpRequests": 0,
+    "lockActive": false,
+    "stagingMode": "none",
+    "dbHost": "aws-1-us-east-2.pooler.supabase.com",
+    "expectedDbHost": "aws-1-us-east-2.pooler.supabase.com",
+    "postgresWrites": true,
+    "servingBefore": {
+      "dbBytes": 330321043,
+      "dbName": "postgres",
+      "games_2023": 0,
+      "distinct_games_2023": 0,
+      "logs_2023": 0,
+      "log_games_2023": 0,
+      "tgs_2023": 0,
+      "tgs_games_2023": 0,
+      "psa_2023": 0,
+      "tsa_2023": 0,
+      "inferred_2023": 0,
+      "other_stints_2023": 0,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "psa_2025": 603,
+      "tsa_2025": 30,
+      "inferred_2025": 184,
+      "nba_stats_2025": 514,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578,
+      "raw_pgs": 46056,
+      "raw_pgs_2023": 0,
+      "raw_pgs_2024": 0,
+      "raw_pgs_2025": 46056,
+      "box184": {
+        "game_id": "18447793",
+        "season": "2025",
+        "home_score": 109,
+        "away_score": 118
+      },
+      "localOnly": {
+        "game_id": "21681993",
+        "season": "2025",
+        "home_score": 0,
+        "away_score": 0,
+        "logs": 0
+      }
+    }
+  },
+  "qualityEvaluation": {
+    "allowStrict": 1309,
+    "allowAnomaly": 10,
+    "reject": 0,
+    "anomalyIds": [
+      "1038319",
+      "1038322",
+      "1038342",
+      "1038362",
+      "1038379",
+      "1038433",
+      "1038439",
+      "1038453",
+      "1038491",
+      "1038504"
+    ],
+    "expectedIds": [
+      "1038319",
+      "1038322",
+      "1038342",
+      "1038362",
+      "1038379",
+      "1038433",
+      "1038439",
+      "1038453",
+      "1038491",
+      "1038504"
+    ],
+    "rejects": []
+  },
+  "qualityRecordsWritten": 10,
+  "entitiesCreatedForStints": 0,
+  "inferredStintsWritten": 695,
+  "games": {
+    "expected": 1319,
+    "actual": 1319,
+    "distinct": 1319
+  },
+  "playerLogs": {
+    "expected": 46090,
+    "actual": 46090,
+    "logGames": 1319
+  },
+  "teamStats": {
+    "expected": 2638,
+    "actual": 2638,
+    "games": 1319
+  },
+  "seasonAverages": {
+    "playerExpected": 595,
+    "playerActual": 595,
+    "teamExpected": 30,
+    "teamActual": 30
+  },
+  "stints": {
+    "expectedApprox": 695,
+    "actual": 695,
+    "other": 0
+  },
+  "strictReconciliation": {
+    "pass": 1309,
+    "fail": 0,
+    "expected": 1309
+  },
+  "knownProviderAnomaly": {
+    "flaggedAndAllowed": 10,
+    "fail": 0,
+    "expected": 10
+  },
+  "rawStagingIsolation": {
+    "raw_pgs": 46056,
+    "raw_pgs_2023": 0,
+    "raw_pgs_2024": 0,
+    "raw_pgs_2025": 46056
+  },
+  "qualityFilterVerification": {
+    "n": 10,
+    "ids": [
+      "1038319",
+      "1038322",
+      "1038342",
+      "1038362",
+      "1038379",
+      "1038433",
+      "1038439",
+      "1038453",
+      "1038491",
+      "1038504"
+    ],
+    "extra": []
+  },
+  "isolation2024": {
+    "games": 1321,
+    "logs": 46150,
+    "tgs": 2642,
+    "psa": 587,
+    "tsa": 30,
+    "inferred": 699
+  },
+  "isolation2025": {
+    "games": 1323,
+    "logs": 46056,
+    "tgs": 2644,
+    "box184": {
+      "game_id": "18447793",
+      "season": "2025",
+      "home_score": 109,
+      "away_score": 118
+    },
+    "localOnly": {
+      "game_id": "21681993",
+      "season": "2025",
+      "home_score": 0,
+      "away_score": 0,
+      "logs": 0
+    }
+  },
+  "isolation2026": {
+    "games": 1200,
+    "logs": 0,
+    "tgs": 0,
+    "stints": 578
+  },
+  "structural": {
+    "dupLogKeys": 0,
+    "foreignTeam": 0,
+    "nullCore": 0,
+    "tgsNotTwo": 0,
+    "bothTeamsMissing": 0
+  },
+  "storage": {
+    "previousMb": 315.02,
+    "currentMb": 326.96,
+    "bytes": 342846611,
+    "deltaMb": 11.94,
+    "headroomTo340Mb": 13.04,
+    "headroomTo400Mb": 73.04,
+    "headroomTo450Mb": 123.04,
+    "class": "Healthy",
+    "checkpoint": "reports/storage/after-2023.json"
+  },
+  "isolationFailures": [],
+  "bdlHttpConfirmation": {
+    "requests": 0,
+    "investigationClosed": true
+  },
+  "verdict": "GREEN — 2023 materialized successfully; core historical objective complete"
+}

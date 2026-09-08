@@ -1,0 +1,2291 @@
+{
+  "generatedAt": "2026-09-08T21:31:36.104Z",
+  "step": "5C",
+  "dryRun": false,
+  "postgresWrites": false,
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "delaySource": "trial-default",
+    "minDelayMs": 12000,
+    "concurrency": 1,
+    "lockActiveBefore": false,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "stagingMode": "none",
+    "endpoint": "/nba/v2/stats/advanced?seasons[]=2024&period=0",
+    "s3Prefix": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2",
+    "postgresMaterialize": false,
+    "dbMb": 326.96,
+    "dbBytes": 342846611,
+    "lockAcquired": true,
+    "lockReleased": true
+  },
+  "characterizationHandling": {
+    "existingPages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "characterizationManifest": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2/_characterization_5page_manifest.json",
+    "completeManifestBefore": null,
+    "strategy": "resume: keep pages 1–N as canonical, continue cursor from last page next_cursor, write complete _manifest.json at exhaustion, preserve _characterization_5page_manifest.json",
+    "willNotTreatCharacterizationManifestAsComplete": true,
+    "samePrefix": true,
+    "after": {
+      "characterizationManifestPreserved": true,
+      "completeManifest": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2/_manifest.json",
+      "pages1to5ReusedAsCanonical": true
+    }
+  },
+  "timeGate": {
+    "trialStart": "2026-09-08T12:10:59.422Z",
+    "elapsedHours": 9.34,
+    "remainingHours": 38.66,
+    "reserveHours": 6,
+    "remainingAfterReserveHours": 32.66,
+    "existingPages": 5,
+    "remainingPagesEst": 345,
+    "forecast": {
+      "pages": 350,
+      "records": 34881,
+      "practicalSpacingSec": 13.84,
+      "s3Mb": 173,
+      "hours": 1.35,
+      "baseline2025": {
+        "pages": 349,
+        "records": 34810,
+        "durationHours": 1.34,
+        "s3Mb": 172.07
+      }
+    },
+    "projectedBaseHours": 1.33,
+    "projectedHighHours": 1.53,
+    "timeGateMaxHours": 2,
+    "projectedRemainingAfterThisCrawlHours": 37.13,
+    "proceed": true
+  },
+  "acquisition": {
+    "pageCount": 352,
+    "recordCount": 35103,
+    "written": 347,
+    "skipped": 0,
+    "resumedFromPage": 5,
+    "startCursor": 71153,
+    "lastNextCursor": null,
+    "exhausted": true,
+    "status": "success",
+    "durationMs": 4802103,
+    "durationHours": 1.33,
+    "httpAttempts": 347,
+    "httpSuccess": 347,
+    "status429": 0,
+    "retries": 0,
+    "retryAfterUsed": 0,
+    "finalCursor": null
+  },
+  "pagination": {
+    "pages": 352,
+    "records": 35103,
+    "recordsPerPage": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      3
+    ],
+    "missingPages": [],
+    "duplicatePages": false,
+    "lastNextCursor": null,
+    "exhausted": true
+  },
+  "rateLimit": {
+    "configuredMs": 13000,
+    "avgSpacingMs": 13874.2,
+    "minSpacingMs": 13684,
+    "maxSpacingMs": 17128,
+    "status429": 0,
+    "retries": 0,
+    "retryAfterUsed": 0,
+    "limiterOk": true,
+    "note": "Retry-After gaps are reported separately and are not treated as normal spacing failures."
+  },
+  "recordGrain": {
+    "totalRows": 35103,
+    "distinctPlayerGamePairs": 35103,
+    "duplicatePlayerGameKeys": 0,
+    "distinctGames": 1321,
+    "distinctPlayers": 577,
+    "distinctTeams": 30,
+    "periodDistribution": {
+      "0": 35103
+    }
+  },
+  "gameCoverage": {
+    "analyticsGames2024": 1321,
+    "advancedDistinctGames": 1321,
+    "gamesWithAtLeastOneAdvanced": 1321,
+    "gamesWithZeroAdvanced": 0,
+    "zeroAdvancedIds": [],
+    "advancedIdsAbsentFrom2024": [],
+    "wrongSeasonIds": []
+  },
+  "identityCompatibility": {
+    "games": {
+      "mapped": 1321,
+      "unmapped": 0,
+      "wrongSeason": [],
+      "distinct": 1321
+    },
+    "players": {
+      "mapped": 577,
+      "unmapped": 0,
+      "distinct": 577
+    },
+    "teams": {
+      "mapped": 30,
+      "unmapped": 0,
+      "distinct": 30,
+      "conflicts": 0
+    }
+  },
+  "playerGameLogMatch": {
+    "advancedKeys": 35103,
+    "matchingLogs": 35103,
+    "advancedOnly": 0,
+    "logOnly": 11047,
+    "logs2024": 46150,
+    "matchRatePct": 100,
+    "coverageVsLogsPct": 76.1,
+    "vs2025CoveragePct": 75.6,
+    "coverageClass": "similar",
+    "advancedOnlySample": []
+  },
+  "fieldQuality": {
+    "fields": [
+      {
+        "field": "assist_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 13881,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 100
+      },
+      {
+        "field": "assist_ratio",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 13881,
+        "min": 0,
+        "max": 100,
+        "pctPopulated": 100
+      },
+      {
+        "field": "assist_to_turnover",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 20202,
+        "min": 0,
+        "max": 18,
+        "pctPopulated": 100
+      },
+      {
+        "field": "blocks_against",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 23064,
+        "min": 0,
+        "max": 8,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "box_out_player_rebounds",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 19531,
+        "min": 0,
+        "max": 12,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "box_out_player_team_rebounds",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 16075,
+        "min": 0,
+        "max": 14,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "box_outs",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 15967,
+        "min": 0,
+        "max": 14,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "charges_drawn",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 24740,
+        "min": 0,
+        "max": 2,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "contested_fg_pct",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 16398,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "contested_fga",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 12029,
+        "min": 0,
+        "max": 24,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "contested_fgm",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 16398,
+        "min": 0,
+        "max": 13,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "contested_shots",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 1886,
+        "min": 0,
+        "max": 24,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "contested_shots_2pt",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 5538,
+        "min": 0,
+        "max": 23,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "contested_shots_3pt",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 6882,
+        "min": 0,
+        "max": 14,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "defended_at_rim_fg_pct",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 14646,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "defended_at_rim_fga",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 12259,
+        "min": 0,
+        "max": 19,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "defended_at_rim_fgm",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 14646,
+        "min": 0,
+        "max": 13,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "defensive_box_outs",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 17167,
+        "min": 0,
+        "max": 14,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "defensive_rating",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 7181,
+        "min": 0,
+        "max": 300,
+        "pctPopulated": 100
+      },
+      {
+        "field": "defensive_rebound_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 11396,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 100
+      },
+      {
+        "field": "deflections",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 7076,
+        "min": 0,
+        "max": 15,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "distance",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 6695,
+        "min": 0,
+        "max": 3.95,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "effective_field_goal_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 10899,
+        "min": 0,
+        "max": 1.5,
+        "pctPopulated": 100
+      },
+      {
+        "field": "estimated_defensive_rating",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 7181,
+        "min": 0,
+        "max": 300,
+        "pctPopulated": 100
+      },
+      {
+        "field": "estimated_net_rating",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 7446,
+        "min": -300,
+        "max": 300,
+        "pctPopulated": 100
+      },
+      {
+        "field": "estimated_offensive_rating",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 7270,
+        "min": 0,
+        "max": 300,
+        "pctPopulated": 100
+      },
+      {
+        "field": "estimated_pace",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 6843,
+        "min": 0,
+        "max": 14400,
+        "pctPopulated": 100
+      },
+      {
+        "field": "estimated_usage_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 8038,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 100
+      },
+      {
+        "field": "fouls_drawn",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 14473,
+        "min": 0,
+        "max": 16,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "four_factors_efg_pct",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 7064,
+        "min": 0,
+        "max": 1.5,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "four_factors_oreb_pct",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 19142,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "free_throw_assists",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 29130,
+        "min": 0,
+        "max": 5,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "free_throw_attempt_rate",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 8462,
+        "min": 0,
+        "max": 10,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "id",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 0,
+        "min": 68515,
+        "max": 3017929,
+        "pctPopulated": 100
+      },
+      {
+        "field": "loose_balls_recovered_def",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 20308,
+        "min": 0,
+        "max": 5,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "loose_balls_recovered_off",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 20462,
+        "min": 0,
+        "max": 5,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "loose_balls_recovered_total",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 16460,
+        "min": 0,
+        "max": 6,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "matchup_3pa",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 3220,
+        "min": 0,
+        "max": 19,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_3pm",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 9628,
+        "min": 0,
+        "max": 10,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_3pt_pct",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 9628,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_assists",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 4786,
+        "min": 0,
+        "max": 15,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_fg_pct",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 2388,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_fga",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 1026,
+        "min": 0,
+        "max": 39,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_fgm",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 2388,
+        "min": 0,
+        "max": 20,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_minutes",
+        "nonNull": 0,
+        "nullCount": 35103,
+        "zeroCount": 0,
+        "min": null,
+        "max": null,
+        "pctPopulated": 0
+      },
+      {
+        "field": "matchup_player_points",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 1973,
+        "min": 0,
+        "max": 50,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "matchup_turnovers",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 9333,
+        "min": 0,
+        "max": 9,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "net_rating",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 7531,
+        "min": -300,
+        "max": 300,
+        "pctPopulated": 100
+      },
+      {
+        "field": "offensive_box_outs",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 22940,
+        "min": 0,
+        "max": 7,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "offensive_rating",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 7270,
+        "min": 0,
+        "max": 300,
+        "pctPopulated": 100
+      },
+      {
+        "field": "offensive_rebound_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 20019,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 100
+      },
+      {
+        "field": "opp_efg_pct",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 7015,
+        "min": 0,
+        "max": 1.5,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "opp_free_throw_attempt_rate",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 8172,
+        "min": 0,
+        "max": 8,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "opp_oreb_pct",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 8702,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "opp_points_fast_break",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 9487,
+        "min": 0,
+        "max": 35,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "opp_points_off_turnovers",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 8694,
+        "min": 0,
+        "max": 34,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "opp_points_paint",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 6917,
+        "min": 0,
+        "max": 76,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "opp_points_second_chance",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 9445,
+        "min": 0,
+        "max": 33,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "opp_turnover_pct",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 7946,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "pace",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 6841,
+        "min": 0,
+        "max": 14400,
+        "pctPopulated": 100
+      },
+      {
+        "field": "pace_per_40",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 6841,
+        "min": 0,
+        "max": 12000,
+        "pctPopulated": 100
+      },
+      {
+        "field": "partial_possessions",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 1,
+        "min": 0,
+        "max": 102.2,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "passes",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 7059,
+        "min": 0,
+        "max": 116,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_3pa",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 12202,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_3pm",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 18297,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_assisted_2pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 16279,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_assisted_3pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 18788,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_assisted_fgm",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 11844,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_blocks",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 25303,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_blocks_allowed",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 24726,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_fga",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 8196,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_fga_2pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 9838,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_fga_3pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 11837,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_fgm",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 10524,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_fta",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 19057,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_ftm",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 19917,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_personal_fouls",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 12905,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_personal_fouls_drawn",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 15522,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_points",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 9927,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_pts_2pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 12710,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_pts_3pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 17773,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_pts_fast_break",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 21943,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_pts_free_throw",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 19317,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_pts_midrange_2pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 26832,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_pts_off_turnovers",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 20620,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_pts_paint",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 13466,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_rebounds_def",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 11008,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_rebounds_off",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 19301,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_rebounds_total",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 9793,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_steals",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 20639,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_turnovers",
+        "nonNull": 33857,
+        "nullCount": 1246,
+        "zeroCount": 16856,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "pct_unassisted_2pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 18791,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_unassisted_3pt",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 29104,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "pct_unassisted_fgm",
+        "nonNull": 32876,
+        "nullCount": 2227,
+        "zeroCount": 18009,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 93.7
+      },
+      {
+        "field": "period",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 35103,
+        "min": 0,
+        "max": 0,
+        "pctPopulated": 100
+      },
+      {
+        "field": "pie",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 8172,
+        "min": -5,
+        "max": 10,
+        "pctPopulated": 100
+      },
+      {
+        "field": "points_fast_break",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 21122,
+        "min": 0,
+        "max": 18,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "points_off_turnovers",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 19857,
+        "min": 0,
+        "max": 17,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "points_paint",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 12948,
+        "min": 0,
+        "max": 34,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "points_second_chance",
+        "nonNull": 31661,
+        "nullCount": 3442,
+        "zeroCount": 21232,
+        "min": 0,
+        "max": 18,
+        "pctPopulated": 90.2
+      },
+      {
+        "field": "possessions",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 6870,
+        "min": 0,
+        "max": 104,
+        "pctPopulated": 100
+      },
+      {
+        "field": "rebound_chances_def",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 9001,
+        "min": 0,
+        "max": 31,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "rebound_chances_off",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 12857,
+        "min": 0,
+        "max": 25,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "rebound_chances_total",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 8248,
+        "min": 0,
+        "max": 41,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "rebound_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 10136,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 100
+      },
+      {
+        "field": "screen_assist_points",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 15328,
+        "min": 0,
+        "max": 32,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "screen_assists",
+        "nonNull": 25543,
+        "nullCount": 9560,
+        "zeroCount": 15328,
+        "min": 0,
+        "max": 14,
+        "pctPopulated": 72.8
+      },
+      {
+        "field": "secondary_assists",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 27100,
+        "min": 0,
+        "max": 6,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "speed",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 6681,
+        "min": 0,
+        "max": 10.11,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "switches_on",
+        "nonNull": 26772,
+        "nullCount": 8331,
+        "zeroCount": 26772,
+        "min": 0,
+        "max": 0,
+        "pctPopulated": 76.3
+      },
+      {
+        "field": "team_turnover_pct",
+        "nonNull": 33594,
+        "nullCount": 1509,
+        "zeroCount": 7700,
+        "min": 0,
+        "max": 1.064,
+        "pctPopulated": 95.7
+      },
+      {
+        "field": "touches",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 6912,
+        "min": 0,
+        "max": 154,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "true_shooting_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 10279,
+        "min": 0,
+        "max": 1.5,
+        "pctPopulated": 100
+      },
+      {
+        "field": "turnover_ratio",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 17450,
+        "min": 0,
+        "max": 100,
+        "pctPopulated": 100
+      },
+      {
+        "field": "uncontested_fg_pct",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 13195,
+        "min": -1,
+        "max": 2,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "uncontested_fga",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 9561,
+        "min": -1,
+        "max": 30,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "uncontested_fgm",
+        "nonNull": 33873,
+        "nullCount": 1230,
+        "zeroCount": 13191,
+        "min": -1,
+        "max": 16,
+        "pctPopulated": 96.5
+      },
+      {
+        "field": "usage_percentage",
+        "nonNull": 35103,
+        "nullCount": 0,
+        "zeroCount": 8038,
+        "min": 0,
+        "max": 1,
+        "pctPopulated": 100
+      }
+    ],
+    "coreAvgPct": 100,
+    "trackingAvgPct": 77.7,
+    "compare5aVsFull2024VsFull2025": [
+      {
+        "field": "possessions",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "usage_percentage",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "estimated_usage_percentage",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "offensive_rating",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "defensive_rating",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "net_rating",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "true_shooting_percentage",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "effective_field_goal_percentage",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "pie",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "pace",
+        "sample5a": 100,
+        "full2024": 100,
+        "full2025": 99.9
+      },
+      {
+        "field": "box_outs",
+        "sample5a": 62.8,
+        "full2024": 72.8,
+        "full2025": 77.5
+      },
+      {
+        "field": "deflections",
+        "sample5a": 62.8,
+        "full2024": 72.8,
+        "full2025": 77.5
+      },
+      {
+        "field": "matchup_fga",
+        "sample5a": 67.4,
+        "full2024": 76.3,
+        "full2025": 80.4
+      },
+      {
+        "field": "points_paint",
+        "sample5a": 79.2,
+        "full2024": 90.2,
+        "full2025": 95
+      },
+      {
+        "field": "switches_on",
+        "sample5a": 67.4,
+        "full2024": 76.3,
+        "full2025": 80.4
+      }
+    ],
+    "sampleVsFull2024": [
+      {
+        "field": "possessions",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "usage_percentage",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "estimated_usage_percentage",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "offensive_rating",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "defensive_rating",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "net_rating",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "true_shooting_percentage",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "effective_field_goal_percentage",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "pie",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "pace",
+        "samplePct": 100,
+        "fullPct": 100,
+        "delta": 0
+      },
+      {
+        "field": "box_outs",
+        "samplePct": 62.8,
+        "fullPct": 72.8,
+        "delta": 10
+      },
+      {
+        "field": "deflections",
+        "samplePct": 62.8,
+        "fullPct": 72.8,
+        "delta": 10
+      },
+      {
+        "field": "matchup_fga",
+        "samplePct": 67.4,
+        "fullPct": 76.3,
+        "delta": 8.9
+      },
+      {
+        "field": "points_paint",
+        "samplePct": 79.2,
+        "fullPct": 90.2,
+        "delta": 11
+      },
+      {
+        "field": "switches_on",
+        "samplePct": 67.4,
+        "fullPct": 76.3,
+        "delta": 8.9
+      }
+    ],
+    "switches_on": {
+      "field": "switches_on",
+      "nonNull": 26772,
+      "nullCount": 8331,
+      "zeroCount": 26772,
+      "min": 0,
+      "max": 0,
+      "pctPopulated": 76.3
+    },
+    "deadOrConstantWhenPopulated": [
+      {
+        "field": "switches_on",
+        "value": 0,
+        "pctPopulated": 76.3
+      }
+    ],
+    "topLevelKeyCount": 121
+  },
+  "comparison2024vs2025": {
+    "pages": {
+      "2024": 352,
+      "2025": 349
+    },
+    "records": {
+      "2024": 35103,
+      "2025": 34810
+    },
+    "games": {
+      "2024": 1321,
+      "2025": 1322
+    },
+    "players": {
+      "2024": 577,
+      "2025": 594
+    },
+    "logCoveragePct": {
+      "2024": 76.1,
+      "2025": 75.6
+    },
+    "coreFieldPopulationPct": {
+      "2024": 100,
+      "2025": 99.9
+    },
+    "trackingPopulationPct": {
+      "2024": 77.7,
+      "2025": "77-80"
+    },
+    "s3Mb": {
+      "2024": 173.57,
+      "2025": 172.07
+    },
+    "timeHours": {
+      "2024": 1.33,
+      "2025": 1.34
+    }
+  },
+  "outlierProfile": {
+    "highPaceGt250": 36,
+    "highDefensiveRatingGt200": 61,
+    "outliersWithPossessionsLte5": 73,
+    "sample": [
+      {
+        "gameId": "15907618",
+        "playerId": "17896030",
+        "pace": 215.85,
+        "defensive_rating": 266.7,
+        "possessions": 4,
+        "usage_percentage": 0.25
+      },
+      {
+        "gameId": "15907618",
+        "playerId": "666650",
+        "pace": 215.85,
+        "defensive_rating": 266.7,
+        "possessions": 4,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907618",
+        "playerId": "38017663",
+        "pace": 215.85,
+        "defensive_rating": 266.7,
+        "possessions": 4,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907625",
+        "playerId": "226",
+        "pace": 720,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907668",
+        "playerId": "3547302",
+        "pace": 1800,
+        "defensive_rating": 200,
+        "possessions": 0,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907723",
+        "playerId": "1028025177",
+        "pace": 106.67,
+        "defensive_rating": 209.1,
+        "possessions": 11,
+        "usage_percentage": 0.167
+      },
+      {
+        "gameId": "15907466",
+        "playerId": "1028026508",
+        "pace": 100.38,
+        "defensive_rating": 207.7,
+        "possessions": 13,
+        "usage_percentage": 0.25
+      },
+      {
+        "gameId": "15907498",
+        "playerId": "3547302",
+        "pace": 720.01,
+        "defensive_rating": 0,
+        "possessions": 0,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907512",
+        "playerId": "56677845",
+        "pace": 248.28,
+        "defensive_rating": 300,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907514",
+        "playerId": "1028046517",
+        "pace": 378.95,
+        "defensive_rating": 200,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907589",
+        "playerId": "666650",
+        "pace": 97.63,
+        "defensive_rating": 250,
+        "possessions": 2,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907631",
+        "playerId": "226",
+        "pace": 1066.67,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907630",
+        "playerId": "338",
+        "pace": 800,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907682",
+        "playerId": "38017715",
+        "pace": 105.37,
+        "defensive_rating": 266.7,
+        "possessions": 3,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907687",
+        "playerId": "273",
+        "pace": 1800,
+        "defensive_rating": 300,
+        "possessions": 0,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907715",
+        "playerId": "56677799",
+        "pace": 85.42,
+        "defensive_rating": 214.3,
+        "possessions": 7,
+        "usage_percentage": 0.2
+      },
+      {
+        "gameId": "15907735",
+        "playerId": "1028038426",
+        "pace": 117.93,
+        "defensive_rating": 211.1,
+        "possessions": 10,
+        "usage_percentage": 0.2
+      },
+      {
+        "gameId": "15907733",
+        "playerId": "17896025",
+        "pace": 675,
+        "defensive_rating": 200,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907808",
+        "playerId": "56677776",
+        "pace": 98.13,
+        "defensive_rating": 205,
+        "possessions": 20,
+        "usage_percentage": 0.174
+      },
+      {
+        "gameId": "15907813",
+        "playerId": "273",
+        "pace": 496.55,
+        "defensive_rating": 200,
+        "possessions": 0,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907815",
+        "playerId": "1028048549",
+        "pace": 102.05,
+        "defensive_rating": 225,
+        "possessions": 5,
+        "usage_percentage": 0.167
+      },
+      {
+        "gameId": "15907814",
+        "playerId": "462",
+        "pace": 107.23,
+        "defensive_rating": 300,
+        "possessions": 4,
+        "usage_percentage": 0.25
+      },
+      {
+        "gameId": "15907893",
+        "playerId": "18677954",
+        "pace": 100.8,
+        "defensive_rating": 233.3,
+        "possessions": 4,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907893",
+        "playerId": "38017687",
+        "pace": 100.8,
+        "defensive_rating": 233.3,
+        "possessions": 4,
+        "usage_percentage": 0.2
+      },
+      {
+        "gameId": "15907893",
+        "playerId": "1016384149",
+        "pace": 100.8,
+        "defensive_rating": 233.3,
+        "possessions": 4,
+        "usage_percentage": 0.2
+      },
+      {
+        "gameId": "15907893",
+        "playerId": "3547302",
+        "pace": 100.8,
+        "defensive_rating": 233.3,
+        "possessions": 4,
+        "usage_percentage": 0.4
+      },
+      {
+        "gameId": "15907896",
+        "playerId": "1028037494",
+        "pace": 104.1,
+        "defensive_rating": 300,
+        "possessions": 2,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907896",
+        "playerId": "1028045145",
+        "pace": 104.1,
+        "defensive_rating": 300,
+        "possessions": 2,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907896",
+        "playerId": "1028243201",
+        "pace": 104.1,
+        "defensive_rating": 300,
+        "possessions": 2,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907921",
+        "playerId": "56677871",
+        "pace": 123.71,
+        "defensive_rating": 250,
+        "possessions": 3,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907937",
+        "playerId": "226",
+        "pace": 1800.05,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15907966",
+        "playerId": "3547249",
+        "pace": 99.31,
+        "defensive_rating": 208.3,
+        "possessions": 12,
+        "usage_percentage": 0.071
+      },
+      {
+        "gameId": "15908006",
+        "playerId": "114",
+        "pace": 1440.06,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15908065",
+        "playerId": "795959473",
+        "pace": 94.43,
+        "defensive_rating": 216.7,
+        "possessions": 6,
+        "usage_percentage": 0.25
+      },
+      {
+        "gameId": "15908101",
+        "playerId": "1028274126",
+        "pace": 80.75,
+        "defensive_rating": 233.3,
+        "possessions": 3,
+        "usage_percentage": 0.333
+      },
+      {
+        "gameId": "15908101",
+        "playerId": "242",
+        "pace": 80.75,
+        "defensive_rating": 233.3,
+        "possessions": 3,
+        "usage_percentage": 0.333
+      },
+      {
+        "gameId": "15908109",
+        "playerId": "38017715",
+        "pace": 120,
+        "defensive_rating": 300,
+        "possessions": 0,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15908120",
+        "playerId": "17896025",
+        "pace": 1800,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15908134",
+        "playerId": "56677849",
+        "pace": 306.38,
+        "defensive_rating": 200,
+        "possessions": 1,
+        "usage_percentage": 0
+      },
+      {
+        "gameId": "15908141",
+        "playerId": "226",
+        "pace": 4114.29,
+        "defensive_rating": 0,
+        "possessions": 1,
+        "usage_percentage": 0
+      }
+    ],
+    "note": "Extremes kept as-is. Associated with very low possessions in this profile when possessions <= 5."
+  },
+  "s3Validation": {
+    "prefix": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2",
+    "manifest": {
+      "schemaVersion": 1,
+      "source": "balldontlie",
+      "entity": "advanced_stats_v2",
+      "endpoint": "/nba/v2/stats/advanced",
+      "pageCount": 352,
+      "recordCount": 35103,
+      "status": "success",
+      "fetchedAt": "2026-09-08T22:51:38.756Z",
+      "cursorExhausted": true
+    },
+    "pageCount": 352,
+    "recordCount": 35103,
+    "sequenceOk": true,
+    "exhausted": true,
+    "runObject": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2/_run.json"
+  },
+  "s3Growth": {
+    "before": {
+      "objects": 6,
+      "bytes": 2597371,
+      "mb": 2.48,
+      "pages": 5
+    },
+    "after": {
+      "objects": 354,
+      "bytes": 182002234,
+      "mb": 173.57,
+      "pages": 352
+    },
+    "incrementalBytes": 179404863,
+    "incrementalMb": 171.09,
+    "characterizationObjectsPreserved": [
+      "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2/_characterization_5page_manifest.json"
+    ],
+    "canonicalPageObjects": 352
+  },
+  "recalibrated2023": {
+    "method": "mean of complete 2025 and 2024 seasons, scaled by 2023 log count",
+    "pages": 351,
+    "recordsEst": 34947,
+    "practicalHours": 1.35,
+    "s3Mb": 172.77
+  },
+  "trialTimeBudget": {
+    "trialStart": "2026-09-08T12:10:59.422Z",
+    "elapsedHours": 10.69,
+    "remainingHours": 37.31,
+    "reserveHours": 6,
+    "remainingAfterReserveHours": 31.31,
+    "estimated2023AdvancedHours": 1.35,
+    "openingPropsHours": {
+      "low": 3,
+      "high": 5.3
+    },
+    "openingOddsHours": {
+      "low": 0.8,
+      "high": 5
+    },
+    "optionalLineupHours": 5,
+    "optional2022": "S3-only; drop first if short",
+    "priority": [
+      "finish Advanced 2024",
+      "finish Advanced 2023",
+      "historical opening player props",
+      "historical opening odds",
+      "final validation/reserve",
+      "lineups optional",
+      "2022 optional"
+    ]
+  },
+  "postgresIsolation": {
+    "beforeBytes": 342846611,
+    "afterBytes": 342846611,
+    "deltaBytes": 0,
+    "before": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games_2023": 1319,
+      "logs_2023": 46090,
+      "tgs_2023": 2638,
+      "psa_2023": 595,
+      "tsa_2023": 30,
+      "inferred_2023": 695,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578,
+      "raw_pgs": 46056,
+      "advancedTable": null,
+      "box184": {
+        "home_score": 109,
+        "away_score": 118
+      }
+    },
+    "after": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games_2023": 1319,
+      "logs_2023": 46090,
+      "tgs_2023": 2638,
+      "psa_2023": 595,
+      "tsa_2023": 30,
+      "inferred_2023": 695,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578,
+      "raw_pgs": 46056,
+      "advancedTable": null,
+      "box184": {
+        "home_score": 109,
+        "away_score": 118
+      }
+    },
+    "isolationFailures": []
+  },
+  "redReasons": [],
+  "yellowReasons": [],
+  "verdict": "GREEN — 2024 Advanced Stats archived successfully; proceed to 2023"
+}

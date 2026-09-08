@@ -160,6 +160,18 @@ export class BdlArchiveClient {
     this.logger = opts.logger ?? ((msg: string) => console.log(msg));
   }
 
+  /**
+   * Trial mode: wait so any two outbound attempts are >= requestDelayMs apart,
+   * including first pages of independent game/date-scoped calls. paginate()
+   * still sleeps between pages; this wait is a no-op when that sleep already
+   * covered the gap. Production (non-trial) is unchanged.
+   */
+  private async waitForTrialSpacing(): Promise<void> {
+    if (!this.trialMode || this.lastAttemptAt == null) return;
+    const wait = this.requestDelayMs - (Date.now() - this.lastAttemptAt);
+    if (wait > 0) await sleep(wait);
+  }
+
   getMetrics(): BdlClientMetrics {
     return {
       ...this.metrics,
@@ -174,6 +186,7 @@ export class BdlArchiveClient {
   async fetchWithRetry(url: string): Promise<Response> {
     const run = async () => {
       for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+        await this.waitForTrialSpacing();
         this.requestNumber += 1;
         const n = this.requestNumber;
         const now = Date.now();
@@ -269,7 +282,7 @@ export class BdlArchiveClient {
 
     let cursor: number | string | null | undefined =
       opts.paginationStyle === 'cursor' ? opts.startCursor ?? null : undefined;
-    let pageIndex = opts.paginationStyle === 'page' ? opts.startPage ?? 1 : 1;
+    let pageIndex = opts.startPage ?? 1;
     let firstPage = true;
 
     while (true) {

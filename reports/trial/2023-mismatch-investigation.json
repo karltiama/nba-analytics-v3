@@ -1,0 +1,2210 @@
+{
+  "generatedAt": "2026-09-08T18:53:53.384Z",
+  "step": "4B",
+  "bdlHttpRequests": 0,
+  "postgresWrites": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlHttpRequests": 0,
+    "postgresWrites": false,
+    "serving": {
+      "games_2023": 0,
+      "logs_2023": 0,
+      "tgs_2023": 0,
+      "psa_2023": 0,
+      "tsa_2023": 0,
+      "stints_2023": 0,
+      "raw_pgs": 46056,
+      "raw_pgs_2023": 0,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "stints_2026": 578,
+      "box184": {
+        "home": 109,
+        "away": 118
+      }
+    }
+  },
+  "exact10MismatchGames": [
+    "1038319",
+    "1038322",
+    "1038342",
+    "1038362",
+    "1038379",
+    "1038433",
+    "1038439",
+    "1038453",
+    "1038491",
+    "1038504"
+  ],
+  "perGameReconciliation": [
+    {
+      "gameId": "1038319",
+      "gamesArchive": {
+        "date": "2024-02-07",
+        "datetime": "2024-02-08T00:30:00.000Z",
+        "home": {
+          "id": "23",
+          "abbr": "PHI",
+          "name": "Philadelphia 76ers",
+          "score": 104
+        },
+        "visitor": {
+          "id": "10",
+          "abbr": "GSW",
+          "name": "Golden State Warriors",
+          "score": 127
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 8
+      },
+      "stats": {
+        "totalRows": 35,
+        "distinctPlayers": 35,
+        "homeRows": 18,
+        "visitorRows": 17,
+        "summedHome": 104,
+        "summedVisitor": 125,
+        "officialHome": 104,
+        "officialVisitor": 127,
+        "deltaHome": 0,
+        "deltaVisitor": -2,
+        "totalPtsAllRows": 229,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 22,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 104,
+        "modeAway": 127,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "104|127",
+            "rows": 35
+          }
+        ]
+      },
+      "pages": [
+        268
+      ],
+      "splitAcrossPages": false,
+      "firstPageRowCount": 35,
+      "lastPageRowCount": 35,
+      "pageBoundary": [
+        {
+          "page": 268,
+          "prior": 267,
+          "next": 269,
+          "meta": {
+            "nextCursor": 14409280,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Andrew Wiggins",
+          "team": "GSW",
+          "pts": 21,
+          "min": "23"
+        },
+        {
+          "player": "Jonathan Kuminga",
+          "team": "GSW",
+          "pts": 18,
+          "min": "29"
+        },
+        {
+          "player": "Klay Thompson",
+          "team": "GSW",
+          "pts": 18,
+          "min": "28"
+        },
+        {
+          "player": "Ricky Council IV",
+          "team": "PHI",
+          "pts": 17,
+          "min": "10"
+        },
+        {
+          "player": "Kenyon Martin Jr.",
+          "team": "PHI",
+          "pts": 15,
+          "min": "29"
+        },
+        {
+          "player": "Tobias Harris",
+          "team": "PHI",
+          "pts": 13,
+          "min": "29"
+        },
+        {
+          "player": "Patrick Beverley",
+          "team": "PHI",
+          "pts": 13,
+          "min": "23"
+        },
+        {
+          "player": "Lester Quinones",
+          "team": "GSW",
+          "pts": 13,
+          "min": "24"
+        }
+      ]
+    },
+    {
+      "gameId": "1038322",
+      "gamesArchive": {
+        "date": "2024-02-07",
+        "datetime": "2024-02-08T00:30:00.000Z",
+        "home": {
+          "id": "16",
+          "abbr": "MIA",
+          "name": "Miami Heat",
+          "score": 116
+        },
+        "visitor": {
+          "id": "27",
+          "abbr": "SAS",
+          "name": "San Antonio Spurs",
+          "score": 104
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 8
+      },
+      "stats": {
+        "totalRows": 35,
+        "distinctPlayers": 35,
+        "homeRows": 17,
+        "visitorRows": 18,
+        "summedHome": 114,
+        "summedVisitor": 104,
+        "officialHome": 116,
+        "officialVisitor": 104,
+        "deltaHome": -2,
+        "deltaVisitor": 0,
+        "totalPtsAllRows": 218,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 21,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 116,
+        "modeAway": 104,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "116|104",
+            "rows": 35
+          }
+        ]
+      },
+      "pages": [
+        267,
+        268
+      ],
+      "splitAcrossPages": true,
+      "firstPageRowCount": 29,
+      "lastPageRowCount": 6,
+      "pageBoundary": [
+        {
+          "page": 267,
+          "prior": 266,
+          "next": 268,
+          "meta": {
+            "nextCursor": 14406851,
+            "recordCount": 100,
+            "malformed": false
+          }
+        },
+        {
+          "page": 268,
+          "prior": 267,
+          "next": 269,
+          "meta": {
+            "nextCursor": 14409280,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Tyler Herro",
+          "team": "MIA",
+          "pts": 24,
+          "min": "29"
+        },
+        {
+          "player": "Bam Adebayo",
+          "team": "MIA",
+          "pts": 20,
+          "min": "29"
+        },
+        {
+          "player": "Devin Vassell",
+          "team": "SAS",
+          "pts": 19,
+          "min": "32"
+        },
+        {
+          "player": "Tre Jones",
+          "team": "SAS",
+          "pts": 19,
+          "min": "32"
+        },
+        {
+          "player": "Victor Wembanyama",
+          "team": "SAS",
+          "pts": 18,
+          "min": "28"
+        },
+        {
+          "player": "Jimmy Butler",
+          "team": "MIA",
+          "pts": 17,
+          "min": "34"
+        },
+        {
+          "player": "Terry Rozier",
+          "team": "MIA",
+          "pts": 13,
+          "min": "28"
+        },
+        {
+          "player": "Jaime Jaquez Jr.",
+          "team": "MIA",
+          "pts": 10,
+          "min": "27"
+        }
+      ]
+    },
+    {
+      "gameId": "1038342",
+      "gamesArchive": {
+        "date": "2024-02-10",
+        "datetime": "2024-02-10T23:00:00.000Z",
+        "home": {
+          "id": "3",
+          "abbr": "BKN",
+          "name": "Brooklyn Nets",
+          "score": 123
+        },
+        "visitor": {
+          "id": "27",
+          "abbr": "SAS",
+          "name": "San Antonio Spurs",
+          "score": 103
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 8
+      },
+      "stats": {
+        "totalRows": 33,
+        "distinctPlayers": 33,
+        "homeRows": 16,
+        "visitorRows": 17,
+        "summedHome": 123,
+        "summedVisitor": 101,
+        "officialHome": 123,
+        "officialVisitor": 103,
+        "deltaHome": 0,
+        "deltaVisitor": -2,
+        "totalPtsAllRows": 224,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 22,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 123,
+        "modeAway": 103,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "123|103",
+            "rows": 33
+          }
+        ]
+      },
+      "pages": [
+        274,
+        275
+      ],
+      "splitAcrossPages": true,
+      "firstPageRowCount": 9,
+      "lastPageRowCount": 24,
+      "pageBoundary": [
+        {
+          "page": 274,
+          "prior": 273,
+          "next": 275,
+          "meta": {
+            "nextCursor": 14419927,
+            "recordCount": 100,
+            "malformed": false
+          }
+        },
+        {
+          "page": 275,
+          "prior": 274,
+          "next": 276,
+          "meta": {
+            "nextCursor": 14420192,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Cam Thomas",
+          "team": "BKN",
+          "pts": 25,
+          "min": "36"
+        },
+        {
+          "player": "Victor Wembanyama",
+          "team": "SAS",
+          "pts": 21,
+          "min": "29"
+        },
+        {
+          "player": "Nicolas Claxton",
+          "team": "BKN",
+          "pts": 20,
+          "min": "27"
+        },
+        {
+          "player": "Keldon Johnson",
+          "team": "SAS",
+          "pts": 19,
+          "min": "30"
+        },
+        {
+          "player": "Devin Vassell",
+          "team": "SAS",
+          "pts": 17,
+          "min": "34"
+        },
+        {
+          "player": "Dennis Schroder",
+          "team": "BKN",
+          "pts": 15,
+          "min": "27"
+        },
+        {
+          "player": "Mikal Bridges",
+          "team": "BKN",
+          "pts": 14,
+          "min": "33"
+        },
+        {
+          "player": "Dennis Smith Jr.",
+          "team": "BKN",
+          "pts": 14,
+          "min": "24"
+        }
+      ]
+    },
+    {
+      "gameId": "1038362",
+      "gamesArchive": {
+        "date": "2024-02-12",
+        "datetime": "2024-02-13T03:30:00.000Z",
+        "home": {
+          "id": "13",
+          "abbr": "LAC",
+          "name": "LA Clippers",
+          "score": 100
+        },
+        "visitor": {
+          "id": "18",
+          "abbr": "MIN",
+          "name": "Minnesota Timberwolves",
+          "score": 121
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 8
+      },
+      "stats": {
+        "totalRows": 34,
+        "distinctPlayers": 34,
+        "homeRows": 18,
+        "visitorRows": 16,
+        "summedHome": 96,
+        "summedVisitor": 121,
+        "officialHome": 100,
+        "officialVisitor": 121,
+        "deltaHome": -4,
+        "deltaVisitor": 0,
+        "totalPtsAllRows": 217,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 20,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 100,
+        "modeAway": 121,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "100|121",
+            "rows": 34
+          }
+        ]
+      },
+      "pages": [
+        281,
+        282
+      ],
+      "splitAcrossPages": true,
+      "firstPageRowCount": 30,
+      "lastPageRowCount": 4,
+      "pageBoundary": [
+        {
+          "page": 281,
+          "prior": 280,
+          "next": 282,
+          "meta": {
+            "nextCursor": 14430329,
+            "recordCount": 100,
+            "malformed": false
+          }
+        },
+        {
+          "page": 282,
+          "prior": 281,
+          "next": 283,
+          "meta": {
+            "nextCursor": 14431527,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Karl-Anthony Towns",
+          "team": "MIN",
+          "pts": 24,
+          "min": "27"
+        },
+        {
+          "player": "Anthony Edwards",
+          "team": "MIN",
+          "pts": 23,
+          "min": "32"
+        },
+        {
+          "player": "Paul George",
+          "team": "LAC",
+          "pts": 18,
+          "min": "30"
+        },
+        {
+          "player": "Kawhi Leonard",
+          "team": "LAC",
+          "pts": 18,
+          "min": "30"
+        },
+        {
+          "player": "James Harden",
+          "team": "LAC",
+          "pts": 17,
+          "min": "32"
+        },
+        {
+          "player": "Rudy Gobert",
+          "team": "MIN",
+          "pts": 17,
+          "min": "33"
+        },
+        {
+          "player": "Nickeil Alexander-Walker",
+          "team": "MIN",
+          "pts": 15,
+          "min": "24"
+        },
+        {
+          "player": "Russell Westbrook",
+          "team": "LAC",
+          "pts": 11,
+          "min": "29"
+        }
+      ]
+    },
+    {
+      "gameId": "1038379",
+      "gamesArchive": {
+        "date": "2024-02-14",
+        "datetime": "2024-02-15T02:00:00.000Z",
+        "home": {
+          "id": "24",
+          "abbr": "PHX",
+          "name": "Phoenix Suns",
+          "score": 116
+        },
+        "visitor": {
+          "id": "9",
+          "abbr": "DET",
+          "name": "Detroit Pistons",
+          "score": 100
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 9
+      },
+      "stats": {
+        "totalRows": 34,
+        "distinctPlayers": 34,
+        "homeRows": 16,
+        "visitorRows": 18,
+        "summedHome": 111,
+        "summedVisitor": 95,
+        "officialHome": 116,
+        "officialVisitor": 100,
+        "deltaHome": -5,
+        "deltaVisitor": -5,
+        "totalPtsAllRows": 206,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 23,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 116,
+        "modeAway": 100,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "116|100",
+            "rows": 34
+          }
+        ]
+      },
+      "pages": [
+        287
+      ],
+      "splitAcrossPages": false,
+      "firstPageRowCount": 34,
+      "lastPageRowCount": 34,
+      "pageBoundary": [
+        {
+          "page": 287,
+          "prior": 286,
+          "next": 288,
+          "meta": {
+            "nextCursor": 14435272,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Kevin Durant",
+          "team": "PHX",
+          "pts": 25,
+          "min": "30"
+        },
+        {
+          "player": "Simone Fontecchio",
+          "team": "DET",
+          "pts": 18,
+          "min": "21"
+        },
+        {
+          "player": "Saben Lee",
+          "team": "PHX",
+          "pts": 16,
+          "min": "24"
+        },
+        {
+          "player": "Ausar Thompson",
+          "team": "DET",
+          "pts": 14,
+          "min": "29"
+        },
+        {
+          "player": "Eric Gordon",
+          "team": "PHX",
+          "pts": 13,
+          "min": "24"
+        },
+        {
+          "player": "Cade Cunningham",
+          "team": "DET",
+          "pts": 13,
+          "min": "26"
+        },
+        {
+          "player": "Shake Milton",
+          "team": "DET",
+          "pts": 13,
+          "min": "23"
+        },
+        {
+          "player": "Jusuf Nurkic",
+          "team": "PHX",
+          "pts": 10,
+          "min": "22"
+        }
+      ]
+    },
+    {
+      "gameId": "1038433",
+      "gamesArchive": {
+        "date": "2024-02-27",
+        "datetime": "2024-02-28T03:00:00.000Z",
+        "home": {
+          "id": "21",
+          "abbr": "OKC",
+          "name": "Oklahoma City Thunder",
+          "score": 112
+        },
+        "visitor": {
+          "id": "11",
+          "abbr": "HOU",
+          "name": "Houston Rockets",
+          "score": 95
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 9
+      },
+      "stats": {
+        "totalRows": 35,
+        "distinctPlayers": 35,
+        "homeRows": 17,
+        "visitorRows": 18,
+        "summedHome": 110,
+        "summedVisitor": 95,
+        "officialHome": 112,
+        "officialVisitor": 95,
+        "deltaHome": -2,
+        "deltaVisitor": 0,
+        "totalPtsAllRows": 205,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 19,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 112,
+        "modeAway": 95,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "112|95",
+            "rows": 35
+          }
+        ]
+      },
+      "pages": [
+        307
+      ],
+      "splitAcrossPages": false,
+      "firstPageRowCount": 35,
+      "lastPageRowCount": 35,
+      "pageBoundary": [
+        {
+          "page": 307,
+          "prior": 306,
+          "next": 308,
+          "meta": {
+            "nextCursor": 14471195,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Shai Gilgeous-Alexander",
+          "team": "OKC",
+          "pts": 31,
+          "min": "32"
+        },
+        {
+          "player": "Jalen Williams",
+          "team": "OKC",
+          "pts": 24,
+          "min": "35"
+        },
+        {
+          "player": "Alperen Sengun",
+          "team": "HOU",
+          "pts": 23,
+          "min": "36"
+        },
+        {
+          "player": "Chet Holmgren",
+          "team": "OKC",
+          "pts": 18,
+          "min": "34"
+        },
+        {
+          "player": "Jabari Smith Jr.",
+          "team": "HOU",
+          "pts": 18,
+          "min": "35"
+        },
+        {
+          "player": "Jalen Green",
+          "team": "HOU",
+          "pts": 16,
+          "min": "28"
+        },
+        {
+          "player": "Josh Giddey",
+          "team": "OKC",
+          "pts": 14,
+          "min": "20"
+        },
+        {
+          "player": "Aaron Holiday",
+          "team": "HOU",
+          "pts": 10,
+          "min": "16"
+        }
+      ]
+    },
+    {
+      "gameId": "1038439",
+      "gamesArchive": {
+        "date": "2024-02-28",
+        "datetime": "2024-02-29T02:00:00.000Z",
+        "home": {
+          "id": "8",
+          "abbr": "DEN",
+          "name": "Denver Nuggets",
+          "score": 117
+        },
+        "visitor": {
+          "id": "26",
+          "abbr": "SAC",
+          "name": "Sacramento Kings",
+          "score": 96
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 9
+      },
+      "stats": {
+        "totalRows": 36,
+        "distinctPlayers": 36,
+        "homeRows": 18,
+        "visitorRows": 18,
+        "summedHome": 114,
+        "summedVisitor": 96,
+        "officialHome": 117,
+        "officialVisitor": 96,
+        "deltaHome": -3,
+        "deltaVisitor": 0,
+        "totalPtsAllRows": 210,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 21,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 117,
+        "modeAway": 96,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "117|96",
+            "rows": 36
+          }
+        ]
+      },
+      "pages": [
+        308,
+        309
+      ],
+      "splitAcrossPages": true,
+      "firstPageRowCount": 17,
+      "lastPageRowCount": 19,
+      "pageBoundary": [
+        {
+          "page": 308,
+          "prior": 307,
+          "next": 309,
+          "meta": {
+            "nextCursor": 14472560,
+            "recordCount": 100,
+            "malformed": false
+          }
+        },
+        {
+          "page": 309,
+          "prior": 308,
+          "next": 310,
+          "meta": {
+            "nextCursor": 14474432,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Jamal Murray",
+          "team": "DEN",
+          "pts": 32,
+          "min": "33"
+        },
+        {
+          "player": "Keegan Murray",
+          "team": "SAC",
+          "pts": 21,
+          "min": "33"
+        },
+        {
+          "player": "Chris Duarte",
+          "team": "SAC",
+          "pts": 18,
+          "min": "26"
+        },
+        {
+          "player": "Aaron Gordon",
+          "team": "DEN",
+          "pts": 17,
+          "min": "24"
+        },
+        {
+          "player": "Kentavious Caldwell-Pope",
+          "team": "DEN",
+          "pts": 16,
+          "min": "29"
+        },
+        {
+          "player": "Michael Porter Jr.",
+          "team": "DEN",
+          "pts": 14,
+          "min": "24"
+        },
+        {
+          "player": "Nikola Jokic",
+          "team": "DEN",
+          "pts": 14,
+          "min": "32"
+        },
+        {
+          "player": "Malik Monk",
+          "team": "SAC",
+          "pts": 14,
+          "min": "25"
+        }
+      ]
+    },
+    {
+      "gameId": "1038453",
+      "gamesArchive": {
+        "date": "2024-03-01",
+        "datetime": "2024-03-02T01:00:00.000Z",
+        "home": {
+          "id": "15",
+          "abbr": "MEM",
+          "name": "Memphis Grizzlies",
+          "score": 92
+        },
+        "visitor": {
+          "id": "25",
+          "abbr": "POR",
+          "name": "Portland Trail Blazers",
+          "score": 122
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 9
+      },
+      "stats": {
+        "totalRows": 37,
+        "distinctPlayers": 37,
+        "homeRows": 19,
+        "visitorRows": 18,
+        "summedHome": 89,
+        "summedVisitor": 122,
+        "officialHome": 92,
+        "officialVisitor": 122,
+        "deltaHome": -3,
+        "deltaVisitor": 0,
+        "totalPtsAllRows": 211,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 19,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 92,
+        "modeAway": 122,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "92|122",
+            "rows": 37
+          }
+        ]
+      },
+      "pages": [
+        314
+      ],
+      "splitAcrossPages": false,
+      "firstPageRowCount": 37,
+      "lastPageRowCount": 37,
+      "pageBoundary": [
+        {
+          "page": 314,
+          "prior": 313,
+          "next": 315,
+          "meta": {
+            "nextCursor": 14481310,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Jake LaRavia",
+          "team": "MEM",
+          "pts": 21,
+          "min": "26"
+        },
+        {
+          "player": "Lamar Stevens",
+          "team": "MEM",
+          "pts": 19,
+          "min": "21"
+        },
+        {
+          "player": "Dalano Banton",
+          "team": "POR",
+          "pts": 19,
+          "min": "20"
+        },
+        {
+          "player": "Jabari Walker",
+          "team": "POR",
+          "pts": 19,
+          "min": "22"
+        },
+        {
+          "player": "Duop Reath",
+          "team": "POR",
+          "pts": 18,
+          "min": "23"
+        },
+        {
+          "player": "Kris Murray",
+          "team": "POR",
+          "pts": 14,
+          "min": "24"
+        },
+        {
+          "player": "Matisse Thybulle",
+          "team": "POR",
+          "pts": 13,
+          "min": "26"
+        },
+        {
+          "player": "GG Jackson",
+          "team": "MEM",
+          "pts": 11,
+          "min": "23"
+        }
+      ]
+    },
+    {
+      "gameId": "1038491",
+      "gamesArchive": {
+        "date": "2024-03-06",
+        "datetime": "2024-03-07T03:00:00.000Z",
+        "home": {
+          "id": "10",
+          "abbr": "GSW",
+          "name": "Golden State Warriors",
+          "score": 125
+        },
+        "visitor": {
+          "id": "17",
+          "abbr": "MIL",
+          "name": "Milwaukee Bucks",
+          "score": 90
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 10
+      },
+      "stats": {
+        "totalRows": 35,
+        "distinctPlayers": 35,
+        "homeRows": 17,
+        "visitorRows": 18,
+        "summedHome": 122,
+        "summedVisitor": 90,
+        "officialHome": 125,
+        "officialVisitor": 90,
+        "deltaHome": -3,
+        "deltaVisitor": 0,
+        "totalPtsAllRows": 212,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 20,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 125,
+        "modeAway": 90,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "125|90",
+            "rows": 35
+          }
+        ]
+      },
+      "pages": [
+        327
+      ],
+      "splitAcrossPages": false,
+      "firstPageRowCount": 35,
+      "lastPageRowCount": 35,
+      "pageBoundary": [
+        {
+          "page": 327,
+          "prior": 326,
+          "next": 328,
+          "meta": {
+            "nextCursor": 14498116,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Stephen Curry",
+          "team": "GSW",
+          "pts": 29,
+          "min": "30"
+        },
+        {
+          "player": "Giannis Antetokounmpo",
+          "team": "MIL",
+          "pts": 23,
+          "min": "33"
+        },
+        {
+          "player": "Jonathan Kuminga",
+          "team": "GSW",
+          "pts": 20,
+          "min": "25"
+        },
+        {
+          "player": "Damian Lillard",
+          "team": "MIL",
+          "pts": 20,
+          "min": "33"
+        },
+        {
+          "player": "Bobby Portis",
+          "team": "MIL",
+          "pts": 20,
+          "min": "24"
+        },
+        {
+          "player": "Trayce Jackson-Davis",
+          "team": "GSW",
+          "pts": 15,
+          "min": "19"
+        },
+        {
+          "player": "Draymond Green",
+          "team": "GSW",
+          "pts": 12,
+          "min": "25"
+        },
+        {
+          "player": "Klay Thompson",
+          "team": "GSW",
+          "pts": 10,
+          "min": "21"
+        }
+      ]
+    },
+    {
+      "gameId": "1038504",
+      "gamesArchive": {
+        "date": "2024-03-08",
+        "datetime": "2024-03-09T00:30:00.000Z",
+        "home": {
+          "id": "20",
+          "abbr": "NYK",
+          "name": "New York Knicks",
+          "score": 98
+        },
+        "visitor": {
+          "id": "22",
+          "abbr": "ORL",
+          "name": "Orlando Magic",
+          "score": 74
+        },
+        "status": "Final",
+        "postseason": false,
+        "period": 4,
+        "time": "Final",
+        "gamesPage": 10
+      },
+      "stats": {
+        "totalRows": 34,
+        "distinctPlayers": 34,
+        "homeRows": 16,
+        "visitorRows": 18,
+        "summedHome": 98,
+        "summedVisitor": 72,
+        "officialHome": 98,
+        "officialVisitor": 74,
+        "deltaHome": 0,
+        "deltaVisitor": -2,
+        "totalPtsAllRows": 170,
+        "unassignedPts": 0,
+        "unexpectedTeams": [],
+        "duplicateLogicalPlayerIds": [],
+        "duplicateProviderStatIds": [],
+        "missingPlayerIds": 0,
+        "missingTeamIds": 0,
+        "unusualMinutes": 0,
+        "nullPts": 0,
+        "rowsWithPoints": 18,
+        "structure": "structurally_normal_score_mismatch"
+      },
+      "nestedStatGameScores": {
+        "modeHome": 98,
+        "modeAway": 74,
+        "equalsOfficialGameRow": true,
+        "equalsPlayerPtsSum": false,
+        "variants": [
+          {
+            "score": "98|74",
+            "rows": 34
+          }
+        ]
+      },
+      "pages": [
+        331
+      ],
+      "splitAcrossPages": false,
+      "firstPageRowCount": 34,
+      "lastPageRowCount": 34,
+      "pageBoundary": [
+        {
+          "page": 331,
+          "prior": 330,
+          "next": 332,
+          "meta": {
+            "nextCursor": 14503461,
+            "recordCount": 100,
+            "malformed": false
+          }
+        }
+      ],
+      "sourceVsValidator": "A",
+      "sourceVsValidatorNote": "Archived /v1/stats pts sums do not match archived official game scores. Validator calculation matches this independent recount.",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ],
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "topScorers": [
+        {
+          "player": "Jalen Brunson",
+          "team": "NYK",
+          "pts": 26,
+          "min": "29"
+        },
+        {
+          "player": "Paolo Banchero",
+          "team": "ORL",
+          "pts": 23,
+          "min": "36"
+        },
+        {
+          "player": "Josh Hart",
+          "team": "NYK",
+          "pts": 19,
+          "min": "42"
+        },
+        {
+          "player": "Precious Achiuwa",
+          "team": "NYK",
+          "pts": 15,
+          "min": "39"
+        },
+        {
+          "player": "Miles McBride",
+          "team": "NYK",
+          "pts": 14,
+          "min": "19"
+        },
+        {
+          "player": "Franz Wagner",
+          "team": "ORL",
+          "pts": 13,
+          "min": "34"
+        },
+        {
+          "player": "Donte DiVincenzo",
+          "team": "NYK",
+          "pts": 11,
+          "min": "42"
+        },
+        {
+          "player": "Jonathan Isaac",
+          "team": "ORL",
+          "pts": 11,
+          "min": "16"
+        }
+      ]
+    }
+  ],
+  "structuralFindings": {
+    "duplicateProviderStatIdsGlobal": 0,
+    "logicalPlayerGameDuplicateKeys": 0,
+    "medianPlayerRowsOnMatchingFinals": 35,
+    "mismatchRowCounts": [
+      {
+        "gameId": "1038319",
+        "rows": 35
+      },
+      {
+        "gameId": "1038322",
+        "rows": 35
+      },
+      {
+        "gameId": "1038342",
+        "rows": 33
+      },
+      {
+        "gameId": "1038362",
+        "rows": 34
+      },
+      {
+        "gameId": "1038379",
+        "rows": 34
+      },
+      {
+        "gameId": "1038433",
+        "rows": 35
+      },
+      {
+        "gameId": "1038439",
+        "rows": 36
+      },
+      {
+        "gameId": "1038453",
+        "rows": 37
+      },
+      {
+        "gameId": "1038491",
+        "rows": 35
+      },
+      {
+        "gameId": "1038504",
+        "rows": 34
+      }
+    ]
+  },
+  "archivePageBoundaryFindings": {
+    "gamesPages": 14,
+    "statsPages": 461,
+    "gamesCursorExhausted": true,
+    "statsCursorExhausted": true,
+    "malformedOrEmptyStatsPages": [],
+    "nearFinalStatsPage": false,
+    "retryBoundaryNote": "Step 4A recorded 1×429 and 1 retry on the whole run (476 attempts / 475 success). Pages 1–461 all exist with sequential keys; no truncated empty page objects.",
+    "skipExisting": "2023 prefix was empty before 4A; all pages written=not skipped",
+    "runLogMetrics": {
+      "httpAttempts": 476,
+      "httpSuccess": 475,
+      "status429": 1,
+      "status5xx": 0,
+      "retries": 1,
+      "retryAfterUsed": 1,
+      "spacingSamplesMs": [
+        13695,
+        13675,
+        13592,
+        13717,
+        13552,
+        13587,
+        13666,
+        13533,
+        13602,
+        13815,
+        13576,
+        13529,
+        13696,
+        567,
+        13930,
+        5175,
+        13681,
+        13715,
+        13718,
+        13730,
+        13616,
+        13628,
+        13710,
+        13593,
+        13759,
+        13698,
+        13635,
+        13830,
+        13702,
+        13755,
+        13641,
+        13759,
+        13707,
+        13679,
+        13819,
+        13623,
+        13622,
+        13832,
+        13702,
+        13616,
+        13671,
+        13614,
+        13611,
+        13730,
+        13676,
+        13731,
+        13763,
+        13619,
+        13764,
+        13997,
+        13654,
+        13693,
+        13828,
+        13624,
+        13595,
+        13803,
+        13659,
+        13733,
+        13852,
+        13664,
+        13692,
+        13667,
+        13647,
+        13739,
+        13731,
+        13639,
+        13621,
+        13731,
+        13781,
+        13622,
+        13698,
+        13651,
+        13604,
+        13731,
+        13641,
+        13659,
+        13734,
+        13670,
+        13614,
+        13841,
+        13636,
+        13680,
+        13719,
+        13625,
+        13693,
+        13694,
+        13658,
+        13768,
+        13793,
+        13633,
+        13641,
+        13741,
+        14878,
+        13688,
+        13848,
+        13651,
+        13770,
+        13770,
+        13631,
+        13674,
+        13714,
+        13731,
+        13661,
+        13700,
+        13652,
+        13624,
+        13809,
+        13641,
+        13647,
+        13697,
+        13715,
+        13724,
+        13790,
+        13600,
+        13636,
+        13753,
+        13620,
+        13631,
+        13679,
+        13655,
+        13758,
+        13715,
+        13740,
+        13636,
+        13744,
+        13675,
+        13694,
+        13649,
+        13684,
+        13785,
+        13670,
+        13827,
+        13612,
+        13602,
+        13722,
+        13717,
+        13651,
+        13695,
+        13724,
+        13615,
+        13621,
+        13705,
+        13658,
+        13577,
+        13777,
+        13762,
+        13731,
+        13876,
+        13709,
+        13660,
+        13644,
+        13774,
+        13701,
+        13766,
+        13597,
+        13654,
+        13667,
+        13649,
+        13732,
+        13887,
+        13593,
+        13768,
+        13662,
+        13623,
+        13733,
+        13752,
+        13678,
+        13700,
+        13735,
+        13637,
+        13709,
+        13656,
+        13622,
+        13709,
+        13674,
+        13601,
+        13831,
+        13612,
+        13712,
+        13683,
+        13596,
+        13594,
+        13662,
+        13598,
+        13629,
+        13782,
+        13630,
+        13577,
+        13690,
+        13833,
+        14716,
+        13652,
+        13598,
+        13620,
+        13665,
+        13641,
+        13653,
+        13710,
+        13740,
+        13743,
+        13722,
+        13715,
+        13608,
+        13638,
+        13779,
+        13796,
+        13710,
+        13699,
+        13651,
+        13798,
+        13625,
+        13657,
+        13645,
+        13629,
+        13664,
+        13688,
+        13630,
+        13590,
+        13676,
+        13617,
+        13666,
+        13728,
+        13694,
+        13673,
+        13762,
+        13601,
+        13735,
+        13695,
+        13620,
+        13679,
+        13860,
+        13631,
+        13798,
+        13739,
+        13631,
+        13573,
+        13779,
+        13725,
+        13723,
+        13625,
+        13800,
+        13592,
+        13613,
+        13708,
+        13564,
+        13640,
+        13695,
+        13626,
+        13730,
+        13791,
+        13670,
+        13803,
+        13733,
+        13631,
+        13651,
+        13694,
+        13655,
+        13612,
+        13838,
+        13702,
+        13721,
+        13687,
+        13656,
+        13640,
+        13773,
+        13693,
+        13724,
+        13740,
+        13712,
+        13602,
+        13676,
+        13637,
+        13577,
+        13748,
+        13625,
+        13614,
+        13712,
+        13691,
+        13651,
+        13634,
+        13690,
+        13701,
+        13617,
+        13710,
+        13639,
+        13638,
+        13760,
+        13720,
+        13630,
+        17615,
+        13727,
+        13825,
+        13648,
+        13684,
+        13797,
+        13699,
+        13663,
+        13726,
+        13779,
+        13642,
+        13742,
+        13708,
+        13686,
+        13780,
+        13598,
+        13594,
+        13750,
+        13581,
+        13745,
+        13767,
+        13632,
+        13606,
+        13773,
+        13619,
+        13625,
+        13718,
+        13772,
+        13558,
+        13892,
+        13694,
+        13633,
+        13765,
+        13776,
+        13597,
+        13780,
+        13728,
+        13729,
+        13617,
+        13613,
+        13677,
+        13610,
+        13717,
+        13724,
+        13656,
+        13631,
+        13823,
+        13709,
+        13672,
+        13719,
+        13639,
+        13687,
+        13710,
+        13686,
+        13616,
+        13782,
+        13704,
+        13642,
+        13811,
+        13673,
+        13679,
+        13731,
+        13678,
+        13597,
+        13662,
+        13626,
+        13661,
+        13734,
+        13615,
+        13565,
+        13769,
+        13674,
+        13625,
+        13684,
+        13667,
+        13663,
+        13762,
+        13796,
+        13688,
+        13911,
+        13628,
+        13605,
+        13781,
+        13603,
+        13639,
+        13694,
+        13654,
+        13663,
+        13805,
+        13719,
+        13595,
+        13583,
+        13743,
+        13784,
+        13680,
+        13819,
+        13624,
+        13624,
+        13665,
+        13733,
+        13636,
+        13643,
+        13853,
+        13676,
+        13648,
+        13981,
+        13659,
+        13679,
+        13660,
+        13782,
+        13648,
+        13759,
+        13632,
+        13716,
+        13782,
+        13668,
+        13706,
+        13837,
+        13597,
+        13684,
+        13709,
+        13851,
+        13640,
+        13687,
+        13712,
+        13678,
+        13698,
+        13704,
+        13691,
+        13605,
+        13713,
+        13657,
+        13633,
+        13706,
+        13663,
+        13584,
+        13812,
+        13673,
+        13704,
+        13717,
+        13671,
+        13671,
+        13800,
+        13709,
+        13798,
+        13719,
+        13684,
+        13651,
+        13838,
+        13672,
+        13676,
+        13749,
+        13610,
+        13657,
+        13803,
+        13670,
+        13661,
+        13677,
+        13638,
+        13705,
+        13713,
+        13733,
+        13703,
+        13663,
+        13594,
+        13742,
+        13782,
+        13748,
+        13646,
+        13721,
+        13652,
+        13723,
+        13644,
+        13641,
+        13770,
+        14144,
+        13671,
+        13789,
+        13645,
+        13673,
+        13676,
+        13648,
+        13660,
+        13669,
+        13596,
+        13599
+      ]
+    }
+  },
+  "sharedPatternAnalysis": {
+    "dates": {
+      "2024-02-07": 2,
+      "2024-02-10": 1,
+      "2024-02-12": 1,
+      "2024-02-14": 1,
+      "2024-02-27": 1,
+      "2024-02-28": 1,
+      "2024-03-01": 1,
+      "2024-03-06": 1,
+      "2024-03-08": 1
+    },
+    "teams": {
+      "GSW": 2,
+      "SAS": 2,
+      "PHI": 1,
+      "MIA": 1,
+      "BKN": 1,
+      "LAC": 1,
+      "MIN": 1,
+      "PHX": 1,
+      "DET": 1,
+      "OKC": 1,
+      "HOU": 1,
+      "DEN": 1,
+      "SAC": 1,
+      "MEM": 1,
+      "POR": 1,
+      "MIL": 1,
+      "NYK": 1,
+      "ORL": 1
+    },
+    "statsPages": {
+      "267": 1,
+      "268": 2,
+      "274": 1,
+      "275": 1,
+      "281": 1,
+      "282": 1,
+      "287": 1,
+      "307": 1,
+      "308": 1,
+      "309": 1,
+      "314": 1,
+      "327": 1,
+      "331": 1
+    },
+    "postseasonCount": 0,
+    "deltas": [
+      0,
+      -2,
+      -2,
+      0,
+      0,
+      -2,
+      -4,
+      0,
+      -5,
+      -5,
+      -2,
+      0,
+      -3,
+      0,
+      -3,
+      0,
+      -3,
+      0,
+      0,
+      -2
+    ],
+    "allOfficialMinusSumNonNegative": true,
+    "undercountSideCount": 11,
+    "interpretation": "All 10 are regular-season Finals whose archived player pts undercount the archived official score by 2–5 points on one or both sides. Nested /v1/stats game scores match the official games payload, not the player-pts sum — so this is provider box vs score inconsistency in the archived payload, not a validator bug and not a pagination hole."
+  },
+  "providerDataVsValidator": {
+    "conclusion": "A",
+    "detail": "Independent recount of archived s.pts grouped by stat.team.id reproduces Step 4A exactly. Nested game.home_team_score/visitor_team_score on the stat rows match the games archive, not the summed pts. Validator is not wrong."
+  },
+  "minimumRepairActionPerGame": [
+    {
+      "gameId": "1038319",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038322",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038342",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038362",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038379",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038433",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038439",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038453",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038491",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    },
+    {
+      "gameId": "1038504",
+      "repair": "REFETCH_SINGLE_GAME_STATS",
+      "classifications": [
+        "PLAYER_STAT_SCORE_MISMATCH",
+        "ARCHIVED_STATS_INCOMPLETE",
+        "PROVIDER_DATA_ANOMALY"
+      ]
+    }
+  ],
+  "estimatedRepairRequestCost": {
+    "refetchSingleGameStats": 10,
+    "refetchGameMetadata": 0,
+    "totalRequests": 10,
+    "secondsAt13s": 130,
+    "estimatedMinutes": 2.2,
+    "note": "Do not make these requests in Step 4B. Game-scoped /v1/stats is typically 1 request per game_ids[] page; 10 games ≈ 10 requests ≈ 2.2 minutes at 13s plus overhead."
+  },
+  "restOfSeasonCompleteness": {
+    "totalFinals": 1319,
+    "cleanFinals": 1309,
+    "otherMismatches": [],
+    "missingFinalsWithoutStats": 0,
+    "unknownStatGameIds": [],
+    "logicalDupKeys": 0,
+    "identityFailures": 0,
+    "cleanGamesOverTotal": "1309 / 1319"
+  },
+  "postgresUnchanged": {
+    "ok": true,
+    "snapshot": {
+      "games_2023": 0,
+      "logs_2023": 0,
+      "tgs_2023": 0,
+      "psa_2023": 0,
+      "tsa_2023": 0,
+      "stints_2023": 0,
+      "raw_pgs": 46056,
+      "raw_pgs_2023": 0,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "stints_2026": 578,
+      "box184": {
+        "home": 109,
+        "away": 118
+      }
+    }
+  },
+  "recommendedNextStep": "Do not materialize 2023 yet. Next: targeted game-scoped /v1/stats (and/or game metadata) refetch for the 10 IDs only, then re-reconcile. Do not start Advanced Stats or 2022.",
+  "verdict": "GREEN — mismatches understood; proceed with targeted repair"
+}

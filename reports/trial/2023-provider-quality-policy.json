@@ -1,0 +1,732 @@
+{
+  "generatedAt": "2026-09-08T19:21:20.744Z",
+  "step": "4E",
+  "dryRun": true,
+  "bdlHttpRequests": 0,
+  "postgresWrites": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "bdlHttpRequests": 0,
+    "postgresWrites": false,
+    "serving": {
+      "games_2023": 0,
+      "logs_2023": 0,
+      "tgs_2023": 0,
+      "psa_2023": 0,
+      "tsa_2023": 0,
+      "stints_2023": 0,
+      "raw_pgs": 46056,
+      "raw_pgs_2023": 0,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "stints_2026": 578,
+      "gvr_rows": 5817,
+      "box184": {
+        "home": 109,
+        "away": 118
+      }
+    }
+  },
+  "existingQualityInfrastructureAudit": {
+    "table": "public.game_validation_results",
+    "present": true,
+    "existingRows": 5817,
+    "sampleGameIds": [
+      "bbref_202510210000_HOU_OKC",
+      "bbref_202510210000_HOU_OKC",
+      "bbref_202510210000_HOU_OKC"
+    ],
+    "idNamespace": "existing rows use bbref_* game ids; BDL numeric ids do not collide",
+    "columns": [
+      "game_id",
+      "check_name",
+      "status",
+      "severity",
+      "details jsonb",
+      "validated_at"
+    ],
+    "uniqueKey": "(game_id, check_name)",
+    "canRepresent": {
+      "game_id": "column",
+      "season": "details.season",
+      "source": "details.source",
+      "issueCode": "check_name",
+      "severity": "column (error = high)",
+      "officialScore": "details.official",
+      "providerSum": "details.providerSum",
+      "delta": "details.delta",
+      "detectedAt": "validated_at",
+      "notes": "details.notes / reviewStatus"
+    },
+    "reuse": true,
+    "reason": "This is the existing per-game validation ledger. Not an unrelated table. No migration required."
+  },
+  "chosenQualityRepresentation": {
+    "table": "public.game_validation_results",
+    "checkName": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+    "status": "fail",
+    "severity": "error",
+    "writeOnMaterialize": true,
+    "writeNow": false
+  },
+  "anomalyCode": {
+    "code": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+    "semantics": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+  },
+  "authoritativeScorePolicy": {
+    "gameScore": "analytics.games home_score/away_score from BDL /v1/games archive. Authoritative final score.",
+    "playerStats": "Store BDL player rows exactly as provided. Do not alter pts. Do not distribute missing team points.",
+    "teamStats": {
+      "team_points": "SUM(analytics.player_game_logs.points) — provider as-reported. For the 10 games this is 2–5 pts below official.",
+      "points_allowed": "Opponent analytics.games score (authoritative).",
+      "result": "W/L from analytics.games home_score vs away_score (authoritative).",
+      "team_season_averages": "avg_points uses team_points (provider sums). wins/losses/avg_points_allowed use official-score fields.",
+      "doNot": "Do not overwrite team_points with official scores (fabrication). Do not change W/L to player-sum outcomes."
+    }
+  },
+  "seasonAveragePolicy": {
+    "playerSeasonAverages": "Include provider player stats as reported. Do not drop the 10 games.",
+    "reason": "Dropping them would create a larger completeness error than the 2–5 point undercount."
+  },
+  "futureResearchFilterPolicy": {
+    "excludeFromScoreSensitiveWork": "unresolved severity-high provider score mismatch",
+    "sql": "select game_id\n  from game_validation_results\n  where check_name = 'BDL_PLAYER_POINTS_SCORE_MISMATCH'\n    and status = 'fail'\n    and severity = 'error'",
+    "historicalExplorer": "Do not auto-exclude. Later UI may disclose that provider player stats do not fully reconcile.",
+    "noUiNow": true
+  },
+  "allowlist": [
+    {
+      "gameId": "1038319",
+      "official": {
+        "home": 104,
+        "away": 127
+      },
+      "providerSum": {
+        "home": 104,
+        "away": 125
+      },
+      "boxScoresEvidence": "sampled_reproduced"
+    },
+    {
+      "gameId": "1038322",
+      "official": {
+        "home": 116,
+        "away": 104
+      },
+      "providerSum": {
+        "home": 114,
+        "away": 104
+      },
+      "boxScoresEvidence": "sampled_reproduced"
+    },
+    {
+      "gameId": "1038342",
+      "official": {
+        "home": 123,
+        "away": 103
+      },
+      "providerSum": {
+        "home": 123,
+        "away": 101
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038362",
+      "official": {
+        "home": 100,
+        "away": 121
+      },
+      "providerSum": {
+        "home": 96,
+        "away": 121
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038379",
+      "official": {
+        "home": 116,
+        "away": 100
+      },
+      "providerSum": {
+        "home": 111,
+        "away": 95
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038433",
+      "official": {
+        "home": 112,
+        "away": 95
+      },
+      "providerSum": {
+        "home": 110,
+        "away": 95
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038439",
+      "official": {
+        "home": 117,
+        "away": 96
+      },
+      "providerSum": {
+        "home": 114,
+        "away": 96
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038453",
+      "official": {
+        "home": 92,
+        "away": 122
+      },
+      "providerSum": {
+        "home": 89,
+        "away": 122
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038491",
+      "official": {
+        "home": 125,
+        "away": 90
+      },
+      "providerSum": {
+        "home": 122,
+        "away": 90
+      },
+      "boxScoresEvidence": "class_confirmed_by_sample"
+    },
+    {
+      "gameId": "1038504",
+      "official": {
+        "home": 98,
+        "away": 74
+      },
+      "providerSum": {
+        "home": 98,
+        "away": 72
+      },
+      "boxScoresEvidence": "sampled_reproduced"
+    }
+  ],
+  "evidenceNotes": [
+    {
+      "gameId": "1038319",
+      "refetchIdentical": true,
+      "boxScores": "sampled_reproduced",
+      "origSum": {
+        "home": 104,
+        "away": 125,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 104,
+        "away": 125,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038322",
+      "refetchIdentical": true,
+      "boxScores": "sampled_reproduced",
+      "origSum": {
+        "home": 114,
+        "away": 104,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 114,
+        "away": 104,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038342",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 123,
+        "away": 101,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 123,
+        "away": 101,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038362",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 96,
+        "away": 121,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 96,
+        "away": 121,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038379",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 111,
+        "away": 95,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 111,
+        "away": 95,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038433",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 110,
+        "away": 95,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 110,
+        "away": 95,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038439",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 114,
+        "away": 96,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 114,
+        "away": 96,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038453",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 89,
+        "away": 122,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 89,
+        "away": 122,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038491",
+      "refetchIdentical": true,
+      "boxScores": "class_confirmed_by_sample",
+      "origSum": {
+        "home": 122,
+        "away": 90,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 122,
+        "away": 90,
+        "players": {}
+      }
+    },
+    {
+      "gameId": "1038504",
+      "refetchIdentical": true,
+      "boxScores": "sampled_reproduced",
+      "origSum": {
+        "home": 98,
+        "away": 72,
+        "players": {}
+      },
+      "freshSum": {
+        "home": 98,
+        "away": 72,
+        "players": {}
+      }
+    }
+  ],
+  "dryRunCounts": {
+    "archiveGames": 1319,
+    "archiveStats": 46090,
+    "mappedGames": 1319,
+    "mappedLogs": 46090,
+    "projectedTeamStats": 2638,
+    "projectedPlayerAverages": 595,
+    "projectedTeamAverages": 30,
+    "projectedInferredStints": 695,
+    "qualityFlags": 10,
+    "allowStrict": 1309,
+    "allowAnomaly": 10,
+    "reject": 0,
+    "expected": {
+      "games": 1319,
+      "logs": 46090,
+      "teamStats": 2638,
+      "qualityFlags": 10,
+      "allowStrict": 1309,
+      "allowAnomaly": 10
+    }
+  },
+  "mappingIssues": {
+    "gamesFetched": 1319,
+    "gamesInWindow": 1319,
+    "gamesSkippedWindow": 0,
+    "statsFetched": 46090,
+    "logsBuilt": 46090,
+    "unresolvedTeams": 0,
+    "unresolvedPlayers": 0,
+    "unresolvedGames": 0,
+    "crossSeasonConflicts": 0
+  },
+  "rejects": [],
+  "projectedQualityRows": [
+    {
+      "game_id": "1038319",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 104,
+          "away": 127
+        },
+        "providerSum": {
+          "home": 104,
+          "away": 125
+        },
+        "delta": {
+          "home": 0,
+          "away": -2
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038322",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 116,
+          "away": 104
+        },
+        "providerSum": {
+          "home": 114,
+          "away": 104
+        },
+        "delta": {
+          "home": -2,
+          "away": 0
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038342",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 123,
+          "away": 103
+        },
+        "providerSum": {
+          "home": 123,
+          "away": 101
+        },
+        "delta": {
+          "home": 0,
+          "away": -2
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038362",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 100,
+          "away": 121
+        },
+        "providerSum": {
+          "home": 96,
+          "away": 121
+        },
+        "delta": {
+          "home": -4,
+          "away": 0
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038379",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 116,
+          "away": 100
+        },
+        "providerSum": {
+          "home": 111,
+          "away": 95
+        },
+        "delta": {
+          "home": -5,
+          "away": -5
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038433",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 112,
+          "away": 95
+        },
+        "providerSum": {
+          "home": 110,
+          "away": 95
+        },
+        "delta": {
+          "home": -2,
+          "away": 0
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038439",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 117,
+          "away": 96
+        },
+        "providerSum": {
+          "home": 114,
+          "away": 96
+        },
+        "delta": {
+          "home": -3,
+          "away": 0
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038453",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 92,
+          "away": 122
+        },
+        "providerSum": {
+          "home": 89,
+          "away": 122
+        },
+        "delta": {
+          "home": -3,
+          "away": 0
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038491",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 125,
+          "away": 90
+        },
+        "providerSum": {
+          "home": 122,
+          "away": 90
+        },
+        "delta": {
+          "home": -3,
+          "away": 0
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    },
+    {
+      "game_id": "1038504",
+      "check_name": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "status": "fail",
+      "severity": "error",
+      "details": {
+        "season": "2023",
+        "source": "balldontlie",
+        "issue": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+        "official": {
+          "home": 98,
+          "away": 74
+        },
+        "providerSum": {
+          "home": 98,
+          "away": 72
+        },
+        "delta": {
+          "home": 0,
+          "away": -2
+        },
+        "reviewStatus": "persistent_reviewed_provider_anomaly",
+        "notes": "BALLDONTLIE's official game score is authoritative for the game record, but the sum of provider player pts is lower than that score. Targeted /v1/stats refetch and Box Scores independently reproduced the same provider data."
+      },
+      "validated_at": "2026-09-08T19:21:20.744Z"
+    }
+  ],
+  "validatorSafetyTests": {
+    "file": "lib/ingestion/historical-serving/__tests__/provider-quality-policy.test.ts",
+    "cases": [
+      "known 10 allowed only under explicit persistent-provider-anomaly policy",
+      "unknown mismatch fails closed",
+      "known id with new structural defect fails closed",
+      "known id whose mismatch changes unexpectedly fails closed",
+      "known id that suddenly reconciles requires review",
+      "clean games use normal validation path",
+      "allowlist is 2023-only; no generic ignoreScoreMismatch"
+    ]
+  },
+  "projectedStorage": {
+    "method": "Scale actual 2024 materialization delta (+10.95 MB) by 2023/2024 player-log counts. Quality flag rows are negligible.",
+    "actual2024DeltaMb": 10.95,
+    "logScale": 1,
+    "lowMb": 10.39,
+    "baseMb": 10.94,
+    "highMb": 12.58,
+    "currentDbMb": 315.02,
+    "checkpointAfter2024Mb": 315.02,
+    "projectedDbAfter2023Mb": 325.96,
+    "headroomTo340Mb": 14.04
+  },
+  "trialApiCost": {
+    "bdlHttpRequests": 0,
+    "investigationClosedForTrial": true,
+    "note": "Do not spend more GOAT requests on these 10. /v1/stats refetch and Box Scores already reproduced the anomaly."
+  },
+  "remainingMaterializationBlockers": [
+    "Do not materialize from this step.",
+    "Next execute must call evaluateSeason before writes and upsert the 10 game_validation_results rows.",
+    "Do not introduce ignoreScoreMismatch=true."
+  ],
+  "archiveGate": {
+    "ok": true,
+    "games": {
+      "pages": 14,
+      "records": 1319,
+      "status": "success"
+    },
+    "playerStats": {
+      "pages": 461,
+      "records": 46090,
+      "status": "success"
+    }
+  },
+  "seasonWindow": {
+    "min": "2023-10-15",
+    "max": "2024-06-30"
+  },
+  "verdict": "GREEN — quality policy is fail-closed and 2023 is ready for controlled materialization"
+}
