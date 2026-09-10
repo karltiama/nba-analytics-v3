@@ -10,7 +10,6 @@ import {
   propsComparisonLabel,
   shoppingUnavailableMessage,
   summarizeComparableBoard,
-  summarizePropMovement,
   type PropMarketBookRow,
 } from '../prop-market-compare';
 
@@ -173,38 +172,11 @@ describe('missing shopping data', () => {
   });
 });
 
-describe('movement snapshots', () => {
-  it('does not fabricate movement from zero or one snapshot', () => {
-    expect(summarizePropMovement([])).toEqual({
-      available: false,
-      reason: 'missing_movement_snapshots',
-    });
-    expect(
-      summarizePropMovement([{ snapshotAt: '2026-03-09T16:00:00.000Z', lineValue: 24.5 }])
-    ).toEqual({ available: false, reason: 'missing_movement_snapshots' });
-  });
-
-  it('computes open → close when two or more timestamps exist, including a true 0 line', () => {
-    const moved = summarizePropMovement([
-      { snapshotAt: '2026-03-09T16:00:00.000Z', lineValue: 24.5 },
-      { snapshotAt: '2026-03-09T17:00:00.000Z', lineValue: 25.5 },
-    ]);
-    expect(moved).toMatchObject({
-      available: true,
-      openedLine: 24.5,
-      closedLine: 25.5,
-      delta: 1,
-    });
-
-    const zeroLine = summarizePropMovement([
-      { snapshotAt: '2026-03-09T16:00:00.000Z', lineValue: 0 },
-      { snapshotAt: '2026-03-09T17:00:00.000Z', lineValue: 0.5 },
-    ]);
-    expect(zeroLine).toMatchObject({
-      available: true,
-      openedLine: 0,
-      closedLine: 0.5,
-      delta: 0.5,
-    });
+describe('legacy movement helper', () => {
+  it('does not export summarizePropMovement', async () => {
+    const mod = await import('../prop-market-compare');
+    expect('summarizePropMovement' in mod).toBe(false);
+    expect('movementUnavailableMessage' in mod).toBe(false);
+    expect('PropMovementPoint' in mod).toBe(false);
   });
 });

@@ -55,9 +55,13 @@
     "archive:opening-player-props": "tsx scripts/archive/backfill-opening-player-props.ts",
     "archive:opening-game-odds": "tsx scripts/archive/backfill-opening-game-odds.ts",
     "archive:lineups-2025": "tsx scripts/archive/backfill-lineups-2025.ts",
-    "ingest:repair-2025-games": "tsx scripts/ingestion/repair-2025-games-from-bdl.ts"
+    "characterize:lineups-25": "tsx scripts/archive/characterize-lineups-25.ts",
+    "analyze:market-intelligence": "tsx scripts/archive/analyze-market-intelligence.ts",
+    "ingest:repair-2025-games": "tsx scripts/ingestion/repair-2025-games-from-bdl.ts",
+    "ingest:game-starters-2025": "tsx scripts/ingestion/materialize-game-starters-2025.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1130.0",
     "@aws-sdk/client-s3": "^3.1024.0",
     "@aws-sdk/client-sqs": "^3.1024.0",
     "@duckdb/node-api": "^1.5.2-r.1",

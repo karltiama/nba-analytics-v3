@@ -1,0 +1,506 @@
+{
+  "generatedAt": "2026-09-09T23:07:22.396Z",
+  "step": "10",
+  "supersedes": "9A goat-final-audit",
+  "reasonThisAuditSupersedes9A": "Targeted 2023–2025 Season Averages and full 2025 Plays were acquired after Step 9A.",
+  "bdlHttpRequestsThisStep": 0,
+  "started2022": false,
+  "builtPossessions": false,
+  "builtWowy": false,
+  "createdServingTables": false,
+  "productionThawed": false,
+  "configurationMutated": false,
+  "safetyState": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "productionFrozen": true,
+    "bdlHttpThisStep": 0,
+    "acquisitionLockRequired": false,
+    "acquisitionLockActive": false,
+    "postgresBytes": 342846611,
+    "postgresMb": 326.96,
+    "matchesExpectedPostgres": true,
+    "playsServingTables": [],
+    "possessionsTables": [],
+    "wowyTables": [],
+    "advancedServingTables": [],
+    "lineupServingTables": [],
+    "seasonAveragesGoatServingTables": [],
+    "openingMarketServingTables": [],
+    "legacyRawSeasonAveragesRows": 0,
+    "materialDifference": false
+  },
+  "trialTiming": {
+    "trialStart": "2026-09-08T12:10:59.422Z",
+    "currentTimestamp": "2026-09-09T23:07:22.396Z",
+    "elapsedHours": 34.94,
+    "remainingHours": 13.06,
+    "protectedReserveHours": 6,
+    "usableRemainingAfterReserveHours": 7.06,
+    "doNotConsumeBecauseTimeRemains": true,
+    "unusedTimeIsNotAReasonToAcquireMore": true
+  },
+  "coreHistoricalAudit": {
+    "2023": {
+      "games": { "expected": 1319, "actual": 1319, "drift": false },
+      "playerLogs": { "expected": 46090, "actual": 46090, "drift": false },
+      "teamStats": { "expected": 2638, "actual": 2638, "drift": false },
+      "playerAverages": { "expected": 595, "actual": 595, "drift": false },
+      "teamAverages": { "expected": 30, "actual": 30, "drift": false },
+      "inferredStints": { "expected": 695, "actual": 695, "drift": false },
+      "rawPlayerGameStats": { "expected": 0, "actual": 0, "drift": false },
+      "qualityFlags": { "expected": 10, "actual": 10, "drift": false }
+    },
+    "2024": {
+      "games": { "expected": 1321, "actual": 1321, "drift": false },
+      "playerLogs": { "expected": 46150, "actual": 46150, "drift": false },
+      "teamStats": { "expected": 2642, "actual": 2642, "drift": false },
+      "playerAverages": { "expected": 587, "actual": 587, "drift": false },
+      "teamAverages": { "expected": 30, "actual": 30, "drift": false },
+      "inferredStints": { "expected": 699, "actual": 699, "drift": false },
+      "rawPlayerGameStats": { "expected": 0, "actual": 0, "drift": false }
+    },
+    "2025": {
+      "authoritativeBdlFinals": { "expected": 1322, "actual": 1322, "drift": false },
+      "localAnalyticsGames": { "expected": 1323, "actual": 1323, "note": "includes unresolved local-only 21681993" },
+      "playerLogs": { "expected": 46056, "actual": 46056, "drift": false },
+      "teamStats": { "expected": 2644, "actual": 2644, "drift": false },
+      "box18447793": {
+        "expected": "LAC 109 / SAC 118",
+        "actual": { "homeTeam": "LAC", "homeScore": 109, "awayTeam": "SAC", "awayScore": 118 },
+        "drift": false
+      },
+      "rawPlayerGameStats": { "expected": 46056, "actual": 46056, "drift": false }
+    },
+    "drift": false,
+    "classification": "COMPLETE"
+  },
+  "qualityRegistry": {
+    "bdlPlayerPointsScoreMismatch": {
+      "checkName": "BDL_PLAYER_POINTS_SCORE_MISMATCH",
+      "count": 10,
+      "status": "fail",
+      "severity": "error",
+      "season": "2023",
+      "gameIds": [
+        "1038319",
+        "1038322",
+        "1038342",
+        "1038362",
+        "1038379",
+        "1038433",
+        "1038439",
+        "1038453",
+        "1038491",
+        "1038504"
+      ],
+      "recordsRemainPresentAndSpecific": true,
+      "policyGameSpecific": true,
+      "genericIgnoreScoreMismatchExists": false
+    },
+    "lineupStarterAnomalies": {
+      "reason": "starter_archive_anomaly",
+      "count": 2,
+      "gameIds": ["18447931", "18447988"],
+      "details": [
+        { "gameId": "18447931", "teamId": "10", "starters": 4 },
+        { "gameId": "18447988", "teamId": "10", "starters": 4 }
+      ],
+      "doNotMergeIntoGenericFlag": true
+    },
+    "playsRotationReconstructionFailures": {
+      "reason": "rotation_reconstruction_failed",
+      "count": 36,
+      "classes": {
+        "MISSING_PARTICIPANT": 27,
+        "BOTH_OFF_COURT": 5,
+        "BOTH_ON_COURT": 4
+      },
+      "gameIds": [
+        "18446876",
+        "18446886",
+        "18446930",
+        "18446957",
+        "18446964",
+        "18446979",
+        "18446994",
+        "18447007",
+        "18447009",
+        "18447019",
+        "18447074",
+        "18447087",
+        "18447330",
+        "18447390",
+        "18447432",
+        "18447480",
+        "18447498",
+        "18447684",
+        "18447700",
+        "18447720",
+        "18447721",
+        "18447738",
+        "18447741",
+        "18447742",
+        "18447743",
+        "18447752",
+        "18447761",
+        "18447799",
+        "18447802",
+        "18447817",
+        "18447827",
+        "18447831",
+        "18447844",
+        "18447908",
+        "18447928",
+        "18448017"
+      ],
+      "doNotMergeIntoGenericFlag": true,
+      "doNotRepair": true
+    },
+    "playsScoreMismatches": {
+      "reason": "plays_final_score_mismatch",
+      "count": 20,
+      "matched": "1302 / 1322",
+      "gameIds": [
+        "18446874",
+        "18446876",
+        "18446885",
+        "18446886",
+        "18446941",
+        "18447009",
+        "18447024",
+        "18447157",
+        "18447188",
+        "18447236",
+        "18447292",
+        "18447388",
+        "18447389",
+        "18447390",
+        "18447432",
+        "18447741",
+        "18447742",
+        "18447470",
+        "18447953",
+        "21709227"
+      ],
+      "doNotMergeIntoGenericFlag": true
+    },
+    "mergedGenericExclusionFlag": false,
+    "classification": "COMPLETE"
+  },
+  "advancedStatsAudit": {
+    "2023": { "records": 34843, "pages": 349, "manifestStatus": "success", "cursorExhausted": true },
+    "2024": { "records": 35103, "pages": 352, "manifestStatus": "success", "cursorExhausted": true },
+    "2025": { "records": 34810, "pages": 349, "manifestStatus": "success", "cursorExhausted": true },
+    "combinedRecords": 104756,
+    "storage": "S3-only",
+    "servingTable": false,
+    "knownAdvancedOnlyKey": "1038324|273",
+    "fieldLimitations": [
+      "switches_on dead/zero",
+      "matchup_minutes null",
+      "tracking fields season-variable",
+      "low-possession extreme rates / outliers"
+    ],
+    "classification": "COMPLETE"
+  },
+  "playerPropsAudit": {
+    "targetGames": 129,
+    "archivedGames": 129,
+    "openingRows": 44127,
+    "deterministicOpenToCloseMatches": 27491,
+    "productGradeMatchedObservations": 24412,
+    "terminology": "3-Hour Pre-Tip",
+    "notTerminology": ["true market open", "first print"],
+    "v1Books": ["BetMGM", "FanDuel", "DraftKings", "Caesars"],
+    "v1Markets": ["points", "rebounds", "assists", "threes", "points_rebounds", "points_assists", "PRA"],
+    "meaningfulMovementPct": 31.8,
+    "classification": "COMPLETE"
+  },
+  "gameOddsAudit": {
+    "window": "2026-03-09 → 2026-03-22",
+    "games": 107,
+    "openingRows": 1179,
+    "sportsbookRows": 965,
+    "sportsbookOpenToCloseMatches": 945,
+    "matchRatePct": 97.9,
+    "terminology": "Opening Snapshot",
+    "march23CoverageCliffPreserved": true,
+    "classification": "COMPLETE"
+  },
+  "lineupAudit": {
+    "targetGames": 1322,
+    "records": 28833,
+    "valid5plus5": "1320 / 1322",
+    "reliabilityPct": 99.85,
+    "reliabilityClass": "EXCELLENT",
+    "qualityExclusions": ["18447931", "18447988"],
+    "certifies": ["historical starters", "listed non-starters"],
+    "doesNotCertify": ["active roster", "DNP", "inactive", "five-man units", "WOWY"],
+    "s3ManifestPresent": true,
+    "servingTable": false,
+    "classification": "COMPLETE"
+  },
+  "seasonAveragesAudit": {
+    "archiveKind": "targeted_allowlist_only",
+    "notCompleteBdlDump": true,
+    "player": ["isolation", "prballhandler", "prrollman", "drives", "passing", "by_zone"],
+    "team": ["isolation", "possessions", "by_zone_opponent"],
+    "seasons": [2023, 2024, 2025],
+    "records": 7888,
+    "canonicalBytes": 9204971,
+    "canonicalMb": 8.78,
+    "prefixBytesIncludingCharacterization": 9321484,
+    "prefixMb": 8.89,
+    "manifestsPresent": true,
+    "servingTable": false,
+    "productClass": "Role Profile / Matchup Profile enrichment",
+    "limitations": [
+      "season grain only",
+      "qualification-limited playtype coverage",
+      "gp is not necessarily season GP",
+      "no general/advanced duplicate archive"
+    ],
+    "classification": "COMPLETE"
+  },
+  "playsAudit": {
+    "canonicalGames": 1322,
+    "events": 642354,
+    "duplicates": 0,
+    "eventOrderGaps": 0,
+    "zeroResultGames": 0,
+    "canonicalGameObjectMb": 566.1,
+    "prefixBytes": 598114275,
+    "prefixMb": 570.41,
+    "scoreQuality": { "matched": 1302, "of": 1322, "mismatches": 20 },
+    "starterEligibility": 1320,
+    "rotationReconstruction": {
+      "successful": 1284,
+      "failed": 36,
+      "reliabilityPct": 97.27,
+      "reliabilityClass": "GOOD",
+      "failureClasses": {
+        "MISSING_PARTICIPANT": 27,
+        "BOTH_OFF_COURT": 5,
+        "BOTH_ON_COURT": 4
+      },
+      "doNotRepairFailures": true
+    },
+    "identity": {
+      "participantsMapped": 579,
+      "unmapped": 0,
+      "unknownTeamEvents": 0
+    },
+    "s3ManifestPresent": true,
+    "servingTable": false,
+    "classification": "COMPLETE"
+  },
+  "wowyPrePossessionEligibility": {
+    "wowyCalculated": false,
+    "servingTable": false,
+    "gates": [
+      "authoritative game exists",
+      "lineup archive has valid 5+5 starters",
+      "Plays score quality is acceptable for the intended analysis",
+      "rotation reconstruction succeeds",
+      "all player/team identities map",
+      "possession reconstruction later passes its own validation"
+    ],
+    "identityCurrentlyMaps": true,
+    "possessionValidationImplemented": false,
+    "strict": {
+      "definition": "valid starters + successful rotation + exact Plays final-score reconciliation",
+      "games": 1271,
+      "ofAuthoritative": 1322,
+      "pctOfAuthoritative": 96.14,
+      "excludedStarterAnomalies": 2,
+      "excludedRotationFailures": 36,
+      "additionalExactScoreMismatchesWithSuccessfulRotation": 13
+    },
+    "rotationOnly": {
+      "definition": "valid starters + successful rotation",
+      "games": 1284,
+      "ofAuthoritative": 1322,
+      "pctOfAuthoritative": 97.13,
+      "pctOfStarterEligible": 97.27
+    }
+  },
+  "wowyReadinessStatement": {
+    "dataAcquisition": "Complete.",
+    "rotationReconstruction": "GOOD / usable with exclusions.",
+    "possessionSegmentation": "Not implemented.",
+    "possessionValidation": "Not implemented.",
+    "productionWowy": "Not ready.",
+    "researchWowyPotential": "High."
+  },
+  "productReadiness": {
+    "historicalExplorer": {
+      "threeSeasonGamePlayerHistory": "ready in compact Postgres serving (2023–2025)",
+      "actualStarters": "raw 2025 lineup archive ready; serving model still required",
+      "advancedProfiles": "raw 3-season S3 archive ready; compact serving still required",
+      "seasonRolePlayStyle": "targeted Season Averages archive ready; compact serving still required",
+      "gameTimelines2025": "raw Plays archive ready; serving/read model still required",
+      "postTrialServingRequired": [
+        "starter representation",
+        "Advanced compact serving",
+        "Season Averages compact serving",
+        "Plays timeline read model"
+      ]
+    },
+    "marketMovement": {
+      "P1": ["3-Hour Pre-Tip → Close", "Market Consensus", "Opening Snapshot → Close"],
+      "P2": ["Line Shopping", "Book Movement"],
+      "later": ["Market + Context"],
+      "productReadyToBuild": true,
+      "builtThisStep": false
+    },
+    "roleOpportunityWowy": {
+      "roleNowSupportedBy": ["starter signal", "Advanced Stats", "Season Averages playtype/tracking/zone profile"],
+      "opportunityStillBlockedBy": ["robust injury-as-of state", "game-level role redistribution methodology"],
+      "wowyStillBlockedBy": ["possession engine + validation"]
+    }
+  },
+  "s3StorageAudit": {
+    "preTrialBytes": 561953620,
+    "preTrialMb": 535.9,
+    "preTrialObjects": 897,
+    "prePlaysAuditBytes": 1337635097,
+    "prePlaysAuditMb": 1275.67,
+    "prePlaysAuditObjects": 4594,
+    "currentBytes": 1945070856,
+    "currentMb": 1854.96,
+    "currentGb": 1.81,
+    "currentObjects": 6072,
+    "trialAddedBytes": 1383117236,
+    "trialAddedMb": 1319.06,
+    "trialAddedObjects": 5175,
+    "post9AAddedBytes": 607435759,
+    "post9AAddedMb": 579.29,
+    "post9AAddedObjects": 1478,
+    "post9AAddedEqualsPlaysPlusSeasonAveragesPrefixes": true,
+    "largestPrefixesMb": [
+      { "prefix": "entity=plays season=2025", "mb": 570.41, "objects": 1334 },
+      { "prefix": "entity=player_props_raw_v2 season=2025", "mb": 337.3, "objects": 27 },
+      { "prefix": "entity=advanced_stats_v2 season=2024", "mb": 173.58, "objects": 355 },
+      { "prefix": "entity=advanced_stats_v2 season=2023", "mb": 172.33, "objects": 351 },
+      { "prefix": "entity=advanced_stats_v2 season=2025", "mb": 172.08, "objects": 351 }
+    ],
+    "playsIsLargestRawDataset": true,
+    "operationallyReasonable": true,
+    "note": "Plays (~570 MB prefix / ~566 MB canonical) is now the largest raw dataset. Bucket 1.81 GB remains operationally reasonable."
+  },
+  "postgresStorageAudit": {
+    "preTrialBytes": 318712979,
+    "preTrialMb": 303.95,
+    "currentBytes": 342846611,
+    "currentMb": 326.96,
+    "trialDeltaBytes": 24133632,
+    "trialDeltaMb": 23.01,
+    "unchangedSince9A": true,
+    "despiteVeryLargeS3Growth": true,
+    "architecture": "S3 = deep/raw event + historical data; Postgres = compact product-serving analytics",
+    "noNewServingMaterialized": true
+  },
+  "apiTimeAccounting": {
+    "precision": "approximate; interrupted/resumed lineups crawl and Season Averages/Plays certify re-runs prevent exact combined wall-clock",
+    "step9ABaselineHttp": 3585,
+    "rowsAddedAfter9A": [
+      { "objective": "Season Averages characterization 9B", "http": 16, "hours": 0.058, "status429": 0 },
+      { "objective": "Season Averages targeted archive 9C", "http": 126, "hours": 0.473, "status429": 0, "note": "certify re-run added 0 HTTP" },
+      { "objective": "Plays characterization 9D", "http": 10, "hours": 0.037, "status429": 0, "note": "first execute wrote 10 objects then report-only crash; certify reused with 0 extra HTTP" },
+      { "objective": "Plays full archive 9E", "http": 1134, "hours": 4.361, "status429": 0, "note": "188 already canonical skipped; 10 characterization objects preserved separately" }
+    ],
+    "post9AHttp": 1286,
+    "approxTotalHttp": 4871,
+    "notableRetriesFrom9A": [
+      "2024 core: 1×429, Retry-After used",
+      "2023 core: 1×429, Retry-After used"
+    ]
+  },
+  "datasetScorecard": [
+    { "dataset": "core history 2023–2025", "archived": true, "serving": "compact Postgres", "quality": "COMPLETE; 10 game-specific 2023 score flags; 21681993 local-only; 18447793 repaired", "uniqueValue": "3-season Historical Explorer foundation", "nextAction": "Wire Explorer to 2023/2024/2025 serving" },
+    { "dataset": "Advanced Stats", "archived": true, "serving": false, "quality": "COMPLETE 104,756 rows; S3-only; switches_on / matchup_minutes / tracking / low-poss outliers; 1038324|273", "uniqueValue": "Role Check raw history", "nextAction": "Design compact serving, do not dump all rows" },
+    { "dataset": "injuries", "archived": true, "serving": "current + history exist", "quality": "history exists; density insufficient for causal absence", "uniqueValue": "as-of research input, not yet a product model", "nextAction": "Model injury-as-of before Opportunity" },
+    { "dataset": "opening player props", "archived": true, "serving": false, "quality": "129/129; 44,127 rows; 24,412 product-grade matches", "uniqueValue": "3-Hour Pre-Tip Market Movement v1", "nextAction": "Market Movement serving + UI" },
+    { "dataset": "opening game odds", "archived": true, "serving": false, "quality": "107/107 Mar 9–22; 97.9%; March 23 cliff preserved", "uniqueValue": "Opening Snapshot window", "nextAction": "Include in P1 Opening Snapshot → Close" },
+    { "dataset": "lineups 2025", "archived": true, "serving": false, "quality": "1320/1322 EXCELLENT; exclude 18447931 and 18447988", "uniqueValue": "historical starter vs listed non-starter", "nextAction": "Starter serving representation" },
+    { "dataset": "Season Averages targeted", "archived": true, "serving": false, "quality": "7,888 records / 8.78 MB; allowlist only; season grain; qualifying gp", "uniqueValue": "Role Profile / Matchup Profile enrichment", "nextAction": "Compact serving design with Advanced" },
+    { "dataset": "Plays 2025", "archived": true, "serving": false, "quality": "1,322 games / 642,354 events; 1,302 exact scores; rotation 97.27% GOOD; 36+20 reason-specific exclusions", "uniqueValue": "2025 game timelines + rotation reconstruction research", "nextAction": "Timeline read model; later possession engine" }
+  ],
+  "deliberatelySkippedAcquisition": [
+    { "item": "2022 core history", "why": "Three complete serving seasons plus 2025 event/starter/market archives already cover current product/research. Cold depth would not unblock Role, Market Movement, Explorer, or WOWY." },
+    { "item": "broad Season Averages dump", "why": "Only characterized unique signals were valuable. A full category dump would spend GOAT quota on redundant or untested types." },
+    { "item": "unsupported Season Average categories", "why": "general/advanced duplicate box-score/Advanced archives; untested shotdashboard/hustle/clutch/defense/extra playtypes were excluded by allowlist." },
+    { "item": "season-wide opening game odds after coverage cliff", "why": "Sportsbook opening coverage degrades beginning March 23. Archiving empty/degraded days would falsify Opening Snapshot." },
+    { "item": "arbitrary BetRivers prop variants", "why": "Simultaneous variants break deterministic Open→Close. v1 is scoped to four books and seven markets." }
+  ],
+  "deliberatelyDeferredEngineering": [
+    "Advanced serving tables",
+    "lineup serving tables",
+    "Plays serving tables",
+    "possession engine",
+    "WOWY",
+    "Opportunity model",
+    "market-context model"
+  ],
+  "goatSubscriptionAssessment": {
+    "previousRecommendation": "REASSESS_AT_LIVE_ACTIVATION",
+    "revisedRecommendation": "REASSESS_AT_LIVE_ACTIVATION",
+    "subscriptionChanged": false,
+    "historicalAcquisition": {
+      "status": "Now largely complete.",
+      "captured": [
+        "2023–2025 compact core serving",
+        "3-season Advanced Stats",
+        "2025 lineups",
+        "targeted Season Averages 2023–2025",
+        "full 2025 Plays",
+        "129-game 3-Hour Pre-Tip props",
+        "107-game Opening Snapshot odds"
+      ],
+      "downgradeAfterArchiveViableForHistoricalOnly": true
+    },
+    "ongoingSeasonNeed2026_27": {
+      "livePreTipProps": "HIGH — 3-Hour Pre-Tip cannot be reconstructed later; strongest GOAT-justifying live dataset",
+      "openingOdds": "HIGH inside a working sportsbook-open window; March 23 cliff means GOAT does not guarantee season-wide opens",
+      "advancedStats": "USEFUL during season if Role Check ships live",
+      "lineups": "USEFUL if daily starters are productized; endpoint is not availability truth",
+      "plays": "USEFUL if live/game timelines ship; expensive; not required until possession/WOWY work begins",
+      "seasonAverages": "PERIODIC — season grain; can be recaptured in batches rather than daily GOAT traffic"
+    },
+    "keepGoatDuringSeasonIf": "Live/pre-tip props and/or working Opening Snapshot coverage are productized for 2026–27.",
+    "downgradeAfterArchiveIf": "No live GOAT surfaces ship and remaining work is serving/UI on already-captured S3.",
+    "recommendation": "REASSESS_AT_LIVE_ACTIVATION"
+  },
+  "recommendation2022": "SKIP_2022",
+  "recommendation2022Reason": "Nothing discovered after Step 9A changes the conclusion. Season Averages and Plays increased 2023–2025 depth; they do not create a 2022 dependency. Do not execute.",
+  "postTrialEngineeringRoadmap": [
+    { "priority": 1, "item": "Market Movement serving + UI", "why": "P1 datasets are complete (3-Hour Pre-Tip, Market Consensus, Opening Snapshot → Close)." },
+    { "priority": 2, "item": "Historical Explorer multi-season", "why": "2023–2025 compact serving already exists. 2025 timelines are a later Explorer slice needing a Plays read model." },
+    { "priority": 3, "item": "Advanced / Season Average compact serving design", "why": "Both are S3-only Role/Matchup enrichment. Design compact serving; do not dump raw pages." },
+    { "priority": 4, "item": "Starter serving representation", "why": "Filter/flag 18447931 and 18447988. Needed for Explorer starting five and Role." },
+    { "priority": 5, "item": "Role Check", "why": "Data-ready from starter + Advanced + Season Averages. Not blocked by injury-as-of." },
+    { "priority": 6, "item": "injury-as-of model", "why": "History exists but density is insufficient. Blocks Opportunity, not Role." },
+    { "priority": 7, "item": "Opportunity Check", "why": "Still needs injury-as-of plus game-level role redistribution methodology." },
+    { "priority": 8, "item": "possession engine", "why": "Required before WOWY. Do not treat rotation reconstruction as possessions." },
+    { "priority": 9, "item": "WOWY validation", "why": "Apply the pre-possession eligibility gate, then possession validation. Research-only until both pass." },
+    { "priority": 10, "item": "Market + Context", "why": "Later combination of movement with role/injury/timeline context." }
+  ],
+  "irreplaceableDataCheck": {
+    "datasetsLackingCriticalArchive": [],
+    "fixBeforeTrialExpires": [],
+    "classification": "NO_CRITICAL_FIXES",
+    "notes": [
+      "2025 season-wide BDL games/player_stats _manifest.json were never written; GOAT repair slice (34 games) plus Postgres serving remain the certified 2025 core. Same as 9A; not a new hole.",
+      "Advanced identity key 1038324|273 remains documented in closeout rather than S3 manifests.",
+      "Season Averages and Plays now have canonical objects, manifests, counts, limitations, local reports, and reason-specific quality IDs.",
+      "Unused trial time is not a reason to acquire more data."
+    ]
+  },
+  "finalTrialVerdict": "STRONG_SUCCESS",
+  "acquisitionDecision": "END_GOAT_ACQUISITION",
+  "acquisitionDecisionReason": "Everything valuable enough for this trial has been captured. 2022 is not a remaining critical acquisition."
+}

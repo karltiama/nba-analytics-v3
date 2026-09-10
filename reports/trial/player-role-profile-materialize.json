@@ -1,0 +1,181 @@
+{
+  "generatedAt": "2026-09-10T16:07:37.358Z",
+  "mode": "execute",
+  "source": "bdl_season_averages_targeted_archive",
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": "1",
+    "cronDryRun": "1",
+    "bdlHttp": 0
+  },
+  "pages": 117,
+  "grain": {
+    "archiveRows": 7618,
+    "validCategoryRows": 7618,
+    "skippedUnsupportedSeason": 0,
+    "skippedUnsupportedCategory": 0,
+    "skippedNullIdentity": 0,
+    "skippedNullStats": 0,
+    "skippedSeasonMismatch": 0,
+    "duplicateIdentical": 0,
+    "uniquePlayers": 802
+  },
+  "identity": {
+    "mapped": 1723,
+    "unmappedPlayers": 0,
+    "unsupportedSeason": 0,
+    "unmappedPlayerSamples": []
+  },
+  "coverage": {
+    "2023": {
+      "profiles": 572,
+      "isolation": 234,
+      "pnrBallHandler": 282,
+      "pnrRollMan": 240,
+      "drives": 572,
+      "passing": 572,
+      "zone": 572,
+      "isolationPct": 40.9,
+      "pnrBallHandlerPct": 49.3,
+      "pnrRollManPct": 42,
+      "drivesPct": 100,
+      "passingPct": 100,
+      "zonePct": 100
+    },
+    "2024": {
+      "profiles": 569,
+      "isolation": 261,
+      "pnrBallHandler": 308,
+      "pnrRollMan": 270,
+      "drives": 569,
+      "passing": 569,
+      "zone": 569,
+      "isolationPct": 45.9,
+      "pnrBallHandlerPct": 54.1,
+      "pnrRollManPct": 47.5,
+      "drivesPct": 100,
+      "passingPct": 100,
+      "zonePct": 100
+    },
+    "2025": {
+      "profiles": 582,
+      "isolation": 267,
+      "pnrBallHandler": 319,
+      "pnrRollMan": 268,
+      "drives": 582,
+      "passing": 582,
+      "zone": 582,
+      "isolationPct": 45.9,
+      "pnrBallHandlerPct": 54.8,
+      "pnrRollManPct": 46,
+      "drivesPct": 100,
+      "passingPct": 100,
+      "zonePct": 100
+    }
+  },
+  "candidateRows": 1723,
+  "written": 0,
+  "storage": {
+    "dbBytesBefore": 385510547,
+    "dbBytesAfter": 385543315,
+    "dbDelta": 32768,
+    "tableBefore": {
+      "heap": 450560,
+      "indexes": 90112,
+      "total": 540672
+    },
+    "tableAfter": {
+      "heap": 458752,
+      "indexes": 90112,
+      "total": 548864
+    }
+  },
+  "serving": {
+    "bySeason": [
+      {
+        "season": "2023",
+        "rows": 572
+      },
+      {
+        "season": "2024",
+        "rows": 569
+      },
+      {
+        "season": "2025",
+        "rows": 582
+      }
+    ],
+    "totalRows": 1723,
+    "duplicateKeys": 0,
+    "sampleRows": [
+      {
+        "player_id": "175",
+        "season": "2023",
+        "isolation_poss_pct": 0.24,
+        "pnr_ball_handler_poss_pct": 0.303,
+        "drives_per_game": 23.3
+      },
+      {
+        "player_id": "246",
+        "season": "2023",
+        "isolation_poss_pct": 0.062,
+        "pnr_ball_handler_poss_pct": 0.053,
+        "drives_per_game": 5.4
+      },
+      {
+        "player_id": "434",
+        "season": "2023",
+        "isolation_poss_pct": 0.259,
+        "pnr_ball_handler_poss_pct": 0.222,
+        "drives_per_game": 9.1
+      },
+      {
+        "player_id": "175",
+        "season": "2024",
+        "isolation_poss_pct": 0.251,
+        "pnr_ball_handler_poss_pct": 0.342,
+        "drives_per_game": 20.6
+      },
+      {
+        "player_id": "246",
+        "season": "2024",
+        "isolation_poss_pct": 0.049,
+        "pnr_ball_handler_poss_pct": 0.068,
+        "drives_per_game": 4.9
+      },
+      {
+        "player_id": "434",
+        "season": "2024",
+        "isolation_poss_pct": 0.259,
+        "pnr_ball_handler_poss_pct": 0.286,
+        "drives_per_game": 10.3
+      },
+      {
+        "player_id": "175",
+        "season": "2025",
+        "isolation_poss_pct": 0.28,
+        "pnr_ball_handler_poss_pct": 0.36,
+        "drives_per_game": 25.8
+      },
+      {
+        "player_id": "246",
+        "season": "2025",
+        "isolation_poss_pct": 0.067,
+        "pnr_ball_handler_poss_pct": 0.085,
+        "drives_per_game": 8.8
+      },
+      {
+        "player_id": "434",
+        "season": "2025",
+        "isolation_poss_pct": 0.229,
+        "pnr_ball_handler_poss_pct": 0.332,
+        "drives_per_game": 12.4
+      }
+    ]
+  },
+  "policy": {
+    "inclusion": "player-season row if at least one approved category is present",
+    "primaryRoleLabel": "omit — captured playtypes insufficient for a universal archetype",
+    "playtypeGp": "not served (qualifying games, not season GP)"
+  }
+}

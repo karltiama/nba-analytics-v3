@@ -32,6 +32,7 @@ import { Pool } from 'pg';
 import { z } from 'zod';
 import { REMOVED_FROM_REPORT_STATUS } from './leave-report';
 import { planInjuryIngest, type InjuryFieldSnapshot, type InjuryPullRow } from './ingest-plan';
+import { fetchBdlLive } from './bdl-live-rate-limit';
 
 // ============================================
 // CONFIGURATION
@@ -99,8 +100,6 @@ type BdlPlayerInjury = z.infer<typeof BdlPlayerInjurySchema>;
 // FETCH INJURIES FROM BDL
 // ============================================
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
   const all: BdlPlayerInjury[] = [];
   let cursor: number | null = null;
@@ -112,15 +111,11 @@ async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
       url.searchParams.set('cursor', String(cursor));
     }
 
-    const res = await fetch(url.toString(), {
-      headers: { Authorization: BALLDONTLIE_API_KEY as string },
-    });
-
-    if (res.status === 429) {
-      console.warn('Rate limited, waiting 60s...');
-      await sleep(60000);
-      continue;
-    }
+    const res = await fetchBdlLive(
+      url.toString(),
+      { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
+      { worker: 'injuries-snapshot' }
+    );
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
@@ -133,8 +128,6 @@ async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
 
     cursor = parsed.meta?.next_cursor ?? null;
     if (cursor == null) break;
-
-    await sleep(200);
   }
 
   return all;

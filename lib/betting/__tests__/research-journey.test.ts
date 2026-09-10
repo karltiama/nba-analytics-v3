@@ -61,10 +61,14 @@ describe('research journey URLs', () => {
     expect(href).not.toContain('season=');
   });
 
-  it('live explorer picker stays season-scoped (no calendar picker flag)', () => {
-    const href = explorerGamesApiHref({ dateEt: '2026-09-06', todayEt: '2026-09-06' });
-    expect(href).toContain('date=2026-09-06');
-    expect(href).toContain('scope=explorer');
-    expect(href).not.toContain('picker=calendar');
+  it('historical player href includes game season for Court Context player page', () => {
+    const href = playerResearchHref({
+      playerId: '434',
+      date: '2024-06-17',
+      gameId: '15905067',
+      season: '2023',
+    });
+    expect(href).toContain('season=2023');
+    expect(href).toContain('/betting/players/434?');
   });
 });

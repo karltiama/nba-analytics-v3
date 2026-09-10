@@ -1,0 +1,1 @@
+{"statusCode":200,"body":"{\"success\":true,\"skipped\":true,\"reason\":\"Injuries snapshot skipped by runtime mode flags\",\"dataMode\":\"replay\",\"offseasonMode\":true,\"cronDryRun\":true,\"timestamp\":\"2026-09-10T20:15:40.809Z\"}"}

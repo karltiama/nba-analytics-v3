@@ -36,6 +36,19 @@ variable "lambda_env" {
 }
 
 # -----------------------------------------------------------------------------
+# Master ingestion schedule switch (Step 13C.1)
+# Per-family enable_* flags / cron lists may still CREATE schedule resources.
+# This flag is the only source of truth for ENABLED vs DISABLED.
+# Frozen apply must keep all ingestion schedules DISABLED even if stale tfvars
+# still say enable_schedule = true.
+# -----------------------------------------------------------------------------
+variable "live_ingestion_enabled" {
+  description = "When false (default), every EventBridge rule and EventBridge Scheduler schedule is DISABLED. Set true only for a controlled production thaw; still requires freeze env DATA_MODE=live_api / OFFSEASON_MODE=0 / CRON_DRY_RUN=0 on the Lambdas."
+  type        = bool
+  default     = false
+}
+
+# -----------------------------------------------------------------------------
 # EventBridge schedule (optional)
 # -----------------------------------------------------------------------------
 variable "enable_schedule" {
@@ -192,9 +205,15 @@ variable "player_props_controller_env" {
 }
 
 variable "player_props_worker_reserved_concurrency" {
-  description = "Reserved concurrency for player props worker Lambda."
+  description = "Desired reserved concurrency for player props worker Lambda. Not applied until player_props_apply_reserved_concurrency is true (requires Lambda account quota headroom)."
   type        = number
   default     = 4
+}
+
+variable "player_props_apply_reserved_concurrency" {
+  description = "When false, Terraform does not set reserved concurrency (AWS remains unreserved). Set true only after the account ConcurrentExecutions quota can hold this reservation plus the unreserved floor of 10."
+  type        = bool
+  default     = false
 }
 
 variable "player_props_enable_schedule" {

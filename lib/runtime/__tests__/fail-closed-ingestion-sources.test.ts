@@ -33,4 +33,18 @@ describe('fail-closed ingestion source guards', () => {
       expect(src, file).not.toMatch(/process\.env\.DATA_MODE\s*\|\|\s*['"]live_api['"]/);
     }
   });
+
+  it('live BDL Lambdas route HTTP through fetchBdlLive', () => {
+    const files = [
+      'lambda/nightly-bdl-updater/index.ts',
+      'lambda/odds-pre-game-snapshot/index.ts',
+      'lambda/injuries-snapshot/index.ts',
+      'lambda/player-props-snapshot/src/fetch.ts',
+    ];
+    for (const file of files) {
+      const src = read(file);
+      expect(src, file).toMatch(/fetchBdlLive/);
+      expect(src, file).not.toMatch(/from ['"]@\/lib\/balldontlie\/archive-client['"]/);
+    }
+  });
 });

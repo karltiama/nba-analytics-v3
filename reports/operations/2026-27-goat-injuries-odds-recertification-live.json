@@ -1,0 +1,124 @@
+{
+  "generatedAt": "2026-09-10T22:16:25.829Z",
+  "pin": "2025",
+  "persist": false,
+  "entitlement": "BDL_ENTITLEMENT_CONFIRMED_GOAT",
+  "entitlementSource": "account_owner_dashboard_confirmation",
+  "operatingRate": {
+    "intervalMs": 13000,
+    "burst": 1,
+    "label": "activation-canary safety rate"
+  },
+  "injuries": {
+    "endpoint": "GET /nba/v1/player_injuries",
+    "pages": 1,
+    "lastStatus": 401,
+    "http401": 1,
+    "httpError": "Unauthorized",
+    "durationMs": 623,
+    "http200": 0,
+    "accounting": {
+      "httpAttempts": 1,
+      "throttleGrants": 1,
+      "throttle429": 0,
+      "retries": 0,
+      "throttleWaitsMs": [
+        0
+      ],
+      "throttleWaitMaxMs": 0,
+      "retryAfterMs": [],
+      "throttleDecisions": [
+        "granted"
+      ]
+    },
+    "recordCount": 0,
+    "teamsRepresented": 0,
+    "statusInventory": {},
+    "payload": {
+      "rowKeys": [],
+      "playerKeys": [],
+      "statusNull": 0,
+      "descriptionNull": 0,
+      "returnDateNull": 0,
+      "rowsWithProviderUpdatedAtLikeField": 0,
+      "sample": []
+    },
+    "identity": {
+      "mapped": 0,
+      "unmapped": 0,
+      "unmappedIds": [],
+      "duplicates": [],
+      "missingPlayerId": 0,
+      "dbNote": null
+    },
+    "freshness": {
+      "persisted": "snapshot_at",
+      "semantics": "court_context_observed",
+      "providerTimestamp": null,
+      "uiLabel": "Updated N minutes ago uses snapshot_at (fetch time), not a provider injury-changed-at"
+    },
+    "dryRun": {
+      "inserts": 0,
+      "updates": 0,
+      "unchanged": 0,
+      "skippedUnmapped": 0,
+      "conflicts": 0,
+      "deletes": 0
+    },
+    "massClearBlocked": true,
+    "completenessReason": "pull stored zero rows",
+    "injuryAsOf": false
+  },
+  "odds": {
+    "endpoint": "GET /v2/odds",
+    "dates": [
+      "2026-09-10",
+      "2026-09-11"
+    ],
+    "pages": 1,
+    "lastStatus": 401,
+    "http401": 1,
+    "httpError": "Unauthorized",
+    "durationMs": 12973,
+    "http200": 0,
+    "accounting": {
+      "httpAttempts": 1,
+      "throttleGrants": 1,
+      "throttle429": 0,
+      "retries": 0,
+      "throttleWaitsMs": [
+        12495
+      ],
+      "throttleWaitMaxMs": 12495,
+      "retryAfterMs": [],
+      "throttleDecisions": [
+        "granted"
+      ]
+    },
+    "rowCount": 0,
+    "games": 0,
+    "vendors": [],
+    "coverage": "UNAUTHORIZED",
+    "usableMoneylineObservations": 0,
+    "usableSpreadObservations": 0,
+    "usableTotalObservations": 0,
+    "unknownGameIds": [],
+    "payload": {
+      "rowKeys": [],
+      "sample": []
+    },
+    "dryRunActions": {},
+    "firstObservedCount": 0,
+    "firstObservedLiveShape": {
+      "immutable": true,
+      "emptyLiveRows": true,
+      "afterFirstCount": 0
+    }
+  },
+  "requestBudget": {
+    "injuryRequestsPerDay": 3,
+    "oddsRequestsPerDay": 8,
+    "totalRequestsPerDay": 11,
+    "elapsedMsAtSafetyRate": 143000
+  }
+}

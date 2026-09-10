@@ -1,5 +1,5 @@
 /**
- * Prop market comparison (line shopping) and movement summaries.
+ * Prop market comparison (line shopping).
  * Market research only — not EV, edge, or a recommended bet.
  *
  * Live freshness window matches the existing injury-opportunity near-tip
@@ -15,7 +15,6 @@ import {
 
 export const LIVE_SHOPPING_FRESHNESS_MINUTES = 30;
 export const PROP_MARKET_BOOK_CAP = 40;
-export const PROP_MARKET_MOVEMENT_CAP = 200;
 
 export type PropSide = 'over' | 'under';
 
@@ -34,30 +33,11 @@ export type PropMarketLinePick = {
   oddsAmerican: number;
 };
 
-export type PropMovementPoint = {
-  snapshotAt: string;
-  lineValue: number;
-};
-
 export type LiveShoppingAvailability =
   | { ok: true }
   | {
       ok: false;
       reason: 'frozen_current' | 'stale_current' | 'missing_shopping_data';
-    };
-
-export type MovementSummary =
-  | {
-      available: false;
-      reason: 'missing_movement_snapshots';
-    }
-  | {
-      available: true;
-      openedLine: number;
-      closedLine: number;
-      delta: number;
-      from: string;
-      to: string;
     };
 
 /** 0 is a valid sportsbook line; only null/NaN/non-finite are missing. */
@@ -93,10 +73,6 @@ export function propsComparisonLabel(context: PropsMarketContext): string {
 
 export function shoppingUnavailableMessage(): string {
   return 'Line comparison unavailable';
-}
-
-export function movementUnavailableMessage(): string {
-  return 'Movement history unavailable';
 }
 
 function normalizeBook(name: string): string {
@@ -221,44 +197,6 @@ export function liveShoppingAvailability(input: {
   }
 
   return { ok: true };
-}
-
-export function summarizePropMovement(points: PropMovementPoint[]): MovementSummary {
-  const valid = points.filter(
-    (p) => isPresentLineValue(p.lineValue) && p.snapshotAt.trim() !== ''
-  );
-  if (valid.length === 0) {
-    return { available: false, reason: 'missing_movement_snapshots' };
-  }
-
-  const byTime = new Map<string, number>();
-  for (const point of valid) {
-    const key = new Date(point.snapshotAt).toISOString();
-    if (Number.isNaN(new Date(key).getTime())) continue;
-    if (!byTime.has(key)) byTime.set(key, point.lineValue);
-  }
-
-  const timestamps = [...byTime.keys()].sort();
-  if (timestamps.length < 2) {
-    return { available: false, reason: 'missing_movement_snapshots' };
-  }
-
-  const from = timestamps[0];
-  const to = timestamps[timestamps.length - 1];
-  const openedLine = byTime.get(from);
-  const closedLine = byTime.get(to);
-  if (!isPresentLineValue(openedLine) || !isPresentLineValue(closedLine)) {
-    return { available: false, reason: 'missing_movement_snapshots' };
-  }
-
-  return {
-    available: true,
-    openedLine,
-    closedLine,
-    delta: closedLine - openedLine,
-    from,
-    to,
-  };
 }
 
 export function marketContextLabels(context: PropsMarketContext): {

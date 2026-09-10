@@ -1,0 +1,55 @@
+{
+  "step": "12F",
+  "title": "Historical Explorer v2 Role Profile",
+  "generatedAt": "2026-09-10T16:15:00.000Z",
+  "verdict": "GREEN — Historical Explorer Role Profile is ship-ready and ready for the next roadmap step",
+  "productClassification": "SHIP_READY",
+  "safety": {
+    "bdlHttp": 0,
+    "dataMode": "replay",
+    "offseasonMode": "1",
+    "cronDryRun": "1",
+    "plays": false,
+    "timeline": false,
+    "teamMatchupProfile": false,
+    "liveRoleProfile": false
+  },
+  "serving": {
+    "table": "analytics.player_role_profile",
+    "pk": ["player_id", "season"],
+    "rows": 1723,
+    "bySeason": { "2023": 572, "2024": 569, "2025": 582 },
+    "unmappedPlayers": 0,
+    "duplicateKeys": 0,
+    "secondExecuteWrites": 0,
+    "totalRelationBytes": 540672
+  },
+  "primaryRoleLabel": "omit",
+  "inclusion": "at least one approved category",
+  "ui": {
+    "section": "Context",
+    "heading": "Season Role — {season label}",
+    "notInside": "Box Score | Advanced",
+    "defaultPlayer": "first certified starter else first box away/home"
+  },
+  "qa": {
+    "g2023": {
+      "gameId": "15905067",
+      "tatumGameUsg": "28.4%",
+      "tatumSeasonIso": "25.9%",
+      "startingFive": false
+    },
+    "g2025": {
+      "gameId": "18447937",
+      "startingFive": true,
+      "defaultPlayer": "Luke Kornet",
+      "kornetPlaytypes": ["PnR Roll Man"]
+    },
+    "g2026": {
+      "gameId": "21717855",
+      "historicalRoleProfile": false,
+      "projectedStarters": true
+    }
+  },
+  "next": "Timeline / Plays — STOP here"
+}

@@ -1,0 +1,56 @@
+{
+  "step": "12C",
+  "title": "Historical Explorer v2 certified starters",
+  "generatedAt": "2026-09-10",
+  "verdict": "GREEN — certified historical Starting Five is ready and Historical Explorer can proceed to Advanced context",
+  "doNotStart12DAutomatically": true,
+  "safety": {
+    "bdlHttp": 0,
+    "s3Writes": false,
+    "dataMode": "replay",
+    "advancedWork": false,
+    "playsWork": false,
+    "marketMovementChanges": false
+  },
+  "source": {
+    "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=lineups",
+    "archiveGames": 1322,
+    "archiveRows": 28833,
+    "starterTrueRows": 13218,
+    "valid5plus5": 1320,
+    "anomalies": ["18447931", "18447988"]
+  },
+  "schema": {
+    "table": "analytics.game_starters",
+    "pk": ["game_id", "team_id", "player_id"],
+    "extraIndexes": [],
+    "rls": false,
+    "anonGrants": false
+  },
+  "anomalyHandling": "omit serving rows (Option A); runtime requires exact 5+5",
+  "backfill": {
+    "eligibleGames": 1320,
+    "servingRows": 13200,
+    "firstRunUpsertTouched": 13200,
+    "secondRunUpsertTouched": 0,
+    "duplicateKeys": 0,
+    "unmappedPlayers": 0
+  },
+  "storage": {
+    "dbBytesBefore": 356084883,
+    "dbBytesAfter": 358206611,
+    "deltaBytes": 2121728,
+    "tableHeapPretty": "1304 kB",
+    "indexPretty": "768 kB",
+    "totalRelationPretty": "2072 kB"
+  },
+  "queryAdded": 1,
+  "ui": {
+    "label": "Starting Five",
+    "fixture18447937": {
+      "sas": 5,
+      "lac": 5,
+      "score": "118-99"
+    }
+  }
+}

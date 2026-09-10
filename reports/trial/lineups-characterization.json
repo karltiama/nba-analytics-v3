@@ -1,0 +1,1361 @@
+{
+  "generatedAt": "2026-09-09T03:51:24.618Z",
+  "step": "8A",
+  "dryRun": false,
+  "postgresWrites": false,
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "delaySource": "trial-default",
+    "minDelayMs": 12000,
+    "concurrency": 1,
+    "lockActiveBefore": false,
+    "lockAcquired": true,
+    "lockReleased": true,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "dbBytesBefore": 342846611,
+    "dbBytesAfter": 342846611,
+    "dbMb": 326.96,
+    "postgresUnchanged": true,
+    "lineupServingTables": [],
+    "acquisitionPathWritesPostgres": false,
+    "isolation": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games2025": 1323,
+      "logs2025": 46056,
+      "games2026": 1200,
+      "logs2026": 0,
+      "propDecisionLineGames": 129,
+      "gameOddsHistoryGames": 334,
+      "lineupServingTables": [],
+      "advancedServingTables": []
+    }
+  },
+  "sampleSelection": {
+    "authoritative2025Games": 1322,
+    "excludedLocalOnly": "21681993",
+    "n": 25,
+    "games": [
+      {
+        "gameId": "18446819",
+        "date": "2025-10-21",
+        "matchup": "HOU @ OKC",
+        "phase": "early_regular_season",
+        "reasonSelected": "First portion of 2025-26 regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 35,
+        "injuryOutN": 0,
+        "homeTeamId": "21",
+        "awayTeamId": "11",
+        "homeAbbr": "OKC",
+        "awayAbbr": "HOU",
+        "startTime": "2025-10-21T23:30:00.000Z"
+      },
+      {
+        "gameId": "18446868",
+        "date": "2025-10-27",
+        "matchup": "OKC @ DAL",
+        "phase": "early_regular_season",
+        "reasonSelected": "First portion of 2025-26 regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 36,
+        "injuryOutN": 0,
+        "homeTeamId": "7",
+        "awayTeamId": "21",
+        "homeAbbr": "DAL",
+        "awayAbbr": "OKC",
+        "startTime": "2025-10-28T00:30:00.000Z"
+      },
+      {
+        "gameId": "18446914",
+        "date": "2025-11-03",
+        "matchup": "MIL @ IND",
+        "phase": "early_regular_season",
+        "reasonSelected": "First portion of 2025-26 regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 37,
+        "injuryOutN": 0,
+        "homeTeamId": "12",
+        "awayTeamId": "17",
+        "homeAbbr": "IND",
+        "awayAbbr": "MIL",
+        "startTime": "2025-11-04T00:00:00.000Z"
+      },
+      {
+        "gameId": "18446962",
+        "date": "2025-11-09",
+        "matchup": "OKC @ MEM",
+        "phase": "early_regular_season",
+        "reasonSelected": "First portion of 2025-26 regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 36,
+        "injuryOutN": 0,
+        "homeTeamId": "15",
+        "awayTeamId": "21",
+        "homeAbbr": "MEM",
+        "awayAbbr": "OKC",
+        "startTime": "2025-11-09T23:00:00.000Z"
+      },
+      {
+        "gameId": "18447009",
+        "date": "2025-11-15",
+        "matchup": "DEN @ MIN",
+        "phase": "early_regular_season",
+        "reasonSelected": "First portion of 2025-26 regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 34,
+        "injuryOutN": 0,
+        "homeTeamId": "18",
+        "awayTeamId": "8",
+        "homeAbbr": "MIN",
+        "awayAbbr": "DEN",
+        "startTime": "2025-11-16T01:00:00.000Z"
+      },
+      {
+        "gameId": "18447316",
+        "date": "2026-01-05",
+        "matchup": "NYK @ DET",
+        "phase": "midseason",
+        "reasonSelected": "Mid-January regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 35,
+        "injuryOutN": 0,
+        "homeTeamId": "9",
+        "awayTeamId": "20",
+        "homeAbbr": "DET",
+        "awayAbbr": "NYK",
+        "startTime": "2026-01-06T00:00:00.000Z"
+      },
+      {
+        "gameId": "18447356",
+        "date": "2026-01-10",
+        "matchup": "MIN @ CLE",
+        "phase": "midseason",
+        "reasonSelected": "Mid-January regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 34,
+        "injuryOutN": 0,
+        "homeTeamId": "6",
+        "awayTeamId": "18",
+        "homeAbbr": "CLE",
+        "awayAbbr": "MIN",
+        "startTime": "2026-01-10T18:00:00.000Z"
+      },
+      {
+        "gameId": "18447395",
+        "date": "2026-01-15",
+        "matchup": "OKC @ HOU",
+        "phase": "midseason",
+        "reasonSelected": "Mid-January regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 35,
+        "injuryOutN": 0,
+        "homeTeamId": "11",
+        "awayTeamId": "21",
+        "homeAbbr": "HOU",
+        "awayAbbr": "OKC",
+        "startTime": "2026-01-16T00:30:00.000Z"
+      },
+      {
+        "gameId": "18447433",
+        "date": "2026-01-20",
+        "matchup": "SAS @ HOU",
+        "phase": "midseason",
+        "reasonSelected": "Mid-January regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 35,
+        "injuryOutN": 0,
+        "homeTeamId": "11",
+        "awayTeamId": "27",
+        "homeAbbr": "HOU",
+        "awayAbbr": "SAS",
+        "startTime": "2026-01-21T01:00:00.000Z"
+      },
+      {
+        "gameId": "18447474",
+        "date": "2026-01-25",
+        "matchup": "BKN @ LAC",
+        "phase": "midseason",
+        "reasonSelected": "Mid-January regular season; complete box logs",
+        "postseason": false,
+        "hasProps": false,
+        "logN": 36,
+        "injuryOutN": 0,
+        "homeTeamId": "13",
+        "awayTeamId": "3",
+        "homeAbbr": "LAC",
+        "awayAbbr": "BKN",
+        "startTime": "2026-01-26T02:00:00.000Z"
+      },
+      {
+        "gameId": "18447934",
+        "date": "2026-04-02",
+        "matchup": "LAL @ OKC",
+        "phase": "late_regular_season",
+        "reasonSelected": "April RS window overlapping prop decision lines / opening props / injuries / Advanced Stats",
+        "postseason": false,
+        "hasProps": true,
+        "logN": 36,
+        "injuryOutN": 1,
+        "homeTeamId": "21",
+        "awayTeamId": "14",
+        "homeAbbr": "OKC",
+        "awayAbbr": "LAL",
+        "startTime": "2026-04-03T01:30:00.000Z"
+      },
+      {
+        "gameId": "18447955",
+        "date": "2026-04-05",
+        "matchup": "CHA @ MIN",
+        "phase": "late_regular_season",
+        "reasonSelected": "April RS window overlapping prop decision lines / opening props / injuries / Advanced Stats",
+        "postseason": false,
+        "hasProps": true,
+        "logN": 36,
+        "injuryOutN": 2,
+        "homeTeamId": "18",
+        "awayTeamId": "4",
+        "homeAbbr": "MIN",
+        "awayAbbr": "CHA",
+        "startTime": "2026-04-05T23:00:00.000Z"
+      },
+      {
+        "gameId": "18447976",
+        "date": "2026-04-08",
+        "matchup": "ATL @ CLE",
+        "phase": "late_regular_season",
+        "reasonSelected": "April RS window overlapping prop decision lines / opening props / injuries / Advanced Stats",
+        "postseason": false,
+        "hasProps": true,
+        "logN": 36,
+        "injuryOutN": 1,
+        "homeTeamId": "6",
+        "awayTeamId": "1",
+        "homeAbbr": "CLE",
+        "awayAbbr": "ATL",
+        "startTime": "2026-04-08T23:00:00.000Z"
+      },
+      {
+        "gameId": "18447998",
+        "date": "2026-04-10",
+        "matchup": "DAL @ SAS",
+        "phase": "late_regular_season",
+        "reasonSelected": "April RS window overlapping prop decision lines / opening props / injuries / Advanced Stats",
+        "postseason": false,
+        "hasProps": true,
+        "logN": 36,
+        "injuryOutN": 1,
+        "homeTeamId": "27",
+        "awayTeamId": "7",
+        "homeAbbr": "SAS",
+        "awayAbbr": "DAL",
+        "startTime": "2026-04-11T00:00:00.000Z"
+      },
+      {
+        "gameId": "18448018",
+        "date": "2026-04-12",
+        "matchup": "SAC @ POR",
+        "phase": "late_regular_season",
+        "reasonSelected": "April RS window overlapping prop decision lines / opening props / injuries / Advanced Stats",
+        "postseason": false,
+        "hasProps": true,
+        "logN": 36,
+        "injuryOutN": 6,
+        "homeTeamId": "25",
+        "awayTeamId": "26",
+        "homeAbbr": "POR",
+        "awayAbbr": "SAC",
+        "startTime": "2026-04-13T00:30:00.000Z"
+      },
+      {
+        "gameId": "21682711",
+        "date": "2026-04-19",
+        "matchup": "PHI @ BOS",
+        "phase": "early_playoffs",
+        "reasonSelected": "First-round playoff window; postseason=true",
+        "postseason": true,
+        "hasProps": true,
+        "logN": 30,
+        "injuryOutN": 0,
+        "homeTeamId": "2",
+        "awayTeamId": "23",
+        "homeAbbr": "BOS",
+        "awayAbbr": "PHI",
+        "startTime": "2026-04-19T17:00:00.000Z"
+      },
+      {
+        "gameId": "21681976",
+        "date": "2026-04-21",
+        "matchup": "HOU @ LAL",
+        "phase": "early_playoffs",
+        "reasonSelected": "First-round playoff window; postseason=true",
+        "postseason": true,
+        "hasProps": true,
+        "logN": 30,
+        "injuryOutN": 4,
+        "homeTeamId": "14",
+        "awayTeamId": "11",
+        "homeAbbr": "LAL",
+        "awayAbbr": "HOU",
+        "startTime": "2026-04-22T02:30:00.000Z"
+      },
+      {
+        "gameId": "21684895",
+        "date": "2026-04-25",
+        "matchup": "OKC @ PHX",
+        "phase": "early_playoffs",
+        "reasonSelected": "First-round playoff window; postseason=true",
+        "postseason": true,
+        "hasProps": true,
+        "logN": 30,
+        "injuryOutN": 3,
+        "homeTeamId": "24",
+        "awayTeamId": "21",
+        "homeAbbr": "PHX",
+        "awayAbbr": "OKC",
+        "startTime": "2026-04-25T19:30:00.000Z"
+      },
+      {
+        "gameId": "21681987",
+        "date": "2026-04-27",
+        "matchup": "MIN @ DEN",
+        "phase": "early_playoffs",
+        "reasonSelected": "First-round playoff window; postseason=true",
+        "postseason": true,
+        "hasProps": true,
+        "logN": 31,
+        "injuryOutN": 3,
+        "homeTeamId": "8",
+        "awayTeamId": "18",
+        "homeAbbr": "DEN",
+        "awayAbbr": "MIN",
+        "startTime": "2026-04-28T02:30:00.000Z"
+      },
+      {
+        "gameId": "21681994",
+        "date": "2026-04-30",
+        "matchup": "DEN @ MIN",
+        "phase": "early_playoffs",
+        "reasonSelected": "First-round playoff window; postseason=true",
+        "postseason": true,
+        "hasProps": true,
+        "logN": 30,
+        "injuryOutN": 2,
+        "homeTeamId": "18",
+        "awayTeamId": "8",
+        "homeAbbr": "MIN",
+        "awayAbbr": "DEN",
+        "startTime": "2026-05-01T01:30:00.000Z"
+      },
+      {
+        "gameId": "21709238",
+        "date": "2026-05-15",
+        "matchup": "DET @ CLE",
+        "phase": "later_postseason_rotation",
+        "reasonSelected": "Later postseason; tighter-rotation candidate logs=30",
+        "postseason": true,
+        "hasProps": false,
+        "logN": 30,
+        "injuryOutN": 0,
+        "homeTeamId": "6",
+        "awayTeamId": "9",
+        "homeAbbr": "CLE",
+        "awayAbbr": "DET",
+        "startTime": "2026-05-15T23:00:00.000Z"
+      },
+      {
+        "gameId": "21707977",
+        "date": "2026-05-15",
+        "matchup": "SAS @ MIN",
+        "phase": "later_postseason_rotation",
+        "reasonSelected": "Later postseason; tighter-rotation candidate logs=30",
+        "postseason": true,
+        "hasProps": false,
+        "logN": 30,
+        "injuryOutN": 0,
+        "homeTeamId": "18",
+        "awayTeamId": "27",
+        "homeAbbr": "MIN",
+        "awayAbbr": "SAS",
+        "startTime": "2026-05-16T01:30:00.000Z"
+      },
+      {
+        "gameId": "21709241",
+        "date": "2026-05-17",
+        "matchup": "CLE @ DET",
+        "phase": "later_postseason_rotation",
+        "reasonSelected": "Later postseason; tighter-rotation candidate logs=30",
+        "postseason": true,
+        "hasProps": false,
+        "logN": 30,
+        "injuryOutN": 0,
+        "homeTeamId": "9",
+        "awayTeamId": "6",
+        "homeAbbr": "DET",
+        "awayAbbr": "CLE",
+        "startTime": "2026-05-18T00:00:00.000Z"
+      },
+      {
+        "gameId": "21713528",
+        "date": "2026-05-18",
+        "matchup": "SAS @ OKC",
+        "phase": "later_postseason_rotation",
+        "reasonSelected": "Later postseason; tighter-rotation candidate logs=30",
+        "postseason": true,
+        "hasProps": false,
+        "logN": 30,
+        "injuryOutN": 0,
+        "homeTeamId": "21",
+        "awayTeamId": "27",
+        "homeAbbr": "OKC",
+        "awayAbbr": "SAS",
+        "startTime": "2026-05-19T00:30:00.000Z"
+      },
+      {
+        "gameId": "21713895",
+        "date": "2026-05-19",
+        "matchup": "CLE @ NYK",
+        "phase": "later_postseason_rotation",
+        "reasonSelected": "Later postseason; tighter-rotation candidate logs=30",
+        "postseason": true,
+        "hasProps": false,
+        "logN": 30,
+        "injuryOutN": 0,
+        "homeTeamId": "20",
+        "awayTeamId": "6",
+        "homeAbbr": "NYK",
+        "awayAbbr": "CLE",
+        "startTime": "2026-05-20T00:00:00.000Z"
+      }
+    ]
+  },
+  "acquisitionResult": {
+    "gamesRequested": 25,
+    "httpSuccessGames": 25,
+    "zeroResultGames": 0,
+    "skippedExistingOnReanalysis": 25,
+    "wallClockMsFirstFetch": 329921,
+    "wallClockMs": 329921,
+    "characterizationPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=lineups/_characterization_25game",
+    "canonicalManifestWritten": false,
+    "note": "First fetch: 25 HTTP, 0 zeros, 329.9s. Later analysis re-read S3 only (0 additional BDL HTTP)."
+  },
+  "requestRateLimit": {
+    "httpAttempts": 25,
+    "httpSuccess": 25,
+    "status429": 0,
+    "retries": 0,
+    "retryAfterUsed": 0,
+    "spacingMinMs": 13484,
+    "spacingAvgMs": 13718,
+    "spacingMaxMs": 15889
+  },
+  "recordGrain": {
+    "totalRecords": 588,
+    "meanPerGame": 23.5,
+    "inventory": {
+      "topLevelKeys": [
+        "game_id",
+        "id",
+        "player",
+        "position",
+        "starter",
+        "team"
+      ],
+      "playerKeys": [
+        "college",
+        "country",
+        "draft_number",
+        "draft_round",
+        "draft_year",
+        "first_name",
+        "height",
+        "id",
+        "jersey_number",
+        "last_name",
+        "position",
+        "team_id",
+        "weight"
+      ],
+      "teamKeys": [
+        "abbreviation",
+        "city",
+        "conference",
+        "division",
+        "full_name",
+        "id",
+        "name"
+      ],
+      "starterTrue": 250,
+      "starterFalse": 338,
+      "starterNull": 0,
+      "hasProviderId": true,
+      "hasGameId": true,
+      "hasStarter": true,
+      "hasPosition": true,
+      "hasPlayerObject": true,
+      "hasTeamObject": true,
+      "hasStatus": false,
+      "hasPeriod": false,
+      "hasTimestamp": false,
+      "hasUnitId": false
+    },
+    "naturalKeys": {
+      "providerIdUnique": true,
+      "gameTeamPlayer": {
+        "unique": true,
+        "duplicateGroups": 0
+      },
+      "gamePlayer": {
+        "unique": true,
+        "duplicateGroups": 0
+      }
+    },
+    "recommendedKey": "(game_id, team_id, player_id)",
+    "notFiveManUnits": true,
+    "note": "Inspected sample records. Do not assume five-man stint units unless a unit identifier exists."
+  },
+  "teamObjectTypeAudit": {
+    "recordsWithTeamObject": 588,
+    "recordsMissingTeamObject": 0,
+    "typescriptBdlLineupEntryIncludesTeam": false,
+    "typescriptIncomplete": true,
+    "note": "GOAT probe and this sample include a top-level team object (id/abbreviation/full_name). lib/balldontlie/lineups.ts BdlLineupEntry omits team. No production type change in this step.",
+    "teamIdMatchesPlayerTeamId": 426,
+    "teamIdMismatchesPlayerTeamId": 162,
+    "teamMatchesGameHomeOrAway": 588,
+    "teamOutsideGame": 0
+  },
+  "playerIdentityCompatibility": {
+    "uniqueLineupPlayers": 314,
+    "mapped": 314,
+    "unmapped": 0,
+    "unmappedIds": [],
+    "conflicts": 0,
+    "matchMethod": "provider player.id == analytics.players.player_id (no name guessing)"
+  },
+  "playerGameLogComparison": {
+    "lineupToLogs": {
+      "lineupPlayersWithLogs": 563,
+      "lineupOnlyPlayers": 25,
+      "matchPct": 95.7,
+      "lineupOnlyPct": 4.3
+    },
+    "logsToLineup": {
+      "logPlayersInLineup": 563,
+      "logOnlyPlayers": 271,
+      "matchPct": 67.5,
+      "logOnlyPct": 32.5
+    },
+    "lineupOnlyClassifications": {
+      "lineup_nonstarter_no_log": 25
+    },
+    "lineupOnlyExamples": [
+      {
+        "gameId": "18447976",
+        "playerId": "38017724",
+        "name": "Caleb Houstan",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21684895",
+        "playerId": "1057392335",
+        "name": "Brooks Barnhizer",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21684895",
+        "playerId": "1059635020",
+        "name": "Payton Sandfort",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21684895",
+        "playerId": "1028218679",
+        "name": "Branden Carlson",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21684895",
+        "playerId": "17896071",
+        "name": "Isaiah Livers",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21684895",
+        "playerId": "1057846700",
+        "name": "CJ Huntley",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21684895",
+        "playerId": "1057387526",
+        "name": "Koby Brea",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      },
+      {
+        "gameId": "21681994",
+        "playerId": "38017729",
+        "name": "David Roddy",
+        "starter": false,
+        "injuryStatus": null,
+        "classification": "lineup_nonstarter_no_log"
+      }
+    ],
+    "logOnlyExamples": [
+      {
+        "gameId": "18446819",
+        "playerId": "1028028932",
+        "name": "Nikola Topic",
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "1028203948",
+        "name": null,
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "1028218679",
+        "name": "Branden Carlson",
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "1057274983",
+        "name": null,
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "158",
+        "name": "Dorian Finney-Smith",
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "188",
+        "name": "Jeff Green",
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "213",
+        "name": "Aaron Holiday",
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      },
+      {
+        "gameId": "18446819",
+        "playerId": "3547272",
+        "name": "Isaiah Joe",
+        "minutes": "00",
+        "classification": "log_with_zero_or_null_minutes"
+      }
+    ],
+    "note": "Lineup-only is not assumed DNP. Classes use injury history + starter flag + minutes when present."
+  },
+  "starterReliability": {
+    "teamGamesEvaluated": 50,
+    "exactly5Starters": 50,
+    "fewerThan5": 0,
+    "moreThan5": 0,
+    "duplicateStarterFlags": 0,
+    "nullOrAmbiguousStarter": 0,
+    "valid5plus5": "25 / 25",
+    "valid55Count": 25,
+    "byGame": [
+      {
+        "gameId": "18446819",
+        "matchup": "HOU @ OKC",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "11",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "21",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18446868",
+        "matchup": "OKC @ DAL",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "21",
+            "n": 10,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "7",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18446914",
+        "matchup": "MIL @ IND",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "17",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "12",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18446962",
+        "matchup": "OKC @ MEM",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "21",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "15",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447009",
+        "matchup": "DEN @ MIN",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "8",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "18",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447316",
+        "matchup": "NYK @ DET",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "20",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "9",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447356",
+        "matchup": "MIN @ CLE",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "18",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "6",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447395",
+        "matchup": "OKC @ HOU",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "21",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "11",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447433",
+        "matchup": "SAS @ HOU",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "27",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "11",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447474",
+        "matchup": "BKN @ LAC",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "3",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "13",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447934",
+        "matchup": "LAL @ OKC",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "14",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "21",
+            "n": 15,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447955",
+        "matchup": "CHA @ MIN",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "4",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "18",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447976",
+        "matchup": "ATL @ CLE",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "1",
+            "n": 10,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "6",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18447998",
+        "matchup": "DAL @ SAS",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "7",
+            "n": 10,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "27",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "18448018",
+        "matchup": "SAC @ POR",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "26",
+            "n": 8,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "25",
+            "n": 15,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21682711",
+        "matchup": "PHI @ BOS",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "23",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "2",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21681976",
+        "matchup": "HOU @ LAL",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "11",
+            "n": 10,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "14",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21684895",
+        "matchup": "OKC @ PHX",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "21",
+            "n": 15,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "24",
+            "n": 16,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21681987",
+        "matchup": "MIN @ DEN",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "18",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "8",
+            "n": 10,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21681994",
+        "matchup": "DEN @ MIN",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "8",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "18",
+            "n": 11,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21709238",
+        "matchup": "DET @ CLE",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "9",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "6",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21707977",
+        "matchup": "SAS @ MIN",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "27",
+            "n": 18,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "18",
+            "n": 16,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21709241",
+        "matchup": "CLE @ DET",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "6",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "9",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21713528",
+        "matchup": "SAS @ OKC",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "27",
+            "n": 9,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "21",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      },
+      {
+        "gameId": "21713895",
+        "matchup": "CLE @ NYK",
+        "valid55": true,
+        "teams": [
+          {
+            "teamId": "6",
+            "n": 12,
+            "starters": 5,
+            "duplicateStarters": false
+          },
+          {
+            "teamId": "20",
+            "n": 13,
+            "starters": 5,
+            "duplicateStarters": false
+          }
+        ]
+      }
+    ]
+  },
+  "starterAgreementWithExisting": {
+    "playerGameLogsHasStarterColumn": false,
+    "trustworthyHistoricalStarterSource": false,
+    "note": "analytics.player_game_logs has minutes but no starter flag. Live matchup analysis projects usual starters from recent minutes, not stored per-game starters. Lineup starter=true is new information if reliable."
+  },
+  "benchSemantics": {
+    "observed": {
+      "starterFalseWithPositiveMinutes": 310,
+      "starterFalseNoLog": 25,
+      "starterFalseZeroMinutes": 3
+    },
+    "interpretation": "starter=false mixes players who entered the game (present in logs with minutes) and players absent from box logs (DNP and/or inactive — not distinguishable from lineup fields alone)."
+  },
+  "availabilitySemantics": {
+    "distinctionsSupported": [
+      "starter=true",
+      "starter=false"
+    ],
+    "notSupported": [
+      "active bench vs active DNP vs inactive vs absent-from-roster — no status/active/inactive field on records"
+    ],
+    "summary": "Lineup data provides starter vs non-starter only. It does not by itself distinguish inactive vs DNP vs active bench."
+  },
+  "starterReplacementExamples": [
+    {
+      "gameId": "18447356",
+      "date": "2026-01-10",
+      "matchup": "MIN @ CLE",
+      "teamId": "6",
+      "absentOrChangedPlayer": {
+        "playerId": "192",
+        "name": "James Harden",
+        "seasonAvgMinutes": 35.2,
+        "inLineupStarters": false,
+        "inBoxLogs": false,
+        "injuryStatusNearTip": null
+      },
+      "replacementStarter": {
+        "playerId": "9",
+        "name": "Jarrett Allen",
+        "position": "C"
+      },
+      "evidence": "Frequent high-minute player for this team (20+ games, season avg minutes >= 28) is not a listed starter and has no box log this game. Replacement is a listed starter outside that usual high-minute set. Not a causal claim."
+    },
+    {
+      "gameId": "18447474",
+      "date": "2026-01-25",
+      "matchup": "BKN @ LAC",
+      "teamId": "13",
+      "absentOrChangedPlayer": {
+        "playerId": "666581",
+        "name": "Darius Garland",
+        "seasonAvgMinutes": 29.1,
+        "inLineupStarters": false,
+        "inBoxLogs": false,
+        "injuryStatusNearTip": null
+      },
+      "replacementStarter": {
+        "playerId": "101",
+        "name": "John Collins",
+        "position": "F"
+      },
+      "evidence": "Frequent high-minute player for this team (20+ games, season avg minutes >= 28) is not a listed starter and has no box log this game. Replacement is a listed starter outside that usual high-minute set. Not a causal claim."
+    },
+    {
+      "gameId": "18447976",
+      "date": "2026-04-08",
+      "matchup": "ATL @ CLE",
+      "teamId": "6",
+      "absentOrChangedPlayer": {
+        "playerId": "666581",
+        "name": "Darius Garland",
+        "seasonAvgMinutes": 30.3,
+        "inLineupStarters": false,
+        "inBoxLogs": false,
+        "injuryStatusNearTip": "Out"
+      },
+      "replacementStarter": {
+        "playerId": "666940",
+        "name": "Dean Wade",
+        "position": "F"
+      },
+      "evidence": "Frequent high-minute player for this team (20+ games, season avg minutes >= 28) is not a listed starter and has no box log this game. Replacement is a listed starter outside that usual high-minute set. Not a causal claim."
+    },
+    {
+      "gameId": "18447998",
+      "date": "2026-04-10",
+      "matchup": "DAL @ SAS",
+      "teamId": "7",
+      "absentOrChangedPlayer": {
+        "playerId": "117",
+        "name": "Anthony Davis",
+        "seasonAvgMinutes": 31.3,
+        "inLineupStarters": false,
+        "inBoxLogs": false,
+        "injuryStatusNearTip": null
+      },
+      "replacementStarter": {
+        "playerId": "315",
+        "name": "Khris Middleton",
+        "position": "F"
+      },
+      "evidence": "Frequent high-minute player for this team (20+ games, season avg minutes >= 28) is not a listed starter and has no box log this game. Replacement is a listed starter outside that usual high-minute set. Not a causal claim."
+    },
+    {
+      "gameId": "21709238",
+      "date": "2026-05-15",
+      "matchup": "DET @ CLE",
+      "teamId": "6",
+      "absentOrChangedPlayer": {
+        "playerId": "666581",
+        "name": "Darius Garland",
+        "seasonAvgMinutes": 30.3,
+        "inLineupStarters": false,
+        "inBoxLogs": false,
+        "injuryStatusNearTip": null
+      },
+      "replacementStarter": {
+        "playerId": "666940",
+        "name": "Dean Wade",
+        "position": "F"
+      },
+      "evidence": "Frequent high-minute player for this team (20+ games, season avg minutes >= 28) is not a listed starter and has no box log this game. Replacement is a listed starter outside that usual high-minute set. Not a causal claim."
+    }
+  ],
+  "uniqueInformationAdded": [
+    "Explicit per-game starter boolean — analytics.player_game_logs does not store starter",
+    "Cannot be reproduced from minutes heuristics (those estimate usual starters, not the actual five)",
+    "A small non-starter tail absent from box logs (~4% of lineup players) — not a complete DNP/inactive census",
+    "Does NOT add a full availability roster: mean 23.5 lineup rows vs ~30–36 box-log rows; most 00-minute log players are omitted"
+  ],
+  "roleOpportunityWowy": {
+    "roleCheck": "strong",
+    "opportunityCheck": "moderate",
+    "wowy": "weak",
+    "injuryContext": "weak",
+    "historicalExplorer": "strong",
+    "evidence": {
+      "valid55": 25,
+      "replacements": 5,
+      "availabilitySummary": "Lineup data provides starter vs non-starter only. It does not by itself distinguish inactive vs DNP vs active bench.",
+      "noStoredStarterOnLogs": true
+    }
+  },
+  "fullSeasonEstimate": {
+    "games": 1322,
+    "expectedRequests": 1322,
+    "expectedApiHours": 4.77,
+    "expectedRecords": 31093,
+    "expectedS3Mb": 13.44,
+    "likelyZeroResultGames": 0,
+    "note": "Projected from this 25-game sample. Not the old 1,297 estimate."
+  },
+  "utilityPerApiHour": {
+    "fullLineupsHours": 4.77,
+    "core2022Hours": "1.8-2",
+    "preserveReserveHours": 0,
+    "recommendation": "Lineups add some unique starter information, but overlap/semantics are not clean enough to outrank preserving reserve. Do not launch yet."
+  },
+  "productValueClassification": "MEDIUM_VALUE_CONSIDER",
+  "updatedTrialTimeBudget": {
+    "characterizationApiHours": 0.092,
+    "elapsedHours": 15.67,
+    "remainingHours": 32.33,
+    "protectedReserveHours": 6,
+    "usableAfterReserveHours": 26.33,
+    "estimatedFullLineupHours": 4.77,
+    "optional2022Hours": "1.8-2",
+    "recommendedFinalAuditReserveHours": 6
+  },
+  "postgresUnchangedConfirmation": {
+    "beforeBytes": 342846611,
+    "afterBytes": 342846611,
+    "expectedBytes": 342846611,
+    "unchanged": true,
+    "coreServingUnchanged": true,
+    "advancedStatsS3Only": true,
+    "marketDataServingUnchanged": true,
+    "lineupTableCreated": false
+  },
+  "stepVerdict": "YELLOW — lineup data useful but overlap/semantics need review"
+}

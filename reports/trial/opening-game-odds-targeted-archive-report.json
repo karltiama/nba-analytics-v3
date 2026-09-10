@@ -1,0 +1,1659 @@
+{
+  "generatedAt": "2026-09-09T02:37:24.302Z",
+  "step": "7D",
+  "dryRun": false,
+  "postgresWrites": false,
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "delaySource": "trial-default",
+    "minDelayMs": 12000,
+    "concurrency": 1,
+    "lockActiveBefore": false,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "postgresWrites": false,
+    "dbMb": 326.96,
+    "dbBytes": 342846611,
+    "canonicalPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/window=2026-03-09_to_2026-03-22",
+    "characterizationPrefixesPreserved": [
+      "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff",
+      "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_schedule_phase",
+      "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_10game"
+    ],
+    "lockAcquired": true,
+    "lockReleased": true
+  },
+  "targetDefinition": {
+    "games": 107,
+    "minEt": "2026-03-09",
+    "maxEt": "2026-03-22",
+    "closingRows": 15239,
+    "vendors": [
+      "ballybet",
+      "betmgm",
+      "betparx",
+      "betrivers",
+      "betway",
+      "caesars",
+      "draftkings",
+      "fanatics",
+      "fanduel",
+      "kalshi",
+      "polymarket",
+      "rebet"
+    ],
+    "window": "2026-03-09 to 2026-03-22",
+    "expected": 107,
+    "actual": 107,
+    "gameIds": [
+      "18447749",
+      "18447750",
+      "18447751",
+      "18447752",
+      "18447753",
+      "18447754",
+      "18447755",
+      "18447756",
+      "18447757",
+      "18447758",
+      "18447759",
+      "18447760",
+      "18447761",
+      "18447762",
+      "18447763",
+      "18447764",
+      "18447765",
+      "18447766",
+      "18447767",
+      "18447768",
+      "18447769",
+      "18447770",
+      "18447771",
+      "18447772",
+      "18447773",
+      "18447774",
+      "18447775",
+      "18447776",
+      "18447777",
+      "18447778",
+      "18447929",
+      "18447779",
+      "18447780",
+      "18447781",
+      "18447782",
+      "18447783",
+      "18447784",
+      "18447785",
+      "18447786",
+      "18447787",
+      "18447788",
+      "18447789",
+      "18447790",
+      "18447791",
+      "18447792",
+      "18447793",
+      "18447794",
+      "18447795",
+      "18447796",
+      "18447797",
+      "18447798",
+      "18447799",
+      "18447800",
+      "18447801",
+      "18447802",
+      "18447803",
+      "18447804",
+      "18447805",
+      "18447806",
+      "18447807",
+      "18447808",
+      "18447809",
+      "18447810",
+      "18447811",
+      "18447812",
+      "18447813",
+      "18447814",
+      "18447815",
+      "18447816",
+      "18447469",
+      "18447817",
+      "18447818",
+      "18447819",
+      "18447820",
+      "18447822",
+      "18447823",
+      "18447824",
+      "18447825",
+      "18447826",
+      "18447827",
+      "18447828",
+      "18447829",
+      "18447830",
+      "18447831",
+      "18447832",
+      "18447833",
+      "18447834",
+      "18447835",
+      "18447836",
+      "18447837",
+      "18447838",
+      "18447839",
+      "18447840",
+      "18447841",
+      "18447842",
+      "18447843",
+      "18447844",
+      "18447845",
+      "18447846",
+      "18447847",
+      "18447848",
+      "18447849",
+      "18447850",
+      "18447851",
+      "18447852",
+      "18447853",
+      "18447854"
+    ]
+  },
+  "characterizationReuse": {
+    "reused": [
+      {
+        "gameId": "18447749",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_10game/game_id=18447749.json",
+        "source": "7A"
+      },
+      {
+        "gameId": "18447770",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447770.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447779",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447779.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447789",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447789.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447801",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447801.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447809",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447809.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447826",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447826.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447834",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447834.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447842",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447842.json",
+        "source": "7C"
+      },
+      {
+        "gameId": "18447850",
+        "from": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/_characterization_march_cutoff/game_id=18447850.json",
+        "source": "7C"
+      }
+    ],
+    "alreadyCanonical": 0,
+    "newProviderRequests": 97,
+    "note": "Did not re-request characterization games. 7C preferred over 7B over 7A when multiple copies exist."
+  },
+  "timeGate": {
+    "trialStart": "2026-09-08T12:10:59.422Z",
+    "elapsedHours": 14.44,
+    "remainingHours": 33.56,
+    "reserveHours": 6,
+    "remainingAfterReserveHours": 27.56,
+    "reusableTargetObjects": 10,
+    "requiredNewRequests": 97,
+    "projectedHours": {
+      "low": 0.37,
+      "base": 0.37,
+      "high": 0.43
+    },
+    "timeGateMaxHours": 1,
+    "proceed": true
+  },
+  "acquisition": {
+    "targetGames": 107,
+    "reusedGames": 10,
+    "newlyRequestedGames": 97,
+    "successfulGames": 107,
+    "zeroResultGames": 0,
+    "failedGames": 0,
+    "totalOpeningRecords": 1179,
+    "httpAttempts": 97,
+    "httpSuccess": 97,
+    "status429": 0,
+    "retries": 0,
+    "durationMs": 1259876,
+    "durationHours": 0.35
+  },
+  "rateLimit": {
+    "configuredMs": 13000,
+    "avgSpacingMs": 13007.8,
+    "minSpacingMs": 13000,
+    "maxSpacingMs": 13015,
+    "limiterOk": true
+  },
+  "coverageClassification": {
+    "MULTIBOOK_SPORTSBOOK": 107,
+    "LIMITED_SPORTSBOOK": 0,
+    "PREDICTION_MARKET_ONLY": 0,
+    "ZERO_ROWS": 0,
+    "pct": {
+      "MULTIBOOK_SPORTSBOOK": 100,
+      "LIMITED_SPORTSBOOK": 0,
+      "PREDICTION_MARKET_ONLY": 0,
+      "ZERO_ROWS": 0
+    },
+    "games": [
+      {
+        "gameId": "18447749",
+        "etDate": "2026-03-09",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447750",
+        "etDate": "2026-03-09",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447751",
+        "etDate": "2026-03-09",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447752",
+        "etDate": "2026-03-09",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447753",
+        "etDate": "2026-03-09",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447754",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447755",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447756",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 10
+      },
+      {
+        "gameId": "18447757",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447758",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447759",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447760",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447761",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447762",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 10
+      },
+      {
+        "gameId": "18447763",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447764",
+        "etDate": "2026-03-10",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447765",
+        "etDate": "2026-03-11",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447766",
+        "etDate": "2026-03-11",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447767",
+        "etDate": "2026-03-11",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447768",
+        "etDate": "2026-03-11",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447769",
+        "etDate": "2026-03-11",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447770",
+        "etDate": "2026-03-11",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447771",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447772",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447773",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447774",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447775",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447776",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447777",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447778",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447929",
+        "etDate": "2026-03-12",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447779",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447780",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447781",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447782",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447783",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447784",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447785",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447786",
+        "etDate": "2026-03-13",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447787",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447788",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447789",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447790",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447791",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447792",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447793",
+        "etDate": "2026-03-14",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447794",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447795",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447796",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447797",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447798",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447799",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 8
+      },
+      {
+        "gameId": "18447800",
+        "etDate": "2026-03-15",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447801",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447802",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447803",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447804",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447805",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447806",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447807",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447808",
+        "etDate": "2026-03-16",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447809",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447810",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447811",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447812",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447813",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447814",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447815",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 10
+      },
+      {
+        "gameId": "18447816",
+        "etDate": "2026-03-17",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447469",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447817",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447818",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447819",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447820",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447822",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447823",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447824",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447825",
+        "etDate": "2026-03-18",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447826",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447827",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447828",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447829",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447830",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447831",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447832",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447833",
+        "etDate": "2026-03-19",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447834",
+        "etDate": "2026-03-20",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447835",
+        "etDate": "2026-03-20",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447836",
+        "etDate": "2026-03-20",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447837",
+        "etDate": "2026-03-20",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447838",
+        "etDate": "2026-03-20",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447839",
+        "etDate": "2026-03-20",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447840",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447841",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447842",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447843",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447844",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447845",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447846",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447847",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447848",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447849",
+        "etDate": "2026-03-21",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447850",
+        "etDate": "2026-03-22",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447851",
+        "etDate": "2026-03-22",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447852",
+        "etDate": "2026-03-22",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447853",
+        "etDate": "2026-03-22",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      },
+      {
+        "gameId": "18447854",
+        "etDate": "2026-03-22",
+        "coverageClass": "MULTIBOOK_SPORTSBOOK",
+        "sportsbooks": 9
+      }
+    ]
+  },
+  "sportsbookCoverage": {
+    "gamesWithSportsbookOpenings": 107,
+    "gamesWithSpread": 107,
+    "gamesWithTotal": 107,
+    "gamesWithMoneyline": 107,
+    "medianSportsbookVendorsPerGame": 9
+  },
+  "vendorCoverage": [
+    {
+      "vendor": "ballybet",
+      "class": "sportsbook",
+      "games": 106,
+      "rows": 106,
+      "gamesPct": 99.1
+    },
+    {
+      "vendor": "betmgm",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "betparx",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "betrivers",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "betway",
+      "class": "sportsbook",
+      "games": 3,
+      "rows": 3,
+      "gamesPct": 2.8
+    },
+    {
+      "vendor": "caesars",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "draftkings",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "fanatics",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "fanduel",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "kalshi",
+      "class": "prediction-market",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "polymarket",
+      "class": "prediction-market",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    },
+    {
+      "vendor": "rebet",
+      "class": "sportsbook",
+      "games": 107,
+      "rows": 107,
+      "gamesPct": 100
+    }
+  ],
+  "recordGrain": {
+    "totalRows": 1179,
+    "distinctGameVendor": 1179,
+    "duplicateGameVendorPairs": 0,
+    "extraDuplicateRows": 0,
+    "missingVendorNames": 0,
+    "spreadPopulated": 81.8,
+    "totalPopulated": 69.9,
+    "moneylinePopulated": 90.9,
+    "note": "Expected grain is one game/vendor snapshot that may carry spread+total+moneyline together."
+  },
+  "identityCertification": {
+    "everyReturnedIdInTarget": true,
+    "wrongSeasonIds": [],
+    "unknownGames": [],
+    "anomalies": []
+  },
+  "openToClose": {
+    "sportsbookOpeningRows": 965,
+    "closingComparable": 965,
+    "matched": 945,
+    "unmatched": 20,
+    "matchPct": 97.9,
+    "key": "game_id + lower(vendor)",
+    "unmatchedReasons": [
+      {
+        "gameId": "18447758",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447761",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447762",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447763",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447764",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447776",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447777",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447778",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447929",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447784",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447785",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447786",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447816",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447824",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447825",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447830",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447832",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447844",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447848",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      },
+      {
+        "gameId": "18447849",
+        "vendor": "rebet",
+        "reason": "no last-pre-tip snapshot for this vendor"
+      }
+    ],
+    "predictionMarketRowsExcluded": 214,
+    "note": "Last pre-tip closing snapshot. No fuzzy matching. Prediction-market rows excluded from sportsbook match rate."
+  },
+  "spreadMovement": {
+    "overall": {
+      "n": 943,
+      "mean": -0.13,
+      "median": 0,
+      "min": -18,
+      "max": 18,
+      "pctUp": 37.6,
+      "pctDown": 41.1,
+      "pctUnchanged": 21.2
+    },
+    "byVendor": [
+      {
+        "vendor": "fanduel",
+        "n": 107,
+        "mean": -0.08,
+        "median": 0,
+        "min": -4.5,
+        "max": 4,
+        "pctUp": 43,
+        "pctDown": 39.3,
+        "pctUnchanged": 17.8
+      },
+      {
+        "vendor": "draftkings",
+        "n": 107,
+        "mean": -0.14,
+        "median": 0,
+        "min": -4,
+        "max": 16,
+        "pctUp": 32.7,
+        "pctDown": 43.9,
+        "pctUnchanged": 23.4
+      },
+      {
+        "vendor": "rebet",
+        "n": 87,
+        "mean": -0.2,
+        "median": 0,
+        "min": -18,
+        "max": 6.5,
+        "pctUp": 37.9,
+        "pctDown": 37.9,
+        "pctUnchanged": 24.1
+      },
+      {
+        "vendor": "fanatics",
+        "n": 107,
+        "mean": -0.26,
+        "median": 0,
+        "min": -12,
+        "max": 2.5,
+        "pctUp": 38.3,
+        "pctDown": 44.9,
+        "pctUnchanged": 16.8
+      },
+      {
+        "vendor": "betmgm",
+        "n": 106,
+        "mean": -0.02,
+        "median": 0,
+        "min": -4,
+        "max": 18,
+        "pctUp": 32.1,
+        "pctDown": 36.8,
+        "pctUnchanged": 31.1
+      },
+      {
+        "vendor": "caesars",
+        "n": 106,
+        "mean": -0.18,
+        "median": 0,
+        "min": -3.5,
+        "max": 3.5,
+        "pctUp": 37.7,
+        "pctDown": 46.2,
+        "pctUnchanged": 16
+      },
+      {
+        "vendor": "betrivers",
+        "n": 107,
+        "mean": -0.08,
+        "median": 0,
+        "min": -3.5,
+        "max": 2.5,
+        "pctUp": 38.3,
+        "pctDown": 40.2,
+        "pctUnchanged": 21.5
+      },
+      {
+        "vendor": "ballybet",
+        "n": 106,
+        "mean": -0.08,
+        "median": 0,
+        "min": -3.5,
+        "max": 2.5,
+        "pctUp": 40.6,
+        "pctDown": 40.6,
+        "pctUnchanged": 18.9
+      },
+      {
+        "vendor": "betparx",
+        "n": 107,
+        "mean": -0.11,
+        "median": 0,
+        "min": -3.5,
+        "max": 2.5,
+        "pctUp": 39.3,
+        "pctDown": 41.1,
+        "pctUnchanged": 19.6
+      }
+    ]
+  },
+  "totalMovement": {
+    "overall": {
+      "n": 802,
+      "mean": 0.77,
+      "median": 1,
+      "min": -25,
+      "max": 25,
+      "pctUp": 55.7,
+      "pctDown": 32.2,
+      "pctUnchanged": 12.1
+    },
+    "byVendor": [
+      {
+        "vendor": "fanduel",
+        "n": 107,
+        "mean": 0.82,
+        "median": 1,
+        "min": -6,
+        "max": 9,
+        "pctUp": 56.1,
+        "pctDown": 29.9,
+        "pctUnchanged": 14
+      },
+      {
+        "vendor": "draftkings",
+        "n": 107,
+        "mean": 1.01,
+        "median": 1,
+        "min": -6,
+        "max": 19,
+        "pctUp": 52.3,
+        "pctDown": 29.9,
+        "pctUnchanged": 17.8
+      },
+      {
+        "vendor": "rebet",
+        "n": 55,
+        "mean": 0.24,
+        "median": 0.5,
+        "min": -25,
+        "max": 6,
+        "pctUp": 54.5,
+        "pctDown": 27.3,
+        "pctUnchanged": 18.2
+      },
+      {
+        "vendor": "fanatics",
+        "n": 106,
+        "mean": 0.73,
+        "median": 0.5,
+        "min": -6,
+        "max": 7.5,
+        "pctUp": 55.7,
+        "pctDown": 40.6,
+        "pctUnchanged": 3.8
+      },
+      {
+        "vendor": "betmgm",
+        "n": 106,
+        "mean": 0.79,
+        "median": 0,
+        "min": -5,
+        "max": 25,
+        "pctUp": 49.1,
+        "pctDown": 34,
+        "pctUnchanged": 17
+      },
+      {
+        "vendor": "caesars",
+        "n": 106,
+        "mean": 0.79,
+        "median": 0.5,
+        "min": -6.5,
+        "max": 9,
+        "pctUp": 53.8,
+        "pctDown": 35.8,
+        "pctUnchanged": 10.4
+      },
+      {
+        "vendor": "betrivers",
+        "n": 107,
+        "mean": 0.77,
+        "median": 1,
+        "min": -5,
+        "max": 8.5,
+        "pctUp": 62.6,
+        "pctDown": 28,
+        "pctUnchanged": 9.3
+      },
+      {
+        "vendor": "ballybet",
+        "n": 106,
+        "mean": 0.73,
+        "median": 1,
+        "min": -5,
+        "max": 8.5,
+        "pctUp": 61.3,
+        "pctDown": 30.2,
+        "pctUnchanged": 8.5
+      }
+    ]
+  },
+  "moneylineMovement": {
+    "homeAmericanDelta": {
+      "n": 858,
+      "mean": -43.83,
+      "median": 0,
+      "min": -2500,
+      "max": 740,
+      "pctUp": 40.2,
+      "pctDown": 49.4,
+      "pctUnchanged": 10.4
+    },
+    "awayAmericanDelta": {
+      "n": 858,
+      "mean": 3.26,
+      "median": 2,
+      "min": -2500,
+      "max": 5000,
+      "pctUp": 50.1,
+      "pctDown": 40.6,
+      "pctUnchanged": 9.3
+    },
+    "homeImpliedProbabilityChangePp": {
+      "n": 858,
+      "mean": 0.26,
+      "median": 0,
+      "min": -50.13,
+      "max": 15.1,
+      "pctUp": 49.4,
+      "pctDown": 40.2,
+      "pctUnchanged": 10.4
+    },
+    "note": "Raw American-odds subtraction is shown but is not a linear probability. Implied-probability change is the analysis metric. No betting-performance claims."
+  },
+  "timestampProfile": {
+    "label": "Opening Snapshot",
+    "openedAtPopulatedPct": 100,
+    "n": 965,
+    "minHoursBeforeTip": 0.5,
+    "medianHoursBeforeTip": 22.6,
+    "maxHoursBeforeTip": 1267.5,
+    "buckets": {
+      "0-12h": 25,
+      "12-18h": 27,
+      "18-24h": 674,
+      "24-36h": 236,
+      "36-48h": 1,
+      "48h+": 2
+    },
+    "note": "Not first market open."
+  },
+  "coverageByDate": [
+    {
+      "etDate": "2026-03-09",
+      "targetGames": 5,
+      "sportsbookOpenings": 5,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-10",
+      "targetGames": 11,
+      "sportsbookOpenings": 11,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-11",
+      "targetGames": 6,
+      "sportsbookOpenings": 6,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-12",
+      "targetGames": 9,
+      "sportsbookOpenings": 9,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-13",
+      "targetGames": 8,
+      "sportsbookOpenings": 8,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-14",
+      "targetGames": 7,
+      "sportsbookOpenings": 7,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-15",
+      "targetGames": 7,
+      "sportsbookOpenings": 7,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-16",
+      "targetGames": 8,
+      "sportsbookOpenings": 8,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-17",
+      "targetGames": 8,
+      "sportsbookOpenings": 8,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-18",
+      "targetGames": 9,
+      "sportsbookOpenings": 9,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-19",
+      "targetGames": 8,
+      "sportsbookOpenings": 8,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-20",
+      "targetGames": 6,
+      "sportsbookOpenings": 6,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-21",
+      "targetGames": 10,
+      "sportsbookOpenings": 10,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    },
+    {
+      "etDate": "2026-03-22",
+      "targetGames": 5,
+      "sportsbookOpenings": 5,
+      "predictionOnly": 0,
+      "zero": 0,
+      "medianSportsbookVendors": 9
+    }
+  ],
+  "earlyDegradation": [],
+  "productGradeSubset": {
+    "vendors": [
+      "ballybet",
+      "betmgm",
+      "betparx",
+      "betrivers",
+      "caesars",
+      "draftkings",
+      "fanatics",
+      "fanduel",
+      "rebet"
+    ],
+    "markets": {
+      "spread": true,
+      "total": true,
+      "moneyline": true
+    },
+    "recommend": {
+      "spreadMovement": true,
+      "totalMovement": true,
+      "moneylineMovement": "yes, as implied-probability change; do not treat raw American-odds deltas as the product metric",
+      "vendorSpecificViews": [
+        "ballybet",
+        "betmgm",
+        "betparx",
+        "betrivers",
+        "caesars",
+        "draftkings",
+        "fanatics",
+        "fanduel",
+        "rebet"
+      ],
+      "consensusViews": "median opening vs last pre-tip close across the high-coverage sportsbooks"
+    },
+    "note": "Do not build Historical Opening Snapshot → Closing Line in this step."
+  },
+  "s3Certification": {
+    "objects": 107,
+    "objectsIncludingManifest": 107,
+    "bytes": 604818,
+    "mb": 0.58,
+    "all107AccountedFor": true,
+    "recordCountMatchesObjectSum": true,
+    "zeroResultGamesRecorded": [],
+    "failedGamesRecorded": [],
+    "coverageWindowEmbedded": true,
+    "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/window=2026-03-09_to_2026-03-22"
+  },
+  "scopeLimitation": "Historical opening game odds are only certified for this targeted March 9–22, 2026 window. BALLDONTLIE sportsbook opening coverage degrades beginning March 23 and later becomes empty.",
+  "trialTimeBudget": {
+    "trialStart": "2026-09-08T12:10:59.422Z",
+    "step7DRequests": 97,
+    "elapsedHours": 14.79,
+    "remainingHours": 33.21,
+    "reserveHours": 6,
+    "remainingAfterReserveHours": 27.21,
+    "remainingOptionalWork": [
+      "deeper market analysis using already-captured props/odds — zero API",
+      "lineup characterization",
+      "full lineups only if justified",
+      "2022 S3-only if worthwhile",
+      "final trial audit"
+    ]
+  },
+  "postgresIsolation": {
+    "beforeBytes": 342846611,
+    "afterBytes": 342846611,
+    "deltaBytes": 0,
+    "gohRowsBefore": 63380,
+    "gohRowsAfter": 63380,
+    "gohGamesAfter": 334,
+    "before": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games_2023": 1319,
+      "logs_2023": 46090,
+      "tgs_2023": 2638,
+      "psa_2023": 595,
+      "tsa_2023": 30,
+      "inferred_2023": 695,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578,
+      "raw_pgs": 46056,
+      "advancedTable": null,
+      "pdl_rows": 94086,
+      "pdl_games": 129,
+      "goh_rows": 63380,
+      "goh_games": 334,
+      "goc_rows": 334,
+      "box184": {
+        "home_score": 109,
+        "away_score": 118
+      }
+    },
+    "after": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games_2023": 1319,
+      "logs_2023": 46090,
+      "tgs_2023": 2638,
+      "psa_2023": 595,
+      "tsa_2023": 30,
+      "inferred_2023": 695,
+      "games_2024": 1321,
+      "logs_2024": 46150,
+      "tgs_2024": 2642,
+      "psa_2024": 587,
+      "tsa_2024": 30,
+      "inferred_2024": 699,
+      "games_2025": 1323,
+      "logs_2025": 46056,
+      "tgs_2025": 2644,
+      "games_2026": 1200,
+      "logs_2026": 0,
+      "tgs_2026": 0,
+      "stints_2026": 578,
+      "raw_pgs": 46056,
+      "advancedTable": null,
+      "pdl_rows": 94086,
+      "pdl_games": 129,
+      "goh_rows": 63380,
+      "goh_games": 334,
+      "goc_rows": 334,
+      "box184": {
+        "home_score": 109,
+        "away_score": 118
+      }
+    },
+    "isolationFailures": []
+  },
+  "redReasons": [],
+  "yellowReasons": [],
+  "verdict": "GREEN — targeted opening-odds archive complete and product-useful"
+}

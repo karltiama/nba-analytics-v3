@@ -1,3 +1,4 @@
+import { fetchBdlLive } from '@/lib/balldontlie/live-rate-limit';
 import { normalizePlayerIdForLookup, trimPlayerDisplayName } from '@/lib/research/player-display-name-lookup-builder';
 
 const BDL_PLAYERS_BASE = 'https://api.balldontlie.io/v1/players';
@@ -40,10 +41,14 @@ export async function fetchBdlPlayerNamesByIds(args: {
   const url = `${BDL_PLAYERS_BASE}?${params.toString()}`;
   let res: Response;
   try {
-    res = await fetch(url, {
-      headers: { Authorization: key },
-      next: { revalidate: 86_400 },
-    });
+    res = await fetchBdlLive(
+      url,
+      {
+        headers: { Authorization: key },
+        next: { revalidate: 86_400 },
+      } as RequestInit,
+      { worker: 'bdl-player-names' }
+    );
   } catch {
     return out;
   }

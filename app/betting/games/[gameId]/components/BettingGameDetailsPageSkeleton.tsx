@@ -58,14 +58,16 @@ export function BettingGameDetailsPageSkeleton() {
 
       <div className="mt-4 flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
         <div className="flex-1 min-w-0 space-y-4">
-          <GlassSection titleWidth="w-48 max-w-[70%]" borderClass="border-[#bf5af2]/30">
-            <div className="flex flex-wrap gap-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-9 w-full sm:w-[calc(50%-0.25rem)] lg:w-[calc(25%-0.375rem)] max-w-[200px] rounded-lg bg-white/10" />
+          <GlassSection titleWidth="w-36 max-w-[50%]">
+            <div className="grid grid-cols-2 gap-3">
+              {Array.from({ length: 2 }).map((_, col) => (
+                <div key={col} className="space-y-2">
+                  {Array.from({ length: 5 }).map((_, row) => (
+                    <Skeleton key={row} className="h-4 w-full bg-white/10" />
+                  ))}
+                </div>
               ))}
             </div>
-            <Skeleton className="h-20 w-full rounded-lg bg-white/10" />
-            <Skeleton className="h-3 w-3/4 max-w-md bg-white/10" />
           </GlassSection>
 
           <GlassSection titleWidth="w-40 max-w-[60%]">

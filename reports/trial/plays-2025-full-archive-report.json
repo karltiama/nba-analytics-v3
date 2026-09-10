@@ -1,0 +1,1701 @@
+{
+  "generatedAt": "2026-09-09T22:55:37.731Z",
+  "step": "9E",
+  "started2022": false,
+  "postgresWrites": false,
+  "builtPossessions": false,
+  "builtWowy": false,
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "minDelayMs": 12000,
+    "concurrency": 1,
+    "lockActiveBefore": false,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "dbBytesBefore": 342846611,
+    "dbMb": 326.96,
+    "unexpectedServing": [],
+    "acquisitionPathWritesPostgres": false
+  },
+  "targetDefinition": {
+    "count": 1322,
+    "expected": 1322,
+    "dateMin": "2025-10-21",
+    "dateMax": "2026-06-13",
+    "regularSeason": 1237,
+    "postseason": 85,
+    "excludedLocalOnly": "21681993",
+    "source": "reports/trial/bdl-games-2025.json"
+  },
+  "characterizationReuse": {
+    "characterizationPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=plays/_characterization_10game",
+    "reusableValid": 10,
+    "alreadyCanonical": 188,
+    "needCopy": 0,
+    "needFetch": 1134,
+    "expectedReusableUpTo": 10,
+    "expectedNewIfAll10Reused": 1312
+  },
+  "timeGate": {
+    "trialElapsedHours": 30.304,
+    "trialRemainingHours": 17.696,
+    "protectedReserveHours": 6,
+    "usableAfterReserveHours": 11.696,
+    "reusableResponses": 10,
+    "requiredProviderRequests": 1134,
+    "projectedCrawlMs": 14742000,
+    "projectedCrawlHours": 4.095,
+    "projectedRemainingAfterCrawlHours": 13.601,
+    "maxAllowedHours": 6,
+    "proceed": true
+  },
+  "acquisitionResult": {
+    "target": 1322,
+    "reused": 0,
+    "newlyRequested": 1134,
+    "skippedExisting": 188,
+    "written": 1134,
+    "successful": 1134,
+    "zeroResult": 0,
+    "failed": [],
+    "truncated": [],
+    "stoppedReason": null,
+    "totalEvents": 642354,
+    "averageEventsPerGame": 485.9,
+    "minEventsPerGame": 399,
+    "maxEventsPerGame": 644,
+    "httpAttempts": 1134,
+    "httpSuccess": 1134,
+    "status429": 0,
+    "retries": 0,
+    "retryAfterUsed": 0,
+    "wallClockMs": 15700653
+  },
+  "rateLimitResult": {
+    "configuredSpacingMs": 13000,
+    "concurrency": 1,
+    "averageMs": 13856.8,
+    "minimumMs": 13650,
+    "maximumMs": 16607,
+    "minObservedAtLeast12000": true
+  },
+  "eventGrain": {
+    "totalEvents": 642354,
+    "distinctKeys": 642354,
+    "duplicateLogicalKeys": 0,
+    "gamesWithDuplicateOrders": [],
+    "nullGameIds": 0,
+    "nullOrders": 0,
+    "gamesWithOrderGaps": [],
+    "gamesNotStartingAt1": [],
+    "gamesNotMonotonic": []
+  },
+  "identityCertification": {
+    "targetGames": 1322,
+    "missingCanonical": [],
+    "invalidCanonical": [],
+    "wrongGameEvents": 0,
+    "unknownGameEvents": 0,
+    "wrongSeasonGames": [],
+    "validTeamEvents": 634094,
+    "nullTeamEvents": 8260,
+    "unknownTeamEvents": 0,
+    "participants": {
+      "uniqueIds": 579,
+      "mapped": 579,
+      "unmapped": 0,
+      "conflicts": 0,
+      "matchMethod": "analytics.players.player_id or analytics.player_provider_ids provider=balldontlie"
+    }
+  },
+  "eventTypeInventory": {
+    "distinctTypes": 137,
+    "topTypes": {
+      "Defensive Rebound": 91956,
+      "Substitution": 82649,
+      "Jump Shot": 68666,
+      "Offensive Rebound": 47335,
+      "Pullup Jump Shot": 27738,
+      "Shooting Foul": 27437,
+      "Free Throw - 1 of 2": 25501,
+      "Free Throw - 2 of 2": 25479,
+      "Driving Layup Shot": 21160,
+      "Personal Foul": 16182,
+      "Full Timeout": 14282,
+      "Driving Floating Jump Shot": 13684,
+      "Bad Pass\nTurnover": 13608,
+      "Step Back Jump Shot": 12234,
+      "Lost Ball Turnover": 8877,
+      "Running Layup Shot": 8367,
+      "Running Jump Shot": 6879,
+      "Free Throw - 1 of 1": 6578,
+      "Driving Finger Roll Layup": 6285,
+      "Cutting Layup Shot": 5539,
+      "End Period": 5356,
+      "Tip Shot": 5044,
+      "Fade Away Jump Shot": 4472,
+      "Out of Bounds - Bad Pass Turnover": 4463,
+      "Layup Shot Putback": 4112
+    },
+    "substitution": 82649,
+    "scoringPlays": 159050,
+    "shootingPlays": 298340,
+    "groups": {
+      "jump_ball": [
+        "Jumpball",
+        "Jump Ball",
+        "Jumpball Violation Turnover"
+      ],
+      "other": [
+        "Jump Shot",
+        "Cutting Layup Shot",
+        "Layup Shot Putback",
+        "Floating Jump Shot",
+        "Kicked Ball",
+        "Pullup Jump Shot",
+        "Running Layup Shot",
+        "Turnaround Fade Away Jump Shot",
+        "Step Back Jump Shot",
+        "Driving Dunk Shot",
+        "Running Pullup Jump Shot",
+        "Driving Floating Jump Shot",
+        "Driving Layup Shot",
+        "Driving Finger Roll Layup",
+        "Fade Away Jump Shot",
+        "Running Jump Shot",
+        "Hook Shot",
+        "Offensive Charge",
+        "Layup Driving Reverse",
+        "Layup Shot",
+        "Jump Shot Bank",
+        "Tip Shot",
+        "Heave Jump Shot",
+        "Finger Roll Layup",
+        "Running Dunk Shot",
+        "Alley Oop Dunk Shot",
+        "Pullup Bank Jump Shot",
+        "Turnaround Hook Shot",
+        "Turnaround Jump Shot",
+        "Dunk Shot",
+        "Putback Dunk Shot",
+        "Alley Oop Layup Shot",
+        "Delay of Game",
+        "Running Alley Oop Layup Shot",
+        "Driving Floating Bank Jump Shot",
+        "Tip Dunk Shot",
+        "Driving Jump Shot Bank",
+        "Turnaround Bank Jump Shot",
+        "Cutting Dunk Shot",
+        "Driving Hook Shot",
+        "Hook Turnaround Bank",
+        "Fade Away Bank Jump Shot",
+        "Cutting Finger Roll Layup Shot",
+        "Layup Running Reverse",
+        "Running Finger Roll Layup",
+        "Running Reverse Dunk Shot",
+        "Running Alley Oop Dunk Shot",
+        "Defensive Goaltending",
+        "Hook Driving Bank",
+        "Driving Reverse Dunk Shot",
+        "Turnaround Fadeaway Bank Jump Shot",
+        "Reverse Layup Shot",
+        "Reverse Dunk Shot",
+        "Double Lane",
+        "Lane",
+        "Step Back Bank Jump Shot",
+        "Hook Shot Bank",
+        "Ejection",
+        "Not Available",
+        "No Shot (Default Shot)"
+      ],
+      "rebound": [
+        "Defensive Rebound",
+        "Offensive Rebound"
+      ],
+      "foul": [
+        "Shooting Foul",
+        "Loose Ball Foul",
+        "Personal Foul",
+        "Offensive Foul",
+        "Away from Play Foul",
+        "Technical Foul",
+        "Flagrant Foul Type 1",
+        "Personal Take Foul",
+        "Defensive 3-Seconds Technical",
+        "Double Technical Foul",
+        "Hanging Technical Foul",
+        "Double Personal Foul",
+        "Too Many Players Technical",
+        "Flagrant Foul Type 2",
+        "Transition Take Foul",
+        "Delay Technical",
+        "Flopping Technical",
+        "Clear Path Foul",
+        "No Foul"
+      ],
+      "free_throw": [
+        "Free Throw - 1 of 1",
+        "Free Throw - 1 of 2",
+        "Free Throw - 2 of 2",
+        "Free Throw - Technical",
+        "Free Throw - 1 of 3",
+        "Free Throw - 3 of 3",
+        "Free Throw - 2 of 3",
+        "Free Throw - Flagrant 2 of 2",
+        "Free Throw - Flagrant 1 of 2",
+        "Free Throw - Flagrant 2 of 3",
+        "Free Throw - Flagrant 1 of 3",
+        "Free Throw - Flagrant 3 of 3",
+        "Free Throw - Flagrant 1 of 1",
+        "Free Throw - Clear Path 1 of 2",
+        "Free Throw - Clear Path 2 of 2"
+      ],
+      "turnover": [
+        "Shot Clock Turnover",
+        "Bad Pass\nTurnover",
+        "Lost Ball Turnover",
+        "Out of Bounds - Bad Pass Turnover",
+        "Offensive Foul Turnover",
+        "Traveling",
+        "Back Court Turnover",
+        "Out of Bounds - Lost Ball Turnover",
+        "Out of Bounds - Step Turnover",
+        "Double Dribble Turnover",
+        "Palming Turnover",
+        "3-Second Turnover",
+        "5-Second Turnover",
+        "Offensive Goaltending Turnover",
+        "8-Second Turnover",
+        "Too Many Players Turnover",
+        "Disc Dribble Turnover",
+        "Inbound Turnover",
+        "Lane Violation Turnover",
+        "Kicked Ball Turnover",
+        "Illegal Assist Turnover",
+        "No Turnover",
+        "Punched Ball Turnover",
+        "5-Second Back to the Basket Turnover"
+      ],
+      "timeout": [
+        "Full Timeout",
+        "Excess Timeout Technical",
+        "Excess Timeout Turnover"
+      ],
+      "review": [
+        "Coach's Challenge (replaycenter)",
+        "Challenge",
+        "Coach's Challenge (Overturned)",
+        "Ref-Initiated Review (Stands)",
+        "Coach's Challenge (Supported)",
+        "Coach's Challenge (Stands)",
+        "Ref-Initiated Review (Overturned)",
+        "Ref-Initiated Review (Supported)"
+      ],
+      "substitution": [
+        "Substitution"
+      ],
+      "period_boundary": [
+        "End Period",
+        "End Game"
+      ]
+    }
+  },
+  "scoreReconciliation": {
+    "matched": 1302,
+    "of": 1322,
+    "mismatches": [
+      {
+        "gameId": "18446874",
+        "plays": {
+          "home": 121,
+          "away": 110
+        },
+        "analytics": {
+          "home": 121,
+          "away": 111
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18446876",
+        "plays": {
+          "home": 44,
+          "away": 35
+        },
+        "analytics": {
+          "home": 98,
+          "away": 79
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18446885",
+        "plays": {
+          "home": 108,
+          "away": 114
+        },
+        "analytics": {
+          "home": 115,
+          "away": 116
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18446886",
+        "plays": {
+          "home": 87,
+          "away": 92
+        },
+        "analytics": {
+          "home": 113,
+          "away": 114
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18446941",
+        "plays": {
+          "home": 114,
+          "away": 148
+        },
+        "analytics": {
+          "home": 115,
+          "away": 148
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447009",
+        "plays": {
+          "home": 108,
+          "away": 121
+        },
+        "analytics": {
+          "home": 112,
+          "away": 123
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447024",
+        "plays": {
+          "home": 109,
+          "away": 120
+        },
+        "analytics": {
+          "home": 109,
+          "away": 126
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447157",
+        "plays": {
+          "home": 99,
+          "away": 116
+        },
+        "analytics": {
+          "home": 101,
+          "away": 116
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447188",
+        "plays": {
+          "home": 135,
+          "away": 141
+        },
+        "analytics": {
+          "home": 135,
+          "away": 143
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447236",
+        "plays": {
+          "home": 141,
+          "away": 138
+        },
+        "analytics": {
+          "home": 142,
+          "away": 138
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447292",
+        "plays": {
+          "home": 112,
+          "away": 108
+        },
+        "analytics": {
+          "home": 113,
+          "away": 108
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447388",
+        "plays": {
+          "home": 110,
+          "away": 110
+        },
+        "analytics": {
+          "home": 116,
+          "away": 113
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447389",
+        "plays": {
+          "home": 28,
+          "away": 38
+        },
+        "analytics": {
+          "home": 109,
+          "away": 118
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447390",
+        "plays": {
+          "home": 12,
+          "away": 8
+        },
+        "analytics": {
+          "home": 112,
+          "away": 101
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447432",
+        "plays": {
+          "home": 129,
+          "away": 107
+        },
+        "analytics": {
+          "home": 138,
+          "away": 110
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447741",
+        "plays": {
+          "home": 103,
+          "away": 80
+        },
+        "analytics": {
+          "home": 121,
+          "away": 110
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447742",
+        "plays": {
+          "home": 101,
+          "away": 74
+        },
+        "analytics": {
+          "home": 122,
+          "away": 92
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447470",
+        "plays": {
+          "home": 123,
+          "away": 96
+        },
+        "analytics": {
+          "home": 123,
+          "away": 99
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "18447953",
+        "plays": {
+          "home": 129,
+          "away": 115
+        },
+        "analytics": {
+          "home": 131,
+          "away": 115
+        },
+        "exactMatch": false
+      },
+      {
+        "gameId": "21709227",
+        "plays": {
+          "home": 116,
+          "away": 108
+        },
+        "analytics": {
+          "home": 116,
+          "away": 109
+        },
+        "exactMatch": false
+      }
+    ],
+    "missingFinalScore": []
+  },
+  "starterEligibility": {
+    "expectedEligible": 1320,
+    "eligible": 1320,
+    "notEligible": [
+      {
+        "gameId": "18447931",
+        "reason": "starter_archive_anomaly",
+        "counts": {
+          "10": 4,
+          "27": 5
+        }
+      },
+      {
+        "gameId": "18447988",
+        "reason": "starter_archive_anomaly",
+        "counts": {
+          "10": 4,
+          "14": 5
+        }
+      }
+    ],
+    "anomalyIds": [
+      "18447931",
+      "18447988"
+    ]
+  },
+  "substitutionSemantics": {
+    "exactType": "Substitution",
+    "total": 82649,
+    "direction": "participant on court = OUT; participant off court = IN; no name parsing"
+  },
+  "fullSeasonRotationReconstruction": {
+    "eligible": 1320,
+    "reconstructedSuccessfully": 1284,
+    "failed": 36,
+    "successPct": 97.27,
+    "reliability": "GOOD"
+  },
+  "rotationFailureCases": [
+    {
+      "gameId": "18446876",
+      "date": "2025-10-28",
+      "matchup": "LAC @ GSW",
+      "period": 3,
+      "clock": "7:13",
+      "order": 78,
+      "type": "Substitution",
+      "text": "Brandin Podziemski enters the game for Jimmy Butler III",
+      "participants": [
+        "56677858",
+        "79"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "17553979",
+        "115",
+        "210",
+        "2189",
+        "219"
+      ],
+      "classification": "BOTH_OFF_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18446886",
+      "date": "2025-10-29",
+      "matchup": "MEM @ PHX",
+      "period": 4,
+      "clock": "7:17",
+      "order": 11,
+      "type": "Substitution",
+      "text": "Jaylen Wells enters the game for Ja Morant",
+      "participants": [
+        "1028039105",
+        "666786"
+      ],
+      "teamId": "15",
+      "onCourtBefore": [
+        "231",
+        "1028039105",
+        "19465326",
+        "81",
+        "666786"
+      ],
+      "classification": "BOTH_ON_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18446930",
+      "date": "2025-11-05",
+      "matchup": "BKN @ IND",
+      "period": 2,
+      "clock": "12:00",
+      "order": 120,
+      "type": "Substitution",
+      "text": "Cody Martin enters the game for Jeremiah Robinson-Earl",
+      "participants": [
+        "17896021"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "17896021",
+        "416",
+        "1057395638",
+        "17896103",
+        "56677861"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18446957",
+      "date": "2025-11-08",
+      "matchup": "IND @ DEN",
+      "period": 1,
+      "clock": "6:39",
+      "order": 48,
+      "type": "Substitution",
+      "text": "Monte Morris enters the game for Andrew Nembhard",
+      "participants": [
+        "38017507"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "416",
+        "56677832",
+        "38017507",
+        "3547250",
+        "60"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18446964",
+      "date": "2025-11-09",
+      "matchup": "IND @ GSW",
+      "period": 1,
+      "clock": "7:37",
+      "order": 36,
+      "type": "Substitution",
+      "text": "Cody Martin enters the game for Jarace Walker",
+      "participants": [
+        "56677832"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "17896035",
+        "56677832",
+        "17896103",
+        "38017507",
+        "56677861"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18446979",
+      "date": "2025-11-11",
+      "matchup": "IND @ UTA",
+      "period": 1,
+      "clock": "1:23",
+      "order": 110,
+      "type": "Substitution",
+      "text": "Monte Morris enters the game for Jarace Walker",
+      "participants": [
+        "56677832"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "17896035",
+        "56677832",
+        "38017507",
+        "416",
+        "17896021"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18446994",
+      "date": "2025-11-13",
+      "matchup": "IND @ PHX",
+      "period": 2,
+      "clock": "12:00",
+      "order": 114,
+      "type": "Substitution",
+      "text": "Monte Morris enters the game for Andrew Nembhard",
+      "participants": [
+        "38017507"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "56677832",
+        "38017507",
+        "416",
+        "60",
+        "304"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447007",
+      "date": "2025-11-15",
+      "matchup": "TOR @ IND",
+      "period": 4,
+      "clock": "4:32",
+      "order": 482,
+      "type": "Substitution",
+      "text": "Monte Morris enters the game for Jarace Walker",
+      "participants": [
+        "56677832"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "56677861",
+        "56677832",
+        "17896103",
+        "1028274126",
+        "17896021"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447009",
+      "date": "2025-11-15",
+      "matchup": "DEN @ MIN",
+      "period": 3,
+      "clock": "2:41",
+      "order": 351,
+      "type": "Substitution",
+      "text": "Jamal Murray enters the game for Tim Hardaway Jr.",
+      "participants": [
+        "335",
+        "191"
+      ],
+      "teamId": "8",
+      "onCourtBefore": [
+        "246",
+        "191",
+        "38017721",
+        "335",
+        "1028255289"
+      ],
+      "classification": "BOTH_ON_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447019",
+      "date": "2025-11-17",
+      "matchup": "IND @ DET",
+      "period": 4,
+      "clock": "2:11",
+      "order": 533,
+      "type": "Substitution",
+      "text": "Monte Morris enters the game for Pascal Siakam",
+      "participants": [
+        "416"
+      ],
+      "teamId": "12",
+      "onCourtBefore": [
+        "38017507",
+        "17896035",
+        "416",
+        "56677861",
+        "56677832"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447074",
+      "date": "2025-11-24",
+      "matchup": "POR @ MIL",
+      "period": 4,
+      "clock": "12:00",
+      "order": 346,
+      "type": "Substitution",
+      "text": "Ryan Rollins enters the game for Gary Harris",
+      "participants": [
+        "38017712",
+        "196"
+      ],
+      "teamId": "17",
+      "onCourtBefore": [
+        "17896063",
+        "377",
+        "3547251",
+        "38017733",
+        "56677852"
+      ],
+      "classification": "BOTH_OFF_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447087",
+      "date": "2025-11-26",
+      "matchup": "MEM @ NOP",
+      "period": 5,
+      "clock": "5.3",
+      "order": 501,
+      "type": "Substitution",
+      "text": "Zach Edey enters the game for ",
+      "participants": [
+        "1028025754"
+      ],
+      "teamId": "15",
+      "onCourtBefore": [
+        "231",
+        "1057266649",
+        "38017731",
+        "1028039105",
+        "17896067"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447330",
+      "date": "2026-01-07",
+      "matchup": "TOR @ CHA",
+      "period": 4,
+      "clock": "10:05",
+      "order": 389,
+      "type": "Substitution",
+      "text": "Collin Murray-Boyles enters the game for ",
+      "participants": [
+        "1057268940"
+      ],
+      "teamId": "28",
+      "onCourtBefore": [
+        "1028038426",
+        "17896059",
+        "666423",
+        "1057268940",
+        "3547269"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447390",
+      "date": "2026-01-14",
+      "matchup": "NYK @ SAC",
+      "period": 1,
+      "clock": "5:27",
+      "order": 46,
+      "type": "Substitution",
+      "text": "OG Anunoby enters the game for Mikal Bridges",
+      "participants": [
+        "18",
+        "61"
+      ],
+      "teamId": "20",
+      "onCourtBefore": [
+        "18",
+        "447",
+        "61",
+        "100",
+        "488"
+      ],
+      "classification": "BOTH_ON_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447432",
+      "date": "2026-01-20",
+      "matchup": "LAC @ CHI",
+      "period": 4,
+      "clock": "5:18",
+      "order": 384,
+      "type": "Substitution",
+      "text": "enters the game for Jordan Miller",
+      "participants": [
+        "56677856"
+      ],
+      "teamId": "13",
+      "onCourtBefore": [
+        "56677856",
+        "1028035215",
+        "38017691",
+        "56677849",
+        "1057279105"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447480",
+      "date": "2026-01-26",
+      "matchup": "MEM @ HOU",
+      "period": 4,
+      "clock": "15.4",
+      "order": 517,
+      "type": "Substitution",
+      "text": "Kevin Durant enters the game for Alperen Sengun",
+      "participants": [
+        "140",
+        "17896062"
+      ],
+      "teamId": "11",
+      "onCourtBefore": [
+        "56677825",
+        "38017684",
+        "38017695",
+        "356",
+        "3547301"
+      ],
+      "classification": "BOTH_OFF_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447498",
+      "date": "2026-01-29",
+      "matchup": "SAC @ PHI",
+      "period": 4,
+      "clock": "1.3",
+      "order": 438,
+      "type": "Substitution",
+      "text": "Zach LaVine enters the game for ",
+      "participants": [
+        "268"
+      ],
+      "teamId": "26",
+      "onCourtBefore": [
+        "409",
+        "406",
+        "38017714",
+        "268",
+        "125"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447684",
+      "date": "2026-02-28",
+      "matchup": "LAL @ GSW",
+      "period": 3,
+      "clock": "7:07",
+      "order": 267,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Brandin Podziemski",
+      "participants": [
+        "56677858"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "56677858",
+        "17553992",
+        "185",
+        "2189",
+        "795959473"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447700",
+      "date": "2026-03-02",
+      "matchup": "LAC @ GSW",
+      "period": 1,
+      "clock": "6:49",
+      "order": 46,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Al Horford",
+      "participants": [
+        "219"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "185",
+        "219",
+        "57875092",
+        "795959473",
+        "56677858"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447720",
+      "date": "2026-03-05",
+      "matchup": "GSW @ HOU",
+      "period": 1,
+      "clock": "4:26",
+      "order": 57,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Gui Santos",
+      "participants": [
+        "57875092"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "185",
+        "57875092",
+        "219",
+        "313",
+        "56677858"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447721",
+      "date": "2026-03-05",
+      "matchup": "TOR @ MIN",
+      "period": 1,
+      "clock": "5:55",
+      "order": 48,
+      "type": "Substitution",
+      "text": "Sandro Mamukelashvili enters the game for ",
+      "participants": [
+        "17896059"
+      ],
+      "teamId": "28",
+      "onCourtBefore": [
+        "227",
+        "666423",
+        "373",
+        "3547269",
+        "1028038426"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447738",
+      "date": "2026-03-07",
+      "matchup": "GSW @ OKC",
+      "period": 1,
+      "clock": "3:29",
+      "order": 80,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Gary Payton II",
+      "participants": [
+        "2189"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "2189",
+        "378",
+        "56677858",
+        "57875092",
+        "1028265620"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447741",
+      "date": "2026-03-08",
+      "matchup": "DET @ MIA",
+      "period": 4,
+      "clock": "12:00",
+      "order": 194,
+      "type": "Substitution",
+      "text": "Bam Adebayo enters the game for Tyler Herro",
+      "participants": [
+        "4",
+        "666633"
+      ],
+      "teamId": "16",
+      "onCourtBefore": [
+        "19465585",
+        "1028036986",
+        "666633",
+        "17553994",
+        "4"
+      ],
+      "classification": "BOTH_ON_COURT",
+      "periodBoundary": true
+    },
+    {
+      "gameId": "18447742",
+      "date": "2026-03-08",
+      "matchup": "DAL @ TOR",
+      "period": 4,
+      "clock": "7:21",
+      "order": 234,
+      "type": "Substitution",
+      "text": "Marvin Bagley III enters the game for Klay Thompson",
+      "participants": [
+        "24",
+        "443"
+      ],
+      "teamId": "7",
+      "onCourtBefore": [
+        "666950",
+        "1057262088",
+        "38017697",
+        "666577",
+        "3547293"
+      ],
+      "classification": "BOTH_OFF_COURT",
+      "periodBoundary": true
+    },
+    {
+      "gameId": "18447743",
+      "date": "2026-03-08",
+      "matchup": "WAS @ NOP",
+      "period": 2,
+      "clock": "5:19",
+      "order": 2,
+      "type": "Substitution",
+      "text": "Bub Carrington enters the game for Will Riley",
+      "participants": [
+        "1028025235",
+        "1057279594"
+      ],
+      "teamId": "30",
+      "onCourtBefore": [
+        "56677866",
+        "1028028405",
+        "490",
+        "56677844",
+        "1057262985"
+      ],
+      "classification": "BOTH_OFF_COURT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447752",
+      "date": "2026-03-09",
+      "matchup": "GSW @ UTA",
+      "period": 1,
+      "clock": "6:47",
+      "order": 48,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Brandin Podziemski",
+      "participants": [
+        "56677858"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "185",
+        "313",
+        "56677858",
+        "2189",
+        "1057968644"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447761",
+      "date": "2026-03-10",
+      "matchup": "CHI @ GSW",
+      "period": 1,
+      "clock": "7:11",
+      "order": 42,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Brandin Podziemski",
+      "participants": [
+        "56677858"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "185",
+        "56677858",
+        "1057395872",
+        "1057968644",
+        "378"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447799",
+      "date": "2026-03-15",
+      "matchup": "GSW @ NYK",
+      "period": 1,
+      "clock": "8:43",
+      "order": 23,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Gui Santos",
+      "participants": [
+        "57875092"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "1028265620",
+        "57875092",
+        "1028047928",
+        "56677858",
+        "1057395872"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447802",
+      "date": "2026-03-16",
+      "matchup": "GSW @ WAS",
+      "period": 2,
+      "clock": "12:00",
+      "order": 125,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Brandin Podziemski",
+      "participants": [
+        "56677858"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "378",
+        "57875092",
+        "56677858",
+        "185",
+        "313"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447817",
+      "date": "2026-03-18",
+      "matchup": "GSW @ BOS",
+      "period": 4,
+      "clock": "4:35",
+      "order": 432,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Gary Payton II",
+      "participants": [
+        "2189"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "1057395872",
+        "2189",
+        "795959473",
+        "11891374",
+        "1028265620"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447827",
+      "date": "2026-03-19",
+      "matchup": "DET @ WAS",
+      "period": 2,
+      "clock": "6:56",
+      "order": 165,
+      "type": "Substitution",
+      "text": "Jalen Duren enters the game for ",
+      "participants": [
+        "38017694"
+      ],
+      "teamId": "9",
+      "onCourtBefore": [
+        "56677826",
+        "397",
+        "38017694",
+        "1028240128",
+        "200"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447831",
+      "date": "2026-03-19",
+      "matchup": "PHX @ SAS",
+      "period": 4,
+      "clock": "32.7",
+      "order": 470,
+      "type": "Substitution",
+      "text": "Ryan Dunn enters the game for ",
+      "participants": [
+        "1028025723"
+      ],
+      "teamId": "24",
+      "onCourtBefore": [
+        "18678058",
+        "57",
+        "38017727",
+        "1028036515",
+        "17895966"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447844",
+      "date": "2026-03-21",
+      "matchup": "GSW @ ATL",
+      "period": 1,
+      "clock": "5:25",
+      "order": 55,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Will Richard",
+      "participants": [
+        "1057395872"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "185",
+        "1057395872",
+        "57875092",
+        "795959473",
+        "1057968644"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447908",
+      "date": "2026-03-29",
+      "matchup": "GSW @ DEN",
+      "period": 1,
+      "clock": "4:38",
+      "order": 64,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for LJ Cryer",
+      "participants": [
+        "1057968644"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "185",
+        "1057968644",
+        "57875092",
+        "795959473",
+        "56677858"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18447928",
+      "date": "2026-04-01",
+      "matchup": "MIL @ HOU",
+      "period": 4,
+      "clock": "30.5",
+      "order": 415,
+      "type": "Substitution",
+      "text": "enters the game for Tari Eason",
+      "participants": [
+        "38017695"
+      ],
+      "teamId": "11",
+      "onCourtBefore": [
+        "56677825",
+        "140",
+        "38017684",
+        "356",
+        "38017695"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": false
+    },
+    {
+      "gameId": "18448017",
+      "date": "2026-04-12",
+      "matchup": "GSW @ LAC",
+      "period": 2,
+      "clock": "12:00",
+      "order": 124,
+      "type": "Substitution",
+      "text": "Nate Williams enters the game for Malevy Leons",
+      "participants": [
+        "1028265620"
+      ],
+      "teamId": "10",
+      "onCourtBefore": [
+        "1057395872",
+        "17895854",
+        "795959473",
+        "114",
+        "1028265620"
+      ],
+      "classification": "MISSING_PARTICIPANT",
+      "periodBoundary": true
+    }
+  ],
+  "periodBoundaryResult": {
+    "substitutionFailuresAtPeriodChange": [
+      {
+        "gameId": "18447741",
+        "date": "2026-03-08",
+        "matchup": "DET @ MIA",
+        "period": 4,
+        "clock": "12:00",
+        "order": 194,
+        "type": "Substitution",
+        "text": "Bam Adebayo enters the game for Tyler Herro",
+        "participants": [
+          "4",
+          "666633"
+        ],
+        "teamId": "16",
+        "onCourtBefore": [
+          "19465585",
+          "1028036986",
+          "666633",
+          "17553994",
+          "4"
+        ],
+        "classification": "BOTH_ON_COURT",
+        "periodBoundary": true
+      },
+      {
+        "gameId": "18447742",
+        "date": "2026-03-08",
+        "matchup": "DAL @ TOR",
+        "period": 4,
+        "clock": "7:21",
+        "order": 234,
+        "type": "Substitution",
+        "text": "Marvin Bagley III enters the game for Klay Thompson",
+        "participants": [
+          "24",
+          "443"
+        ],
+        "teamId": "7",
+        "onCourtBefore": [
+          "666950",
+          "1057262088",
+          "38017697",
+          "666577",
+          "3547293"
+        ],
+        "classification": "BOTH_OFF_COURT",
+        "periodBoundary": true
+      },
+      {
+        "gameId": "18448017",
+        "date": "2026-04-12",
+        "matchup": "GSW @ LAC",
+        "period": 2,
+        "clock": "12:00",
+        "order": 124,
+        "type": "Substitution",
+        "text": "Nate Williams enters the game for Malevy Leons",
+        "participants": [
+          "1028265620"
+        ],
+        "teamId": "10",
+        "onCourtBefore": [
+          "1057395872",
+          "17895854",
+          "795959473",
+          "114",
+          "1028265620"
+        ],
+        "classification": "MISSING_PARTICIPANT",
+        "periodBoundary": true
+      }
+    ],
+    "sizeNot5AtEndPeriod": [],
+    "note": "Period-boundary clustering = substitution failure immediately after period change or End Period, or five-man size invalid at End Period/End Game."
+  },
+  "substitutionStatistics": {
+    "total": 82649,
+    "medianPerGame": 62,
+    "p25": 55,
+    "p75": 68,
+    "min": 1,
+    "max": 101,
+    "regularSeasonGames": 1235,
+    "postseasonGames": 85,
+    "regularSeasonMedian": 62,
+    "postseasonMedian": 66,
+    "gamesWithZeroSubstitutions": [],
+    "meanSubsPerTeamGame": 30.69
+  },
+  "periodClockIntegrity": {
+    "nullPeriods": 0,
+    "nullClocks": 0,
+    "malformedClocks": 73588,
+    "periodValues": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "otGameCount": 60,
+    "otGames": [
+      "18446819",
+      "18446833",
+      "18446834",
+      "18446842",
+      "18446869",
+      "18446872",
+      "18446967",
+      "18446969",
+      "18447000",
+      "18447003",
+      "18447013",
+      "18447015",
+      "18447017",
+      "18447043",
+      "18447078",
+      "18447087",
+      "18447103",
+      "18447113",
+      "18447130",
+      "20054971",
+      "20054977",
+      "20054978",
+      "18447184",
+      "18447185",
+      "18447189",
+      "18447202",
+      "18447210",
+      "18447236",
+      "18447255",
+      "18447272",
+      "18447321",
+      "18447335",
+      "18447339",
+      "18447364",
+      "18447404",
+      "18447446",
+      "18447455",
+      "18447544",
+      "18447547",
+      "18447589",
+      "18447629",
+      "18447676",
+      "18447680",
+      "18447720",
+      "18447761",
+      "18447773",
+      "18447792",
+      "18447847",
+      "18447862",
+      "18447869",
+      "18447876",
+      "18447915",
+      "18447948",
+      "18447965",
+      "21681576",
+      "21681981",
+      "21681995",
+      "21709235",
+      "21713528",
+      "21713895"
+    ],
+    "maxPeriod": 6,
+    "endPeriodEvents": 5356
+  },
+  "wallclockResult": {
+    "populated": 642354,
+    "nulls": 0,
+    "reversals": 0,
+    "duplicates": 77206,
+    "gamesWithReversals": []
+  },
+  "shotCoordinateResult": {
+    "shooting": 298340,
+    "xPop": 298340,
+    "yPop": 298340,
+    "both": 298340,
+    "plausible": 236045,
+    "sentinel": 62295,
+    "sentinelPct": 20.9,
+    "plausiblePct": 79.1,
+    "note": "abs(coord) >= 1e6 treated as sentinel. Court geometry is not interpreted."
+  },
+  "possessionFeasibility": {
+    "classification": "POSSESSION_COMPLEX_BUT_POSSIBLE",
+    "complications": [
+      "offensive rebounds",
+      "team/null-team rebounds",
+      "technical free throws",
+      "flagrant/clear-path free throws",
+      "jump balls",
+      "reviews/challenges",
+      "period endings",
+      "null-team administrative events",
+      "assists/steals/blocks not separate types"
+    ],
+    "note": "No possession engine was built."
+  },
+  "wowyFeasibility": {
+    "dataReadiness": "GOOD",
+    "methodologyReadiness": "not started",
+    "note": "Even with excellent rotation reconstruction, WOWY is not ready until possession reconstruction is implemented and validated. Not claimed solved."
+  },
+  "s3Certification": {
+    "target": 1322,
+    "canonicalGameObjects": 1322,
+    "missingCanonical": [],
+    "invalidCanonical": [],
+    "totalEvents": 642354,
+    "certifiedEventsSum": 642354,
+    "eventsMatchSum": true,
+    "failedGames": [],
+    "zeroResult": 0,
+    "characterizationPrefixPreserved": "raw/source=balldontlie/league=nba/season=2025/entity=plays/_characterization_10game",
+    "characterizationObjects": 10,
+    "bytes": 593594468,
+    "mb": 566.1,
+    "averageKbPerGame": 438.5,
+    "step9dEstimateMb": 315,
+    "varianceNote": "Byte total is canonical game objects only (excludes _manifest/_run and characterization prefix)."
+  },
+  "productInterpretation": {
+    "historicalGameTimeline": true,
+    "scoringRuns": true,
+    "leadChanges": true,
+    "quarterByQuarterEventFlow": true,
+    "clutchTimeline": true,
+    "starterPlusSubstitutionReconstruction": "GOOD",
+    "fiveManUnitTimeline": true,
+    "possessionAttribution": false,
+    "wowy": false
+  },
+  "trialTimeRemaining": {
+    "elapsedHours": 34.744,
+    "remainingHours": 13.256,
+    "protectedReserveHours": 6,
+    "usableRemainingHours": 7.256
+  },
+  "postgresUnchangedConfirmation": {
+    "expectedBytes": 342846611,
+    "dbBytesAfter": 342846611,
+    "unchanged": true,
+    "unexpectedServing": []
+  },
+  "manifestLimitations": {
+    "certified": [
+      "event order",
+      "event clock",
+      "scores",
+      "substitution timeline",
+      "participants",
+      "team context"
+    ],
+    "notAutomaticallyCertified": [
+      "possession boundaries",
+      "participant roles",
+      "exact substitution IN/OUT labels",
+      "shot coordinate geometry",
+      "WOWY",
+      "active roster status"
+    ],
+    "note": "IN/OUT is inferred during reconstruction from current on-court state. That inference is not stored as raw provider truth."
+  },
+  "archiveVerdict": "HIGH_VALUE_ARCHIVE_CONFIRMED",
+  "stepVerdict": "GREEN — full Plays archive confirms high-value event and rotation data",
+  "availabilityLimitation": "IN/OUT is inferred from the current five-man state, not a labeled provider field. Possession boundaries, participant roles, shot geometry, WOWY, and active-roster status are not certified."
+}

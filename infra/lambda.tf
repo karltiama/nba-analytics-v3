@@ -6,6 +6,9 @@ locals {
     OFFSEASON_MODE = "1"
     CRON_DRY_RUN   = "1"
   }
+
+  # Master schedule state. Stale per-family enable flags cannot ENABLED-thaw this.
+  ingestion_schedule_state = var.live_ingestion_enabled ? "ENABLED" : "DISABLED"
 }
 
 # Package Lambda from source: run "npm install && npm run build" in lambda/nightly-bdl-updater first.
@@ -26,7 +29,16 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
   source_code_hash = data.archive_file.nightly_bdl.output_base64sha256
 
   environment {
-    variables = merge(local.ingestion_freeze_defaults, var.lambda_env)
+    variables = merge(
+      local.ingestion_freeze_defaults,
+      local.bdl_rate_limit_env,
+      var.lambda_env,
+      {
+        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND = "dynamodb"
+        BDL_RATE_LIMIT_WORKER  = "nightly-bdl-updater"
+      }
+    )
   }
 }
 
@@ -38,6 +50,7 @@ resource "aws_cloudwatch_event_rule" "nightly_bdl_schedule" {
   name                = "${var.lambda_function_name}-daily"
   description         = "Daily trigger for ${var.lambda_function_name} at 08:00 UTC"
   schedule_expression = var.schedule_cron
+  state               = local.ingestion_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "nightly_bdl" {
@@ -76,7 +89,16 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
   source_code_hash = data.archive_file.odds_pre_game.output_base64sha256
 
   environment {
-    variables = merge(local.ingestion_freeze_defaults, var.odds_lambda_env)
+    variables = merge(
+      local.ingestion_freeze_defaults,
+      local.bdl_rate_limit_env,
+      var.odds_lambda_env,
+      {
+        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND = "dynamodb"
+        BDL_RATE_LIMIT_WORKER  = "odds-pre-game-snapshot"
+      }
+    )
   }
 }
 
@@ -93,6 +115,7 @@ resource "aws_cloudwatch_event_rule" "odds_schedule" {
   name                = "${var.odds_lambda_function_name}-schedule-${count.index}"
   description         = "Odds snapshot run ${count.index + 1}/${length(local.odds_crons)} (e.g. 10am-12pm ET every 30 min)"
   schedule_expression = local.odds_crons[count.index]
+  state               = local.ingestion_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "odds_pre_game" {
@@ -131,7 +154,16 @@ resource "aws_lambda_function" "injuries_snapshot" {
   source_code_hash = data.archive_file.injuries_snapshot.output_base64sha256
 
   environment {
-    variables = merge(local.ingestion_freeze_defaults, var.injuries_lambda_env)
+    variables = merge(
+      local.ingestion_freeze_defaults,
+      local.bdl_rate_limit_env,
+      var.injuries_lambda_env,
+      {
+        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND = "dynamodb"
+        BDL_RATE_LIMIT_WORKER  = "injuries-snapshot"
+      }
+    )
   }
 }
 
@@ -140,6 +172,7 @@ resource "aws_cloudwatch_event_rule" "injuries_schedule" {
   name                = "${var.injuries_lambda_function_name}-schedule"
   description         = "Schedule for ${var.injuries_lambda_function_name} (e.g. 2-3x daily)"
   schedule_expression = var.injuries_schedule_cron
+  state               = local.ingestion_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "injuries_snapshot" {
@@ -184,14 +217,15 @@ resource "aws_sqs_queue" "player_props_game_queue" {
 }
 
 resource "aws_lambda_function" "player_props_worker" {
-  filename         = data.archive_file.player_props.output_path
-  function_name    = var.player_props_lambda_function_name
-  role             = aws_iam_role.lambda_player_props_execution.arn
-  handler          = "dist/worker.handler"
-  runtime          = "nodejs22.x"
-  timeout          = var.player_props_lambda_timeout
-  memory_size      = var.player_props_lambda_memory_size
-  source_code_hash = data.archive_file.player_props.output_base64sha256
+  filename                       = data.archive_file.player_props.output_path
+  function_name                  = var.player_props_lambda_function_name
+  role                           = aws_iam_role.lambda_player_props_execution.arn
+  handler                        = "dist/worker.handler"
+  runtime                        = "nodejs22.x"
+  timeout                        = var.player_props_lambda_timeout
+  memory_size                    = var.player_props_lambda_memory_size
+  reserved_concurrent_executions = var.player_props_apply_reserved_concurrency ? var.player_props_worker_reserved_concurrency : null
+  source_code_hash               = data.archive_file.player_props.output_base64sha256
 
   environment {
     variables = merge(
@@ -200,9 +234,13 @@ resource "aws_lambda_function" "player_props_worker" {
         PROP_RAW_JSON_SAMPLE_RATE = "0"
       },
       local.ingestion_freeze_defaults,
+      local.bdl_rate_limit_env,
       var.player_props_lambda_env,
       {
         PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND = "dynamodb"
+        BDL_RATE_LIMIT_WORKER  = "player-props-worker"
       }
     )
   }
@@ -249,6 +287,7 @@ resource "aws_scheduler_schedule" "player_props_crons" {
   name        = "nba-player-props-${count.index}"
   group_name  = "default"
   description = "Player props ingestion (BallDontLie) run ${count.index + 1}/${length(var.player_props_schedule_crons)}."
+  state       = local.ingestion_schedule_state
 
   flexible_time_window {
     mode = "OFF"
@@ -268,6 +307,7 @@ resource "aws_scheduler_schedule" "player_props_rate" {
   name        = "nba-player-props-schedule"
   group_name  = "default"
   description = "Every 30 min player props ingestion (BallDontLie)."
+  state       = local.ingestion_schedule_state
 
   flexible_time_window {
     mode = "OFF"
@@ -319,6 +359,7 @@ resource "aws_cloudwatch_event_rule" "boxscore_schedule" {
   name                = "${var.boxscore_lambda_function_name}-daily"
   description         = "Daily trigger for ${var.boxscore_lambda_function_name} at 08:00 UTC (03:00 ET)"
   schedule_expression = var.boxscore_schedule_cron
+  state               = local.ingestion_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "boxscore_scraper" {

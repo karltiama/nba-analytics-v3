@@ -1,0 +1,64 @@
+{
+  "step": "13C",
+  "title": "2026-27 Schedule/Status Canary",
+  "generatedAt": "2026-09-10T20:20:00.000Z",
+  "verdict": "YELLOW — schedule/status canary works but reconciliation or infrastructure issue must be resolved",
+  "safety": {
+    "freezeAfterDeploy": {
+      "DATA_MODE": "replay",
+      "OFFSEASON_MODE": "1",
+      "CRON_DRY_RUN": "1"
+    },
+    "pinnedAnalyticsSeason": "2025",
+    "schedulesEnabledByThisStep": false,
+    "fullTerraformApply": false,
+    "targetedApply": true,
+    "dbMigration": false,
+    "s3Writes": false,
+    "marketIngestion": false
+  },
+  "deployment": {
+    "dynamoTable": "nba-bdl-rate-limit",
+    "iamWorkers": [
+      "nightly-bdl-updater",
+      "odds-pre-game-snapshot",
+      "injuries-snapshot",
+      "player-props-worker"
+    ],
+    "propsReservedConcurrency": {
+      "configured": 4,
+      "awsObserved": -1,
+      "match": false,
+      "reason": "Account ConcurrentExecutions=10; unreserved floor=10"
+    }
+  },
+  "canary": {
+    "endpoint": "GET /v1/games?seasons[]=2026",
+    "pages": 13,
+    "httpAttempts": 15,
+    "httpOk": 13,
+    "http429": 2,
+    "retryAfterMs": [55000, 55000],
+    "durationMs": 124041,
+    "liveGames": 1200,
+    "localGames": 1200,
+    "matchingIds": 1200,
+    "missingLocal": 0,
+    "extraLocal": 0,
+    "postseason": 0,
+    "teamCount": 30,
+    "firstDate": "2026-10-20",
+    "lastDate": "2027-04-11",
+    "normalizedStatus": { "Scheduled": 1200 },
+    "canonicalTipField": "datetime -> analytics.games.start_time"
+  },
+  "readiness": {
+    "scheduleCoverage": "PARTIAL",
+    "tipTimeQuality": "READY",
+    "statusNormalization": "READY",
+    "dryRunSync": "READY",
+    "liveRecurringScheduleJob": "NOT_ACTIVATED"
+  },
+  "vercelBdl": "MOVE_TO_SERVING_DATA_LATER",
+  "next": "Raise Lambda concurrency quota and slow BDL_RATE_LIMIT_INTERVAL_MS before 13D injuries/odds"
+}

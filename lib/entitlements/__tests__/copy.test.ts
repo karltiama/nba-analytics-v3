@@ -9,7 +9,10 @@ describe('Founding Pro terminology', () => {
     expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$10/month');
     expect(UPGRADE_COPY.line_shopping_detail.title).toBe('Find the best book');
     expect(UPGRADE_COPY.line_shopping_detail.detail).toMatch(/Founding Pro/);
-    expect(UPGRADE_COPY.market_movement.title).toBe('Movement history available with Founding Pro');
+    expect(UPGRADE_COPY.market_movement.title).toBe(
+      'See how this line moved from 3 hours before tip'
+    );
+    expect(UPGRADE_COPY.market_movement.detail).toMatch(/Founding Pro/);
     expect(UPGRADE_COPY.ai_briefing.title).toBe('AI research briefing — Founding Pro');
     for (const copy of Object.values(UPGRADE_COPY)) {
       const blob = `${copy.title} ${copy.detail}`;

@@ -6,6 +6,7 @@
 import type { PoolClient } from 'pg';
 import pool from '@/lib/db';
 import { resolveIngestionSeasonStartYear } from '@/lib/season';
+import { fetchBdlLive } from '@/lib/balldontlie/live-rate-limit';
 
 const BDL_BASE = 'https://api.balldontlie.io/v1';
 
@@ -15,14 +16,50 @@ const upsertRawGame = `
   on conflict (id) do update set
     date = excluded.date,
     season = excluded.season,
-    status = excluded.status,
-    period = excluded.period,
-    time = excluded.time,
-    period_detail = excluded.period_detail,
-    datetime = excluded.datetime,
+    /* final-preserve-guard */
+    status = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.status
+      else excluded.status
+    end,
+    period = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.period
+      else excluded.period
+    end,
+    time = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.time
+      else excluded.time
+    end,
+    period_detail = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.period_detail
+      else excluded.period_detail
+    end,
+    datetime = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.datetime
+      else excluded.datetime
+    end,
     postseason = excluded.postseason,
-    home_team_score = excluded.home_team_score,
-    visitor_team_score = excluded.visitor_team_score,
+    home_team_score = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.home_team_score
+      else excluded.home_team_score
+    end,
+    visitor_team_score = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.visitor_team_score
+      else excluded.visitor_team_score
+    end,
     home_team = excluded.home_team,
     visitor_team = excluded.visitor_team;
 `;
@@ -32,12 +69,33 @@ const upsertAnalyticsGame = `
   values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   on conflict (game_id) do update set
     season = excluded.season,
-    start_time = excluded.start_time,
-    status = excluded.status,
+    /* final-preserve-guard */
+    start_time = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.start_time
+      else excluded.start_time
+    end,
+    status = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.status
+      else excluded.status
+    end,
     home_team_id = excluded.home_team_id,
     away_team_id = excluded.away_team_id,
-    home_score = excluded.home_score,
-    away_score = excluded.away_score,
+    home_score = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.home_score
+      else excluded.home_score
+    end,
+    away_score = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.away_score
+      else excluded.away_score
+    end,
     venue = excluded.venue,
     updated_at = now();
 `;
@@ -52,18 +110,13 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function fetchWithRetry(url: string, apiKey: string): Promise<Response> {
   const maxRetries = Number.parseInt(process.env.MAX_RETRIES || '3', 10);
   const retryBaseDelayMs = 60000;
-  const requestDelayMs = Number.parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '200', 10);
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const res = await fetch(url, {
-      headers: { Authorization: apiKey },
-    });
-    if (res.status === 429) {
-      const delay = retryBaseDelayMs * Math.pow(2, attempt);
-      console.warn(`[refresh-schedule-from-bdl] Rate limited (429). Waiting ${delay / 1000}s before retry ${attempt + 1}...`);
-      await sleep(delay);
-      continue;
-    }
+    const res = await fetchBdlLive(
+      url,
+      { headers: { Authorization: apiKey } },
+      { worker: 'refresh-schedule-from-bdl' }
+    );
     if (res.status >= 500 && attempt < maxRetries) {
       const delay = retryBaseDelayMs * Math.pow(2, attempt);
       console.warn(`[refresh-schedule-from-bdl] Server error (${res.status}). Waiting ${delay / 1000}s before retry ${attempt + 1}...`);
@@ -83,8 +136,6 @@ async function fetchGamesPage(
 ): Promise<any[]> {
   const out: any[] = [];
   let cursor: number | null = null;
-  const requestDelayMs = Number.parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '200', 10);
-
   while (true) {
     const params = new URLSearchParams({
       start_date: startDate,
@@ -99,7 +150,6 @@ async function fetchGamesPage(
     out.push(...(json.data || []));
     cursor = json.meta?.next_cursor ?? null;
     if (cursor == null) break;
-    await sleep(requestDelayMs);
   }
   return out;
 }

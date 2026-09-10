@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-09-10T01:40:00.000Z",
+  "step": "11E",
+  "bdlHttp": 0,
+  "ingestionFrozen": true,
+  "dataMode": "replay",
+  "uiChanges": true,
+  "newPage": false,
+  "newApiRoute": false,
+  "legacyMovementFieldRemoved": true,
+  "certifiedField": "marketMovement",
+  "verdict": "GREEN — certified Market Movement v1 is live in Props Explorer and ready for polish",
+  "tests": {
+    "passed": 106,
+    "files": 10
+  },
+  "realData": [
+    { "scenario": "quiet_4book", "player": "John Collins", "gameId": "18447937", "headline": "Consensus 12.5 · 4 books Quiet" },
+    { "scenario": "juice", "player": "Jordan Clarkson", "gameId": "21681977", "headline": "FanDuel +2.4 pp implied probability" },
+    { "scenario": "line_mix", "player": "John Collins", "gameId": "18447959", "headline": "11.5 → 12.5 +1" },
+    { "scenario": "pra", "player": "John Collins", "displayLabel": "PRA" },
+    { "scenario": "split_26", "player": "RJ Barrett", "median": 26, "range": "25.5–26.5" },
+    { "scenario": "one_book", "consensusAvailable": false }
+  ],
+  "nextStep": "11F polish — do not start automatically"
+}

@@ -8,6 +8,7 @@ export type ResearchJourneyParams = {
   side?: string | null;
   sportsbook?: string | null;
   lineValue?: string | number | null;
+  season?: string | null;
 };
 
 function ymd(value: string | null | undefined): string | null {
@@ -50,6 +51,8 @@ export function playerResearchHref(input: ResearchJourneyParams): string {
   const gameId = id(input.gameId);
   if (date) params.set('date', date);
   if (gameId) params.set('game_id', gameId);
+  const season = (input.season ?? '').trim();
+  if (season) params.set('season', season);
   const propType = (input.propType ?? '').trim();
   if (propType) params.set('prop_type', propType);
   const side = (input.side ?? '').trim();

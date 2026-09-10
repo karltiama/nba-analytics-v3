@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-09-10T01:00:00.000Z",
+  "step": "11D",
+  "bdlHttp": 0,
+  "ingestionFrozen": true,
+  "dataMode": "replay",
+  "offseasonMode": "1",
+  "cronDryRun": "1",
+  "uiChanges": false,
+  "schemaChanges": false,
+  "backfillRerun": false,
+  "s3Mutation": false,
+  "liveCurrentPopulated": false,
+  "newPublicRoute": false,
+  "legacyMovementPreserved": true,
+  "certifiedField": "marketMovement",
+  "sourceTable": "analytics.player_prop_market_movement",
+  "playerJoin": "analytics.players.full_name via player_id",
+  "consensusHelper": "lib/betting/market-movement.ts#playerPropConsensus",
+  "verdict": "GREEN — certified Market Movement API is ready for Props Explorer UI integration",
+  "serving": {
+    "playerRows": 21132,
+    "gameRows": 945,
+    "consensusEligibleMarkets": 6286,
+    "playerSemantics": "3_hour_pre_tip → decision_close",
+    "gameSemantics": "opening_snapshot → last_pre_tip_history"
+  },
+  "queryCount": {
+    "certifiedHit": 1,
+    "certifiedMiss": 2,
+    "unsupportedProp": 0,
+    "fullHistoricalResearchWithDate": 3
+  },
+  "emptyStates": {
+    "okMultiBook": "status=ok, consensus.available=true when >=2 usable lines",
+    "okOneBook": "status=ok, consensus.available=false",
+    "empty": "status=empty, reason=no_certified_historical_snapshot, HTTP 200",
+    "unsupportedProp": "status=unsupported_prop, HTTP 200, no serving query"
+  },
+  "freePro": {
+    "free": "detail=summary, comparison consensus kept, 3-Hour books/reference consensus stripped",
+    "pro": "detail=full, per-book classes + 3-Hour snapshot"
+  },
+  "tests": {
+    "passed": 75,
+    "files": 7
+  },
+  "realData": [
+    {
+      "scenario": "quiet_4book",
+      "gameId": "18447937",
+      "playerId": "101",
+      "playerName": "John Collins",
+      "propType": "points",
+      "classes": ["Quiet", "Quiet", "Quiet", "Quiet"],
+      "closeMedian": 12.5
+    },
+    {
+      "scenario": "juice",
+      "gameId": "21681977",
+      "playerId": "100",
+      "playerName": "Jordan Clarkson",
+      "propType": "points",
+      "classes": ["Quiet", "Juice", "Quiet", "Quiet"]
+    },
+    {
+      "scenario": "line_mix",
+      "gameId": "18447959",
+      "playerId": "101",
+      "propType": "points",
+      "classes": ["Quiet", "Line", "Line+Price", "Line"],
+      "consensusLineDelta": 1
+    },
+    {
+      "scenario": "line_plus_price_pra",
+      "gameId": "18447937",
+      "playerId": "101",
+      "propType": "points_rebounds_assists",
+      "displayLabel": "PRA",
+      "classes": ["Line+Price", "Line+Price"]
+    },
+    {
+      "scenario": "split_consensus",
+      "gameId": "18447974",
+      "playerId": "101",
+      "propType": "points_rebounds",
+      "closeLines": [17.5, 16.5],
+      "closeMedian": 17
+    },
+    {
+      "scenario": "interpolating_25_5_26_5",
+      "gameId": "21681978",
+      "playerId": "666423",
+      "playerName": "RJ Barrett",
+      "propType": "points_rebounds",
+      "bookLines": [25.5, 26.5],
+      "median": 26,
+      "medianOfferedByABook": false
+    },
+    {
+      "scenario": "one_book",
+      "gameId": "21681977",
+      "playerId": "100",
+      "propType": "points_rebounds_assists",
+      "bookCount": 1,
+      "consensusAvailable": false
+    },
+    {
+      "scenario": "empty",
+      "status": "empty",
+      "reason": "no_certified_historical_snapshot"
+    },
+    {
+      "scenario": "unsupported_prop",
+      "propType": "blocks",
+      "status": "unsupported_prop"
+    }
+  ],
+  "nextStep": "11E Props Explorer UI migration — do not start automatically"
+}

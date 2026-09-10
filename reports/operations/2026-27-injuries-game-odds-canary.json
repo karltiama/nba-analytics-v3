@@ -1,0 +1,43 @@
+{
+  "step": "13D",
+  "generatedAt": "2026-09-10T22:02:13.507Z",
+  "verdict": "YELLOW — canary works but feed/schema issue must be resolved before activation",
+  "freeze": {
+    "live_ingestion_enabled": false,
+    "schedules": "DISABLED",
+    "PINNED_ANALYTICS_SEASON": "2025",
+    "lambdaEnv": "replay/1/1"
+  },
+  "entitlement": "BDL_ENTITLEMENT_REQUIRES_ACCOUNT_CONFIRMATION",
+  "lambdaQuota": { "classification": "NOT_REQUESTED", "recommended": 20, "current": 10 },
+  "persist": false,
+  "injuriesLive": {
+    "endpoint": "GET /nba/v1/player_injuries",
+    "http200": 0,
+    "http401": 1,
+    "http429": 0,
+    "records": 0
+  },
+  "oddsLive": {
+    "endpoint": "GET /v2/odds",
+    "http200": 0,
+    "http401": 1,
+    "http429": 0,
+    "coverage": "NO_CURRENT_MARKET",
+    "rows": 0
+  },
+  "limiter": {
+    "intervalMs": 13000,
+    "injuriesWaitMaxMs": 0,
+    "oddsWaitMaxMs": 12220
+  },
+  "historicalCorpusNote": "Injury current board and odds current/history queried read-only for semantics; not this canary's live payload.",
+  "firstObserved": {
+    "label": "First Observed",
+    "immutable": true,
+    "sqlCoalesceFreeze": true,
+    "deployedToAws": false
+  },
+  "close": "design_only",
+  "thirteenE": { "recommended": true, "started": false, "blockedOnGoat": true }
+}

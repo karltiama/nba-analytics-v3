@@ -1,0 +1,89 @@
+/* Instagram Context Check type variants. Layout/colors live in the component. */
+
+.cc-ig-card {
+  --cc-ig-display: var(--font-cc-archivo-black), ui-sans-serif, system-ui, sans-serif;
+  --cc-ig-body: var(--font-cc-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+.cc-ig-card[data-ig-type='league-inter'] {
+  --cc-ig-display: var(--font-cc-league-spartan), ui-sans-serif, system-ui, sans-serif;
+  --cc-ig-body: var(--font-cc-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+.cc-ig-card[data-ig-type='barlow-manrope'] {
+  --cc-ig-display: var(--font-cc-barlow-condensed), ui-sans-serif, system-ui, sans-serif;
+  --cc-ig-body: var(--font-cc-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+.cc-ig-label {
+  font-family: var(--cc-ig-body);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.cc-ig-series {
+  font-family: var(--cc-ig-body);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.cc-ig-display {
+  font-family: var(--cc-ig-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.cc-ig-card[data-ig-type='league-inter'] .cc-ig-display,
+.cc-ig-card[data-ig-type='barlow-manrope'] .cc-ig-display {
+  font-weight: 700;
+}
+
+.cc-ig-card[data-ig-type='league-inter'] .cc-ig-display {
+  letter-spacing: -0.01em;
+}
+
+.cc-ig-card[data-ig-type='barlow-manrope'] .cc-ig-display {
+  letter-spacing: 0.01em;
+}
+
+.cc-ig-market {
+  font-family: var(--cc-ig-body);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.cc-ig-stat-label {
+  font-family: var(--cc-ig-body);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.cc-ig-nums {
+  font-family: var(--cc-ig-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.cc-ig-pct {
+  font-family: var(--cc-ig-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.cc-ig-card[data-ig-type='league-inter'] .cc-ig-pct,
+.cc-ig-card[data-ig-type='barlow-manrope'] .cc-ig-pct {
+  font-weight: 700;
+}
+
+.cc-ig-body {
+  font-family: var(--cc-ig-body);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.cc-ig-footer {
+  font-family: var(--cc-ig-body);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}

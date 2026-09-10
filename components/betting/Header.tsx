@@ -246,7 +246,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                   ) : sessionState === 'guest' ? (
                     <span className="text-sm font-medium text-white pr-0.5 max-sm:sr-only">Sign in</span>
                   ) : (
-                    <span className="text-sm font-medium text-white truncate min-w-0 max-w-[7rem] sm:max-w-[11rem] md:max-w-[15rem] text-left">
+                    <span className="text-sm font-medium text-white truncate min-w-0 max-w-[7rem] sm:max-w-[11rem] md:max-w-[15rem] text-left max-sm:hidden">
                       {displayLabel}
                     </span>
                   )}

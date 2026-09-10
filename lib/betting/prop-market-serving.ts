@@ -1,7 +1,7 @@
 /**
  * On-demand Props Explorer market research: historical book comparison from
  * decision lines, live shopping from player_prop_lines only when fresh,
- * movement only from 2+ actual snapshots.
+ * certified Market Movement from analytics.player_prop_market_movement.
  */
 
 import { query, queryOne } from '@/lib/db';
@@ -16,18 +16,19 @@ import {
 import {
   liveShoppingAvailability,
   marketContextLabels,
-  movementUnavailableMessage,
   parseLineValue,
   parsePropSide,
   PROP_MARKET_BOOK_CAP,
-  PROP_MARKET_MOVEMENT_CAP,
   shoppingUnavailableMessage,
   summarizeComparableBoard,
-  summarizePropMovement,
   type PropMarketBookRow,
   type PropMarketLinePick,
   type PropSide,
 } from '@/lib/betting/prop-market-compare';
+import {
+  getPlayerMarketMovement,
+  type PlayerMarketMovementResponse,
+} from '@/lib/betting/market-movement-server';
 
 export type PropMarketResearchInput = {
   gameId: string;
@@ -73,16 +74,10 @@ export type PropMarketResearch = {
     bestPriceAtSelectedLine: PropMarketLinePick | null;
     books: PropMarketBookRow[];
   };
-  movement: {
-    status: 'ok' | 'unavailable';
-    reason: string | null;
-    message: string | null;
-    openedLine: number | null;
-    closedLine: number | null;
-    delta: number | null;
-    from: string | null;
-    to: string | null;
-  };
+  /**
+   * Certified 3-Hour Pre-Tip → Close Market Movement v1.
+   */
+  marketMovement: PlayerMarketMovementResponse;
 };
 
 type DbBookRow = {
@@ -91,11 +86,6 @@ type DbBookRow = {
   line_value: string | number;
   odds_american: number;
   snapshot_at: string | Date;
-};
-
-type DbMovementRow = {
-  snapshot_at: string | Date;
-  line_value: string | number;
 };
 
 function emptyShopping(
@@ -115,19 +105,6 @@ function emptyShopping(
     bestAvailableUnderLine: null,
     bestPriceAtSelectedLine: null,
     books: [],
-  };
-}
-
-function emptyMovement(reason: string): PropMarketResearch['movement'] {
-  return {
-    status: 'unavailable',
-    reason,
-    message: movementUnavailableMessage(),
-    openedLine: null,
-    closedLine: null,
-    delta: null,
-    from: null,
-    to: null,
   };
 }
 
@@ -201,36 +178,6 @@ async function loadLiveBooks(
     [gameId, playerId, propType]
   );
   return rows.map(toBookRow).filter((r): r is PropMarketBookRow => r != null);
-}
-
-async function loadMovementPoints(input: {
-  gameId: string;
-  playerId: string;
-  propType: string;
-  side: PropSide;
-  sportsbook: string;
-}): Promise<Array<{ snapshotAt: string; lineValue: number }>> {
-  const rows = await query<DbMovementRow>(
-    `SELECT snapshot_at, line_value
-     FROM analytics.player_prop_lines
-     WHERE game_id::text = $1
-       AND player_id::text = $2
-       AND lower(market_type) = lower($3)
-       AND lower(side) = lower($4)
-       AND lower(trim(sportsbook)) = lower($5)
-     ORDER BY snapshot_at ASC
-     LIMIT ${PROP_MARKET_MOVEMENT_CAP}`,
-    [input.gameId, input.playerId, input.propType, input.side, input.sportsbook]
-  );
-  return rows
-    .map((row) => {
-      const lineValue = parseLineValue(row.line_value);
-      if (!isPresentOrZero(lineValue)) return null;
-      const snapshotAt =
-        row.snapshot_at instanceof Date ? row.snapshot_at.toISOString() : String(row.snapshot_at);
-      return { snapshotAt, lineValue };
-    })
-    .filter((r): r is { snapshotAt: string; lineValue: number } => r != null);
 }
 
 export async function getPropMarketResearch(
@@ -319,26 +266,7 @@ export async function getPropMarketResearch(
           );
   }
 
-  const movementPoints = await loadMovementPoints({
-    gameId,
-    playerId,
-    propType,
-    side,
-    sportsbook,
-  });
-  const movementSummary = summarizePropMovement(movementPoints);
-  const movement: PropMarketResearch['movement'] = movementSummary.available
-    ? {
-        status: 'ok',
-        reason: null,
-        message: null,
-        openedLine: movementSummary.openedLine,
-        closedLine: movementSummary.closedLine,
-        delta: movementSummary.delta,
-        from: movementSummary.from,
-        to: movementSummary.to,
-      }
-    : emptyMovement(movementSummary.reason);
+  const marketMovement = await getPlayerMarketMovement({ gameId, playerId, propType });
 
   return {
     marketContext,
@@ -347,6 +275,6 @@ export async function getPropMarketResearch(
     paperBetAllowed: marketContext === 'historical' ? historicalPaperBetAllowed() : true,
     selected,
     shopping,
-    movement,
+    marketMovement,
   };
 }

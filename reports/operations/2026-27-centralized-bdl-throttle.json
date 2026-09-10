@@ -1,0 +1,75 @@
+{
+  "step": "13B",
+  "title": "2026-27 Centralized BDL Throttle",
+  "generatedAt": "2026-09-10T20:00:00.000Z",
+  "verdict": "GREEN — centralized BDL rate limiting is implementation-ready for activation canary",
+  "safety": {
+    "bdlHttp": 0,
+    "productionFlagChanges": false,
+    "eventBridgeEnablement": false,
+    "lambdaDeploys": false,
+    "terraformApply": false,
+    "s3Writes": false,
+    "dbMigration": false,
+    "seasonPinFlip": false,
+    "rookieMapping": false,
+    "marketMovementLive": false,
+    "postgameWorkers": false
+  },
+  "freeze": {
+    "DATA_MODE": "replay",
+    "OFFSEASON_MODE": "1",
+    "CRON_DRY_RUN": "1"
+  },
+  "architecture": {
+    "chosen": "dynamodb_token_bucket",
+    "rejected": ["process_local_sleep", "sqs_serialization", "trial_13s_cadence", "elasticache"],
+    "sharedClient": "fetchBdlLive",
+    "failClosed": true
+  },
+  "rateDefaults": {
+    "intervalMs": 1000,
+    "maxRequests": 1,
+    "burst": 1,
+    "acquireTimeoutMs": 20000,
+    "certifiedProviderQuota": false,
+    "note": "Configurable defaults; not a certified BallDontLie account cap"
+  },
+  "propsReservedConcurrency": {
+    "variable": "player_props_worker_reserved_concurrency",
+    "default": 4,
+    "wiredOn": "aws_lambda_function.player_props_worker.reserved_concurrent_executions",
+    "controllerReserved": false
+  },
+  "iam": {
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"],
+    "roles": [
+      "lambda_nightly_bdl_execution",
+      "lambda_odds_execution",
+      "lambda_injuries_execution",
+      "lambda_player_props_execution"
+    ],
+    "controller": false,
+    "starActions": false
+  },
+  "costUsdPerMonthEstimate": {
+    "dynamodbOnDemand": "<0.01",
+    "assumedRequestsPerDay": 400
+  },
+  "terraform": {
+    "fmt": "ran",
+    "initBackendFalse": true,
+    "validate": "valid",
+    "plan": "not_run",
+    "apply": false
+  },
+  "tests": {
+    "coreFiles": 9,
+    "coreTests": 60,
+    "extraRegressionFiles": 2,
+    "extraRegressionTests": 11,
+    "result": "passed",
+    "liveBdlHttp": false
+  },
+  "next": "13C schedule/status canary after apply+deploy; do not start automatically"
+}

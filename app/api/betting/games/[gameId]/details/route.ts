@@ -18,6 +18,12 @@ import {
   isFrozenInjuryServing,
 } from '@/lib/injuries/freshness';
 import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
+import { loadHistoricalFinalBox } from '@/lib/betting/historical-final-server';
+import {
+  HISTORICAL_VIEW_MODE_FINAL,
+  HISTORICAL_VIEW_MODE_LIVE,
+  isHistoricalFinalView,
+} from '@/lib/betting/historical-final';
 
 /** Normalize provider injury fields to UI-friendly status for injury badges. */
 function normalizeInjuryStatus(
@@ -78,6 +84,7 @@ export async function GET(
     const gameResult = await query(`
       SELECT
         g.game_id,
+        g.season,
         g.start_time,
         g.start_time::date as game_date,
         g.status,
@@ -105,6 +112,95 @@ export async function GET(
 
     const game = gameResult[0];
     const resolvedGameId = game.game_id;
+
+    const startTimeFormatted = formatTipoffEt(game.start_time);
+    const status = resolveDisplayGameStatus({
+      statusRaw: game.status,
+      startTime: game.start_time,
+      homeScore: game.home_score,
+      awayScore: game.away_score,
+    });
+    const gameSeason = game.season != null ? String(game.season) : '';
+    const gameDateStr = game.start_time
+      ? new Date(game.start_time).toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
+      : '';
+
+    if (isHistoricalFinalView(status)) {
+      const [historical, lineMovement, odds] = await Promise.all([
+        loadHistoricalFinalBox(
+          resolvedGameId,
+          String(game.home_team_id),
+          String(game.away_team_id),
+          gameSeason
+        ),
+        getLineMovement(resolvedGameId, 'draftkings'),
+        getGameOdds(resolvedGameId, 'draftkings'),
+      ]);
+      const nullableOdds = toNullableGameOdds(odds);
+      return NextResponse.json({
+        viewMode: HISTORICAL_VIEW_MODE_FINAL,
+        gameSeason,
+        availability: historical.availability,
+        boxScore: historical.boxScore,
+        starters: historical.starters,
+        game: {
+          id: resolvedGameId,
+          gameDate: gameDateStr,
+          season: gameSeason,
+          status,
+          statusRaw: game.status ?? null,
+          homeScore: game.home_score != null ? Number(game.home_score) : null,
+          awayScore: game.away_score != null ? Number(game.away_score) : null,
+          homeTeam: {
+            id: game.home_team_id,
+            name: game.home_team_name,
+            abbreviation: game.home_team_abbr,
+            record: null,
+          },
+          awayTeam: {
+            id: game.away_team_id,
+            name: game.away_team_name,
+            abbreviation: game.away_team_abbr,
+            record: null,
+          },
+          startTime: startTimeFormatted,
+        },
+        homeTeamStats: {
+          offensiveRating: null,
+          defensiveRating: null,
+          pace: null,
+          hasSeasonAnalytics: false,
+          recentForm: [],
+        },
+        awayTeamStats: {
+          offensiveRating: null,
+          defensiveRating: null,
+          pace: null,
+          hasSeasonAnalytics: false,
+          recentForm: [],
+        },
+        spreadMovement: lineMovement.spreadMovement.length > 0 ? lineMovement.spreadMovement : [],
+        totalMovement: lineMovement.totalMovement.length > 0 ? lineMovement.totalMovement : [],
+        historicalMatchups: [],
+        currentOdds: {
+          spread: nullableOdds.home.spread,
+          spreadOddsHome: nullableOdds.home.spreadOdds,
+          spreadOddsAway: nullableOdds.away.spreadOdds,
+          moneylineHome: nullableOdds.home.moneyline,
+          moneylineAway: nullableOdds.away.moneyline,
+          overUnder: nullableOdds.overUnder,
+          overOdds: nullableOdds.overOdds,
+          underOdds: nullableOdds.underOdds,
+          bookmaker: nullableOdds.bookmaker,
+        },
+        injuries: { home: [], away: [] },
+        injuryFeed: 'not_current',
+        ingestionFrozen: isIngestionFrozen(),
+        injuryMatchupContext: { season: '', entries: [] },
+        aiSuggestions: [],
+        aiConfidenceScores: { moneyline: 0, spread: 0, total: 0 },
+      });
+    }
 
     // Get team ratings
     const teamRatings = await getAllTeamRatings();
@@ -213,22 +309,21 @@ export async function GET(
       recentForm: [],
     });
 
-    const startTimeFormatted = formatTipoffEt(game.start_time);
-    const status = resolveDisplayGameStatus({
-      statusRaw: game.status,
-      startTime: game.start_time,
-      homeScore: game.home_score,
-      awayScore: game.away_score,
-    });
-
-    const gameDateStr = game.start_time
-      ? new Date(game.start_time).toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
-      : '';
-
     const nullableOdds = toNullableGameOdds(odds);
 
     // Build response (include game for page/modal header)
     const response = {
+      viewMode: HISTORICAL_VIEW_MODE_LIVE,
+      gameSeason,
+      availability: {
+        starters: false,
+        advanced: false,
+        roleProfile: false,
+        timeline: false,
+        rotationContext: false,
+      },
+      boxScore: { available: false, home: [], away: [] },
+      starters: { available: false, home: [], away: [] },
       game: {
         id: resolvedGameId,
         gameDate: gameDateStr,

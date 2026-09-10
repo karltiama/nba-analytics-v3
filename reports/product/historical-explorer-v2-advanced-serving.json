@@ -1,0 +1,144 @@
+{
+  "step": "12D",
+  "title": "Historical Explorer v2 compact Advanced serving",
+  "generatedAt": "2026-09-10T05:56:00.000Z",
+  "verdict": "GREEN — compact Advanced serving is certified and ready for Historical Explorer UI",
+  "safety": {
+    "bdlHttp": 0,
+    "dataMode": "replay",
+    "offseasonMode": "1",
+    "cronDryRun": "1",
+    "s3ReadOnly": true,
+    "rawDump": false,
+    "uiImplemented": false,
+    "roleProfile": false,
+    "timeline": false,
+    "startingFiveRows": 13200,
+    "rls": false,
+    "anonGrants": false
+  },
+  "source": {
+    "entity": "advanced_stats_v2",
+    "pages": 1050,
+    "grain": "game_id+player_id",
+    "duplicateKeys": 0,
+    "nullGameIds": 0,
+    "nullPlayerIds": 0,
+    "seasons": {
+      "2023": { "rows": 34843, "games": 1319, "players": 586 },
+      "2024": { "rows": 35103, "games": 1321, "players": 577 },
+      "2025": { "rows": 34810, "games": 1322, "players": 594 }
+    },
+    "combined": 104756
+  },
+  "scale": {
+    "percentages": "0-1 fraction",
+    "ratings": "points per 100 possessions",
+    "turnover_ratio": "provider ratio, not 0-1",
+    "doNotRescale": true
+  },
+  "schema": {
+    "table": "analytics.player_game_advanced",
+    "pk": ["game_id", "player_id"],
+    "extraIndexes": false,
+    "storesTeam": false,
+    "storesNames": false,
+    "storesJson": false
+  },
+  "identity": {
+    "mapped": 104756,
+    "unmappedGames": 0,
+    "unmappedPlayers": 0,
+    "seasonMismatch": 0,
+    "advancedOnlyValid": 1,
+    "alexLenKey": "1038324|273",
+    "teamIdMismatchVsPlayerTeamId": 50286
+  },
+  "backfill": {
+    "upsertTouchedFirst": 104756,
+    "upsertTouchedSecond": 0,
+    "servingRows": 104756,
+    "duplicateKeys": 0
+  },
+  "coverageVsPgl": [
+    { "season": "2023", "pgl": 46090, "matched": 34842, "coveragePct": 75.6, "advancedOnly": 1 },
+    { "season": "2024", "pgl": 46150, "matched": 35103, "coveragePct": 76.1, "advancedOnly": 0 },
+    { "season": "2025", "pgl": 46056, "matched": 34810, "coveragePct": 75.6, "advancedOnly": 0 }
+  ],
+  "perGame": [
+    { "season": "2023", "gamesWithAdvanced": 1319, "avg": 26.42, "min": 22, "max": 30 },
+    { "season": "2024", "gamesWithAdvanced": 1321, "avg": 26.57, "min": 20, "max": 30 },
+    { "season": "2025", "gamesWithAdvanced": 1322, "avg": 26.33, "min": 20, "max": 36 }
+  ],
+  "nulls": { "perSelectedField": 30, "allSelectedNullTogether": 30, "ratePct": 0.029 },
+  "lowSample": { "minutesLt5": 26404, "possLt5": 22261, "paceGt140": 504, "usageGt1": 0 },
+  "storage": {
+    "deltaBytes": 26689536,
+    "heap": 20488192,
+    "indexes": 6217728,
+    "totalRelation": 26705920,
+    "withinEstimate20to30Mb": true
+  },
+  "query": {
+    "shape": "SELECT * FROM analytics.player_game_advanced WHERE game_id = $1",
+    "index": "player_game_advanced_pk",
+    "game15905067": { "plan": "Index Scan", "actualRows": 30, "executionMs": 0.131 }
+  },
+  "contract": {
+    "recommendation": "Option A+C: enrich box players on existing details Final payload; no public /advanced route",
+    "availabilityMeans": "game has >=1 serving row, not every player has Advanced",
+    "attachPolicy": "box players only; do not fabricate PGL rows"
+  },
+  "samples": [
+    {
+      "season": "2023",
+      "gameId": "15905067",
+      "player": "Jayson Tatum",
+      "playerId": "434",
+      "minutes": "45",
+      "usagePercentage": 0.284,
+      "trueShootingPercentage": 0.563,
+      "sourceMatch": true
+    },
+    {
+      "season": "2023",
+      "gameId": "15905067",
+      "player": "Payton Pritchard",
+      "playerId": "3547276",
+      "minutes": "01",
+      "trueShootingPercentage": 1.5,
+      "possessions": 3,
+      "sourceMatch": true
+    },
+    {
+      "season": "2024",
+      "gameId": "18444564",
+      "player": "Bennedict Mathurin",
+      "playerId": "38017686",
+      "minutes": "33",
+      "usagePercentage": 0.278,
+      "sourceMatch": true
+    },
+    {
+      "season": "2025",
+      "gameId": "18447937",
+      "player": "Kawhi Leonard",
+      "playerId": "274",
+      "minutes": "32",
+      "usagePercentage": 0.208,
+      "trueShootingPercentage": 0.75,
+      "sourceMatch": true
+    },
+    {
+      "season": "2023",
+      "gameId": "1038324",
+      "player": "Alex Len",
+      "playerId": "273",
+      "boxScore": false,
+      "servingRow": true,
+      "metrics": 0,
+      "sourceMatch": true
+    }
+  ],
+  "next": "12E Advanced UI only — STOP here"
+}

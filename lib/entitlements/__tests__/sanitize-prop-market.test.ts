@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { sanitizePropMarketResearch } from '../sanitize-prop-market';
 import { foundingProEntitlement, freeEntitlement } from '../resolve';
 import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
+import { mapServingRowsToPlayerMarketMovement } from '@/lib/betting/market-movement-api';
 
 const FULL: PropMarketResearch = {
   marketContext: 'historical',
@@ -58,16 +59,55 @@ const FULL: PropMarketResearch = {
       },
     ],
   },
-  movement: {
-    status: 'ok',
-    reason: null,
-    message: null,
-    openedLine: 10.5,
-    closedLine: 11.5,
-    delta: 1,
-    from: '2026-05-01T16:00:00.000Z',
-    to: '2026-05-01T18:00:00.000Z',
-  },
+  marketMovement: mapServingRowsToPlayerMarketMovement({
+    gameId: '1',
+    playerId: '9',
+    propType: 'points',
+    rows: [
+      {
+        game_id: '1',
+        player_id: '9',
+        player_name: 'A',
+        prop_type: 'points',
+        vendor: 'betmgm',
+        reference_kind: '3_hour_pre_tip',
+        reference_line: 10.5,
+        reference_over_odds: -110,
+        reference_under_odds: -110,
+        reference_timestamp: '2026-05-01T16:00:00.000Z',
+        comparison_kind: 'decision_close',
+        comparison_line: 11.5,
+        comparison_over_odds: -110,
+        comparison_under_odds: -110,
+        comparison_timestamp: '2026-05-01T18:00:00.000Z',
+        line_delta: 1,
+        over_implied_probability_delta: 0,
+        under_implied_probability_delta: 0,
+        movement_class: 'C',
+      },
+      {
+        game_id: '1',
+        player_id: '9',
+        player_name: 'A',
+        prop_type: 'points',
+        vendor: 'fanduel',
+        reference_kind: '3_hour_pre_tip',
+        reference_line: 10.5,
+        reference_over_odds: -110,
+        reference_under_odds: -110,
+        reference_timestamp: '2026-05-01T16:00:00.000Z',
+        comparison_kind: 'decision_close',
+        comparison_line: 11.5,
+        comparison_over_odds: -110,
+        comparison_under_odds: -110,
+        comparison_timestamp: '2026-05-01T18:00:00.000Z',
+        line_delta: 1,
+        over_implied_probability_delta: 0,
+        under_implied_probability_delta: 0,
+        movement_class: 'C',
+      },
+    ],
+  }),
 };
 
 describe('sanitizePropMarketResearch', () => {
@@ -81,31 +121,28 @@ describe('sanitizePropMarketResearch', () => {
     expect(out.shopping.bestAvailableUnderLine).toBeNull();
     expect(out.shopping.bestPriceAtSelectedLine).toBeNull();
     expect(out.shopping.books).toEqual([]);
-    expect(out.movement.openedLine).toBeNull();
-    expect(out.movement.closedLine).toBeNull();
-    expect(out.movement.reason).toBe('entitlement');
-    expect(out.movement.message).toBe('Movement history available with Founding Pro');
     expect(out.entitlement.isPro).toBe(false);
+    expect(out.marketMovement.detail).toBe('summary');
+    expect(out.marketMovement.books).toEqual([]);
+    expect(out.marketMovement.consensus.comparison.available).toBe(true);
+    expect(out.marketMovement.consensus.reference.available).toBe(false);
+    expect(out.marketMovement.reference.timestamp).toBeNull();
   });
 
-  it('does not turn missing movement into a premium lock', () => {
+  it('does not turn empty certified movement into a premium lock', () => {
     const noHistory: PropMarketResearch = {
       ...FULL,
-      movement: {
-        status: 'unavailable',
-        reason: 'single_snapshot',
-        message: 'Movement history unavailable',
-        openedLine: null,
-        closedLine: null,
-        delta: null,
-        from: null,
-        to: null,
-      },
+      marketMovement: mapServingRowsToPlayerMarketMovement({
+        gameId: '1',
+        playerId: '9',
+        propType: 'points',
+        rows: [],
+      }),
     };
     const out = sanitizePropMarketResearch(noHistory, freeEntitlement());
-    expect(out.movement.status).toBe('unavailable');
-    expect(out.movement.reason).toBe('single_snapshot');
-    expect(out.movement.message).toBe('Movement history unavailable');
+    expect(out.marketMovement.status).toBe('empty');
+    expect(out.marketMovement.reason).toBe('no_certified_historical_snapshot');
+    expect(out.marketMovement.books).toEqual([]);
   });
 
   it('keeps premium fields for Founding Pro', () => {
@@ -117,7 +154,9 @@ describe('sanitizePropMarketResearch', () => {
     expect(out.shopping.books).toHaveLength(1);
     expect(out.shopping.bestAvailableOverLine?.sportsbook).toBe('draftkings');
     expect(out.shopping.bestAvailableUnderLine?.sportsbook).toBe('fanduel');
-    expect(out.movement.openedLine).toBe(10.5);
     expect(out.entitlement.isPro).toBe(true);
+    expect(out.marketMovement.detail).toBe('full');
+    expect(out.marketMovement.books).toHaveLength(2);
+    expect(out.marketMovement.books[0]?.movement.class).toBe('Line');
   });
 });

@@ -1,0 +1,75 @@
+{
+  "step": "12A",
+  "title": "Historical Explorer v2 audit and design",
+  "generatedAt": "2026-09-10",
+  "verdict": "GREEN — Historical Explorer v2 design is implementation-ready",
+  "safety": {
+    "schemaChanges": false,
+    "servingTablesCreated": false,
+    "uiChanges": false,
+    "apiBehaviorChanges": false,
+    "marketMovementChanges": false,
+    "s3Mutation": false,
+    "databaseWrites": false,
+    "liveIngestion": false,
+    "bdlHttpFrom12AJobs": 0,
+    "existingProductMayCallBdlLineups": true,
+    "postgresMb": 339.59,
+    "postgresBytes": 356084883
+  },
+  "currentSurfaces": {
+    "namedHistoricalExplorer": false,
+    "primaryNav": ["Dashboard", "Teams", "Props Explorer", "Saved", "Paper", "Profile"],
+    "dashboard": "/betting?date=",
+    "bettingGame": "/betting/games/[gameId]",
+    "publicBoxScore": "/games/[gameId]",
+    "propsExplorer": "/betting/props-explorer",
+    "teams": "/teams/[teamId]?season=",
+    "bettingPlayer": "/betting/players/[playerId]",
+    "publicPlayer": "/players/[playerId]"
+  },
+  "visualQa": {
+    "publicBox2025": "/games/18447937",
+    "publicBox2023Finals": "/games/15905067",
+    "dashboardPinnedEmpty": "/betting?date=2024-06-17",
+    "propsExplorerUnpinnedGame": { "date": "2024-06-17", "gameId": "15905067", "label": "DAL @ BOS" },
+    "bettingFinalLiveFirst": "/betting/games/21682743",
+    "teamSeasonChips": ["2025–26", "2026–27"]
+  },
+  "inventory": {
+    "games": { "2023": 1319, "2024": 1321, "2025": 1323, "2026": 1200 },
+    "finals": { "2023": 1319, "2024": 1321, "2025": 1322, "2026": 0 },
+    "playerGameLogs": { "2023": 46090, "2024": 46150, "2025": 46056 },
+    "advancedS3": 104756,
+    "lineupStarterReliability": "1320/1322",
+    "lineupAnomalies": ["18447931", "18447988"],
+    "playsEvents": 642354,
+    "playsScoreExact": "1302/1322",
+    "playsRotationGood": 1284,
+    "propMmGames": 121,
+    "gameMmGames": 107,
+    "injuryHistoryWindow": { "min": "2026-03-10", "max": "2026-05-06", "rows": 4801 }
+  },
+  "mvp": [
+    "multi-season-2023-2025-navigation",
+    "game-header-final",
+    "starting-five-when-certified",
+    "box-score-player-performance",
+    "selected-advanced",
+    "selected-season-role-profile"
+  ],
+  "v21": ["market-movement-optional-card", "2025-key-events-timeline"],
+  "firstSlice": "12B",
+  "firstSliceTitle": "Multi-season correctness + base historical game contract",
+  "sequence": ["12B", "12C", "12D", "12E", "12F", "12G", "12H", "12I"],
+  "serving": {
+    "starters": "analytics.game_starters Option A, not created",
+    "advanced": "compact player-game subset, not created",
+    "roleProfile": "wide player_id+season shared with Role Check later, not created",
+    "plays": "S3 on demand + optional game_flow, not 642k PG rows"
+  },
+  "canonicalUrl": "/betting/games/:gameId",
+  "paywallMvp": "none",
+  "injuryInV2": false,
+  "marketInMvp": false
+}

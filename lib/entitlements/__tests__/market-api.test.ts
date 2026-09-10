@@ -24,6 +24,7 @@ vi.mock('@/lib/betting/ai-briefing-eligibility', () => ({
 import { GET } from '@/app/api/betting/props-explorer/market/route';
 import { freeEntitlement, foundingProEntitlement } from '../resolve';
 import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
+import { mapServingRowsToPlayerMarketMovement } from '@/lib/betting/market-movement-api';
 
 const USER_A = '11111111-1111-1111-1111-111111111111';
 
@@ -76,16 +77,12 @@ const RESEARCH: PropMarketResearch = {
       },
     ],
   },
-  movement: {
-    status: 'unavailable',
-    reason: 'single_snapshot',
-    message: 'Movement history unavailable',
-    openedLine: null,
-    closedLine: null,
-    delta: null,
-    from: null,
-    to: null,
-  },
+  marketMovement: mapServingRowsToPlayerMarketMovement({
+    gameId: '1',
+    playerId: '9',
+    propType: 'points',
+    rows: [],
+  }),
 };
 
 function authed(userId = USER_A) {
@@ -120,6 +117,10 @@ describe('props-explorer market entitlement contract', () => {
     expect(body.shopping.marketMinLine).toBe(10.5);
     expect(body.shopping.marketMaxLine).toBe(11.5);
     expect(body.entitlement.isPro).toBe(false);
+    expect(body.marketMovement.detail).toBe('summary');
+    expect(body.marketMovement.books).toEqual([]);
+    expect(body.marketMovement.status).toBe('empty');
+    expect(body.movement).toBeUndefined();
   });
 
   it('Founding Pro responses include premium fields', async () => {
@@ -135,6 +136,8 @@ describe('props-explorer market entitlement contract', () => {
     expect(body.shopping.bestPriceAtSelectedLine.sportsbook).toBe('fanduel');
     expect(body.shopping.books).toHaveLength(1);
     expect(body.entitlement.isPro).toBe(true);
+    expect(body.marketMovement.sourceTable).toBe('analytics.player_prop_market_movement');
+    expect(body.marketMovement.detail).toBe('full');
   });
 
   it('past_due is treated as Free and sanitizes premium fields', async () => {
