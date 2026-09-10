@@ -15,6 +15,9 @@ interface LineMovementChartProps {
   width?: number;
   /** When true, skip outer card wrapper (for use inside another card). */
   embedded?: boolean;
+  /** Historical Finals should not say Open / Current. */
+  referenceCaption?: string;
+  comparisonCaption?: string;
 }
 
 export function LineMovementChart({ 
@@ -24,6 +27,8 @@ export function LineMovementChart({
   height = 120,
   width = 400,
   embedded = false,
+  referenceCaption = 'Open',
+  comparisonCaption = 'Current',
 }: LineMovementChartProps) {
   const resolved = resolveLineMovementChartData(data);
 
@@ -70,7 +75,7 @@ export function LineMovementChart({
         <h4 className="text-xs font-medium text-white">{label}</h4>
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] text-muted-foreground">
-            Open: <span className="text-white font-mono">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
+            {referenceCaption}: <span className="text-white font-mono">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
           </span>
           <span className="text-[10px]" style={{ color: changeColor }}>
             {change > 0 ? '+' : ''}{change.toFixed(1)}
@@ -78,8 +83,14 @@ export function LineMovementChart({
         </div>
       </div>
 
-      <div className="flex justify-center">
-        <svg width={width} height={height} className="overflow-visible">
+      <div className="flex justify-center min-w-0 overflow-hidden">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          width="100%"
+          height={height}
+          className="max-w-full overflow-hidden"
+          aria-hidden="true"
+        >
         <defs>
           <linearGradient id={`line-gradient-${label.replace(/\s/g, '')}`} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor={color} stopOpacity="0.3" />
@@ -163,7 +174,7 @@ export function LineMovementChart({
 
       {/* Current Value */}
       <div className="mt-1.5 flex items-center justify-center gap-1.5">
-        <span className="text-[10px] text-muted-foreground">Current:</span>
+        <span className="text-[10px] text-muted-foreground">{comparisonCaption}:</span>
         <span className="text-sm font-mono font-bold" style={{ color }}>
           {currentValue > 0 ? `+${currentValue}` : currentValue}
         </span>

@@ -48,8 +48,8 @@ export const UPGRADE_COPY: Record<FeatureKey, { title: string; detail: string }>
     detail: 'See the exact sportsbook offering the strongest line and price with Founding Pro.',
   },
   market_movement: {
-    title: 'Movement history available with Founding Pro',
-    detail: 'See open-to-close movement when snapshot history exists.',
+    title: 'See how this line moved from 3 hours before tip',
+    detail: 'Founding Pro compares how supported books moved from three hours before tip to close.',
   },
   ai_briefing: {
     title: 'AI research briefing — Founding Pro',

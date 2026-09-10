@@ -8,9 +8,11 @@ export { FOUNDING_PRO_UPGRADE_HREF };
 export function FoundingProUpgradeLink({
   className,
   children,
+  onClick,
 }: {
   className?: string;
   children?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) {
   return (
     <Link
@@ -19,6 +21,13 @@ export function FoundingProUpgradeLink({
         'inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-[#00d4ff]/90 to-[#bf5af2]/90 px-3 py-1.5 text-xs font-medium text-white hover:opacity-95',
         className
       )}
+      onClick={(event) => {
+        try {
+          onClick?.(event);
+        } catch {
+          // Tracking must never block navigation to /billing.
+        }
+      }}
     >
       {children ?? 'Upgrade to Founding Pro'}
     </Link>

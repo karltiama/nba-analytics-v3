@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-09-10T02:48:00.000Z",
+  "step": "11G",
+  "bdlHttp": 0,
+  "dataMode": "replay",
+  "offseasonMode": "1",
+  "cronDryRun": "1",
+  "schemaChanges": false,
+  "apiChanges": false,
+  "newAnalyticsNpmPackage": false,
+  "provider": "umami-optional",
+  "helper": "lib/product-analytics/track-event.ts",
+  "events": [
+    {
+      "name": "market_movement_viewed",
+      "when": "resolved MM rendered (ok|empty|unsupported_prop); not loading",
+      "oncePer": "game_id+player_id+prop_type+detail+status",
+      "properties": ["game_id", "prop_type", "detail", "movement_status", "consensus_book_count"]
+    },
+    {
+      "name": "market_movement_upgrade_clicked",
+      "when": "Free MM Founding Pro link clicked",
+      "properties": ["surface"]
+    }
+  ],
+  "skippedEvents": ["market_movement_books_expanded"],
+  "tests": { "passed": 134, "files": 14 },
+  "productClassification": "SHIP_READY",
+  "verdict": "GREEN — historical Props Market Movement v1 is complete and ship-ready",
+  "recommendedNext": "Historical Explorer v2",
+  "doNotStartAutomatically": ["historical-explorer-v2", "game-odds-market-movement-ui", "live-ingestion"]
+}

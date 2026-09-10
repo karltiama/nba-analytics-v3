@@ -9,6 +9,8 @@ import type {
   ContextCheckData,
   ContextVerdictType,
 } from '@/lib/content/context-check/types';
+import type { InstagramTypeVariantId } from '@/lib/content/context-check/instagram-type';
+import { ContextCheckInstagramCard } from '@/components/content/context-check/ContextCheckInstagramCard';
 
 const VERDICT_SURFACE: Record<ContextVerdictType, string> = {
   supports: 'border-neon-cyan/40 bg-neon-cyan/10',
@@ -119,7 +121,7 @@ function CardBody({
       </header>
 
       <div className={cn('flex items-center gap-4', compact ? 'mt-4' : 'mt-5')}>
-        <PlayerMark initials={vm.playerInitials} src={vm.headshotUrl} compact={compact} />
+        <PlayerMark initials={vm.playerInitials} src={vm.headshotUrl ?? vm.heroImageUrl} compact={compact} />
         <div className="min-w-0 space-y-1">
           <h2
             className={cn(
@@ -208,32 +210,35 @@ export interface ContextCheckCardProps {
   data: ContextCheckData;
   variant?: ContextCheckCardVariant;
   className?: string;
+  typeVariant?: InstagramTypeVariantId;
 }
 
 /**
  * Presentation-only Context Check. Receives a normalized ContextCheckData
  * object and never queries a database.
  */
-export function ContextCheckCard({ data, variant = 'web', className }: ContextCheckCardProps) {
+export function ContextCheckCard({
+  data,
+  variant = 'web',
+  className,
+  typeVariant,
+}: ContextCheckCardProps) {
   const vm = toContextCheckCardViewModel(data, variant);
-  const isSocial = variant === 'social';
+
+  if (variant === 'social') {
+    return (
+      <ContextCheckInstagramCard vm={vm} className={className} typeVariant={typeVariant} />
+    );
+  }
 
   return (
     <article
       data-testid="context-check-card"
-      data-variant={variant}
+      data-variant="web"
       aria-label={`Context Check for ${vm.playerName}: ${vm.marketClaim}`}
-      className={cn(
-        'glass-card text-card-foreground',
-        isSocial
-          ? 'flex aspect-[4/5] w-full max-w-[420px] flex-col overflow-y-auto p-5 sm:p-6'
-          : 'w-full max-w-xl p-5 sm:p-6',
-        className
-      )}
+      className={cn('glass-card w-full max-w-xl p-5 text-card-foreground sm:p-6', className)}
     >
-      <div className={cn(isSocial && 'flex min-h-0 flex-1 flex-col justify-between')}>
-        <CardBody vm={vm} compact={isSocial} />
-      </div>
+      <CardBody vm={vm} compact={false} />
     </article>
   );
 }

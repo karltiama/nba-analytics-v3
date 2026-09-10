@@ -4,6 +4,7 @@ import {
   formatHitRate,
   formatMarketClaim,
   formatSignedNumber,
+  formatSocialVerdictLabel,
   formatVerdictLabel,
   playerInitials,
 } from '../format';
@@ -37,12 +38,12 @@ describe('formatHitFraction', () => {
   });
 });
 
-describe('formatVerdictLabel', () => {
-  it('uses evidence labels rather than betting commands', () => {
-    expect(formatVerdictLabel('supports')).toBe('Supports');
-    expect(formatVerdictLabel('mixed')).toBe('Mixed');
-    expect(formatVerdictLabel('pushes_back')).toBe('Pushes Back');
-    expect(formatVerdictLabel('insufficient')).toBe('Insufficient');
+describe('formatSocialVerdictLabel', () => {
+  it('uses Instagram public labels rather than betting commands', () => {
+    expect(formatSocialVerdictLabel('supports')).toBe('Context Supports');
+    expect(formatSocialVerdictLabel('mixed')).toBe('Mixed Context');
+    expect(formatSocialVerdictLabel('pushes_back')).toBe('Context Pushes Back');
+    expect(formatSocialVerdictLabel('insufficient')).toBe('Not Enough Context');
   });
 });
 

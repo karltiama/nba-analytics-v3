@@ -27,14 +27,18 @@ function sqlOf(callIdx: number): string {
   return String(mockQuery.mock.calls[callIdx]?.[0] ?? '');
 }
 
+function mockResearchQueries(books: unknown[], certified: unknown[] = []) {
+  mockQuery.mockResolvedValueOnce(books).mockResolvedValueOnce(certified);
+}
+
 describe('getPropMarketResearch', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('uses historical decision lines for May 1 and never labels them current/live', async () => {
-    mockQuery
-      .mockResolvedValueOnce([
+    mockResearchQueries(
+      [
         ALLEN_OVER,
         {
           sportsbook: 'fanduel',
@@ -50,8 +54,9 @@ describe('getPropMarketResearch', () => {
           odds_american: 107,
           snapshot_at: '2026-05-01T18:00:11.909Z',
         },
-      ])
-      .mockResolvedValueOnce([]);
+      ],
+      []
+    );
 
     const result = await getPropMarketResearch({
       gameId: '21681995',
@@ -87,16 +92,19 @@ describe('getPropMarketResearch', () => {
     expect(result.shopping.sourceTable).toBe('research.prop_decision_lines');
     expect(result.shopping.bestAvailableOverLine?.lineValue).toBe(10.5);
     expect(result.shopping.bestPriceAtSelectedLine?.sportsbook).toBe('fanduel');
-    expect(result.movement.status).toBe('unavailable');
-    expect(result.movement.message).toBe('Movement history unavailable');
+    expect(result).not.toHaveProperty('movement');
+    expect(result.marketMovement.sourceTable).toBe('analytics.player_prop_market_movement');
+    expect(result.marketMovement.status).toBe('empty');
     expect(sqlOf(0)).toMatch(/research\.prop_decision_lines/);
+    expect(sqlOf(1)).toMatch(/analytics\.player_prop_market_movement/);
+    expect(sqlOf(1)).not.toMatch(/player_prop_movement_summary/);
     expect(sqlOf(0)).not.toMatch(/player_prop_lines/);
     expect(sqlOf(0)).not.toMatch(/player_props_current/);
-    expect(mockQueryOne).not.toHaveBeenCalled();
+    expect(String(mockQueryOne.mock.calls[0]?.[0] ?? '')).toMatch(/analytics\.players/);
   });
 
   it('keeps a selected line of 0 instead of treating it as missing', async () => {
-    mockQuery.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+    mockResearchQueries([], []);
     const result = await getPropMarketResearch({
       gameId: '21681995',
       playerId: '9',
@@ -116,7 +124,7 @@ describe('getPropMarketResearch', () => {
   });
 
   it('returns unavailable shopping for a historical date with no decision rows (May 6)', async () => {
-    mockQuery.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+    mockResearchQueries([], []);
     const result = await getPropMarketResearch({
       gameId: '21708674',
       playerId: '1',
@@ -158,8 +166,8 @@ describe('getPropMarketResearch', () => {
     expect(result.shopping.status).toBe('unavailable');
     expect(result.shopping.reason).toBe('frozen_current');
     expect(result.shopping.books).toEqual([]);
-    expect(mockQuery.mock.calls.every((call) => !String(call[0]).includes('player_prop_lines') || String(call[0]).includes('ORDER BY snapshot_at ASC'))).toBe(true);
-    expect(sqlOf(0)).not.toMatch(/max\(snapshot_at\)/);
+    expect(mockQuery.mock.calls.every((call) => !String(call[0]).includes('player_prop_lines'))).toBe(true);
+    expect(sqlOf(0)).toMatch(/analytics\.player_prop_market_movement/);
   });
 
   it('marks unfrozen but stale current shopping unavailable', async () => {
@@ -195,14 +203,9 @@ describe('getPropMarketResearch', () => {
     expect(sqlOf(0)).toMatch(/analytics\.player_prop_lines/);
   });
 
-  it('computes movement only when two timestamps exist and otherwise stays unavailable', async () => {
-    mockQuery
-      .mockResolvedValueOnce([ALLEN_OVER])
-      .mockResolvedValueOnce([
-        { snapshot_at: '2026-03-09T16:00:00.000Z', line_value: 24.5 },
-        { snapshot_at: '2026-03-09T17:00:00.000Z', line_value: 25.5 },
-      ]);
-    const withPath = await getPropMarketResearch({
+  it('does not load first/last player_prop_lines as certified Market Movement', async () => {
+    mockResearchQueries([ALLEN_OVER], []);
+    const result = await getPropMarketResearch({
       gameId: '21681995',
       playerId: '9',
       propType: 'points',
@@ -213,30 +216,11 @@ describe('getPropMarketResearch', () => {
       todayEt: '2026-09-06',
       frozen: true,
     });
-    expect('error' in withPath).toBe(false);
-    if ('error' in withPath) return;
-    expect(withPath.movement.status).toBe('ok');
-    expect(withPath.movement.openedLine).toBe(24.5);
-    expect(withPath.movement.closedLine).toBe(25.5);
-    expect(withPath.movement.delta).toBe(1);
-
-    mockQuery.mockReset();
-    mockQuery
-      .mockResolvedValueOnce([ALLEN_OVER])
-      .mockResolvedValueOnce([{ snapshot_at: '2026-03-09T16:00:00.000Z', line_value: 24.5 }]);
-    const oneSnap = await getPropMarketResearch({
-      gameId: '21681995',
-      playerId: '9',
-      propType: 'points',
-      side: 'over',
-      lineValue: 10.5,
-      sportsbook: 'draftkings',
-      dateEt: '2026-05-01',
-      todayEt: '2026-09-06',
-      frozen: true,
-    });
-    expect('error' in oneSnap).toBe(false);
-    if ('error' in oneSnap) return;
-    expect(oneSnap.movement.status).toBe('unavailable');
+    expect('error' in result).toBe(false);
+    if ('error' in result) return;
+    expect(result).not.toHaveProperty('movement');
+    expect(result).not.toHaveProperty('openedLine');
+    expect(mockQuery.mock.calls.every((call) => !String(call[0]).includes('player_prop_lines'))).toBe(true);
+    expect(sqlOf(1)).toMatch(/analytics\.player_prop_market_movement/);
   });
 });

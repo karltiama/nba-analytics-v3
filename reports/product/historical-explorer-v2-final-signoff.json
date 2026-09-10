@@ -1,0 +1,85 @@
+{
+  "step": "12I",
+  "title": "Historical Explorer v2 Final Signoff",
+  "generatedAt": "2026-09-10T18:30:00.000Z",
+  "verdict": "GREEN — Historical Explorer v2 is complete and ship-ready",
+  "productClassification": "SHIP_READY",
+  "safety": {
+    "bdlHttpHistoricalFinals": 0,
+    "dataMode": "replay",
+    "offseasonMode": "1",
+    "cronDryRun": "1",
+    "servingBackfills": false,
+    "s3Writes": false,
+    "schemaExpansion": false,
+    "possessionEngine": false,
+    "wowy": false,
+    "injuryAsOf": false,
+    "livePbp": false,
+    "gameOddsMarketMovementUi": false,
+    "liveActivation": false,
+    "globalRedesign": false
+  },
+  "coverageLine": {
+    "g2023": "Completed game · Box · Advanced · Season Role",
+    "g2025Full": "Completed game · Starting Five · Box · Advanced · Season Role · Timeline",
+    "presentOnly": true
+  },
+  "stickyNavFinal": ["Players", "Context", "Timeline", "Lines"],
+  "startingFiveStickyItem": false,
+  "analytics": {
+    "events": [
+      "historical_game_viewed",
+      "historical_player_opened",
+      "historical_timeline_opened"
+    ],
+    "privacy": "ids_and_capability_flags_only",
+    "livePagesFireHistoricalViewed": false
+  },
+  "freePro": {
+    "newPaywall": false,
+    "gate": "requireBettingAuth",
+    "advancedHistoryRequired": false,
+    "laterRecommendation": "Keep Final/Box/Starting Five on Free; consider Pro for Advanced/Role/Timeline later"
+  },
+  "marketContext": {
+    "implementNow": false,
+    "propMmGames": 121,
+    "openingSnapshotGames": 107,
+    "recommendation": "Leave Props Explorer as canonical market history; optional later Finals module only"
+  },
+  "performanceMsApprox": {
+    "details2023AfterCompile": [488, 802],
+    "details2025AfterCompile": [363, 941],
+    "timelineColdCompile": 2800,
+    "timelineSubsequent": [210, 901],
+    "timelineWarm": [181, 259]
+  },
+  "browserMatrix": {
+    "15905067": "pass",
+    "18447937": "pass",
+    "18447931": "pass",
+    "18446874": "pass",
+    "18447390": "pass",
+    "21717855": "pass"
+  },
+  "tests": {
+    "files": 18,
+    "passed": 133,
+    "failed": 0
+  },
+  "naming": "A_implicit_dashboard_to_final",
+  "recommendedNextPhase": "2026-27 live activation readiness",
+  "roadmapRanked": [
+    "A. 2026-27 live activation",
+    "D. Team Matchup Profile",
+    "C. Game-odds Market Movement UI",
+    "B. Possession / WOWY R&D"
+  ],
+  "nonBlockingFollowUps": [
+    "Dev hydration overlay on BettingAppShell/Header",
+    "Explicit History nav later",
+    "Free/Pro packaging of Advanced/Role/Timeline later",
+    "Optional Market Context on Finals later"
+  ]
+}

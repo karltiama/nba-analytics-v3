@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MatchupPageLayout } from '@/components/betting/MatchupPageLayout';
 import { BettingGameDetailsPageSkeleton } from './components/BettingGameDetailsPageSkeleton';
 import { slateHref } from '@/lib/betting/research-journey';
+import { shouldFetchLiveMatchupAnalysis } from '@/lib/betting/historical-final';
 
 export function GameDetailsPageClient({ gameId }: { gameId: string }) {
   const [data, setData] = useState<any>(null);
@@ -17,24 +18,30 @@ export function GameDetailsPageClient({ gameId }: { gameId: string }) {
       setLoading(true);
       setError(null);
       try {
-        const [detailsRes, matchupRes, playerPropsRes] = await Promise.all([
-          fetch(`/api/betting/games/${gameId}/details`),
-          fetch(`/api/betting/games/${gameId}/matchup-analysis`).catch(() => null),
-          fetch(`/api/betting/games/${gameId}/player-props`).catch(() => null),
-        ]);
+        const detailsRes = await fetch(`/api/betting/games/${gameId}/details`);
         if (!detailsRes.ok) {
           const err = await detailsRes.json().catch(() => ({}));
           throw new Error(err.error || 'Failed to load game details');
         }
         const details = await detailsRes.json();
-        if (matchupRes?.ok) {
-          const matchup = await matchupRes.json();
-          details.matchupAnalysis = matchup;
-        }
-        if (playerPropsRes?.ok) {
-          const { playerProps } = await playerPropsRes.json();
-          details.playerProps = playerProps ?? [];
+        const isFinal = !shouldFetchLiveMatchupAnalysis(details.viewMode);
+        if (!isFinal) {
+          const [matchupRes, playerPropsRes] = await Promise.all([
+            fetch(`/api/betting/games/${gameId}/matchup-analysis`).catch(() => null),
+            fetch(`/api/betting/games/${gameId}/player-props`).catch(() => null),
+          ]);
+          if (matchupRes?.ok) {
+            const matchup = await matchupRes.json();
+            details.matchupAnalysis = matchup;
+          }
+          if (playerPropsRes?.ok) {
+            const { playerProps } = await playerPropsRes.json();
+            details.playerProps = playerProps ?? [];
+          } else {
+            details.playerProps = [];
+          }
         } else {
+          details.matchupAnalysis = null;
           details.playerProps = [];
         }
         if (!cancelled) setData(details);

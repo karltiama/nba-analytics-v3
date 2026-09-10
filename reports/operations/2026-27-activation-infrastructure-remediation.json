@@ -1,0 +1,76 @@
+{
+  "step": "13C.1",
+  "generatedAt": "2026-09-10T20:45:00.000Z",
+  "verdict": "GREEN — activation infrastructure is safe enough to proceed to injuries/odds canary",
+  "freeze": {
+    "DATA_MODE": "replay",
+    "OFFSEASON_MODE": "1",
+    "CRON_DRY_RUN": "1",
+    "PINNED_ANALYTICS_SEASON": "2025",
+    "live_ingestion_enabled": false
+  },
+  "scheduleCertificationCarryForward": {
+    "liveBdlGames": 1200,
+    "localGames": 1200,
+    "matchingIds": 1200,
+    "liveOnly": 0,
+    "localOnly": 0,
+    "dryRunInserts": 0,
+    "dryRunUpdates": 0,
+    "conflicts": 0,
+    "unpublishedVs1230": 30,
+    "unpublishedClass": "PROVIDER_NOT_YET_PUBLISHED"
+  },
+  "terraform": {
+    "masterSwitch": "live_ingestion_enabled",
+    "plan": { "create": 0, "update": 9, "destroy": 0 },
+    "applied": true,
+    "schedulesAfterApply": {
+      "nightly": "DISABLED",
+      "odds": "DISABLED",
+      "injuries": "DISABLED",
+      "boxscore": "DISABLED",
+      "player_props_scheduler": "DISABLED"
+    },
+    "propsReservedConcurrencyApplied": false,
+    "propsReservedConcurrencyAws": null
+  },
+  "lambdaQuota": {
+    "code": "L-B99A9384",
+    "current": 10,
+    "unreservedFloor": 10,
+    "desiredPropsReserved": 4,
+    "minimumToApplyReserved4": 14,
+    "recommendedTarget": 20,
+    "classification": "NOT_REQUESTED"
+  },
+  "bdl": {
+    "entitlement": "BDL_ENTITLEMENT_REQUIRES_ACCOUNT_CONFIRMATION",
+    "providerEntitlement": "unknown",
+    "operatingRateLabel": "activation-canary safety rate",
+    "intervalMs": 13000,
+    "burst": 1,
+    "maxRequests": 1,
+    "acquireTimeoutMs": 90000,
+    "observed429Headers": {
+      "retryAfterSeconds": 55,
+      "xRateLimitLimit": null,
+      "xRateLimitRemaining": null,
+      "xRateLimitReset": null
+    },
+    "globalCooldownPreserved": true,
+    "reCanary": "skipped"
+  },
+  "finalPreserve": {
+    "implemented": true,
+    "blocksFinalToScheduled": true,
+    "statusStateAdopted": false,
+    "statusStateNote": "Present on 2025 BDL games; 2026 canary did not persist it. Leave current status normalization."
+  },
+  "vercelBdl": "MOVE_TO_SERVING_DATA_LATER",
+  "thirteenD": {
+    "decision": "GO",
+    "started": false,
+    "quotaBlocksInjuriesOdds": false
+  }
+}

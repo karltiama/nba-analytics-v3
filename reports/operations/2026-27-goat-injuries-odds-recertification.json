@@ -1,0 +1,35 @@
+{
+  "step": "13D.1",
+  "generatedAt": "2026-09-10T22:16:25.829Z",
+  "verdict": "YELLOW — entitlement works but live feed/transform issue remains",
+  "entitlement": "BDL_ENTITLEMENT_CONFIRMED_GOAT",
+  "entitlementSource": "account_owner_dashboard_confirmation",
+  "entitlementInferredFromHttp200": false,
+  "freeze": {
+    "live_ingestion_enabled": false,
+    "schedules": "DISABLED",
+    "PINNED_ANALYTICS_SEASON": "2025",
+    "lambdaEnv": "replay/1/1",
+    "intervalMs": 13000
+  },
+  "injuries": {
+    "http200": 0,
+    "http401": 1,
+    "http429": 0,
+    "rows": 0
+  },
+  "odds": {
+    "http200": 0,
+    "http401": 1,
+    "http429": 0,
+    "coverage": "UNAUTHORIZED",
+    "note": "401 is not NO_CURRENT_MARKET"
+  },
+  "persist": false,
+  "lambdaQuota": {
+    "current": 10,
+    "recommended": 20,
+    "classification": "NOT_REQUESTED"
+  },
+  "thirteenEStarted": false
+}

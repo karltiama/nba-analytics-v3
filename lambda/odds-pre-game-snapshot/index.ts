@@ -36,6 +36,7 @@ try {
 
 import { Pool } from 'pg';
 import { z } from 'zod';
+import { fetchBdlLive } from './bdl-live-rate-limit';
 
 // ============================================
 // CONFIGURATION
@@ -110,8 +111,6 @@ type BdlOddsRow = z.infer<typeof BdlOddsRowSchema>;
 // HELPERS
 // ============================================
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 function parseNumeric(val: string | null | undefined): number | null {
   if (val == null || val === '') return null;
   const n = parseFloat(val);
@@ -136,15 +135,11 @@ async function fetchOddsForDate(dateStr: string): Promise<BdlOddsRow[]> {
 
     console.log(`Fetching odds: ${url.toString().replace(/Authorization=[^&]+/, 'Authorization=***')}`);
 
-    const res = await fetch(url.toString(), {
-      headers: { Authorization: BALLDONTLIE_API_KEY as string },
-    });
-
-    if (res.status === 429) {
-      console.warn('Rate limited, waiting 60s...');
-      await sleep(60000);
-      continue;
-    }
+    const res = await fetchBdlLive(
+      url.toString(),
+      { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
+      { worker: 'odds-pre-game-snapshot' }
+    );
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
@@ -157,8 +152,6 @@ async function fetchOddsForDate(dateStr: string): Promise<BdlOddsRow[]> {
 
     cursor = parsed.meta?.next_cursor ?? null;
     if (cursor == null) break;
-
-    await sleep(200);
   }
 
   return allRows;
@@ -369,16 +362,16 @@ async function refreshLineMovementSummary(gameIds: string[]): Promise<number> {
          WHERE game_id = $1 AND vendor = $2
        ) stats
        ON CONFLICT (game_id) DO UPDATE SET
-         open_home_spread = excluded.open_home_spread,
-         open_total = excluded.open_total,
-         open_home_ml = excluded.open_home_ml,
+         open_home_spread = COALESCE(analytics.game_line_movement_summary.open_home_spread, excluded.open_home_spread),
+         open_total = COALESCE(analytics.game_line_movement_summary.open_total, excluded.open_total),
+         open_home_ml = COALESCE(analytics.game_line_movement_summary.open_home_ml, excluded.open_home_ml),
          current_home_spread = excluded.current_home_spread,
          current_total = excluded.current_total,
          current_home_ml = excluded.current_home_ml,
-         spread_movement = excluded.spread_movement,
-         total_movement = excluded.total_movement,
+         spread_movement = excluded.current_home_spread - COALESCE(analytics.game_line_movement_summary.open_home_spread, excluded.open_home_spread),
+         total_movement = excluded.current_total - COALESCE(analytics.game_line_movement_summary.open_total, excluded.open_total),
          snapshots_count = excluded.snapshots_count,
-         first_seen_at = excluded.first_seen_at,
+         first_seen_at = COALESCE(analytics.game_line_movement_summary.first_seen_at, excluded.first_seen_at),
          last_seen_at = excluded.last_seen_at,
          updated_at = now()`,
       [gameId, PREFERRED_VENDOR]

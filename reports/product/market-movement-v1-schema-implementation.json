@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-09-09T23:56:00.000Z",
+  "step": "11B",
+  "bdlHttp": 0,
+  "ingestionFrozen": true,
+  "dataMode": "replay",
+  "s3Acquisition": false,
+  "s3Backfill": false,
+  "uiChanges": false,
+  "apiChanges": false,
+  "globalRlsChanges": false,
+  "verdict": "GREEN — Market Movement schema and shared math are ready for historical backfill",
+  "migration": {
+    "sql": "db/schemas/MIGRATION_market_movement_v1.sql",
+    "applyScript": "scripts/apply-market-movement-v1-schema.ts",
+    "appliedToFrozenWorkingDb": true,
+    "appliedToProductionDeploy": false,
+    "populated": false
+  },
+  "tables": {
+    "player": {
+      "name": "analytics.player_prop_market_movement",
+      "grain": ["game_id", "player_id", "prop_type", "vendor"],
+      "rows": 0,
+      "referenceKind": "3_hour_pre_tip",
+      "comparisonKindHistorical": "decision_close",
+      "rls": false
+    },
+    "game": {
+      "name": "analytics.game_odds_market_movement",
+      "grain": ["game_id", "vendor"],
+      "rows": 0,
+      "referenceKind": "opening_snapshot",
+      "comparisonKindHistorical": "last_pre_tip_history",
+      "certifiedWindow": { "start": "2026-03-09", "end": "2026-03-22" },
+      "rls": false
+    },
+    "consensusTable": null
+  },
+  "indexes": [
+    {
+      "name": "player_prop_market_movement_pk",
+      "columns": ["game_id", "player_id", "prop_type", "vendor"],
+      "why": "grain uniqueness; covers by-game and game+player+prop vendor rows"
+    },
+    {
+      "name": "analytics_player_prop_mm_player_game_idx",
+      "columns": ["player_id", "game_id"],
+      "why": "player-page lookups not game-prefixed"
+    },
+    {
+      "name": "game_odds_market_movement_pk",
+      "columns": ["game_id", "vendor"],
+      "why": "grain uniqueness; covers by-game vendor rows"
+    }
+  ],
+  "unchangedFirstSeen": {
+    "player_prop_movement_summary": 1611,
+    "game_line_movement_summary": 334
+  },
+  "sharedModule": "lib/betting/market-movement.ts",
+  "math": {
+    "impliedProbability": "raw_not_vig_normalized",
+    "zeroOdds": "invalid_not_even_money",
+    "evenMoney": ["+100", "-100"],
+    "juicePp": 0.02,
+    "lineEpsilon": 1e-9,
+    "median": "interpolating_quantile_0.5",
+    "consensusMinBooks": 2,
+    "consensusPersisted": false,
+    "variantPolicy": "exclude_ambiguous_simultaneous_groups"
+  },
+  "vendors": ["betmgm", "fanduel", "draftkings", "caesars"],
+  "propTypes": [
+    "points",
+    "rebounds",
+    "assists",
+    "threes",
+    "points_rebounds",
+    "points_assists",
+    "points_rebounds_assists"
+  ],
+  "tests": {
+    "command": "npx vitest run lib/betting/__tests__/market-movement.test.ts lib/betting/__tests__/market-movement-schema.test.ts",
+    "files": 2,
+    "passed": 30
+  },
+  "nextStep": "11C historical backfill — do not start automatically"
+}

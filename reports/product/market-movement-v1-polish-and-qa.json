@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-09-10T02:15:00.000Z",
+  "step": "11F",
+  "bdlHttp": 0,
+  "ingestionFrozen": true,
+  "dataMode": "replay",
+  "offseasonMode": "1",
+  "cronDryRun": "1",
+  "schemaChanges": false,
+  "servingWrites": false,
+  "backfillRerun": false,
+  "s3Mutation": false,
+  "gameOddsUi": false,
+  "newPage": false,
+  "analyticsAbstraction": null,
+  "intendedEvents": [
+    {
+      "name": "market_movement_viewed",
+      "when": "certified MM meaningfully displayed",
+      "properties": ["game_id", "prop_type", "detail", "movement_status", "consensus_book_count"]
+    },
+    {
+      "name": "market_movement_upgrade_clicked",
+      "when": "Free user clicks MM upgrade affordance"
+    }
+  ],
+  "skippedEvents": ["market_movement_books_expanded"],
+  "legacyHelperRemoved": ["summarizePropMovement", "movementUnavailableMessage", "PropMovementPoint"],
+  "tests": {
+    "passed": 119,
+    "files": 12
+  },
+  "productClassification": "READY_WITH_MINOR_FOLLOWUPS",
+  "verdict": "YELLOW — feature is functional but needs minor follow-up before shipping",
+  "realData": [
+    { "scenario": "quiet_4book", "player": "John Collins", "gameId": "18447937", "headline": "12.5 → 0 → 12.5 · 4 books Quiet" },
+    { "scenario": "juice", "player": "Jordan Clarkson", "gameId": "21681977", "headline": "FanDuel line 4.5 held, +2.4 percentage points" },
+    { "scenario": "line_mix", "player": "John Collins", "gameId": "18447959", "headline": "11.5 → +1 → 12.5" },
+    { "scenario": "pra", "player": "John Collins", "gameId": "18447937", "headline": "19.5 → +1 → 20.5 Line+Price" },
+    { "scenario": "split_26", "player": "RJ Barrett", "gameId": "21681978", "median": 26, "range": "25.5–26.5" },
+    { "scenario": "one_book", "player": "Jordan Clarkson", "gameId": "21681977", "propType": "points_rebounds_assists", "label": "1 supported book available" },
+    { "scenario": "unsupported", "player": "John Collins", "propType": "steals", "copy": "Market Movement isn't available for this prop yet." }
+  ],
+  "nextStep": "STOP — review player-prop MM. Analytics helper later. Do not start game-odds UI."
+}

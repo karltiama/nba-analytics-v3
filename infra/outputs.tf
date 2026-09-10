@@ -87,8 +87,8 @@ output "player_props_schedule_name" {
   description = "Name of the EventBridge Scheduler schedule (when player_props_enable_schedule is true)."
   value = var.player_props_enable_schedule ? (
     length(var.player_props_schedule_crons) > 0
-      ? aws_scheduler_schedule.player_props_crons[0].name
-      : aws_scheduler_schedule.player_props_rate[0].name
+    ? aws_scheduler_schedule.player_props_crons[0].name
+    : aws_scheduler_schedule.player_props_rate[0].name
   ) : null
 }
 

@@ -32,6 +32,13 @@ const VERDICT_LABELS: Record<ContextVerdictType, string> = {
   insufficient: 'Insufficient',
 };
 
+const SOCIAL_VERDICT_LABELS: Record<ContextVerdictType, string> = {
+  supports: 'Context Supports',
+  mixed: 'Mixed Context',
+  pushes_back: 'Context Pushes Back',
+  insufficient: 'Not Enough Context',
+};
+
 export function formatMarketLabel(type: ContextMarketType): string {
   return MARKET_LABELS[type];
 }
@@ -69,6 +76,11 @@ export function formatHitFraction(hits: number, games: number): string {
 
 export function formatVerdictLabel(type: ContextVerdictType): string {
   return VERDICT_LABELS[type];
+}
+
+/** Public Instagram labels — evidence language, never betting commands. */
+export function formatSocialVerdictLabel(type: ContextVerdictType): string {
+  return SOCIAL_VERDICT_LABELS[type];
 }
 
 export function formatContextTypeLabel(type: ContextCheckType): string {

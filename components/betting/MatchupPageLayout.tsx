@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays, ChevronDown, Loader2, Users } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Game } from './GameCard';
@@ -19,10 +19,34 @@ import type { MarketSentimentSnapshot } from '@/lib/betting/market-sentiment-typ
 import { MarketSentimentChart, resolveSentimentChartData } from '@/components/betting/MarketSentimentChart';
 import type { InjuryFeedAvailability } from '@/lib/injuries/freshness';
 import { injuryAbsenceCopy } from '@/lib/injuries/freshness';
+import { HistoricalFinalBoxScore } from '@/components/betting/HistoricalFinalBoxScore';
+import { HistoricalStartingFive } from '@/components/betting/HistoricalStartingFive';
+import { HistoricalFinalRoleProfile } from '@/components/betting/HistoricalFinalRoleProfile';
+import { HistoricalFinalTimeline } from '@/components/betting/HistoricalFinalTimeline';
+import type { HistoricalBoxScore, HistoricalModuleAvailability, HistoricalViewMode } from '@/lib/betting/historical-final';
+import type { HistoricalStarters } from '@/lib/betting/historical-starters';
+import { shouldShowStartingFive } from '@/lib/betting/historical-starters';
+import { shouldShowHistoricalAdvanced } from '@/lib/betting/historical-advanced';
+import { shouldShowHistoricalRoleProfile } from '@/lib/betting/historical-role-profile';
+import { shouldShowHistoricalTimeline } from '@/lib/betting/historical-timeline';
+import {
+  formatHistoricalCoverageLine,
+  historicalCoverageLabels,
+  historicalFinalNavIds,
+  isHistoricalFinalView,
+} from '@/lib/betting/historical-final';
 import { displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
+import { formatNbaSeasonLabel } from '@/lib/season';
 import { playerResearchHref, propsExplorerHref, slateHref } from '@/lib/betting/research-journey';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
 import { UPGRADE_COPY } from '@/lib/entitlements/types';
+import { trackEvent } from '@/lib/product-analytics/track-event';
+import {
+  HISTORICAL_GAME_VIEWED,
+  HISTORICAL_TIMELINE_OPENED,
+  historicalGameViewedIfChanged,
+  historicalTimelineOpenedIfChanged,
+} from '@/lib/product-analytics/historical-explorer-events';
 
 // --- Types (migrated from GameDetailsModal) ---
 interface RecentGameResult {
@@ -104,6 +128,11 @@ export type { MarketSentimentSnapshot } from '@/lib/betting/market-sentiment-typ
 
 export interface GameDetailsData {
   game: Game;
+  viewMode?: HistoricalViewMode;
+  gameSeason?: string;
+  availability?: HistoricalModuleAvailability;
+  boxScore?: HistoricalBoxScore;
+  starters?: HistoricalStarters;
   homeTeamStats: TeamStats;
   awayTeamStats: TeamStats;
   spreadMovement: { time: string; value: number }[];
@@ -542,17 +571,21 @@ function MarketSentimentPanel({
 }
 
 const SECTION_IDS = ['section-ai-projection', 'section-odds', 'section-matchup', 'section-players', 'section-injuries'] as const;
-const SECTION_LABELS: Record<(typeof SECTION_IDS)[number], string> = {
+const SECTION_LABELS: Record<string, string> = {
   'section-ai-projection': 'AI Projection',
   'section-odds': 'Odds & sentiment',
   'section-matchup': 'Matchup',
   'section-players': 'Players',
   'section-injuries': 'Injuries',
+  'section-box': 'Box score',
+  'section-starters': 'Starting Five',
+  'section-context': 'Context',
+  'section-timeline': 'Timeline',
 };
 
 export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
   const router = useRouter();
-  const [activeSection, setActiveSection] = useState<(typeof SECTION_IDS)[number]>(SECTION_IDS[0]);
+  const [activeSection, setActiveSection] = useState<string>(SECTION_IDS[0]);
   const [aiSummaryText, setAiSummaryText] = useState<string | null>(null);
   const [aiSummaryStatus, setAiSummaryStatus] = useState<
     'idle' | 'loading' | 'success' | 'unavailable' | 'entitlement' | 'error'
@@ -572,7 +605,59 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     playerProps = [],
     injuryMatchupContext,
     marketSentiment,
+    viewMode,
+    gameSeason,
+    boxScore,
+    starters,
+    availability,
   } = data;
+
+  const isFinalView =
+    viewMode === 'final' || isHistoricalFinalView(game.status);
+
+  const showStartingFive = shouldShowStartingFive(starters);
+  const showHistoricalAdvanced = shouldShowHistoricalAdvanced(availability);
+  const showHistoricalRoleProfile = shouldShowHistoricalRoleProfile(availability);
+  const showHistoricalTimeline = shouldShowHistoricalTimeline(availability);
+  const historicalViewedKey = useRef<string | null>(null);
+  const historicalTimelineKey = useRef<string | null>(null);
+
+  const hasOdds =
+    currentOdds != null &&
+    (currentOdds.spread != null ||
+      currentOdds.moneylineHome != null ||
+      currentOdds.overUnder != null ||
+      (spreadMovement?.length ?? 0) > 0 ||
+      (totalMovement?.length ?? 0) > 0);
+
+  const finalSectionIds = useMemo(
+    () =>
+      historicalFinalNavIds({
+        roleProfile: showHistoricalRoleProfile,
+        timeline: showHistoricalTimeline,
+        storedOdds: hasOdds,
+      }),
+    [showHistoricalRoleProfile, showHistoricalTimeline, hasOdds]
+  );
+
+  const liveSectionIds = SECTION_IDS;
+  const navIds = isFinalView ? finalSectionIds : liveSectionIds;
+  const hasStoredOdds = finalSectionIds.includes('section-odds');
+  const coverageLine = isFinalView
+    ? formatHistoricalCoverageLine(
+        historicalCoverageLabels({
+          boxAvailable: boxScore?.available === true,
+          startersAvailable: showStartingFive,
+          advancedAvailable: showHistoricalAdvanced,
+          roleProfileAvailable: showHistoricalRoleProfile,
+          timelineAvailable: showHistoricalTimeline,
+        })
+      )
+    : null;
+
+  useEffect(() => {
+    setActiveSection(navIds[0] ?? SECTION_IDS[0]);
+  }, [navIds]);
 
   const ingestionFrozen = Boolean(data.ingestionFrozen);
   const injuryFeed =
@@ -580,7 +665,9 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
 
   const sentimentResolved = resolveSentimentChartData(game.id, marketSentiment);
   const showSentiment =
-    sentimentResolved.mode !== 'none' && sentimentResolved.points.length >= 2;
+    !isFinalView &&
+    sentimentResolved.mode !== 'none' &&
+    sentimentResolved.points.length >= 2;
 
   const summaryBullets = getGameSummaryBulletsForAi({
     matchupAnalysis: data.matchupAnalysis,
@@ -603,7 +690,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     [injuryMatchupContext, game.homeTeam.id, game.homeTeam.name, game.awayTeam.name]
   );
 
-  const scrollToSection = (sectionId: (typeof SECTION_IDS)[number]) => {
+  const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.scrollY;
@@ -616,7 +703,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
-    SECTION_IDS.forEach((id) => {
+    navIds.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
       const observer = new IntersectionObserver(
@@ -631,9 +718,14 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
       observers.push(observer);
     });
     return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  }, [navIds]);
 
   useEffect(() => {
+    if (isFinalView) {
+      setAiSummaryStatus('idle');
+      setAiSummaryText(null);
+      return;
+    }
     const ac = new AbortController();
     let cancelled = false;
 
@@ -727,7 +819,43 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
       cancelled = true;
       ac.abort();
     };
-  }, [data, injuryNarrative, matchupAnalysis]);
+  }, [data, injuryNarrative, matchupAnalysis, isFinalView]);
+
+  useEffect(() => {
+    if (!isFinalView) return;
+    const next = historicalGameViewedIfChanged(historicalViewedKey.current, {
+      gameId: game.id,
+      season: String(gameSeason || game.season || ''),
+      startersAvailable: showStartingFive,
+      advancedAvailable: showHistoricalAdvanced,
+      roleProfileAvailable: showHistoricalRoleProfile,
+      timelineAvailable: showHistoricalTimeline,
+    });
+    if (!next) return;
+    historicalViewedKey.current = next.key;
+    trackEvent(HISTORICAL_GAME_VIEWED, next.properties);
+  }, [
+    isFinalView,
+    game.id,
+    game.season,
+    gameSeason,
+    showStartingFive,
+    showHistoricalAdvanced,
+    showHistoricalRoleProfile,
+    showHistoricalTimeline,
+  ]);
+
+  useEffect(() => {
+    if (!isFinalView || !showHistoricalTimeline) return;
+    if (activeSection !== 'section-timeline') return;
+    const next = historicalTimelineOpenedIfChanged(historicalTimelineKey.current, {
+      gameId: game.id,
+      mode: 'key',
+    });
+    if (!next) return;
+    historicalTimelineKey.current = next.key;
+    trackEvent(HISTORICAL_TIMELINE_OPENED, next.properties);
+  }, [activeSection, isFinalView, showHistoricalTimeline, game.id]);
 
   return (
     <main className="min-h-screen bg-background gradient-mesh max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
@@ -748,38 +876,58 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           </button>
           <div className="flex items-center gap-2 min-w-0 shrink-0">
             <Calendar className="w-4 h-4 text-[#00d4ff] shrink-0" />
-            <span className="text-sm font-medium text-muted-foreground truncate">{game.startTime}</span>
+            <span className="text-sm font-medium text-muted-foreground truncate">
+              {isFinalView && typeof game.gameDate === 'string' ? game.gameDate : game.startTime}
+            </span>
             {game.status ? (
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-medium">
                 {displayGameStatusLabel(game.status)}
+              </span>
+            ) : null}
+            {isFinalView && gameSeason ? (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-medium">
+                {formatNbaSeasonLabel(gameSeason)}
               </span>
             ) : null}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             <Link href={`/teams/${game.awayTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
               <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</span>
-              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.awayTeam.record ?? '—'}</span>
+              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+                {isFinalView
+                  ? (game.awayScore != null ? String(game.awayScore) : '—')
+                  : (game.awayTeam.record ?? '—')}
+              </span>
             </Link>
             <span className="text-xs text-muted-foreground">@</span>
             <Link href={`/teams/${game.homeTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
               <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</span>
-              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">{game.homeTeam.record ?? '—'}</span>
+              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+                {isFinalView
+                  ? (game.homeScore != null ? String(game.homeScore) : '—')
+                  : (game.homeTeam.record ?? '—')}
+              </span>
             </Link>
           </div>
         </div>
         <div className="px-3 sm:px-5 py-2 border-t border-white/5 flex flex-wrap items-center justify-center gap-1.5 bg-white/[0.02]">
-          {SECTION_IDS.map((id) => (
+          {navIds.map((id) => (
             <button
               key={id}
               type="button"
               onClick={() => scrollToSection(id)}
+              aria-current={activeSection === id ? 'true' : undefined}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 activeSection === id
                   ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/40'
                   : 'bg-white/5 text-muted-foreground border border-white/5 hover:bg-white/10 hover:text-white'
               }`}
             >
-              {SECTION_LABELS[id]}
+              {isFinalView && id === 'section-odds'
+                ? 'Lines'
+                : isFinalView && id === 'section-box' && showHistoricalAdvanced
+                  ? 'Players'
+                  : SECTION_LABELS[id]}
             </button>
           ))}
           <Link
@@ -792,10 +940,68 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             View props
           </Link>
         </div>
+        {coverageLine ? (
+          <p className="px-3 sm:px-5 pb-2 text-[10px] text-center text-muted-foreground">
+            {coverageLine}
+          </p>
+        ) : null}
       </div>
 
       <div className="mt-4 flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
         <div className="flex-1 min-w-0 space-y-4">
+        {isFinalView ? (
+        <>
+        {showStartingFive && starters ? (
+          <HistoricalStartingFive
+            awayName={game.awayTeam.name}
+            awayAbbr={game.awayTeam.abbreviation}
+            homeName={game.homeTeam.name}
+            homeAbbr={game.homeTeam.abbreviation}
+            starters={starters}
+            gameId={game.id}
+            date={typeof game.gameDate === 'string' ? game.gameDate : undefined}
+            season={gameSeason || game.season}
+          />
+        ) : null}
+        <section id="section-box" className="scroll-mt-[10rem]">
+          <HistoricalFinalBoxScore
+            awayName={game.awayTeam.name}
+            awayTeamId={game.awayTeam.id}
+            homeName={game.homeTeam.name}
+            homeTeamId={game.homeTeam.id}
+            boxScore={boxScore ?? { available: false, home: [], away: [] }}
+            gameId={game.id}
+            date={typeof game.gameDate === 'string' ? game.gameDate : undefined}
+            season={gameSeason || game.season}
+            availability={availability}
+          />
+        </section>
+        {showHistoricalRoleProfile ? (
+          <HistoricalFinalRoleProfile
+            gameId={game.id}
+            season={gameSeason || game.season || ''}
+            boxScore={boxScore ?? { available: false, home: [], away: [] }}
+            starters={starters}
+            awayAbbr={game.awayTeam.abbreviation}
+            homeAbbr={game.homeTeam.abbreviation}
+          />
+        ) : null}
+        {showHistoricalTimeline ? (
+          <HistoricalFinalTimeline
+            gameId={game.id}
+            availability={availability}
+            homeTeamId={game.homeTeam.id}
+            awayTeamId={game.awayTeam.id}
+            homeAbbr={game.homeTeam.abbreviation}
+            awayAbbr={game.awayTeam.abbreviation}
+            officialHomeScore={game.homeScore}
+            officialAwayScore={game.awayScore}
+            loadNow={activeSection === 'section-timeline'}
+          />
+        ) : null}
+        </>
+        ) : null}
+        {!isFinalView ? (
         <section id="section-ai-projection" className="scroll-mt-[10rem]">
           <div className="glass-card rounded-xl overflow-hidden border border-[#bf5af2]/30">
             <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex items-center gap-1.5">
@@ -932,12 +1138,20 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
         </section>
+        ) : null}
 
+        {(!isFinalView || navIds.includes('section-odds')) ? (
         <section id="section-odds" className="scroll-mt-[10rem]">
           <div className="glass-card rounded-xl overflow-hidden border border-white/5">
             <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">Odds & line movement</h2>
-              <p className="text-[10px] text-muted-foreground mt-0.5">Sportsbook lines and crowd sentiment side by side</p>
+              <h2 className="text-sm font-semibold text-white">
+                {isFinalView ? 'Sportsbook lines' : 'Odds & line movement'}
+              </h2>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                {isFinalView
+                  ? 'Closing or stored sportsbook lines for this game. Not certified Opening Snapshot Market Movement.'
+                  : 'Sportsbook lines and crowd sentiment side by side'}
+              </p>
             </div>
             <div className="p-2.5 sm:p-3">
               <div className={`grid grid-cols-1 gap-3 lg:items-stretch ${showSentiment ? 'lg:grid-cols-2' : ''}`}>
@@ -995,11 +1209,29 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                           Total (O/U)
                         </TabsTrigger>
                       </TabsList>
-                      <TabsContent value="spread" className="mt-0 outline-none">
-                        <LineMovementChart data={spreadMovement} label={`Spread: ${game.homeTeam.abbreviation}`} color="#00d4ff" height={176} width={520} embedded />
+                      <TabsContent value="spread" className="mt-0 outline-none min-w-0 overflow-hidden">
+                        <LineMovementChart
+                          data={spreadMovement}
+                          label={`Spread: ${game.homeTeam.abbreviation}`}
+                          color="#00d4ff"
+                          height={176}
+                          width={520}
+                          embedded
+                          referenceCaption={isFinalView ? 'First stored' : 'Open'}
+                          comparisonCaption={isFinalView ? 'Stored close' : 'Current'}
+                        />
                       </TabsContent>
-                      <TabsContent value="total" className="mt-0 outline-none">
-                        <LineMovementChart data={totalMovement} label="Total (O/U)" color="#39ff14" height={176} width={520} embedded />
+                      <TabsContent value="total" className="mt-0 outline-none min-w-0 overflow-hidden">
+                        <LineMovementChart
+                          data={totalMovement}
+                          label="Total (O/U)"
+                          color="#39ff14"
+                          height={176}
+                          width={520}
+                          embedded
+                          referenceCaption={isFinalView ? 'First stored' : 'Open'}
+                          comparisonCaption={isFinalView ? 'Stored close' : 'Current'}
+                        />
                       </TabsContent>
                     </Tabs>
                   </div>
@@ -1014,7 +1246,10 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
         </section>
+        ) : null}
 
+        {!isFinalView ? (
+        <>
         <section id="section-matchup" className="space-y-4 scroll-mt-[10rem]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Column 1: Projected starters */}
@@ -1240,6 +1475,8 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
         </section>
+        </>
+        ) : null}
         </div>
 
         <aside
@@ -1254,12 +1491,21 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             <div className="p-3 space-y-3 text-xs">
               <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
                 <span>{game.awayTeam.abbreviation}</span>
-                <span className="text-white font-mono tabular-nums">{game.awayTeam.record ?? '—'}</span>
+                <span className="text-white font-mono tabular-nums">
+                  {isFinalView
+                    ? (game.awayScore != null ? String(game.awayScore) : '—')
+                    : (game.awayTeam.record ?? '—')}
+                </span>
               </div>
               <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
                 <span>{game.homeTeam.abbreviation}</span>
-                <span className="text-white font-mono tabular-nums">{game.homeTeam.record ?? '—'}</span>
+                <span className="text-white font-mono tabular-nums">
+                  {isFinalView
+                    ? (game.homeScore != null ? String(game.homeScore) : '—')
+                    : (game.homeTeam.record ?? '—')}
+                </span>
               </div>
+              {(!isFinalView || hasStoredOdds) ? (
               <div className="border-t border-white/5 pt-3 space-y-2">
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Lines</p>
                 <div className="flex justify-between gap-2">
@@ -1286,6 +1532,8 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                   <p className="text-[10px] text-muted-foreground pt-1">Book: {currentOdds.bookmaker}</p>
                 )}
               </div>
+              ) : null}
+              {!isFinalView ? (
               <div className="border-t border-white/5 pt-3">
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1">Injuries</p>
                 <p className="text-[11px] text-white/90">
@@ -1298,6 +1546,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                   {injuries?.home?.length ?? 0}
                 </p>
               </div>
+              ) : null}
             </div>
           </div>
         </aside>

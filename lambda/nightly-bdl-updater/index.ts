@@ -37,6 +37,7 @@ try {
 }
 
 import { Pool, PoolClient } from 'pg';
+import { fetchBdlLive } from './bdl-live-rate-limit';
 
 // ============================================
 // CONFIGURATION
@@ -111,15 +112,11 @@ function resolveIngestionSeasonStartYear(season?: number | null): number {
 
 async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
   for (let attempt = 0; attempt <= retries; attempt++) {
-    const res = await fetch(url, {
-      headers: { Authorization: BALLDONTLIE_API_KEY as string },
-    });
-    if (res.status === 429) {
-      const delay = RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
-      console.warn(`Rate limited (429). Waiting ${delay / 1000}s before retry ${attempt + 1}...`);
-      await sleep(delay);
-      continue;
-    }
+    const res = await fetchBdlLive(
+      url,
+      { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
+      { worker: 'nightly-bdl-updater' }
+    );
     if (res.status >= 500 && attempt < retries) {
       const delay = RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
       console.warn(`Server error (${res.status}). Waiting ${delay / 1000}s before retry ${attempt + 1}...`);
@@ -148,7 +145,6 @@ async function fetchGames(startDate: string, endDate: string, season: number): P
     out.push(...(json.data || []));
     cursor = json.meta?.next_cursor ?? null;
     if (cursor == null) break;
-    await sleep(REQUEST_DELAY_MS);
   }
   return out;
 }
@@ -168,7 +164,6 @@ async function fetchStatsByGameIds(gameIds: number[]): Promise<any[]> {
     out.push(...(json.data || []));
     cursor = json.meta?.next_cursor ?? null;
     if (cursor == null) break;
-    await sleep(REQUEST_DELAY_MS);
   }
   return out;
 }
@@ -183,14 +178,50 @@ const upsertRawGame = `
   on conflict (id) do update set
     date = excluded.date,
     season = excluded.season,
-    status = excluded.status,
-    period = excluded.period,
-    time = excluded.time,
-    period_detail = excluded.period_detail,
-    datetime = excluded.datetime,
+    /* final-preserve-guard */
+    status = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.status
+      else excluded.status
+    end,
+    period = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.period
+      else excluded.period
+    end,
+    time = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.time
+      else excluded.time
+    end,
+    period_detail = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.period_detail
+      else excluded.period_detail
+    end,
+    datetime = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.datetime
+      else excluded.datetime
+    end,
     postseason = excluded.postseason,
-    home_team_score = excluded.home_team_score,
-    visitor_team_score = excluded.visitor_team_score,
+    home_team_score = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.home_team_score
+      else excluded.home_team_score
+    end,
+    visitor_team_score = case
+      when lower(btrim(coalesce(raw.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then raw.games.visitor_team_score
+      else excluded.visitor_team_score
+    end,
     home_team = excluded.home_team,
     visitor_team = excluded.visitor_team;
 `;
@@ -252,12 +283,33 @@ const upsertAnalyticsGame = `
   values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   on conflict (game_id) do update set
     season = excluded.season,
-    start_time = excluded.start_time,
-    status = excluded.status,
+    /* final-preserve-guard */
+    start_time = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.start_time
+      else excluded.start_time
+    end,
+    status = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.status
+      else excluded.status
+    end,
     home_team_id = excluded.home_team_id,
     away_team_id = excluded.away_team_id,
-    home_score = excluded.home_score,
-    away_score = excluded.away_score,
+    home_score = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.home_score
+      else excluded.home_score
+    end,
+    away_score = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.away_score
+      else excluded.away_score
+    end,
     venue = excluded.venue,
     updated_at = now();
 `;

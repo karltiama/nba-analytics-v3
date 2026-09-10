@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ContextCheckStudioPage() {
   return (
     <main className="min-h-screen bg-background gradient-mesh">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-8 space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Internal · editorial studio · not indexed

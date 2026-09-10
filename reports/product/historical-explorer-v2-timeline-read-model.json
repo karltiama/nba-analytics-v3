@@ -1,0 +1,60 @@
+{
+  "step": "12G",
+  "title": "Historical Explorer v2 Timeline read model",
+  "generatedAt": "2026-09-10T16:42:00.000Z",
+  "verdict": "GREEN — Historical Timeline read model is certified and ready for UI",
+  "safety": {
+    "bdlHttp": 0,
+    "dataMode": "replay",
+    "offseasonMode": "1",
+    "cronDryRun": "1",
+    "playsArchive": "read-only",
+    "possessions": false,
+    "wowy": false,
+    "timelineUi": false
+  },
+  "source": {
+    "games": 1322,
+    "events": 642354,
+    "scoreExact": 1302,
+    "scoreMismatch": 20,
+    "rotationSuccess": 1284,
+    "rotationEligible": 1320,
+    "starterAnomalies": ["18447931", "18447988"]
+  },
+  "policy": {
+    "truncationScoreRatio": 0.7,
+    "deficitWithoutEndGame": 20,
+    "openingZeroZeroCountsAsTie": false,
+    "takingLeadFromTieIsLeadChange": false,
+    "chronology": "order",
+    "officialScore": "analytics.games"
+  },
+  "coverage": {
+    "gameFlowRows": 1322,
+    "timelineAvailable": 1319,
+    "scoreReconciled": 1302,
+    "rotationAvailable": 1284,
+    "truncated": 3,
+    "scoreMismatchTimelineOn": 17
+  },
+  "truncatedGameIds": ["18446876", "18447389", "18447390"],
+  "storage": {
+    "heap": 360448,
+    "indexes": 57344,
+    "totalRelation": 417792,
+    "dbDeltaFirstExecute": 393216
+  },
+  "performance": {
+    "archiveScanMs": 21165,
+    "oneGameGetObjectNormalizeMs": 124,
+    "goodGameTimelineMs": [405, 558],
+    "unavailableMs": [50, 56]
+  },
+  "idempotentSecondExecuteWritten": 0,
+  "cache": {
+    "kind": "process-lru",
+    "maxEntries": 48,
+    "recommendFor12H": "Next unstable_cache on getHistoricalGameTimeline"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "step": "12B",
+  "title": "Historical Explorer v2 multi-season historical base",
+  "generatedAt": "2026-09-10",
+  "verdict": "GREEN — multi-season historical base is correct and ready for certified starters",
+  "doNotStart12CAutomatically": true,
+  "safety": {
+    "bdlHttpFromThisImplementation": 0,
+    "dataModeObserved": "replay",
+    "s3Writes": false,
+    "servingTableMigrations": false,
+    "gameStartersTable": false,
+    "lineupAdvancedSeasonAverageBackfill": false,
+    "playsWork": false,
+    "marketMovementChanges": false,
+    "roleOpportunityWowy": false,
+    "historyNavItem": false,
+    "historyRoute": false,
+    "publicGamesPageChanged": false,
+    "newAnalyticsEvents": false
+  },
+  "dashboardFix": {
+    "historicalDates": "getGamesForCalendarDate",
+    "currentFutureDates": "getGamesForDate season pin",
+    "certificationDate": "2024-06-17",
+    "certificationGameId": "15905067",
+    "falseNoGamesFixed": true
+  },
+  "seasonResolution": {
+    "source": "analytics.games.season",
+    "field": "gameSeason",
+    "notGlobalPin": true
+  },
+  "finalMode": {
+    "authority": "game status",
+    "viewModeFinal": "final",
+    "viewModeLive": "live"
+  },
+  "lineups": {
+    "fetchLineupsFromBallDontLieOnFinal": false,
+    "projectedStartersOnFinal": false,
+    "clientSkipsMatchupAnalysisOnFinal": true
+  },
+  "header": {
+    "scoreSource": "analytics.games"
+  },
+  "boxScore": {
+    "source": "analytics.player_game_logs",
+    "groupBy": "game-night team_id",
+    "columns": ["MIN", "PTS", "REB", "AST", "STL", "BLK"],
+    "playerLinks": "/betting/players/:id?season="
+  },
+  "oddsAiInjury": {
+    "odds": "secondary stored sportsbook lines; not certified MM; hidden if empty",
+    "ai": "hidden on Finals; no historical AI feature",
+    "injuries": "omitted on Finals; no injury-as-of"
+  },
+  "apiContract": {
+    "dedicatedHistoryRoute": false,
+    "route": "GET /api/betting/games/:gameId/details",
+    "reason": "smallest clean contract without extra HTTP hop"
+  },
+  "availability": {
+    "starters": false,
+    "advanced": false,
+    "roleProfile": false,
+    "timeline": false,
+    "meaning": "product-module-ready not archive-exists",
+    "appliesTo2025": true
+  },
+  "fixtures": {
+    "s2023": { "gameId": "15905067", "season": "2023", "score": "DAL 88 @ BOS 106", "etDate": "2024-06-17", "logs": 30 },
+    "s2024": { "gameId": "18444564", "season": "2024", "score": "IND 91 @ OKC 103", "etDate": "2025-06-22", "logs": 30 },
+    "s2025": { "gameId": "18447937", "season": "2025", "score": "SAS 118 @ LAC 99", "etDate": "2026-04-02", "logs": 36 },
+    "regression2025": { "gameId": "21682743", "season": "2025", "score": "PHI 109 @ BOS 100", "etDate": "2026-05-02" },
+    "upcomingLive": { "gameId": "21717855", "season": "2026", "status": "Scheduled" }
+  },
+  "queryPerformance": {
+    "historicalDashboardTopLevel": 2,
+    "historicalFinalDetailsTopLevel": "4-5",
+    "perPlayerQueries": false
+  },
+  "tests": {
+    "files": 15,
+    "passed": 123,
+    "failed": 0
+  },
+  "remainingGaps": [
+    "12C certified starters",
+    "Advanced/Role/Season Average",
+    "Plays/Timeline v2.1",
+    "injury-as-of",
+    "historical AI",
+    "team season switcher 2023-2025",
+    "Dashboard pin-season trending strip on historical dates"
+  ]
+}

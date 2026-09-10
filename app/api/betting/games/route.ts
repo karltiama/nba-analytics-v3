@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import {
-  getGamesForDate,
   getTodaysGames,
   getRecentGames,
   getAllTeamRatings,
@@ -10,6 +9,7 @@ import {
   getTeamDefensiveRankings,
   getGamesForCalendarDate,
 } from '@/lib/betting/queries';
+import { loadDashboardGamesForEtDate } from '@/lib/betting/slate-date';
 import {
   getTodayEtYmd,
   refreshBdlScheduleForEtDateRange,
@@ -66,13 +66,21 @@ export async function GET(request: NextRequest) {
 
     let games;
     let displayDate: string;
+    let gamePicker: 'calendar' | 'season' = 'season';
 
     if (date) {
       await maybeRefreshScheduleForEtDay(date);
       const marketContext = resolvePropsMarketContext({ dateEt: date, todayEt });
-      const useCalendarPicker =
+      const explorerCalendar =
         scope === 'explorer' && (picker === 'calendar' || marketContext === 'historical');
-      games = useCalendarPicker ? await getGamesForCalendarDate(date) : await getGamesForDate(date);
+      if (explorerCalendar) {
+        games = await getGamesForCalendarDate(date);
+        gamePicker = 'calendar';
+      } else {
+        const loaded = await loadDashboardGamesForEtDate(date, todayEt);
+        games = loaded.games;
+        gamePicker = loaded.picker;
+      }
       displayDate = date;
     } else if (mode === 'recent') {
       games = await getRecentGames(limit);
@@ -83,10 +91,13 @@ export async function GET(request: NextRequest) {
       displayDate = todayEt;
     }
 
-    const [teamRatings, defRankings] = await Promise.all([
-      getAllTeamRatings(),
-      getTeamDefensiveRankings(),
-    ]);
+    const attachPinSeasonContext = gamePicker !== 'calendar';
+    const [teamRatings, defRankings] = attachPinSeasonContext
+      ? await Promise.all([getAllTeamRatings(), getTeamDefensiveRankings()])
+      : [
+          {} as Awaited<ReturnType<typeof getAllTeamRatings>>,
+          [] as Awaited<ReturnType<typeof getTeamDefensiveRankings>>,
+        ];
 
     const defRankMap: Record<string, number> = {};
     defRankings.forEach((r) => {
@@ -99,12 +110,14 @@ export async function GET(request: NextRequest) {
       teamIds.add(game.away_team_id);
     });
 
-    const recentFormResults = await Promise.all(
-      Array.from(teamIds).map(async (teamId) => {
-        const form = await getTeamRecentForm(teamId, 5);
-        return { teamId, form };
-      })
-    );
+    const recentFormResults = attachPinSeasonContext
+      ? await Promise.all(
+          Array.from(teamIds).map(async (teamId) => {
+            const form = await getTeamRecentForm(teamId, 5);
+            return { teamId, form };
+          })
+        )
+      : [];
     const recentFormMap: Record<string, unknown[]> = {};
     recentFormResults.forEach(({ teamId, form }) => {
       recentFormMap[teamId] = form;
@@ -170,13 +183,7 @@ export async function GET(request: NextRequest) {
         mode: mode,
         dataSource: 'analytics.games',
         ingestionFrozen: isIngestionFrozen(),
-        gamePicker:
-          date &&
-          scope === 'explorer' &&
-          (picker === 'calendar' ||
-            resolvePropsMarketContext({ dateEt: date, todayEt }) === 'historical')
-            ? 'calendar'
-            : 'season',
+        gamePicker,
       },
     });
   } catch (error: unknown) {

@@ -38,8 +38,13 @@ export interface ContextCheckPlayer {
   name: string;
   teamAbbreviation?: string;
   teamName?: string;
+  /** Preferred Instagram/social action photo. */
+  heroImageUrl?: string;
+  /** Headshot fallback when no action photo exists. */
   headshotUrl?: string;
 }
+
+export type PlayerVisualKind = 'hero' | 'headshot' | 'fallback';
 
 export interface ContextCheckMarket {
   type: ContextMarketType;

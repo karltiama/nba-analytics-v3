@@ -6,6 +6,7 @@ import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
 import { UPGRADE_COPY } from '@/lib/entitlements/types';
 import { formatMarketRangePreview } from '@/lib/entitlements/market-preview';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
+import { MarketMovementSection } from '@/components/betting/market-movement/MarketMovementSection';
 
 export type PropsExplorerMarketSelection = {
   gameId: string | number;
@@ -55,12 +56,6 @@ function formatLine(value: number | null | undefined): string {
   return String(value);
 }
 
-function formatDelta(delta: number | null): string {
-  if (delta == null || !Number.isFinite(delta)) return '—';
-  const sign = delta > 0 ? '+' : '';
-  return `${sign}${delta} points`;
-}
-
 function MarketBody({
   data,
   loading,
@@ -71,10 +66,22 @@ function MarketBody({
   error: string | null;
 }) {
   if (loading) {
+    // Do not mount MarketMovementSection here — viewed events fire only after a resolved payload.
     return (
-      <p className="text-xs text-muted-foreground py-6 text-center" aria-busy="true">
-        Loading market comparison…
-      </p>
+      <div className="space-y-3" aria-busy="true" aria-live="polite">
+        <p className="text-xs text-muted-foreground text-center">Loading market comparison…</p>
+        <div className="rounded-lg border border-white/10 bg-white/[0.03] h-16" />
+        <div
+          data-market-section="market-movement-loading"
+          className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 min-h-[5.5rem]"
+        >
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Market Movement
+          </p>
+          {/* Resolved MarketMovementSection is not mounted here — no market_movement_viewed. */}
+          <p className="text-xs text-muted-foreground mt-2">Loading certified history…</p>
+        </div>
+      </div>
     );
   }
   if (error) {
@@ -83,10 +90,7 @@ function MarketBody({
   if (!data) return null;
 
   const shopping = data.shopping;
-  const movement = data.movement;
-  const isPro = data.entitlement?.isPro === true;
   const lineShoppingOn = data.entitlement?.features?.line_shopping_detail === true;
-  const movementIsEntitlementGate = movement.reason === 'entitlement';
 
   return (
     <div className="space-y-3">
@@ -203,23 +207,10 @@ function MarketBody({
         </>
       )}
 
-      <section
-        data-market-section="movement"
-        data-premium-candidate="movement"
-        className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-1"
-      >
-        <h3 className="text-[11px] font-medium text-white">Line moved</h3>
-        {movement.status === 'ok' && isPro ? (
-          <p className="text-xs text-white">
-            Opened {formatLine(movement.openedLine)} → Closed {formatLine(movement.closedLine)}
-            <span className="block text-muted-foreground mt-0.5">{formatDelta(movement.delta)}</span>
-          </p>
-        ) : movementIsEntitlementGate ? (
-          <p className="text-xs text-muted-foreground">{UPGRADE_COPY.market_movement.title}</p>
-        ) : (
-          <p className="text-xs text-muted-foreground">{movement.message || 'Movement history unavailable'}</p>
-        )}
-      </section>
+      <MarketMovementSection
+        marketMovement={data.marketMovement}
+        selectedSide={data.selected.side}
+      />
     </div>
   );
 }

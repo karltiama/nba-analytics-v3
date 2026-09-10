@@ -1,5 +1,6 @@
 import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
-import { UPGRADE_COPY, type ResolvedEntitlement } from './types';
+import { summarizePlayerMarketMovementForFree } from '@/lib/betting/market-movement-api';
+import { type ResolvedEntitlement } from './types';
 
 export type EntitledPropMarketResearch = PropMarketResearch & {
   entitlement: {
@@ -18,7 +19,6 @@ export function sanitizePropMarketResearch(
   entitlement: ResolvedEntitlement
 ): EntitledPropMarketResearch {
   const shopping = { ...research.shopping };
-  const movement = { ...research.movement };
 
   if (!entitlement.features.line_shopping_detail) {
     shopping.bestAvailableOverLine = null;
@@ -27,21 +27,14 @@ export function sanitizePropMarketResearch(
     shopping.books = [];
   }
 
-  if (!entitlement.features.market_movement && movement.status === 'ok') {
-    movement.status = 'unavailable';
-    movement.reason = 'entitlement';
-    movement.message = UPGRADE_COPY.market_movement.title;
-    movement.openedLine = null;
-    movement.closedLine = null;
-    movement.delta = null;
-    movement.from = null;
-    movement.to = null;
-  }
+  const marketMovement = entitlement.features.market_movement
+    ? research.marketMovement
+    : summarizePlayerMarketMovementForFree(research.marketMovement);
 
   return {
     ...research,
     shopping,
-    movement,
+    marketMovement,
     entitlement: {
       plan: entitlement.plan,
       isPro: entitlement.isPro,

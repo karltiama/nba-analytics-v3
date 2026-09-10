@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-09-09T23:30:00.000Z",
+  "step": "11A",
+  "postgresWrites": false,
+  "bdlHttp": 0,
+  "migrationsRun": false,
+  "servingTablesCreated": false,
+  "verdict": "YELLOW — design is viable but one or more architecture questions need review",
+  "productQuestion": "How has the market changed, and how much agreement is there across books?",
+  "architecture": {
+    "option": "B",
+    "tables": [
+      "analytics.player_prop_market_movement",
+      "analytics.game_odds_market_movement"
+    ],
+    "doNotReuse": [
+      "analytics.player_prop_movement_summary",
+      "analytics.game_line_movement_summary",
+      "analytics.player_prop_history",
+      "analytics.player_prop_lines"
+    ],
+    "consensus": "read_time",
+    "consensusMinBooks": 2,
+    "median": "interpolating_quantile_0.5"
+  },
+  "v1PlayerProps": {
+    "vendors": ["betmgm", "fanduel", "draftkings", "caesars"],
+    "markets": [
+      "points",
+      "rebounds",
+      "assists",
+      "threes",
+      "points_rebounds",
+      "points_assists",
+      "points_rebounds_assists"
+    ],
+    "praStoredAs": "points_rebounds_assists",
+    "referenceLabel": "3_hour_pre_tip",
+    "comparisonSource": "decision_close",
+    "certifiedGames": 129,
+    "productGradeMatches": 24412,
+    "meaningfulMovementPct": 31.8
+  },
+  "v1GameOdds": {
+    "referenceLabel": "opening_snapshot",
+    "comparisonSource": "last_pre_tip_history",
+    "certifiedWindow": { "start": "2026-03-09", "end": "2026-03-22" },
+    "coverageDegradesFrom": "2026-03-23",
+    "games": 107,
+    "matchedSportsbookRows": 945,
+    "firstUi": false
+  },
+  "s3": {
+    "playerPropsPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=opening_player_props",
+    "gameOddsPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/window=2026-03-09_to_2026-03-22"
+  },
+  "movementTaxonomy": {
+    "source": "scripts/archive/analyze-market-intelligence.ts taxonomy()",
+    "juicePp": 0.02,
+    "lineMovedEpsilon": 1e-9,
+    "A": "line unchanged + implied-prob move < 2pp",
+    "B": "line unchanged + implied-prob move >= 2pp",
+    "C": "line changed, price move < 2pp or missing",
+    "D": "line changed + implied-prob move >= 2pp",
+    "impliedProbability": "raw_not_vig_normalized",
+    "counts": { "A": 16652, "B": 4171, "C": 776, "D": 2813 }
+  },
+  "variantPolicy": "exclude_ambiguous_simultaneous_groups_v1",
+  "firstUiSurface": "props_explorer_market_panel",
+  "firstApi": "GET /api/betting/props-explorer/market (extend with movementV1)",
+  "freePro": {
+    "free": ["comparison_line", "comparison_consensus_median_range_bookcount"],
+    "pro": ["3_hour_pre_tip", "line_and_juice_movement", "per_book_historical_movement"]
+  },
+  "sequence": ["11B", "11C", "11D", "11E", "11F"],
+  "openQuestions": [
+    "replace_existing_explorer_movement",
+    "interpolating_median_display",
+    "create_game_odds_table_before_ui",
+    "live_current_not_ready"
+  ],
+  "dbBytes": 342846611,
+  "estimatedServingAddBytes": "<10MB"
+}

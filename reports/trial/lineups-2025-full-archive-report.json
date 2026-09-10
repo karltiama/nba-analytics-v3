@@ -1,0 +1,301 @@
+{
+  "generatedAt": "2026-09-09T12:53:30.569Z",
+  "step": "8B",
+  "postgresWrites": false,
+  "started2022": false,
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "delaySource": "trial-default",
+    "minDelayMs": 12000,
+    "concurrency": 1,
+    "lockActiveBefore": false,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "dbBytesBefore": 342846611,
+    "dbMb": 326.96,
+    "isolationBefore": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games2025": 1323,
+      "logs2025": 46056,
+      "games2026": 1200,
+      "logs2026": 0,
+      "lineupServingTables": [],
+      "advancedServingTables": []
+    },
+    "acquisitionPathWritesPostgres": false,
+    "lockReleased": true
+  },
+  "targetDefinition": {
+    "source": "reports/trial/bdl-games-2025.json",
+    "targetCount": 1322,
+    "expected": 1322,
+    "excludedLocalOnly": "21681993",
+    "dateMin": "2025-10-21",
+    "dateMax": "2026-06-13",
+    "regularSeason": 1237,
+    "postseason": 85
+  },
+  "characterizationReuse": {
+    "characterizationPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=lineups/_characterization_25game",
+    "reusableValid": 25,
+    "alreadyCanonical": 837,
+    "needCopy": 0,
+    "needFetch": 485,
+    "expectedReusableUpTo": 25,
+    "expectedNewIfAll25Reused": 1297
+  },
+  "timeGate": {
+    "trialElapsedHours": 22.89,
+    "trialRemainingHours": 25.11,
+    "protectedReserveHours": 6,
+    "usableAfterReserveHours": 19.11,
+    "reusableResponses": 25,
+    "requiredProviderRequests": 485,
+    "projectedCrawlMs": 6305000,
+    "projectedCrawlHours": 1.751,
+    "projectedRemainingAfterCrawlHours": 23.359,
+    "maxAllowedHours": 6,
+    "proceed": true
+  },
+  "acquisitionResult": {
+    "targetGames": 1322,
+    "reusedGames": 0,
+    "newlyRequestedGames": 485,
+    "skippedExisting": 837,
+    "written": 485,
+    "successfulGames": 1322,
+    "zeroResultGames": 0,
+    "failedGames": [],
+    "lineupRecords": 28833,
+    "httpAttempts": 485,
+    "httpSuccess": 485,
+    "status429": 0,
+    "retries": 0,
+    "retryAfterUsed": 0,
+    "wallClockMs": 6544986,
+    "rateLimit": {
+      "configuredSpacingMs": 13000,
+      "averageMs": 13521.5,
+      "minimumMs": 13415,
+      "maximumMs": 14292,
+      "retrySpecificBehavior": "429/5xx honor Retry-After else 60s exponential backoff; maxRetries=3; no infinite retry",
+      "minObservedAtLeast12000": true
+    },
+    "missingCanonical": [],
+    "invalidCanonical": []
+  },
+  "rateLimitResult": {
+    "configuredSpacingMs": 13000,
+    "averageMs": 13521.5,
+    "minimumMs": 13415,
+    "maximumMs": 14292,
+    "retrySpecificBehavior": "429/5xx honor Retry-After else 60s exponential backoff; maxRetries=3; no infinite retry",
+    "minObservedAtLeast12000": true
+  },
+  "recordGrain": {
+    "totalRecords": 28833,
+    "distinctLogicalKeys": 28833,
+    "duplicateLogicalKeys": 0,
+    "nullGameIds": 0,
+    "nullTeamIds": 0,
+    "nullPlayerIds": 0,
+    "starterNulls": 0,
+    "positionNulls": 0,
+    "recommendedKey": "(game_id, team_id, player_id)",
+    "notFiveManUnits": true,
+    "uniqueGames": 1322,
+    "uniqueTeams": 30,
+    "uniquePlayers": 580
+  },
+  "teamObjectTypeResult": {
+    "priorType": "BdlLineupEntry omitted team",
+    "actualProviderField": "top-level team { id, abbreviation, name, full_name, city, conference, division }",
+    "minimalCorrection": "Added BdlLineupTeam / required team on BdlLineupEntry. Raw JSON remains authoritative. team.id is game-context team; do not replace with player.team_id.",
+    "recordsWithTeamObject": 28833,
+    "recordsMissingTeamObject": 0,
+    "teamIdMatchesPlayerTeamId": 21138,
+    "teamIdMismatchesPlayerTeamId": 7695,
+    "typescriptNowIncludesTeam": true
+  },
+  "identityCompatibility": {
+    "games": {
+      "mapped": 1322,
+      "unknown": 0,
+      "wrongSeason": 0,
+      "note": "Mapped against analytics.games by provider game_id"
+    },
+    "teams": {
+      "mapped": 30,
+      "unknown": 0,
+      "teamNotParticipatingInGame": 0,
+      "matchMethod": "top-level team.id (not player.team_id)"
+    },
+    "players": {
+      "uniqueLineupPlayers": 580,
+      "mapped": 580,
+      "unmapped": 0,
+      "unmappedIds": [],
+      "conflicts": 0,
+      "matchMethod": "provider player.id == analytics.players.player_id (no name guessing)"
+    }
+  },
+  "fullSeasonStarterCertification": {
+    "teamGamesEvaluated": 2644,
+    "expectedTeamGames": 2644,
+    "exactly5Starters": 2642,
+    "fewerThan5": 2,
+    "moreThan5": 0,
+    "duplicateStarterFlags": 0,
+    "nullStarterState": 0,
+    "valid5plus5": 1320,
+    "valid5plus5OfTarget": "1320 / 1322",
+    "anomalyGameIds": [
+      "18447931",
+      "18447988"
+    ],
+    "anomalies": [
+      {
+        "gameId": "18447931",
+        "teamId": "10",
+        "starters": 4,
+        "duplicateStarters": false,
+        "nullStarter": false
+      },
+      {
+        "gameId": "18447988",
+        "teamId": "10",
+        "starters": 4,
+        "duplicateStarters": false,
+        "nullStarter": false
+      }
+    ]
+  },
+  "starterReliabilityClassification": {
+    "classification": "EXCELLENT",
+    "pct": 99.85
+  },
+  "playerGameLogComparison": {
+    "lineupPlayersWithMatchingLogs": 28724,
+    "lineupOnlyPlayers": 109,
+    "logPlayersPresentInLineup": 28724,
+    "logOnlyPlayers": 17332,
+    "lineupToLogsMatchPct": 99.62,
+    "lineupOnlyPct": 0.38,
+    "logsToLineupMatchPct": 62.37,
+    "logOnlyPct": 37.63,
+    "note": "Do not require 1:1 coverage. Endpoint is not a full-roster source."
+  },
+  "benchSemantics": {
+    "starterFalsePlayedPositiveMinutes": 15411,
+    "starterFalseZeroMinuteLog": 95,
+    "starterFalseNoPlayerGameLog": 109,
+    "statement": "starter=false does NOT mean “played off the bench.”",
+    "note": "Non-starters mix players who entered, zero-minute logs, and lineup-only rows. Do not derive active/inactive from this endpoint."
+  },
+  "availabilityLimitation": "The lineup endpoint does NOT reliably distinguish active bench, DNP, inactive, or absent roster members. Certified product signal is starter vs listed non-starter only.",
+  "starterReplacementCoverage": {
+    "window": "injury snapshot_at in [start_time-36h, start_time+6h]; status ~ out|inactive; team in home/away",
+    "gamesWithInjuryMarkedMissingUsualStarterProxy": 296,
+    "gamesWhereInjuredPlayerIsNotAStarter": 296,
+    "gamesWithDeterministicReplacementContext": 294,
+    "pctOfTargetWithUsableReplacementContext": 22.24,
+    "pctOfInjuryGamesWithUsableReplacement": 99.32,
+    "note": "Lightweight coverage only. An Out/Inactive player who is not in the starting five plus a valid 5+5 listing is replacement context, not a causal usual-starter model. Injury as-of density may be incomplete."
+  },
+  "contextJoinability": {
+    "playerGameLogs": {
+      "games": 1322,
+      "pctOfTarget": 100
+    },
+    "advancedStatsS3": {
+      "pagesScanned": 349,
+      "distinctGameIds": 1322,
+      "overlappingTargetGames": 1322,
+      "pctOfTarget": 100,
+      "servingTable": false
+    },
+    "injuryHistory": {
+      "gamesWithSnapshotNearTip": 325,
+      "pctOfTarget": 24.58
+    },
+    "propResearchGames": {
+      "games": 129,
+      "pctOfTarget": 9.76
+    },
+    "playerTeamStints": {
+      "lineupPlayersWith2025Stint": 575,
+      "pctOfLineupPlayers": 99.14
+    }
+  },
+  "s3Certification": {
+    "canonicalPrefix": "raw/source=balldontlie/league=nba/season=2025/entity=lineups",
+    "characterizationPrefixPreserved": true,
+    "gameObjects": 1322,
+    "gameObjectBytes": 24431769,
+    "manifestBytes": 0,
+    "runBytes": 873,
+    "totalBytes": 24432642,
+    "totalMb": 23.3,
+    "step8AProjectionMb": 13.4
+  },
+  "productInterpretation": {
+    "roleCheck": {
+      "recommendation": "recommended",
+      "reason": "Explicit per-game starter=true is unique versus logs/stints/injuries/Advanced Stats."
+    },
+    "opportunityCheck": {
+      "recommendation": "scoped",
+      "reason": "Replacement context exists when an Out/Inactive player is not among the five starters and the game is valid 5+5. Not a causal usual-starter model."
+    },
+    "historicalExplorer": {
+      "recommendation": "recommended",
+      "reason": "Starting five display is the primary product use of this archive."
+    },
+    "wowy": {
+      "recommendation": "not_from_this_endpoint",
+      "reason": "Records are player-game listings, not five-man units or possessions."
+    },
+    "availability": {
+      "recommendation": "not_from_this_endpoint",
+      "reason": "The lineup endpoint does NOT reliably distinguish active bench, DNP, inactive, or absent roster members. Certified product signal is starter vs listed non-starter only."
+    }
+  },
+  "trialTimeRemaining": {
+    "elapsedHours": 24.709,
+    "remainingHours": 23.291,
+    "protectedReserveHours": 6,
+    "usableRemainingHours": 17.291,
+    "characterizationPlusArchiveHours": 1.818,
+    "optional2022Hours": [
+      1.8,
+      2
+    ],
+    "doNotStart2022": true,
+    "nextStep": "final trial audit / objective review"
+  },
+  "postgresUnchangedConfirmation": {
+    "expectedBytes": 342846611,
+    "dbBytesAfter": 342846611,
+    "unchanged": true,
+    "isolationAfter": {
+      "dbBytes": 342846611,
+      "dbMb": 326.96,
+      "games2025": 1323,
+      "logs2025": 46056,
+      "games2026": 1200,
+      "logs2026": 0,
+      "lineupServingTables": [],
+      "advancedServingTables": []
+    },
+    "noLineupTableCreated": true,
+    "advancedStatsS3Only": true,
+    "marketDataServingUnchanged": true
+  },
+  "failedGames": [],
+  "stepVerdict": "GREEN — 2025 starter archive complete and product-useful"
+}

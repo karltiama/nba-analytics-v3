@@ -49,6 +49,7 @@ export interface Game {
   homeScore?: number | null;
   awayScore?: number | null;
   hasOdds?: boolean;
+  season?: string;
 }
 
 interface GameCardProps {

@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-09-10T00:30:00.000Z",
+  "step": "11C",
+  "bdlHttp": 0,
+  "ingestionFrozen": true,
+  "dataMode": "replay",
+  "uiChanges": false,
+  "apiChanges": false,
+  "liveCurrentPopulated": false,
+  "verdict": "GREEN — historical Market Movement serving data is certified and ready for API integration",
+  "dbBytesBeforeFirstInsert": 342912147,
+  "dbBytesAfterFirstInsert": 349637779,
+  "deltaBytesFirstInsert": 6725632,
+  "playerTableBytesFirstInsert": 6397952,
+  "gameTableBytesFirstInsert": 368640,
+  "sourceImmutable": true,
+  "player": {
+    "rows": 21132,
+    "games": 121,
+    "archiveGames": 129,
+    "productGradeJoin": 24412,
+    "v1Allowlist": 21132,
+    "excludedNonV1Canonical": 3280,
+    "byVendor": { "betmgm": 6856, "fanduel": 6466, "draftkings": 4184, "caesars": 3626 },
+    "byProp": {
+      "points": 4716,
+      "rebounds": 4180,
+      "assists": 2777,
+      "threes": 3397,
+      "points_rebounds": 2116,
+      "points_assists": 1709,
+      "points_rebounds_assists": 2237
+    },
+    "byClass": { "A": 14195, "B": 3612, "C": 759, "D": 2566, "unclassified": 0 },
+    "meaningfulMovementPct": 32.8,
+    "referenceKind": "3_hour_pre_tip",
+    "comparisonKind": "decision_close",
+    "v1AmbiguousGroups": 0,
+    "unmatchedV1Identities": 3823
+  },
+  "game": {
+    "rows": 945,
+    "games": 107,
+    "sportsbookOpening": 965,
+    "unmatched": 20,
+    "unmatchedVendor": "rebet",
+    "matchRate": 0.979,
+    "window": { "start": "2026-03-09", "end": "2026-03-22" },
+    "coverage": { "spread": 945, "total": 837, "homeMl": 859, "awayMl": 859 },
+    "outliers": 5
+  },
+  "consensus": {
+    "persisted": false,
+    "uniqueMarkets": 8340,
+    "byBookCount": { "1": 2054, "2": 2542, "3": 982, "4": 2762 },
+    "eligibleGe2": 6286,
+    "sevenEMultiBookUniverse": 7029,
+    "note": "Interpolating median is not necessarily an offered sportsbook line."
+  },
+  "identityAudit": {
+    "playerGamesUnmapped": 0,
+    "playerIdsUnmapped": 0,
+    "gameOddsGamesUnmapped": 0,
+    "fkAdded": false
+  },
+  "tests": {
+    "passed": 47,
+    "files": 3
+  },
+  "nextStep": "11D API integration — do not start automatically"
+}

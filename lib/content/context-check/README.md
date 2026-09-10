@@ -20,6 +20,25 @@ This v1 ships presentation, the canonical model, an admin studio, and mock/manua
 
 Public auto-publishing is intentionally **not** part of v1.
 
+## Web vs Instagram
+
+`ContextCheckCard` has two variants of the same `ContextCheckData` snapshot:
+
+### Web (`variant="web"`)
+
+Richer breakdown: L5 / L10 / L20 / Season, both line and role sections when present, circular headshot, longer verdict copy.
+
+### Instagram (`variant="social"`)
+
+4:5 portrait (1080 × 1350 intent). Compressed and visual:
+
+- L5 / L10 / Season only (L20 is web-only)
+- one primary context block (Line Check or Role Check)
+- action image first, then headshot, then initials fallback
+- public verdict labels: Context Supports / Mixed Context / Context Pushes Back / Not Enough Context
+
+The social card is built to be rendered later to a PNG. It does not query a database and does not use random visual effects.
+
 Intended future workflow:
 
 ```text

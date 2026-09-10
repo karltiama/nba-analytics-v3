@@ -1,0 +1,1288 @@
+{
+  "generatedAt": "2026-09-10T05:51:05.183Z",
+  "mode": "execute",
+  "dataMode": "replay",
+  "offseason": true,
+  "cronDryRun": true,
+  "sourceReadOnly": true,
+  "bdlHttp": 0,
+  "bytesBefore": 358239379,
+  "candidate": {
+    "pages": 1050,
+    "grain": {
+      "archiveRows": 104756,
+      "validLogicalRows": 104756,
+      "nullGameIds": 0,
+      "nullPlayerIds": 0,
+      "nonFullGamePeriod": 0,
+      "duplicateKeys": 0,
+      "duplicateKeySamples": []
+    },
+    "perSeason": {
+      "2023": {
+        "archiveRows": 34843,
+        "validLogicalRows": 34843,
+        "uniqueGames": 1319,
+        "uniquePlayers": 586
+      },
+      "2024": {
+        "archiveRows": 35103,
+        "validLogicalRows": 35103,
+        "uniqueGames": 1321,
+        "uniquePlayers": 577
+      },
+      "2025": {
+        "archiveRows": 34810,
+        "validLogicalRows": 34810,
+        "uniqueGames": 1322,
+        "uniquePlayers": 594
+      }
+    },
+    "combinedCandidates": 104756,
+    "identity": {
+      "mapped": 104756,
+      "unmappedGames": 0,
+      "unmappedPlayers": 0,
+      "seasonMismatch": 0,
+      "nestedSeasonConflict": 0,
+      "unmappedGameSamples": [],
+      "unmappedPlayerSamples": [],
+      "seasonMismatchSamples": [],
+      "advancedOnlyValid": 1
+    },
+    "teamAssociation": {
+      "compared": 104756,
+      "archiveTeamNePlayerListedTeam": 50286,
+      "storedInServing": false,
+      "note": "Prefer player_game_logs.team_id at render. Do not use player.team_id."
+    },
+    "fieldStats": {
+      "usage_percentage": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 1,
+        "integerValued": 23112
+      },
+      "true_shooting_percentage": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 1.5,
+        "integerValued": 32157
+      },
+      "effective_field_goal_percentage": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 1.5,
+        "integerValued": 35665
+      },
+      "offensive_rating": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 300,
+        "integerValued": 36588
+      },
+      "defensive_rating": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 400,
+        "integerValued": 36507
+      },
+      "net_rating": {
+        "nulls": 30,
+        "present": 104726,
+        "min": -400,
+        "max": 300,
+        "integerValued": 32624
+      },
+      "pace": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 28800,
+        "integerValued": 21457
+      },
+      "possessions": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 122,
+        "integerValued": 104726
+      },
+      "assist_percentage": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 1,
+        "integerValued": 41316
+      },
+      "rebound_percentage": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 1,
+        "integerValued": 29584
+      },
+      "turnover_ratio": {
+        "nulls": 30,
+        "present": 104726,
+        "min": 0,
+        "max": 100,
+        "integerValued": 63598
+      },
+      "pie": {
+        "nulls": 30,
+        "present": 104726,
+        "min": -11,
+        "max": 10,
+        "integerValued": 24062
+      }
+    },
+    "lowSample": {
+      "minutesLt5": 26404,
+      "minutesUnknown": 1,
+      "possLt5": 22261
+    },
+    "advancedOnly": {
+      "count": 1,
+      "samples": [
+        "1038324|273"
+      ],
+      "alexLenPresent": true,
+      "alexLen": {
+        "gameId": "1038324",
+        "playerId": "273",
+        "season": "2023",
+        "policy": "serve_if_identity_valid_do_not_fabricate_box"
+      }
+    }
+  },
+  "backfill": {
+    "upsertTouchedFirst": 104756,
+    "upsertTouchedSecond": 0,
+    "serving": {
+      "bySeason": [
+        {
+          "season": "2023",
+          "rows": 34843,
+          "games": 1319,
+          "players": 586
+        },
+        {
+          "season": "2024",
+          "rows": 35103,
+          "games": 1321,
+          "players": 577
+        },
+        {
+          "season": "2025",
+          "rows": 34810,
+          "games": 1322,
+          "players": 594
+        }
+      ],
+      "totalRows": 104756,
+      "totalGames": 3962,
+      "duplicateKeys": 0,
+      "perGame": [
+        {
+          "season": "2023",
+          "gamesWithAdvanced": 1319,
+          "avgRows": 26.42,
+          "minRows": 22,
+          "maxRows": 30
+        },
+        {
+          "season": "2024",
+          "gamesWithAdvanced": 1321,
+          "avgRows": 26.57,
+          "minRows": 20,
+          "maxRows": 30
+        },
+        {
+          "season": "2025",
+          "gamesWithAdvanced": 1322,
+          "avgRows": 26.33,
+          "minRows": 20,
+          "maxRows": 36
+        }
+      ],
+      "coverage": [
+        {
+          "season": "2023",
+          "pglRows": 46090,
+          "matchedAdvanced": 34842,
+          "coveragePct": 75.6,
+          "advancedOnly": 1
+        },
+        {
+          "season": "2024",
+          "pglRows": 46150,
+          "matchedAdvanced": 35103,
+          "coveragePct": 76.1,
+          "advancedOnly": 0
+        },
+        {
+          "season": "2025",
+          "pglRows": 46056,
+          "matchedAdvanced": 34810,
+          "coveragePct": 75.6,
+          "advancedOnly": 0
+        }
+      ],
+      "alexLen": {
+        "servingRows": 1,
+        "season": "2023"
+      },
+      "extremes": {
+        "poss_lt_5": 22261,
+        "poss_lt_10": 26294,
+        "pace_gt_140": 504,
+        "pace_lt_70": 19602,
+        "ortg_gt_200": 86,
+        "ortg_lt_50": 21644,
+        "drtg_gt_200": 199,
+        "usage_gt_1": 0
+      },
+      "sampleRows": [
+        {
+          "game_id": "1038324",
+          "player_id": "161",
+          "season": "2023",
+          "usage_percentage": 0.222,
+          "true_shooting_percentage": 0.381,
+          "possessions": 76,
+          "pie": 0.037
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "167",
+          "season": "2023",
+          "usage_percentage": 0.04,
+          "true_shooting_percentage": 1,
+          "possessions": 23,
+          "pie": 0.144
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "17553994",
+          "season": "2023",
+          "usage_percentage": 0.111,
+          "true_shooting_percentage": 0.765,
+          "possessions": 48,
+          "pie": 0.045
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "17896044",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "17896075",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "197",
+          "season": "2023",
+          "usage_percentage": 0.107,
+          "true_shooting_percentage": 0.333,
+          "possessions": 26,
+          "pie": -0.014
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "221",
+          "season": "2023",
+          "usage_percentage": 0.145,
+          "true_shooting_percentage": 0.727,
+          "possessions": 71,
+          "pie": 0.061
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "273",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "290",
+          "season": "2023",
+          "usage_percentage": 0.25,
+          "true_shooting_percentage": 0.684,
+          "possessions": 48,
+          "pie": 0.138
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "30",
+          "season": "2023",
+          "usage_percentage": 0.175,
+          "true_shooting_percentage": 0.4,
+          "possessions": 54,
+          "pie": 0.056
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "306",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "324",
+          "season": "2023",
+          "usage_percentage": 0.268,
+          "true_shooting_percentage": 0.536,
+          "possessions": 74,
+          "pie": 0.138
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "337",
+          "season": "2023",
+          "usage_percentage": 0.136,
+          "true_shooting_percentage": 0.563,
+          "possessions": 54,
+          "pie": 0.046
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "3547240",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "3547241",
+          "season": "2023",
+          "usage_percentage": 0.123,
+          "true_shooting_percentage": 0.571,
+          "possessions": 61,
+          "pie": 0.088
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "38017682",
+          "season": "2023",
+          "usage_percentage": 0.36,
+          "true_shooting_percentage": 0.722,
+          "possessions": 80,
+          "pie": 0.177
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "38017688",
+          "season": "2023",
+          "usage_percentage": 0.111,
+          "true_shooting_percentage": 0,
+          "possessions": 44,
+          "pie": 0.005
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "38017694",
+          "season": "2023",
+          "usage_percentage": 0.195,
+          "true_shooting_percentage": 0.791,
+          "possessions": 77,
+          "pie": 0.147
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "38017714",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "406",
+          "season": "2023",
+          "usage_percentage": 0.226,
+          "true_shooting_percentage": 0.701,
+          "possessions": 85,
+          "pie": 0.165
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "4197162",
+          "season": "2023",
+          "usage_percentage": 0.071,
+          "true_shooting_percentage": 1.136,
+          "possessions": 13,
+          "pie": 0.082
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "54",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "56677792",
+          "season": "2023",
+          "usage_percentage": 0.214,
+          "true_shooting_percentage": 0.605,
+          "possessions": 66,
+          "pie": 0.097
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "56677826",
+          "season": "2023",
+          "usage_percentage": 0.145,
+          "true_shooting_percentage": 0.872,
+          "possessions": 59,
+          "pie": 0.095
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "56677845",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "1038324",
+          "player_id": "77",
+          "season": "2023",
+          "usage_percentage": 0.226,
+          "true_shooting_percentage": 0.854,
+          "possessions": 58,
+          "pie": 0.173
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "132",
+          "season": "2023",
+          "usage_percentage": 0.363,
+          "true_shooting_percentage": 0.515,
+          "possessions": 82,
+          "pie": 0.138
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "151",
+          "season": "2023",
+          "usage_percentage": 0.125,
+          "true_shooting_percentage": 1.064,
+          "possessions": 16,
+          "pie": 0.136
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "17553967",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "17554004",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 4,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "17896025",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "17896060",
+          "season": "2023",
+          "usage_percentage": 0.167,
+          "true_shooting_percentage": 0.571,
+          "possessions": 32,
+          "pie": 0.153
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "191",
+          "season": "2023",
+          "usage_percentage": 0.053,
+          "true_shooting_percentage": 0,
+          "possessions": 18,
+          "pie": -0.118
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "214",
+          "season": "2023",
+          "usage_percentage": 0.168,
+          "true_shooting_percentage": 0.536,
+          "possessions": 81,
+          "pie": 0.101
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "219",
+          "season": "2023",
+          "usage_percentage": 0.097,
+          "true_shooting_percentage": 0.654,
+          "possessions": 60,
+          "pie": 0.143
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "228",
+          "season": "2023",
+          "usage_percentage": 0.212,
+          "true_shooting_percentage": 0.444,
+          "possessions": 76,
+          "pie": 0.088
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "247",
+          "season": "2023",
+          "usage_percentage": 0.191,
+          "true_shooting_percentage": 0.563,
+          "possessions": 41,
+          "pie": 0.075
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "257",
+          "season": "2023",
+          "usage_percentage": 0.107,
+          "true_shooting_percentage": 0.333,
+          "possessions": 27,
+          "pie": 0.03
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "261",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 3,
+          "pie": -1
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "329",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "338",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 1,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "3547258",
+          "season": "2023",
+          "usage_percentage": 0.167,
+          "true_shooting_percentage": 0.875,
+          "possessions": 44,
+          "pie": 0.111
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "3547276",
+          "season": "2023",
+          "usage_percentage": 0.333,
+          "true_shooting_percentage": 1.5,
+          "possessions": 3,
+          "pie": 0.5
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "3547285",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "378",
+          "season": "2023",
+          "usage_percentage": 0.139,
+          "true_shooting_percentage": 0.512,
+          "possessions": 31,
+          "pie": 0.016
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "379",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 4,
+          "pie": -0.333
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "38017679",
+          "season": "2023",
+          "usage_percentage": 0.75,
+          "true_shooting_percentage": 0.521,
+          "possessions": 4,
+          "pie": -0.333
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "434",
+          "season": "2023",
+          "usage_percentage": 0.284,
+          "true_shooting_percentage": 0.563,
+          "possessions": 85,
+          "pie": 0.205
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "473",
+          "season": "2023",
+          "usage_percentage": 0.149,
+          "true_shooting_percentage": 0.643,
+          "possessions": 70,
+          "pie": 0.126
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "56677840",
+          "season": "2023",
+          "usage_percentage": 0.061,
+          "true_shooting_percentage": 0.5,
+          "possessions": 44,
+          "pie": -0.014
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "56677859",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 4,
+          "pie": -0.333
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "56677864",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "666468",
+          "season": "2023",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 1,
+          "pie": 0
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "666577",
+          "season": "2023",
+          "usage_percentage": 0.2,
+          "true_shooting_percentage": 0.6,
+          "possessions": 22,
+          "pie": 0.152
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "666950",
+          "season": "2023",
+          "usage_percentage": 0.149,
+          "true_shooting_percentage": 0.286,
+          "possessions": 67,
+          "pie": 0.017
+        },
+        {
+          "game_id": "15905067",
+          "player_id": "70",
+          "season": "2023",
+          "usage_percentage": 0.267,
+          "true_shooting_percentage": 0.41,
+          "possessions": 83,
+          "pie": 0.089
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "1028026812",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 2,
+          "pie": -0.333
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "1028035897",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 2,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "1028037477",
+          "season": "2024",
+          "usage_percentage": 0.5,
+          "true_shooting_percentage": 0,
+          "possessions": 2,
+          "pie": -0.333
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "175",
+          "season": "2024",
+          "usage_percentage": 0.362,
+          "true_shooting_percentage": 0.449,
+          "possessions": 77,
+          "pie": 0.178
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "17896035",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "17896078",
+          "season": "2024",
+          "usage_percentage": 0.032,
+          "true_shooting_percentage": 0,
+          "possessions": 25,
+          "pie": -0.056
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "201",
+          "season": "2024",
+          "usage_percentage": 0.163,
+          "true_shooting_percentage": 0.658,
+          "possessions": 35,
+          "pie": 0.24
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "242",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "304",
+          "season": "2024",
+          "usage_percentage": 0.333,
+          "true_shooting_percentage": 0.615,
+          "possessions": 55,
+          "pie": 0.162
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "3547243",
+          "season": "2024",
+          "usage_percentage": 0.137,
+          "true_shooting_percentage": 0,
+          "possessions": 43,
+          "pie": -0.121
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "3547245",
+          "season": "2024",
+          "usage_percentage": 0.429,
+          "true_shooting_percentage": 0.9,
+          "possessions": 12,
+          "pie": 0.16
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "3547250",
+          "season": "2024",
+          "usage_percentage": 0.087,
+          "true_shooting_percentage": 0.3,
+          "possessions": 59,
+          "pie": 0.016
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "3547272",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "38017507",
+          "season": "2024",
+          "usage_percentage": 0.183,
+          "true_shooting_percentage": 0.593,
+          "possessions": 70,
+          "pie": 0.113
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "38017685",
+          "season": "2024",
+          "usage_percentage": 0.164,
+          "true_shooting_percentage": 0.781,
+          "possessions": 61,
+          "pie": 0.212
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "38017686",
+          "season": "2024",
+          "usage_percentage": 0.278,
+          "true_shooting_percentage": 0.652,
+          "possessions": 65,
+          "pie": 0.275
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "38017703",
+          "season": "2024",
+          "usage_percentage": 0.273,
+          "true_shooting_percentage": 0.442,
+          "possessions": 74,
+          "pie": 0.079
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "38017706",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "38017716",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 2,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "416",
+          "season": "2024",
+          "usage_percentage": 0.195,
+          "true_shooting_percentage": 0.498,
+          "possessions": 73,
+          "pie": 0.087
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "452",
+          "season": "2024",
+          "usage_percentage": 0.137,
+          "true_shooting_percentage": 0.521,
+          "possessions": 45,
+          "pie": 0.016
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "480",
+          "season": "2024",
+          "usage_percentage": 0.083,
+          "true_shooting_percentage": 0,
+          "possessions": 10,
+          "pie": -0.05
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "56677832",
+          "season": "2024",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "56677833",
+          "season": "2024",
+          "usage_percentage": 0.108,
+          "true_shooting_percentage": 0.833,
+          "possessions": 53,
+          "pie": 0.11
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "56677861",
+          "season": "2024",
+          "usage_percentage": 0.051,
+          "true_shooting_percentage": 0,
+          "possessions": 32,
+          "pie": 0.017
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "60",
+          "season": "2024",
+          "usage_percentage": 0.167,
+          "true_shooting_percentage": 1.136,
+          "possessions": 11,
+          "pie": 0
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "666541",
+          "season": "2024",
+          "usage_percentage": 0.148,
+          "true_shooting_percentage": 0.414,
+          "possessions": 68,
+          "pie": 0.048
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "74",
+          "season": "2024",
+          "usage_percentage": 0.2,
+          "true_shooting_percentage": 0,
+          "possessions": 4,
+          "pie": -0.286
+        },
+        {
+          "game_id": "18444564",
+          "player_id": "89",
+          "season": "2024",
+          "usage_percentage": 0.123,
+          "true_shooting_percentage": 0.5,
+          "possessions": 65,
+          "pie": 0.081
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "101",
+          "season": "2025",
+          "usage_percentage": 0.179,
+          "true_shooting_percentage": 0.805,
+          "possessions": 52,
+          "pie": 0.162
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1028025261",
+          "season": "2025",
+          "usage_percentage": 0.263,
+          "true_shooting_percentage": 0.648,
+          "possessions": 65,
+          "pie": 0.094
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1028035215",
+          "season": "2025",
+          "usage_percentage": 0.214,
+          "true_shooting_percentage": 0,
+          "possessions": 13,
+          "pie": -0.091
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1028046464",
+          "season": "2025",
+          "usage_percentage": 0.286,
+          "true_shooting_percentage": 1,
+          "possessions": 7,
+          "pie": 0.333
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1057262518",
+          "season": "2025",
+          "usage_percentage": 0.237,
+          "true_shooting_percentage": 0.764,
+          "possessions": 53,
+          "pie": 0.145
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1057271360",
+          "season": "2025",
+          "usage_percentage": 0.167,
+          "true_shooting_percentage": 0.333,
+          "possessions": 21,
+          "pie": -0.116
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1057396055",
+          "season": "2025",
+          "usage_percentage": 0.258,
+          "true_shooting_percentage": 0.387,
+          "possessions": 27,
+          "pie": -0.039
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "1058921044",
+          "season": "2025",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 6,
+          "pie": 0
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "139",
+          "season": "2025",
+          "usage_percentage": 0.091,
+          "true_shooting_percentage": 0.338,
+          "possessions": 46,
+          "pie": 0.033
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "161",
+          "season": "2025",
+          "usage_percentage": 0.261,
+          "true_shooting_percentage": 0.745,
+          "possessions": 63,
+          "pie": 0.206
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "247",
+          "season": "2025",
+          "usage_percentage": 0.115,
+          "true_shooting_percentage": 0.333,
+          "possessions": 49,
+          "pie": 0.051
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "261",
+          "season": "2025",
+          "usage_percentage": 0.086,
+          "true_shooting_percentage": 0.84,
+          "possessions": 52,
+          "pie": 0.155
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "274",
+          "season": "2025",
+          "usage_percentage": 0.208,
+          "true_shooting_percentage": 0.75,
+          "possessions": 68,
+          "pie": 0.227
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "27924547",
+          "season": "2025",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "283",
+          "season": "2025",
+          "usage_percentage": 0.226,
+          "true_shooting_percentage": 0.25,
+          "possessions": 49,
+          "pie": 0.021
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "30",
+          "season": "2025",
+          "usage_percentage": 0.043,
+          "true_shooting_percentage": 0.75,
+          "possessions": 43,
+          "pie": 0.049
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "33",
+          "season": "2025",
+          "usage_percentage": 0.067,
+          "true_shooting_percentage": 0,
+          "possessions": 13,
+          "pie": 0.045
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "3547246",
+          "season": "2025",
+          "usage_percentage": 0.176,
+          "true_shooting_percentage": 0.563,
+          "possessions": 58,
+          "pie": 0.133
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "358",
+          "season": "2025",
+          "usage_percentage": 0.143,
+          "true_shooting_percentage": 0,
+          "possessions": 7,
+          "pie": 0.333
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "371",
+          "season": "2025",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "38017649",
+          "season": "2025",
+          "usage_percentage": 0.242,
+          "true_shooting_percentage": 0.454,
+          "possessions": 58,
+          "pie": 0.12
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "38017686",
+          "season": "2025",
+          "usage_percentage": 0.235,
+          "true_shooting_percentage": 0.666,
+          "possessions": 58,
+          "pie": 0.123
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "38017691",
+          "season": "2025",
+          "usage_percentage": 0.091,
+          "true_shooting_percentage": 0,
+          "possessions": 10,
+          "pie": -0.133
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "48",
+          "season": "2025",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 7,
+          "pie": 0.167
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "53",
+          "season": "2025",
+          "usage_percentage": 0,
+          "true_shooting_percentage": 0,
+          "possessions": 0,
+          "pie": 0
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "56677856",
+          "season": "2025",
+          "usage_percentage": 0.19,
+          "true_shooting_percentage": 0.545,
+          "possessions": 53,
+          "pie": 0.057
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "666581",
+          "season": "2025",
+          "usage_percentage": 0.288,
+          "true_shooting_percentage": 0.308,
+          "possessions": 59,
+          "pie": -0.004
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "666682",
+          "season": "2025",
+          "usage_percentage": 0.182,
+          "true_shooting_percentage": 0.591,
+          "possessions": 56,
+          "pie": 0.085
+        },
+        {
+          "game_id": "18447937",
+          "player_id": "666767",
+          "season": "2025",
+          "usage_percentage": 0.25,
+          "true_shooting_percentage": 0.5,
+          "possessions": 8,
+          "pie": 1
+        }
+      ]
+    }
+  },
+  "bytesAfter": 384928915,
+  "tableBytes": {
+    "heap": 20488192,
+    "indexes": 6217728,
+    "total": 26705920
+  },
+  "deltaBytes": 26689536
+}

@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-09-10T05:24:19.357Z",
+  "step": "12C",
+  "dryRun": false,
+  "safety": {
+    "dataMode": "replay",
+    "offseason": true,
+    "cronDryRun": true,
+    "bdlHttp": 0,
+    "s3Writes": false
+  },
+  "bytesBefore": 358206611,
+  "candidate": {
+    "archiveGames": 1322,
+    "archiveRows": 28833,
+    "starterTrueRows": 13218,
+    "distinctGamesWithStarters": 1322,
+    "teamGames": 2644,
+    "exactly5StarterTeamGames": 2642,
+    "fewerThan5TeamGames": 2,
+    "moreThan5TeamGames": 0,
+    "valid5plus5Games": 1320,
+    "anomalousGames": [
+      "18447931",
+      "18447988"
+    ],
+    "incompleteGames": [],
+    "candidateServingRows": 13200,
+    "unknownIdentity": 0,
+    "missingObjects": 0,
+    "invalidArchive": 0,
+    "missingGames": [],
+    "wrongSeason": [],
+    "unmappedPlayers": [],
+    "unmappedPlayerCount": 0,
+    "unmappedTeams": [],
+    "expectedEligibleGames": 1320,
+    "expectedServingRows": 13200,
+    "expectedArchiveRows": 28833,
+    "nestedTeamNote": "team_id taken from top-level team.id; player.team_id never used",
+    "source": "bdl_lineups_archive_2025"
+  },
+  "materialMismatch": false,
+  "backfill": {
+    "upsertTouched": 0,
+    "servingRows": 13200,
+    "servingGames": 1320,
+    "duplicateKeys": 0,
+    "anomalyRows": 0,
+    "otherSeasonRows": 0
+  },
+  "bytesAfter": 358206611,
+  "tableBytes": 1335296,
+  "indexBytes": 786432,
+  "deltaBytes": 0
+}

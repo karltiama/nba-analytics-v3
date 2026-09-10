@@ -1,0 +1,751 @@
+{
+  "generatedAt": "2026-09-09T23:07:22.396Z",
+  "bdlHttp": 0,
+  "safety": {
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "lockActive": false,
+    "lockPid": null
+  },
+  "entitySums": [
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2023/entity=games",
+      "objects": 15,
+      "bytes": 1731400,
+      "pageJson": 14,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2023/entity=player_stats",
+      "objects": 473,
+      "bytes": 91740171,
+      "pageJson": 461,
+      "gameJson": 10,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2023/entity=advanced_stats_v2",
+      "objects": 351,
+      "bytes": 180699240,
+      "pageJson": 349,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": true
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2024/entity=games",
+      "objects": 15,
+      "bytes": 1735507,
+      "pageJson": 14,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2024/entity=player_stats",
+      "objects": 463,
+      "bytes": 91095952,
+      "pageJson": 462,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2",
+      "objects": 355,
+      "bytes": 182007983,
+      "pageJson": 352,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": true
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=games",
+      "objects": 0,
+      "bytes": 0,
+      "pageJson": 0,
+      "gameJson": 0,
+      "hasManifest": false,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=player_stats",
+      "objects": 36,
+      "bytes": 2373987,
+      "pageJson": 0,
+      "gameJson": 34,
+      "hasManifest": false,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=advanced_stats_v2",
+      "objects": 351,
+      "bytes": 180435806,
+      "pageJson": 349,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": true
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=opening_player_props",
+      "objects": 136,
+      "bytes": 17661047,
+      "pageJson": 0,
+      "gameJson": 134,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds",
+      "objects": 148,
+      "bytes": 696098,
+      "pageJson": 0,
+      "gameJson": 145,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=lineups",
+      "objects": 1349,
+      "bytes": 24934356,
+      "pageJson": 0,
+      "gameJson": 1347,
+      "hasManifest": true,
+      "hasRun": true
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2025/entity=plays",
+      "objects": 1334,
+      "bytes": 598114275,
+      "pageJson": 0,
+      "gameJson": 1332,
+      "hasManifest": true,
+      "hasRun": true
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/entity=season_averages",
+      "objects": 130,
+      "bytes": 9000847,
+      "pageJson": 117,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/entity=team_season_averages",
+      "objects": 14,
+      "bytes": 320637,
+      "pageJson": 9,
+      "gameJson": 0,
+      "hasManifest": true,
+      "hasRun": false
+    },
+    {
+      "prefix": "raw/source=balldontlie/league=nba/season=2022",
+      "objects": 0,
+      "bytes": 0,
+      "pageJson": 0,
+      "gameJson": 0,
+      "hasManifest": false,
+      "hasRun": false
+    }
+  ],
+  "manifests": [
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2023/entity=games/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 14,
+      "recordCount": 1319,
+      "targetGames": null,
+      "season": 2023,
+      "entity": "games",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": "Raw BallDontLie API response archive before access expires. Filtered by seasons[]=<season>.",
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "s3Prefix",
+        "exportMode",
+        "source",
+        "league",
+        "season",
+        "entity",
+        "endpoint",
+        "paginationStyle",
+        "perPage",
+        "fetchedAt",
+        "pageCount",
+        "recordCount",
+        "status",
+        "notes"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2023/entity=player_stats/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 461,
+      "recordCount": 46090,
+      "targetGames": null,
+      "season": 2023,
+      "entity": "player_stats",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": "Raw BallDontLie API response archive before access expires. BDL endpoint is /stats; we expose it under entity=player_stats for naming clarity.",
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "s3Prefix",
+        "exportMode",
+        "source",
+        "league",
+        "season",
+        "entity",
+        "endpoint",
+        "paginationStyle",
+        "perPage",
+        "fetchedAt",
+        "pageCount",
+        "recordCount",
+        "status",
+        "notes"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2023/entity=advanced_stats_v2/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 349,
+      "recordCount": 34843,
+      "targetGames": null,
+      "season": null,
+      "entity": "advanced_stats_v2",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "source",
+        "entity",
+        "endpoint",
+        "pageCount",
+        "recordCount",
+        "status",
+        "fetchedAt",
+        "cursorExhausted"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2024/entity=games/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 14,
+      "recordCount": 1321,
+      "targetGames": null,
+      "season": 2024,
+      "entity": "games",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": "Raw BallDontLie API response archive before access expires. Filtered by seasons[]=<season>.",
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "s3Prefix",
+        "exportMode",
+        "source",
+        "league",
+        "season",
+        "entity",
+        "endpoint",
+        "paginationStyle",
+        "perPage",
+        "fetchedAt",
+        "pageCount",
+        "recordCount",
+        "status",
+        "notes"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2024/entity=player_stats/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 462,
+      "recordCount": 46150,
+      "targetGames": null,
+      "season": 2024,
+      "entity": "player_stats",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": "Raw BallDontLie API response archive before access expires. BDL endpoint is /stats; we expose it under entity=player_stats for naming clarity.",
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "s3Prefix",
+        "exportMode",
+        "source",
+        "league",
+        "season",
+        "entity",
+        "endpoint",
+        "paginationStyle",
+        "perPage",
+        "fetchedAt",
+        "pageCount",
+        "recordCount",
+        "status",
+        "notes"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2024/entity=advanced_stats_v2/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 352,
+      "recordCount": 35103,
+      "targetGames": null,
+      "season": null,
+      "entity": "advanced_stats_v2",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "source",
+        "entity",
+        "endpoint",
+        "pageCount",
+        "recordCount",
+        "status",
+        "fetchedAt",
+        "cursorExhausted"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=advanced_stats_v2/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": 349,
+      "recordCount": 34810,
+      "targetGames": null,
+      "season": null,
+      "entity": "advanced_stats_v2",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "source",
+        "entity",
+        "endpoint",
+        "pageCount",
+        "recordCount",
+        "status",
+        "fetchedAt",
+        "cursorExhausted"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=opening_player_props/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": null,
+      "recordCount": 44127,
+      "targetGames": 129,
+      "season": null,
+      "entity": "opening_player_props",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "step",
+        "entity",
+        "endpoint",
+        "targetGameCount",
+        "successfullyFetchedGames",
+        "reusedFromCharacterization",
+        "skippedExistingCanonical",
+        "fetchedFromProvider",
+        "zeroDataGames",
+        "failedGames",
+        "totalRecords",
+        "requestCount",
+        "completionStatus",
+        "matchabilityKeys",
+        "fetchedAt"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=opening_game_odds/window=2026-03-09_to_2026-03-22/_manifest.json",
+      "present": true,
+      "status": "complete",
+      "pageCount": null,
+      "recordCount": 1179,
+      "targetGames": 107,
+      "season": null,
+      "entity": "opening_game_odds",
+      "availabilityLimitation": null,
+      "scopeLimitation": "Historical opening game odds are only certified for this targeted March 9–22, 2026 window. BALLDONTLIE sportsbook opening coverage degrades beginning March 23 and later becomes empty.",
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "step",
+        "entity",
+        "coverageWindow",
+        "targetSource",
+        "targetCount",
+        "gameIds",
+        "acquisitionStatus",
+        "zeroResultGames",
+        "failedGames",
+        "recordCount",
+        "reusedFromCharacterization",
+        "newlyRequested",
+        "limitationAfterMarch22",
+        "notAFullSeasonArchive",
+        "fetchedAt"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=lineups/_manifest.json",
+      "present": true,
+      "status": "success",
+      "pageCount": null,
+      "recordCount": 28833,
+      "targetGames": 1322,
+      "season": 2025,
+      "entity": "lineups",
+      "availabilityLimitation": "The lineup endpoint does NOT reliably distinguish active bench, DNP, inactive, or absent roster members. Certified product signal is starter vs listed non-starter only.",
+      "scopeLimitation": "The lineup endpoint does NOT reliably distinguish active bench, DNP, inactive, or absent roster members. Certified product signal is starter vs listed non-starter only.",
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "source",
+        "entity",
+        "season",
+        "endpoint",
+        "grain",
+        "teamIdAuthoritative",
+        "availabilityLimitation",
+        "notFiveManUnits",
+        "postgresMaterialize",
+        "characterizationPrefixPreserved",
+        "targetGames",
+        "excludedLocalOnly",
+        "reusedFromCharacterization",
+        "newlyRequested",
+        "successfulGames",
+        "zeroResultGames",
+        "failedGames",
+        "lineupRecords",
+        "httpAttempts",
+        "status429",
+        "retries",
+        "retryAfterUsed",
+        "wallClockMs",
+        "starterReliability",
+        "valid5plus5",
+        "status",
+        "fetchedAt"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=plays/_manifest.json",
+      "present": true,
+      "status": null,
+      "pageCount": null,
+      "recordCount": 642354,
+      "targetGames": 1322,
+      "season": 2025,
+      "entity": "plays",
+      "availabilityLimitation": "IN/OUT is inferred from the current five-man state, not a labeled provider field. Possession boundaries, participant roles, shot geometry, WOWY, and active-roster status are not certified.",
+      "scopeLimitation": "IN/OUT is inferred from the current five-man state, not a labeled provider field. Possession boundaries, participant roles, shot geometry, WOWY, and active-roster status are not certified.",
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "source",
+        "league",
+        "season",
+        "entity",
+        "endpoint",
+        "targetGames",
+        "canonicalGameObjects",
+        "totalEvents",
+        "rotationReliability",
+        "characterizationPrefix",
+        "characterizationNotImportedAsSeasonMetadata",
+        "limitations",
+        "availabilityLimitation",
+        "postgresMaterialize",
+        "started2022",
+        "generatedAt"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/season=2025/entity=plays/_run.json",
+      "present": true,
+      "status": "complete",
+      "pageCount": null,
+      "recordCount": null,
+      "targetGames": null,
+      "season": 2025,
+      "entity": "plays",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "entity",
+        "season",
+        "status",
+        "startedAt",
+        "finishedAt",
+        "postgresMaterialize",
+        "started2022",
+        "acquisition",
+        "stepVerdict"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/entity=season_averages/_manifest.json",
+      "present": true,
+      "status": null,
+      "pageCount": null,
+      "recordCount": null,
+      "targetGames": null,
+      "season": null,
+      "entity": "season_averages",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "archiveKind",
+        "notCompleteBdlDump",
+        "seasons",
+        "seasonType",
+        "allowlist",
+        "exclusions",
+        "playerTargetMethodology",
+        "teamTargetMethodology",
+        "grain",
+        "limitations",
+        "requestPageCounts",
+        "recordCounts",
+        "generatedAt",
+        "entity"
+      ]
+    },
+    {
+      "key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_manifest.json",
+      "present": true,
+      "status": null,
+      "pageCount": null,
+      "recordCount": null,
+      "targetGames": null,
+      "season": null,
+      "entity": "team_season_averages",
+      "availabilityLimitation": null,
+      "scopeLimitation": null,
+      "notes": null,
+      "identityNotes": null,
+      "keys": [
+        "schemaVersion",
+        "archiveKind",
+        "notCompleteBdlDump",
+        "seasons",
+        "seasonType",
+        "allowlist",
+        "exclusions",
+        "playerTargetMethodology",
+        "teamTargetMethodology",
+        "grain",
+        "limitations",
+        "requestPageCounts",
+        "recordCounts",
+        "generatedAt",
+        "entity"
+      ]
+    }
+  ],
+  "bucket": {
+    "totalBytes": 1945070856,
+    "objectCount": 6072,
+    "totalMb": 1854.96,
+    "totalGb": 1.81,
+    "byTop": {
+      "backtests": {
+        "bytes": 27432803,
+        "objects": 55
+      },
+      "raw": {
+        "bytes": 1917638053,
+        "objects": 6017
+      }
+    },
+    "byEntity": {
+      "backtests": {
+        "bytes": 27432803,
+        "objects": 55
+      },
+      "entity=season_averages season=2024": {
+        "bytes": 2989501,
+        "objects": 39
+      },
+      "entity=season_averages season=2025": {
+        "bytes": 3123263,
+        "objects": 54
+      },
+      "entity=season_averages": {
+        "bytes": 4646,
+        "objects": 1
+      },
+      "entity=season_averages season=2023": {
+        "bytes": 2883437,
+        "objects": 36
+      },
+      "entity=team_season_averages season=2025": {
+        "bytes": 147556,
+        "objects": 9
+      },
+      "entity=team_season_averages": {
+        "bytes": 4651,
+        "objects": 1
+      },
+      "entity=team_season_averages season=2023": {
+        "bytes": 98121,
+        "objects": 3
+      },
+      "entity=team_season_averages season=2024": {
+        "bytes": 98196,
+        "objects": 3
+      },
+      "raw": {
+        "bytes": 14786,
+        "objects": 3
+      },
+      "entity=advanced_stats_v2 season=2023": {
+        "bytes": 180699240,
+        "objects": 351
+      },
+      "entity=box_scores_diagnostic season=2023": {
+        "bytes": 555775,
+        "objects": 3
+      },
+      "entity=games season=2023": {
+        "bytes": 1731400,
+        "objects": 15
+      },
+      "entity=player_stats season=2023": {
+        "bytes": 91740171,
+        "objects": 473
+      },
+      "entity=advanced_stats_v2 season=2024": {
+        "bytes": 182007983,
+        "objects": 355
+      },
+      "entity=games season=2024": {
+        "bytes": 1735507,
+        "objects": 15
+      },
+      "entity=player_stats season=2024": {
+        "bytes": 91095952,
+        "objects": 463
+      },
+      "entity=advanced_stats_v2 season=2025": {
+        "bytes": 180435806,
+        "objects": 351
+      },
+      "entity=lineups season=2025": {
+        "bytes": 24934356,
+        "objects": 1349
+      },
+      "entity=opening_game_odds season=2025": {
+        "bytes": 696098,
+        "objects": 148
+      },
+      "entity=opening_player_props season=2025": {
+        "bytes": 17661047,
+        "objects": 136
+      },
+      "entity=player_stats season=2025": {
+        "bytes": 2373987,
+        "objects": 36
+      },
+      "entity=plays season=2025": {
+        "bytes": 598114275,
+        "objects": 1334
+      },
+      "entity=games season=2025": {
+        "bytes": 344035,
+        "objects": 191
+      },
+      "entity=injuries_current season=2025": {
+        "bytes": 79719,
+        "objects": 2
+      },
+      "entity=injuries_history season=2025": {
+        "bytes": 1979623,
+        "objects": 58
+      },
+      "entity=odds_current season=2025": {
+        "bytes": 106831,
+        "objects": 2
+      },
+      "entity=odds_history season=2025": {
+        "bytes": 19595711,
+        "objects": 59
+      },
+      "entity=player_game_logs season=2025": {
+        "bytes": 25142430,
+        "objects": 187
+      },
+      "entity=player_props_current season=2025": {
+        "bytes": 54803069,
+        "objects": 2
+      },
+      "entity=player_props_raw_v2 season=2025": {
+        "bytes": 353679646,
+        "objects": 27
+      },
+      "entity=players season=2025": {
+        "bytes": 1202071,
+        "objects": 2
+      },
+      "entity=raw_odds_snapshots season=2025": {
+        "bytes": 50875616,
+        "objects": 60
+      },
+      "entity=raw_player_injuries season=2025": {
+        "bytes": 24293279,
+        "objects": 58
+      },
+      "entity=team_game_stats season=2025": {
+        "bytes": 2379960,
+        "objects": 189
+      },
+      "entity=teams season=2025": {
+        "bytes": 10309,
+        "objects": 2
+      }
+    }
+  }
+}

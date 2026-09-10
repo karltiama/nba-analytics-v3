@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { UmamiScript } from "@/components/product-analytics/UmamiScript";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,6 +30,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <UmamiScript />
       </body>
     </html>
   );

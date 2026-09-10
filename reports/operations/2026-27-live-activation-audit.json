@@ -1,0 +1,76 @@
+{
+  "step": "13A",
+  "title": "2026-27 Live Activation Audit",
+  "generatedAt": "2026-09-10T19:15:00.000Z",
+  "verdict": "YELLOW — activation path is viable but blockers must be resolved first",
+  "safety": {
+    "flagChanges": false,
+    "eventBridgeChanges": false,
+    "lambdaDeploys": false,
+    "bdlCalls": false,
+    "s3Writes": false,
+    "schemaMigration": false,
+    "uiChanges": false,
+    "possessionWowy": false
+  },
+  "freeze": {
+    "DATA_MODE": "replay",
+    "OFFSEASON_MODE": "1",
+    "CRON_DRY_RUN": "1"
+  },
+  "postgres": {
+    "sizePretty": "368 MB",
+    "bytes": 385969299
+  },
+  "schedule2026": {
+    "games": 1200,
+    "expectedRegularSeason": 1230,
+    "canonicalStatus": 0,
+    "statusLooksLikeTimestamp": 1200,
+    "finals": 0,
+    "minStart": "2026-10-20",
+    "maxStart": "2027-04-12",
+    "teams": 30,
+    "logs": 0,
+    "seasonAverages": 0
+  },
+  "identity": {
+    "entities": 5615,
+    "bdlMaps": 5534,
+    "analyticsPlayers": 5534,
+    "entitiesWithoutBdl": 81,
+    "classCBlockedBySchema": 81
+  },
+  "markets": {
+    "player_props_current": 0,
+    "player_prop_current": 25812,
+    "player_prop_current_vendor": "draftkings",
+    "game_odds_current": 334,
+    "game_odds_current_vendor": "draftkings",
+    "mm_decision_close": 21132,
+    "mm_live_current": 0,
+    "injuries_current": 150,
+    "oddsLastSnapshot": "2026-05-06",
+    "propsLegacyLastSnapshot": "2026-05-02",
+    "injuriesLastSnapshot": "2026-05-06"
+  },
+  "infraGaps": {
+    "distributedBdlThrottle": false,
+    "propsReservedConcurrencyWired": false,
+    "liveThreeHourSnapshotJob": false,
+    "schedulesDefaultOff": true
+  },
+  "goatRecommendation": "KEEP_GOAT_DURING_SEASON",
+  "recommended13B": "Centralized BDL rate limiting + wire player_props_worker reserved concurrency",
+  "sequence": ["13B limiter", "13C schedule/status canary", "13D injuries+odds canary", "13E props+MM snapshots", "13F postgame", "13G observability signoff"],
+  "readiness": {
+    "historicalProduct": "READY",
+    "marketMovementHistorical": "READY",
+    "liveScheduleGame": "PARTIAL",
+    "liveMarkets": "BLOCKED",
+    "liveInjuries": "PARTIAL",
+    "postgameEnrichment": "PARTIAL",
+    "operationsMonitoring": "PARTIAL"
+  },
+  "possessionWowyForLaunch": false
+}

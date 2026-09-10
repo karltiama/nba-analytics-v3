@@ -17,6 +17,12 @@ import type {
   ContextCheckCardVariant,
   ContextCheckData,
 } from '@/lib/content/context-check/types';
+import { InstagramTypographyPreview } from '@/components/content/context-check/InstagramTypographyPreview';
+import {
+  DEFAULT_INSTAGRAM_TYPE_VARIANT,
+  INSTAGRAM_TYPE_VARIANTS,
+  type InstagramTypeVariantId,
+} from '@/lib/content/context-check/instagram-type';
 
 function PersistencePlaceholder({
   title,
@@ -39,7 +45,11 @@ export function ContextCheckStudio() {
   const candidates = useMemo(() => MOCK_CANDIDATES, []);
   const [preview, setPreview] = useState<ContextCheckData | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [variant, setVariant] = useState<ContextCheckCardVariant>('web');
+  const [variant, setVariant] = useState<ContextCheckCardVariant>('social');
+  const [typeVariant, setTypeVariant] = useState<InstagramTypeVariantId>(
+    DEFAULT_INSTAGRAM_TYPE_VARIANT
+  );
+  const [studioTab, setStudioTab] = useState('suggested');
   const [isGenerating, setIsGenerating] = useState(false);
 
   function showPreview(data: ContextCheckData) {
@@ -70,14 +80,21 @@ export function ContextCheckStudio() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)]">
+    <div
+      className={
+        studioTab === 'type'
+          ? 'min-w-0'
+          : 'grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,28rem)]'
+      }
+    >
       <div className="min-w-0">
-        <Tabs defaultValue="suggested">
+        <Tabs value={studioTab} onValueChange={setStudioTab}>
           <TabsList variant="line" className="w-full max-w-full flex-wrap justify-start">
             <TabsTrigger value="suggested">Suggested</TabsTrigger>
             <TabsTrigger value="manual">Manual</TabsTrigger>
             <TabsTrigger value="drafts">Drafts</TabsTrigger>
             <TabsTrigger value="posted">Posted</TabsTrigger>
+            <TabsTrigger value="type">Type</TabsTrigger>
           </TabsList>
 
           <TabsContent value="suggested" className="mt-6">
@@ -106,32 +123,77 @@ export function ContextCheckStudio() {
               body="Public auto-publishing is intentionally not part of v1. The intended workflow is candidate detection, human review, then publish — never database straight to social media."
             />
           </TabsContent>
+
+          <TabsContent value="type" className="mt-6">
+            <InstagramTypographyPreview />
+          </TabsContent>
         </Tabs>
       </div>
 
-      <aside className="min-w-0 lg:sticky lg:top-6 lg:self-start">
+      {studioTab !== 'type' && (
+        <aside className="min-w-0 lg:sticky lg:top-6 lg:self-start">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Preview
-          </h2>
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Preview
+            </h2>
+            {variant === 'social' ? (
+              <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                Instagram · 1080 × 1350 · 4:5
+              </p>
+            ) : (
+              <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                Web
+              </p>
+            )}
+          </div>
           <div className="flex rounded-md border border-white/10 p-0.5" role="group" aria-label="Card variant">
-            {(['web', 'social'] as const).map((option) => (
+            {(
+              [
+                { id: 'web' as const, label: 'Web' },
+                { id: 'social' as const, label: 'Instagram' },
+              ]
+            ).map((option) => (
               <button
-                key={option}
+                key={option.id}
                 type="button"
-                aria-pressed={variant === option}
-                onClick={() => setVariant(option)}
-                className={`rounded px-2.5 py-1 text-xs font-medium capitalize ${
-                  variant === option
+                aria-pressed={variant === option.id}
+                onClick={() => setVariant(option.id)}
+                className={`rounded px-2.5 py-1 text-xs font-medium ${
+                  variant === option.id
                     ? 'bg-neon-cyan text-primary-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {option}
+                {option.label}
               </button>
             ))}
           </div>
         </div>
+
+        {variant === 'social' && (
+          <div
+            className="mb-3 flex flex-col gap-1"
+            role="group"
+            aria-label="Typography variant"
+          >
+            {INSTAGRAM_TYPE_VARIANTS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={typeVariant === option.id}
+                onClick={() => setTypeVariant(option.id)}
+                className={`rounded-md px-2.5 py-1 text-left text-xs ${
+                  typeVariant === option.id
+                    ? 'bg-white/10 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {isGenerating ? (
           <div className="space-y-3 rounded-xl border border-white/10 p-4" aria-busy="true" aria-live="polite">
@@ -146,7 +208,9 @@ export function ContextCheckStudio() {
             {previewError}
           </p>
         ) : preview ? (
-          <ContextCheckCard data={preview} variant={variant} />
+          <div className={variant === 'social' ? 'mx-auto w-full max-w-[432px]' : undefined}>
+            <ContextCheckCard data={preview} variant={variant} typeVariant={typeVariant} />
+          </div>
         ) : (
           <p className="rounded-xl border border-dashed border-white/15 p-6 text-sm text-muted-foreground">
             Preview a suggested candidate or generate one from the manual form. The same
@@ -154,6 +218,7 @@ export function ContextCheckStudio() {
           </p>
         )}
       </aside>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { query } from '@/lib/db';
 import { fetchLineupsFromBallDontLie } from '@/lib/balldontlie/lineups';
 import { getAnalyticsSeason } from '@/lib/season';
+import { isFinalStatus } from '@/lib/betting/normalize-game-status';
 import { filterAuthoritativeInjuries } from '@/lib/injuries/freshness';
 import { seriesFromOddsHistoryRows } from '@/lib/betting/line-movement-series';
 import type {
@@ -1417,7 +1418,7 @@ export async function getGameStartingLineups(
  */
 export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysis | null> {
   const gameResult = await query(`
-    SELECT g.game_id, g.home_team_id, g.away_team_id
+    SELECT g.game_id, g.home_team_id, g.away_team_id, g.status, g.season
     FROM analytics.games g
     WHERE g.game_id = $1
     LIMIT 1
@@ -1430,6 +1431,22 @@ export async function getMatchupAnalysis(gameId: string): Promise<MatchupAnalysi
   const game = gameResult[0];
   const homeTeamId = game.home_team_id;
   const awayTeamId = game.away_team_id;
+
+  // Historical Finals: never call live BDL lineups or pin-season projected starters.
+  if (isFinalStatus(game.status == null ? null : String(game.status))) {
+    return {
+      game_id: game.game_id,
+      home_team_id: homeTeamId,
+      away_team_id: awayTeamId,
+      home_offense: null,
+      away_offense: null,
+      home_defense: null,
+      away_defense: null,
+      pace_analysis: null,
+      key_players: [],
+      starting_lineups: { home: null, away: null },
+    };
+  }
 
   const paceAnalysis = await getPaceAnalysis(homeTeamId, awayTeamId);
 

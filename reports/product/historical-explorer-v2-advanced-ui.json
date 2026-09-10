@@ -1,0 +1,57 @@
+{
+  "step": "12E",
+  "title": "Historical Explorer v2 Advanced UI",
+  "generatedAt": "2026-09-10T06:15:00.000Z",
+  "verdict": "GREEN — Historical Explorer Advanced game context is ship-ready and ready for Role Profile work",
+  "productClassification": "SHIP_READY",
+  "safety": {
+    "bdlHttp": 0,
+    "dataMode": "replay",
+    "offseasonMode": "1",
+    "cronDryRun": "1",
+    "dbWrites": false,
+    "migrations": false,
+    "newApiRoute": false,
+    "roleProfile": false,
+    "timeline": false
+  },
+  "architecture": {
+    "toggle": "Box Score | Advanced",
+    "default": "box",
+    "availability": "availability.advanced from Final contract",
+    "extraFetch": false,
+    "primary": ["USG%", "TS%", "eFG%", "ORtg", "DRtg", "Net"],
+    "secondary": ["AST%", "REB%", "TOV Ratio", "PIE", "Poss", "Pace"]
+  },
+  "formatting": {
+    "usage0_284": "28.4%",
+    "ts1_5": "150.0%",
+    "netSigned": true,
+    "null": "—",
+    "turnoverRatioNotPercent": true
+  },
+  "lowSample": {
+    "threshold": false,
+    "cue": "minutes + possessions only"
+  },
+  "qa": {
+    "g2023": {
+      "gameId": "15905067",
+      "tatumUsg": "28.4%",
+      "pritchardTs": "150.0%",
+      "startingFive": false
+    },
+    "g2025": {
+      "gameId": "18447937",
+      "startingFive": true,
+      "kawhiUsg": "20.8%"
+    },
+    "g2026": {
+      "gameId": "21717855",
+      "historicalAdvanced": false,
+      "projectedStarters": true
+    },
+    "mobile390": "player cards 3x2 grid"
+  },
+  "next": "12F Role Profile — STOP here"
+}

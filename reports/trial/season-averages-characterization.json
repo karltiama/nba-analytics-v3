@@ -1,0 +1,2544 @@
+{
+  "generatedAt": "2026-09-09T13:51:50.168Z",
+  "step": "9B",
+  "bdlHttp": 16,
+  "startedPlays": false,
+  "started2022": false,
+  "postgresWrites": false,
+  "safety": {
+    "trialMode": true,
+    "delayMs": 13000,
+    "minDelayMs": 12000,
+    "concurrency": 1,
+    "lockActiveBefore": false,
+    "dataMode": "replay",
+    "offseasonMode": true,
+    "cronDryRun": true,
+    "frozen": true,
+    "currentAnalyticsSeason": "2025",
+    "dbBytesBefore": 342846611,
+    "dbMb": 326.96,
+    "seasonAveragesServingTables": [],
+    "acquisitionWritesPostgres": false
+  },
+  "existingImplementationAudit": {
+    "goatCategoryClientExisted": false,
+    "legacyBoxScoreSeasonAverages": "scripts/seed-raw-balldontlie.ts uses /v1/season_averages?player_id=&season= (not this endpoint)",
+    "reused": [
+      "BdlArchiveClient",
+      "trial-limiter",
+      "acquisition-lock",
+      "archiveJsonObjectToS3"
+    ],
+    "openapi": "docs/api/balldontlie-openapi.yaml is stale ({type} path / limited enum). Live docs use /nba/v1/season_averages/{category} and team_season_averages/{category}.",
+    "generatedTypes": false
+  },
+  "characterizationPlan": {
+    "probeCount": 16,
+    "projectedHttp": 16,
+    "projectedMs": 208000,
+    "projectedMinutes": 3.47,
+    "maxPagesPerProbe": 2,
+    "samplePlayers": [
+      {
+        "playerId": "175",
+        "name": "Shai Gilgeous-Alexander",
+        "role": "high-usage primary creator"
+      },
+      {
+        "playerId": "246",
+        "name": "Nikola Jokic",
+        "role": "big / roll man"
+      },
+      {
+        "playerId": "73",
+        "name": "Jalen Brunson",
+        "role": "guard with drive/passing volume"
+      },
+      {
+        "playerId": "140",
+        "name": "Kevin Durant",
+        "role": "wing / spot-up / isolation scorer"
+      },
+      {
+        "playerId": "3547249",
+        "name": "Precious Achiuwa",
+        "role": "bench / low-usage forward"
+      }
+    ],
+    "sampleTeams": [
+      {
+        "teamId": "21",
+        "abbr": "OKC",
+        "profile": "elite defense / high win% "
+      },
+      {
+        "teamId": "8",
+        "abbr": "DEN",
+        "profile": "top offensive rating"
+      },
+      {
+        "teamId": "29",
+        "abbr": "UTA",
+        "profile": "poor defense / high pace"
+      },
+      {
+        "teamId": "3",
+        "abbr": "BKN",
+        "profile": "lowest offensive rating"
+      }
+    ],
+    "requests": [
+      {
+        "id": "P01",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/playtype",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "isolation",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "role / offensive style",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=isolation.json"
+      },
+      {
+        "id": "P02",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/playtype",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "prballhandler",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "role / offensive style (P&R ballhandler)",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=prballhandler.json"
+      },
+      {
+        "id": "P03",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/playtype",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "prrollman",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "role / offensive style (P&R roll man)",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=prrollman.json"
+      },
+      {
+        "id": "P04",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/tracking",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "drives",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "tracking drives",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=tracking/type=drives.json"
+      },
+      {
+        "id": "P05",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/tracking",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "passing",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "tracking passing",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=tracking/type=passing.json"
+      },
+      {
+        "id": "P06",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/shooting",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "by_zone",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "shot-zone profile",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=shooting/type=by_zone.json"
+      },
+      {
+        "id": "P07",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/shotdashboard",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "overall",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "shot dashboard baseline",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=shotdashboard/type=overall.json"
+      },
+      {
+        "id": "P08",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/hustle",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "hustle (no type)",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=hustle/type=none.json"
+      },
+      {
+        "id": "P09",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/general",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "advanced",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "overlap baseline vs Advanced Stats",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=general/type=advanced.json"
+      },
+      {
+        "id": "P10",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/playtype",
+        "query": {
+          "season": 2024,
+          "season_type": "regular",
+          "type": "isolation",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "historical consistency vs 2025 playtype",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2024/season_type=regular/category=playtype/type=isolation.json"
+      },
+      {
+        "id": "P11",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/tracking",
+        "query": {
+          "season": 2024,
+          "season_type": "regular",
+          "type": "drives",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "historical consistency vs 2025 tracking",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2024/season_type=regular/category=tracking/type=drives.json"
+      },
+      {
+        "id": "P12",
+        "kind": "player",
+        "path": "/nba/v1/season_averages/shooting",
+        "query": {
+          "season": 2024,
+          "season_type": "regular",
+          "type": "by_zone",
+          "player_ids[]": [
+            "175",
+            "246",
+            "73",
+            "140",
+            "3547249"
+          ]
+        },
+        "purpose": "historical consistency vs 2025 shooting",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2024/season_type=regular/category=shooting/type=by_zone.json"
+      },
+      {
+        "id": "T01",
+        "kind": "team",
+        "path": "/nba/v1/team_season_averages/playtype",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "isolation",
+          "team_ids[]": [
+            "21",
+            "8",
+            "29",
+            "3"
+          ]
+        },
+        "purpose": "team play style",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=isolation.json"
+      },
+      {
+        "id": "T02",
+        "kind": "team",
+        "path": "/nba/v1/team_season_averages/tracking",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "possessions",
+          "team_ids[]": [
+            "21",
+            "8",
+            "29",
+            "3"
+          ]
+        },
+        "purpose": "team tracking / pace-style",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=tracking/type=possessions.json"
+      },
+      {
+        "id": "T03",
+        "kind": "team",
+        "path": "/nba/v1/team_season_averages/shooting",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "by_zone_opponent",
+          "team_ids[]": [
+            "21",
+            "8",
+            "29",
+            "3"
+          ]
+        },
+        "purpose": "matchup opponent zone profile",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=shooting/type=by_zone_opponent.json"
+      },
+      {
+        "id": "T04",
+        "kind": "team",
+        "path": "/nba/v1/team_season_averages/general",
+        "query": {
+          "season": 2025,
+          "season_type": "regular",
+          "type": "advanced",
+          "team_ids[]": [
+            "21",
+            "8",
+            "29",
+            "3"
+          ]
+        },
+        "purpose": "team advanced overlap vs existing team averages",
+        "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=general/type=advanced.json"
+      }
+    ],
+    "doNotExpand": true,
+    "clutchDefenseIncluded": false,
+    "playsIncluded": false,
+    "season2022Included": false
+  },
+  "acquisitionResult": {
+    "plannedRequests": 16,
+    "httpAttempts": 16,
+    "httpSuccess": 16,
+    "status429": 0,
+    "retries": 0,
+    "retryAfterUsed": 0,
+    "pages": 16,
+    "wallClockMs": 202263,
+    "averageMs": 13425.7,
+    "minimumMs": 13362,
+    "maximumMs": 13579,
+    "failed": [],
+    "stoppedEarly": []
+  },
+  "playerCategoryResults": [
+    {
+      "id": "P01",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "playtype",
+      "type": "isolation",
+      "path": "/nba/v1/season_averages/playtype",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "246",
+        "3547249",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "efg_pct",
+        "fg_pct",
+        "fga",
+        "fgm",
+        "fgmx",
+        "ft_poss_pct",
+        "gp",
+        "percentile",
+        "play_type",
+        "plusone_poss_pct",
+        "poss",
+        "poss_pct",
+        "ppp",
+        "pts",
+        "score_poss_pct",
+        "season_id",
+        "sf_poss_pct",
+        "team_name",
+        "tov_poss_pct",
+        "type_grouping"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "plusone_poss_pct"
+      ],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        63,
+        76,
+        70,
+        63,
+        70
+      ],
+      "grainKeys": [
+        "2025|regular|175|playtype|isolation",
+        "2025|regular|140|playtype|isolation",
+        "2025|regular|73|playtype|isolation",
+        "2025|regular|246|playtype|isolation",
+        "2025|regular|3547249|playtype|isolation"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=isolation.json"
+    },
+    {
+      "id": "P02",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "playtype",
+      "type": "prballhandler",
+      "path": "/nba/v1/season_averages/playtype",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "175",
+        "73",
+        "140",
+        "246",
+        "3547249"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "efg_pct",
+        "fg_pct",
+        "fga",
+        "fgm",
+        "fgmx",
+        "ft_poss_pct",
+        "gp",
+        "percentile",
+        "play_type",
+        "plusone_poss_pct",
+        "poss",
+        "poss_pct",
+        "ppp",
+        "pts",
+        "score_poss_pct",
+        "season_id",
+        "sf_poss_pct",
+        "team_name",
+        "tov_poss_pct",
+        "type_grouping"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "plusone_poss_pct"
+      ],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        63,
+        70,
+        76,
+        63,
+        70
+      ],
+      "grainKeys": [
+        "2025|regular|175|playtype|prballhandler",
+        "2025|regular|73|playtype|prballhandler",
+        "2025|regular|140|playtype|prballhandler",
+        "2025|regular|246|playtype|prballhandler",
+        "2025|regular|3547249|playtype|prballhandler"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=prballhandler.json"
+    },
+    {
+      "id": "P03",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "playtype",
+      "type": "prrollman",
+      "path": "/nba/v1/season_averages/playtype",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "246",
+        "3547249",
+        "140",
+        "175",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "efg_pct",
+        "fg_pct",
+        "fga",
+        "fgm",
+        "fgmx",
+        "ft_poss_pct",
+        "gp",
+        "percentile",
+        "play_type",
+        "plusone_poss_pct",
+        "poss",
+        "poss_pct",
+        "ppp",
+        "pts",
+        "score_poss_pct",
+        "season_id",
+        "sf_poss_pct",
+        "team_name",
+        "tov_poss_pct",
+        "type_grouping"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "plusone_poss_pct",
+        "tov_poss_pct"
+      ],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        63,
+        70,
+        76,
+        63,
+        70
+      ],
+      "grainKeys": [
+        "2025|regular|246|playtype|prrollman",
+        "2025|regular|3547249|playtype|prrollman",
+        "2025|regular|140|playtype|prrollman",
+        "2025|regular|175|playtype|prrollman",
+        "2025|regular|73|playtype|prrollman"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=prrollman.json"
+    },
+    {
+      "id": "P04",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "tracking",
+      "type": "drives",
+      "path": "/nba/v1/season_averages/tracking",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "246",
+        "3547249",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "drive_ast",
+        "drive_ast_pct",
+        "drive_fg_pct",
+        "drive_fga",
+        "drive_fgm",
+        "drive_ft_pct",
+        "drive_fta",
+        "drive_ftm",
+        "drive_passes",
+        "drive_passes_pct",
+        "drive_pf",
+        "drive_pf_pct",
+        "drive_pts",
+        "drive_pts_pct",
+        "drive_tov",
+        "drive_tov_pct",
+        "drives",
+        "gp",
+        "l",
+        "min",
+        "w"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        74,
+        78,
+        65,
+        73,
+        68
+      ],
+      "grainKeys": [
+        "2025|regular|73|tracking|drives",
+        "2025|regular|140|tracking|drives",
+        "2025|regular|246|tracking|drives",
+        "2025|regular|3547249|tracking|drives",
+        "2025|regular|175|tracking|drives"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=tracking/type=drives.json"
+    },
+    {
+      "id": "P05",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "tracking",
+      "type": "passing",
+      "path": "/nba/v1/season_averages/tracking",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "73",
+        "140",
+        "246",
+        "3547249",
+        "175"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "ast",
+        "ast_adj",
+        "ast_points_created",
+        "ast_to_pass_pct",
+        "ast_to_pass_pct_adj",
+        "ft_ast",
+        "gp",
+        "l",
+        "min",
+        "passes_made",
+        "passes_received",
+        "potential_ast",
+        "secondary_ast",
+        "w"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        74,
+        78,
+        65,
+        73,
+        68
+      ],
+      "grainKeys": [
+        "2025|regular|73|tracking|passing",
+        "2025|regular|140|tracking|passing",
+        "2025|regular|246|tracking|passing",
+        "2025|regular|3547249|tracking|passing",
+        "2025|regular|175|tracking|passing"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=tracking/type=passing.json"
+    },
+    {
+      "id": "P06",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "shooting",
+      "type": "by_zone",
+      "path": "/nba/v1/season_averages/shooting",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "246",
+        "3547249",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "above_the_break_3_fg_pct",
+        "above_the_break_3_fga",
+        "above_the_break_3_fgm",
+        "backcourt_fg_pct",
+        "backcourt_fga",
+        "backcourt_fgm",
+        "corner_3_fg_pct",
+        "corner_3_fga",
+        "corner_3_fgm",
+        "in_the_paint_(non-ra)_fg_pct",
+        "in_the_paint_(non-ra)_fga",
+        "in_the_paint_(non-ra)_fgm",
+        "left_corner_3_fg_pct",
+        "left_corner_3_fga",
+        "left_corner_3_fgm",
+        "mid-range_fg_pct",
+        "mid-range_fga",
+        "mid-range_fgm",
+        "restricted_area_fg_pct",
+        "restricted_area_fga",
+        "restricted_area_fgm",
+        "right_corner_3_fg_pct",
+        "right_corner_3_fga",
+        "right_corner_3_fgm"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "backcourt_fg_pct",
+        "backcourt_fga",
+        "backcourt_fgm",
+        "right_corner_3_fgm"
+      ],
+      "sentinels": [],
+      "gpPresent": false,
+      "gpValues": [],
+      "grainKeys": [
+        "2025|regular|140|shooting|by_zone",
+        "2025|regular|175|shooting|by_zone",
+        "2025|regular|73|shooting|by_zone",
+        "2025|regular|246|shooting|by_zone",
+        "2025|regular|3547249|shooting|by_zone"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=shooting/type=by_zone.json"
+    },
+    {
+      "id": "P07",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "shotdashboard",
+      "type": "overall",
+      "path": "/nba/v1/season_averages/shotdashboard",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "73",
+        "175",
+        "140",
+        "246",
+        "3547249"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "age",
+        "efg_pct",
+        "fg2_pct",
+        "fg2a",
+        "fg2a_frequency",
+        "fg2m",
+        "fg3_pct",
+        "fg3a",
+        "fg3a_frequency",
+        "fg3m",
+        "fg_pct",
+        "fga",
+        "fga_frequency",
+        "fgm",
+        "g",
+        "gp",
+        "player_last_team_abbreviation",
+        "player_last_team_id"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        74,
+        68,
+        78,
+        65,
+        73
+      ],
+      "grainKeys": [
+        "2025|regular|73|shotdashboard|overall",
+        "2025|regular|175|shotdashboard|overall",
+        "2025|regular|140|shotdashboard|overall",
+        "2025|regular|246|shotdashboard|overall",
+        "2025|regular|3547249|shotdashboard|overall"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=shotdashboard/type=overall.json"
+    },
+    {
+      "id": "P08",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "hustle",
+      "type": null,
+      "path": "/nba/v1/season_averages/hustle",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "73",
+        "140",
+        "246",
+        "3547249",
+        "175"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "age",
+        "box_out_player_rebs",
+        "box_out_player_team_rebs",
+        "box_outs",
+        "charges_drawn",
+        "contested_shots",
+        "contested_shots_2pt",
+        "contested_shots_3pt",
+        "def_boxouts",
+        "def_loose_balls_recovered",
+        "deflections",
+        "g",
+        "loose_balls_recovered",
+        "min",
+        "off_boxouts",
+        "off_loose_balls_recovered",
+        "pct_box_outs_def",
+        "pct_box_outs_off",
+        "pct_box_outs_reb",
+        "pct_box_outs_team_reb",
+        "pct_loose_balls_recovered_def",
+        "pct_loose_balls_recovered_off",
+        "screen_assists",
+        "screen_ast_pts"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "charges_drawn",
+        "off_boxouts",
+        "pct_box_outs_off"
+      ],
+      "sentinels": [],
+      "gpPresent": false,
+      "gpValues": [],
+      "grainKeys": [
+        "2025|regular|73|hustle|none",
+        "2025|regular|140|hustle|none",
+        "2025|regular|246|hustle|none",
+        "2025|regular|3547249|hustle|none",
+        "2025|regular|175|hustle|none"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=hustle/type=none.json"
+    },
+    {
+      "id": "P09",
+      "kind": "player",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "general",
+      "type": "advanced",
+      "path": "/nba/v1/season_averages/general",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "73",
+        "246",
+        "3547249"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "age",
+        "ast_pct",
+        "ast_pct_rank",
+        "ast_ratio",
+        "ast_ratio_rank",
+        "ast_to",
+        "ast_to_rank",
+        "def_rating",
+        "def_rating_rank",
+        "dreb_pct",
+        "dreb_pct_rank",
+        "e_def_rating",
+        "e_def_rating_rank",
+        "e_net_rating",
+        "e_net_rating_rank",
+        "e_off_rating",
+        "e_off_rating_rank",
+        "e_pace",
+        "e_pace_rank",
+        "e_tov_pct",
+        "e_tov_pct_rank",
+        "e_usg_pct",
+        "e_usg_pct_rank",
+        "efg_pct",
+        "efg_pct_rank",
+        "fg_pct",
+        "fg_pct_rank",
+        "fga",
+        "fga_pg",
+        "fga_pg_rank",
+        "fga_rank",
+        "fgm",
+        "fgm_pg",
+        "fgm_pg_rank",
+        "fgm_rank",
+        "gp",
+        "gp_rank",
+        "l",
+        "l_rank",
+        "min",
+        "min_rank",
+        "net_rating",
+        "net_rating_rank",
+        "off_rating",
+        "off_rating_rank",
+        "oreb_pct",
+        "oreb_pct_rank",
+        "pace",
+        "pace_per40",
+        "pace_rank",
+        "pie",
+        "pie_rank",
+        "poss",
+        "reb_pct",
+        "reb_pct_rank",
+        "sp_work_def_rating",
+        "sp_work_def_rating_rank",
+        "sp_work_net_rating",
+        "sp_work_net_rating_rank",
+        "sp_work_off_rating",
+        "sp_work_off_rating_rank",
+        "sp_work_pace",
+        "sp_work_pace_rank",
+        "team_count",
+        "tm_tov_pct",
+        "tm_tov_pct_rank",
+        "ts_pct",
+        "ts_pct_rank",
+        "usg_pct",
+        "usg_pct_rank",
+        "w",
+        "w_pct",
+        "w_pct_rank",
+        "w_rank"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        78,
+        68,
+        74,
+        65,
+        73
+      ],
+      "grainKeys": [
+        "2025|regular|140|general|advanced",
+        "2025|regular|175|general|advanced",
+        "2025|regular|73|general|advanced",
+        "2025|regular|246|general|advanced",
+        "2025|regular|3547249|general|advanced"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2025/season_type=regular/category=general/type=advanced.json"
+    },
+    {
+      "id": "P10",
+      "kind": "player",
+      "season": 2024,
+      "seasonType": "regular",
+      "category": "playtype",
+      "type": "isolation",
+      "path": "/nba/v1/season_averages/playtype",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "246",
+        "3547249",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2024,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "efg_pct",
+        "fg_pct",
+        "fga",
+        "fgm",
+        "fgmx",
+        "ft_poss_pct",
+        "gp",
+        "percentile",
+        "play_type",
+        "plusone_poss_pct",
+        "poss",
+        "poss_pct",
+        "ppp",
+        "pts",
+        "score_poss_pct",
+        "season_id",
+        "sf_poss_pct",
+        "team_name",
+        "tov_poss_pct",
+        "type_grouping"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "plusone_poss_pct"
+      ],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        76,
+        62,
+        65,
+        70,
+        57
+      ],
+      "grainKeys": [
+        "2024|regular|175|playtype|isolation",
+        "2024|regular|140|playtype|isolation",
+        "2024|regular|73|playtype|isolation",
+        "2024|regular|246|playtype|isolation",
+        "2024|regular|3547249|playtype|isolation"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2024/season_type=regular/category=playtype/type=isolation.json"
+    },
+    {
+      "id": "P11",
+      "kind": "player",
+      "season": 2024,
+      "seasonType": "regular",
+      "category": "tracking",
+      "type": "drives",
+      "path": "/nba/v1/season_averages/tracking",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "246",
+        "3547249",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2024,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "drive_ast",
+        "drive_ast_pct",
+        "drive_fg_pct",
+        "drive_fga",
+        "drive_fgm",
+        "drive_ft_pct",
+        "drive_fta",
+        "drive_ftm",
+        "drive_passes",
+        "drive_passes_pct",
+        "drive_pf",
+        "drive_pf_pct",
+        "drive_pts",
+        "drive_pts_pct",
+        "drive_tov",
+        "drive_tov_pct",
+        "drives",
+        "gp",
+        "l",
+        "min",
+        "w"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        65,
+        62,
+        70,
+        57,
+        76
+      ],
+      "grainKeys": [
+        "2024|regular|73|tracking|drives",
+        "2024|regular|140|tracking|drives",
+        "2024|regular|246|tracking|drives",
+        "2024|regular|3547249|tracking|drives",
+        "2024|regular|175|tracking|drives"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2024/season_type=regular/category=tracking/type=drives.json"
+    },
+    {
+      "id": "P12",
+      "kind": "player",
+      "season": 2024,
+      "seasonType": "regular",
+      "category": "shooting",
+      "type": "by_zone",
+      "path": "/nba/v1/season_averages/shooting",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 5,
+      "requestedEntities": 5,
+      "returnedIds": [
+        "140",
+        "175",
+        "246",
+        "3547249",
+        "73"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "player",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2024,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "above_the_break_3_fg_pct",
+        "above_the_break_3_fga",
+        "above_the_break_3_fgm",
+        "backcourt_fg_pct",
+        "backcourt_fga",
+        "backcourt_fgm",
+        "corner_3_fg_pct",
+        "corner_3_fga",
+        "corner_3_fgm",
+        "in_the_paint_(non-ra)_fg_pct",
+        "in_the_paint_(non-ra)_fga",
+        "in_the_paint_(non-ra)_fgm",
+        "left_corner_3_fg_pct",
+        "left_corner_3_fga",
+        "left_corner_3_fgm",
+        "mid-range_fg_pct",
+        "mid-range_fga",
+        "mid-range_fgm",
+        "restricted_area_fg_pct",
+        "restricted_area_fga",
+        "restricted_area_fgm",
+        "right_corner_3_fg_pct",
+        "right_corner_3_fga",
+        "right_corner_3_fgm"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "above_the_break_3_fgm",
+        "backcourt_fg_pct",
+        "backcourt_fga",
+        "backcourt_fgm",
+        "right_corner_3_fga",
+        "right_corner_3_fgm"
+      ],
+      "sentinels": [],
+      "gpPresent": false,
+      "gpValues": [],
+      "grainKeys": [
+        "2024|regular|73|shooting|by_zone",
+        "2024|regular|140|shooting|by_zone",
+        "2024|regular|246|shooting|by_zone",
+        "2024|regular|3547249|shooting|by_zone",
+        "2024|regular|175|shooting|by_zone"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=season_averages/_characterization/season=2024/season_type=regular/category=shooting/type=by_zone.json"
+    }
+  ],
+  "teamCategoryResults": [
+    {
+      "id": "T01",
+      "kind": "team",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "playtype",
+      "type": "isolation",
+      "path": "/nba/v1/team_season_averages/playtype",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 4,
+      "requestedEntities": 4,
+      "returnedIds": [
+        "21",
+        "8",
+        "3",
+        "29"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "team",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "efg_pct",
+        "fg_pct",
+        "fga",
+        "fgm",
+        "fgmx",
+        "ft_poss_pct",
+        "gp",
+        "percentile",
+        "play_type",
+        "plusone_poss_pct",
+        "poss",
+        "poss_pct",
+        "ppp",
+        "pts",
+        "score_poss_pct",
+        "season_id",
+        "sf_poss_pct",
+        "tov_poss_pct",
+        "type_grouping"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        77,
+        80,
+        79,
+        80
+      ],
+      "grainKeys": [
+        "2025|regular|21|playtype|isolation",
+        "2025|regular|8|playtype|isolation",
+        "2025|regular|3|playtype|isolation",
+        "2025|regular|29|playtype|isolation"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=playtype/type=isolation.json"
+    },
+    {
+      "id": "T02",
+      "kind": "team",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "tracking",
+      "type": "possessions",
+      "path": "/nba/v1/team_season_averages/tracking",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 4,
+      "requestedEntities": 4,
+      "returnedIds": [
+        "3",
+        "8",
+        "21",
+        "29"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "team",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "avg_drib_per_touch",
+        "avg_sec_per_touch",
+        "elbow_touches",
+        "front_ct_touches",
+        "gp",
+        "l",
+        "min",
+        "paint_touches",
+        "points",
+        "post_touches",
+        "pts_per_elbow_touch",
+        "pts_per_paint_touch",
+        "pts_per_post_touch",
+        "pts_per_touch",
+        "time_of_poss",
+        "touches",
+        "w"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        82,
+        82,
+        82,
+        82
+      ],
+      "grainKeys": [
+        "2025|regular|3|tracking|possessions",
+        "2025|regular|8|tracking|possessions",
+        "2025|regular|21|tracking|possessions",
+        "2025|regular|29|tracking|possessions"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=tracking/type=possessions.json"
+    },
+    {
+      "id": "T03",
+      "kind": "team",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "shooting",
+      "type": "by_zone_opponent",
+      "path": "/nba/v1/team_season_averages/shooting",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 4,
+      "requestedEntities": 4,
+      "returnedIds": [
+        "3",
+        "8",
+        "21",
+        "29"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "team",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "above_the_break_3_opp_fg_pct",
+        "above_the_break_3_opp_fga",
+        "above_the_break_3_opp_fgm",
+        "backcourt_opp_fg_pct",
+        "backcourt_opp_fga",
+        "backcourt_opp_fgm",
+        "corner_3_opp_fg_pct",
+        "corner_3_opp_fga",
+        "corner_3_opp_fgm",
+        "in_the_paint_(non-ra)_opp_fg_pct",
+        "in_the_paint_(non-ra)_opp_fga",
+        "in_the_paint_(non-ra)_opp_fgm",
+        "left_corner_3_opp_fg_pct",
+        "left_corner_3_opp_fga",
+        "left_corner_3_opp_fgm",
+        "mid-range_opp_fg_pct",
+        "mid-range_opp_fga",
+        "mid-range_opp_fgm",
+        "restricted_area_opp_fg_pct",
+        "restricted_area_opp_fga",
+        "restricted_area_opp_fgm",
+        "right_corner_3_opp_fg_pct",
+        "right_corner_3_opp_fga",
+        "right_corner_3_opp_fgm"
+      ],
+      "nullFields": [],
+      "zeroFields": [
+        "backcourt_opp_fg_pct",
+        "backcourt_opp_fga",
+        "backcourt_opp_fgm"
+      ],
+      "sentinels": [],
+      "gpPresent": false,
+      "gpValues": [],
+      "grainKeys": [
+        "2025|regular|3|shooting|by_zone_opponent",
+        "2025|regular|8|shooting|by_zone_opponent",
+        "2025|regular|21|shooting|by_zone_opponent",
+        "2025|regular|29|shooting|by_zone_opponent"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=shooting/type=by_zone_opponent.json"
+    },
+    {
+      "id": "T04",
+      "kind": "team",
+      "season": 2025,
+      "seasonType": "regular",
+      "category": "general",
+      "type": "advanced",
+      "path": "/nba/v1/team_season_averages/general",
+      "httpOk": true,
+      "error": null,
+      "pages": 1,
+      "stoppedEarly": false,
+      "rows": 4,
+      "requestedEntities": 4,
+      "returnedIds": [
+        "3",
+        "8",
+        "21",
+        "29"
+      ],
+      "coveragePct": 100,
+      "identityFields": [
+        "team",
+        "season",
+        "season_type",
+        "stats"
+      ],
+      "seasonField": 2025,
+      "seasonTypeField": "regular",
+      "statsFieldNames": [
+        "ast_pct",
+        "ast_pct_rank",
+        "ast_ratio",
+        "ast_ratio_rank",
+        "ast_to",
+        "ast_to_rank",
+        "def_rating",
+        "def_rating_rank",
+        "dreb_pct",
+        "dreb_pct_rank",
+        "e_def_rating",
+        "e_net_rating",
+        "e_off_rating",
+        "e_pace",
+        "efg_pct",
+        "efg_pct_rank",
+        "gp",
+        "gp_rank",
+        "l",
+        "l_rank",
+        "min",
+        "min_rank",
+        "net_rating",
+        "net_rating_rank",
+        "off_rating",
+        "off_rating_rank",
+        "oreb_pct",
+        "oreb_pct_rank",
+        "pace",
+        "pace_per40",
+        "pace_rank",
+        "pie",
+        "pie_rank",
+        "poss",
+        "reb_pct",
+        "reb_pct_rank",
+        "tm_tov_pct",
+        "tm_tov_pct_rank",
+        "ts_pct",
+        "ts_pct_rank",
+        "w",
+        "w_pct",
+        "w_pct_rank",
+        "w_rank"
+      ],
+      "nullFields": [],
+      "zeroFields": [],
+      "sentinels": [],
+      "gpPresent": true,
+      "gpValues": [
+        82,
+        82,
+        82,
+        82
+      ],
+      "grainKeys": [
+        "2025|regular|3|general|advanced",
+        "2025|regular|8|general|advanced",
+        "2025|regular|21|general|advanced",
+        "2025|regular|29|general|advanced"
+      ],
+      "duplicateGrain": 0,
+      "s3Key": "raw/source=balldontlie/league=nba/entity=team_season_averages/_characterization/season=2025/season_type=regular/category=general/type=advanced.json"
+    }
+  ],
+  "responseGrain": {
+    "playerLikely": "(season, season_type, player_id, category, type)",
+    "teamLikely": "(season, season_type, team_id, category, type)",
+    "duplicates": [
+      {
+        "id": "P01",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P02",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P03",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P04",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P05",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P06",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P07",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P08",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P09",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P10",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P11",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "P12",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "T01",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "T02",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "T03",
+        "duplicateGrain": 0
+      },
+      {
+        "id": "T04",
+        "duplicateGrain": 0
+      }
+    ],
+    "verifiedFromResponses": true
+  },
+  "historicalConsistency": [
+    {
+      "compared": true,
+      "pair": "playtype/isolation 2025 vs 2024",
+      "sameFieldNames": true,
+      "sharedFields": 20,
+      "addedIn2025": [],
+      "droppedIn2025": [],
+      "coverage2025": 100,
+      "coverage2024": 100,
+      "identityCompatible": true
+    },
+    {
+      "compared": true,
+      "pair": "tracking/drives 2025 vs 2024",
+      "sameFieldNames": true,
+      "sharedFields": 21,
+      "addedIn2025": [],
+      "droppedIn2025": [],
+      "coverage2025": 100,
+      "coverage2024": 100,
+      "identityCompatible": true
+    },
+    {
+      "compared": true,
+      "pair": "shooting/by_zone 2025 vs 2024",
+      "sameFieldNames": true,
+      "sharedFields": 24,
+      "addedIn2025": [],
+      "droppedIn2025": [],
+      "coverage2025": 100,
+      "coverage2024": 100,
+      "identityCompatible": true
+    }
+  ],
+  "coverageQuality": [
+    {
+      "id": "P01",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 1,
+      "sentinels": []
+    },
+    {
+      "id": "P02",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 1,
+      "sentinels": []
+    },
+    {
+      "id": "P03",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 2,
+      "sentinels": []
+    },
+    {
+      "id": "P04",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "P05",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "P06",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": false,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 4,
+      "sentinels": []
+    },
+    {
+      "id": "P07",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "P08",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": false,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 3,
+      "sentinels": []
+    },
+    {
+      "id": "P09",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "P10",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 1,
+      "sentinels": []
+    },
+    {
+      "id": "P11",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "P12",
+      "requested": 5,
+      "returned": 5,
+      "coveragePct": 100,
+      "gpPresent": false,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 6,
+      "sentinels": []
+    },
+    {
+      "id": "T01",
+      "requested": 4,
+      "returned": 4,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "T02",
+      "requested": 4,
+      "returned": 4,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    },
+    {
+      "id": "T03",
+      "requested": 4,
+      "returned": 4,
+      "coveragePct": 100,
+      "gpPresent": false,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 3,
+      "sentinels": []
+    },
+    {
+      "id": "T04",
+      "requested": 4,
+      "returned": 4,
+      "coveragePct": 100,
+      "gpPresent": true,
+      "nullFieldCount": 0,
+      "zeroFieldCount": 0,
+      "sentinels": []
+    }
+  ],
+  "advancedStatsOverlap": {
+    "generalAdvanced": {
+      "A": [
+        "ast_pct",
+        "ast_pct_rank",
+        "ast_ratio",
+        "ast_ratio_rank",
+        "ast_to",
+        "ast_to_rank",
+        "fg_pct",
+        "fg_pct_rank",
+        "fga",
+        "fga_pg",
+        "fga_pg_rank",
+        "fga_rank",
+        "fgm",
+        "fgm_pg",
+        "fgm_pg_rank",
+        "fgm_rank",
+        "gp",
+        "gp_rank",
+        "min",
+        "min_rank",
+        "reb_pct",
+        "reb_pct_rank"
+      ],
+      "B": [
+        "e_net_rating",
+        "e_net_rating_rank",
+        "e_pace",
+        "e_pace_rank",
+        "net_rating",
+        "net_rating_rank",
+        "pace",
+        "pace_per40",
+        "pace_rank",
+        "pie",
+        "pie_rank",
+        "sp_work_net_rating",
+        "sp_work_net_rating_rank",
+        "sp_work_pace",
+        "sp_work_pace_rank"
+      ],
+      "C": [
+        "age",
+        "def_rating",
+        "def_rating_rank",
+        "dreb_pct",
+        "dreb_pct_rank",
+        "e_def_rating",
+        "e_def_rating_rank",
+        "e_off_rating",
+        "e_off_rating_rank",
+        "e_tov_pct",
+        "e_tov_pct_rank",
+        "e_usg_pct",
+        "e_usg_pct_rank",
+        "efg_pct",
+        "efg_pct_rank",
+        "l",
+        "l_rank",
+        "off_rating",
+        "off_rating_rank",
+        "oreb_pct",
+        "oreb_pct_rank",
+        "poss",
+        "sp_work_def_rating",
+        "sp_work_def_rating_rank",
+        "sp_work_off_rating",
+        "sp_work_off_rating_rank",
+        "team_count",
+        "tm_tov_pct",
+        "tm_tov_pct_rank",
+        "ts_pct",
+        "ts_pct_rank",
+        "usg_pct",
+        "usg_pct_rank",
+        "w",
+        "w_pct",
+        "w_pct_rank",
+        "w_rank"
+      ]
+    },
+    "playtypeIsolation": {
+      "A": [
+        "fg_pct",
+        "fga",
+        "fgm",
+        "gp",
+        "pts",
+        "tov_poss_pct"
+      ],
+      "B": [],
+      "C": [
+        "efg_pct",
+        "fgmx",
+        "ft_poss_pct",
+        "percentile",
+        "play_type",
+        "plusone_poss_pct",
+        "poss",
+        "poss_pct",
+        "ppp",
+        "score_poss_pct",
+        "season_id",
+        "sf_poss_pct",
+        "team_name",
+        "type_grouping"
+      ]
+    },
+    "trackingDrives": {
+      "A": [
+        "gp",
+        "min"
+      ],
+      "B": [],
+      "C": [
+        "drive_ast",
+        "drive_ast_pct",
+        "drive_fg_pct",
+        "drive_fga",
+        "drive_fgm",
+        "drive_ft_pct",
+        "drive_fta",
+        "drive_ftm",
+        "drive_passes",
+        "drive_passes_pct",
+        "drive_pf",
+        "drive_pf_pct",
+        "drive_pts",
+        "drive_pts_pct",
+        "drive_tov",
+        "drive_tov_pct",
+        "drives",
+        "l",
+        "w"
+      ]
+    },
+    "shootingByZone": {
+      "A": [],
+      "B": [],
+      "C": [
+        "above_the_break_3_fg_pct",
+        "above_the_break_3_fga",
+        "above_the_break_3_fgm",
+        "backcourt_fg_pct",
+        "backcourt_fga",
+        "backcourt_fgm",
+        "corner_3_fg_pct",
+        "corner_3_fga",
+        "corner_3_fgm",
+        "in_the_paint_(non-ra)_fg_pct",
+        "in_the_paint_(non-ra)_fga",
+        "in_the_paint_(non-ra)_fgm",
+        "left_corner_3_fg_pct",
+        "left_corner_3_fga",
+        "left_corner_3_fgm",
+        "mid-range_fg_pct",
+        "mid-range_fga",
+        "mid-range_fgm",
+        "restricted_area_fg_pct",
+        "restricted_area_fga",
+        "restricted_area_fgm",
+        "right_corner_3_fg_pct",
+        "right_corner_3_fga",
+        "right_corner_3_fgm"
+      ]
+    },
+    "note": "A = box-like / already in serving averages or logs. B = named like Advanced Stats V2 (season-grain vs game-grain). C = not in our Advanced field set."
+  },
+  "uniquePlayerSignals": {
+    "classCFields": [
+      "efg_pct",
+      "fgmx",
+      "ft_poss_pct",
+      "percentile",
+      "play_type",
+      "plusone_poss_pct",
+      "poss",
+      "poss_pct",
+      "ppp",
+      "score_poss_pct",
+      "season_id",
+      "sf_poss_pct",
+      "team_name",
+      "type_grouping",
+      "drive_ast",
+      "drive_ast_pct",
+      "drive_fg_pct",
+      "drive_fga",
+      "drive_fgm",
+      "drive_ft_pct",
+      "drive_fta",
+      "drive_ftm",
+      "drive_passes",
+      "drive_passes_pct",
+      "drive_pf",
+      "drive_pf_pct",
+      "drive_pts",
+      "drive_pts_pct",
+      "drive_tov",
+      "drive_tov_pct",
+      "drives",
+      "l",
+      "w",
+      "above_the_break_3_fg_pct",
+      "above_the_break_3_fga",
+      "above_the_break_3_fgm",
+      "backcourt_fg_pct",
+      "backcourt_fga",
+      "backcourt_fgm",
+      "corner_3_fg_pct",
+      "corner_3_fga",
+      "corner_3_fgm",
+      "in_the_paint_(non-ra)_fg_pct",
+      "in_the_paint_(non-ra)_fga",
+      "in_the_paint_(non-ra)_fgm",
+      "left_corner_3_fg_pct",
+      "left_corner_3_fga",
+      "left_corner_3_fgm",
+      "mid-range_fg_pct",
+      "mid-range_fga",
+      "mid-range_fgm",
+      "restricted_area_fg_pct",
+      "restricted_area_fga",
+      "restricted_area_fgm",
+      "right_corner_3_fg_pct",
+      "right_corner_3_fga",
+      "right_corner_3_fgm"
+    ],
+    "count": 57
+  },
+  "uniqueTeamSignals": {
+    "opponentZoneFields": [
+      "above_the_break_3_opp_fg_pct",
+      "above_the_break_3_opp_fga",
+      "above_the_break_3_opp_fgm",
+      "backcourt_opp_fg_pct",
+      "backcourt_opp_fga",
+      "backcourt_opp_fgm",
+      "corner_3_opp_fg_pct",
+      "corner_3_opp_fga",
+      "corner_3_opp_fgm",
+      "in_the_paint_(non-ra)_opp_fg_pct",
+      "in_the_paint_(non-ra)_opp_fga",
+      "in_the_paint_(non-ra)_opp_fgm",
+      "left_corner_3_opp_fg_pct",
+      "left_corner_3_opp_fga",
+      "left_corner_3_opp_fgm",
+      "mid-range_opp_fg_pct",
+      "mid-range_opp_fga",
+      "mid-range_opp_fgm",
+      "restricted_area_opp_fg_pct",
+      "restricted_area_opp_fga",
+      "restricted_area_opp_fgm",
+      "right_corner_3_opp_fg_pct",
+      "right_corner_3_opp_fga",
+      "right_corner_3_opp_fgm"
+    ],
+    "teamPlaytypeFields": [
+      "efg_pct",
+      "fg_pct",
+      "fga",
+      "fgm",
+      "fgmx",
+      "ft_poss_pct",
+      "gp",
+      "percentile",
+      "play_type",
+      "plusone_poss_pct",
+      "poss",
+      "poss_pct",
+      "ppp",
+      "pts",
+      "score_poss_pct",
+      "season_id",
+      "sf_poss_pct",
+      "tov_poss_pct",
+      "type_grouping"
+    ],
+    "teamGeneralOverlap": {
+      "A": [
+        "ast_pct",
+        "ast_pct_rank",
+        "ast_ratio",
+        "ast_ratio_rank",
+        "ast_to",
+        "ast_to_rank",
+        "gp",
+        "gp_rank",
+        "min",
+        "min_rank",
+        "reb_pct",
+        "reb_pct_rank"
+      ],
+      "B": [
+        "e_net_rating",
+        "e_pace",
+        "net_rating",
+        "net_rating_rank",
+        "pace",
+        "pace_per40",
+        "pace_rank",
+        "pie",
+        "pie_rank"
+      ],
+      "C": [
+        "def_rating",
+        "def_rating_rank",
+        "dreb_pct",
+        "dreb_pct_rank",
+        "e_def_rating",
+        "e_off_rating",
+        "efg_pct",
+        "efg_pct_rank",
+        "l",
+        "l_rank",
+        "off_rating",
+        "off_rating_rank",
+        "oreb_pct",
+        "oreb_pct_rank",
+        "poss",
+        "tm_tov_pct",
+        "tm_tov_pct_rank",
+        "ts_pct",
+        "ts_pct_rank",
+        "w",
+        "w_pct",
+        "w_pct_rank",
+        "w_rank"
+      ]
+    }
+  },
+  "playTypeAssessment": {
+    "classification": "HIGH_VALUE",
+    "actualFields": [
+      "efg_pct",
+      "fg_pct",
+      "fga",
+      "fgm",
+      "fgmx",
+      "ft_poss_pct",
+      "gp",
+      "percentile",
+      "play_type",
+      "plusone_poss_pct",
+      "poss",
+      "poss_pct",
+      "ppp",
+      "pts",
+      "score_poss_pct",
+      "season_id",
+      "sf_poss_pct",
+      "team_name",
+      "tov_poss_pct",
+      "type_grouping"
+    ],
+    "alsoSampled": [
+      "prballhandler",
+      "prrollman"
+    ]
+  },
+  "trackingAssessment": {
+    "drivesFields": [
+      "drive_ast",
+      "drive_ast_pct",
+      "drive_fg_pct",
+      "drive_fga",
+      "drive_fgm",
+      "drive_ft_pct",
+      "drive_fta",
+      "drive_ftm",
+      "drive_passes",
+      "drive_passes_pct",
+      "drive_pf",
+      "drive_pf_pct",
+      "drive_pts",
+      "drive_pts_pct",
+      "drive_tov",
+      "drive_tov_pct",
+      "drives",
+      "gp",
+      "l",
+      "min",
+      "w"
+    ],
+    "passingFields": [
+      "ast",
+      "ast_adj",
+      "ast_points_created",
+      "ast_to_pass_pct",
+      "ast_to_pass_pct_adj",
+      "ft_ast",
+      "gp",
+      "l",
+      "min",
+      "passes_made",
+      "passes_received",
+      "potential_ast",
+      "secondary_ast",
+      "w"
+    ],
+    "teamPossessionsFields": [
+      "avg_drib_per_touch",
+      "avg_sec_per_touch",
+      "elbow_touches",
+      "front_ct_touches",
+      "gp",
+      "l",
+      "min",
+      "paint_touches",
+      "points",
+      "post_touches",
+      "pts_per_elbow_touch",
+      "pts_per_paint_touch",
+      "pts_per_post_touch",
+      "pts_per_touch",
+      "time_of_poss",
+      "touches",
+      "w"
+    ]
+  },
+  "shootingAssessment": {
+    "byZoneFields": [
+      "above_the_break_3_fg_pct",
+      "above_the_break_3_fga",
+      "above_the_break_3_fgm",
+      "backcourt_fg_pct",
+      "backcourt_fga",
+      "backcourt_fgm",
+      "corner_3_fg_pct",
+      "corner_3_fga",
+      "corner_3_fgm",
+      "in_the_paint_(non-ra)_fg_pct",
+      "in_the_paint_(non-ra)_fga",
+      "in_the_paint_(non-ra)_fgm",
+      "left_corner_3_fg_pct",
+      "left_corner_3_fga",
+      "left_corner_3_fgm",
+      "mid-range_fg_pct",
+      "mid-range_fga",
+      "mid-range_fgm",
+      "restricted_area_fg_pct",
+      "restricted_area_fga",
+      "restricted_area_fgm",
+      "right_corner_3_fg_pct",
+      "right_corner_3_fga",
+      "right_corner_3_fgm"
+    ],
+    "shotDashboardFields": [
+      "age",
+      "efg_pct",
+      "fg2_pct",
+      "fg2a",
+      "fg2a_frequency",
+      "fg2m",
+      "fg3_pct",
+      "fg3a",
+      "fg3a_frequency",
+      "fg3m",
+      "fg_pct",
+      "fga",
+      "fga_frequency",
+      "fgm",
+      "g",
+      "gp",
+      "player_last_team_abbreviation",
+      "player_last_team_id"
+    ],
+    "teamOpponentZoneFields": [
+      "above_the_break_3_opp_fg_pct",
+      "above_the_break_3_opp_fga",
+      "above_the_break_3_opp_fgm",
+      "backcourt_opp_fg_pct",
+      "backcourt_opp_fga",
+      "backcourt_opp_fgm",
+      "corner_3_opp_fg_pct",
+      "corner_3_opp_fga",
+      "corner_3_opp_fgm",
+      "in_the_paint_(non-ra)_opp_fg_pct",
+      "in_the_paint_(non-ra)_opp_fga",
+      "in_the_paint_(non-ra)_opp_fgm",
+      "left_corner_3_opp_fg_pct",
+      "left_corner_3_opp_fga",
+      "left_corner_3_opp_fgm",
+      "mid-range_opp_fg_pct",
+      "mid-range_opp_fga",
+      "mid-range_opp_fgm",
+      "restricted_area_opp_fg_pct",
+      "restricted_area_opp_fga",
+      "restricted_area_opp_fgm",
+      "right_corner_3_opp_fg_pct",
+      "right_corner_3_opp_fga",
+      "right_corner_3_opp_fgm"
+    ]
+  },
+  "productApplications": {
+    "roleProfile": {
+      "readiness": "promising",
+      "uniqueValue": "Season play-type/tracking if class C fields populate",
+      "majorLimitation": "Season grain, not game-level role; hustle/clutch not fully probed",
+      "priority": "P2"
+    },
+    "matchupProfile": {
+      "readiness": "promising",
+      "uniqueValue": "Opponent shooting-zone if by_zone_opponent is populated",
+      "majorLimitation": "Four teams only; not a league archive",
+      "priority": "P2"
+    },
+    "opportunityCheck": {
+      "readiness": "not_ready",
+      "uniqueValue": "Season style context only",
+      "majorLimitation": "No in-season role shift without game grain",
+      "priority": "later"
+    },
+    "historicalExplorer": {
+      "readiness": "partial",
+      "uniqueValue": "Season profiles if schema is stable 2024–2025",
+      "majorLimitation": "Sampled players/teams only",
+      "priority": "P2"
+    },
+    "marketPlusContext": {
+      "readiness": "later",
+      "uniqueValue": "Combine with 3-Hour Pre-Tip later",
+      "majorLimitation": "Not characterized against props in this step",
+      "priority": "later"
+    }
+  },
+  "rawEvidenceNotes": {
+    "units": {
+      "playtype_poss": "per-game (SGA isolation 7.1 poss/g)",
+      "playtype_poss_pct": "0-1 share of offensive possessions (SGA isolation 0.28)",
+      "playtype_percentile": "0-1 (SGA isolation 0.926)",
+      "playtype_ppp": "points per possession (SGA isolation 1.163)",
+      "tracking": "per-game rates (SGA 25.8 drives, Jokic 72.9 passes_made)",
+      "shooting_by_zone": "per-game FGA/FGM/FG% by zone",
+      "shotdashboard_overall": "per-game FGA plus 2pt/3pt frequency (fg2a_frequency+fg3a_frequency=1)",
+      "hustle": "per-game; games field is stats.g not gp",
+      "general_advanced": "season rates (usg_pct 0-1, ratings ~100 scale, pie 0-1)"
+    },
+    "playtypeGpIsNotSeasonGp": {
+      "sga_playtype_gp": 63,
+      "sga_tracking_gp": 68,
+      "sga_general_gp": 68,
+      "team_isolation_gp": [77, 80, 79, 80],
+      "team_general_gp": 82,
+      "note": "Play-type GP is games with that Synergy type (or a narrower window), not full-season GP."
+    },
+    "zeroFieldsAreAnyRowZero": "zeroFields flags a key if any sampled row is 0, not if the field is always zero. plusone_poss_pct is 0.022 for SGA isolation and 0 for Achiuwa. charges_drawn is 0 for Durant only.",
+    "paginationMeta": "Each probe returned meta={per_page:100} only; no next_cursor on these filtered samples. 1 page per probe.",
+    "identity": {
+      "player": "nested player.id (no player.team_id on these rows)",
+      "team": "nested team.id",
+      "topLevel": ["player|team", "season", "season_type", "stats"]
+    },
+    "roleDifferentiation2025": {
+      "175_SGA": { "iso_poss_pct": 0.28, "prbh_poss_pct": 0.36, "prroll_poss_pct": 0.007, "drives": 25.8 },
+      "246_Jokic": { "iso_poss_pct": 0.067, "prbh_poss_pct": 0.085, "prroll_poss_pct": 0.114, "passes_made": 72.9 },
+      "73_Brunson": { "iso_poss_pct": 0.164, "prbh_poss_pct": 0.34, "prroll_poss_pct": 0.008, "drives": 20.2 },
+      "140_Durant": { "iso_poss_pct": 0.189, "prbh_poss_pct": 0.176, "prroll_poss_pct": 0.027, "midrange_fga": 5.4 },
+      "3547249_Achiuwa": { "iso_poss_pct": 0.045, "prbh_poss_pct": 0.018, "prroll_poss_pct": 0.113, "drives": 3.9 }
+    },
+    "matchupDifferentiation2025": {
+      "OKC_iso_poss_pct": 0.097,
+      "OKC_opp_ra_fg_pct": 0.61,
+      "UTA_opp_ra_fg_pct": 0.729,
+      "DEN_off_rating": 121.2,
+      "BKN_off_rating": 108.2
+    },
+    "naiveClassCCaveat": "Script class C used string matching against Advanced Stats V2 names. general/advanced usg_pct, efg_pct, ts_pct, off_rating, def_rating, poss are Class B (season rollup of existing Advanced), not unique. l/w/season_id/team_name/play_type/type_grouping are metadata."
+  },
+  "targetedArchiveEstimate": {
+    "notExecuted": true,
+    "skip": [
+      "player general/advanced (Class B vs existing Advanced Stats)",
+      "player shotdashboard/overall (2/3 mix already in logs)",
+      "clutch and defense (not probed; do not expand this step)",
+      "hustle (populated but not core Role/Matchup)"
+    ],
+    "proposedPlayer": [
+      "playtype: isolation, prballhandler, prrollman, spotup, transition",
+      "tracking: drives, passing, possessions, catchshoot, pullupshot",
+      "shooting: by_zone"
+    ],
+    "proposedTeam": [
+      "playtype: isolation, spotup, prballhandler",
+      "tracking: drives, possessions, passing",
+      "shooting: by_zone_base, by_zone_opponent"
+    ],
+    "combinationsPerSeasonApprox": 19,
+    "seasons": [2023, 2024, 2025],
+    "logicalProbes": 57,
+    "pagesIfUnfilteredPlayer": "unknown; do not run unfiltered. Sample of 5 players = 1 page. League-wide player lists would be multiple pages at per_page=100.",
+    "safeBatchPlan": "Reuse known BDL player IDs from logs in batches of <=100 player_ids[]. ~5 batches × 11 player types × 3 seasons = 165 player requests + 8 team types × 3 seasons = 24 team requests ≈ 189 HTTP.",
+    "requestsConservative": 189,
+    "providerMinutesAt13s": 41,
+    "estimatedS3Mb": "~12 MB (characterization ~670–800 bytes/player/category; 500 players × 11 types × 3 seasons ≈ 11 MB plus team objects)",
+    "characterizationObjectBytesSample": 48792,
+    "note": "Do not archive without player_ids[]/team_ids[] filters. Unfiltered player endpoints can paginate into a crawl. This estimate is not executed."
+  },
+  "trialTimeRemaining": {
+    "elapsedHours": 25.737,
+    "remainingHours": 22.263,
+    "protectedReserveHours": 6,
+    "usableRemainingHours": 16.263
+  },
+  "postgresUnchangedConfirmation": {
+    "expectedBytes": 342846611,
+    "dbBytesAfter": 342846611,
+    "unchanged": true,
+    "unexpectedServing": []
+  },
+  "archiveRecommendation": "TARGETED_ARCHIVE_CONSIDER",
+  "stepVerdict": "YELLOW — useful subset exists but broad archive is unnecessary"
+}
