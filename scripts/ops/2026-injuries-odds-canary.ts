@@ -9,6 +9,7 @@ import { config as loadEnv } from 'dotenv';
 import path from 'node:path';
 import fs from 'node:fs';
 import { Pool } from 'pg';
+import { bdlAuthorizationHeader } from '../../lib/balldontlie/credential-fingerprint';
 import { fetchBdlLive } from '../../lib/balldontlie/live-rate-limit';
 import { PINNED_ANALYTICS_SEASON } from '../../lib/season';
 import {
@@ -101,11 +102,10 @@ function oddsPayloadAudit(rows: BdlGameOddsRow[]) {
 
 function requireKey(): string {
   const key =
-    process.env.BALLDONTLIE_API_KEY?.trim() ||
-    process.env.BALDONTLIE_API_KEY?.trim() ||
+    process.env.BALLDONTLIE_API_KEY ||
+    process.env.BALDONTLIE_API_KEY ||
     '';
-  if (!key) throw new Error('BALLDONTLIE_API_KEY missing in local .env (not printed)');
-  return key;
+  return bdlAuthorizationHeader(key).Authorization;
 }
 
 function liveLimiterEnv(worker: string): Record<string, string | undefined> {
@@ -165,6 +165,9 @@ async function main() {
     throw new Error('13D canary refuses --persist; dry-run only');
   }
 
+  const skipOdds = process.argv.includes('--injuries-only');
+  const skipInjuries = process.argv.includes('--odds-only');
+
   const key = requireKey();
   const throttleLogs: Record<string, unknown>[] = [];
   const origLog = console.log;
@@ -187,9 +190,10 @@ async function main() {
   let injuryPages = 0;
   let injuryHttp200 = 0;
   let injuryLastStatus = 0;
-  let injuryError: string | null = null;
+  let injuryError: string | null = skipInjuries ? 'skipped (--odds-only)' : null;
   const injuryStarted = Date.now();
   let injuryCursor: number | null = null;
+  if (!skipInjuries) {
   while (true) {
     const url = new URL('https://api.balldontlie.io/nba/v1/player_injuries');
     url.searchParams.set('per_page', '100');
@@ -214,6 +218,7 @@ async function main() {
     injuryCursor = json.meta?.next_cursor ?? null;
     if (injuryCursor == null) break;
   }
+  }
   const injuryDurationMs = Date.now() - injuryStarted;
   const injuryLogs = throttleLogs.filter((l) => l.worker === 'injuries-odds-canary-injuries');
 
@@ -222,8 +227,9 @@ async function main() {
   let oddsPages = 0;
   let oddsHttp200 = 0;
   let oddsLastStatus = 0;
-  let oddsError: string | null = null;
+  let oddsError: string | null = skipOdds ? 'skipped (--injuries-only)' : null;
   const oddsStarted = Date.now();
+  if (!skipOdds) {
   dateLoop: for (const dateStr of dates) {
     let cursor: number | null = null;
     while (true) {
@@ -251,6 +257,7 @@ async function main() {
       cursor = json.meta?.next_cursor ?? null;
       if (cursor == null) break;
     }
+  }
   }
   const oddsDurationMs = Date.now() - oddsStarted;
   const oddsLogs = throttleLogs.filter((l) => l.worker === 'injuries-odds-canary-odds');
@@ -366,7 +373,9 @@ async function main() {
   }
 
   const coverage =
-    oddsLastStatus === 401 || oddsLastStatus === 403
+    skipOdds
+      ? 'SKIPPED'
+      : oddsLastStatus === 401 || oddsLastStatus === 403
       ? 'UNAUTHORIZED'
       : classifySportsbookCoverage(vendors);
   const budget = estimateInjuriesOddsRequestBudget({

@@ -65,3 +65,5 @@ Terraform (`infra/lambda.tf`) merges freeze defaults (`DATA_MODE=replay`, `OFFSE
 - Placeholders in `.env.example` and `infra/terraform.tfvars.example`
 
 Local Lambda secrets belong only in **untracked** `infra/terraform.tfvars` (`*.tfvars` is gitignored). Rotating a password at the provider does not update Vercel/Lambda until those env stores are updated to match.
+
+**BALLDONTLIE ingestion key:** AWS source of truth is `infra/terraform.tfvars` (`lambda_env`, `odds_lambda_env`, `injuries_lambda_env`, `player_props_lambda_env`). Those maps are also stored in Terraform state (`sensitive = true` redacts CLI output; state still holds the value). There is no Secrets Manager / SSM lookup. `terraform apply` replaces Lambda env from tfvars — do not rely on a console-only key edit. Local CLI canaries read repo-root `.env` (`BALLDONTLIE_API_KEY`, typo alias `BALDONTLIE_API_KEY`). Keep copies aligned with `npx tsx scripts/ops/2026-bdl-credential-alignment.ts` (fingerprint only). Vercel Next.js serving does not read this key.

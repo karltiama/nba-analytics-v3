@@ -20,6 +20,14 @@ lambda_memory_size  = 512
 enable_schedule = false
 schedule_cron   = "cron(0 8 * * ? *)"
 
+# BALLDONTLIE key — AWS source of truth is this untracked tfvars file.
+# Use the SAME BALLDONTLIE_API_KEY in nightly / odds / injuries / props env maps.
+# terraform apply overwrites Lambda environment from these maps; do not set the
+# key only in the AWS console (the next apply will replace it).
+# Before apply: npx tsx scripts/ops/2026-bdl-credential-alignment.ts
+# Local CLI canaries read repo-root .env (BALLDONTLIE_API_KEY; typo alias fallback).
+# There is no Secrets Manager / SSM lookup.
+
 # Required for nightly-bdl-updater. Use real values in terraform.tfvars or TF_VAR_lambda_env.
 lambda_env = {
   SUPABASE_DB_URL       = "postgresql://postgres.PROJECT:PASSWORD@REGION.pooler.supabase.com:6543/postgres"

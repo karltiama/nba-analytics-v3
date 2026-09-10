@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-10T22:16:25.829Z",
+  "generatedAt": "2026-09-10T23:11:12.834Z",
   "pin": "2025",
   "persist": false,
   "entitlement": "BDL_ENTITLEMENT_CONFIRMED_GOAT",
@@ -15,7 +15,7 @@
     "lastStatus": 401,
     "http401": 1,
     "httpError": "Unauthorized",
-    "durationMs": 623,
+    "durationMs": 491,
     "http200": 0,
     "accounting": {
       "httpAttempts": 1,
@@ -75,30 +75,26 @@
       "2026-09-10",
       "2026-09-11"
     ],
-    "pages": 1,
-    "lastStatus": 401,
-    "http401": 1,
-    "httpError": "Unauthorized",
-    "durationMs": 12973,
+    "pages": 0,
+    "lastStatus": 0,
+    "http401": 0,
+    "httpError": "skipped (--injuries-only)",
+    "durationMs": 0,
     "http200": 0,
     "accounting": {
-      "httpAttempts": 1,
-      "throttleGrants": 1,
+      "httpAttempts": 0,
+      "throttleGrants": 0,
       "throttle429": 0,
       "retries": 0,
-      "throttleWaitsMs": [
-        12495
-      ],
-      "throttleWaitMaxMs": 12495,
+      "throttleWaitsMs": [],
+      "throttleWaitMaxMs": 0,
       "retryAfterMs": [],
-      "throttleDecisions": [
-        "granted"
-      ]
+      "throttleDecisions": []
     },
     "rowCount": 0,
     "games": 0,
     "vendors": [],
-    "coverage": "UNAUTHORIZED",
+    "coverage": "SKIPPED",
     "usableMoneylineObservations": 0,
     "usableSpreadObservations": 0,
     "usableTotalObservations": 0,

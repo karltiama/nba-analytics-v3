@@ -1,0 +1,18 @@
+{
+  "step": "13R.2",
+  "generatedAt": "2026-09-10T23:31:25.718Z",
+  "verdict": "GREEN — canonical player identity resolver is ready for ingestion adoption",
+  "printsSecrets": false,
+  "bdlHttp": 0,
+  "liveIngestionEnabled": false,
+  "analyticsPlayers": 5534,
+  "classCNbaOnlyEntities": 81,
+  "classDNbaMaps": 0,
+  "quarantineRows": 0,
+  "constraintsAdded": [
+    "analytics_player_provider_ids_entity_provider_uniq",
+    "analytics_player_provider_ids_provider_chk"
+  ],
+  "tests": { "files": 13, "passed": 87 },
+  "recommended13R3": "A — integrate resolver into ingestion adapters; keep product FKs"
+}

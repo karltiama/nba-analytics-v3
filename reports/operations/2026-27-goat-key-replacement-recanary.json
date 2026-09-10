@@ -1,0 +1,17 @@
+{
+  "step": "13D.3-retry",
+  "generatedAt": "2026-09-10T23:13:13.098Z",
+  "verdict": "YELLOW — replacement credential is deployed but provider still rejects entitled endpoints",
+  "classification": "PROVIDER_KEY_OR_ENTITLEMENT_STILL_UNRESOLVED",
+  "printsSecrets": false,
+  "ownerNote": "First pass used tfvars before owner updated it. Retry used current tfvars, synced .env, applied 5 Lambdas.",
+  "cliTfvarsAwsMatch": true,
+  "terraformApply": "0 added, 5 changed, 0 destroyed",
+  "schedules": "DISABLED",
+  "gamesSmoke": { "http200": 1, "http401": 0, "at": "2026-09-10T23:10:47Z" },
+  "injuries": { "http200": 0, "http401": 1 },
+  "odds": { "skipped": true, "reason": "injuries 401" },
+  "persist": false,
+  "propsInvoked": false,
+  "lambdaQuota": { "current": 10, "classification": "NOT_REQUESTED" }
+}

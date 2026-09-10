@@ -39,6 +39,19 @@ create table if not exists analytics.player_provider_ids (
     unique (provider, provider_player_id)
 );
 
+-- 13R.2: at most one mapping per provider on a canonical person (IF NOT EXISTS in migration).
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'analytics_player_provider_ids_entity_provider_uniq'
+  ) then
+    alter table analytics.player_provider_ids
+      add constraint analytics_player_provider_ids_entity_provider_uniq
+      unique (player_entity_id, provider);
+  end if;
+end $$;
+
 create index if not exists analytics_player_provider_ids_entity_idx
   on analytics.player_provider_ids (player_entity_id);
 
