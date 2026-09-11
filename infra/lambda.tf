@@ -7,14 +7,35 @@ locals {
     CRON_DRY_RUN   = "1"
   }
 
-  # Master schedule state. Stale per-family enable flags cannot ENABLED-thaw this.
-  ingestion_schedule_state = var.live_ingestion_enabled ? "ENABLED" : "DISABLED"
+  # Per-family activation. Global live alone cannot ENABLED-thaw any family.
+  family_schedule_enabled = {
+    nightly          = var.live_ingestion_enabled && var.nightly_execution_enabled
+    odds             = var.live_ingestion_enabled && var.odds_execution_enabled
+    injuries         = var.live_ingestion_enabled && var.injuries_execution_enabled
+    player_props     = var.live_ingestion_enabled && var.player_props_execution_enabled
+    boxscore         = var.live_ingestion_enabled && var.boxscore_execution_enabled
+    game_status_sync = var.live_ingestion_enabled && var.game_status_sync_execution_enabled
+    postgame         = var.live_ingestion_enabled && var.postgame_execution_enabled
+  }
+
+  nightly_schedule_state          = local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED"
+  odds_schedule_state             = local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED"
+  injuries_schedule_state         = local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED"
+  player_props_schedule_state     = local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED"
+  boxscore_schedule_state         = local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED"
+  game_status_sync_schedule_state = local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED"
+
+  player_props_bundle_hash = base64sha256(join("", [
+    filesha256("${path.module}/../lambda/player-props-snapshot/.package/dist/controller.js"),
+    filesha256("${path.module}/../lambda/player-props-snapshot/.package/dist/worker.js"),
+  ]))
 }
 
-# Package Lambda from source: run "npm install && npm run build" in lambda/nightly-bdl-updater first.
+# Package from deterministic .package bundle (esbuild). Build with:
+#   npm run build:ingestion-lambdas
 data "archive_file" "nightly_bdl" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/nightly-bdl-updater"
+  source_dir  = "${path.module}/../lambda/nightly-bdl-updater/.package"
   output_path = "${path.module}/nightly-bdl-updater.zip"
 }
 
@@ -26,7 +47,7 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
   runtime          = "nodejs22.x"
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
-  source_code_hash = data.archive_file.nightly_bdl.output_base64sha256
+  source_code_hash = filebase64sha256("${path.module}/../lambda/nightly-bdl-updater/.package/dist/index.js")
 
   environment {
     variables = merge(
@@ -50,7 +71,7 @@ resource "aws_cloudwatch_event_rule" "nightly_bdl_schedule" {
   name                = "${var.lambda_function_name}-daily"
   description         = "Daily trigger for ${var.lambda_function_name} at 08:00 UTC"
   schedule_expression = var.schedule_cron
-  state               = local.ingestion_schedule_state
+  state               = local.nightly_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "nightly_bdl" {
@@ -74,7 +95,7 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 # -----------------------------------------------------------------------------
 data "archive_file" "odds_pre_game" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/odds-pre-game-snapshot"
+  source_dir  = "${path.module}/../lambda/odds-pre-game-snapshot/.package"
   output_path = "${path.module}/odds-pre-game-snapshot.zip"
 }
 
@@ -86,7 +107,7 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
   runtime          = "nodejs22.x"
   timeout          = var.odds_lambda_timeout
   memory_size      = var.odds_lambda_memory_size
-  source_code_hash = data.archive_file.odds_pre_game.output_base64sha256
+  source_code_hash = filebase64sha256("${path.module}/../lambda/odds-pre-game-snapshot/.package/dist/index.js")
 
   environment {
     variables = merge(
@@ -115,7 +136,7 @@ resource "aws_cloudwatch_event_rule" "odds_schedule" {
   name                = "${var.odds_lambda_function_name}-schedule-${count.index}"
   description         = "Odds snapshot run ${count.index + 1}/${length(local.odds_crons)} (e.g. 10am-12pm ET every 30 min)"
   schedule_expression = local.odds_crons[count.index]
-  state               = local.ingestion_schedule_state
+  state               = local.odds_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "odds_pre_game" {
@@ -139,7 +160,7 @@ resource "aws_lambda_permission" "allow_eventbridge_odds" {
 # -----------------------------------------------------------------------------
 data "archive_file" "injuries_snapshot" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/injuries-snapshot"
+  source_dir  = "${path.module}/../lambda/injuries-snapshot/.package"
   output_path = "${path.module}/injuries-snapshot.zip"
 }
 
@@ -151,7 +172,7 @@ resource "aws_lambda_function" "injuries_snapshot" {
   runtime          = "nodejs22.x"
   timeout          = var.injuries_lambda_timeout
   memory_size      = var.injuries_lambda_memory_size
-  source_code_hash = data.archive_file.injuries_snapshot.output_base64sha256
+  source_code_hash = filebase64sha256("${path.module}/../lambda/injuries-snapshot/.package/dist/index.js")
 
   environment {
     variables = merge(
@@ -172,7 +193,7 @@ resource "aws_cloudwatch_event_rule" "injuries_schedule" {
   name                = "${var.injuries_lambda_function_name}-schedule"
   description         = "Schedule for ${var.injuries_lambda_function_name} (e.g. 2-3x daily)"
   schedule_expression = var.injuries_schedule_cron
-  state               = local.ingestion_schedule_state
+  state               = local.injuries_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "injuries_snapshot" {
@@ -198,7 +219,7 @@ resource "aws_lambda_permission" "allow_eventbridge_injuries" {
 # -----------------------------------------------------------------------------
 data "archive_file" "player_props" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/player-props-snapshot"
+  source_dir  = "${path.module}/../lambda/player-props-snapshot/.package"
   output_path = "${path.module}/player-props-snapshot.zip"
 }
 
@@ -225,7 +246,7 @@ resource "aws_lambda_function" "player_props_worker" {
   timeout                        = var.player_props_lambda_timeout
   memory_size                    = var.player_props_lambda_memory_size
   reserved_concurrent_executions = var.player_props_apply_reserved_concurrency ? var.player_props_worker_reserved_concurrency : null
-  source_code_hash               = data.archive_file.player_props.output_base64sha256
+  source_code_hash               = local.player_props_bundle_hash
 
   environment {
     variables = merge(
@@ -251,6 +272,7 @@ resource "aws_lambda_event_source_mapping" "player_props_worker_queue" {
   function_name                      = aws_lambda_function.player_props_worker.arn
   batch_size                         = 1
   maximum_batching_window_in_seconds = 0
+  enabled                            = local.family_schedule_enabled.player_props
 }
 
 resource "aws_lambda_function" "player_props_controller" {
@@ -261,7 +283,7 @@ resource "aws_lambda_function" "player_props_controller" {
   runtime          = "nodejs22.x"
   timeout          = var.player_props_controller_timeout
   memory_size      = var.player_props_controller_memory_size
-  source_code_hash = data.archive_file.player_props.output_base64sha256
+  source_code_hash = local.player_props_bundle_hash
 
   environment {
     variables = merge(
@@ -287,7 +309,7 @@ resource "aws_scheduler_schedule" "player_props_crons" {
   name        = "nba-player-props-${count.index}"
   group_name  = "default"
   description = "Player props ingestion (BallDontLie) run ${count.index + 1}/${length(var.player_props_schedule_crons)}."
-  state       = local.ingestion_schedule_state
+  state       = local.player_props_schedule_state
 
   flexible_time_window {
     mode = "OFF"
@@ -307,7 +329,7 @@ resource "aws_scheduler_schedule" "player_props_rate" {
   name        = "nba-player-props-schedule"
   group_name  = "default"
   description = "Every 30 min player props ingestion (BallDontLie)."
-  state       = local.ingestion_schedule_state
+  state       = local.player_props_schedule_state
 
   flexible_time_window {
     mode = "OFF"
@@ -335,7 +357,7 @@ resource "aws_lambda_permission" "allow_scheduler_player_props" {
 # -----------------------------------------------------------------------------
 data "archive_file" "boxscore_scraper" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/boxscore-scraper"
+  source_dir  = "${path.module}/../lambda/boxscore-scraper/.package"
   output_path = "${path.module}/boxscore-scraper.zip"
 }
 
@@ -347,7 +369,7 @@ resource "aws_lambda_function" "boxscore_scraper" {
   runtime          = "nodejs22.x"
   timeout          = var.boxscore_lambda_timeout
   memory_size      = var.boxscore_lambda_memory_size
-  source_code_hash = data.archive_file.boxscore_scraper.output_base64sha256
+  source_code_hash = filebase64sha256("${path.module}/../lambda/boxscore-scraper/.package/dist/index.js")
 
   environment {
     variables = merge(local.ingestion_freeze_defaults, var.boxscore_lambda_env)
@@ -359,7 +381,7 @@ resource "aws_cloudwatch_event_rule" "boxscore_schedule" {
   name                = "${var.boxscore_lambda_function_name}-daily"
   description         = "Daily trigger for ${var.boxscore_lambda_function_name} at 08:00 UTC (03:00 ET)"
   schedule_expression = var.boxscore_schedule_cron
-  state               = local.ingestion_schedule_state
+  state               = local.boxscore_schedule_state
 }
 
 resource "aws_cloudwatch_event_target" "boxscore_scraper" {

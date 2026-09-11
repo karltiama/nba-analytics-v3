@@ -33,6 +33,12 @@ import { z } from 'zod';
 import { REMOVED_FROM_REPORT_STATUS } from './leave-report';
 import { planInjuryIngest, type InjuryFieldSnapshot, type InjuryPullRow } from './ingest-plan';
 import { fetchBdlLive } from './bdl-live-rate-limit';
+import {
+  IDENTITY_BRIDGES_SQL,
+  IDENTITY_PROJECTIONS_SQL,
+  IDENTITY_QUARANTINE_SQL,
+} from './identity-sql';
+import { classifyFromSqlRows } from './classify-sql-rows';
 
 // ============================================
 // CONFIGURATION
@@ -232,22 +238,55 @@ async function transformToAnalytics(
        provider_player_id, provider_team_id, status, description, return_date_raw, created_at
      FROM raw.player_injuries
      WHERE pull_run_id = $1
-       AND (provider_player_id::text) IN (SELECT player_id FROM analytics.players)
      ORDER BY provider_player_id, created_at DESC`,
     [pullRunId]
   );
 
-  const pullRows: InjuryPullRow[] = rawRows.rows.map((row) => ({
-    playerId: String(row.provider_player_id),
-    teamId: mapTeamId(row.provider_team_id ?? null),
-    status: row.status ?? null,
-    description: row.description ?? null,
-    returnDateRaw: row.return_date_raw ?? null,
-    snapshotAt:
-      row.created_at instanceof Date
-        ? row.created_at.toISOString()
-        : String(row.created_at),
-  }));
+  const requestedIds = [
+    ...new Set(rawRows.rows.map((row) => String(row.provider_player_id))),
+  ];
+  const bridges = requestedIds.length
+    ? await pool.query<{ provider_player_id: string; player_entity_id: string }>(
+        IDENTITY_BRIDGES_SQL,
+        ['balldontlie', requestedIds]
+      )
+    : { rows: [] as Array<{ provider_player_id: string; player_entity_id: string }> };
+  const entityIds = [
+    ...new Set(bridges.rows.map((r) => r.player_entity_id)),
+  ];
+  const projections = entityIds.length
+    ? await pool.query<{ player_entity_id: string; analytics_player_id: string }>(
+        IDENTITY_PROJECTIONS_SQL,
+        [entityIds]
+      )
+    : { rows: [] as Array<{ player_entity_id: string; analytics_player_id: string }> };
+  const identity = classifyFromSqlRows(requestedIds, bridges.rows, projections.rows);
+  const observedAtIso = new Date().toISOString();
+  for (const q of identity.quarantine) {
+    await pool.query(IDENTITY_QUARANTINE_SQL, [
+      'balldontlie',
+      q.providerPlayerId,
+      'INJURY',
+      q.status,
+      observedAtIso,
+      null,
+      null,
+    ]);
+  }
+
+  const pullRows: InjuryPullRow[] = rawRows.rows
+    .map((row) => ({
+      playerId: String(row.provider_player_id),
+      teamId: mapTeamId(row.provider_team_id ?? null),
+      status: row.status ?? null,
+      description: row.description ?? null,
+      returnDateRaw: row.return_date_raw ?? null,
+      snapshotAt:
+        row.created_at instanceof Date
+          ? row.created_at.toISOString()
+          : String(row.created_at),
+    }))
+    .filter((row) => identity.servingIds.has(row.playerId));
 
   const observedAt =
     pullRows[0]?.snapshotAt ?? new Date().toISOString();

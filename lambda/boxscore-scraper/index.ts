@@ -530,6 +530,7 @@ async function fetchBBRefBoxScore(date: Date | string, homeTeamCode: string): Pr
 // ============================================
 
 async function resolvePlayerId(playerName: string, teamCode: string): Promise<string | null> {
+  // 13R.3 DEFERRED: BBRef name matching is not a canonical provider bridge.
   // Map BBRef code to NBA abbreviation
   const nbaAbbr = Object.entries(TEAM_CODE_MAP).find(([_, code]) => code === teamCode)?.[0] || teamCode;
   

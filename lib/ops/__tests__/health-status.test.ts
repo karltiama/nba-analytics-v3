@@ -182,4 +182,9 @@ describe('rollupHealthStatus', () => {
     expect(rollupHealthStatus(['FROZEN_EXPECTED', 'HEALTHY', 'FAILED'])).toBe('FAILED');
     expect(rollupHealthStatus(['FROZEN_EXPECTED', 'HEALTHY'])).toBe('FROZEN_EXPECTED');
   });
+
+  it('blocked does not outrank failed and is not a generic failure', () => {
+    expect(rollupHealthStatus(['BLOCKED', 'FROZEN_EXPECTED'])).toBe('BLOCKED');
+    expect(rollupHealthStatus(['BLOCKED', 'FAILED'])).toBe('FAILED');
+  });
 });

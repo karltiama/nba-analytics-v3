@@ -33,6 +33,7 @@ const upsertTeam = `
 `;
 
 const upsertPlayer = `
+  -- Owned BDL serving-projection creation path (13R.3). Attested BDL payload ids only.
   insert into analytics.players (player_id, full_name, first_name, last_name, position, height, weight)
   values ($1, $2, $3, $4, $5, $6, $7)
   on conflict (player_id) do update set
@@ -50,12 +51,33 @@ const upsertGame = `
   values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   on conflict (game_id) do update set
     season = excluded.season,
-    start_time = excluded.start_time,
-    status = excluded.status,
+    /* final-preserve-guard */
+    start_time = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.start_time
+      else excluded.start_time
+    end,
+    status = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.status
+      else excluded.status
+    end,
     home_team_id = excluded.home_team_id,
     away_team_id = excluded.away_team_id,
-    home_score = excluded.home_score,
-    away_score = excluded.away_score,
+    home_score = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.home_score
+      else excluded.home_score
+    end,
+    away_score = case
+      when lower(btrim(coalesce(analytics.games.status, ''))) = 'final'
+       and lower(btrim(coalesce(excluded.status, ''))) is distinct from 'final'
+      then analytics.games.away_score
+      else excluded.away_score
+    end,
     venue = excluded.venue,
     updated_at = now();
 `;

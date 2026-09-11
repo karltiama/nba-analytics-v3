@@ -18,6 +18,8 @@
 
 import 'dotenv/config';
 import { Pool } from 'pg';
+import { gateIngestIdentitiesFromDb } from '@/lib/identity/apply-ingest-gate';
+import type { SqlQuery } from '@/lib/identity/player-identity-store';
 
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 if (!SUPABASE_DB_URL) {
@@ -49,15 +51,37 @@ async function main() {
     const pullFilter = pullRunIdArg ? 'AND s.pull_run_id = $1' : '';
     const baseParams: any[] = pullRunIdArg ? [pullRunIdArg] : [];
 
-    // Find affected game_ids from raw snapshots
+    const sqlQuery: SqlQuery = (text, params) => client.query(text, params);
+    const idResult = await client.query<{ player_id: string }>(
+      `SELECT DISTINCT s.player_id::text AS player_id
+       FROM raw.player_prop_snapshots s
+       WHERE s.game_id IN (SELECT game_id FROM analytics.games)
+         ${pullFilter}`,
+      baseParams
+    );
+    const identityGate = await gateIngestIdentitiesFromDb({
+      query: sqlQuery,
+      provider: 'balldontlie',
+      sourceContext: 'PLAYER_PROP',
+      providerPlayerIds: idResult.rows.map((row) => row.player_id),
+      observedAt: new Date().toISOString(),
+      persistQuarantine: true,
+    });
+    const servingIds = [...identityGate.servingIds];
+    console.log(
+      `   Identity: unique=${identityGate.accounting.uniqueProviderIds} serving=${identityGate.accounting.serving} skipped=${identityGate.accounting.skipped} resolverLookups=${identityGate.accounting.resolverLookups}`
+    );
+
+    const servingIdx = baseParams.length + 1;
+    const vendorIdxForGames = servingIdx + 1;
     const gamesResult = await client.query(
       `SELECT DISTINCT s.game_id
        FROM raw.player_prop_snapshots s
        WHERE s.game_id IN (SELECT game_id FROM analytics.games)
-         AND s.player_id IN (SELECT player_id FROM analytics.players)
-         AND s.vendor = $${baseParams.length + 1}
+         AND s.player_id = ANY($${servingIdx}::text[])
+         AND s.vendor = $${vendorIdxForGames}
          ${pullFilter}`,
-      [...baseParams, vendorArg]
+      [...baseParams, servingIds, vendorArg]
     );
     const affectedGameIds = gamesResult.rows.map((r: any) => r.game_id);
     console.log(`   Found ${affectedGameIds.length} affected games`);
@@ -74,6 +98,7 @@ async function main() {
       // Insert latest snapshot per unique prop market
       const vendorIdx = baseParams.length + 1;
       const gameIdx = vendorIdx + 1;
+      const servingIdxInsert = gameIdx + 1;
       const insertResult = await client.query(
         `INSERT INTO analytics.player_prop_current (
            game_id, player_id, player_name, vendor,
@@ -95,11 +120,11 @@ async function main() {
          LEFT JOIN analytics.players p ON p.player_id = s.player_id
          WHERE s.vendor = $${vendorIdx}
            AND s.game_id = $${gameIdx}
-           AND s.player_id IN (SELECT player_id FROM analytics.players)
+           AND s.player_id = ANY($${servingIdxInsert}::text[])
            ${pullFilter}
          ORDER BY s.game_id, s.player_id, s.prop_type, s.market_type, s.line_value,
                   s.created_at DESC`,
-        [...baseParams, vendorArg, gameId]
+        [...baseParams, vendorArg, gameId, servingIds]
       );
       currentCount += insertResult.rowCount ?? 0;
     }
@@ -109,11 +134,11 @@ async function main() {
     console.log('\n2. Appending analytics.player_prop_history...');
 
     let historyFilter = `WHERE s.game_id IN (SELECT game_id FROM analytics.games)
-       AND s.player_id IN (SELECT player_id FROM analytics.players)`;
-    const historyParams: any[] = [];
+       AND s.player_id = ANY($1::text[])`;
+    const historyParams: any[] = [servingIds];
     if (pullRunIdArg) {
       historyParams.push(pullRunIdArg);
-      historyFilter += ' AND s.pull_run_id = $1';
+      historyFilter += ' AND s.pull_run_id = $2';
     }
 
     const historyResult = await client.query(

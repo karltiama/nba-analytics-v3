@@ -1,0 +1,13 @@
+{
+  "name": "postgame-stage-worker",
+  "version": "1.0.0",
+  "description": "CODE_ONLY freeze-gated SQS adapter for postgame box/starters. Do not deploy.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}

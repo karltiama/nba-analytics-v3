@@ -13,6 +13,10 @@ import {
 } from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
 import type { WorkerMessage } from './src/types';
+import {
+  classifyBdlPropPlayerIds,
+  filterRowsByServingProviderId,
+} from './src/prop-identity-boundary';
 
 function parseMessage(body: string): WorkerMessage {
   const payload = JSON.parse(body) as WorkerMessage;
@@ -57,15 +61,29 @@ export const handler = async (event: SQSEvent) => {
         enabled: env.storePropRawJson,
         sampleRate: env.propRawJsonSampleRate,
       });
-      const current = await bulkUpsertCurrent(pool, normalized, snapshotAt);
-      const preferred = buildPreferredVendorLines(normalized, env.preferredVendor, snapshotAt);
+      const identity = await classifyBdlPropPlayerIds(
+        pool,
+        normalized.map((row) => String(row.player_id)),
+        msg.gameId
+      );
+      const servingNormalized = filterRowsByServingProviderId(
+        normalized,
+        (row) => row.player_id,
+        identity.servingIds
+      ).keep;
+      const current = await bulkUpsertCurrent(pool, servingNormalized, snapshotAt);
+      const preferred = buildPreferredVendorLines(
+        servingNormalized,
+        env.preferredVendor,
+        snapshotAt
+      );
       const legacyCurrent = await refreshPreferredVendorCurrent(pool, msg.runId, msg.gameId, preferred);
       await completeGameRun(pool, msg.runId, msg.gameId, 'success', props.length, rawV2);
       await finalizePullRunIfComplete(pool, msg.runId);
       emitCoverageMetric(
         'NBA/PlayerProps',
         { Component: 'Worker', GameId: msg.gameId },
-        { RowsFetched: props.length, RowsRawV2: rawV2, RowsCurrent: current, RowsLegacyCurrent: legacyCurrent }
+        { RowsFetched: props.length, RowsRawV2: rawV2, RowsCurrent: current, RowsLegacyCurrent: legacyCurrent, IdentitySkipped: identity.quarantined }
       );
       successCount++;
     } catch (error: unknown) {

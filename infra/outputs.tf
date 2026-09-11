@@ -136,3 +136,38 @@ output "boxscore_scraper_errors_alarm_name" {
   description = "CloudWatch alarm name for boxscore-scraper invocation errors."
   value       = aws_cloudwatch_metric_alarm.boxscore_scraper_errors.alarm_name
 }
+
+output "injuries_snapshot_errors_alarm_name" {
+  description = "CloudWatch alarm name for injuries-snapshot invocation errors."
+  value       = aws_cloudwatch_metric_alarm.injuries_snapshot_errors.alarm_name
+}
+
+output "player_props_dlq_not_empty_alarm_name" {
+  description = "CloudWatch alarm name for player props DLQ depth. CODE_ONLY until authorized apply."
+  value       = aws_cloudwatch_metric_alarm.player_props_dlq_not_empty.alarm_name
+}
+
+output "game_status_sync_errors_alarm_name" {
+  description = "CloudWatch alarm name for game-status-sync invocation errors when created."
+  value       = var.game_status_sync_create ? aws_cloudwatch_metric_alarm.game_status_sync_errors[0].alarm_name : null
+}
+
+output "postgame_stage_queue_url" {
+  description = "SQS queue URL for per-game postgame stage jobs when postgame_create is true."
+  value       = var.postgame_create ? aws_sqs_queue.postgame_stage_queue[0].id : null
+}
+
+output "postgame_stage_dlq_url" {
+  description = "SQS dead-letter queue URL for postgame stage jobs when postgame_create is true."
+  value       = var.postgame_create ? aws_sqs_queue.postgame_stage_dlq[0].id : null
+}
+
+output "postgame_stage_worker_function_name" {
+  description = "Postgame stage worker Lambda name when postgame_create is true."
+  value       = var.postgame_create ? aws_lambda_function.postgame_stage_worker[0].function_name : null
+}
+
+output "postgame_stage_worker_event_source_enabled" {
+  description = "Whether the postgame SQS event source mapping would be enabled. Requires live_ingestion_enabled AND postgame_execution_enabled."
+  value       = local.family_schedule_enabled.postgame
+}

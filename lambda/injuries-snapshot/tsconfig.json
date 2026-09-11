@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["index.ts", "leave-report.ts", "ingest-plan.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts"],
+  "include": ["index.ts", "leave-report.ts", "ingest-plan.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "identity-sql.ts", "classify-sql-rows.ts"],
   "exclude": ["node_modules", "dist"]
 }

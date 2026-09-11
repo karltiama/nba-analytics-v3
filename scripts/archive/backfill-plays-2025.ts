@@ -1086,11 +1086,7 @@ async function main() {
         `select count(*)::int as n from (
            select unnest($1::text[]) as pid
          ) s
-         where exists (select 1 from analytics.players p where p.player_id = s.pid)
-            or exists (
-              select 1 from analytics.player_provider_ids i
-              where i.provider = 'balldontlie' and i.provider_player_id = s.pid
-            )`,
+         where exists (select 1 from analytics.players p where p.player_id = s.pid)`,
         [ids]
       );
       mappedParticipants = Number((r.rows[0] as { n: string | number }).n);
@@ -1223,7 +1219,7 @@ async function main() {
         mapped: mappedParticipants,
         unmapped: participantIds.size - mappedParticipants,
         conflicts: 0,
-        matchMethod: 'analytics.players.player_id or analytics.player_provider_ids provider=balldontlie',
+        matchMethod: 'canonical resolver serving link (analytics.players); chronology remains valid without a serving participant',
       },
     },
     eventTypeInventory: {

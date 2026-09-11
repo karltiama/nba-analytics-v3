@@ -1,15 +1,27 @@
 # Copy to terraform.tfvars and set real values. Do not commit terraform.tfvars.
 # Or pass via environment: export TF_VAR_aws_region=us-east-1
 
-# Master ingestion schedule switch (Step 13C.1).
-# Per-family enable_* / cron lists may still CREATE EventBridge / Scheduler resources.
-# Those resources stay DISABLED unless this is true.
+# Master ingestion safety gate (Step 13C.1 / 13I.2).
+# Not a resource-creation flag. Per-family enable_* / cron lists may still CREATE
+# EventBridge / Scheduler resources; those stay DISABLED unless this is true AND
+# the family *_execution_enabled flag is true.
 # Frozen apply: keep false even if stale tfvars still say enable_schedule = true.
-# Controlled thaw:
-#   1. live_ingestion_enabled = true
-#   2. flip Lambda freeze env to live_api / 0 / 0 for the families you intend to run
-#   3. do not flip PINNED_ANALYTICS_SEASON here
 live_ingestion_enabled = false
+
+# Family execution (activation). Defaults false so a global thaw cannot start work.
+nightly_execution_enabled = false
+odds_execution_enabled = false
+injuries_execution_enabled = false
+player_props_execution_enabled = false
+boxscore_execution_enabled = false
+game_status_sync_execution_enabled = false
+postgame_execution_enabled = false
+
+# CODE_ONLY family creation. Independent of live_ingestion_enabled.
+# Frozen baseline: keep false. Authorized status-sync deploy: game_status_sync_create = true
+# while live_ingestion_enabled remains false (Lambda exists, no execution).
+game_status_sync_create = false
+postgame_create = false
 
 aws_region          = "us-east-1"
 lambda_function_name = "nightly-bdl-updater"
@@ -153,3 +165,13 @@ boxscore_lambda_env = {
   # BBREF_SCRAPE_DELAY_MS = "4000"
   # MAX_GAMES_PER_RUN     = "50"
 }
+
+# 13C.3B activation (status-sync only). Keep every other *_execution_enabled false.
+# live_ingestion_enabled = true
+# game_status_sync_create = true
+# game_status_sync_execution_enabled = true
+# game_status_sync_enable_schedule = true
+# game_status_sync_schedule_expression = "rate(15 minutes)"
+# Status-sync DATA_MODE/OFFSEASON/CRON_DRY_RUN are family-gated in HCL last-merge.
+# Do not put DATA_MODE=live_api in nightly/odds/injuries/props/boxscore env maps.
+

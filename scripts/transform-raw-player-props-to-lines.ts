@@ -13,6 +13,8 @@
 
 import 'dotenv/config';
 import { Pool } from 'pg';
+import { gateIngestIdentitiesFromDb } from '@/lib/identity/apply-ingest-gate';
+import type { SqlQuery } from '@/lib/identity/player-identity-store';
 
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 if (!SUPABASE_DB_URL) {
@@ -36,6 +38,26 @@ async function main() {
 
   const client = await pool.connect();
   try {
+    const sqlQuery: SqlQuery = (text, params) => client.query(text, params);
+    const idResult = await client.query<{ player_id: string }>(
+      `SELECT DISTINCT s.player_id::text AS player_id
+       FROM raw.player_prop_snapshots s
+       WHERE s.game_id IN (SELECT game_id FROM analytics.games)
+         ${pullFilter}`,
+      params
+    );
+    const identityGate = await gateIngestIdentitiesFromDb({
+      query: sqlQuery,
+      provider: 'balldontlie',
+      sourceContext: 'PLAYER_PROP',
+      providerPlayerIds: idResult.rows.map((row) => row.player_id),
+      observedAt: new Date().toISOString(),
+      persistQuarantine: true,
+    });
+    const servingIds = [...identityGate.servingIds];
+    const servingIdx = params.length + 1;
+    const servingFilter = `AND s.player_id = ANY($${servingIdx}::text[])`;
+    const insertParams = [...params, servingIds];
     const result = await client.query(
       `INSERT INTO analytics.player_prop_lines (
          game_id, player_id, player_name, team_id, sportsbook, market_type, side, line_value,
@@ -52,7 +74,7 @@ async function main() {
        LEFT JOIN analytics.player_game_logs gl ON gl.game_id = s.game_id AND gl.player_id = s.player_id
        WHERE s.market_type = 'over_under' AND s.over_odds IS NOT NULL
          AND s.game_id IN (SELECT game_id FROM analytics.games)
-         AND s.player_id IN (SELECT player_id FROM analytics.players)
+         ${servingFilter}
          ${pullFilter}
 
        UNION ALL
@@ -68,11 +90,11 @@ async function main() {
        LEFT JOIN analytics.player_game_logs gl ON gl.game_id = s.game_id AND gl.player_id = s.player_id
        WHERE s.market_type = 'over_under' AND s.under_odds IS NOT NULL
          AND s.game_id IN (SELECT game_id FROM analytics.games)
-         AND s.player_id IN (SELECT player_id FROM analytics.players)
+         ${servingFilter}
          ${pullFilter}
 
        ON CONFLICT (game_id, player_id, sportsbook, market_type, side, line_value, snapshot_at) DO NOTHING`,
-      params.length > 0 ? params : undefined
+      insertParams
     );
     console.log(`Inserted ${result.rowCount ?? 0} rows into analytics.player_prop_lines`);
   } finally {

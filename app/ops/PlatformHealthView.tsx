@@ -6,6 +6,7 @@ import type { PlatformHealthReport } from '@/lib/ops/platform-health';
 const STATUS_CLASS: Record<HealthStatus, string> = {
   HEALTHY: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
   FROZEN_EXPECTED: 'text-cyan-300 border-cyan-500/30 bg-cyan-500/10',
+  BLOCKED: 'text-violet-300 border-violet-500/30 bg-violet-500/10',
   UNKNOWN: 'text-zinc-400 border-white/10 bg-white/5',
   STALE: 'text-amber-300 border-amber-500/30 bg-amber-500/10',
   DEGRADED: 'text-orange-300 border-orange-500/30 bg-orange-500/10',
@@ -60,7 +61,8 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
         <p className="text-sm text-muted-foreground">
           Generated {report.generatedAt}. Freeze: DATA_MODE={report.freeze.dataMode},
           OFFSEASON={report.freeze.offseason ? '1' : '0'}, CRON_DRY_RUN=
-          {report.freeze.cronDryRun ? '1' : '0'}.
+          {report.freeze.cronDryRun ? '1' : '0'}, live_ingestion_enabled=
+          {report.freeze.liveIngestionEnabled ? 'true' : 'false'}.
         </p>
       </header>
 
@@ -104,6 +106,138 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
           {report.injuryServing.authoritative ? 'authoritative' : 'not authoritative'}
         </p>
         <p className="text-xs text-muted-foreground">{report.injuryServing.reason}</p>
+      </Card>
+
+      <Card title="Identity" status={report.identity.status}>
+        <p className="text-sm text-white/80">
+          Quarantine unresolved {report.identity.unresolved} · conflicts {report.identity.conflicts}{' '}
+          · resolved {report.identity.resolved}
+          {report.identity.alert ? ' · alert' : ''}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Class C canonical {report.identity.classCCanonical} (census, not an ingest alert).{' '}
+          {report.identity.reason}
+        </p>
+      </Card>
+
+      <Card
+        title="Ingestion families"
+        status={rollupHealthStatus(report.families.map((row) => row.status))}
+      >
+        <ul className="space-y-2 text-sm">
+          {report.families.map((row) => (
+            <li key={row.id} className="space-y-0.5">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <span className="text-white">{row.label}</span>
+                <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{row.config}</span>
+                  <span>AWS {row.awsState}</span>
+                  <span>{row.missedRun}</span>
+                  <Badge status={row.status} />
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                freshness {row.freshness} · last inv {row.lastInvocationAt ?? '—'} · data{' '}
+                {row.lastSuccessAt ?? '—'} · {row.correlation}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Card>
+
+      <Card title="Schedule completeness (2026)" status={report.scheduleCompleteness.status}>
+        <p className="text-sm text-white/80">
+          Local {report.scheduleCompleteness.localCount ?? '—'} · provider published{' '}
+          {report.scheduleCompleteness.providerPublished} · expected RS{' '}
+          {report.scheduleCompleteness.expectedRs} · unpublished{' '}
+          {report.scheduleCompleteness.unpublished}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {report.scheduleCompleteness.reconciliation}: {report.scheduleCompleteness.reason}
+        </p>
+      </Card>
+
+      <Card title="Schedule intent vs AWS" status={report.scheduleMismatch.status}>
+        <p className="text-sm text-white/80">
+          Observed {report.scheduleMismatch.observed} · {report.scheduleMismatch.reason}
+        </p>
+      </Card>
+
+      <Card title="AWS telemetry" status={report.aws.status}>
+        <p className="text-sm text-white/80">
+          {report.aws.queried ? 'queried' : 'not queried'} ·{' '}
+          {report.aws.available ? 'available' : 'unavailable'}
+        </p>
+        <p className="text-xs text-muted-foreground">{report.aws.reason}</p>
+      </Card>
+
+      <Card
+        title="Queues / DLQ"
+        status={rollupHealthStatus(report.queueCards.map((row) => row.status))}
+      >
+        <ul className="space-y-2 text-sm">
+          {report.queueCards.map((row) => (
+            <li key={row.id} className="space-y-0.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-white">{row.label}</span>
+                <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{row.deployState}</span>
+                  <Badge status={row.status} />
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                visible {row.queueDepth ?? '—'} · in-flight {row.inFlight ?? '—'} · oldest{' '}
+                {row.oldestAgeSeconds ?? '—'}s · DLQ {row.dlqDepth ?? '—'}
+                {row.id === 'player_props'
+                  ? ` · reserved ${row.reservedConcurrency}`
+                  : ''}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Card>
+
+      <Card
+        title="Provider capability"
+        status={rollupHealthStatus(report.providers.map((row) => row.status))}
+      >
+        <ul className="space-y-1 text-sm">
+          {report.providers.map((row) => (
+            <li key={row.id} className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-white">{row.label}</span>
+              <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>{row.state}</span>
+                <Badge status={row.status} />
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs text-muted-foreground">
+          Known capability only. /ops does not call the provider.
+        </p>
+      </Card>
+
+      <Card title="Postgame stages" status={report.postgame.status}>
+        <p className="text-sm text-white/80">
+          schema {report.postgame.schemaState} · queue{' '}
+          {report.postgame.queueDeployed == null
+            ? 'UNKNOWN'
+            : report.postgame.queueDeployed
+              ? 'DEPLOYED'
+              : 'NOT_DEPLOYED'}{' '}
+          · worker{' '}
+          {report.postgame.workerDeployed == null
+            ? 'UNKNOWN'
+            : report.postgame.workerDeployed
+              ? 'DEPLOYED'
+              : 'NOT_DEPLOYED'}{' '}
+          · box {report.postgame.boxProvider}
+        </p>
+        <p className="text-sm text-white/80">
+          Waiting {report.postgame.waitingCount} · ready {report.postgame.readyCount} · blocked{' '}
+          {report.postgame.blockedCount} · failed {report.postgame.failedCount}
+        </p>
+        <p className="text-xs text-muted-foreground">{report.postgame.reason}</p>
       </Card>
 
       <Card

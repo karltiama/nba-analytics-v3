@@ -32,6 +32,12 @@ import {
 } from '@/lib/betting/historical-advanced';
 import pool from '@/lib/db';
 import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
+import { selectArchiveRowsForServing } from '@/lib/identity/archive-identity';
+import {
+  loadPartialIdentityIndex,
+  persistQuarantineObservations,
+  type SqlQuery,
+} from '@/lib/identity/player-identity-store';
 
 const OUT_JSON = 'reports/trial/player-game-advanced-materialize.json';
 const BATCH = 500;
@@ -436,7 +442,24 @@ async function main() {
     `select game_id, season from analytics.games where season = any($1::text[])`,
     [[...PLAYER_GAME_ADVANCED_SEASONS]]
   );
-  const playerRes = await pool.query<{ player_id: string }>(`select player_id from analytics.players`);
+  const scanned = [...byKey.values()];
+  const sqlQuery: SqlQuery = (text, params) => pool.query(text, params);
+  const identityIndex = await loadPartialIdentityIndex(
+    sqlQuery,
+    'balldontlie',
+    scanned.map((row) => row.playerId)
+  );
+  const partitioned = selectArchiveRowsForServing(
+    'ADVANCED',
+    scanned,
+    (row) => row.playerId,
+    identityIndex,
+    generatedAt
+  );
+  if (flags.execute) {
+    await persistQuarantineObservations(sqlQuery, partitioned.gate.observations);
+  }
+  const servingPlayerIds = new Set(partitioned.keep.map((row) => row.playerId));
   const pglRes = await pool.query<{ game_id: string; player_id: string; minutes: string | null }>(
     `select game_id, player_id, minutes
      from analytics.player_game_logs
@@ -444,16 +467,15 @@ async function main() {
     [[...PLAYER_GAME_ADVANCED_SEASONS]]
   );
   const gamesById = new Map(gameRes.rows.map((g) => [g.game_id, g]));
-  const playerIds = new Set(playerRes.rows.map((p) => p.player_id));
   const pglKeys = new Set(pglRes.rows.map((r) => candidateKey(r.game_id, r.player_id)));
   const pglMinutes = new Map(
     pglRes.rows.map((r) => [candidateKey(r.game_id, r.player_id), parseMinutes(r.minutes)])
   );
 
   const { candidates, audit } = auditAdvancedIdentity({
-    candidates: [...byKey.values()],
+    candidates: partitioned.keep,
     gamesById,
-    playerIds,
+    playerIds: servingPlayerIds,
     pglKeys,
   });
   assertIdentityOrThrow(audit);
@@ -494,7 +516,12 @@ async function main() {
       ])
     ),
     combinedCandidates: candidates.length,
-    identity: audit,
+    identity: {
+      ...audit,
+      canonical: partitioned.gate.accounting,
+      resolverQueryCount: 2,
+      skippedNonServing: partitioned.skipped.length,
+    },
     teamAssociation: {
       compared: teamPresent,
       archiveTeamNePlayerListedTeam: teamMismatch,

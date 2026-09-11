@@ -1,0 +1,13 @@
+{
+  "name": "game-status-sync",
+  "version": "1.0.0",
+  "description": "Frequent /v1/games status-sync Lambda. Bundle before deploy. Do not enable the schedule while frozen.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node ./build.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}

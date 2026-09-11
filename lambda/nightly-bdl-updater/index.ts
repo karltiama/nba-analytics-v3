@@ -266,6 +266,8 @@ const upsertRawPlayer = `
 // ============================================
 
 const upsertAnalyticsPlayer = `
+  -- Owned BDL serving-projection creation path (13R.3). Attested BDL payload ids only.
+  -- Do not insert Class C / NBA-only entities here. Canonical existence ≠ analytics.players.
   insert into analytics.players (player_id, full_name, first_name, last_name, position, height, weight)
   values ($1, $2, $3, $4, $5, $6, $7)
   on conflict (player_id) do update set

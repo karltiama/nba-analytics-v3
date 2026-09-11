@@ -11,6 +11,7 @@ import { S3Storage } from '@/lib/aws/s3';
 import {
   certifyStarterGame,
   extractStarterCandidatesFromArchive,
+  failStarterCertificationIfIdentityUnsafe,
   GAME_STARTERS_SEASON,
   GAME_STARTERS_SOURCE,
   type GameStarterCandidate,
@@ -23,6 +24,15 @@ import {
 import { LINEUPS_2025_STARTER_ANOMALY_IDS } from '@/lib/betting/historical-starters';
 import pool from '@/lib/db';
 import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
+import {
+  gateArchivePlayerIds,
+  starterGameIdentityReason,
+} from '@/lib/identity/archive-identity';
+import {
+  loadPartialIdentityIndex,
+  persistQuarantineObservations,
+  type SqlQuery,
+} from '@/lib/identity/player-identity-store';
 
 const EXPECTED_ELIGIBLE_GAMES = 1320;
 const EXPECTED_SERVING_ROWS = 13200;
@@ -124,8 +134,14 @@ async function main() {
   const eligible: GameStarterCandidate[] = [];
   const anomalyIds: string[] = [];
   const incompleteIds: string[] = [];
+  const identityFailedIds: string[] = [];
   const wrongSeason: string[] = [];
   const missingGames: string[] = [];
+  const extractedGames: Array<{
+    gameId: string;
+    game: GameRow;
+    extracted: ReturnType<typeof extractStarterCandidatesFromArchive>;
+  }> = [];
 
   for (const gameId of inventory.gameIds) {
     const key = lineups2025GameObjectKey(prefix, gameId);
@@ -148,14 +164,45 @@ async function main() {
       const k = `${row.gameId}|${row.teamId}`;
       teamGames.set(k, (teamGames.get(k) ?? 0) + 1);
     }
-    const cert = certifyStarterGame({
-      gameId,
-      homeTeamId: game.home_team_id,
-      awayTeamId: game.away_team_id,
-      starterCandidates: extracted.starterCandidates,
-      unknownIdentity: extracted.unknownIdentity,
-    });
+    extractedGames.push({ gameId, game, extracted });
+  }
+
+  const sqlQuery: SqlQuery = (text, params) => pool.query(text, params);
+  const starterProviderIds = extractedGames.flatMap((g) =>
+    g.extracted.starterCandidates.map((r) => r.playerId)
+  );
+  const identityIndex = await loadPartialIdentityIndex(
+    sqlQuery,
+    'balldontlie',
+    starterProviderIds
+  );
+  const identityGate = gateArchivePlayerIds({
+    sourceContext: 'LINEUP',
+    providerPlayerIds: starterProviderIds,
+    index: identityIndex,
+    observedAt: generatedAt,
+  });
+  if (execute) {
+    await persistQuarantineObservations(sqlQuery, identityGate.observations);
+  }
+
+  for (const { gameId, game, extracted } of extractedGames) {
+    const identityReason = starterGameIdentityReason(
+      extracted.starterCandidates.map((r) => r.playerId),
+      identityGate
+    );
+    const cert = failStarterCertificationIfIdentityUnsafe(
+      certifyStarterGame({
+        gameId,
+        homeTeamId: game.home_team_id,
+        awayTeamId: game.away_team_id,
+        starterCandidates: extracted.starterCandidates,
+        unknownIdentity: extracted.unknownIdentity,
+      }),
+      identityReason
+    );
     if (cert.reason === 'anomaly') anomalyIds.push(gameId);
+    else if (cert.reason === 'canonical_identity_unresolved') identityFailedIds.push(gameId);
     else if (!cert.productEligible) incompleteIds.push(gameId);
     else eligible.push(...extracted.starterCandidates.map((r) => ({ ...r, season: game.season })));
   }
@@ -167,17 +214,15 @@ async function main() {
 
   const playerIds = [...new Set(eligible.map((r) => r.playerId))];
   const teamIds = [...new Set(eligible.map((r) => r.teamId))];
-  const mappedPlayers = await pool.query<{ player_id: string }>(
-    `select player_id from analytics.players where player_id = any($1::text[])`,
-    [playerIds]
+  const mappedTeamSet = new Set(
+    (
+      await pool.query<{ team_id: string }>(
+        `select team_id from analytics.teams where team_id = any($1::text[])`,
+        [teamIds]
+      )
+    ).rows.map((r) => r.team_id)
   );
-  const mappedTeams = await pool.query<{ team_id: string }>(
-    `select team_id from analytics.teams where team_id = any($1::text[])`,
-    [teamIds]
-  );
-  const mappedPlayerSet = new Set(mappedPlayers.rows.map((r) => r.player_id));
-  const mappedTeamSet = new Set(mappedTeams.rows.map((r) => r.team_id));
-  const unmappedPlayers = playerIds.filter((id) => !mappedPlayerSet.has(id));
+  const unmappedPlayers = playerIds.filter((id) => !identityGate.servingIds.has(id));
   const unmappedTeams = teamIds.filter((id) => !mappedTeamSet.has(id));
 
   const candidate = {
@@ -194,6 +239,9 @@ async function main() {
     valid5plus5Games: eligibleGameCount,
     anomalousGames: [...new Set(anomalyIds)],
     incompleteGames: incompleteIds,
+    identityFailedGames: identityFailedIds,
+    identityAccounting: identityGate.accounting,
+    resolverQueryCount: 2,
     candidateServingRows: eligible.length,
     unknownIdentity,
     missingObjects,

@@ -26,6 +26,12 @@ import {
 } from '@/lib/betting/historical-role-profile';
 import pool from '@/lib/db';
 import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
+import { selectArchiveRowsForServing } from '@/lib/identity/archive-identity';
+import {
+  loadPartialIdentityIndex,
+  persistQuarantineObservations,
+  type SqlQuery,
+} from '@/lib/identity/player-identity-store';
 
 const OUT_JSON = 'reports/trial/player-role-profile-materialize.json';
 const BATCH = 250;
@@ -328,9 +334,27 @@ async function main() {
   const s3 = new S3Storage({ bucket });
 
   const { state, pages, candidates: scanned } = await scanArchive(s3);
-  const playerRes = await pool.query<{ player_id: string }>(`select player_id from analytics.players`);
-  const playerIds = new Set(playerRes.rows.map((p) => p.player_id));
-  const { candidates, audit } = auditRoleIdentity({ candidates: scanned, playerIds });
+  const sqlQuery: SqlQuery = (text, params) => pool.query(text, params);
+  const identityIndex = await loadPartialIdentityIndex(
+    sqlQuery,
+    'balldontlie',
+    scanned.map((row) => row.playerId)
+  );
+  const partitioned = selectArchiveRowsForServing(
+    'SEASON_AVERAGE',
+    scanned,
+    (row) => row.playerId,
+    identityIndex,
+    generatedAt
+  );
+  if (flags.execute) {
+    await persistQuarantineObservations(sqlQuery, partitioned.gate.observations);
+  }
+  const servingPlayerIds = new Set(partitioned.keep.map((row) => row.playerId));
+  const { candidates, audit } = auditRoleIdentity({
+    candidates: partitioned.keep,
+    playerIds: servingPlayerIds,
+  });
   const coverage = countCoverage(candidates);
 
   let written = 0;
@@ -356,7 +380,12 @@ async function main() {
     },
     pages,
     grain: state.grain,
-    identity: audit,
+    identity: {
+      ...audit,
+      canonical: partitioned.gate.accounting,
+      resolverQueryCount: 2,
+      skippedNonServing: partitioned.skipped.length,
+    },
     coverage,
     candidateRows: candidates.length,
     written,

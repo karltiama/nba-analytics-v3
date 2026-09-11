@@ -136,13 +136,15 @@ export async function loadPlayerIdentityIndex(
   });
 }
 
-export async function resolvePlayerIdentitiesFromDb(
+export async function loadPartialIdentityIndex(
   query: SqlQuery,
   provider: PlayerIdentityProvider,
   providerPlayerIds: string[]
-) {
+): Promise<PlayerIdentityIndex> {
   const ids = [...new Set(providerPlayerIds.map((id) => id.trim()).filter(Boolean))];
-  if (ids.length === 0) return [];
+  if (ids.length === 0) {
+    return buildPlayerIdentityIndex({ bridges: [], projections: [] });
+  }
   const bridges = await query<{
     player_entity_id: string;
     provider: string;
@@ -161,6 +163,41 @@ export async function resolvePlayerIdentitiesFromDb(
       analyticsPlayerId: p.analytics_player_id,
     }));
   }
-  const index = buildPlayerIdentityIndex({ bridges: parsed, projections });
+  return buildPlayerIdentityIndex({ bridges: parsed, projections });
+}
+
+export async function resolvePlayerIdentitiesFromDb(
+  query: SqlQuery,
+  provider: PlayerIdentityProvider,
+  providerPlayerIds: string[]
+) {
+  const index = await loadPartialIdentityIndex(query, provider, providerPlayerIds);
+  const ids = [...new Set(providerPlayerIds.map((id) => id.trim()).filter(Boolean))];
   return resolvePlayerIdentities(provider, ids, index);
+}
+
+export async function persistQuarantineObservations(
+  query: SqlQuery,
+  observations: Array<{
+    provider: PlayerIdentityProvider;
+    providerPlayerId: string;
+    sourceContext: string;
+    kind: 'UNRESOLVED' | 'CONFLICT';
+    observedAt: string;
+    sampleGameId?: string | null;
+    sampleTeamId?: string | null;
+  }>
+): Promise<number> {
+  for (const observation of observations) {
+    await query(UPSERT_QUARANTINE_SQL, [
+      observation.provider,
+      observation.providerPlayerId,
+      observation.sourceContext,
+      observation.kind,
+      observation.observedAt,
+      observation.sampleGameId ?? null,
+      observation.sampleTeamId ?? null,
+    ]);
+  }
+  return observations.length;
 }

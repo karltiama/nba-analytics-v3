@@ -25,6 +25,8 @@ describe('fail-closed ingestion source guards', () => {
       'lambda/injuries-snapshot/index.ts',
       'lambda/boxscore-scraper/index.ts',
       'lambda/player-props-snapshot/src/env.ts',
+      'lambda/game-status-sync/index.ts',
+      'lib/games/status-sync-lambda.ts',
       'app/api/cron/paper-settle/route.ts',
     ];
     for (const file of files) {
@@ -40,6 +42,7 @@ describe('fail-closed ingestion source guards', () => {
       'lambda/odds-pre-game-snapshot/index.ts',
       'lambda/injuries-snapshot/index.ts',
       'lambda/player-props-snapshot/src/fetch.ts',
+      'lib/games/status-sync-fetch.ts',
     ];
     for (const file of files) {
       const src = read(file);

@@ -63,15 +63,22 @@ describe('schedule upsert SQL guard', () => {
   const files = [
     'lib/balldontlie/refresh-schedule-from-bdl.ts',
     'lambda/nightly-bdl-updater/index.ts',
+    'scripts/transform-raw-to-analytics.ts',
+    'lib/betting/final-preserve.ts',
   ];
 
   it('embeds the Final-preserve marker and predicates in live upsert SQL', () => {
     for (const file of files) {
       const src = read(file);
       expect(src, file).toContain(FINAL_PRESERVE_SQL_MARKER);
-      expect(src, file).toContain(FINAL_PRESERVE_SQL_EXISTING_RAW);
       expect(src, file).toContain(FINAL_PRESERVE_SQL_EXISTING_ANALYTICS);
       expect(src, file).toContain(FINAL_PRESERVE_SQL_INCOMING_NOT_FINAL);
+    }
+    for (const file of [
+      'lib/balldontlie/refresh-schedule-from-bdl.ts',
+      'lambda/nightly-bdl-updater/index.ts',
+    ]) {
+      expect(read(file), file).toContain(FINAL_PRESERVE_SQL_EXISTING_RAW);
     }
   });
 });

@@ -5,6 +5,7 @@
 export type HealthStatus =
   | 'HEALTHY'
   | 'FROZEN_EXPECTED'
+  | 'BLOCKED'
   | 'STALE'
   | 'DEGRADED'
   | 'FAILED'
@@ -13,6 +14,7 @@ export type HealthStatus =
 export const HEALTH_STATUS_RANK: Record<HealthStatus, number> = {
   HEALTHY: 0,
   FROZEN_EXPECTED: 1,
+  BLOCKED: 1,
   UNKNOWN: 2,
   STALE: 3,
   DEGRADED: 4,

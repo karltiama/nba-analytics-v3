@@ -43,7 +43,63 @@ variable "lambda_env" {
 # still say enable_schedule = true.
 # -----------------------------------------------------------------------------
 variable "live_ingestion_enabled" {
-  description = "When false (default), every EventBridge rule and EventBridge Scheduler schedule is DISABLED. Set true only for a controlled production thaw; still requires freeze env DATA_MODE=live_api / OFFSEASON_MODE=0 / CRON_DRY_RUN=0 on the Lambdas."
+  description = "Master safety gate. When false, no family schedule/ESM can be ENABLED. When true, each family still requires its own *_execution_enabled flag. Not a resource-creation flag."
+  type        = bool
+  default     = false
+}
+
+# Family execution (activation). Independent of resource creation.
+# effective_family_execution = live_ingestion_enabled && family_execution_enabled
+variable "nightly_execution_enabled" {
+  description = "When true with live_ingestion_enabled, the nightly EventBridge rule is ENABLED. Default false so a global thaw cannot start nightly alone."
+  type        = bool
+  default     = false
+}
+
+variable "odds_execution_enabled" {
+  description = "When true with live_ingestion_enabled, odds EventBridge rules are ENABLED."
+  type        = bool
+  default     = false
+}
+
+variable "injuries_execution_enabled" {
+  description = "When true with live_ingestion_enabled, the injuries EventBridge rule is ENABLED."
+  type        = bool
+  default     = false
+}
+
+variable "player_props_execution_enabled" {
+  description = "When true with live_ingestion_enabled, props Scheduler rules are ENABLED and the worker ESM is enabled. Messages already on the queue are preserved while ESM is disabled."
+  type        = bool
+  default     = false
+}
+
+variable "boxscore_execution_enabled" {
+  description = "When true with live_ingestion_enabled, the boxscore EventBridge rule is ENABLED."
+  type        = bool
+  default     = false
+}
+
+variable "game_status_sync_create" {
+  description = "When true, create status-sync Lambda, IAM, and Errors alarm. Does not enable execution. Default false keeps CODE_ONLY families out of a baseline plan."
+  type        = bool
+  default     = false
+}
+
+variable "game_status_sync_execution_enabled" {
+  description = "When true with live_ingestion_enabled and a created schedule, the status-sync Scheduler is ENABLED."
+  type        = bool
+  default     = false
+}
+
+variable "postgame_create" {
+  description = "When true, create postgame SQS, DLQ, worker, IAM, ESM, and DLQ alarm. Default false keeps parked postgame out of a baseline plan."
+  type        = bool
+  default     = false
+}
+
+variable "postgame_execution_enabled" {
+  description = "When true with live_ingestion_enabled and postgame_create, the postgame SQS ESM is enabled. Does not purge the queue."
   type        = bool
   default     = false
 }

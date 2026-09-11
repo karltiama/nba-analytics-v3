@@ -27,7 +27,8 @@ export type GameStarterCertifyReason =
   | 'anomaly'
   | 'incomplete'
   | 'unknown_identity'
-  | 'duplicate_starter';
+  | 'duplicate_starter'
+  | 'canonical_identity_unresolved';
 
 export function isArchiveStarterFlag(value: unknown): boolean {
   return value === true;
@@ -39,7 +40,8 @@ export function isArchiveStarterFlag(value: unknown): boolean {
  */
 export function extractStarterCandidatesFromArchive(
   gameId: string,
-  body: unknown
+  body: unknown,
+  season: string = GAME_STARTERS_SEASON
 ): {
   archiveRows: number;
   starterCandidates: GameStarterCandidate[];
@@ -61,7 +63,7 @@ export function extractStarterCandidatesFromArchive(
       teamId,
       playerId,
       position: normalizeCertifiedPosition(row.position),
-      season: GAME_STARTERS_SEASON,
+      season,
       source: GAME_STARTERS_SOURCE,
     });
   }
@@ -103,6 +105,33 @@ export function certifyStarterGame(input: {
     reason: 'incomplete',
     homeCount: home.length,
     awayCount: away.length,
+  };
+}
+
+/**
+ * Starting Five is a game-level structure. One unresolved starter must not
+ * emit 4 certified starters. Fail this game's 5+5 certification instead.
+ */
+export function failStarterCertificationIfIdentityUnsafe(
+  cert: {
+    productEligible: boolean;
+    reason: GameStarterCertifyReason;
+    homeCount: number;
+    awayCount: number;
+  },
+  identityReason: 'ok' | 'identity_not_serving' | 'identity_unresolved' | 'identity_conflict'
+): {
+  productEligible: boolean;
+  reason: GameStarterCertifyReason;
+  homeCount: number;
+  awayCount: number;
+} {
+  if (!cert.productEligible || identityReason === 'ok') return cert;
+  return {
+    productEligible: false,
+    reason: 'canonical_identity_unresolved',
+    homeCount: 0,
+    awayCount: 0,
   };
 }
 

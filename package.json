@@ -42,6 +42,10 @@
     "build:player-game-features": "tsx scripts/features/build-player-game-features-v1.ts",
     "audit:bdl-coverage": "tsx scripts/audit/audit-bdl-data-coverage.ts",
     "ops:health-snapshot": "tsx scripts/ops/platform-health-snapshot.ts",
+    "ops:aws-ingestion-status": "tsx scripts/ops/aws-ingestion-status.ts",
+    "ops:game-status-sync": "tsx scripts/ops/game-status-sync.ts --season=2026 --dry-run",
+    "build:game-status-sync-lambda": "tsx scripts/ops/build-game-status-sync-lambda.ts",
+    "build:ingestion-lambdas": "node scripts/ops/bundle-ingestion-lambda.mjs --all",
     "ops:storage-checkpoint": "tsx scripts/ops/storage-checkpoint.ts",
     "ops:pre-goat-audit": "tsx scripts/ops/pre-goat-pipeline-audit.ts",
     "ops:trial-storage-gate": "tsx scripts/ops/trial-storage-gate.ts",
@@ -61,8 +65,12 @@
     "ingest:game-starters-2025": "tsx scripts/ingestion/materialize-game-starters-2025.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.1130.0",
     "@aws-sdk/client-dynamodb": "^3.1130.0",
+    "@aws-sdk/client-eventbridge": "^3.1130.0",
+    "@aws-sdk/client-lambda": "^3.1130.0",
     "@aws-sdk/client-s3": "^3.1024.0",
+    "@aws-sdk/client-scheduler": "^3.1130.0",
     "@aws-sdk/client-sqs": "^3.1024.0",
     "@duckdb/node-api": "^1.5.2-r.1",
     "@supabase/ssr": "^0.10.0",

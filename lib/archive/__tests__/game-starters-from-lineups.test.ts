@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   certifyStarterGame,
   extractStarterCandidatesFromArchive,
+  failStarterCertificationIfIdentityUnsafe,
+  GAME_STARTERS_SEASON,
   groupCertifiedStarters,
   historicalTeamIdFromLineupRow,
   isLineups2025StarterAnomaly,
@@ -76,6 +78,17 @@ describe('extractStarterCandidatesFromArchive', () => {
     expect(extracted.unknownIdentity).toBe(1);
     expect(extracted.starterCandidates).toHaveLength(0);
   });
+
+  it('accepts an explicit 2026 season without flipping the 2025 product constant', () => {
+    expect(GAME_STARTERS_SEASON).toBe('2025');
+    const extracted = extractStarterCandidatesFromArchive(
+      '18450001',
+      { data: five('18450001', '1', 101) },
+      '2026'
+    );
+    expect(extracted.starterCandidates.every((row) => row.season === '2026')).toBe(true);
+    expect(GAME_STARTERS_SEASON).toBe('2025');
+  });
 });
 
 describe('certifyStarterGame', () => {
@@ -148,6 +161,22 @@ describe('certifyStarterGame', () => {
     });
     expect(cert.productEligible).toBe(false);
     expect(cert.reason).toBe('unknown_identity');
+  });
+
+  it('does not emit a partial five when canonical identity is unsafe', () => {
+    const cert = failStarterCertificationIfIdentityUnsafe(
+      {
+        productEligible: true,
+        reason: 'valid_5_plus_5',
+        homeCount: 5,
+        awayCount: 5,
+      },
+      'identity_not_serving'
+    );
+    expect(cert.productEligible).toBe(false);
+    expect(cert.reason).toBe('canonical_identity_unresolved');
+    expect(cert.homeCount).toBe(0);
+    expect(cert.awayCount).toBe(0);
   });
 });
 
