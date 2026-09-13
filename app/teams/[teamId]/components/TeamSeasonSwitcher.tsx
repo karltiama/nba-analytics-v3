@@ -39,8 +39,8 @@ export function TeamSeasonSwitcher({
             className={cn(
               'text-[10px] px-2 py-0.5 rounded-full font-semibold transition-colors',
               active
-                ? 'bg-[#00d4ff]/20 text-[#00d4ff]'
-                : 'bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10'
+                ? 'bg-[#063f46] text-white'
+                : 'bg-[#f7f9f7] border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-white'
             )}
             aria-current={active ? 'page' : undefined}
           >

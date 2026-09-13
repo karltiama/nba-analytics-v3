@@ -32,8 +32,8 @@ function SnapshotColumn({
   const alignCls = align === 'end' ? 'sm:text-right' : 'sm:text-left';
   return (
     <div className={`flex-1 min-w-0 text-center ${alignCls}`}>
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{heading}</p>
-      <p className="text-lg font-semibold text-white tabular-nums leading-tight mt-0.5">
+      <p className="text-[11px] uppercase tracking-wide text-[#4a6366]">{heading}</p>
+      <p className="text-lg font-semibold text-[#063f46] tabular-nums leading-tight mt-0.5">
         {consensus.available ? consensus.medianLabel : '—'}
       </p>
     </div>
@@ -50,27 +50,27 @@ function SportsbookMovementRow({
   comparisonLabel: string;
 }) {
   return (
-    <li className="rounded-md bg-white/[0.03] px-2 py-2 space-y-1">
+    <li className="rounded-md bg-[#F8FBFA] px-2 py-2 space-y-1">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium text-white truncate">{book.vendorLabel}</span>
-        <span className="text-[11px] text-muted-foreground shrink-0">
+        <span className="text-xs font-medium text-[#063f46] truncate">{book.vendorLabel}</span>
+        <span className="text-[11px] text-[#4a6366] shrink-0">
           {book.classLabel}
           <span className="sr-only"> — {book.classExplanation}</span>
         </span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-        <p className="text-xs text-white tabular-nums">
-          <span className="text-muted-foreground">{referenceLabel} </span>
+        <p className="text-xs text-[#063f46] tabular-nums">
+          <span className="text-[#4a6366]">{referenceLabel} </span>
           {book.referenceQuote}
         </p>
-        <p className="text-xs text-white tabular-nums sm:text-right">
-          <span className="text-muted-foreground">{comparisonLabel} </span>
+        <p className="text-xs text-[#063f46] tabular-nums sm:text-right">
+          <span className="text-[#4a6366]">{comparisonLabel} </span>
           {book.comparisonQuote}
         </p>
       </div>
-      <p className="text-[11px] text-muted-foreground">
+      <p className="text-[11px] text-[#4a6366]">
         {book.lineDeltaLabel ? (
-          <span className="text-white tabular-nums">{book.lineDeltaLabel} · </span>
+          <span className="text-[#063f46] tabular-nums">{book.lineDeltaLabel} · </span>
         ) : null}
         {book.classExplanation}
         {book.priceMovementLabel && !book.juiceContext ? (
@@ -78,7 +78,7 @@ function SportsbookMovementRow({
         ) : null}
       </p>
       {book.juiceContext ? (
-        <p className="text-[11px] text-muted-foreground">{book.juiceContext}</p>
+        <p className="text-[11px] text-[#4a6366]">{book.juiceContext}</p>
       ) : null}
     </li>
   );
@@ -88,11 +88,11 @@ function MarketMovementBody({ presented }: { presented: PresentedMarketMovement 
   if (presented.state === 'empty' || presented.state === 'unsupported') {
     return (
       <>
-        <h3 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <h3 className="text-[11px] font-medium uppercase tracking-wide text-[#4a6366]">
           Market Movement
         </h3>
-        <p className="text-xs text-white">{presented.title}</p>
-        <p className="text-[11px] text-muted-foreground">{presented.body}</p>
+        <p className="text-xs text-[#063f46]">{presented.title}</p>
+        <p className="text-[11px] text-[#4a6366]">{presented.body}</p>
       </>
     );
   }
@@ -100,27 +100,27 @@ function MarketMovementBody({ presented }: { presented: PresentedMarketMovement 
   if (presented.state === 'free') {
     return (
       <>
-        <h3 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <h3 className="text-[11px] font-medium uppercase tracking-wide text-[#4a6366]">
           {presented.title}
         </h3>
         {presented.consensusUnavailable ? (
-          <p className="text-xs text-muted-foreground">Close consensus needs at least 2 supported books.</p>
+          <p className="text-xs text-[#4a6366]">Close consensus needs at least 2 supported books.</p>
         ) : (
           <>
-            <p className="text-lg font-semibold text-white tabular-nums leading-tight">
+            <p className="text-lg font-semibold text-[#063f46] tabular-nums leading-tight">
               {presented.close.medianLabel}
             </p>
             {presented.close.rangeLabel ? (
-              <p className="text-[11px] text-muted-foreground tabular-nums">{presented.close.rangeLabel}</p>
+              <p className="text-[11px] text-[#4a6366] tabular-nums">{presented.close.rangeLabel}</p>
             ) : null}
             {presented.acrossLabel ? (
-              <p className="text-[11px] text-muted-foreground">{presented.acrossLabel}</p>
+              <p className="text-[11px] text-[#4a6366]">{presented.acrossLabel}</p>
             ) : null}
-            <p className="text-[11px] text-muted-foreground">{MM_DISCLAIMER_SHORT}</p>
+            <p className="text-[11px] text-[#4a6366]">{MM_DISCLAIMER_SHORT}</p>
           </>
         )}
         <div className="pt-1 space-y-1.5">
-          <p className="text-xs text-muted-foreground">{presented.upgradeTitle}</p>
+          <p className="text-xs text-[#4a6366]">{presented.upgradeTitle}</p>
           <FoundingProUpgradeLink
             className="px-2.5 py-1 text-[11px]"
             onClick={() => {
@@ -134,7 +134,7 @@ function MarketMovementBody({ presented }: { presented: PresentedMarketMovement 
 
   return (
     <>
-      <h3 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <h3 className="text-[11px] font-medium uppercase tracking-wide text-[#4a6366]">
         {presented.title}
       </h3>
       <p className="sr-only">
@@ -143,8 +143,8 @@ function MarketMovementBody({ presented }: { presented: PresentedMarketMovement 
       </p>
       {presented.oneBook || presented.consensusUnavailable ? (
         <div>
-          <p className="text-xs text-white">{presented.oneBookTitle}</p>
-          <p className="text-[11px] text-muted-foreground">{presented.oneBookDetail}</p>
+          <p className="text-xs text-[#063f46]">{presented.oneBookTitle}</p>
+          <p className="text-[11px] text-[#4a6366]">{presented.oneBookDetail}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -158,24 +158,24 @@ function MarketMovementBody({ presented }: { presented: PresentedMarketMovement 
                   : `${presented.referenceLabel} to ${presented.comparisonLabel}`
               }
             >
-              <span className="text-[11px] text-muted-foreground" aria-hidden>
+              <span className="text-[11px] text-[#4a6366]" aria-hidden>
                 →
               </span>
               {presented.consensusDeltaLabel ? (
-                <span className="text-lg font-semibold text-white tabular-nums leading-tight">
+                <span className="text-lg font-semibold text-[#063f46] tabular-nums leading-tight">
                   {presented.consensusDeltaLabel}
                 </span>
               ) : null}
-              <span className="text-[11px] text-muted-foreground hidden sm:inline" aria-hidden>
+              <span className="text-[11px] text-[#4a6366] hidden sm:inline" aria-hidden>
                 →
               </span>
             </div>
             <SnapshotColumn heading={presented.comparisonLabel} consensus={presented.comparison} align="end" />
           </div>
           {presented.acrossLabel ? (
-            <p className="text-[11px] text-muted-foreground">{presented.acrossLabel}</p>
+            <p className="text-[11px] text-[#4a6366]">{presented.acrossLabel}</p>
           ) : null}
-          <p className="text-[11px] text-muted-foreground">{presented.disclaimer}</p>
+          <p className="text-[11px] text-[#4a6366]">{presented.disclaimer}</p>
         </div>
       )}
       {presented.books.length > 0 ? (
@@ -217,7 +217,7 @@ export function MarketMovementSection({
       data-market-section="market-movement"
       data-mm-state={presented.state}
       data-premium-candidate="movement"
-      className="rounded-lg border border-white/10 bg-white/[0.03] p-2.5 space-y-2"
+      className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-2"
       aria-label={presented.state === 'free' ? MM_FREE_TITLE : presented.title}
     >
       <MarketMovementBody presented={presented} />

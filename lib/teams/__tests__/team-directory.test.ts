@@ -185,7 +185,7 @@ describe('team directory (Phase 2.T.4B)', () => {
     expect(shouldShowLayoutHeader('/teams')).toBe(true);
     expect(shouldShowLayoutHeader('/teams/2')).toBe(true);
     expect(shouldShowLayoutHeader('/betting')).toBe(true);
-    expect(shouldShowLayoutHeader('/betting/players/x')).toBe(false);
+    expect(shouldShowLayoutHeader('/betting/players/x')).toBe(true);
 
     const teamsLayout = readFileSync(join(ROOT, 'app/teams/layout.tsx'), 'utf8');
     expect(teamsLayout).toMatch(/BettingAppShell/);

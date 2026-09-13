@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { TrendingUp, Flame, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 
 type TrendingStat = 'pts' | 'reb' | 'ast' | '3pm' | 'pra';
 
@@ -12,6 +13,7 @@ interface StripPlayer {
   full_name: string;
   team_abbr: string;
   next_opponent_abbr: string | null;
+  nba_player_id?: string | null;
   l5_avg: number;
   season_avg: number;
   trend_score: number;
@@ -39,6 +41,42 @@ const STAT_LABELS: Record<TrendingStat, string> = {
   '3pm': '3PM',
   pra: 'PRA',
 };
+
+function nbaHeadshotUrl(nbaId: string) {
+  return `https://cdn.nba.com/headshots/nba/latest/1040x760/${nbaId}.png`;
+}
+
+function playerInitials(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2);
+}
+
+function PlayerHeadshot({ nbaId, name }: { nbaId: string | null; name: string }) {
+  const [failed, setFailed] = useState(false);
+  const shell = 'relative w-[72px] h-[88px] rounded-2xl overflow-hidden bg-[#E8F0F1] shrink-0';
+  if (!nbaId || failed) {
+    return (
+      <div className={`${shell} flex items-center justify-center`} aria-hidden>
+        <span className="text-sm font-bold text-[#8aa0a3]">{playerInitials(name)}</span>
+      </div>
+    );
+  }
+  return (
+    <div className={shell}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={nbaHeadshotUrl(nbaId)}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-[center_18%] origin-[center_18%] scale-[1.4]"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
 
 function getBadge(player: StripPlayer, stat: TrendingStat): { label: string; color: string } | null {
   const score = player.trend_score;
@@ -79,55 +117,58 @@ function TrendingCard({
   return (
     <Link
       href={`/betting/players/${player.player_id}`}
-      className="glass-card rounded-xl p-3 min-w-[172px] max-w-[172px] shrink-0
-                 border border-white/5 hover:border-[#00d4ff]/30
+      className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-3.5 w-max shrink-0
+                 hover:border-[#075B5C]/30
                  transition-all duration-200 cursor-pointer group
                  snap-start"
     >
-      {/* Top row: rank + name + badge */}
-      <div className="flex items-start gap-2 mb-2">
-        <span className="text-[10px] font-mono text-muted-foreground/50 mt-0.5 leading-none select-none">
+      <div className="flex gap-2.5">
+        <span className="text-[10px] font-mono text-[#8aa0a3] leading-none pt-1 select-none shrink-0">
           #{rank}
         </span>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate leading-tight group-hover:text-[#00d4ff] transition-colors">
-            {player.full_name}
-          </p>
-          <div className="flex items-center gap-1 mt-0.5">
-            <span className="text-[10px] text-muted-foreground font-medium">{player.team_abbr}</span>
-            {player.next_opponent_abbr && (
-              <>
-                <span className="text-[10px] text-muted-foreground/40">·</span>
-                <span className="text-[10px] text-muted-foreground/60">vs {player.next_opponent_abbr}</span>
-              </>
-            )}
+        <PlayerHeadshot nbaId={player.nba_player_id ?? null} name={player.full_name} />
+        <div className="flex flex-col justify-between py-0.5 shrink-0 min-w-[160px]">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-semibold text-[#063f46] whitespace-nowrap leading-tight group-hover:text-[#075B5C] transition-colors">
+                {player.full_name}
+              </p>
+              {badge && (
+                <span
+                  className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 leading-none"
+                  style={{ backgroundColor: `${badge.color}20`, color: badge.color }}
+                >
+                  {badge.label}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1 mt-0.5">
+              <TeamLogo team={player.team_abbr} size="xs" decorative />
+              <span className="text-[10px] text-[#4a6366] font-medium">{player.team_abbr}</span>
+              {player.next_opponent_abbr && (
+                <>
+                  <span className="text-[10px] text-[#DCE9EA]">·</span>
+                  <span className="text-[10px] text-[#8aa0a3]">vs {player.next_opponent_abbr}</span>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-        {badge && (
-          <span
-            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 leading-none"
-            style={{ backgroundColor: `${badge.color}20`, color: badge.color }}
-          >
-            {badge.label}
-          </span>
-        )}
-      </div>
-
-      {/* Stat row */}
-      <div className="flex items-end justify-between">
-        <div>
-          <span className="text-[10px] text-muted-foreground">{STAT_LABELS[stat]} L5</span>
-          <p className="text-lg font-bold text-white font-mono leading-none mt-0.5">
-            {player.l5_avg.toFixed(1)}
-          </p>
-        </div>
-        <div className="text-right">
-          <span className="text-[10px] text-muted-foreground">vs szn</span>
-          <div className="flex items-center gap-1 justify-end mt-0.5">
-            <TrendingUp className="w-3 h-3 text-[#39ff14]" />
-            <span className="text-sm font-bold font-mono text-[#39ff14] leading-none">
-              +{diff.toFixed(1)}
-            </span>
+          <div className="flex items-end justify-between gap-8 mt-2 whitespace-nowrap">
+            <div>
+              <span className="text-[10px] text-[#4a6366]">{STAT_LABELS[stat]} L5</span>
+              <p className="text-lg font-bold text-[#063f46] font-mono leading-none mt-0.5">
+                {player.l5_avg.toFixed(1)}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] text-[#4a6366]">vs szn</span>
+              <div className="flex items-center gap-1 justify-end mt-0.5">
+                <TrendingUp className="w-3 h-3 text-[#20B95A]" />
+                <span className="text-sm font-bold font-mono text-[#20B95A] leading-none">
+                  +{diff.toFixed(1)}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -139,22 +180,19 @@ function StripSkeleton() {
   return (
     <div className="flex gap-3 overflow-hidden">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="glass-card rounded-xl p-3 min-w-[172px] max-w-[172px] shrink-0">
-          <div className="flex items-start gap-2 mb-2">
-            <Skeleton className="w-4 h-3 mt-0.5" />
-            <div className="flex-1 space-y-1.5">
-              <Skeleton className="w-24 h-3.5" />
-              <Skeleton className="w-16 h-2.5" />
-            </div>
-          </div>
-          <div className="flex items-end justify-between">
-            <div className="space-y-1">
-              <Skeleton className="w-10 h-2.5" />
-              <Skeleton className="w-12 h-5" />
-            </div>
-            <div className="space-y-1 flex flex-col items-end">
-              <Skeleton className="w-10 h-2.5" />
-              <Skeleton className="w-14 h-4" />
+        <div key={i} className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-3.5 w-max shrink-0">
+          <div className="flex gap-2.5">
+            <Skeleton className="w-4 h-2.5 mt-1 shrink-0" />
+            <Skeleton className="w-[72px] h-[88px] rounded-2xl shrink-0" />
+            <div className="flex flex-col justify-between min-w-[160px] py-0.5">
+              <div className="space-y-1.5">
+                <Skeleton className="w-36 h-3.5" />
+                <Skeleton className="w-16 h-2.5" />
+              </div>
+              <div className="flex items-end justify-between">
+                <Skeleton className="w-12 h-8" />
+                <Skeleton className="w-14 h-8" />
+              </div>
             </div>
           </div>
         </div>
@@ -222,9 +260,9 @@ export function TrendingPlayerStrip() {
       {/* Header row */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-[#ff6b35]" />
-          <h2 className="text-lg font-semibold text-white">Recent form</h2>
-          <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/15 text-[#ff6b35] rounded-full font-medium leading-none">
+          <Flame className="w-4 h-4 text-amber-600" />
+          <h2 className="text-lg font-semibold text-[#063f46]">Recent form</h2>
+          <span className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium leading-none">
             L5 vs SZN
           </span>
         </div>
@@ -235,21 +273,21 @@ export function TrendingPlayerStrip() {
             onClick={() => scroll('left')}
             disabled={!canScrollLeft}
             className="w-6 h-6 rounded-md flex items-center justify-center
-                       bg-white/5 hover:bg-white/10 disabled:opacity-0
+                       bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] disabled:opacity-0
                        transition-all duration-150"
             aria-label="Scroll left"
           >
-            <ChevronLeft className="w-3.5 h-3.5 text-white/60" />
+            <ChevronLeft className="w-3.5 h-3.5 text-[#4a6366]" />
           </button>
           <button
             onClick={() => scroll('right')}
             disabled={!canScrollRight}
             className="w-6 h-6 rounded-md flex items-center justify-center
-                       bg-white/5 hover:bg-white/10 disabled:opacity-0
+                       bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] disabled:opacity-0
                        transition-all duration-150"
             aria-label="Scroll right"
           >
-            <ChevronRight className="w-3.5 h-3.5 text-white/60" />
+            <ChevronRight className="w-3.5 h-3.5 text-[#4a6366]" />
           </button>
         </div>
       </div>
@@ -263,8 +301,8 @@ export function TrendingPlayerStrip() {
             className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all duration-150
               ${
                 stat === t.key
-                  ? 'bg-[#00d4ff]/15 text-[#00d4ff] shadow-[0_0_6px_rgba(0,212,255,0.15)]'
-                  : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  ? 'bg-[#F8FBFA] border border-[#DCE9EA] text-[#063F46]'
+                  : 'text-[#72869A] hover:text-[#063f46] hover:bg-[#f7f9f7]'
               }`}
           >
             {t.label}
@@ -276,17 +314,17 @@ export function TrendingPlayerStrip() {
       {loading ? (
         <StripSkeleton />
       ) : players.length === 0 ? (
-        <div className="glass-card rounded-xl p-6 text-center">
-          <p className="text-sm text-muted-foreground">No trending players found for {STAT_LABELS[stat]}</p>
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6 text-center">
+          <p className="text-sm text-[#4a6366]">No trending players found for {STAT_LABELS[stat]}</p>
         </div>
       ) : (
         <div className="relative">
           {/* Fade edges */}
           {canScrollLeft && (
-            <div className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-linear-to-r from-background to-transparent" />
+            <div className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-linear-to-r from-[#f7f9f7] to-transparent" />
           )}
           {canScrollRight && (
-            <div className="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-linear-to-l from-background to-transparent" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-linear-to-l from-[#f7f9f7] to-transparent" />
           )}
 
           <div

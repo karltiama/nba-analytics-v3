@@ -65,14 +65,18 @@ function formatPct(x: number | null | undefined, digits = 1): string {
   return `${(x * 100).toFixed(digits)}%`;
 }
 
+function profitClass(value: number): string {
+  return value >= 0 ? 'text-[#20B95A]' : 'text-[#c2410c]';
+}
+
 function SegmentTable({ title, rows, keyLabel }: { title: string; rows: AnalyticsSegment[]; keyLabel?: (k: string) => string }) {
   if (rows.length === 0) return null;
   return (
     <div className="mt-5">
-      <h3 className="text-xs font-medium text-white mb-2">{title}</h3>
-      <div className="overflow-x-auto border border-white/10 rounded-lg">
+      <h3 className="text-xs font-medium text-[#063f46] mb-2">{title}</h3>
+      <div className="overflow-x-auto border border-[#DCE9EA] rounded-xl">
         <table className="w-full text-left text-[11px]">
-          <thead className="bg-gray-950/80 border-b border-white/10 text-muted-foreground">
+          <thead className="bg-[#F8FBFA] border-b border-[#DCE9EA] text-[#4a6366]">
             <tr>
               <th className="py-1.5 px-2 font-medium">Segment</th>
               <th className="py-1.5 px-2 font-medium text-right">n</th>
@@ -86,19 +90,17 @@ function SegmentTable({ title, rows, keyLabel }: { title: string; rows: Analytic
               const roi = r.stakeSum > 0 ? r.profitSum / r.stakeSum : null;
               const label = keyLabel ? keyLabel(r.key) : r.key;
               return (
-                <tr key={r.key} className="border-b border-white/5">
-                  <td className="py-1 px-2 text-white capitalize">{label}</td>
-                  <td className="py-1 px-2 text-right font-mono text-muted-foreground">{r.count}</td>
-                  <td className="py-1 px-2 text-right font-mono text-muted-foreground text-[10px]">
+                <tr key={r.key} className="border-b border-[#DCE9EA]">
+                  <td className="py-1 px-2 text-[#063f46] capitalize">{label}</td>
+                  <td className="py-1 px-2 text-right font-mono text-[#4a6366]">{r.count}</td>
+                  <td className="py-1 px-2 text-right font-mono text-[#4a6366] text-[10px]">
                     {r.wins}/{r.losses}/{r.pushes}/{r.voids}
                   </td>
-                  <td
-                    className={`py-1 px-2 text-right font-mono ${r.profitSum >= 0 ? 'text-[#39ff14]' : 'text-[#ff4757]'}`}
-                  >
+                  <td className={`py-1 px-2 text-right font-mono ${profitClass(r.profitSum)}`}>
                     {r.profitSum >= 0 ? '+' : ''}
                     {r.profitSum.toFixed(2)}
                   </td>
-                  <td className="py-1 px-2 text-right font-mono text-white">
+                  <td className="py-1 px-2 text-right font-mono text-[#063f46]">
                     {roi != null ? `${(roi * 100).toFixed(1)}%` : '—'}
                   </td>
                 </tr>
@@ -222,12 +224,19 @@ function PaperBetsContent() {
 
   const displayRows = validTab === 'open' ? openBets : validTab === 'history' ? historyBets : [];
 
+  const tabBtn = (active: boolean) =>
+    `px-3 py-1.5 rounded-lg text-xs border ${
+      active
+        ? 'border-[#55ddb1] bg-[#55ddb1] text-[#063f46] font-semibold'
+        : 'border-[#DCE9EA] bg-white text-[#4a6366] hover:bg-[#f7f9f7]'
+    }`;
+
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-white">Paper Bets</h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <h1 className="text-xl font-semibold text-[#063f46]">Paper Bets</h1>
+          <p className="text-xs text-[#4a6366] mt-1">
             Log legs from Props Explorer. Settlement uses Final box scores (same stat mapping as research views).
             ROI = sum(profit) / sum(stake) on settled bets. Cron: GET /api/cron/paper-settle (Bearer{' '}
             <span className="font-mono">PAPER_SETTLE_CRON_SECRET</span> or <span className="font-mono">CRON_SECRET</span>
@@ -235,44 +244,20 @@ function PaperBetsContent() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setTab('open')}
-            className={`px-3 py-1.5 rounded-lg text-xs border ${
-              validTab === 'open'
-                ? 'border-[#00d4ff] bg-[#00d4ff]/10 text-white'
-                : 'border-white/10 text-muted-foreground hover:bg-white/5'
-            }`}
-          >
+          <button type="button" onClick={() => setTab('open')} className={tabBtn(validTab === 'open')}>
             Open ({openBets.length})
           </button>
-          <button
-            type="button"
-            onClick={() => setTab('history')}
-            className={`px-3 py-1.5 rounded-lg text-xs border ${
-              validTab === 'history'
-                ? 'border-[#00d4ff] bg-[#00d4ff]/10 text-white'
-                : 'border-white/10 text-muted-foreground hover:bg-white/5'
-            }`}
-          >
+          <button type="button" onClick={() => setTab('history')} className={tabBtn(validTab === 'history')}>
             History
           </button>
-          <button
-            type="button"
-            onClick={() => setTab('summary')}
-            className={`px-3 py-1.5 rounded-lg text-xs border ${
-              validTab === 'summary'
-                ? 'border-[#00d4ff] bg-[#00d4ff]/10 text-white'
-                : 'border-white/10 text-muted-foreground hover:bg-white/5'
-            }`}
-          >
+          <button type="button" onClick={() => setTab('summary')} className={tabBtn(validTab === 'summary')}>
             Summary
           </button>
           <button
             type="button"
             disabled={settling || loading}
             onClick={handleSettle}
-            className="px-3 py-1.5 rounded-lg text-xs border border-[#39ff14]/50 bg-[#39ff14]/10 text-[#b8ffc9] hover:bg-[#39ff14]/20 disabled:opacity-50"
+            className="px-3 py-1.5 rounded-lg text-xs border border-[#075B5C] bg-[#55ddb1]/20 text-[#063f46] hover:bg-[#55ddb1]/40 disabled:opacity-50"
           >
             {settling ? 'Settling…' : 'Settle now'}
           </button>
@@ -280,47 +265,45 @@ function PaperBetsContent() {
       </div>
 
       {error && (
-        <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757] mb-4">
-          <p className="text-sm text-[#ff4757]">{error}</p>
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-red-500 mb-4">
+          <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
 
       {validTab === 'summary' && (
-        <div className="glass-card rounded-xl p-4 sm:p-6 mb-6 space-y-3">
-          <h2 className="text-sm font-medium text-white">ROI summary (settled only)</h2>
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 sm:p-6 mb-6 space-y-3">
+          <h2 className="text-sm font-medium text-[#063f46]">ROI summary (settled only)</h2>
           <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div>
-              <dt className="text-muted-foreground">Settled bets</dt>
-              <dd className="text-white font-mono text-lg">{summary.n}</dd>
+              <dt className="text-[#4a6366]">Settled bets</dt>
+              <dd className="text-[#063f46] font-mono text-lg">{summary.n}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">W / L / Push / Void</dt>
-              <dd className="text-white font-mono">
+              <dt className="text-[#4a6366]">W / L / Push / Void</dt>
+              <dd className="text-[#063f46] font-mono">
                 {summary.wins} / {summary.losses} / {summary.pushes} / {summary.voids}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">Net units</dt>
-              <dd
-                className={`font-mono text-lg ${summary.profitStaked >= 0 ? 'text-[#39ff14]' : 'text-[#ff4757]'}`}
-              >
+              <dt className="text-[#4a6366]">Net units</dt>
+              <dd className={`font-mono text-lg ${profitClass(summary.profitStaked)}`}>
                 {summary.profitStaked >= 0 ? '+' : ''}
                 {summary.profitStaked.toFixed(2)}
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">ROI (profit / stake)</dt>
-              <dd className="text-white font-mono text-lg">
+              <dt className="text-[#4a6366]">ROI (profit / stake)</dt>
+              <dd className="text-[#063f46] font-mono text-lg">
                 {summary.roi != null ? `${(summary.roi * 100).toFixed(2)}%` : '—'}
               </dd>
             </div>
           </dl>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[10px] text-[#8aa0a3]">
             Breakdowns use all settled rows in the database (not limited by the 500-row history fetch). EV buckets use
             decimal edge as stored (e.g. 0.05 = 5%).
           </p>
           {loading && !analytics ? (
-            <p className="text-xs text-muted-foreground mt-4">Loading breakdowns…</p>
+            <p className="text-xs text-[#4a6366] mt-4">Loading breakdowns…</p>
           ) : analytics ? (
             <>
               <SegmentTable title="By prop type" rows={analytics.byPropType} />
@@ -333,17 +316,17 @@ function PaperBetsContent() {
               />
             </>
           ) : (
-            <p className="text-xs text-muted-foreground mt-4">Breakdowns unavailable.</p>
+            <p className="text-xs text-[#4a6366] mt-4">Breakdowns unavailable.</p>
           )}
         </div>
       )}
 
       {validTab !== 'summary' && (
-        <div className="glass-card rounded-xl overflow-hidden border border-white/5">
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto max-h-[calc(100vh-14rem)] overflow-y-auto">
             <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 z-10 bg-gray-950/95 border-b border-white/10">
-                <tr className="text-muted-foreground">
+              <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
+                <tr className="text-[#4a6366]">
                   <th className="py-2 px-2 font-medium">Game</th>
                   <th className="py-2 px-2 font-medium">Player</th>
                   <th className="py-2 px-2 font-medium">Prop</th>
@@ -368,49 +351,49 @@ function PaperBetsContent() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={validTab === 'history' ? 14 : validTab === 'open' ? 12 : 11} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={validTab === 'history' ? 14 : validTab === 'open' ? 12 : 11} className="py-8 text-center text-[#4a6366]">
                       Loading…
                     </td>
                   </tr>
                 ) : displayRows.length === 0 ? (
                   <tr>
-                    <td colSpan={validTab === 'history' ? 14 : validTab === 'open' ? 12 : 11} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={validTab === 'history' ? 14 : validTab === 'open' ? 12 : 11} className="py-8 text-center text-[#4a6366]">
                       {validTab === 'open' ? 'No open bets. Add from Props Explorer.' : 'No settled bets yet.'}
                     </td>
                   </tr>
                 ) : (
                   displayRows.map((b) => (
-                    <tr key={b.id} className="border-b border-white/5 hover:bg-white/3">
+                    <tr key={b.id} className="border-b border-[#DCE9EA] hover:bg-[#f7f9f7]">
                       <td className="py-1.5 px-2 font-mono">
-                        <Link href={`/betting/games/${b.gameId}`} className="text-[#00d4ff] hover:underline">
+                        <Link href={`/betting/games/${b.gameId}`} className="text-[#075B5C] hover:underline">
                           {b.gameId}
                         </Link>
                       </td>
                       <td className="py-1.5 px-2">
                         <Link
                           href={`/betting/players/${b.playerId}`}
-                          className="text-[#00d4ff] hover:underline truncate max-w-[120px] block"
+                          className="text-[#075B5C] hover:underline truncate max-w-[120px] block"
                         >
                           {b.playerName ?? b.playerId}
                         </Link>
                       </td>
-                      <td className="py-1.5 px-2 text-white capitalize">
+                      <td className="py-1.5 px-2 text-[#063f46] capitalize">
                         {(b.propType ?? '—').replace(/_/g, ' ')}
                       </td>
-                      <td className="py-1.5 px-2 capitalize">{b.side ?? '—'}</td>
-                      <td className="py-1.5 px-2 text-right font-mono text-white">{b.lineValue ?? '—'}</td>
-                      <td className="py-1.5 px-2 text-muted-foreground truncate max-w-[100px]">
+                      <td className="py-1.5 px-2 capitalize text-[#063f46]">{b.side ?? '—'}</td>
+                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{b.lineValue ?? '—'}</td>
+                      <td className="py-1.5 px-2 text-[#4a6366] truncate max-w-[100px]">
                         {b.sportsbook ?? '—'}
                       </td>
-                      <td className="py-1.5 px-2 text-right font-mono">{formatOdds(b.oddsAmerican)}</td>
-                      <td className="py-1.5 px-2 text-right font-mono">{b.stakeUnits}</td>
-                      <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
+                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{formatOdds(b.oddsAmerican)}</td>
+                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{b.stakeUnits}</td>
+                      <td className="py-1.5 px-2 text-right font-mono text-[#4a6366]">
                         {formatPct(b.modelProbability)}
                       </td>
-                      <td className="py-1.5 px-2 text-right font-mono text-white">
+                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
                         {b.projection != null && Number.isFinite(b.projection) ? b.projection.toFixed(1) : '—'}
                       </td>
-                      <td className="py-1.5 px-2 text-[10px] font-mono text-muted-foreground truncate max-w-[100px]">
+                      <td className="py-1.5 px-2 text-[10px] font-mono text-[#8aa0a3] truncate max-w-[100px]">
                         {b.evSelectedTrack ?? '—'}
                       </td>
                       {validTab === 'open' && (
@@ -419,7 +402,7 @@ function PaperBetsContent() {
                             type="button"
                             disabled={removingBetId === b.id}
                             onClick={() => void handleRemoveBet(b.id)}
-                            className="px-2 py-1 rounded border border-[#ff4757]/40 bg-[#ff4757]/10 text-[#ff9ba4] hover:bg-[#ff4757]/20 disabled:opacity-50"
+                            className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#c2410c] hover:bg-[#f7f9f7] disabled:opacity-40"
                           >
                             {removingBetId === b.id ? 'Removing…' : 'Remove'}
                           </button>
@@ -427,17 +410,15 @@ function PaperBetsContent() {
                       )}
                       {validTab === 'history' && (
                         <>
-                          <td className="py-1.5 px-2 capitalize text-muted-foreground">{b.result ?? '—'}</td>
+                          <td className="py-1.5 px-2 capitalize text-[#4a6366]">{b.result ?? '—'}</td>
                           <td
-                            className={`py-1.5 px-2 text-right font-mono ${
-                              (b.profitUnits ?? 0) >= 0 ? 'text-[#39ff14]' : 'text-[#ff4757]'
-                            }`}
+                            className={`py-1.5 px-2 text-right font-mono ${profitClass(b.profitUnits ?? 0)}`}
                           >
                             {b.profitUnits != null && Number.isFinite(b.profitUnits)
                               ? `${b.profitUnits >= 0 ? '+' : ''}${b.profitUnits.toFixed(2)}`
                               : '—'}
                           </td>
-                          <td className="py-1.5 px-2 text-[10px] text-muted-foreground whitespace-nowrap">
+                          <td className="py-1.5 px-2 text-[10px] text-[#8aa0a3] whitespace-nowrap">
                             {b.settledAt ? new Date(b.settledAt).toLocaleString() : '—'}
                           </td>
                         </>
@@ -459,7 +440,7 @@ export default function PaperBetsPage() {
     <Suspense
       fallback={
         <main className="max-w-[1800px] mx-auto px-4 pt-8 pb-12">
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <p className="text-sm text-[#4a6366]">Loading…</p>
         </main>
       }
     >

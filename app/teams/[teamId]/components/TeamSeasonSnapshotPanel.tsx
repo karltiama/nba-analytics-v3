@@ -32,11 +32,11 @@ function StatCell({
 }) {
   return (
     <div className="min-w-18">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+      <div className="text-[10px] uppercase tracking-wide text-[#4a6366]">
         {label}
       </div>
       <div
-        className="text-sm font-bold font-mono text-white"
+        className="text-sm font-bold font-mono text-[#063f46]"
         style={accent ? { color: accent } : undefined}
       >
         {value}
@@ -63,9 +63,9 @@ function SnapshotMetricsGrid({
     muted || snap.netRating == null
       ? undefined
       : snap.netRating > 0
-        ? '#39ff14'
+        ? '#20B95A'
         : snap.netRating < 0
-          ? '#ff6b35'
+          ? '#c2410c'
           : undefined;
 
   return (
@@ -85,17 +85,17 @@ function SnapshotMetricsGrid({
       </div>
       <div className="flex flex-wrap gap-2 items-center">
         {showSampleLabel && snap.sampleLabel && (
-          <span className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-muted-foreground">
+          <span className="text-[10px] px-2 py-0.5 rounded bg-[#F8FBFA] border border-[#DCE9EA] text-[#4a6366]">
             {snap.sampleLabel}
           </span>
         )}
         {snap.scopeNote && (
-          <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-200/90">
+          <span className="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
             {snap.scopeNote}
           </span>
         )}
         {!snap.scopeNote && snap.hasData && (
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-[10px] text-[#4a6366]">
             All games this season
           </span>
         )}
@@ -112,11 +112,11 @@ function KeyChangeRow({
   teamPrefix: 'From' | 'Now';
 }) {
   return (
-    <li className="py-1.5 border-b border-white/5 last:border-0">
-      <div className="text-sm text-white font-medium truncate">
+    <li className="py-1.5 border-b border-[#DCE9EA] last:border-0">
+      <div className="text-sm text-[#063f46] font-medium truncate">
         {story.displayName}
       </div>
-      <div className="text-[10px] text-muted-foreground leading-snug">
+      <div className="text-[10px] text-[#4a6366] leading-snug">
         {formatChangeContextLine(story)}
         {story.otherTeamAbbr && (
           <span>
@@ -138,7 +138,7 @@ function OtherNames({
   const shown = players.slice(0, 4);
   const more = players.length - shown.length;
   return (
-    <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed">
+    <p className="text-[10px] text-[#4a6366] mt-1.5 leading-relaxed">
       <span className="uppercase tracking-wide">Other</span>
       {' · '}
       {shown.map((p) => p.displayName).join(' · ')}
@@ -161,22 +161,22 @@ export function TeamSeasonSnapshotPanel({
 
   return (
     <section
-      className="glass-card rounded-xl p-4 space-y-4"
+      className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 space-y-4"
       data-analytics-season={season}
       aria-label={`${seasonLabel} team snapshot`}
     >
-      <h2 className="text-sm font-semibold text-white">Team Snapshot</h2>
+      <h2 className="text-sm font-semibold text-[#063f46]">Team Snapshot</h2>
 
       <div data-snapshot-role="current" data-snapshot-season={season}>
-        <h3 className="text-xs font-semibold text-white mb-2">
+        <h3 className="text-xs font-semibold text-[#063f46] mb-2">
           Current Season — {seasonLabel}
         </h3>
         {!snapshot.hasData ? (
           <div className="space-y-0.5">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#4a6366]">
               Not enough season data yet
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[#4a6366]">
               Preseason — no completed games
             </p>
           </div>
@@ -185,34 +185,34 @@ export function TeamSeasonSnapshotPanel({
         )}
       </div>
 
-      <div className="border-t border-white/5 pt-3">
-        <h3 className="text-xs font-semibold text-white mb-2">Roster Changes</h3>
+      <div className="border-t border-[#DCE9EA] pt-3">
+        <h3 className="text-xs font-semibold text-[#063f46] mb-2">Roster Changes</h3>
         {!continuity.available ? (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[#4a6366]">
             {continuity.unavailableReason ?? 'Roster continuity unavailable'}
           </p>
         ) : (
           <div className="space-y-3">
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[10px] text-[#4a6366]">
               vs {continuityPrevLabel} roster
             </p>
-            <p className="text-sm text-white/90">
+            <p className="text-sm text-[#063f46]">
               <span className="font-mono font-semibold">
                 {continuity.returningCount}
               </span>
-              <span className="text-muted-foreground text-xs ml-1 mr-3">
+              <span className="text-[#4a6366] text-xs ml-1 mr-3">
                 Returning
               </span>
-              <span className="font-mono font-semibold text-[#39ff14]">
+              <span className="font-mono font-semibold text-[#20B95A]">
                 {continuity.addedCount}
               </span>
-              <span className="text-muted-foreground text-xs ml-1 mr-3">
+              <span className="text-[#4a6366] text-xs ml-1 mr-3">
                 Added
               </span>
-              <span className="font-mono font-semibold text-[#ff6b35]">
+              <span className="font-mono font-semibold text-[#c2410c]">
                 {continuity.departedCount}
               </span>
-              <span className="text-muted-foreground text-xs ml-1">
+              <span className="text-[#4a6366] text-xs ml-1">
                 Departed
               </span>
             </p>
@@ -220,11 +220,11 @@ export function TeamSeasonSnapshotPanel({
             {story && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
+                  <h4 className="text-[10px] uppercase tracking-wide text-[#4a6366] mb-1">
                     Key Additions
                   </h4>
                   {story.addedKey.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">None</p>
+                    <p className="text-xs text-[#4a6366]">None</p>
                   ) : (
                     <ul>
                       {story.addedKey.map((s) => (
@@ -239,11 +239,11 @@ export function TeamSeasonSnapshotPanel({
                   <OtherNames players={story.addedOther} />
                 </div>
                 <div>
-                  <h4 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
+                  <h4 className="text-[10px] uppercase tracking-wide text-[#4a6366] mb-1">
                     Key Departures
                   </h4>
                   {story.departedKey.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">None</p>
+                    <p className="text-xs text-[#4a6366]">None</p>
                   ) : (
                     <ul>
                       {story.departedKey.map((s) => (
@@ -264,15 +264,15 @@ export function TeamSeasonSnapshotPanel({
       </div>
 
       <div
-        className="rounded-lg border border-white/5 bg-white/[0.02] p-3"
+        className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-3"
         data-snapshot-role="previous"
         data-snapshot-season={previousBaseline.baselineSeason}
       >
-        <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-2">
+        <h3 className="text-[10px] uppercase tracking-wide text-[#4a6366] mb-2">
           Previous Season — {baselineLabel}
         </h3>
         {!previousBaseline.available ? (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[#4a6366]">
             {previousBaseline.unavailableReason ??
               'Previous season baseline unavailable'}
           </p>

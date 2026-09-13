@@ -66,37 +66,37 @@ export default function BillingSuccessPage() {
     <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
       <Link
         href="/billing"
-        className="text-sm text-muted-foreground hover:text-white transition-colors inline-block mb-6"
+        className="text-sm text-[#075B5C] hover:underline inline-block mb-6"
       >
         ← Back to billing
       </Link>
 
-      <h1 className="text-2xl font-bold text-white tracking-tight mb-3">Checkout</h1>
+      <h1 className="text-2xl font-bold text-[#063f46] tracking-tight mb-3">Checkout</h1>
 
       {phase === 'confirming' ? (
         <div className="space-y-2">
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
+          <div className="flex items-start gap-2 text-sm text-[#4a6366]">
             <Loader2 className="h-4 w-4 animate-spin mt-0.5" />
             <p>Payment received. Waiting for billing confirmation.</p>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[#4a6366]">
             This page does not unlock Founding Pro by itself. Access updates after confirmation.
           </p>
         </div>
       ) : null}
 
       {phase === 'pro' ? (
-        <p className="text-sm text-white">Founding Pro is active on this account.</p>
+        <p className="text-sm text-[#063f46]">Founding Pro is active on this account.</p>
       ) : null}
 
       {phase === 'incomplete' ? (
-        <p className="text-sm text-amber-300">
+        <p className="text-sm text-amber-800">
           Billing setup is incomplete. If you completed payment, wait a moment and refresh billing status.
         </p>
       ) : null}
 
       {phase === 'error' ? (
-        <p className="text-sm text-red-400">Could not confirm billing status. Sign in and open Billing.</p>
+        <p className="text-sm text-red-700">Could not confirm billing status. Sign in and open Billing.</p>
       ) : null}
     </main>
   );

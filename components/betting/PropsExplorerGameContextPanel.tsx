@@ -12,6 +12,7 @@ import {
 } from '@/lib/betting/ai-game-summary-payload';
 import { injuryAbsenceCopy, type InjuryFeedAvailability } from '@/lib/injuries/freshness';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 import { UPGRADE_COPY } from '@/lib/entitlements/types';
 
 type InjuryRow = { player: string; status: string; injury: string };
@@ -46,13 +47,13 @@ type GameDetailsPayload = {
 
 function GameContextPlaceholder({ message }: { message: string }) {
   return (
-    <div className="glass-card rounded-xl border border-white/5 overflow-hidden">
-      <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
-        <Zap className="w-4 h-4 text-[#bf5af2]/90 shrink-0" aria-hidden />
-        <h2 className="text-sm font-semibold text-white">AI Projection Summary</h2>
-        <span className="text-[9px] px-1.5 py-0.5 bg-[#bf5af2]/20 text-[#bf5af2] rounded-full">Beta</span>
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
+        <Zap className="w-4 h-4 text-[#075B5C] shrink-0" aria-hidden />
+        <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+        <span className="text-[9px] px-1.5 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">Beta</span>
       </div>
-      <p className="p-3 text-[11px] text-muted-foreground leading-relaxed">{message}</p>
+      <p className="p-3 text-[11px] text-[#4a6366] leading-relaxed">{message}</p>
     </div>
   );
 }
@@ -66,35 +67,42 @@ function UnderlyingNumbersBlock({
 }) {
   if (!injuryMatchupContext.entries?.length) return null;
   return (
-    <details className="group rounded-lg border border-white/10 bg-white/[0.02]">
-      <summary className="cursor-pointer list-none px-2.5 py-2 text-[10px] text-muted-foreground hover:text-white/90 [&::-webkit-details-marker]:hidden flex items-center gap-2">
+    <details className="group rounded-lg border border-[#DCE9EA] bg-[#F8FBFA]">
+      <summary className="cursor-pointer list-none px-2.5 py-2 text-[10px] text-[#4a6366] hover:text-[#063f46] [&::-webkit-details-marker]:hidden flex items-center gap-2">
         <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform group-open:rotate-180" />
         Underlying numbers
       </summary>
-      <div className="px-2.5 pb-2.5 pt-0 space-y-2 border-t border-white/5">
-        <p className="text-[9px] text-muted-foreground pt-2 leading-relaxed">
+      <div className="px-2.5 pb-2.5 pt-0 space-y-2 border-t border-[#DCE9EA]">
+        <p className="text-[9px] text-[#4a6366] pt-2 leading-relaxed">
           Out / doubtful teammate PTS splits (box scores). Descriptive only—not a projection.
         </p>
         {injuryMatchupContext.entries.map((entry) => {
           const teamLabel =
             entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
+          const teamAbbr =
+            entry.team_id === game.homeTeam.id
+              ? game.homeTeam.abbreviation
+              : game.awayTeam.abbreviation;
           return (
-            <div key={entry.player_id} className="border border-white/5 rounded-lg p-2 bg-white/[0.02]">
+            <div key={entry.player_id} className="border border-[#DCE9EA] rounded-lg p-2 bg-white">
               <div className="flex flex-wrap items-baseline gap-1.5 mb-1.5">
-                <span className="text-[10px] font-medium text-white">{entry.full_name}</span>
-                <span className="text-[9px] text-muted-foreground">{teamLabel}</span>
-                <span className="text-[9px] text-muted-foreground">
+                <span className="text-[10px] font-medium text-[#063f46]">{entry.full_name}</span>
+                <span className="inline-flex items-center gap-1 text-[9px] text-[#4a6366]">
+                  <TeamLogo team={teamAbbr} size="xs" decorative />
+                  {teamLabel}
+                </span>
+                <span className="text-[9px] text-[#4a6366]">
                   With {entry.games_played_sample} · No min {entry.games_missed_sample}
                 </span>
-                {entry.low_sample ? <span className="text-[9px] text-amber-400/90">Low sample</span> : null}
+                {entry.low_sample ? <span className="text-[9px] text-amber-700">Low sample</span> : null}
               </div>
               {entry.teammates.length === 0 ? (
-                <p className="text-[9px] text-muted-foreground">No teammate split data.</p>
+                <p className="text-[9px] text-[#4a6366]">No teammate split data.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-[9px] text-left">
                     <thead>
-                      <tr className="text-muted-foreground border-b border-white/5">
+                      <tr className="text-[#4a6366] border-b border-[#DCE9EA]">
                         <th className="py-0.5 pr-1 font-normal">Tm</th>
                         <th className="py-0.5 px-0.5 font-normal">w/</th>
                         <th className="py-0.5 px-0.5 font-normal">out</th>
@@ -103,7 +111,7 @@ function UnderlyingNumbersBlock({
                     </thead>
                     <tbody>
                       {entry.teammates.map((t) => (
-                        <tr key={t.player_id} className="border-b border-white/[0.03] text-white/90">
+                        <tr key={t.player_id} className="border-b border-[#DCE9EA] text-[#063f46]">
                           <td className="py-0.5 pr-1 truncate max-w-[100px]" title={t.full_name}>
                             {t.full_name}
                           </td>
@@ -112,9 +120,9 @@ function UnderlyingNumbersBlock({
                           <td
                             className={`py-0.5 pl-0.5 ${
                               (t.pts_delta ?? 0) > 0
-                                ? 'text-emerald-400/90'
+                                ? 'text-[#20B95A]'
                                 : (t.pts_delta ?? 0) < 0
-                                  ? 'text-rose-400/90'
+                                  ? 'text-[#c2410c]'
                                   : ''
                             }`}
                           >
@@ -299,16 +307,16 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
 
   if (loading && !data) {
     return (
-      <div className="glass-card rounded-xl border border-white/5 overflow-hidden">
-        <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
-          <Loader2 className="w-4 h-4 text-[#bf5af2]/90 animate-spin shrink-0" aria-hidden />
-          <h2 className="text-sm font-semibold text-white">AI Projection Summary</h2>
-          <span className="text-[9px] px-1.5 py-0.5 bg-[#bf5af2]/20 text-[#bf5af2] rounded-full">Beta</span>
+      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
+          <Loader2 className="w-4 h-4 text-[#075B5C] animate-spin shrink-0" aria-hidden />
+          <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+          <span className="text-[9px] px-1.5 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">Beta</span>
         </div>
         <div className="p-3 space-y-2 animate-pulse">
-          <div className="h-3 bg-white/10 rounded w-3/4" />
-          <div className="h-3 bg-white/10 rounded w-full" />
-          <div className="h-3 bg-white/10 rounded w-5/6" />
+          <div className="h-3 bg-[#DCE9EA] rounded w-3/4" />
+          <div className="h-3 bg-[#DCE9EA] rounded w-full" />
+          <div className="h-3 bg-[#DCE9EA] rounded w-5/6" />
         </div>
       </div>
     );
@@ -316,12 +324,12 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
 
   if (error) {
     return (
-      <div className="glass-card rounded-xl border border-white/5 overflow-hidden border-l-4 border-l-amber-500/50">
-        <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
-          <LayoutGrid className="w-4 h-4 text-amber-400/90 shrink-0" aria-hidden />
-          <h2 className="text-sm font-semibold text-white">AI Projection Summary</h2>
+      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden border-l-4 border-l-amber-500">
+        <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
+          <LayoutGrid className="w-4 h-4 text-amber-600 shrink-0" aria-hidden />
+          <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
         </div>
-        <p className="p-3 text-[11px] text-amber-200/90">{error}</p>
+        <p className="p-3 text-[11px] text-amber-800">{error}</p>
       </div>
     );
   }
@@ -333,27 +341,29 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
   const hasSplitTables = Boolean(injuryMatchupContext.entries?.length);
 
   return (
-    <div className="glass-card rounded-xl border border-[#bf5af2]/25 overflow-hidden flex flex-col max-h-[min(28rem,52vh)]">
-      <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] shrink-0 flex items-start justify-between gap-2">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[min(28rem,52vh)]">
+      <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] shrink-0 flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center justify-center p-1 rounded-md bg-[#bf5af2]/20 shrink-0">
-              <Zap className="w-3.5 h-3.5 text-[#bf5af2]" aria-hidden />
+            <div className="flex items-center justify-center p-1 rounded-md bg-[#55ddb1]/25 shrink-0">
+              <Zap className="w-3.5 h-3.5 text-[#075B5C]" aria-hidden />
             </div>
-            <h2 className="text-sm font-semibold text-white">AI Projection Summary</h2>
-            <span className="text-[9px] px-1.5 py-0.5 bg-[#bf5af2]/20 text-[#bf5af2] rounded-full">Beta</span>
+            <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+            <span className="text-[9px] px-1.5 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">Beta</span>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-1 truncate" title={matchupLabel}>
-            {matchupLabel}
-            {game.startTime ? ` · ${game.startTime}` : ''}
+          <p className="text-[11px] text-[#4a6366] mt-1 truncate flex items-center gap-1.5" title={matchupLabel}>
+            <TeamLogo team={game.awayTeam.abbreviation} size="xs" decorative />
+            <span>@</span>
+            <TeamLogo team={game.homeTeam.abbreviation} size="xs" decorative />
+            <span className="truncate">{matchupLabel}{game.startTime ? ` · ${game.startTime}` : ''}</span>
           </p>
-          <p className="text-[10px] text-muted-foreground/80 mt-0.5">
+          <p className="text-[10px] text-[#8aa0a3] mt-0.5">
             {game.awayTeam.record ?? '—'} — {game.homeTeam.record ?? '—'}
           </p>
         </div>
         <Link
           href={`/betting/games/${game.id}`}
-          className="text-[10px] text-[#00d4ff] hover:underline shrink-0 pt-0.5"
+          className="text-[10px] text-[#075B5C] hover:underline shrink-0 pt-0.5"
         >
           Full matchup
         </Link>
@@ -370,7 +380,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
               return (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] bg-white/10 text-muted-foreground border border-white/5"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] bg-[#F8FBFA] text-[#4a6366] border border-[#DCE9EA]"
                 >
                   <Icon className="w-3 h-3 shrink-0 opacity-80" aria-hidden />
                   <span className="leading-tight">{label}</span>
@@ -381,55 +391,58 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
         ) : null}
 
         {aiSummaryStatus === 'loading' && (
-          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#bf5af2]/90" aria-hidden />
+          <div className="flex items-center gap-2 text-[10px] text-[#4a6366]">
+            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#075B5C]" aria-hidden />
             <span>Loading briefing…</span>
           </div>
         )}
         {aiSummaryStatus === 'success' && aiSummaryText && (
-          <p className="text-[11px] text-white/90 leading-relaxed border-l-2 border-[#bf5af2]/35 pl-2.5">
+          <p className="text-[11px] text-[#063f46] leading-relaxed border-l-2 border-[#55ddb1] pl-2.5">
             {aiSummaryText}
           </p>
         )}
         {aiSummaryStatus === 'entitlement' && (
           <div className="space-y-2">
-            <p className="text-[11px] font-medium text-white">{UPGRADE_COPY.ai_briefing.title}</p>
-            <p className="text-[10px] text-muted-foreground">{UPGRADE_COPY.ai_briefing.detail}</p>
+            <p className="text-[11px] font-medium text-[#063f46]">{UPGRADE_COPY.ai_briefing.title}</p>
+            <p className="text-[10px] text-[#4a6366]">{UPGRADE_COPY.ai_briefing.detail}</p>
             <FoundingProUpgradeLink />
           </div>
         )}
         {aiSummaryStatus === 'unavailable' && (
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[10px] text-[#4a6366]">
             {aiSummaryText
               ? aiSummaryText
               : (
                 <>
-                  Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server for the AI-written
+                  Add <span className="font-mono text-[#063f46]">OPENAI_API_KEY</span> on the server for the AI-written
                   summary (same as full matchup page).
                 </>
               )}
           </p>
         )}
         {aiSummaryStatus === 'error' && (
-          <p className="text-[10px] text-amber-400/90">Could not load AI summary. Try again later.</p>
+          <p className="text-[10px] text-amber-700">Could not load AI summary. Try again later.</p>
         )}
 
         <UnderlyingNumbersBlock injuryMatchupContext={injuryMatchupContext} game={game} />
 
         {!hasSplitTables ? (
-          <div className="space-y-2 pt-1 border-t border-white/5">
-            <p className="text-[10px] text-muted-foreground">
+          <div className="space-y-2 pt-1 border-t border-[#DCE9EA]">
+            <p className="text-[10px] text-[#4a6366]">
               No Out/Doubtful teammate split snapshot yet. Injury report:
             </p>
             {injuries && (injuries.home.length > 0 || injuries.away.length > 0) ? (
-              <div className="rounded-lg border border-white/10 bg-white/[0.02] p-2 space-y-2">
+              <div className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2 space-y-2">
                 {injuries.away.length > 0 ? (
                   <div>
-                    <p className="text-[10px] font-medium text-white/90 mb-1">{game.awayTeam.abbreviation}</p>
-                    <ul className="text-[10px] text-muted-foreground space-y-0.5">
+                    <p className="text-[10px] font-medium text-[#063f46] mb-1 inline-flex items-center gap-1.5">
+                      <TeamLogo team={game.awayTeam.abbreviation} size="xs" decorative />
+                      {game.awayTeam.abbreviation}
+                    </p>
+                    <ul className="text-[10px] text-[#4a6366] space-y-0.5">
                       {injuries.away.map((r) => (
                         <li key={r.player}>
-                          {r.player} <span className="text-white/70">({r.status})</span>
+                          {r.player} <span className="text-[#8aa0a3]">({r.status})</span>
                         </li>
                       ))}
                     </ul>
@@ -437,11 +450,14 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
                 ) : null}
                 {injuries.home.length > 0 ? (
                   <div>
-                    <p className="text-[10px] font-medium text-white/90 mb-1">{game.homeTeam.abbreviation}</p>
-                    <ul className="text-[10px] text-muted-foreground space-y-0.5">
+                    <p className="text-[10px] font-medium text-[#063f46] mb-1 inline-flex items-center gap-1.5">
+                      <TeamLogo team={game.homeTeam.abbreviation} size="xs" decorative />
+                      {game.homeTeam.abbreviation}
+                    </p>
+                    <ul className="text-[10px] text-[#4a6366] space-y-0.5">
                       {injuries.home.map((r) => (
                         <li key={r.player}>
-                          {r.player} <span className="text-white/70">({r.status})</span>
+                          {r.player} <span className="text-[#8aa0a3]">({r.status})</span>
                         </li>
                       ))}
                     </ul>
@@ -449,7 +465,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
                 ) : null}
               </div>
             ) : (
-              <p className="text-[10px] text-muted-foreground">{injuryAbsenceCopy(injuryFeed)}</p>
+              <p className="text-[10px] text-[#4a6366]">{injuryAbsenceCopy(injuryFeed)}</p>
             )}
           </div>
         ) : null}

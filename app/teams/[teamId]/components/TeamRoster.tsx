@@ -19,9 +19,9 @@ interface TeamRosterProps {
 }
 
 function availabilityClass(priority: 'high' | 'moderate' | 'low'): string {
-  if (priority === 'high') return 'text-[#ff6b35]';
-  if (priority === 'moderate') return 'text-[#f5a623]';
-  return 'text-muted-foreground';
+  if (priority === 'high') return 'text-[#c2410c]';
+  if (priority === 'moderate') return 'text-[#b45309]';
+  return 'text-[#4a6366]';
 }
 
 function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
@@ -33,15 +33,15 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
 
   const inner = (
     <>
-      <span className="w-8 text-center text-xs font-mono text-muted-foreground shrink-0">
+      <span className="w-8 text-center text-xs font-mono text-[#8aa0a3] shrink-0">
         {jerseyLabel}
       </span>
       <span className="flex-1 min-w-0">
         <span
           className={`block text-sm truncate ${
             href
-              ? 'text-white group-hover:text-[#00d4ff] transition-colors'
-              : 'text-white'
+              ? 'text-[#063f46] group-hover:text-[#075B5C] transition-colors'
+              : 'text-[#063f46]'
           }`}
         >
           {player.displayName}
@@ -57,12 +57,12 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
             {availability.label}
           </span>
         ) : showStatsPending ? (
-          <span className="block text-[10px] text-muted-foreground/50">
+          <span className="block text-[10px] text-[#8aa0a3]">
             Stats pending
           </span>
         ) : null}
       </span>
-      <span className="text-[10px] text-muted-foreground/60 font-medium shrink-0">
+      <span className="text-[10px] text-[#8aa0a3] font-medium shrink-0">
         {player.position || ''}
       </span>
     </>
@@ -72,7 +72,7 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
     return (
       <Link
         href={href}
-        className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors border-b border-white/[0.03] group"
+        className="flex items-center gap-3 px-4 py-2 hover:bg-[#f7f9f7] transition-colors border-b border-[#DCE9EA] group"
       >
         {inner}
       </Link>
@@ -80,7 +80,7 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
   }
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2 border-b border-white/[0.03]">
+    <div className="flex items-center gap-3 px-4 py-2 border-b border-[#DCE9EA]">
       {inner}
     </div>
   );
@@ -91,8 +91,8 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
 
   if (!roster || roster.length === 0) {
     return (
-      <div className="glass-card rounded-xl p-4 text-center">
-        <p className="text-xs text-muted-foreground">Roster not available yet</p>
+      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 text-center">
+        <p className="text-xs text-[#4a6366]">Roster not available yet</p>
       </div>
     );
   }
@@ -128,20 +128,20 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
   const positionGroups = groupRosterByPosition(playersWithAvailability);
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]">
-      <div className="px-4 py-2.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02] shrink-0">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]">
+      <div className="px-4 py-2.5 border-b border-[#DCE9EA] flex items-center justify-between bg-[#F8FBFA] shrink-0">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#4a6366]">
           Roster
         </h3>
-        <span className="text-[10px] px-2 py-0.5 bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium">
+        <span className="text-[10px] px-2 py-0.5 bg-[#55ddb1]/30 text-[#063f46] rounded-full font-medium">
           {playersWithAvailability.length}
         </span>
       </div>
       <div className="flex-1 min-h-0">
         {positionGroups.map((group) => (
           <div key={group.name}>
-            <div className="px-4 py-1.5 bg-white/[0.03] border-b border-white/5">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+            <div className="px-4 py-1.5 bg-[#F8FBFA] border-b border-[#DCE9EA]">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#8aa0a3]">
                 {group.name}
               </span>
             </div>

@@ -38,8 +38,12 @@ export async function resolveAnalyticsPlayerId(playerId: string): Promise<string
 
 export async function getAnalyticsPlayerInfo(playerId: string): Promise<PlayerProfile | null> {
   const row = await queryOne(
-    `SELECT player_id, full_name, first_name, last_name, position, height, weight
-     FROM analytics.players WHERE player_id = $1`,
+    `SELECT p.player_id, p.full_name, p.first_name, p.last_name, p.position, p.height, p.weight,
+            nba.provider_player_id AS nba_player_id
+     FROM analytics.players p
+     LEFT JOIN analytics.player_provider_ids nba
+       ON nba.player_entity_id = p.player_entity_id AND nba.provider = 'nba'
+     WHERE p.player_id = $1`,
     [playerId]
   );
   if (!row) return null;
@@ -53,6 +57,10 @@ export async function getAnalyticsPlayerInfo(playerId: string): Promise<PlayerPr
     weight: row.weight ?? null,
     dob: null,
     active: null,
+    nba_player_id:
+      row.nba_player_id != null && String(row.nba_player_id).trim() !== ''
+        ? String(row.nba_player_id)
+        : null,
   };
 }
 

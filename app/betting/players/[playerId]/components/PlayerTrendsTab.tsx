@@ -84,10 +84,10 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
       <section className="space-y-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">Player Trends</h2>
-            <p className="text-xs text-muted-foreground">Performance breakdown across {timeframeLabel}</p>
+            <h2 className="text-lg font-semibold text-[#063f46]">Player Trends</h2>
+            <p className="text-xs text-[#4a6366]">Performance breakdown across {timeframeLabel}</p>
           </div>
-          <span className="text-[10px] px-2 py-1 bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium">
+          <span className="text-[10px] px-2 py-1 bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46] rounded-full font-medium">
             {METRIC_LABELS[activeMetric]}
           </span>
         </div>
@@ -99,7 +99,7 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
               setBettingLine(null);
             }}
           />
-          <div className="h-6 w-px bg-white/10 hidden sm:block" />
+          <div className="h-6 w-px bg-[#DCE9EA] hidden sm:block" />
           <div className="flex gap-1.5">
             {TIMEFRAMES.map(({ value, label }) => (
               <button
@@ -108,15 +108,15 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
                 className={cn(
                   'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
                   timeframe === value
-                    ? 'bg-[#bf5af2] text-white shadow-[0_0_12px_rgba(191,90,242,0.4)] font-semibold'
-                    : 'glass-card text-muted-foreground hover:text-white hover:bg-white/10'
+                    ? 'bg-[#063f46] text-white font-semibold'
+                    : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'
                 )}
               >
                 {label}
               </button>
             ))}
           </div>
-          <div className="h-6 w-px bg-white/10 hidden sm:block" />
+          <div className="h-6 w-px bg-[#DCE9EA] hidden sm:block" />
           <div className="flex gap-1.5">
             {LOCATION_OPTIONS.map(({ value, label }) => (
               <button
@@ -125,8 +125,8 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
                 className={cn(
                   'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
                   locationFilter === value
-                    ? 'bg-[#bf5af2] text-white shadow-[0_0_12px_rgba(191,90,242,0.4)] font-semibold'
-                    : 'glass-card text-muted-foreground hover:text-white hover:bg-white/10'
+                    ? 'bg-[#063f46] text-white font-semibold'
+                    : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'
                 )}
               >
                 {label}

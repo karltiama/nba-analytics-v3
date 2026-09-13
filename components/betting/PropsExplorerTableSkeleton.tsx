@@ -7,11 +7,11 @@ const ROWS = 12;
  */
 export function PropsExplorerTableSkeleton() {
   return (
-    <div className="glass-card rounded-xl overflow-hidden border border-white/5" aria-busy="true" aria-label="Loading props">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden" aria-busy="true" aria-label="Loading props">
       <div className="overflow-x-auto max-h-[calc(100vh-16rem)] overflow-y-auto">
         <table className="w-full text-left text-xs">
-          <thead className="sticky top-0 z-10 bg-gray-950/95 border-b border-white/10">
-            <tr className="text-muted-foreground">
+          <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
+            <tr className="text-[#4a6366]">
               <th className="py-2 px-2 font-medium">Player</th>
               <th className="py-2 px-2 font-medium">Prop</th>
               <th className="py-2 px-2 font-medium">Side</th>
@@ -30,7 +30,7 @@ export function PropsExplorerTableSkeleton() {
           </thead>
           <tbody>
             {Array.from({ length: ROWS }, (_, i) => (
-              <tr key={i} className="border-b border-white/5">
+              <tr key={i} className="border-b border-[#DCE9EA]">
                 <td className="py-2 px-2">
                   <div className="flex items-center gap-2 min-w-0 max-w-[160px]">
                     <Skeleton className="h-3.5 flex-1 max-w-[100px]" />
@@ -62,7 +62,7 @@ export function PropsExplorerTableSkeleton() {
                   <Skeleton className="h-3.5 w-10 ml-auto" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-10 ml-auto bg-[#39ff14]/15" />
+                  <Skeleton className="h-3.5 w-10 ml-auto bg-[#55ddb1]/25" />
                 </td>
                 <td className="py-2 px-2 text-right">
                   <Skeleton className="h-3.5 w-8 ml-auto" />

@@ -36,7 +36,7 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        'hover:text-[#00d4ff] transition-colors text-muted-foreground',
+        'hover:text-[#063f46] transition-colors text-[#4a6366]',
         className
       )}
     >
@@ -119,32 +119,29 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
     'Account';
 
   return (
-    <header className="sticky top-0 z-50 glass-card border-b border-white/5">
+    <header className="sticky top-0 z-50 bg-[#f7f9f7]/90 backdrop-blur-md border-b border-[#DCE9EA]">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Title */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#bf5af2] flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#39ff14] rounded-full pulse-dot" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/court-context-logo.png"
+              alt=""
+              className="h-9 w-auto select-none shrink-0"
+            />
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold tracking-tight text-[#063f46] truncate">
                 {teamName ? (
                   <>
-                    <span className="neon-text-cyan">{teamAbbr || 'TEAM'}</span>
-                    <span className="text-white ml-1">{teamName}</span>
+                    <span className="text-[#075B5C]">{teamAbbr || 'TEAM'}</span>
+                    <span className="ml-1">{teamName}</span>
                   </>
                 ) : (
-                  <>
-                    <span className="neon-text-cyan">NBA</span>
-                    <span className="text-white ml-1">Analytics</span>
-                  </>
+                  'Court Context'
                 )}
               </h1>
-              <p className="text-xs text-muted-foreground -mt-0.5">
+              <p className="text-xs text-[#4a6366] -mt-0.5">
                 {teamName ? 'Analytics' : 'Betting Dashboard'}
               </p>
             </div>
@@ -169,13 +166,13 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                   <button
                     type="button"
                     className={cn(
-                      'md:hidden p-2.5 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors',
-                      'outline-none focus-visible:ring-2 focus-visible:ring-[#00d4ff]/40'
+                      'md:hidden p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors',
+                      'outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40'
                     )}
                     aria-label="Open primary navigation"
                     aria-haspopup="menu"
                   >
-                    <Menu className="w-4 h-4 text-white" aria-hidden />
+                    <Menu className="w-4 h-4 text-[#063f46]" aria-hidden />
                   </button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
@@ -183,14 +180,14 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                     sideOffset={8}
                     align="end"
                     className={cn(
-                      'min-w-[200px] rounded-xl border border-white/10 bg-zinc-950/95 backdrop-blur-md p-1 shadow-xl z-[300]',
+                      'min-w-[200px] rounded-xl border border-[#DCE9EA] bg-white p-1 shadow-xl z-[300]',
                       'data-[state=open]:animate-in data-[state=closed]:animate-out'
                     )}
                   >
                     {PRIMARY_NAV.map((item) => (
                       <DropdownMenu.Item
                         key={item.href}
-                        className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         asChild
                       >
                         <Link href={item.href}>{item.label}</Link>
@@ -204,7 +201,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
             <button
               type="button"
               onClick={onThemeToggle}
-              className="p-2.5 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+              className="p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors"
               aria-label="Toggle theme"
             >
               {isDarkMode ? (
@@ -219,8 +216,8 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                 <button
                   type="button"
                   className={cn(
-                    'flex items-center gap-2 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors',
-                    'outline-none focus-visible:ring-2 focus-visible:ring-[#00d4ff]/40',
+                    'flex items-center gap-2 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors',
+                    'outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40',
                     sessionState === 'user' ? 'pl-2 pr-1.5 py-1.5 min-w-0' : 'p-2'
                   )}
                   aria-label={
@@ -232,25 +229,25 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                   }
                   aria-haspopup="menu"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#ff00ff] to-[#00d4ff] flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-[#55ddb1] flex items-center justify-center shrink-0">
                     {sessionState === 'guest' ? (
-                      <LogIn className="w-4 h-4 text-white" aria-hidden />
+                      <LogIn className="w-4 h-4 text-[#063f46]" aria-hidden />
                     ) : (
-                      <User className="w-4 h-4 text-white" aria-hidden />
+                      <User className="w-4 h-4 text-[#063f46]" aria-hidden />
                     )}
                   </div>
                   {sessionState === 'loading' ? (
-                    <span className="text-sm text-muted-foreground tabular-nums w-6 text-left hidden sm:inline">
+                    <span className="text-sm text-[#4a6366] tabular-nums w-6 text-left hidden sm:inline">
                       …
                     </span>
                   ) : sessionState === 'guest' ? (
-                    <span className="text-sm font-medium text-white pr-0.5 max-sm:sr-only">Sign in</span>
+                    <span className="text-sm font-medium text-[#063f46] pr-0.5 max-sm:sr-only">Sign in</span>
                   ) : (
-                    <span className="text-sm font-medium text-white truncate min-w-0 max-w-[7rem] sm:max-w-[11rem] md:max-w-[15rem] text-left max-sm:hidden">
+                    <span className="text-sm font-medium text-[#063f46] truncate min-w-0 max-w-[7rem] sm:max-w-[11rem] md:max-w-[15rem] text-left max-sm:hidden">
                       {displayLabel}
                     </span>
                   )}
-                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" aria-hidden />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#4a6366] shrink-0" aria-hidden />
                 </button>
               </DropdownMenu.Trigger>
 
@@ -259,68 +256,68 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                   sideOffset={8}
                   align="end"
                   className={cn(
-                    'min-w-[240px] rounded-xl border border-white/10 bg-zinc-950/95 backdrop-blur-md p-1 shadow-xl z-[300]',
+                    'min-w-[240px] rounded-xl border border-[#DCE9EA] bg-white p-1 shadow-xl z-[300]',
                     'data-[state=open]:animate-in data-[state=closed]:animate-out'
                   )}
                 >
                   {sessionState === 'loading' ? (
-                    <div className="px-3 py-3 text-sm text-muted-foreground">Loading account…</div>
+                    <div className="px-3 py-3 text-sm text-[#4a6366]">Loading account…</div>
                   ) : sessionState === 'guest' ? (
                     <>
                       <DropdownMenu.Item
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         asChild
                       >
                         <Link href={`/login?next=${nextEncoded}`}>
-                          <LogIn className="w-4 h-4 text-[#00d4ff]" />
+                          <LogIn className="w-4 h-4 text-[#075B5C]" />
                           Sign in
                         </Link>
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         asChild
                       >
                         <Link href={`/signup?next=${nextEncoded}`}>
-                          <User className="w-4 h-4 text-[#bf5af2]" />
+                          <User className="w-4 h-4 text-[#55ddb1]" />
                           Create account
                         </Link>
                       </DropdownMenu.Item>
                     </>
                   ) : (
                     <>
-                      <div className="px-3 py-2 border-b border-white/10 mb-1">
-                        <p className="text-sm font-medium text-white truncate">{displayLabel}</p>
+                      <div className="px-3 py-2 border-b border-[#DCE9EA] mb-1">
+                        <p className="text-sm font-medium text-[#063f46] truncate">{displayLabel}</p>
                         {profile?.email ? (
-                          <p className="text-xs text-muted-foreground truncate mt-0.5">{profile.email}</p>
+                          <p className="text-xs text-[#4a6366] truncate mt-0.5">{profile.email}</p>
                         ) : null}
-                        <p className="text-[10px] text-muted-foreground/80 mt-1">TZ: {profile?.timezone}</p>
+                        <p className="text-[10px] text-[#8aa0a3] mt-1">TZ: {profile?.timezone}</p>
                       </div>
                       <DropdownMenu.Item
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         asChild
                       >
                         <Link href="/betting/profile">
-                          <Settings className="w-4 h-4 text-[#00d4ff]" />
+                          <Settings className="w-4 h-4 text-[#075B5C]" />
                           Profile & preferences
                         </Link>
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         asChild
                       >
                         <Link href="/billing">
-                          <Zap className="w-4 h-4 text-[#bf5af2]" />
+                          <Zap className="w-4 h-4 text-[#55ddb1]" />
                           Billing
                         </Link>
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-white outline-none hover:bg-white/10 focus:bg-white/10"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         onSelect={(e) => {
                           e.preventDefault();
                           void handleSignOut();
                         }}
                       >
-                        <LogOut className="w-4 h-4 text-[#ff6b35]" />
+                        <LogOut className="w-4 h-4 text-[#c2410c]" />
                         Sign out
                       </DropdownMenu.Item>
                     </>

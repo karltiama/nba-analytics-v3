@@ -18,7 +18,7 @@ export function FoundingProUpgradeLink({
     <Link
       href={FOUNDING_PRO_UPGRADE_HREF}
       className={cn(
-        'inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-[#00d4ff]/90 to-[#bf5af2]/90 px-3 py-1.5 text-xs font-medium text-white hover:opacity-95',
+        'inline-flex items-center justify-center rounded-lg bg-[#063f46] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#075B5C]',
         className
       )}
       onClick={(event) => {

@@ -12,23 +12,23 @@ export function PlayerResearchReturnBar({ ctx }: { ctx: PlayerReturnContext }) {
   if (!hasExplorer && !ctx.gameId) return null;
 
   return (
-    <div className="glass-card rounded-xl border border-white/10 px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
       {hasExplorer ? (
-        <Link href={explorerReturnHref(ctx)} className="text-[#00d4ff] hover:underline font-medium">
+        <Link href={explorerReturnHref(ctx)} className="text-[#075B5C] hover:underline font-medium">
           ← Back to Props Explorer
         </Link>
       ) : (
-        <Link href={slateHref(ctx.date)} className="text-[#00d4ff] hover:underline font-medium">
-          ← Betting Dashboard
+        <Link href={slateHref(ctx.date)} className="text-[#075B5C] hover:underline font-medium">
+          ← Back to Dashboard
         </Link>
       )}
       {ctx.gameId ? (
-        <Link href={gameDetailHref(ctx.gameId)} className="text-muted-foreground hover:text-white hover:underline">
+        <Link href={gameDetailHref(ctx.gameId)} className="text-[#4a6366] hover:text-[#063f46] hover:underline">
           View game
         </Link>
       ) : null}
       {ctx.date ? (
-        <span className="text-muted-foreground">
+        <span className="text-[#4a6366]">
           Research date {ctx.date}
           {ctx.propType ? ` · ${ctx.propType.replace(/_/g, ' ')}` : ''}
           {ctx.side ? ` ${ctx.side}` : ''}

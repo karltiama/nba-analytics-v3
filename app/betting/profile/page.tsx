@@ -12,14 +12,15 @@ type PrimaryGoal = 'find_edges' | 'track_picks' | 'learn';
 type Experience = 'novice' | 'intermediate' | 'advanced';
 type Risk = 'low' | 'medium' | 'high';
 
-const labelCls =
-  'block text-xs font-medium text-muted-foreground mb-1.5';
+const labelCls = 'block text-xs font-medium text-[#4a6366] mb-1.5';
 const inputCls =
-  'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-muted-foreground/60 outline-none focus:border-[#00d4ff]/50';
+  'w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46] placeholder:text-[#8aa0a3] outline-none focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
 const selectCls = cn(inputCls, 'cursor-pointer');
 const btnPrimary =
-  'inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#00d4ff]/90 to-[#bf5af2]/90 px-4 py-2 text-sm font-medium text-white hover:opacity-95 disabled:opacity-50';
-const cardCls = 'glass-card border border-white/10 rounded-2xl p-5 sm:p-6';
+  'inline-flex items-center justify-center gap-2 rounded-lg bg-[#063f46] px-4 py-2 text-sm font-medium text-white hover:bg-[#075B5C] disabled:opacity-50';
+const cardCls = 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5 sm:p-6';
+const msgCls = (msg: string) =>
+  cn('text-xs', msg.includes('saved') ? 'text-[#20B95A]' : 'text-amber-800');
 
 export default function BettingProfilePage() {
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -213,7 +214,7 @@ export default function BettingProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">
+      <div className="flex min-h-[40vh] items-center justify-center gap-2 text-[#4a6366]">
         <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
         <span className="text-sm">Loading profile…</span>
       </div>
@@ -223,8 +224,8 @@ export default function BettingProfilePage() {
   if (loadError) {
     return (
       <div className="max-w-lg mx-auto px-4 py-16 text-center">
-        <p className="text-sm text-white mb-4">{loadError}</p>
-        <Link href="/login?next=%2Fbetting%2Fprofile" className="text-sm text-[#00d4ff] hover:underline">
+        <p className="text-sm text-[#063f46] mb-4">{loadError}</p>
+        <Link href="/login?next=%2Fbetting%2Fprofile" className="text-sm text-[#075B5C] hover:underline">
           Sign in
         </Link>
       </div>
@@ -235,24 +236,24 @@ export default function BettingProfilePage() {
     <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
       <Link
         href="/betting"
-        className="text-sm text-muted-foreground hover:text-white transition-colors inline-block mb-6"
+        className="text-sm text-[#075B5C] hover:underline inline-block mb-6"
       >
         ← Back to betting
       </Link>
 
-      <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Profile & preferences</h1>
-      <p className="text-sm text-muted-foreground mb-2">Update how you appear and how odds and paper trading are shown.</p>
-      <p className="text-sm text-muted-foreground mb-8">
-        <Link href="/billing" className="text-[#00d4ff] hover:underline">
+      <h1 className="text-2xl font-bold text-[#063f46] tracking-tight mb-1">Profile & preferences</h1>
+      <p className="text-sm text-[#4a6366] mb-2">Update how you appear and how odds and paper trading are shown.</p>
+      <p className="text-sm text-[#4a6366] mb-8">
+        <Link href="/billing" className="text-[#075B5C] hover:underline">
           Billing and plan
         </Link>
       </p>
 
       <section className={cn(cardCls, 'mb-6')}>
-        <h2 className="text-sm font-semibold text-white mb-4">Account</h2>
+        <h2 className="text-sm font-semibold text-[#063f46] mb-4">Account</h2>
         {email ? (
-          <p className="text-xs text-muted-foreground mb-4">
-            Signed in as <span className="text-white/90">{email}</span>
+          <p className="text-xs text-[#4a6366] mb-4">
+            Signed in as <span className="text-[#063f46]">{email}</span>
           </p>
         ) : null}
         <div className="space-y-4">
@@ -296,7 +297,7 @@ export default function BettingProfilePage() {
               placeholder="America/New_York"
               maxLength={80}
             />
-            <p className="mt-1 text-[11px] text-muted-foreground">IANA name, e.g. America/Los_Angeles</p>
+            <p className="mt-1 text-[11px] text-[#8aa0a3]">IANA name, e.g. America/Los_Angeles</p>
           </div>
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -304,16 +305,12 @@ export default function BettingProfilePage() {
             {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
             Save account
           </button>
-          {profileMsg ? (
-            <span className={cn('text-xs', profileMsg.includes('saved') ? 'text-emerald-400' : 'text-amber-400')}>
-              {profileMsg}
-            </span>
-          ) : null}
+          {profileMsg ? <span className={msgCls(profileMsg)}>{profileMsg}</span> : null}
         </div>
       </section>
 
       <section className={cardCls}>
-        <h2 className="text-sm font-semibold text-white mb-4">Betting preferences</h2>
+        <h2 className="text-sm font-semibold text-[#063f46] mb-4">Betting preferences</h2>
         <div className="space-y-4">
           <div>
             <label className={labelCls} htmlFor="sportsbook">
@@ -456,10 +453,10 @@ export default function BettingProfilePage() {
               placeholder="LAL, BOS, … (comma-separated)"
             />
           </div>
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-white/90">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-[#063f46]">
             <input
               type="checkbox"
-              className="rounded border-white/20 bg-black/40 text-[#00d4ff] focus:ring-[#00d4ff]/40"
+              className="rounded border-[#DCE9EA] text-[#075B5C] focus:ring-[#55ddb1]/40"
               checked={notifications}
               onChange={(e) => setNotifications(e.target.checked)}
             />
@@ -471,11 +468,7 @@ export default function BettingProfilePage() {
             {savingPrefs ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
             Save preferences
           </button>
-          {prefsMsg ? (
-            <span className={cn('text-xs', prefsMsg.includes('saved') ? 'text-emerald-400' : 'text-amber-400')}>
-              {prefsMsg}
-            </span>
-          ) : null}
+          {prefsMsg ? <span className={msgCls(prefsMsg)}>{prefsMsg}</span> : null}
         </div>
       </section>
     </main>

@@ -27,33 +27,33 @@ function getWidgetConfig(type: InsightWidget['type']) {
     case 'pace':
       return {
         icon: <Zap className="w-5 h-5" />,
-        color: '#00d4ff',
-        bgColor: 'rgba(0, 212, 255, 0.1)',
+        color: '#075B5C',
+        bgColor: 'rgba(85, 221, 177, 0.2)',
       };
     case 'defense':
       return {
         icon: <Shield className="w-5 h-5" />,
-        color: '#39ff14',
-        bgColor: 'rgba(57, 255, 20, 0.1)',
+        color: '#20B95A',
+        bgColor: 'rgba(32, 185, 90, 0.12)',
       };
     case 'props':
       return {
         icon: <TrendingUp className="w-5 h-5" />,
-        color: '#ff6b35',
-        bgColor: 'rgba(255, 107, 53, 0.1)',
+        color: '#d97706',
+        bgColor: 'rgba(217, 119, 6, 0.12)',
       };
     case 'disagreement':
       return {
         icon: <BarChart2 className="w-5 h-5" />,
-        color: '#bf5af2',
-        bgColor: 'rgba(191, 90, 242, 0.1)',
+        color: '#063f46',
+        bgColor: 'rgba(6, 63, 70, 0.08)',
       };
     case 'general':
     default:
       return {
         icon: <Activity className="w-5 h-5" />,
-        color: '#8888a0',
-        bgColor: 'rgba(136, 136, 160, 0.1)',
+        color: '#72869A',
+        bgColor: 'rgba(114, 134, 154, 0.12)',
       };
   }
 }
@@ -62,7 +62,7 @@ function InsightWidgetCard({ widget }: { widget: InsightWidget }) {
   const config = getWidgetConfig(widget.type);
   
   return (
-    <div className="glass-card rounded-xl p-4 card-hover">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4">
       <div className="flex items-start justify-between mb-3">
         <div 
           className="p-2.5 rounded-xl"
@@ -72,7 +72,7 @@ function InsightWidgetCard({ widget }: { widget: InsightWidget }) {
         </div>
         {widget.change && (
           <div className={`flex items-center gap-1 text-xs font-medium ${
-            widget.changeDirection === 'up' ? 'text-[#39ff14]' : 'text-[#ff4757]'
+            widget.changeDirection === 'up' ? 'text-[#20B95A]' : 'text-red-600'
           }`}>
             {widget.changeDirection === 'up' ? '↑' : '↓'} {widget.change}
           </div>
@@ -80,11 +80,11 @@ function InsightWidgetCard({ widget }: { widget: InsightWidget }) {
       </div>
       
       <div className="space-y-1">
-        <h4 className="text-xs font-medium text-muted-foreground">{widget.title}</h4>
+        <h4 className="text-xs font-medium text-[#4a6366]">{widget.title}</h4>
         <div className="text-2xl font-bold" style={{ color: config.color }}>
           {widget.value}
         </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">
+        <p className="text-xs text-[#4a6366] leading-relaxed">
           {widget.description}
         </p>
       </div>
@@ -96,8 +96,8 @@ export function BettingInsights({ widgets }: BettingInsightsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Betting Model Insights</h2>
-        <span className="text-xs text-muted-foreground">Updated 2m ago</span>
+        <h2 className="text-lg font-semibold text-[#063f46]">Betting Model Insights</h2>
+        <span className="text-xs text-[#4a6366]">Updated 2m ago</span>
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">

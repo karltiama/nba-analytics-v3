@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 import { cn } from '@/lib/utils';
 import type { TeamInfo, TeamGameStats, TeamSeasonAverages, TeamTrendPoint } from '@/lib/teams/types';
 import type { CompactScheduleGame } from '@/lib/teams/team-compact-schedule';
@@ -28,8 +29,8 @@ import type { TeamPageSeasonChoice } from '@/lib/teams/team-page-season';
 function StatPill({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] text-muted-foreground uppercase">{label}</span>
-      <span className="text-sm font-bold font-mono" style={color ? { color } : { color: 'white' }}>{value}</span>
+      <span className="text-[10px] text-[#4a6366] uppercase">{label}</span>
+      <span className="text-sm font-bold font-mono" style={color ? { color } : { color: '#063f46' }}>{value}</span>
     </div>
   );
 }
@@ -58,8 +59,8 @@ interface TeamPageClientProps {
 }
 
 const buttonBase = 'rounded-lg text-xs font-medium transition-all';
-const buttonActive = 'bg-[#bf5af2] text-white shadow-[0_0_12px_rgba(191,90,242,0.4)] font-semibold';
-const buttonInactive = 'glass-card text-muted-foreground hover:text-white hover:bg-white/10';
+const buttonActive = 'bg-[#063f46] text-white font-semibold';
+const buttonInactive = 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]';
 
 export function TeamPageClient({
   team,
@@ -153,15 +154,13 @@ export function TeamPageClient({
   return (
     <>
       <div className="space-y-6 min-w-0 xl:col-start-1">
-        <section className="glass-card rounded-xl p-4" data-analytics-season={season}>
+        <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4" data-analytics-season={season}>
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-3 shrink-0 min-w-0">
-              <div className="w-11 h-11 shrink-0 rounded-lg bg-gradient-to-br from-[#00d4ff] to-[#bf5af2] flex items-center justify-center border border-white/10">
-                <span className="text-sm font-bold text-white">{team.abbreviation}</span>
-              </div>
+              <TeamLogo team={team.abbreviation} size="md" decorative />
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-lg font-bold text-white leading-tight truncate">
+                  <h1 className="text-lg font-bold text-[#063f46] leading-tight truncate">
                     {team.full_name}
                   </h1>
                   <TeamSeasonSwitcher
@@ -171,9 +170,9 @@ export function TeamPageClient({
                     choices={seasonChoices}
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-[10px] text-[#4a6366]">
                   {team.conference} • {team.division}
-                  <span className="mx-1.5 text-white/20">·</span>
+                  <span className="mx-1.5 text-[#DCE9EA]">·</span>
                   {seasonLabel}
                 </p>
               </div>
@@ -181,21 +180,21 @@ export function TeamPageClient({
 
             {seasonSnapshot.hasData ? (
               <>
-                <div className="h-8 w-px bg-white/10 hidden md:block" />
+                <div className="h-8 w-px bg-[#DCE9EA] hidden md:block" />
                 <div className="flex items-center gap-4 flex-wrap">
                   <StatPill label="Record" value={`${wins}-${losses}`} />
                   <StatPill
                     label="Win%"
                     value={`${winPct}%`}
-                    color={parseFloat(winPct) >= 50 ? '#39ff14' : '#ff6b35'}
+                    color={parseFloat(winPct) >= 50 ? '#20B95A' : '#c2410c'}
                   />
                   {ppg && <StatPill label="PPG" value={ppg} />}
                   {streakCount > 0 && streakType && (
                     <span
                       className={`text-xs font-semibold px-2 py-1 rounded ${
                         streakType === 'W'
-                          ? 'bg-[#39ff14]/20 text-[#39ff14]'
-                          : 'bg-[#ff4757]/20 text-[#ff4757]'
+                          ? 'bg-[#55ddb1]/25 text-[#075B5C]'
+                          : 'bg-red-50 text-red-600'
                       }`}
                       title={`${streakCount}-game ${streakType === 'W' ? 'win' : 'losing'} streak`}
                     >
@@ -207,8 +206,8 @@ export function TeamPageClient({
               </>
             ) : (
               <>
-                <div className="h-8 w-px bg-white/10 hidden md:block" />
-                <p className="text-xs text-muted-foreground">
+                <div className="h-8 w-px bg-[#DCE9EA] hidden md:block" />
+                <p className="text-xs text-[#4a6366]">
                   No season data yet
                 </p>
               </>
@@ -244,12 +243,12 @@ export function TeamPageClient({
             <section>
               <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Team Trends</h2>
-                  <p className="text-xs text-muted-foreground">
+                  <h2 className="text-lg font-semibold text-[#063f46]">Team Trends</h2>
+                  <p className="text-xs text-[#4a6366]">
                     Performance breakdown across {timeframeLabel}
                   </p>
                 </div>
-                <span className="text-[10px] px-2 py-1 bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium">
+                <span className="text-[10px] px-2 py-1 bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46] rounded-full font-medium">
                   {METRIC_BUTTONS.find((m) => m.value === trendMetric)?.label ?? metricLabel}
                 </span>
               </div>
@@ -270,7 +269,7 @@ export function TeamPageClient({
                     </button>
                   ))}
                 </div>
-                <div className="h-6 w-px bg-white/10 hidden sm:block" />
+                <div className="h-6 w-px bg-[#DCE9EA] hidden sm:block" />
                 <div className="flex gap-1.5">
                   {LOCATION_OPTIONS.map(({ value, label }) => (
                     <button
@@ -287,7 +286,7 @@ export function TeamPageClient({
                     </button>
                   ))}
                 </div>
-                <div className="h-6 w-px bg-white/10 hidden sm:block" />
+                <div className="h-6 w-px bg-[#DCE9EA] hidden sm:block" />
                 <div className="flex flex-wrap gap-2">
                   {METRIC_BUTTONS.map(({ value, label, disabled }) => (
                     <button
@@ -305,8 +304,8 @@ export function TeamPageClient({
                         'px-4 py-2 rounded-lg text-sm font-medium transition-all',
                         disabled && 'opacity-50 cursor-not-allowed',
                         !disabled && trendMetric === value
-                          ? 'bg-[#00d4ff] text-black shadow-[0_0_16px_rgba(0,212,255,0.5)] font-semibold'
-                          : !disabled && 'glass-card text-muted-foreground hover:text-white hover:bg-white/10'
+                          ? 'bg-[#55ddb1] text-[#063f46] font-semibold'
+                          : !disabled && 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'
                       )}
                     >
                       {label}
@@ -354,32 +353,32 @@ export function TeamPageClient({
         {hasFourFactors && seasonAverages && (
           <section className="slide-up" style={{ animationDelay: '100ms' }}>
             <div className="mb-3">
-              <h2 className="text-sm font-semibold text-white">Four Factors</h2>
-              <p className="text-[10px] text-muted-foreground">
+              <h2 className="text-sm font-semibold text-[#063f46]">Four Factors</h2>
+              <p className="text-[10px] text-[#4a6366]">
                 {seasonLabel} · shooting, turnovers, offensive boards
               </p>
             </div>
-            <div className="glass-card rounded-xl p-4">
+            <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <div className="text-[10px] text-muted-foreground uppercase">eFG%</div>
-                  <div className="text-base font-bold font-mono text-white">
+                  <div className="text-[10px] text-[#4a6366] uppercase">eFG%</div>
+                  <div className="text-base font-bold font-mono text-[#063f46]">
                     {seasonAverages.avg_efg_pct != null
                       ? (seasonAverages.avg_efg_pct * 100).toFixed(1) + '%'
                       : '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground uppercase">TOV%</div>
-                  <div className="text-base font-bold font-mono text-white">
+                  <div className="text-[10px] text-[#4a6366] uppercase">TOV%</div>
+                  <div className="text-base font-bold font-mono text-[#063f46]">
                     {seasonAverages.avg_tov_pct != null
                       ? (seasonAverages.avg_tov_pct * 100).toFixed(1) + '%'
                       : '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground uppercase">ORB%</div>
-                  <div className="text-base font-bold font-mono text-white">
+                  <div className="text-[10px] text-[#4a6366] uppercase">ORB%</div>
+                  <div className="text-base font-bold font-mono text-[#063f46]">
                     {seasonAverages.avg_orb_pct != null
                       ? (seasonAverages.avg_orb_pct * 100).toFixed(1) + '%'
                       : '—'}

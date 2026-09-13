@@ -109,10 +109,10 @@ function getValueCopy(
 
 function getValueToneClass(ev: number | null | undefined): string {
   const grade = getValueGrade(ev);
-  if (grade === 'good') return 'bg-emerald-500/15 text-emerald-200 border-emerald-400/40';
-  if (grade === 'bad') return 'bg-rose-500/15 text-rose-200 border-rose-400/40';
-  if (grade === 'fair') return 'bg-amber-500/15 text-amber-200 border-amber-400/40';
-  return 'bg-white/5 text-muted-foreground border-white/10';
+  if (grade === 'good') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+  if (grade === 'bad') return 'bg-rose-50 text-rose-800 border-rose-200';
+  if (grade === 'fair') return 'bg-amber-50 text-amber-800 border-amber-200';
+  return 'bg-[#F8FBFA] text-[#4a6366] border-[#DCE9EA]';
 }
 
 function formatConfidenceSimple(confidence: ExplorerRow['confidenceTier']): string {
@@ -368,9 +368,9 @@ export default function PropsExplorerPage(props: PageProps) {
   }, [date, gameId, playerName, propType, side, sportsbook, sort, dir, minEv, limit, offset, searchParams, updateParams]);
 
   const selectClass =
-    'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]';
+    'rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
   const inputClass =
-    'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 w-full min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]';
+    'rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] text-xs py-1.5 px-2 w-full min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
 
   const evSortActive = ['ev', 'ev_track_a', 'ev_track_b'].includes(sort);
   const canPrev = offset > 0;
@@ -483,61 +483,61 @@ export default function PropsExplorerPage(props: PageProps) {
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-white">Props Explorer</h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <h1 className="text-xl font-semibold text-[#063f46]">Props Explorer</h1>
+          <p className="text-xs text-[#4a6366] mt-1">
             {marketContext === 'historical'
               ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Model EV is not computed for historical dates.'
               : 'Simple mode highlights Good/Fair/Bad value from your model edge.'}
           </p>
-          <p className="mt-1.5 inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/80">
+          <p className="mt-1.5 inline-flex items-center rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#063f46]">
             {lineLabel}
           </p>
         </div>
         {showAdvancedMetrics && meta ? (
-          <p className="text-[10px] text-muted-foreground font-mono">
+          <p className="text-[10px] text-[#8aa0a3] font-mono">
             {meta.calibrationVersion} · {new Date(meta.computedAt).toLocaleString()}
           </p>
         ) : null}
       </div>
 
-      <div className="glass-card w-full rounded-xl border border-white/5 mb-6 overflow-hidden">
+      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm w-full mb-6 overflow-hidden">
         {/* Context Row */}
-        <div className="bg-white/5 p-3 sm:px-4 border-b border-white/5 flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-1 shrink-0 bg-gray-900/50 p-1 rounded-lg border border-white/5">
+        <div className="bg-[#F8FBFA] p-3 sm:px-4 border-b border-[#DCE9EA] flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-1 shrink-0 bg-white p-1 rounded-lg border border-[#DCE9EA]">
             <button
               type="button"
               onClick={() => updateParams({ date: addDaysET(date, -1), offset: '0' })}
-              className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+              className="p-1.5 rounded-md hover:bg-[#f7f9f7] text-[#4a6366] hover:text-[#063f46] transition-colors"
               aria-label="Previous day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <div className="flex items-center gap-1.5 px-2">
-              <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-sm font-medium text-white min-w-[80px] text-center">
+              <CalendarDays className="w-3.5 h-3.5 text-[#4a6366]" />
+              <span className="text-sm font-medium text-[#063f46] min-w-[80px] text-center">
                 {getDateLabel(date)}
               </span>
             </div>
             <button
               type="button"
               onClick={() => updateParams({ date: addDaysET(date, 1), offset: '0' })}
-              className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+              className="p-1.5 rounded-md hover:bg-[#f7f9f7] text-[#4a6366] hover:text-[#063f46] transition-colors"
               aria-label="Next day"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
-            <div className="w-px h-4 bg-white/10 mx-1" />
+            <div className="w-px h-4 bg-[#DCE9EA] mx-1" />
             <button
               type="button"
               onClick={() => updateParams({ date: getTodayET(), offset: '0' })}
-              className="px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white transition-colors rounded"
+              className="px-2 py-1 text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46] transition-colors rounded"
             >
               Today
             </button>
           </div>
 
           <select
-            className={`${selectClass} min-w-[200px] border-white/5`}
+            className={`${selectClass} min-w-[200px]`}
             aria-label="Game"
             value={gameId}
             onChange={(e) => updateParams({ game_id: e.target.value || null, offset: '0' })}
@@ -559,7 +559,7 @@ export default function PropsExplorerPage(props: PageProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
             <div className="relative col-span-2 md:col-span-1">
               <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                <Search className="h-3.5 w-3.5 text-muted-foreground" />
+                <Search className="h-3.5 w-3.5 text-[#8aa0a3]" />
               </div>
               <input
                 className={`${inputClass} pl-8`}
@@ -616,7 +616,7 @@ export default function PropsExplorerPage(props: PageProps) {
                 }
               />
               <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                <span className="text-muted-foreground text-xs font-medium">EV+</span>
+                <span className="text-[#8aa0a3] text-xs font-medium">EV+</span>
               </div>
             </div>
 
@@ -651,8 +651,8 @@ export default function PropsExplorerPage(props: PageProps) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-white/5">
-            <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-[#DCE9EA]">
+            <div className="flex items-center gap-1.5 text-[#4a6366] text-xs font-medium shrink-0">
               <ListFilter className="w-3.5 h-3.5" />
               <span>Sportsbooks:</span>
             </div>
@@ -672,8 +672,8 @@ export default function PropsExplorerPage(props: PageProps) {
                     }}
                     className={`px-2.5 py-1 text-[11px] font-medium rounded-full border transition-all duration-200 ${
                       active 
-                        ? 'bg-[#00d4ff]/20 border-[#00d4ff]/50 text-[#00d4ff] shadow-[0_0_10px_rgba(0,212,255,0.1)]' 
-                        : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10 hover:text-white'
+                        ? 'bg-[#55ddb1] border-[#55ddb1] text-[#063f46]' 
+                        : 'bg-white border-[#DCE9EA] text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]'
                     }`}
                   >
                     {book.label}
@@ -684,7 +684,7 @@ export default function PropsExplorerPage(props: PageProps) {
           </div>
 
           {evSortActive && meta?.evFetchCap != null && (
-            <p className="text-[10px] text-amber-200/90 pt-1">
+            <p className="text-[10px] text-amber-800 pt-1">
               EV sorts scan up to {meta.evFetchCap} freshest rows, then sort — global order is approximate
               for very large slates.
             </p>
@@ -695,18 +695,18 @@ export default function PropsExplorerPage(props: PageProps) {
       <div className="flex flex-col xl:flex-row xl:items-start gap-4">
         <div className="flex-1 min-w-0">
       {error && (
-        <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757] mb-4">
-          <p className="text-sm text-[#ff4757]">{error}</p>
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-red-500 mb-4">
+          <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
       {saveNotice && (
-        <div className="glass-card rounded-xl p-3 border-l-4 border-l-[#39ff14] mb-4">
-          <p className="text-sm text-[#39ff14]">
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-3 border-l-4 border-l-[#20B95A] mb-4">
+          <p className="text-sm text-[#075B5C]">
             {saveNotice}
             {saveNotice.startsWith('Saved') ? (
               <>
                 {' '}
-                <Link href={savedResearchHref()} className="underline hover:text-white">
+                <Link href={savedResearchHref()} className="underline hover:text-[#063f46]">
                   View saved
                 </Link>
               </>
@@ -715,7 +715,7 @@ export default function PropsExplorerPage(props: PageProps) {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-2 mb-2 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between gap-2 mb-2 text-xs text-[#4a6366]">
         <span className="flex items-center gap-2 min-h-[1.125rem]">
           {loading && rows.length === 0 ? (
             <>
@@ -733,7 +733,7 @@ export default function PropsExplorerPage(props: PageProps) {
           <button
             type="button"
             onClick={() => setShowAdvancedMetrics((prev) => !prev)}
-            className="px-2.5 py-1 text-[11px] font-medium rounded-lg border border-white/10 bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10"
+            className="px-2.5 py-1 text-[11px] font-medium rounded-lg border border-[#DCE9EA] bg-white text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]"
             aria-pressed={showAdvancedMetrics}
           >
             {showAdvancedMetrics ? 'Hide advanced metrics' : 'Show advanced metrics'}
@@ -742,7 +742,7 @@ export default function PropsExplorerPage(props: PageProps) {
             type="button"
             disabled={!canPrev || loading}
             onClick={() => updateParams({ offset: String(Math.max(0, offset - limit)) })}
-            className="px-2 py-1 rounded-lg border border-white/10 bg-white/5 disabled:opacity-40 hover:bg-white/10 text-white"
+            className="px-2 py-1 rounded-lg border border-[#DCE9EA] bg-white disabled:opacity-40 hover:bg-[#f7f9f7] text-[#063f46]"
           >
             Prev
           </button>
@@ -750,7 +750,7 @@ export default function PropsExplorerPage(props: PageProps) {
             type="button"
             disabled={!canNext || loading}
             onClick={() => updateParams({ offset: String(offset + limit) })}
-            className="px-2 py-1 rounded-lg border border-white/10 bg-white/5 disabled:opacity-40 hover:bg-white/10 text-white"
+            className="px-2 py-1 rounded-lg border border-[#DCE9EA] bg-white disabled:opacity-40 hover:bg-[#f7f9f7] text-[#063f46]"
           >
             Next
           </button>
@@ -760,11 +760,11 @@ export default function PropsExplorerPage(props: PageProps) {
       {loading && rows.length === 0 ? (
         <PropsExplorerTableSkeleton />
       ) : (
-      <div className="glass-card rounded-xl overflow-hidden border border-white/5">
+      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto max-h-[calc(100vh-16rem)] overflow-y-auto">
           <table className="w-full text-left text-xs">
-            <thead className="sticky top-0 z-10 bg-gray-950/95 border-b border-white/10">
-              <tr className="text-muted-foreground">
+            <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
+              <tr className="text-[#4a6366]">
                 <th className="py-2 px-2 font-medium">Player</th>
                 <th className="py-2 px-2 font-medium">Prop</th>
                 <th className="py-2 px-2 font-medium">Side</th>
@@ -792,7 +792,7 @@ export default function PropsExplorerPage(props: PageProps) {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={showAdvancedMetrics ? 16 : 12} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={showAdvancedMetrics ? 16 : 12} className="py-8 text-center text-[#4a6366]">
                     {(() => {
                       const copy = propsExplorerEmptyCopy({
                         frozen: Boolean(meta?.ingestionFrozen),
@@ -801,13 +801,13 @@ export default function PropsExplorerPage(props: PageProps) {
                       });
                       return (
                         <div className="space-y-2 px-4">
-                          <p className="text-sm text-white/80">{copy.title}</p>
-                          <p className="text-xs text-muted-foreground">{copy.detail}</p>
+                          <p className="text-sm text-[#063f46]">{copy.title}</p>
+                          <p className="text-xs text-[#4a6366]">{copy.detail}</p>
                           {gameId.trim() ? (
                             <p className="text-xs">
                               <Link
                                 href={gameDetailHref(gameId.trim())}
-                                className="text-[#00d4ff] hover:underline"
+                                className="text-[#075B5C] hover:underline"
                               >
                                 Back to game
                               </Link>
@@ -826,7 +826,7 @@ export default function PropsExplorerPage(props: PageProps) {
                   return (
                   <tr
                     key={`${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
-                    className="border-b border-white/5 hover:bg-white/3"
+                    className="border-b border-[#DCE9EA] hover:bg-[#f7f9f7]"
                   >
                     <td className="py-1.5 px-2">
                       <div className="flex items-center gap-1 min-w-0 max-w-[160px]">
@@ -841,7 +841,7 @@ export default function PropsExplorerPage(props: PageProps) {
                               gameId: r.gameId,
                             })
                           }
-                          className="text-left text-[#00d4ff] hover:underline truncate min-w-0 flex-1 text-xs"
+                          className="text-left text-[#075B5C] hover:underline truncate min-w-0 flex-1 text-xs"
                         >
                           {formatPlayerLabel(r.playerName, r.playerId)}
                         </button>
@@ -855,7 +855,7 @@ export default function PropsExplorerPage(props: PageProps) {
                             sportsbook: r.sportsbook,
                             lineValue: r.lineValue,
                           })}
-                          className="shrink-0 p-0.5 rounded text-muted-foreground hover:text-white"
+                          className="shrink-0 p-0.5 rounded text-[#8aa0a3] hover:text-[#063f46]"
                           title="Open full profile"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -863,17 +863,17 @@ export default function PropsExplorerPage(props: PageProps) {
                         </Link>
                       </div>
                     </td>
-                    <td className="py-1.5 px-2 text-white capitalize">
+                    <td className="py-1.5 px-2 text-[#063f46] capitalize">
                       {(r.propType ?? '—').replace(/_/g, ' ')}
                     </td>
-                    <td className="py-1.5 px-2 capitalize">{r.side ?? '—'}</td>
-                    <td className="py-1.5 px-2 text-right font-mono text-white">
+                    <td className="py-1.5 px-2 capitalize text-[#063f46]">{r.side ?? '—'}</td>
+                    <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
                       {r.lineValue ?? '—'}
                     </td>
-                    <td className="py-1.5 px-2 text-muted-foreground truncate max-w-[100px]">
+                    <td className="py-1.5 px-2 text-[#4a6366] truncate max-w-[100px]">
                       {r.sportsbook ?? '—'}
                     </td>
-                    <td className="py-1.5 px-2 text-right font-mono text-white">
+                    <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
                       {formatOdds(r.oddsAmerican)}
                     </td>
                     <td className="py-1.5 px-2">
@@ -891,7 +891,7 @@ export default function PropsExplorerPage(props: PageProps) {
                       </span>
                     </td>
                     <td
-                      className="py-1.5 px-2 text-right font-mono text-muted-foreground capitalize"
+                      className="py-1.5 px-2 text-right font-mono text-[#4a6366] capitalize"
                       title={
                         r.anchorDeltaAbsTrackB != null && Number.isFinite(r.anchorDeltaAbsTrackB)
                           ? `Anchor |Δ| vs calibrated: ${(r.anchorDeltaAbsTrackB * 100).toFixed(2)}%`
@@ -908,17 +908,17 @@ export default function PropsExplorerPage(props: PageProps) {
                         <td className="py-1.5 px-2 text-right font-mono">
                           {formatPct(r.modelProbability)}
                         </td>
-                        <td className="py-1.5 px-2 text-right font-mono text-[#39ff14]">
+                        <td className="py-1.5 px-2 text-right font-mono text-[#20B95A]">
                           {formatPct(r.ev)}
                         </td>
-                        <td className="py-1.5 px-2 text-right font-mono text-white">
+                        <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
                           {r.projection != null && Number.isFinite(r.projection)
                             ? r.projection.toFixed(1)
                             : '—'}
                         </td>
                       </>
                     ) : null}
-                    <td className="py-1.5 px-2 text-[10px] text-muted-foreground whitespace-nowrap">
+                    <td className="py-1.5 px-2 text-[10px] text-[#8aa0a3] whitespace-nowrap">
                       {new Date(r.snapshotAt).toLocaleString()}
                     </td>
                     <td className="py-1.5 px-1">
@@ -926,7 +926,7 @@ export default function PropsExplorerPage(props: PageProps) {
                         type="button"
                         disabled={savingPropKey !== null}
                         onClick={() => toggleSavedProp(r)}
-                        className="text-[10px] px-1.5 py-0.5 rounded border border-white/20 text-white hover:bg-white/10 disabled:opacity-40"
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7] disabled:opacity-40"
                         title={isSaved ? 'Remove saved prop' : 'Save prop'}
                       >
                         {savingPropKey === saveKey ? '…' : isSaved ? 'Saved' : 'Save'}
@@ -948,7 +948,7 @@ export default function PropsExplorerPage(props: PageProps) {
                             snapshotAt: r.snapshotAt,
                           })
                         }
-                        className="text-[10px] px-1.5 py-0.5 rounded border border-white/20 text-white hover:bg-white/10"
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
                         title="Compare books"
                       >
                         Compare
@@ -963,7 +963,7 @@ export default function PropsExplorerPage(props: PageProps) {
                           r.marketContext === 'historical'
                         }
                         onClick={() => addToPaper(r)}
-                        className="text-[10px] px-1.5 py-0.5 rounded border border-[#00d4ff]/40 text-[#8fefff] hover:bg-[#00d4ff]/15 disabled:opacity-40"
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-[#075B5C] text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
                         title={
                           r.paperBetAllowed === false || r.marketContext === 'historical'
                             ? 'Paper bets cannot be placed on completed historical games'

@@ -15,7 +15,7 @@ export function PlayerGameLogTab({ games }: PlayerGameLogTabProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm text-muted-foreground">Highlight column:</span>
+        <span className="text-sm text-[#4a6366]">Highlight column:</span>
         <StatTabs activeMetric={activeMetric} onMetricChange={setActiveMetric} />
       </div>
       <GameLogTable games={games} activeMetric={activeMetric} bettingLine={null} />

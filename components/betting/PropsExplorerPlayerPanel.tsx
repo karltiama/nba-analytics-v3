@@ -30,7 +30,7 @@ type PreviewResponse = {
   resolvedPlayerId: string;
 };
 
-const skeletonPulse = 'animate-pulse bg-white/10 rounded';
+const skeletonPulse = 'animate-pulse bg-[#DCE9EA] rounded';
 
 /** Stat tabs + chart + game log blocks (shared by empty shell and loading state). */
 function PropsExplorerPlayerPanelBodySkeleton() {
@@ -38,20 +38,20 @@ function PropsExplorerPlayerPanelBodySkeleton() {
     <div className="space-y-3" aria-hidden>
       <div className="flex flex-wrap gap-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className={`h-8 w-14 sm:w-16 ${skeletonPulse} bg-white/[0.08]`} />
+          <div key={i} className={`h-8 w-14 sm:w-16 ${skeletonPulse} bg-[#e8f0ef]`} />
         ))}
       </div>
-      <div className="rounded-xl overflow-hidden border border-white/5">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-          <div className={`h-3 w-20 ${skeletonPulse} bg-white/5`} />
+      <div className="rounded-xl overflow-hidden border border-[#DCE9EA]">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+          <div className={`h-3 w-20 ${skeletonPulse} bg-[#e8f0ef]`} />
           <div className="flex gap-2">
-            <div className={`h-2 w-12 ${skeletonPulse} bg-white/5`} />
-            <div className={`h-2 w-12 ${skeletonPulse} bg-white/5`} />
+            <div className={`h-2 w-12 ${skeletonPulse} bg-[#e8f0ef]`} />
+            <div className={`h-2 w-12 ${skeletonPulse} bg-[#e8f0ef]`} />
           </div>
         </div>
-        <div className="p-3 h-[180px] bg-white/[0.02] flex items-end">
+        <div className="p-3 h-[180px] bg-[#F8FBFA] flex items-end">
           <div
-            className="w-full h-[85%] rounded-md bg-gradient-to-t from-white/[0.07] via-white/[0.12] to-white/[0.06] animate-pulse"
+            className="w-full h-[85%] rounded-md bg-gradient-to-t from-[#DCE9EA] via-[#e8f0ef] to-[#F8FBFA] animate-pulse"
             style={{
               clipPath:
                 'polygon(0% 85%, 8% 70%, 18% 78%, 28% 45%, 38% 52%, 48% 30%, 58% 38%, 68% 22%, 78% 35%, 88% 18%, 100% 28%, 100% 100%, 0% 100%)',
@@ -59,18 +59,18 @@ function PropsExplorerPlayerPanelBodySkeleton() {
           />
         </div>
       </div>
-      <div className="rounded-xl border border-white/5 overflow-hidden border-l-4 border-l-white/10">
-        <div className="h-9 px-3 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
-          <div className={`h-3 w-16 ${skeletonPulse} bg-white/5`} />
-          <div className={`h-5 w-14 rounded-full ${skeletonPulse} bg-white/5`} />
+      <div className="rounded-xl border border-[#DCE9EA] overflow-hidden border-l-4 border-l-[#55ddb1]">
+        <div className="h-9 px-3 flex items-center justify-between border-b border-[#DCE9EA] bg-[#F8FBFA]">
+          <div className={`h-3 w-16 ${skeletonPulse} bg-[#e8f0ef]`} />
+          <div className={`h-5 w-14 rounded-full ${skeletonPulse} bg-[#e8f0ef]`} />
         </div>
         <div className="p-2 space-y-2.5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="flex items-center gap-2">
-              <div className={`h-3 w-10 ${skeletonPulse} bg-white/5`} />
+              <div className={`h-3 w-10 ${skeletonPulse} bg-[#e8f0ef]`} />
               <div className={`h-3 flex-1 ${skeletonPulse}`} />
-              <div className={`h-3 w-6 ${skeletonPulse} bg-white/5`} />
-              <div className={`h-3 w-8 ${skeletonPulse} bg-white/5`} />
+              <div className={`h-3 w-6 ${skeletonPulse} bg-[#e8f0ef]`} />
+              <div className={`h-3 w-8 ${skeletonPulse} bg-[#e8f0ef]`} />
             </div>
           ))}
         </div>
@@ -82,17 +82,17 @@ function PropsExplorerPlayerPanelBodySkeleton() {
 /** Full aside placeholder: header shimmer + body skeleton (empty selection). */
 export function PropsExplorerPlayerPanelSkeleton() {
   return (
-    <div className="glass-card rounded-xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1">
-      <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] shrink-0">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1">
+      <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] shrink-0">
         <div className={`h-4 w-36 ${skeletonPulse}`} />
-        <div className={`h-3 w-28 mt-2 ${skeletonPulse} bg-white/5`} />
+        <div className={`h-3 w-28 mt-2 ${skeletonPulse} bg-[#e8f0ef]`} />
       </div>
       <div
         className="p-2.5 sm:p-3 space-y-3 flex-1 min-h-0 overflow-hidden"
         aria-label="Player preview. Choose a player from the table."
       >
         <PropsExplorerPlayerPanelBodySkeleton />
-        <p className="text-[10px] text-center text-muted-foreground/80 pt-0.5">Select a player in the table</p>
+        <p className="text-[10px] text-center text-[#8aa0a3] pt-0.5">Select a player in the table</p>
       </div>
     </div>
   );
@@ -183,13 +183,13 @@ export function PropsExplorerPlayerPanel({
     <div
       className={
         variant === 'drawer'
-          ? 'glass-card rounded-xl border border-white/10 overflow-hidden flex flex-col h-full max-h-[calc(100dvh-1.5rem)]'
-          : 'glass-card rounded-xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1'
+          ? 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col h-full max-h-[calc(100dvh-1.5rem)]'
+          : 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1'
       }
     >
-      <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02] flex items-start justify-between gap-2 shrink-0">
+      <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-white truncate">{displayName}</h2>
+          <h2 className="text-sm font-semibold text-[#063f46] truncate">{displayName}</h2>
           <Link
             href={playerResearchHref({
               playerId: profileId,
@@ -198,7 +198,7 @@ export function PropsExplorerPlayerPanel({
               propType: selection.propType,
               lineValue: selection.lineValue,
             })}
-            className="inline-flex items-center gap-1 text-[11px] text-[#00d4ff] hover:underline mt-0.5"
+            className="inline-flex items-center gap-1 text-[11px] text-[#075B5C] hover:underline mt-0.5"
           >
             Full profile
             <ExternalLink className="w-3 h-3 shrink-0 opacity-70" />
@@ -207,7 +207,7 @@ export function PropsExplorerPlayerPanel({
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-lg text-muted-foreground hover:text-white hover:bg-white/10 shrink-0"
+          className="p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7] shrink-0"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -221,7 +221,7 @@ export function PropsExplorerPlayerPanel({
           </div>
         )}
         {error && !loading && (
-          <p className="text-xs text-[#ff4757] py-4 text-center">{error}</p>
+          <p className="text-xs text-red-600 py-4 text-center">{error}</p>
         )}
         {!loading && !error && data && (
           <>
@@ -238,7 +238,7 @@ export function PropsExplorerPlayerPanel({
               chartHeight={180}
               compactTrend
             />
-            <div className="max-h-56 overflow-y-auto rounded-xl border border-white/5">
+            <div className="max-h-56 overflow-y-auto rounded-xl border border-[#DCE9EA]">
               <GameLogTable
                 games={games}
                 activeMetric={activeMetric}
@@ -261,7 +261,7 @@ export function PropsExplorerPlayerPanel({
           aria-label="Dismiss"
           onClick={onClose}
         />
-        <div className="absolute inset-y-0 right-0 w-full max-w-md flex flex-col p-2 sm:p-3 border-l border-white/10 bg-background/95 backdrop-blur-md shadow-2xl">
+        <div className="absolute inset-y-0 right-0 w-full max-w-md flex flex-col p-2 sm:p-3 border-l border-[#DCE9EA] bg-white shadow-2xl">
           <div className="flex-1 min-h-0 flex flex-col">{inner}</div>
         </div>
       </div>

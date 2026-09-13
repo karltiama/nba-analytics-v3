@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { cn } from '@/lib/utils';
 
 type ContinueWithGoogleButtonProps = {
   nextPath: string;
   /** Disable while email/password form is submitting */
   disabled?: boolean;
+  className?: string;
 };
 
-export function ContinueWithGoogleButton({ nextPath, disabled }: ContinueWithGoogleButtonProps) {
+export function ContinueWithGoogleButton({ nextPath, disabled, className }: ContinueWithGoogleButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +49,7 @@ export function ContinueWithGoogleButton({ nextPath, disabled }: ContinueWithGoo
   return (
     <div className="space-y-2">
       {error ? (
-        <p className="text-sm text-red-400" role="alert">
+        <p className="text-sm text-red-600" role="alert">
           {error}
         </p>
       ) : null}
@@ -55,7 +57,10 @@ export function ContinueWithGoogleButton({ nextPath, disabled }: ContinueWithGoo
         type="button"
         onClick={onClick}
         disabled={disabled || loading}
-        className="w-full flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white py-3 px-4 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+        className={cn(
+          'w-full flex items-center justify-center gap-3 rounded-2xl border border-[#DCE9EA] bg-white py-3 px-4 text-sm font-semibold text-[#063f46] shadow-sm hover:bg-[#f7f9f7] disabled:opacity-50 disabled:pointer-events-none transition-colors',
+          className
+        )}
       >
         <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden>
           <path

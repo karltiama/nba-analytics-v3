@@ -547,6 +547,8 @@ export interface TrendingStripPlayer {
   full_name: string;
   team_abbr: string;
   next_opponent_abbr: string | null;
+  /** NBA.com person id for CDN headshots. Null when identity is unmapped. */
+  nba_player_id: string | null;
   /** L5 average for the selected stat */
   l5_avg: number;
   /** Season average for the selected stat */
@@ -663,6 +665,7 @@ export async function getTrendingPlayersStrip(
       p.full_name,
       t.abbreviation AS team_abbr,
       ng.opp_abbr    AS next_opponent_abbr,
+      nba.provider_player_id AS nba_player_id,
       -- Selected stat L5 & season
       ${col.l5}      AS l5_avg,
       ${col.season}  AS season_avg,
@@ -678,6 +681,8 @@ export async function getTrendingPlayersStrip(
     JOIN analytics.teams t     ON t.team_id    = pt.team_id
     JOIN player_l5 pl5         ON pl5.player_id = season_src.player_id
     LEFT JOIN next_game ng     ON ng.player_id  = season_src.player_id
+    LEFT JOIN analytics.player_provider_ids nba
+      ON nba.player_entity_id = p.player_entity_id AND nba.provider = 'nba'
     WHERE season_src.games_played >= 5
       AND season_src.s_pts >= 10
       AND (${col.l5} - ${col.season}) > 0
@@ -692,6 +697,10 @@ export async function getTrendingPlayersStrip(
     full_name: row.full_name,
     team_abbr: row.team_abbr,
     next_opponent_abbr: row.next_opponent_abbr ?? null,
+    nba_player_id:
+      row.nba_player_id != null && String(row.nba_player_id).trim() !== ''
+        ? String(row.nba_player_id)
+        : null,
     l5_avg: parseFloat(row.l5_avg) || 0,
     season_avg: parseFloat(row.season_avg) || 0,
     trend_score: parseFloat(row.l5_avg) - parseFloat(row.season_avg) || 0,

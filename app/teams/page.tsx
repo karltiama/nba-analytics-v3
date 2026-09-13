@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 import { getAllTeamsDefensiveRankings } from '@/lib/teams/defensive-rankings';
 import { listCurrentNbaTeams } from '@/lib/teams/team-directory-queries';
 import { teamPageSeasonHref } from '@/lib/teams/team-page-season';
@@ -31,16 +32,14 @@ function TeamDirectoryItem({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-white/5 transition-colors group min-h-11"
+      className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#f7f9f7] transition-colors group min-h-9"
     >
-      <span className="w-10 h-10 shrink-0 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center">
-        <span className="text-[10px] font-bold text-white/80">{team.abbreviation}</span>
+      <TeamLogo team={team.abbreviation} size="xs" decorative />
+      <span className="min-w-0 flex-1 text-sm font-medium text-[#063f46] group-hover:text-[#075B5C] transition-colors truncate">
+        {team.full_name}
       </span>
-      <span className="min-w-0">
-        <span className="block text-sm font-medium text-white group-hover:text-[#00d4ff] transition-colors truncate">
-          {team.full_name}
-        </span>
-        <span className="block text-[10px] text-muted-foreground">{team.abbreviation}</span>
+      <span className="text-[11px] font-semibold tabular-nums text-[#8aa0a3] shrink-0">
+        {team.abbreviation}
       </span>
     </Link>
   );
@@ -63,22 +62,22 @@ export default async function TeamsPage({
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         <header className="space-y-2">
-          <p className="text-xs text-muted-foreground">
-            <Link href="/betting" className="text-[#00d4ff] hover:underline">
+          <p className="text-xs text-[#4a6366]">
+            <Link href="/betting" className="text-[#075B5C] hover:underline">
               Dashboard
             </Link>
-            <span className="mx-1.5 text-white/20">/</span>
+            <span className="mx-1.5 text-[#DCE9EA]">/</span>
             Teams
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#063f46] tracking-tight">
             NBA Teams
           </h1>
-          <p className="text-sm text-muted-foreground max-w-2xl">
+          <p className="text-sm text-[#4a6366] max-w-2xl">
             Choose a team to explore roster, schedule, continuity, and season context.
           </p>
           {integrity.warning && (
             <p
-              className="text-sm text-amber-200/90 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2"
+              className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2"
               role="status"
             >
               {integrity.warning}
@@ -100,7 +99,7 @@ export default async function TeamsPage({
             >
               <h2
                 id={`conf-${conf.conference}`}
-                className="text-lg font-semibold text-white"
+                className="text-lg font-semibold text-[#063f46]"
               >
                 {conf.conferenceLabel}
               </h2>
@@ -108,12 +107,12 @@ export default async function TeamsPage({
                 {conf.divisions.map((div) => (
                   <div
                     key={div.division}
-                    className="glass-card rounded-xl p-3 sm:p-4"
+                    className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
                   >
-                    <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground mb-2 px-2">
+                    <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[#4a6366] px-3 py-2 bg-[#F8FBFA] border-b border-[#DCE9EA]">
                       {div.division}
                     </h3>
-                    <ul className="divide-y divide-white/5">
+                    <ul className="p-1">
                       {div.teams.map((team) => (
                         <li key={team.team_id}>
                           <TeamDirectoryItem
@@ -131,8 +130,8 @@ export default async function TeamsPage({
           ))}
 
           {integrity.count === 0 && (
-            <div className="glass-card rounded-xl p-6 text-center">
-              <p className="text-muted-foreground">
+            <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6 text-center">
+              <p className="text-[#4a6366]">
                 No current NBA teams are available in analytics.teams.
               </p>
             </div>
@@ -142,16 +141,16 @@ export default async function TeamsPage({
         {/* Secondary: existing defensive rankings */}
         <section
           aria-labelledby="defensive-rankings-heading"
-          className="space-y-4 border-t border-white/10 pt-8"
+          className="space-y-4 border-t border-[#DCE9EA] pt-8"
         >
           <div>
             <h2
               id="defensive-rankings-heading"
-              className="text-lg font-semibold text-white"
+              className="text-lg font-semibold text-[#063f46]"
             >
               Team Defensive Rankings
             </h2>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-[#4a6366] mt-1">
               Rankings are based on points allowed per game. Lower rank = better
               defense.
               {seasonParam && (
@@ -160,21 +159,21 @@ export default async function TeamsPage({
             </p>
           </div>
 
-          <div className="glass-card rounded-xl overflow-hidden">
+          <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Rank</TableHead>
-                    <TableHead>Team</TableHead>
-                    <TableHead>Conference</TableHead>
-                    <TableHead>Division</TableHead>
-                    <TableHead className="text-right">Points Allowed</TableHead>
-                    <TableHead className="text-right">Rebounds Allowed</TableHead>
-                    <TableHead className="text-right">Assists Allowed</TableHead>
-                    <TableHead className="text-right">FG% Allowed</TableHead>
-                    <TableHead className="text-right">3P% Allowed</TableHead>
-                    <TableHead className="text-right">Games</TableHead>
+                  <TableRow className="border-[#DCE9EA] hover:bg-transparent">
+                    <TableHead className="text-[#4a6366]">Rank</TableHead>
+                    <TableHead className="text-[#4a6366]">Team</TableHead>
+                    <TableHead className="text-[#4a6366]">Conference</TableHead>
+                    <TableHead className="text-[#4a6366]">Division</TableHead>
+                    <TableHead className="text-right text-[#4a6366]">Points Allowed</TableHead>
+                    <TableHead className="text-right text-[#4a6366]">Rebounds Allowed</TableHead>
+                    <TableHead className="text-right text-[#4a6366]">Assists Allowed</TableHead>
+                    <TableHead className="text-right text-[#4a6366]">FG% Allowed</TableHead>
+                    <TableHead className="text-right text-[#4a6366]">3P% Allowed</TableHead>
+                    <TableHead className="text-right text-[#4a6366]">Games</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -196,8 +195,8 @@ export default async function TeamsPage({
                     three_pct_allowed_rank?: number;
                     games_played?: number;
                   }) => (
-                    <TableRow key={team.team_id}>
-                      <TableCell className="font-bold">
+                    <TableRow key={team.team_id} className="border-[#DCE9EA] hover:bg-[#f7f9f7]">
+                      <TableCell className="font-bold text-[#063f46]">
                         #{team.points_allowed_rank}
                       </TableCell>
                       <TableCell>
@@ -207,61 +206,64 @@ export default async function TeamsPage({
                             season,
                             defaultSeason,
                           })}
-                          className="font-medium text-white hover:text-[#00d4ff] hover:underline"
+                          className="flex items-center gap-2 font-medium text-[#063f46] hover:text-[#075B5C] hover:underline"
                         >
-                          {team.abbreviation}
+                          <TeamLogo team={team.abbreviation} size="xs" decorative />
+                          <span>
+                            <span className="block">{team.abbreviation}</span>
+                            <span className="block text-xs font-normal text-[#4a6366] no-underline">
+                              {team.full_name}
+                            </span>
+                          </span>
                         </Link>
-                        <div className="text-xs text-muted-foreground">
-                          {team.full_name}
-                        </div>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="text-[#4a6366]">
                         {team.conference || '—'}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="text-[#4a6366]">
                         {team.division || '—'}
                       </TableCell>
-                      <TableCell className="text-right font-medium">
+                      <TableCell className="text-right font-medium text-[#063f46]">
                         {team.points_allowed_per_game != null
                           ? Number(team.points_allowed_per_game).toFixed(1)
                           : '—'}
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-[#4a6366]">
                           Rank: #{team.points_allowed_rank}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right text-[#063f46]">
                         {team.rebounds_allowed_per_game != null
                           ? Number(team.rebounds_allowed_per_game).toFixed(1)
                           : '—'}
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-[#4a6366]">
                           Rank: #{team.rebounds_allowed_rank}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right text-[#063f46]">
                         {team.assists_allowed_per_game != null
                           ? Number(team.assists_allowed_per_game).toFixed(1)
                           : '—'}
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-[#4a6366]">
                           Rank: #{team.assists_allowed_rank}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right text-[#063f46]">
                         {team.fg_pct_allowed != null
                           ? Number(team.fg_pct_allowed).toFixed(1) + '%'
                           : '—'}
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-[#4a6366]">
                           Rank: #{team.fg_pct_allowed_rank}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right text-[#063f46]">
                         {team.three_pct_allowed != null
                           ? Number(team.three_pct_allowed).toFixed(1) + '%'
                           : '—'}
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-[#4a6366]">
                           Rank: #{team.three_pct_allowed_rank}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="text-right text-[#4a6366]">
                         {team.games_played || 0}
                       </TableCell>
                     </TableRow>
@@ -271,7 +273,7 @@ export default async function TeamsPage({
             </div>
             {rankings.length === 0 && (
               <div className="p-6">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-[#4a6366]">
                   No defensive rankings available yet. Teams need at least 5 games
                   played.
                 </p>

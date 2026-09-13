@@ -28,27 +28,27 @@ export function UnauthorizedPanel({
     <div
       role="alert"
       className={cn(
-        'glass-card rounded-xl p-6 border-l-4 border-l-[#ff6b35]',
+        'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6 border-l-4 border-l-amber-500',
         className
       )}
     >
       <div className="flex items-start gap-3">
-        <div className="mt-0.5 rounded-lg bg-[#ff6b35]/15 p-2">
-          <Lock className="h-4 w-4 text-[#ff6b35]" aria-hidden />
+        <div className="mt-0.5 rounded-lg bg-amber-50 p-2">
+          <Lock className="h-4 w-4 text-amber-700" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-semibold text-white">Sign in required</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{message}</p>
+          <h2 className="text-sm font-semibold text-[#063f46]">Sign in required</h2>
+          <p className="mt-1 text-sm text-[#4a6366]">{message}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <Link
               href={`/login?next=${next}`}
-              className="inline-flex items-center rounded-lg bg-[#00d4ff] px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-[#00e5ff]"
+              className="inline-flex items-center rounded-lg bg-[#063f46] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0a525c]"
             >
               Sign in
             </Link>
             <Link
               href={`/signup?next=${next}`}
-              className="text-sm text-muted-foreground hover:text-[#00d4ff] transition-colors"
+              className="text-sm text-[#4a6366] hover:text-[#075B5C] transition-colors"
             >
               Create account
             </Link>
@@ -56,7 +56,7 @@ export function UnauthorizedPanel({
               <button
                 type="button"
                 onClick={onRetry}
-                className="text-sm text-[#00d4ff] hover:underline"
+                className="text-sm text-[#075B5C] hover:underline"
               >
                 Retry
               </button>

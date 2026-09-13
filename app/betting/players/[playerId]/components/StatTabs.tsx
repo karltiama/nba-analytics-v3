@@ -21,8 +21,8 @@ export function StatTabs({ activeMetric, onMetricChange }: StatTabsProps) {
           className={cn(
             'px-4 py-2 rounded-lg text-sm font-medium transition-all',
             activeMetric === key
-              ? 'bg-[#00d4ff] text-black shadow-[0_0_16px_rgba(0,212,255,0.5)] font-semibold'
-              : 'glass-card text-muted-foreground hover:text-white hover:bg-white/10'
+              ? 'bg-[#55ddb1] text-[#063f46] font-semibold'
+              : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'
           )}
         >
           {METRIC_LABELS[key]}

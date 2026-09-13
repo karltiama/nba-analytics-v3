@@ -45,7 +45,7 @@ export function FilterBar({
   const today = showDateNav ? getTodayET() : '';
 
   return (
-    <div className="glass-card rounded-xl p-2 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-2 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
       {/* Date nav (when props provided) */}
       {showDateNav && (
         <>
@@ -53,18 +53,18 @@ export function FilterBar({
             <button
               type="button"
               onClick={() => onDateChange(addDaysET(selectedDate, -1))}
-              className="p-1.5 sm:p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-[#f7f9f7] transition-colors text-[#4a6366] hover:text-[#063f46]"
               aria-label="Previous day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm font-medium text-white min-w-[72px] sm:min-w-[120px] text-center">
+            <span className="text-sm font-medium text-[#063f46] min-w-[72px] sm:min-w-[120px] text-center">
               {getDateLabel(selectedDate)}
             </span>
             <button
               type="button"
               onClick={() => onDateChange(addDaysET(selectedDate, 1))}
-              className="p-1.5 sm:p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-white"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-[#f7f9f7] transition-colors text-[#4a6366] hover:text-[#063f46]"
               aria-label="Next day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -73,47 +73,47 @@ export function FilterBar({
               <button
                 type="button"
                 onClick={() => onDateChange(addDaysET(today, -1))}
-                className="px-2 py-1 rounded text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white"
+                className="px-2 py-1 rounded text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]"
               >
                 Yesterday
               </button>
               <button
                 type="button"
                 onClick={() => onDateChange(today)}
-                className="px-2 py-1 rounded text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white"
+                className="px-2 py-1 rounded text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]"
               >
                 Today
               </button>
               <button
                 type="button"
                 onClick={() => onDateChange(addDaysET(today, 1))}
-                className="px-2 py-1 rounded text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-white"
+                className="px-2 py-1 rounded text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]"
               >
                 Tomorrow
               </button>
             </div>
           </div>
-          <div className="h-px sm:h-6 sm:w-px sm:min-h-0 bg-white/10 shrink-0" aria-hidden />
+          <div className="h-px sm:h-6 sm:w-px sm:min-h-0 bg-[#DCE9EA] shrink-0" aria-hidden />
         </>
       )}
 
       {/* Search + sort + filters: wrap together in 640–950px so search keeps room */}
       <div className="flex flex-1 min-w-0 flex-wrap items-center gap-2 sm:gap-3">
         <div className="relative flex-1 min-w-[200px] w-full lg:min-w-0 lg:w-auto">
-          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8aa0a3]" />
           <input
             type="text"
             placeholder="Search teams..."
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-8 sm:pl-9 pr-8 sm:pr-9 py-1.5 sm:py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#00d4ff]/50 transition-all"
+            className="w-full pl-8 sm:pl-9 pr-8 sm:pr-9 py-1.5 sm:py-2 bg-[#f7f9f7] border border-[#DCE9EA] rounded-lg text-sm text-[#063f46] placeholder:text-[#8aa0a3] focus:outline-none focus:ring-2 focus:ring-[#55ddb1]/40 transition-all"
           />
           {searchValue && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-white/10 transition-colors"
+              className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[#e8f0ee] transition-colors"
             >
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
+              <X className="w-3.5 h-3.5 text-[#8aa0a3]" />
             </button>
           )}
         </div>
@@ -121,10 +121,10 @@ export function FilterBar({
         <div className="relative shrink-0">
           <button
             onClick={() => setShowSortMenu(!showSortMenu)}
-            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors whitespace-nowrap"
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-[#f7f9f7] border border-[#DCE9EA] rounded-lg hover:bg-[#eef4f3] transition-colors whitespace-nowrap"
           >
-            <ArrowUpDown className="w-4 h-4 text-muted-foreground shrink-0" />
-            <span className="text-sm text-white">
+            <ArrowUpDown className="w-4 h-4 text-[#4a6366] shrink-0" />
+            <span className="text-sm text-[#063f46]">
               {sortOptions.find(o => o.value === sortBy)?.label}
             </span>
           </button>
@@ -134,7 +134,7 @@ export function FilterBar({
                 className="fixed inset-0 z-10" 
                 onClick={() => setShowSortMenu(false)} 
               />
-              <div className="absolute right-0 top-full mt-1 z-20 w-48 glass-card rounded-lg border border-white/10 py-1 fade-in">
+              <div className="absolute right-0 top-full mt-1 z-20 w-48 bg-white rounded-lg border border-[#DCE9EA] shadow-sm py-1 fade-in">
                 {sortOptions.map((option) => (
                   <button
                     key={option.value}
@@ -142,8 +142,8 @@ export function FilterBar({
                       onSortChange(option.value);
                       setShowSortMenu(false);
                     }}
-                    className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 transition-colors ${
-                      sortBy === option.value ? 'text-[#00d4ff]' : 'text-white'
+                    className={`w-full px-3 py-2 text-left text-sm hover:bg-[#f7f9f7] transition-colors ${
+                      sortBy === option.value ? 'text-[#075B5C] font-semibold' : 'text-[#063f46]'
                     }`}
                   >
                     {option.label}
@@ -159,8 +159,8 @@ export function FilterBar({
             onClick={onFavoritesToggle}
             className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
               showFavoritesOnly 
-                ? 'bg-[#39ff14]/20 border-[#39ff14]/50 text-[#39ff14]' 
-                : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
+                ? 'bg-[#55ddb1]/25 border-[#55ddb1] text-[#075B5C]' 
+                : 'bg-[#f7f9f7] border-[#DCE9EA] text-[#4a6366] hover:bg-[#eef4f3]'
             }`}
           >
             Favorites
@@ -169,14 +169,14 @@ export function FilterBar({
             onClick={onCloseMatchupsToggle}
             className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
               showCloseMatchups 
-                ? 'bg-[#ff6b35]/20 border-[#ff6b35]/50 text-[#ff6b35]' 
-                : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
+                ? 'bg-amber-50 border-amber-200 text-amber-800' 
+                : 'bg-[#f7f9f7] border-[#DCE9EA] text-[#4a6366] hover:bg-[#eef4f3]'
             }`}
           >
             Close Matchups
           </button>
-          <button className="p-1.5 sm:p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors shrink-0" aria-label="Filters">
-            <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
+          <button className="p-1.5 sm:p-2 bg-[#f7f9f7] border border-[#DCE9EA] rounded-lg hover:bg-[#eef4f3] transition-colors shrink-0" aria-label="Filters">
+            <SlidersHorizontal className="w-4 h-4 text-[#4a6366]" />
           </button>
         </div>
       </div>

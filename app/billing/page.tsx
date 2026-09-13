@@ -29,11 +29,11 @@ type BillingStatus = {
   priceLabel?: string;
 };
 
-const cardCls = 'glass-card border border-white/10 rounded-2xl p-5 sm:p-6';
+const cardCls = 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5 sm:p-6';
 const btnPrimary =
-  'inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#00d4ff]/90 to-[#bf5af2]/90 px-4 py-2 text-sm font-medium text-white hover:opacity-95 disabled:opacity-50';
+  'inline-flex items-center justify-center gap-2 rounded-lg bg-[#063f46] px-4 py-2 text-sm font-medium text-white hover:bg-[#075B5C] disabled:opacity-50';
 const btnSecondary =
-  'inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 disabled:opacity-50';
+  'inline-flex items-center justify-center gap-2 rounded-lg border border-[#DCE9EA] bg-white px-4 py-2 text-sm font-medium text-[#063f46] hover:bg-[#f7f9f7] disabled:opacity-50';
 
 export default function BillingPage() {
   const [loading, setLoading] = useState(true);
@@ -125,7 +125,7 @@ export default function BillingPage() {
   if (loading) {
     return (
       <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className="flex items-center gap-2 text-[#4a6366] text-sm">
           <Loader2 className="h-4 w-4 animate-spin" />
           Loading billing…
         </div>
@@ -142,51 +142,51 @@ export default function BillingPage() {
     <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
       <Link
         href="/betting"
-        className="text-sm text-muted-foreground hover:text-white transition-colors inline-block mb-6"
+        className="text-sm text-[#075B5C] hover:underline inline-block mb-6"
       >
         ← Back to betting
       </Link>
 
-      <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Billing</h1>
-      <p className="text-sm text-muted-foreground mb-8">Founding Pro plan and Stripe-hosted billing.</p>
+      <h1 className="text-2xl font-bold text-[#063f46] tracking-tight mb-1">Billing</h1>
+      <p className="text-sm text-[#4a6366] mb-8">Founding Pro plan and Stripe-hosted billing.</p>
 
-      {error ? <p className="text-sm text-red-400 mb-4">{error}</p> : null}
+      {error ? <p className="text-sm text-red-700 mb-4">{error}</p> : null}
 
       {status?.billingNotice ? (
-        <p className="text-xs text-amber-200/90 mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2">
+        <p className="text-xs text-amber-800 mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
           {status.billingNotice}
         </p>
       ) : null}
 
       <section className={cn(cardCls, 'mb-6')}>
-        <h2 className="text-sm font-semibold text-white mb-4">Current plan</h2>
+        <h2 className="text-sm font-semibold text-[#063f46] mb-4">Current plan</h2>
         <dl className="space-y-3 text-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-muted-foreground">Plan</dt>
-            <dd className="text-white">{status ? billingPlanLabel(status) : '—'}</dd>
+            <dt className="text-[#4a6366]">Plan</dt>
+            <dd className="text-[#063f46]">{status ? billingPlanLabel(status) : '—'}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-muted-foreground">Status</dt>
-            <dd className="text-white">{status ? billingStatusLine(status) : '—'}</dd>
+            <dt className="text-[#4a6366]">Status</dt>
+            <dd className="text-[#063f46]">{status ? billingStatusLine(status) : '—'}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-muted-foreground">Current period end</dt>
-            <dd className="text-white">{formatBillingPeriodDay(status?.currentPeriodEnd ?? null) ?? '—'}</dd>
+            <dt className="text-[#4a6366]">Current period end</dt>
+            <dd className="text-[#063f46]">{formatBillingPeriodDay(status?.currentPeriodEnd ?? null) ?? '—'}</dd>
           </div>
         </dl>
 
         {status && billingRetentionCopy(status) ? (
-          <p className="text-xs text-muted-foreground mt-4">{billingRetentionCopy(status)}</p>
+          <p className="text-xs text-[#4a6366] mt-4">{billingRetentionCopy(status)}</p>
         ) : null}
 
         {manualPro ? (
-          <p className="text-xs text-muted-foreground mt-4">
+          <p className="text-xs text-[#4a6366] mt-4">
             Founding Pro is active on this account. Stripe billing management is not available because no
             Stripe customer is on file.
           </p>
         ) : null}
 
-        {actionError ? <p className="text-sm text-amber-300 mt-4">{actionError}</p> : null}
+        {actionError ? <p className="text-sm text-amber-800 mt-4">{actionError}</p> : null}
 
         <div className="flex flex-wrap gap-3 mt-6">
           {showUpgrade ? (
@@ -205,10 +205,10 @@ export default function BillingPage() {
       </section>
 
       <section className={cardCls}>
-        <h2 className="text-sm font-semibold text-white mb-1">Founding Pro</h2>
-        <p className="text-lg font-semibold text-white mb-2">{priceLabel}</p>
-        <p className="text-sm text-white mb-4">Stop checking multiple sportsbooks manually.</p>
-        <ul className="text-sm text-muted-foreground space-y-1.5 list-disc pl-5">
+        <h2 className="text-sm font-semibold text-[#063f46] mb-1">Founding Pro</h2>
+        <p className="text-lg font-semibold text-[#063f46] mb-2">{priceLabel}</p>
+        <p className="text-sm text-[#063f46] mb-4">Stop checking multiple sportsbooks manually.</p>
+        <ul className="text-sm text-[#4a6366] space-y-1.5 list-disc pl-5">
           <li>Exact best sportsbook for the selected market</li>
           <li>Best available Over/Under line and best same-line price</li>
           <li>Deeper sportsbook comparison</li>

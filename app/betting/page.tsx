@@ -444,11 +444,11 @@ export default function BettingDashboard(props: PageProps) {
               <UnauthorizedPanel onRetry={() => fetchGames(selectedDate)} />
             )}
             {error && !unauthorized && (
-              <div className="glass-card rounded-xl p-4 border-l-4 border-l-[#ff4757]">
-                <p className="text-sm text-[#ff4757]">Error loading data: {error}</p>
+              <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-red-500">
+                <p className="text-sm text-red-600">Error loading data: {error}</p>
                 <button 
                   onClick={() => { setError(null); fetchGames(selectedDate); }}
-                  className="mt-2 text-xs text-[#00d4ff] hover:underline"
+                  className="mt-2 text-xs text-[#075B5C] hover:underline"
                 >
                   Retry
                 </button>
@@ -461,8 +461,8 @@ export default function BettingDashboard(props: PageProps) {
             {/* Games for selected date */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">{gamesSectionTitle}</h2>
-                <span className="text-xs text-muted-foreground">
+                <h2 className="text-lg font-semibold text-[#063f46]">{gamesSectionTitle}</h2>
+                <span className="text-xs text-[#4a6366]">
                   {loadingGames ? 'Loading...' : `${sortedGames.length} games`}
                 </span>
               </div>
@@ -474,10 +474,10 @@ export default function BettingDashboard(props: PageProps) {
                   ))}
                 </div>
               ) : sortedGames.length === 0 ? (
-                <div className="glass-card rounded-xl p-8 text-center">
-                  <p className="text-muted-foreground">{emptyGamesMessage}</p>
+                <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
+                  <p className="text-[#4a6366]">{emptyGamesMessage}</p>
                   {dateLabel === 'Today' && (
-                    <p className="text-xs text-muted-foreground/60 mt-2">Check back later or select a different date</p>
+                    <p className="text-xs text-[#8aa0a3] mt-2">Check back later or select a different date</p>
                   )}
                 </div>
               ) : (

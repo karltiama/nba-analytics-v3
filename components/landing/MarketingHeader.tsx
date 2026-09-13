@@ -1,0 +1,32 @@
+import Link from 'next/link';
+
+export function MarketingHeader() {
+  return (
+    <header className="absolute top-0 w-full z-50">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex justify-between items-center gap-3">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0" aria-label="Court Context home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/court-context-logo.png"
+            alt=""
+            className="h-10 sm:h-12 lg:h-14 w-auto select-none"
+          />
+          <span className="font-bold text-xl sm:text-3xl lg:text-5xl tracking-tight text-[#063f46] truncate">
+            Court Context
+          </span>
+        </Link>
+        <div className="flex items-center gap-3 sm:gap-6 shrink-0">
+          <Link href="/login" className="text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors">
+            Sign In
+          </Link>
+          <Link
+            href="/signup"
+            className="text-sm font-semibold bg-[#55ddb1] hover:bg-[#3dcc9f] text-[#063f46] rounded-lg px-3 sm:px-5 py-2 transition-colors"
+          >
+            Get Started
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}

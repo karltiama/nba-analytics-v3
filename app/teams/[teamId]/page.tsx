@@ -134,12 +134,12 @@ export default async function TeamPage({
   if (!team) {
     return (
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12">
-        <div className="glass-card rounded-xl border-l-4 border-l-[#ff4757] p-8 text-center">
-          <h1 className="text-2xl font-bold text-white mb-3">Team not found</h1>
-          <p className="text-muted-foreground mb-4">
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm border-l-4 border-l-red-500 p-8 text-center">
+          <h1 className="text-2xl font-bold text-[#063f46] mb-3">Team not found</h1>
+          <p className="text-[#4a6366] mb-4">
             The requested team could not be located in the analytics database.
           </p>
-          <Link href="/teams" className="text-[#00d4ff] hover:underline text-sm">
+          <Link href="/teams" className="text-[#075B5C] hover:underline text-sm">
             &larr; Back to Teams
           </Link>
         </div>

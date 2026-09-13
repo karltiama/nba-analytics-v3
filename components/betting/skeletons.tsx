@@ -140,7 +140,7 @@ export function PlayerCardSkeleton() {
  */
 export function InsightWidgetSkeleton() {
   return (
-    <div className="glass-card rounded-xl p-4">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4">
       <div className="flex items-start justify-between mb-3">
         <Skeleton className="w-10 h-10 rounded-xl" />
         <Skeleton className="w-12 h-4" />
@@ -159,9 +159,9 @@ export function InsightWidgetSkeleton() {
  */
 export function AIInsightPanelSkeleton() {
   return (
-    <div className="glass-card rounded-xl overflow-hidden h-full flex flex-col">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#DCE9EA] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Skeleton className="w-7 h-7 rounded-lg" />
           <div className="space-y-1">
@@ -175,7 +175,7 @@ export function AIInsightPanelSkeleton() {
       {/* Insights List */}
       <div className="flex-1 p-3 space-y-2">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="p-3 rounded-lg bg-white/[0.03] border border-white/5">
+          <div key={i} className="p-3 rounded-lg bg-[#F8FBFA] border border-[#DCE9EA]">
             <div className="flex items-start gap-3">
               <Skeleton className="w-8 h-8 rounded-lg shrink-0" />
               <div className="flex-1 space-y-2">
@@ -190,7 +190,7 @@ export function AIInsightPanelSkeleton() {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
+      <div className="px-4 py-2.5 border-t border-[#DCE9EA] bg-[#F8FBFA]">
         <Skeleton className="w-48 h-3 mx-auto" />
       </div>
     </div>

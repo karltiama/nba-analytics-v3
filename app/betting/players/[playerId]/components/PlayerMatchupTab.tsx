@@ -57,7 +57,7 @@ export function PlayerMatchupTab({
             gameId: nextGame.game_id,
             date: etCalendarDateFromInstant(nextGame.start_time),
           })}
-          className="text-sm text-[#00d4ff] hover:underline"
+          className="text-sm text-[#075B5C] hover:underline"
         >
           Open Props Explorer for this matchup
         </Link>

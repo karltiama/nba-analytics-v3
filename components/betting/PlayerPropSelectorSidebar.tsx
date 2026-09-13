@@ -270,26 +270,26 @@ export function PlayerPropSelectorSidebar({
   });
 
   const selectClass =
-    'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]';
-  const optionStyle = { backgroundColor: '#111827', color: '#fff' };
+    'rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
+  const optionStyle = { backgroundColor: '#ffffff', color: '#063f46' };
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-white/5 shrink-0">
+      <div className="px-4 py-3 border-b border-[#DCE9EA] shrink-0 bg-[#F8FBFA]">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-[#00d4ff]/20">
-            <Target className="w-4 h-4 text-[#00d4ff]" />
+          <div className="p-1.5 rounded-lg bg-[#55ddb1]/25">
+            <Target className="w-4 h-4 text-[#075B5C]" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-semibold text-white truncate">{playerName || 'Player'}</h3>
-            <p className="text-[10px] text-muted-foreground">Prop lines</p>
+            <h3 className="text-sm font-semibold text-[#063f46] truncate">{playerName || 'Player'}</h3>
+            <p className="text-[10px] text-[#4a6366]">Prop lines</p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="px-3 py-2 border-b border-white/5 flex flex-wrap gap-2 shrink-0">
+      <div className="px-3 py-2 border-b border-[#DCE9EA] flex flex-wrap gap-2 shrink-0">
         <select
           value={effectiveStat}
           onChange={(e) => setFilterStat(e.target.value)}
@@ -313,14 +313,14 @@ export function PlayerPropSelectorSidebar({
           <option value="over" style={optionStyle}>Over</option>
           <option value="under" style={optionStyle}>Under</option>
         </select>
-        <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-gray-900 overflow-hidden">
+        <div className="flex items-center gap-1 rounded-lg border border-[#DCE9EA] bg-white overflow-hidden">
           <button
             type="button"
             onClick={() => {
               const n = filterLineNum ?? defaultLine ?? 0;
               setFilterLineRaw(String(Math.max(0, n - LINE_STEP)));
             }}
-            className="p-1.5 text-white hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]"
+            className="p-1.5 text-[#063f46] hover:bg-[#f7f9f7] focus:outline-none focus:ring-1 focus:ring-[#55ddb1]"
             aria-label="Decrease line"
           >
             <Minus className="w-3.5 h-3.5" />
@@ -332,7 +332,7 @@ export function PlayerPropSelectorSidebar({
             value={filterLineRaw}
             onChange={(e) => setFilterLineRaw(e.target.value)}
             placeholder="Line"
-            className="w-14 bg-transparent text-white text-xs py-1.5 px-2 text-center focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-14 bg-transparent text-[#063f46] text-xs py-1.5 px-2 text-center focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             aria-label="Filter by line value"
           />
           <button
@@ -341,18 +341,18 @@ export function PlayerPropSelectorSidebar({
               const n = filterLineNum ?? defaultLine ?? 0;
               setFilterLineRaw(String(n + LINE_STEP));
             }}
-            className="p-1.5 text-white hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[#00d4ff]"
+            className="p-1.5 text-[#063f46] hover:bg-[#f7f9f7] focus:outline-none focus:ring-1 focus:ring-[#55ddb1]"
             aria-label="Increase line"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
         </div>
-        <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-gray-900 text-xs text-white py-1.5 px-2 cursor-pointer hover:bg-white/5 focus-within:ring-1 focus-within:ring-[#00d4ff]">
+        <label className="flex items-center gap-2 rounded-lg border border-[#DCE9EA] bg-white text-xs text-[#063f46] py-1.5 px-2 cursor-pointer hover:bg-[#f7f9f7] focus-within:ring-1 focus-within:ring-[#55ddb1]">
           <input
             type="checkbox"
             checked={showBestEdgeOnly}
             onChange={(e) => setShowBestEdgeOnly(e.target.checked)}
-            className="rounded border-white/20 bg-gray-800 text-[#00d4ff] focus:ring-[#00d4ff]"
+            className="rounded border-[#DCE9EA] bg-white text-[#075B5C] focus:ring-[#55ddb1]"
             aria-label="Show best edge only"
           />
           <span>Best edge only</span>
@@ -362,9 +362,9 @@ export function PlayerPropSelectorSidebar({
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-3">
         {loading ? (
-          <p className="text-xs text-muted-foreground py-4">Loading props…</p>
+          <p className="text-xs text-[#4a6366] py-4">Loading props…</p>
         ) : groupsWithBest.length === 0 ? (
-          <p className="text-xs text-muted-foreground py-4">
+          <p className="text-xs text-[#4a6366] py-4">
             No props match. Try a lower line, different stat, or outcome.
           </p>
         ) : (
@@ -398,22 +398,22 @@ export function PlayerPropSelectorSidebar({
             return (
               <div
                 key={key}
-                className="p-3 rounded-lg bg-white/[0.03] border border-white/5"
+                className="p-3 rounded-lg bg-[#F8FBFA] border border-[#DCE9EA]"
               >
                 <div className="flex items-center gap-2 mb-2 flex-wrap">
                   {isOver ? (
-                    <Plus className="w-3.5 h-3.5 text-[#39ff14]" />
+                    <Plus className="w-3.5 h-3.5 text-[#20B95A]" />
                   ) : (
-                    <Minus className="w-3.5 h-3.5 text-[#ff4757]" />
+                    <Minus className="w-3.5 h-3.5 text-[#c2410c]" />
                   )}
-                  <span className="text-[10px] text-muted-foreground capitalize">
+                  <span className="text-[10px] text-[#4a6366] capitalize">
                     {(propType ?? '').replace(/_/g, ' ')}
                   </span>
-                  <span className="text-xs font-mono text-white">
+                  <span className="text-xs font-mono text-[#063f46]">
                     {formatLineValue(lineValue)}
                   </span>
                   {rowsToShow.some((r) => r.projection != null && Number.isFinite(r.projection)) && (
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-[10px] text-[#4a6366]">
                       (model {formatLineValue(rowsToShow.find((r) => r.projection != null)?.projection ?? null)})
                     </span>
                   )}
@@ -438,23 +438,23 @@ export function PlayerPropSelectorSidebar({
                       <li
                         key={`${r.sportsbook}-${r.oddsAmerican}`}
                         className={`flex items-center justify-between text-xs py-1 px-2 rounded ${
-                          isBest ? 'bg-[#00d4ff]/15 border border-[#00d4ff]/30' : ''
+                          isBest ? 'bg-[#55ddb1]/20 border border-[#55ddb1]/40' : ''
                         }`}
                       >
-                        <span className="text-muted-foreground truncate">
+                        <span className="text-[#4a6366] truncate">
                           {r.sportsbook ?? '—'}
                         </span>
-                        <span className="font-mono text-white shrink-0 ml-2 flex items-center gap-2">
+                        <span className="font-mono text-[#063f46] shrink-0 ml-2 flex items-center gap-2">
                           <span className="text-xs">
                             EV {formatEv(r.ev)}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">
+                          <span className="text-[10px] text-[#4a6366]">
                             Edge {hasEdge ? formatEdge(r.edgeProbability) : '—'}
                           </span>
                           <span>
                             {formatOdds(r.oddsAmerican)}
                             {isBest && (
-                              <span className="ml-1.5 text-[10px] text-[#00d4ff] font-medium">
+                              <span className="ml-1.5 text-[10px] text-[#075B5C] font-medium">
                                 Best
                               </span>
                             )}

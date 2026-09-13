@@ -14,7 +14,6 @@ import { getNextGameForPlayer } from '@/lib/analytics/games-queries';
 import { getOpponentContextForGame } from '@/lib/analytics/matchup-queries';
 import { getAnalyticsSeason } from '@/lib/season';
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
 import { PlayerResearchReturnBar, playerReturnContextFromSearch } from './components/PlayerResearchReturnBar';
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 import type { OpponentContext } from '@/lib/analytics/matchup-queries';
@@ -91,32 +90,13 @@ export default async function BettingPlayerPage({
 
   if (!player) {
     return (
-      <div className="min-h-screen bg-background gradient-mesh">
-        <header className="sticky top-0 z-50 glass-card border-b border-white/5">
-          <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center h-14">
-              <Link href="/betting" className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#bf5af2] flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-sm font-bold tracking-tight">
-                    <span className="neon-text-cyan">NBA</span>
-                    <span className="text-white ml-1">Analytics</span>
-                  </h1>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </header>
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-12">
-          <div className="glass-card rounded-xl border-l-4 border-l-[#ff4757] p-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-3">Player not found</h1>
-            <p className="text-muted-foreground mb-4">The requested player could not be located.</p>
-            <Link href="/betting" className="text-[#00d4ff] hover:underline text-sm">
-              &larr; Back to Betting Dashboard
-            </Link>
-          </div>
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12">
+        <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm border-l-4 border-l-red-500 p-8 text-center">
+          <h1 className="text-2xl font-bold text-[#063f46] mb-3">Player not found</h1>
+          <p className="text-[#4a6366] mb-4">The requested player could not be located.</p>
+          <Link href="/betting" className="text-[#075B5C] hover:underline text-sm">
+            &larr; Back to Dashboard
+          </Link>
         </div>
       </div>
     );
@@ -133,74 +113,44 @@ export default async function BettingPlayerPage({
       : null;
 
   return (
-    <div className="min-h-screen bg-background gradient-mesh">
-      {/* Mini header matching betting dashboard nav */}
-      <header className="sticky top-0 z-50 glass-card border-b border-white/5">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
-            <Link href="/betting" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#bf5af2] flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-white" />
-                </div>
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#39ff14] rounded-full pulse-dot" />
+    <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+      <PlayerAnalysisProvider>
+        <div className="flex flex-col xl:flex-row gap-6">
+          <div className="flex-1 min-w-0 space-y-6">
+            <PlayerResearchReturnBar ctx={returnCtx} />
+            <PlayerHeader
+              player={player}
+              seasonAverages={seasonAverages}
+              team={currentTeam}
+              seasonLabel={activeSeason}
+            />
+            {!(seasonAverages?.games_played || seasonAverages?.games_active) && (
+              <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm px-4 py-3 text-sm text-[#4a6366]">
+                No {activeSeason} season stats yet. Prior-season numbers are not shown here.
               </div>
-              <div>
-                <h1 className="text-sm font-bold tracking-tight">
-                  <span className="neon-text-cyan">NBA</span>
-                  <span className="text-white ml-1">Analytics</span>
-                </h1>
-                <p className="text-[10px] text-muted-foreground -mt-0.5">Player Analysis</p>
-              </div>
-            </Link>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] px-2 py-0.5 bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-semibold">
-                PLAYER PROFILE
-              </span>
-            </div>
+            )}
+            <PlayerPageTabs
+              games={games}
+              seasonAverages={seasonAverages}
+              nextGame={nextGame}
+              opponentContext={opponentContext}
+              recentForm={recentForm}
+              vsOpponentHistory={vsOpponentHistory}
+            />
           </div>
+          <aside className="w-full xl:w-80 shrink-0">
+            <div className="xl:sticky xl:top-20">
+              <PlayerPropSelectorSidebar
+                key={analyticsPlayerId ?? playerId}
+                playerId={analyticsPlayerId ?? playerId}
+                playerName={player.full_name}
+                gameId={nextGame ? parseInt(nextGame.game_id, 10) : undefined}
+                defaultLineValue={seasonAverages?.avg_points ?? undefined}
+              />
+            </div>
+          </aside>
         </div>
-      </header>
-
-      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-        <PlayerAnalysisProvider>
-          <div className="flex flex-col xl:flex-row gap-6">
-            <div className="flex-1 min-w-0 space-y-6 fade-in">
-              <PlayerResearchReturnBar ctx={returnCtx} />
-              <PlayerHeader
-                player={player}
-                seasonAverages={seasonAverages}
-                team={currentTeam}
-                seasonLabel={activeSeason}
-              />
-              {!(seasonAverages?.games_played || seasonAverages?.games_active) && (
-                <div className="glass-card rounded-xl border border-white/10 px-4 py-3 text-sm text-muted-foreground">
-                  No {activeSeason} season stats yet. Prior-season numbers are not shown here.
-                </div>
-              )}
-              <PlayerPageTabs
-                games={games}
-                seasonAverages={seasonAverages}
-                nextGame={nextGame}
-                opponentContext={opponentContext}
-                recentForm={recentForm}
-                vsOpponentHistory={vsOpponentHistory}
-              />
-            </div>
-            <aside className="w-full xl:w-80 shrink-0">
-              <div className="sticky top-14">
-                <PlayerPropSelectorSidebar
-                  key={analyticsPlayerId ?? playerId}
-                  playerId={analyticsPlayerId ?? playerId}
-                  playerName={player.full_name}
-                  gameId={nextGame ? parseInt(nextGame.game_id, 10) : undefined}
-                  defaultLineValue={seasonAverages?.avg_points ?? undefined}
-                />
-              </div>
-            </aside>
-          </div>
-        </PlayerAnalysisProvider>
-      </main>
-    </div>
+      </PlayerAnalysisProvider>
+    </main>
   );
 }

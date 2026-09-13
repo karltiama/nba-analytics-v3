@@ -18,6 +18,12 @@ export interface PlayerPageTabsProps {
   vsOpponentHistory: PlayerVsOpponentHistory | null;
 }
 
+const triggerClass = cn(
+  'flex-none rounded-lg px-4 py-2 text-sm font-medium shadow-none',
+  'text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]',
+  'data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! data-[state=active]:shadow-none'
+);
+
 export function PlayerPageTabs({
   games,
   seasonAverages,
@@ -30,42 +36,17 @@ export function PlayerPageTabs({
     <Tabs defaultValue="trends" className="w-full">
       <TabsList
         className={cn(
-          'w-full sm:w-auto h-auto flex flex-wrap gap-1 p-1 rounded-xl',
-          'bg-white/5 border border-white/10',
-          'data-[variant=default]:bg-white/5'
+          'inline-flex w-fit h-auto flex-wrap gap-1 p-1 rounded-xl',
+          'bg-white border border-[#DCE9EA] shadow-none'
         )}
       >
-        <TabsTrigger
-          value="trends"
-          className={cn(
-            'rounded-lg px-4 py-2 text-sm font-medium',
-            'data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black',
-            'data-[state=active]:shadow-[0_0_16px_rgba(0,212,255,0.4)]',
-            'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-white/10'
-          )}
-        >
+        <TabsTrigger value="trends" className={triggerClass}>
           Trends
         </TabsTrigger>
-        <TabsTrigger
-          value="matchup"
-          className={cn(
-            'rounded-lg px-4 py-2 text-sm font-medium',
-            'data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black',
-            'data-[state=active]:shadow-[0_0_16px_rgba(0,212,255,0.4)]',
-            'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-white/10'
-          )}
-        >
+        <TabsTrigger value="matchup" className={triggerClass}>
           Matchup
         </TabsTrigger>
-        <TabsTrigger
-          value="gamelog"
-          className={cn(
-            'rounded-lg px-4 py-2 text-sm font-medium',
-            'data-[state=active]:bg-[#00d4ff] data-[state=active]:text-black',
-            'data-[state=active]:shadow-[0_0_16px_rgba(0,212,255,0.4)]',
-            'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-white data-[state=inactive]:hover:bg-white/10'
-          )}
-        >
+        <TabsTrigger value="gamelog" className={triggerClass}>
           Game Log
         </TabsTrigger>
       </TabsList>

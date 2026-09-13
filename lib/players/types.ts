@@ -81,6 +81,8 @@ export interface PlayerProfile {
   weight?: string | null;
   dob?: string | null;
   active?: boolean | null;
+  /** NBA.com person id for CDN headshots. Null when identity is unmapped. */
+  nba_player_id?: string | null;
 }
 
 export interface SeasonAverages {
