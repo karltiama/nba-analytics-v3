@@ -1,5 +1,6 @@
 import { Table2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LandingSection } from '@/components/landing/LandingSection';
 import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader';
 
 type DemoRow = {
@@ -78,53 +79,65 @@ const DEMO_ROWS: DemoRow[] = [
 
 const SKELETON_TAIL_ROWS = 5;
 
+function confBadgeClass(conf: string): string {
+  const c = conf.toLowerCase();
+  if (c === 'high') return 'bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold';
+  if (c === 'medium') return 'bg-amber-50 text-amber-700 rounded-full font-semibold';
+  return 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium';
+}
+
+function evClass(ev: string): string {
+  if (ev.startsWith('+')) return 'text-[#20B95A]';
+  return 'text-[#063F46]';
+}
+
 function SkeletonRow() {
   return (
-    <tr className="border-b border-white/5" aria-hidden>
-      <td className="py-2 px-2">
+    <tr className="border-b border-[#DCE9EA]" aria-hidden>
+      <td className="py-2.5 px-3">
         <div className="flex items-center gap-2 min-w-0 max-w-[160px]">
-          <Skeleton className="h-3.5 flex-1 max-w-[100px]" />
-          <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
+          <Skeleton className="h-3.5 flex-1 max-w-[100px] bg-[#E8F0F1]" />
+          <Skeleton className="h-3.5 w-3.5 shrink-0 rounded bg-[#E8F0F1]" />
         </div>
       </td>
-      <td className="py-2 px-2">
-        <Skeleton className="h-3.5 w-14" />
+      <td className="py-2.5 px-3">
+        <Skeleton className="h-3.5 w-14 bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2">
-        <Skeleton className="h-3.5 w-10" />
+      <td className="py-2.5 px-3">
+        <Skeleton className="h-3.5 w-10 bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-8 ml-auto" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-8 ml-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2">
-        <Skeleton className="h-3.5 w-16 max-w-[100px]" />
+      <td className="py-2.5 px-3">
+        <Skeleton className="h-3.5 w-16 max-w-[100px] bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-9 ml-auto" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-9 ml-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-10 ml-auto" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-10 ml-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-8 ml-auto" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-8 ml-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-10 ml-auto" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-10 ml-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-10 ml-auto bg-[#39ff14]/15" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-10 ml-auto bg-[#56D6A3]/25" />
       </td>
-      <td className="py-2 px-2 text-right">
-        <Skeleton className="h-3.5 w-8 ml-auto" />
+      <td className="py-2.5 px-3 text-right">
+        <Skeleton className="h-3.5 w-8 ml-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-2">
-        <Skeleton className="h-3 w-24" />
+      <td className="py-2.5 px-3">
+        <Skeleton className="h-3 w-24 bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-1">
-        <Skeleton className="h-6 w-11 rounded-md mx-auto" />
+      <td className="py-2.5 px-2">
+        <Skeleton className="h-6 w-11 rounded-lg mx-auto bg-[#E8F0F1]" />
       </td>
-      <td className="py-2 px-1">
-        <Skeleton className="h-6 w-10 rounded-md mx-auto" />
+      <td className="py-2.5 px-2">
+        <Skeleton className="h-6 w-10 rounded-lg mx-auto bg-[#E8F0F1]" />
       </td>
     </tr>
   );
@@ -135,8 +148,8 @@ function SkeletonRow() {
  */
 export function LandingPropsTablePreview() {
   return (
-    <section
-      className="w-full max-w-6xl mx-auto mt-32 px-4 sm:px-6 slide-up"
+    <LandingSection
+      className="slide-up"
       style={{ animationDelay: '550ms' }}
       aria-labelledby="landing-props-preview-heading"
     >
@@ -144,68 +157,73 @@ export function LandingPropsTablePreview() {
         id="landing-props-preview-heading"
         icon={Table2}
         accent="cyan"
+        variant="watermark"
         title="Props Explorer snapshot"
         description="Model vs market — same grid you get inside the terminal (sample rows; tail as loading placeholders)."
         href="/betting/props-explorer"
         linkLabel="Open props board"
       />
 
-      <div className="glass-card rounded-xl overflow-hidden border border-white/5">
+      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto max-h-[min(420px,70vh)] overflow-y-auto">
           <table className="w-full text-left text-xs">
-            <thead className="sticky top-0 z-10 bg-gray-950/95 border-b border-white/10">
-              <tr className="text-muted-foreground">
-                <th className="py-2 px-2 font-medium">Player</th>
-                <th className="py-2 px-2 font-medium">Prop</th>
-                <th className="py-2 px-2 font-medium">Side</th>
-                <th className="py-2 px-2 font-medium text-right">Line</th>
-                <th className="py-2 px-2 font-medium">Book</th>
-                <th className="py-2 px-2 font-medium text-right">Odds</th>
-                <th className="py-2 px-2 font-medium text-right">Implied</th>
-                <th className="py-2 px-2 font-medium text-right" title="Track B.1 confidence tier">
+            <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
+              <tr className="text-[11px] uppercase tracking-wide text-[#72869A]">
+                <th className="py-2.5 px-3 font-medium">Player</th>
+                <th className="py-2.5 px-3 font-medium">Prop</th>
+                <th className="py-2.5 px-3 font-medium">Side</th>
+                <th className="py-2.5 px-3 font-medium text-right">Line</th>
+                <th className="py-2.5 px-3 font-medium">Book</th>
+                <th className="py-2.5 px-3 font-medium text-right">Odds</th>
+                <th className="py-2.5 px-3 font-medium text-right">Implied</th>
+                <th className="py-2.5 px-3 font-medium text-right" title="Track B.1 confidence tier">
                   Conf
                 </th>
-                <th className="py-2 px-2 font-medium text-right">Model</th>
-                <th className="py-2 px-2 font-medium text-right">EV</th>
-                <th className="py-2 px-2 font-medium text-right">Proj</th>
-                <th className="py-2 px-2 font-medium">Updated</th>
-                <th className="py-2 px-2 font-medium w-[72px]">Save</th>
-                <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
+                <th className="py-2.5 px-3 font-medium text-right">Model</th>
+                <th className="py-2.5 px-3 font-medium text-right">EV</th>
+                <th className="py-2.5 px-3 font-medium text-right">Proj</th>
+                <th className="py-2.5 px-3 font-medium">Updated</th>
+                <th className="py-2.5 px-3 font-medium w-[72px]">Save</th>
+                <th className="py-2.5 px-3 font-medium w-[72px]">Paper</th>
               </tr>
             </thead>
             <tbody>
               {DEMO_ROWS.map((r, idx) => (
                 <tr
                   key={`${r.player}-${r.prop}-${idx}`}
-                  className="border-b border-white/5 hover:bg-white/3"
+                  className="border-b border-[#DCE9EA] hover:bg-[#F8FBFA]"
                 >
-                  <td className="py-1.5 px-2">
-                    <span className="text-[#00d4ff] truncate min-w-0 max-w-[160px] inline-block align-middle">
+                  <td className="py-2.5 px-3">
+                    <span className="font-bold text-[#063F46] truncate min-w-0 max-w-[160px] inline-block align-middle">
                       {r.player}
                     </span>
                   </td>
-                  <td className="py-1.5 px-2 text-white capitalize">{r.prop.replace(/_/g, ' ')}</td>
-                  <td className="py-1.5 px-2 capitalize">{r.side}</td>
-                  <td className="py-1.5 px-2 text-right font-mono text-white">{r.line}</td>
-                  <td className="py-1.5 px-2 text-muted-foreground truncate max-w-[100px]">{r.book}</td>
-                  <td className="py-1.5 px-2 text-right font-mono text-white">{r.odds}</td>
-                  <td className="py-1.5 px-2 text-right font-mono">{r.implied}</td>
-                  <td className="py-1.5 px-2 text-right font-mono text-muted-foreground capitalize">
-                    {r.conf}
+                  <td className="py-2.5 px-3 text-[#063F46] capitalize">{r.prop.replace(/_/g, ' ')}</td>
+                  <td className="py-2.5 px-3 text-[#063F46] capitalize">{r.side}</td>
+                  <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-[#063F46]">{r.line}</td>
+                  <td className="py-2.5 px-3 text-[#72869A] truncate max-w-[100px]">{r.book}</td>
+                  <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-[#063F46]">{r.odds}</td>
+                  <td className="py-2.5 px-3 text-right tabular-nums text-[#063F46]">{r.implied}</td>
+                  <td className="py-2.5 px-3 text-right">
+                    <span className={`text-[10px] px-2 py-0.5 capitalize ${confBadgeClass(r.conf)}`}>
+                      {r.conf}
+                    </span>
                   </td>
-                  <td className="py-1.5 px-2 text-right font-mono">{r.model}</td>
-                  <td className="py-1.5 px-2 text-right font-mono text-[#39ff14]">{r.ev}</td>
-                  <td className="py-1.5 px-2 text-right font-mono text-white">{r.proj}</td>
-                  <td className="py-1.5 px-2 text-[10px] text-muted-foreground whitespace-nowrap">
+                  <td className="py-2.5 px-3 text-right tabular-nums text-[#063F46]">{r.model}</td>
+                  <td className={`py-2.5 px-3 text-right font-semibold tabular-nums ${evClass(r.ev)}`}>
+                    {r.ev}
+                  </td>
+                  <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-[#168DD8]">{r.proj}</td>
+                  <td className="py-2.5 px-3 text-[10px] text-[#72869A] whitespace-nowrap">
                     {r.updated}
                   </td>
-                  <td className="py-1.5 px-1">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded border border-white/20 text-white/50 inline-block">
+                  <td className="py-2.5 px-2">
+                    <span className="text-[10px] px-2 py-1 rounded-lg bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] font-semibold inline-block">
                       Save
                     </span>
                   </td>
-                  <td className="py-1.5 px-1">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded border border-[#00d4ff]/25 text-[#8fefff]/50 inline-block">
+                  <td className="py-2.5 px-2">
+                    <span className="text-[10px] px-2 py-1 rounded-lg bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] font-semibold inline-block">
                       Add
                     </span>
                   </td>
@@ -218,6 +236,6 @@ export function LandingPropsTablePreview() {
           </table>
         </div>
       </div>
-    </section>
+    </LandingSection>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Trophy } from 'lucide-react';
 import { GameCard, type Game } from '@/components/betting';
+import { LandingSection } from '@/components/landing/LandingSection';
 import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader';
 
 /**
@@ -34,7 +35,8 @@ const DEMO_GAMES: Game[] = [
     awayImpliedProb: 44,
     isFavorite: 'home',
     isClose: false,
-    paceSignal: { label: 'AVG', projected: 97.4 },
+    matchupContext:
+      'Boston has rest advantage. NYK enters on the second night of a back-to-back.',
   },
   {
     id: 'demo-2',
@@ -60,7 +62,8 @@ const DEMO_GAMES: Game[] = [
     awayImpliedProb: 43,
     isFavorite: 'home',
     isClose: false,
-    paceSignal: { label: 'FAST', projected: 99.0 },
+    matchupContext:
+      'OKC has rest advantage. DEN enters on the second night of a back-to-back.',
   },
   {
     id: 'demo-3',
@@ -86,27 +89,26 @@ const DEMO_GAMES: Game[] = [
     awayImpliedProb: 52,
     isFavorite: 'home',
     isClose: true,
-    paceSignal: { label: 'FAST', projected: 100.1 },
+    matchupContext:
+      'Usage shift for Dončić. Scoring and assists rise when Reaves is out.',
   },
 ];
 
 export function FeaturedGames() {
   return (
-    <section
-      className="w-full max-w-6xl mx-auto mt-32 px-4 sm:px-6"
-      aria-labelledby="landing-featured-games-heading"
-    >
+    <LandingSection aria-labelledby="landing-featured-games-heading">
       <LandingSectionHeader
         id="landing-featured-games-heading"
         icon={Trophy}
         accent="lime"
+        variant="watermark"
         title="Today's Matchups"
         description="Sample slate preview — sign in for live odds and analysis"
         href="/betting"
         linkLabel="View Full Terminal"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {DEMO_GAMES.map((game, index) => (
           <div
             key={game.id}
@@ -117,6 +119,6 @@ export function FeaturedGames() {
           </div>
         ))}
       </div>
-    </section>
+    </LandingSection>
   );
 }

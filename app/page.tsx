@@ -1,111 +1,56 @@
 import Link from 'next/link';
-import { Activity, Zap, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { FeaturedGames } from '@/components/landing/FeaturedGames';
+import { LandingHero } from '@/components/landing/LandingHero';
 import { LandingPropsTablePreview } from '@/components/landing/LandingPropsTablePreview';
 import { LandingTrendingPlayerStripPreview } from '@/components/landing/LandingTrendingPlayerStripPreview';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden selection:bg-[#00d4ff]/30">
-      {/* Background Gradient Mesh */}
-      <div className="absolute inset-0 gradient-mesh opacity-80 pointer-events-none" />
-
-      {/* Navbar overlay */}
-      <header className="absolute top-0 w-full p-6 flex justify-between items-center z-50">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#00d4ff]/10 border border-[#00d4ff]/30 neon-glow-cyan flex items-center justify-center pulse-dot">
-            <Activity className="w-5 h-5 text-[#00d4ff]" />
-          </div>
-          <span className="font-bold text-xl tracking-tight text-white drop-shadow-md">NBA<span className="text-[#00d4ff]">Edge</span></span>
-        </div>
-        <div className="flex items-center gap-6">
-          <Link href="/login" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
+    <div className="min-h-screen bg-[#f7f9f7] text-[#063f46] relative overflow-hidden">
+      <header className="absolute top-0 w-full z-50">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex justify-between items-center gap-3">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0" aria-label="Court Context home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/court-context-logo.png"
+            alt=""
+            className="h-10 sm:h-12 lg:h-14 w-auto select-none"
+          />
+          <span className="font-bold text-xl sm:text-3xl lg:text-5xl tracking-tight text-[#063f46] truncate">
+            Court Context
+          </span>
+        </Link>
+        <div className="flex items-center gap-3 sm:gap-6 shrink-0">
+          <Link href="/login" className="text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors">
             Sign In
           </Link>
-          <Link href="/signup" className="text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/10 neon-border-cyan rounded-full px-5 py-2 transition-all glass-card relative overflow-hidden group">
-            <span className="relative z-10 text-white group-hover:neon-text-cyan transition-all">Get Started</span>
+          <Link href="/signup" className="text-sm font-semibold bg-[#55ddb1] hover:bg-[#3dcc9f] text-[#063f46] rounded-lg px-3 sm:px-5 py-2 transition-colors">
+            Get Started
           </Link>
+        </div>
         </div>
       </header>
 
-      <main className="relative z-10 flex flex-col items-center justify-center pt-32 pb-28 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto min-h-screen">
-        {/* Hero Section */}
-        <div className="text-center max-w-4xl mx-auto flex flex-col items-center gap-8 fade-in">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card border-[#bf5af2]/30 mb-2 slide-up" style={{ animationDelay: '100ms' }}>
-            <span className="flex h-2 w-2 rounded-full bg-[#39ff14] animate-pulse"></span>
-            <span className="text-[11px] font-bold text-[#bf5af2] uppercase tracking-wider">Offseason Improvements In Progress</span>
-          </div>
+      <main className="relative z-10">
+        <LandingHero />
 
-          <div className="max-w-3xl rounded-xl border border-[#00d4ff]/25 bg-[#00d4ff]/10 px-4 py-3 slide-up" style={{ animationDelay: '150ms' }}>
-            <p className="text-sm text-[#bfefff]">
-              Offseason mode: live NBA updates are paused while we improve the platform for next season.
-            </p>
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight text-white drop-shadow-lg slide-up" style={{ animationDelay: '200ms' }}>
-            Dominate the Books with <br className="hidden md:block"/>
-            <span className="neon-text-cyan text-[#00d4ff]">Data-Driven Precision</span>
-          </h1>
-          
-          <p className="max-w-2xl text-lg md:text-xl text-muted-foreground slide-up" style={{ animationDelay: '300ms' }}>
-            The ultimate data-driven NBA terminal. Actionable insights, predictive modeling, and live trending player props delivered at lightspeed.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mt-6 slide-up" style={{ animationDelay: '400ms' }}>
-            <Link
-              href="/betting?onboard=1"
-              className="group flex h-14 items-center justify-center gap-2 rounded-full bg-[#00d4ff] px-8 text-black font-bold transition-all hover:bg-[#00e5ff] neon-glow-cyan"
-            >
-              Start Winning Now
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="/login"
-              className="flex h-14 items-center justify-center rounded-full glass-card border border-white/10 px-8 text-white transition-all hover:bg-white/5 hover:border-white/20 neon-border-cyan group"
-            >
-              <span className="group-hover:neon-text-cyan transition-colors">Sign In</span>
-            </Link>
-          </div>
-        </div>
-
+        <div className="flex flex-col gap-12 md:gap-20 lg:gap-32 pt-12 md:pt-20 lg:pt-32 pb-12 md:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-8 max-w-[1280px] mx-auto">
         {/* Featured Games / Live Data */}
         <FeaturedGames />
 
         <LandingPropsTablePreview />
 
         <LandingTrendingPlayerStripPreview />
-
-        {/* Features Grid */}
-        <div className="mt-40 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl slide-up" style={{ animationDelay: '800ms' }}>
-          <div className="glass-card p-8 rounded-2xl border border-white/5 card-hover relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-32 bg-[#bf5af2]/5 blur-[100px] group-hover:bg-[#bf5af2]/15 transition-all duration-500 rounded-full"></div>
-            <Zap className="w-10 h-10 text-[#bf5af2] mb-6 neon-text-purple relative z-10" />
-            <h3 className="text-xl font-bold text-white mb-3 relative z-10">Live Trend Analysis</h3>
-            <p className="text-muted-foreground text-sm relative z-10">Monitor player streaks, momentum shifts, and statistical anomalies in real-time to catch edges before lines move.</p>
-          </div>
-
-          <div className="glass-card p-8 rounded-2xl border border-white/5 card-hover relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-32 bg-[#00d4ff]/5 blur-[100px] group-hover:bg-[#00d4ff]/15 transition-all duration-500 rounded-full"></div>
-            <Cpu className="w-10 h-10 text-[#00d4ff] mb-6 neon-text-cyan relative z-10" />
-            <h3 className="text-xl font-bold text-white mb-3 relative z-10">Advanced Statistical Models</h3>
-            <p className="text-muted-foreground text-sm relative z-10">Proprietary algorithms process thousands of data points to highlight the highest EV player props on the board.</p>
-          </div>
-
-          <div className="glass-card p-8 rounded-2xl border border-white/5 card-hover relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-32 bg-[#39ff14]/5 blur-[100px] group-hover:bg-[#39ff14]/15 transition-all duration-500 rounded-full"></div>
-            <ShieldCheck className="w-10 h-10 text-[#39ff14] mb-6 neon-text-lime relative z-10" />
-            <h3 className="text-xl font-bold text-white mb-3 relative z-10">Injury & Rotation Intel</h3>
-            <p className="text-muted-foreground text-sm relative z-10">Instant impact analysis when star players sit, automatically recalculating usage rates and secondary player projections.</p>
-          </div>
         </div>
       </main>
       
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 glass-card py-10 mt-28 bg-black/40">
-        <div className="max-w-[1400px] mx-auto px-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-4">
-          <div className="flex items-center gap-2 opacity-50">
+      <footer className="relative z-10 border-t border-[#d7e2de] py-10 bg-[#063f46]">
+        <div className="max-w-[1280px] mx-auto px-6 text-center text-sm text-white/70 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2">
             <Activity className="w-4 h-4" />
-            <span className="font-bold tracking-tight">NBAEdge</span>
+            <span className="font-bold tracking-tight text-white">NBAEdge</span>
           </div>
           <p>© {new Date().getFullYear()} NBA Analytics Edge. For informational purposes only.</p>
         </div>

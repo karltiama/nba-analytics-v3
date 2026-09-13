@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Flame, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TeamLogo } from '@/components/nba/TeamLogo';
+import { LandingSection } from '@/components/landing/LandingSection';
 import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader';
 
 const STAT_TABS = [
@@ -14,17 +16,23 @@ const STAT_TABS = [
 type DemoPlayer = {
   name: string;
   team: string;
-  opponent: string;
+  position: string;
+  nbaId: number;
   l5: number;
   vsSzn: number;
   badge?: { label: string; color: string };
 };
 
+function nbaHeadshotUrl(nbaId: number) {
+  return `https://cdn.nba.com/headshots/nba/latest/1040x760/${nbaId}.png`;
+}
+
 const DEMO_PLAYERS: DemoPlayer[] = [
   {
     name: 'Kyle Filipowski',
     team: 'UTA',
-    opponent: 'OKC',
+    position: 'C',
+    nbaId: 1642271,
     l5: 22.6,
     vsSzn: 11.7,
     badge: { label: 'HOT', color: '#ff6b35' },
@@ -32,7 +40,8 @@ const DEMO_PLAYERS: DemoPlayer[] = [
   {
     name: 'Jrue Holiday',
     team: 'POR',
-    opponent: 'DEN',
+    position: 'PG',
+    nbaId: 201950,
     l5: 20.8,
     vsSzn: 10.5,
     badge: { label: 'HOT', color: '#ff6b35' },
@@ -40,7 +49,8 @@ const DEMO_PLAYERS: DemoPlayer[] = [
   {
     name: 'Joel Embiid',
     team: 'PHI',
-    opponent: 'BOS',
+    position: 'C',
+    nbaId: 203954,
     l5: 28.4,
     vsSzn: 9.2,
     badge: { label: 'HOT', color: '#ff6b35' },
@@ -48,7 +58,8 @@ const DEMO_PLAYERS: DemoPlayer[] = [
   {
     name: 'Shai Gilgeous-Alexander',
     team: 'OKC',
-    opponent: 'LAL',
+    position: 'PG',
+    nbaId: 1628983,
     l5: 31.2,
     vsSzn: 8.1,
     badge: { label: 'PRA↑', color: '#bf5af2' },
@@ -56,7 +67,8 @@ const DEMO_PLAYERS: DemoPlayer[] = [
   {
     name: 'Giannis Antetokounmpo',
     team: 'MIL',
-    opponent: 'CHA',
+    position: 'PF',
+    nbaId: 203507,
     l5: 30.5,
     vsSzn: 7.4,
   },
@@ -64,28 +76,29 @@ const DEMO_PLAYERS: DemoPlayer[] = [
 
 const SKELETON_TAIL_CARDS = 3;
 
+const CARD_SHELL =
+  'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-3.5 w-max shrink-0';
+
+function badgeClass(label: string): string {
+  if (label === 'HOT') return 'bg-amber-50 text-amber-700 rounded-full font-semibold';
+  return 'bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold';
+}
+
 function TrendingCardSkeleton() {
   return (
-    <div
-      className="glass-card rounded-xl p-3 min-w-[172px] max-w-[172px] shrink-0 border border-white/5"
-      aria-hidden
-    >
-      <div className="flex items-start gap-2 mb-2">
-        <Skeleton className="w-4 h-3 mt-0.5" />
-        <div className="flex-1 space-y-1.5">
-          <Skeleton className="w-24 h-3.5" />
-          <Skeleton className="w-16 h-2.5" />
-        </div>
-        <Skeleton className="w-8 h-4 rounded-full shrink-0" />
-      </div>
-      <div className="flex items-end justify-between">
-        <div className="space-y-1">
-          <Skeleton className="w-10 h-2.5" />
-          <Skeleton className="w-12 h-5" />
-        </div>
-        <div className="space-y-1 flex flex-col items-end">
-          <Skeleton className="w-10 h-2.5" />
-          <Skeleton className="w-14 h-4" />
+    <div className={CARD_SHELL} aria-hidden>
+      <div className="flex gap-2.5">
+        <Skeleton className="w-4 h-2.5 mt-1 shrink-0 bg-[#E8F0F1]" />
+        <Skeleton className="w-[72px] h-[88px] rounded-2xl shrink-0 bg-[#E8F0F1]" />
+        <div className="flex flex-col justify-between min-w-[160px] py-0.5">
+          <div className="space-y-1.5">
+            <Skeleton className="w-36 h-3.5 bg-[#E8F0F1]" />
+            <Skeleton className="w-16 h-2.5 bg-[#E8F0F1]" />
+          </div>
+          <div className="flex items-end justify-between">
+            <Skeleton className="w-12 h-8 bg-[#E8F0F1]" />
+            <Skeleton className="w-14 h-8 bg-[#E8F0F1]" />
+          </div>
         </div>
       </div>
     </div>
@@ -97,8 +110,8 @@ function TrendingCardSkeleton() {
  */
 export function LandingTrendingPlayerStripPreview() {
   return (
-    <section
-      className="w-full max-w-6xl mx-auto mt-32 px-4 sm:px-6 min-w-0 slide-up"
+    <LandingSection
+      className="slide-up"
       style={{ animationDelay: '580ms' }}
       aria-labelledby="landing-trending-strip-heading"
     >
@@ -106,21 +119,21 @@ export function LandingTrendingPlayerStripPreview() {
         id="landing-trending-strip-heading"
         icon={Flame}
         accent="orange"
+        variant="watermark"
         title="Trending Players"
         description="L5 vs SZN — sample PTS rankings; switch stats in the live strip."
         href="/betting"
         linkLabel="View Full Terminal"
       />
 
-      {/* Stat tabs — visual only (matches betting page) */}
       <div className="flex items-center gap-1 mb-3 flex-wrap" aria-hidden>
         {STAT_TABS.map((t) => (
           <span
             key={t.key}
-            className={`text-[11px] font-semibold px-2.5 py-1 rounded-md ${
+            className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
               t.key === 'pts'
-                ? 'bg-[#00d4ff]/15 text-[#00d4ff] shadow-[0_0_6px_rgba(0,212,255,0.15)]'
-                : 'text-muted-foreground/80'
+                ? 'bg-[#F8FBFA] border border-[#DCE9EA] text-[#063F46]'
+                : 'text-[#72869A]'
             }`}
           >
             {t.label}
@@ -130,7 +143,7 @@ export function LandingTrendingPlayerStripPreview() {
 
       <div className="relative">
         <div
-          className="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none bg-linear-to-l from-background via-background/80 to-transparent rounded-r-lg"
+          className="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none bg-linear-to-l from-[#f7f9f7] via-[#f7f9f7]/80 to-transparent rounded-r-lg"
           aria-hidden
         />
         <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-1">
@@ -138,52 +151,53 @@ export function LandingTrendingPlayerStripPreview() {
             <Link
               key={player.name}
               href="/betting"
-              className="glass-card rounded-xl p-3 min-w-[172px] max-w-[172px] shrink-0
-                         border border-white/5 hover:border-[#00d4ff]/30
-                         transition-all duration-200 cursor-pointer group
-                         snap-start"
+              className={`${CARD_SHELL} hover:border-[#075B5C]/30 transition-colors cursor-pointer group snap-start`}
             >
-              <div className="flex items-start gap-2 mb-2">
-                <span className="text-[10px] font-mono text-muted-foreground/50 mt-0.5 leading-none select-none">
+              <div className="flex gap-2.5">
+                <span className="text-[10px] font-mono text-[#72869A] leading-none pt-1 select-none shrink-0">
                   #{idx + 1}
                 </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate leading-tight group-hover:text-[#00d4ff] transition-colors">
-                    {player.name}
-                  </p>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="text-[10px] text-muted-foreground font-medium">{player.team}</span>
-                    <span className="text-[10px] text-muted-foreground/40">·</span>
-                    <span className="text-[10px] text-muted-foreground/60">vs {player.opponent}</span>
-                  </div>
-                </div>
-                {player.badge && (
-                  <span
-                    className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 leading-none"
-                    style={{
-                      backgroundColor: `${player.badge.color}20`,
-                      color: player.badge.color,
-                    }}
-                  >
-                    {player.badge.label}
-                  </span>
-                )}
-              </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={nbaHeadshotUrl(player.nbaId)}
+                  alt=""
+                  className="w-[72px] h-[88px] rounded-2xl object-cover object-[center_18%] bg-[#E8F0F1] shrink-0"
+                />
 
-              <div className="flex items-end justify-between">
-                <div>
-                  <span className="text-[10px] text-muted-foreground">PTS L5</span>
-                  <p className="text-lg font-bold text-white font-mono leading-none mt-0.5">
-                    {player.l5.toFixed(1)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-muted-foreground">vs szn</span>
-                  <div className="flex items-center gap-1 justify-end mt-0.5">
-                    <TrendingUp className="w-3 h-3 text-[#39ff14]" />
-                    <span className="text-sm font-bold font-mono text-[#39ff14] leading-none">
-                      +{player.vsSzn.toFixed(1)}
-                    </span>
+                <div className="flex flex-col justify-between py-0.5 shrink-0">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <TeamLogo team={player.team} size="xs" decorative />
+                      <p className="text-sm font-bold text-[#063F46] whitespace-nowrap leading-tight group-hover:text-[#075B5C] transition-colors">
+                        {player.name}
+                      </p>
+                      {player.badge && (
+                        <span className={`text-[10px] px-2 py-0.5 shrink-0 leading-none ${badgeClass(player.badge.label)}`}>
+                          {player.badge.label}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-[#72869A] font-medium mt-0.5 pl-6">
+                      {player.team} · {player.position}
+                    </p>
+                  </div>
+
+                  <div className="flex items-end justify-between gap-8 mt-2 whitespace-nowrap">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wide text-[#72869A] font-medium">PTS L5</span>
+                      <p className="text-lg font-bold text-[#063F46] tabular-nums leading-none mt-0.5">
+                        {player.l5.toFixed(1)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase tracking-wide text-[#72869A] font-medium">vs SZN</span>
+                      <div className="flex items-center gap-1 justify-end mt-0.5">
+                        <TrendingUp className="w-3.5 h-3.5 text-[#20B95A]" />
+                        <span className="text-sm font-bold tabular-nums text-[#20B95A] leading-none">
+                          +{player.vsSzn.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -194,6 +208,6 @@ export function LandingTrendingPlayerStripPreview() {
           ))}
         </div>
       </div>
-    </section>
+    </LandingSection>
   );
 }

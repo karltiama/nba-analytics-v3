@@ -7,82 +7,73 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export function GameCardSkeleton() {
   return (
-    <div className="glass-card rounded-xl overflow-hidden">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-2 border-b border-white/5 bg-white/[0.02]">
+      <div className="px-5 sm:px-6 py-2 border-b border-[#DCE9EA]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Skeleton className="w-3.5 h-3.5 rounded" />
-            <Skeleton className="w-20 h-3" />
+            <Skeleton className="w-4 h-4 rounded bg-[#DCE9EA]" />
+            <Skeleton className="w-24 h-3.5 bg-[#E8F0F1]" />
           </div>
-          <Skeleton className="w-14 h-4 rounded-full" />
+          <Skeleton className="w-12 h-4 rounded bg-[#E8F0F1]" />
         </div>
       </div>
 
       {/* Teams */}
-      <div className="px-4 pt-3 pb-2 space-y-2">
-        <div className="flex items-center gap-3">
-          <Skeleton className="w-10 h-10 rounded-lg" />
-          <div className="flex-1 space-y-1.5">
-            <Skeleton className="w-32 h-3.5" />
-            <Skeleton className="w-12 h-2.5" />
+      <div className="px-5 sm:px-6 pt-5 pb-5">
+        <div className="flex items-start gap-3">
+          <div className="flex items-start gap-2.5 flex-1 min-w-0">
+            <Skeleton className="w-14 h-14 rounded-lg bg-[#E8F0F1] shrink-0" />
+            <div className="flex-1 space-y-1.5 pt-0.5">
+              <Skeleton className="w-20 h-4 bg-[#E8F0F1]" />
+              <Skeleton className="w-16 h-4 bg-[#E8F0F1]" />
+              <Skeleton className="w-12 h-3 bg-[#E8F0F1]" />
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-px bg-white/10" />
-          <Skeleton className="w-5 h-2.5" />
-          <div className="flex-1 h-px bg-white/10" />
-        </div>
-        <div className="flex items-center gap-3">
-          <Skeleton className="w-10 h-10 rounded-lg" />
-          <div className="flex-1 space-y-1.5">
-            <Skeleton className="w-28 h-3.5" />
-            <Skeleton className="w-12 h-2.5" />
+          <Skeleton className="w-5 h-3 mt-4 bg-[#E8F0F1]" />
+          <div className="flex items-start gap-2.5 flex-1 min-w-0">
+            <Skeleton className="w-14 h-14 rounded-lg bg-[#E8F0F1] shrink-0" />
+            <div className="flex-1 space-y-1.5 pt-0.5">
+              <Skeleton className="w-16 h-4 bg-[#E8F0F1]" />
+              <Skeleton className="w-14 h-4 bg-[#E8F0F1]" />
+              <Skeleton className="w-12 h-3 bg-[#E8F0F1]" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* 3-Column Odds Row */}
-      <div className="mx-4 mb-3 grid grid-cols-3 rounded-lg border border-white/5 overflow-hidden bg-white/[0.02]">
+      <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
         {[0, 1, 2].map((i) => (
-          <div key={i} className={`px-2 py-2 text-center ${i < 2 ? 'border-r border-white/5' : ''}`}>
-            <Skeleton className="w-12 h-2.5 mx-auto mb-1.5" />
-            <Skeleton className="w-16 h-3 mx-auto mb-1" />
-            <Skeleton className="w-16 h-3 mx-auto" />
+          <div key={i} className={`px-2 py-3 text-center ${i < 2 ? 'border-r border-[#DCE9EA]' : ''}`}>
+            <Skeleton className="w-12 h-2.5 mx-auto mb-2 bg-[#E8F0F1]" />
+            <Skeleton className="w-16 h-4 mx-auto mb-1 bg-[#E8F0F1]" />
+            <Skeleton className="w-16 h-4 mx-auto bg-[#E8F0F1]" />
           </div>
         ))}
       </div>
 
-      {/* Signals Row */}
-      <div className="mx-4 mb-3 flex gap-2">
-        <div className="flex-1 rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-1.5 flex items-center gap-2">
-          <Skeleton className="w-3.5 h-3.5 rounded shrink-0" />
-          <div className="space-y-1">
-            <Skeleton className="w-16 h-2.5" />
-            <Skeleton className="w-12 h-2.5" />
-          </div>
-        </div>
-        <div className="flex-1 rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-1.5 flex items-center gap-2">
-          <Skeleton className="w-3.5 h-3.5 rounded shrink-0" />
-          <div className="space-y-1">
-            <Skeleton className="w-20 h-2.5" />
-            <Skeleton className="w-12 h-2.5" />
-          </div>
-        </div>
+      {/* Pace */}
+      {/* Matchup Context */}
+      <div className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2 space-y-1">
+        <Skeleton className="w-24 h-2 bg-[#E8F0F1]" />
+        <Skeleton className="w-full h-3 bg-[#E8F0F1]" />
+        <Skeleton className="w-4/5 h-3 bg-[#E8F0F1]" />
       </div>
 
       {/* Probability Bar */}
-      <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
-        <div className="flex items-center gap-3">
-          <Skeleton className="w-8 h-6" />
-          <Skeleton className="flex-1 h-1.5 rounded-full" />
-          <Skeleton className="w-8 h-6" />
+      <div className="px-5 sm:px-6 pb-5">
+        <div className="flex items-center gap-2.5">
+          <Skeleton className="w-8 h-8 bg-[#E8F0F1] shrink-0" />
+          <Skeleton className="flex-1 h-2 rounded-full bg-[#E8F0F1]" />
+          <Skeleton className="w-8 h-8 bg-[#E8F0F1] shrink-0" />
         </div>
       </div>
 
-      {/* Action Button */}
-      <div className="px-4 py-2 bg-[#00d4ff]/5">
-        <Skeleton className="w-32 h-4 mx-auto" />
+      {/* Action Buttons */}
+      <div className="px-5 sm:px-6 pb-5 flex flex-col sm:flex-row gap-3">
+        <Skeleton className="sm:flex-[1.22] h-11 rounded-xl bg-[#DCE9EA]" />
+        <Skeleton className="sm:flex-1 h-11 rounded-xl bg-[#E8F0F1]" />
       </div>
     </div>
   );

@@ -24,6 +24,8 @@ type LandingSectionHeaderProps = {
   linkLabel: string;
   icon: LucideIcon;
   accent: LandingSectionAccent;
+  /** Giant faded title that sits in the section background. */
+  variant?: 'default' | 'watermark';
 };
 
 export function LandingSectionHeader({
@@ -34,7 +36,31 @@ export function LandingSectionHeader({
   linkLabel,
   icon: Icon,
   accent,
+  variant = 'default',
 }: LandingSectionHeaderProps) {
+  if (variant === 'watermark') {
+    return (
+      <div className="relative mb-4 md:mb-6 lg:mb-8">
+        <h2
+          id={id}
+          className="font-extrabold tracking-tight text-2xl leading-tight text-[#053F46] md:pointer-events-none md:select-none md:tracking-tighter md:leading-[0.82] md:text-[clamp(2.75rem,11vw,7.25rem)]"
+        >
+          {title}
+        </h2>
+        <div className="relative z-10 mt-2 md:mt-1 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <p className="text-sm text-[#4a6366] max-w-md">{description}</p>
+          <Link
+            href={href}
+            className="group flex items-center gap-2 text-sm font-semibold text-[#053F46] hover:text-[#053F46]/80 transition-colors shrink-0"
+          >
+            {linkLabel}
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8 pb-4 border-b border-white/5">
       <div className="flex items-center gap-3 min-w-0">

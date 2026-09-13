@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" preserveAspectRatio="xMaxYMid meet">
+  <!--
+    Half-court watermark (baseline on the right).
+    Arc radii are always >= half the chord so browsers do not collapse the path.
+  -->
+  <g
+    fill="none"
+    stroke="#2EE6E0"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <!-- Baseline -->
+    <path d="M920 160h24a24 24 0 0 1 24 24v632a24 24 0 0 1-24 24h-24" />
+    <!-- 3-point arc: R 371, half-chord 340 -->
+    <path d="M920 160A371 371 0 0 0 920 840" />
+
+    <!-- Outer lane, open to baseline -->
+    <path d="M944 350H640a24 24 0 0 0-24 24v252a24 24 0 0 0 24 24h304" />
+
+    <!-- Inner lane -->
+    <rect x="668" y="384" width="196" height="232" rx="10" />
+
+    <!-- Free-throw circle: R 95, half-chord 95 (semicircle) -->
+    <path d="M616 405A95 95 0 0 0 616 595" />
+
+    <!-- Restricted arc: R 70, half-chord 70 (semicircle) -->
+    <path d="M800 430A70 70 0 0 0 800 570" stroke-dasharray="24 20" />
+
+    <!-- Basket arc: R 45, half-chord 45 (semicircle) -->
+    <path d="M944 455A45 45 0 0 0 944 545" />
+
+    <!-- Lane hashes -->
+    <path d="M848 350v-36" />
+    <path d="M848 650v36" />
+  </g>
+</svg>

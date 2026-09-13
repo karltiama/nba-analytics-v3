@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Clock, TrendingUp, ChevronRight, Gauge, ShieldAlert, ListFilter } from 'lucide-react';
+import { Clock, TrendingUp, ChevronRight, ListFilter } from 'lucide-react';
 import { gameDetailHref, propsExplorerHref } from '@/lib/betting/research-journey';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 
 interface TeamInfo {
   id: string;
@@ -44,6 +45,8 @@ export interface Game {
     team: string;
     rank: number;
   };
+  /** Optional rest / B2B blurb for the card. Display-only. */
+  matchupContext?: string;
   /** Normalized product status */
   status?: string;
   homeScore?: number | null;
@@ -71,38 +74,79 @@ function formatSpread(spread: number | null | undefined): string {
   return `${spread}`;
 }
 
-function TeamLogo({ team }: { team: TeamInfo }) {
-  return (
-    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
-      <span className="text-xs font-bold text-white/80">{team.abbreviation}</span>
-    </div>
-  );
-}
-
-const PACE_COLORS: Record<string, string> = {
-  FAST: '#39ff14',
-  AVG: '#00d4ff',
-  SLOW: '#ff6b35',
-};
-
 function getStatusBadge(status: string | undefined): { label: string; className: string } | null {
   if (!status) return null;
   const s = status.toLowerCase();
-  if (s === 'final') return { label: 'FINAL', className: 'bg-white/20 text-white rounded-full font-semibold' };
-  if (s === 'scheduled') return { label: 'Scheduled', className: 'bg-[#00d4ff]/20 text-[#00d4ff] rounded-full font-medium' };
+  if (s === 'final') return { label: 'FINAL', className: 'bg-[#063F46]/10 text-[#063F46] rounded-full font-semibold' };
+  if (s === 'scheduled') return { label: 'Scheduled', className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
   if (s === 'in progress' || s === 'live') {
-    return { label: 'In Progress', className: 'bg-[#39ff14]/20 text-[#39ff14] rounded-full font-semibold' };
+    return { label: 'In Progress', className: 'bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold' };
   }
   if (s === 'postponed') {
-    return { label: 'Postponed', className: 'bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-medium' };
+    return { label: 'Postponed', className: 'bg-amber-50 text-amber-700 rounded-full font-medium' };
   }
   if (s === 'canceled' || s === 'cancelled') {
-    return { label: 'Canceled', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+    return { label: 'Canceled', className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
   }
   if (s === 'unknown') {
-    return { label: 'Status unavailable', className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+    return { label: 'Status unavailable', className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
   }
-  return { label: status, className: 'bg-white/10 text-muted-foreground rounded-full font-medium' };
+  return { label: status, className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
+}
+
+function FavBadge() {
+  return (
+    <span className="text-[9px] px-1 py-px rounded font-bold shrink-0 bg-[#56D6A3]/30 text-[#075B5C]">
+      FAV
+    </span>
+  );
+}
+
+/** Display-only city / nickname split so both fit without truncating the full name. */
+function splitTeamDisplayName(name: string): { city: string; nickname: string } {
+  const trimmed = name.trim();
+  if (trimmed.endsWith('Trail Blazers')) {
+    return {
+      city: trimmed.slice(0, -'Trail Blazers'.length).trim() || trimmed,
+      nickname: 'Trail Blazers',
+    };
+  }
+  const parts = trimmed.split(/\s+/);
+  if (parts.length === 1) return { city: '', nickname: trimmed };
+  return { city: parts.slice(0, -1).join(' '), nickname: parts[parts.length - 1] };
+}
+
+function TeamMatchupSide({
+  team,
+  isFav,
+}: {
+  team: TeamInfo;
+  isFav: boolean;
+}) {
+  const { city, nickname } = splitTeamDisplayName(team.name);
+  return (
+    <div className="flex items-center gap-2 min-w-0 flex-1">
+      <TeamLogo
+        team={team.abbreviation}
+        size="md"
+        decorative
+      />
+      <div className="min-w-0 leading-none">
+        {city ? (
+          <div className="text-[11px] text-[#72869A]">
+            {city}
+          </div>
+        ) : null}
+        <div className={`font-bold text-[#063F46] text-[13px] sm:text-sm ${city ? 'mt-0.5' : ''}`}>
+          {nickname || team.name}
+        </div>
+        <div className="flex items-center gap-1 mt-0.5">
+          <span className="text-[11px] text-[#72869A]">{team.record ?? '—'}</span>
+          {isFav ? <FavBadge /> : null}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
@@ -112,7 +156,6 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
       : null) ?? researchDate ?? undefined;
   const gameHref = gameDetailHref(game.id);
   const propsHref = propsExplorerHref({ gameId: game.id, date: dateForProps });
-  const borderClass = game.isClose ? 'border-l-[#ff6b35]' : 'border-l-[#39ff14]';
 
   const hasOdds =
     game.hasOdds ??
@@ -125,182 +168,147 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
   const homeIsFav = game.isFavorite === 'home';
   const isFinal = game.status === 'Final' && game.homeScore != null && game.awayScore != null;
   const statusBadge = getStatusBadge(game.status);
+  const favoredValue = (isFav: boolean) => (isFav ? 'text-[#20B95A]' : 'text-[#063F46]');
 
   return (
-    <div className={`glass-card rounded-xl border-l-4 ${borderClass} card-hover overflow-hidden`}>
-      <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-5 sm:px-6 py-2 flex items-center justify-between border-b border-[#DCE9EA]">
         <div className="flex items-center gap-2">
-          <Clock className="w-3.5 h-3.5 text-[#00d4ff]" />
-          <span className="text-xs font-medium text-muted-foreground">{game.startTime}</span>
+          <Clock className="w-4 h-4 text-[#075B5C]" />
+          <span className="text-sm font-medium text-[#72869A]">{game.startTime}</span>
         </div>
         {statusBadge ? (
           <span className={`text-[10px] px-2 py-0.5 ${statusBadge.className}`}>{statusBadge.label}</span>
         ) : game.isClose ? (
-          <span className="text-[10px] px-2 py-0.5 bg-[#ff6b35]/20 text-[#ff6b35] rounded-full font-semibold">
+          <span className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-semibold">
             CLOSE
           </span>
-        ) : null}
+        ) : (
+          <span className="inline-flex items-center gap-0.5 text-sm font-medium text-[#72869A]">
+            NBA
+            <ChevronRight className="w-4 h-4" />
+          </span>
+        )}
       </div>
 
       {isFinal && (
-        <div className="px-4 pt-3 pb-1">
-          <div className="text-center py-2 rounded-lg bg-white/[0.04] border border-white/5">
-            <div className="text-2xl font-bold text-white tabular-nums">
+        <div className="px-5 sm:px-6 pt-4">
+          <div className="text-center py-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA]">
+            <div className="text-2xl font-bold text-[#063F46] tabular-nums">
               {game.awayScore} – {game.homeScore}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">
+            <div className="text-[10px] text-[#72869A] mt-0.5">
               {game.awayTeam.abbreviation} – {game.homeTeam.abbreviation}
             </div>
           </div>
         </div>
       )}
 
-      <div className={`px-4 space-y-2 ${isFinal ? 'pt-2 pb-2' : 'pt-3 pb-2'}`}>
-        <div className="flex items-center gap-3">
-          <TeamLogo team={game.awayTeam} />
-          <div className="flex-1 min-w-0">
-            <div className="font-semibold text-white text-sm truncate">{game.awayTeam.name}</div>
-            <div className="text-[11px] text-muted-foreground">{game.awayTeam.record ?? '—'}</div>
-          </div>
-          {awayIsFav && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-[#39ff14]/15 text-[#39ff14] rounded font-bold shrink-0">
-              FAV
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-[10px] text-muted-foreground/60 font-medium">VS</span>
-          <div className="flex-1 h-px bg-white/10" />
-        </div>
-
-        <div className="flex items-center gap-3">
-          <TeamLogo team={game.homeTeam} />
-          <div className="flex-1 min-w-0">
-            <div className="font-semibold text-white text-sm truncate">{game.homeTeam.name}</div>
-            <div className="text-[11px] text-muted-foreground">{game.homeTeam.record ?? '—'}</div>
-          </div>
-          {homeIsFav && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-[#39ff14]/15 text-[#39ff14] rounded font-bold shrink-0">
-              FAV
-            </span>
-          )}
+      <div className="px-5 sm:px-6 py-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} />
+          <span className="shrink-0 text-xs font-medium tracking-wide text-[#72869A]/80">
+            VS
+          </span>
+          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} />
         </div>
       </div>
 
       {hasOdds ? (
-        <div className="mx-4 mb-3 grid grid-cols-3 rounded-lg border border-white/5 overflow-hidden bg-white/[0.02]">
-          <div className="px-2 py-2 text-center border-r border-white/5">
-            <div className="text-[10px] text-muted-foreground mb-1 font-medium">SPREAD</div>
-            <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+        <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
+          <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
+            <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
+              SPREAD
+            </div>
+            <div className={`text-sm sm:text-base font-semibold ${favoredValue(awayIsFav)}`}>
               {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
             </div>
-            <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+            <div className={`text-sm sm:text-base font-semibold ${favoredValue(homeIsFav)}`}>
               {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
             </div>
           </div>
-          <div className="px-2 py-2 text-center border-r border-white/5">
-            <div className="text-[10px] text-muted-foreground mb-1 font-medium">TOTAL</div>
-            <div className="text-xs font-mono font-semibold text-[#00d4ff]">
+          <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
+            <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
+              TOTAL
+            </div>
+            <div className="text-sm sm:text-base font-semibold text-[#168DD8]">
               {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
             </div>
-            <div className="text-[10px] font-mono text-muted-foreground">
+            <div className="text-[11px] text-[#72869A] mt-0.5">
               {game.overUnder != null
                 ? `O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`
                 : ''}
             </div>
           </div>
-          <div className="px-2 py-2 text-center">
-            <div className="text-[10px] text-muted-foreground mb-1 font-medium">ML</div>
-            <div className={`text-xs font-mono font-semibold ${awayIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+          <div className="px-2 py-3 text-center">
+            <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
+              ML
+            </div>
+            <div className={`text-sm sm:text-base font-semibold ${favoredValue(awayIsFav)}`}>
               {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
             </div>
-            <div className={`text-xs font-mono font-semibold ${homeIsFav ? 'text-[#39ff14]' : 'text-white'}`}>
+            <div className={`text-sm sm:text-base font-semibold ${favoredValue(homeIsFav)}`}>
               {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
             </div>
           </div>
         </div>
       ) : (
-        <div className="mx-4 mb-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-3 text-center">
-          <div className="text-[11px] text-muted-foreground">No odds yet</div>
+        <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-3 text-center">
+          <div className="text-[11px] text-[#72869A]">No odds yet</div>
         </div>
       )}
 
-      {(game.paceSignal || game.weakness) && (
-        <div className="mx-4 mb-3 flex items-stretch gap-2">
-          {game.paceSignal && (
-            <div className="flex-1 flex flex-col items-center justify-center rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-2">
-              <Gauge
-                className="w-3.5 h-3.5 mb-1"
-                style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }}
-              />
-              <span
-                className="text-[10px] font-bold leading-none"
-                style={{ color: PACE_COLORS[game.paceSignal.label] ?? '#00d4ff' }}
-              >
-                {game.paceSignal.label} PACE
-              </span>
-              <div className="text-[10px] text-muted-foreground font-mono leading-none mt-1">
-                Proj: {game.paceSignal.projected.toFixed(1)}
-              </div>
-            </div>
-          )}
-          {game.weakness && (
-            <div className="flex-1 flex flex-col items-center justify-center rounded-lg bg-white/[0.03] border border-white/5 px-2.5 py-2">
-              <ShieldAlert className="w-3.5 h-3.5 text-[#ff4757] mb-1" />
-              <span className="text-[10px] font-bold text-[#ff4757] leading-none">
-                {game.weakness.team} {game.weakness.label}
-              </span>
-              <div className="text-[10px] text-muted-foreground font-mono leading-none mt-1">
-                Rank: {game.weakness.rank}th
-              </div>
-            </div>
-          )}
+      {game.matchupContext ? (
+        <div className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2">
+          <div className="text-[10px] uppercase tracking-wide font-medium text-center">
+            <span className="text-[#72869A]">Matchup </span>
+            <span className="text-[#55ddb1]">Context</span>
+          </div>
+          <p className="text-[12px] text-[#063F46] leading-snug mt-1 text-pretty">{game.matchupContext}</p>
         </div>
-      )}
+      ) : null}
 
       {hasOdds && game.homeImpliedProb != null && game.awayImpliedProb != null ? (
-        <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.02]">
-          <div className="flex items-center gap-3">
-            <div className="text-center min-w-[2.5rem]">
-              <div className="text-[10px] text-muted-foreground">{game.awayTeam.abbreviation}</div>
-              <div className="text-xs font-semibold text-white">{game.awayImpliedProb}%</div>
+        <div className="px-5 sm:px-6 pb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="text-left shrink-0">
+              <div className="text-xs font-medium text-[#72869A] leading-none">{game.awayTeam.abbreviation}</div>
+              <div className="text-sm font-bold text-[#063F46] tabular-nums mt-0.5">{game.awayImpliedProb}%</div>
             </div>
-            <div className="flex-1 flex h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="flex-1 flex h-2 bg-[#E8F0F1] rounded-full overflow-hidden min-w-0">
               <div
-                className="h-full rounded-l-full bg-[#00d4ff]/80 transition-all duration-500 min-w-0"
+                className="h-full rounded-l-full bg-[#168DD8] min-w-0"
                 style={{ flex: game.awayImpliedProb }}
               />
               <div
-                className="h-full rounded-r-full bg-[#39ff14]/80 transition-all duration-500 min-w-0"
+                className="h-full rounded-r-full bg-[#20B95A] min-w-0"
                 style={{ flex: game.homeImpliedProb }}
               />
             </div>
-            <div className="text-center min-w-[2.5rem]">
-              <div className="text-[10px] text-muted-foreground">{game.homeTeam.abbreviation}</div>
-              <div className="text-xs font-semibold text-white">{game.homeImpliedProb}%</div>
+            <div className="text-right shrink-0">
+              <div className="text-xs font-medium text-[#72869A] leading-none">{game.homeTeam.abbreviation}</div>
+              <div className="text-sm font-bold text-[#063F46] tabular-nums mt-0.5">{game.homeImpliedProb}%</div>
             </div>
           </div>
         </div>
       ) : null}
 
-      <div className="grid grid-cols-2 border-t border-white/5">
+      <div className="px-5 sm:px-6 pb-5 flex flex-col sm:flex-row gap-2.5">
         <Link
           href={gameHref}
           onClick={() => onViewDetails?.(game.id)}
-          className="px-3 py-2 flex items-center justify-center gap-1.5 bg-[#00d4ff]/10 hover:bg-[#00d4ff]/20 transition-colors group"
+          className="sm:flex-[1.22] min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#075B5C] hover:bg-[#064D4E] transition-colors group whitespace-nowrap"
         >
-          <TrendingUp className="w-3.5 h-3.5 text-[#00d4ff]" />
-          <span className="text-xs font-medium text-[#00d4ff]">View matchup</span>
-          <ChevronRight className="w-3.5 h-3.5 text-[#00d4ff] group-hover:translate-x-0.5 transition-transform" />
+          <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
+          <span className="text-sm font-semibold text-white">View matchup</span>
+          <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
         </Link>
         <Link
           href={propsHref}
-          className="px-3 py-2 flex items-center justify-center gap-1.5 bg-white/[0.03] hover:bg-white/[0.07] transition-colors border-l border-white/5"
+          className="sm:flex-1 min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] hover:bg-[#EAF3F3] transition-colors whitespace-nowrap"
         >
-          <ListFilter className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-xs font-medium text-white/80">View props</span>
+          <ListFilter className="w-3.5 h-3.5 shrink-0" />
+          <span className="text-sm font-semibold">View props</span>
         </Link>
       </div>
     </div>
