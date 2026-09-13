@@ -4,6 +4,7 @@
  */
 
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { gameDetailHref } from '@/lib/betting/research-journey';
 import {
   isFinalStatus,
   resolveDisplayGameStatus,
@@ -175,9 +176,9 @@ export function mapCompactScheduleRow(
   };
 }
 
-/** Safe game details route used elsewhere on team schedule. */
+/** Canonical game details route (`/betting/games/:id`). */
 export function compactGameHref(gameId: string): string {
-  return `/games/${gameId}`;
+  return gameDetailHref(gameId);
 }
 
 /** Preserve season on full schedule page (route already accepts ?season=). */

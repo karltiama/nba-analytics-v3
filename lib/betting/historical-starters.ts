@@ -10,6 +10,8 @@ export type HistoricalStarterPlayer = {
   playerName: string;
   teamId: string;
   position: string | null;
+  /** NBA.com CDN id from analytics.player_provider_ids. Null if unmapped. */
+  nbaPlayerId: string | null;
 };
 
 export type HistoricalStarters = {
@@ -47,6 +49,7 @@ export function groupCertifiedStarters(
     player_name?: unknown;
     team_id: unknown;
     position?: unknown;
+    nba_player_id?: unknown;
   }>,
   homeTeamId: string,
   awayTeamId: string
@@ -62,6 +65,7 @@ export function groupCertifiedStarters(
       playerName: String(row.player_name ?? ''),
       teamId,
       position: normalizeCertifiedPosition(row.position),
+      nbaPlayerId: sid(row.nba_player_id),
     };
     if (teamId === homeTeamId) home.push(mapped);
     else if (teamId === awayTeamId) away.push(mapped);

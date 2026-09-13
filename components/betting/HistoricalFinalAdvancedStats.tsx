@@ -39,10 +39,10 @@ function SecondaryMetrics({ row }: { row: ReturnType<typeof formatAdvancedRow> }
         ] as const
       ).map(([key, value]) => (
         <div key={key} className="min-w-0">
-          <dt className="text-muted-foreground">
+          <dt className="text-[#4a6366]">
             <MetricAbbr metric={ADVANCED_METRIC_HELP[key]} />
           </dt>
-          <dd className="font-mono tabular-nums text-white">{value}</dd>
+          <dd className="font-mono tabular-nums text-[#063f46]">{value}</dd>
         </div>
       ))}
     </dl>
@@ -68,7 +68,7 @@ function PlayerLink({
         date,
         season,
       })}
-      className="text-white hover:text-[#00d4ff] font-medium truncate"
+      className="text-[#063f46] hover:text-[#075B5C] font-medium truncate"
     >
       {row.playerName || 'Player'}
     </Link>
@@ -102,20 +102,20 @@ function AdvancedTeamBlock({
   };
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden border border-white/5 min-w-0">
-      <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-        <Link href={`/teams/${teamId}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">
+    <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
+      <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+        <Link href={`/teams/${teamId}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">
           {teamName}
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="text-xs text-muted-foreground p-4">No player logs for this team.</p>
+        <p className="text-xs text-[#4a6366] p-4">No player logs for this team.</p>
       ) : (
         <>
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-muted-foreground text-left">
+                <tr className="text-[#4a6366] text-left">
                   <th className="px-3 py-2 font-medium">Player</th>
                   <th className="px-2 py-2 font-medium text-right">MIN</th>
                   <th className="px-2 py-2 font-medium text-right">
@@ -148,35 +148,35 @@ function AdvancedTeamBlock({
                   const rowKey = `${row.teamId}-${row.playerId}`;
                   return (
                     <Fragment key={rowKey}>
-                      <tr className="border-t border-white/5">
+                      <tr className="border-t border-[#DCE9EA]">
                         <td className="px-3 py-1.5 max-w-[10rem]">
                           <PlayerLink row={row} gameId={gameId} date={date} season={season} />
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-muted-foreground">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#4a6366]">
                           {row.minutes ?? '—'}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                           {formatted.usg}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                           {formatted.ts}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                           {formatted.efg}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                           {formatted.ortg}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                           {formatted.drtg}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                        <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                           {formatted.net}
                         </td>
                         <td className="px-2 py-1.5 text-right">
                           <button
                             type="button"
-                            className="text-[11px] text-[#00d4ff] hover:underline"
+                            className="text-[11px] text-[#075B5C] hover:underline"
                             aria-expanded={open}
                             aria-controls={`adv-more-${row.playerId}`}
                             onClick={() => toggle(row.playerId)}
@@ -186,7 +186,7 @@ function AdvancedTeamBlock({
                         </td>
                       </tr>
                       {open ? (
-                        <tr className="border-t border-white/5 bg-white/[0.02]">
+                        <tr className="border-t border-[#DCE9EA] bg-[#F8FBFA]">
                           <td colSpan={9} className="px-3 py-2" id={`adv-more-${row.playerId}`}>
                             <SecondaryMetrics row={formatted} />
                           </td>
@@ -199,7 +199,7 @@ function AdvancedTeamBlock({
             </table>
           </div>
 
-          <ul className="lg:hidden divide-y divide-white/5">
+          <ul className="lg:hidden divide-y divide-[#DCE9EA]">
             {rows.map((row) => {
               const formatted = formatAdvancedRow(row.advanced);
               const open = openIds.has(row.playerId);
@@ -207,7 +207,7 @@ function AdvancedTeamBlock({
                 <li key={`${row.teamId}-${row.playerId}`} className="px-3 py-2.5 space-y-2">
                   <div className="flex items-baseline justify-between gap-2 min-w-0">
                     <PlayerLink row={row} gameId={gameId} date={date} season={season} />
-                    <span className="shrink-0 text-[11px] font-mono tabular-nums text-muted-foreground">
+                    <span className="shrink-0 text-[11px] font-mono tabular-nums text-[#4a6366]">
                       {row.minutes ?? '—'} MIN
                       {formatted.poss !== '—' ? ` · ${formatted.poss} poss` : ''}
                     </span>
@@ -224,16 +224,16 @@ function AdvancedTeamBlock({
                       ] as const
                     ).map(([key, value]) => (
                       <div key={key} className="min-w-0">
-                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <div className="text-[10px] uppercase tracking-wide text-[#4a6366]">
                           <MetricAbbr metric={ADVANCED_METRIC_HELP[key]} />
                         </div>
-                        <div className="text-sm font-mono tabular-nums text-white">{value}</div>
+                        <div className="text-sm font-mono tabular-nums text-[#063f46]">{value}</div>
                       </div>
                     ))}
                   </div>
                   <button
                     type="button"
-                    className="text-[11px] text-[#00d4ff] hover:underline"
+                    className="text-[11px] text-[#075B5C] hover:underline"
                     aria-expanded={open}
                     onClick={() => toggle(row.playerId)}
                   >

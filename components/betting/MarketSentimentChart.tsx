@@ -80,7 +80,7 @@ const H = 148;
 export function MarketSentimentChart({
   data,
   homeTeamAbbr,
-  color = '#39ff14',
+  color = '#20B95A',
 }: {
   data: SentimentHistoryPoint[];
   homeTeamAbbr: string;
@@ -88,7 +88,7 @@ export function MarketSentimentChart({
 }) {
   if (data.length < 2) {
     return (
-      <p className="text-xs text-muted-foreground py-6 text-center">No sentiment data</p>
+      <p className="text-xs text-[#4a6366] py-6 text-center">No sentiment data</p>
     );
   }
 
@@ -121,10 +121,10 @@ export function MarketSentimentChart({
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-1.5 gap-2">
-        <h4 className="text-[11px] font-medium text-white truncate">
+        <h4 className="text-[11px] font-medium text-[#063f46] truncate">
           Home win % ({homeTeamAbbr})
         </h4>
-        <span className="text-[10px] text-muted-foreground shrink-0 tabular-nums">
+        <span className="text-[10px] text-[#4a6366] shrink-0 tabular-nums">
           {safeData[safeData.length - 1].homeWinPct.toFixed(1)}%
         </span>
       </div>
@@ -151,10 +151,10 @@ export function MarketSentimentChart({
                 y1={y}
                 x2={W - padding.right}
                 y2={y}
-                stroke="rgba(255,255,255,0.06)"
+                stroke="rgba(6,63,70,0.08)"
                 strokeDasharray="2,2"
               />
-              <text x={W - padding.right + 4} y={y + 3} fill="#8888a0" fontSize="9" fontFamily="monospace">
+              <text x={W - padding.right + 4} y={y + 3} fill="#8aa0a3" fontSize="9" fontFamily="monospace">
                 {value.toFixed(0)}
               </text>
             </g>
@@ -178,7 +178,7 @@ export function MarketSentimentChart({
               key={i}
               x={point.x}
               y={H - 6}
-              fill="#8888a0"
+              fill="#8aa0a3"
               fontSize="9"
               textAnchor="middle"
             >

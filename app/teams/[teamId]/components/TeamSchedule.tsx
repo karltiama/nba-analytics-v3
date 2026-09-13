@@ -11,6 +11,7 @@ import { resolveAnalyticsTeamId } from '@/lib/teams/analytics-queries';
 import { getScheduleForTeam, type ScheduleGameRow } from '@/lib/analytics/games-queries';
 import { resolveTeamScheduleSeason } from '@/lib/analytics/team-schedule-season';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { gameDetailHref } from '@/lib/betting/research-journey';
 import { displayGameStatusLabel, resolveDisplayGameStatus } from '@/lib/betting/normalize-game-status';
 
 interface TeamScheduleProps {
@@ -222,7 +223,7 @@ export async function TeamSchedule({ teamId, season }: TeamScheduleProps) {
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={`/games/${game.game_id}`}
+                          href={gameDetailHref(game.game_id)}
                           className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                         >
                           Box Score

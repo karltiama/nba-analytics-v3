@@ -67,9 +67,12 @@ async function loadCertifiedStarters(
        gs.player_id,
        p.full_name AS player_name,
        gs.team_id,
-       gs.position
+       gs.position,
+       nba.provider_player_id AS nba_player_id
      FROM analytics.game_starters gs
      JOIN analytics.players p ON p.player_id = gs.player_id
+     LEFT JOIN analytics.player_provider_ids nba
+       ON nba.player_entity_id = p.player_entity_id AND nba.provider = 'nba'
      WHERE gs.game_id = $1
      ORDER BY gs.team_id, gs.position NULLS LAST, p.full_name`,
     [gameId]

@@ -6,6 +6,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowLeft, Zap, Shield, TrendingUp, AlertTriangle, Target, Calendar, CalendarDays, ChevronDown, Loader2, Users } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Game } from './GameCard';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 import { LineMovementChart } from './LineMovementChart';
 import { StartingLineupCard } from './MatchupAnalysis';
 import type { InjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
@@ -262,16 +263,16 @@ function PlayerPropsFilterableList({
   };
 
   const selectClass =
-    'rounded-lg border border-white/10 bg-gray-900 text-white text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#00d4ff] focus:border-[#00d4ff]/50';
-  const optionStyle = { backgroundColor: '#111827', color: '#fff' };
+    'rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1]/40 focus:border-[#55ddb1]';
+  const optionStyle = { backgroundColor: '#ffffff', color: '#063f46' };
 
   return (
     <>
-      <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-        <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex flex-wrap items-center gap-3">
-          <h2 className="text-sm font-semibold text-white shrink-0">Player props</h2>
+      <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
+        <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex flex-wrap items-center gap-3">
+          <h2 className="text-sm font-semibold text-[#063f46] shrink-0">Player props</h2>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-[10px] text-muted-foreground shrink-0">Player</label>
+            <label className="text-[10px] text-[#4a6366] shrink-0">Player</label>
             <select
               value={filterPlayer}
               onChange={(e) => setFilterPlayer(e.target.value)}
@@ -285,7 +286,7 @@ function PlayerPropsFilterableList({
                 </option>
               ))}
             </select>
-            <label className="text-[10px] text-muted-foreground shrink-0 ml-1">Prop</label>
+            <label className="text-[10px] text-[#4a6366] shrink-0 ml-1">Prop</label>
             <select
               value={filterPropType}
               onChange={(e) => setFilterPropType(e.target.value)}
@@ -299,7 +300,7 @@ function PlayerPropsFilterableList({
                 </option>
               ))}
             </select>
-            <label className="text-[10px] text-muted-foreground shrink-0 ml-1">Line</label>
+            <label className="text-[10px] text-[#4a6366] shrink-0 ml-1">Line</label>
             <select
               value={filterLine}
               onChange={(e) => setFilterLine(e.target.value)}
@@ -317,20 +318,20 @@ function PlayerPropsFilterableList({
               )}
             </select>
           </div>
-          <span className="text-[10px] text-muted-foreground ml-auto text-right max-w-[11rem] leading-tight">
+          <span className="text-[10px] text-[#4a6366] ml-auto text-right max-w-[11rem] leading-tight">
             {grouped.length} player{grouped.length === 1 ? '' : 's'} · {filtered.length} line{filtered.length === 1 ? '' : 's'}{' '}
-            <span className="text-muted-foreground/80">(expand for more markets)</span>
+            <span className="text-[#8aa0a3]">(expand for more markets)</span>
           </span>
         </div>
         <div className="p-3 overflow-x-auto max-h-[min(520px,65vh)] overflow-y-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left text-[10px] text-muted-foreground py-1.5">Player</th>
-                <th className="text-left text-[10px] text-muted-foreground py-1.5">Prop</th>
-                <th className="text-center text-[10px] text-muted-foreground py-1.5">Line</th>
-                <th className="text-center text-[10px] text-muted-foreground py-1.5">Over</th>
-                <th className="text-center text-[10px] text-muted-foreground py-1.5">Under</th>
+              <tr className="border-b border-[#DCE9EA]">
+                <th className="text-left text-[10px] text-[#4a6366] py-1.5">Player</th>
+                <th className="text-left text-[10px] text-[#4a6366] py-1.5">Prop</th>
+                <th className="text-center text-[10px] text-[#4a6366] py-1.5">Line</th>
+                <th className="text-center text-[10px] text-[#4a6366] py-1.5">Over</th>
+                <th className="text-center text-[10px] text-[#4a6366] py-1.5">Under</th>
               </tr>
             </thead>
             <tbody>
@@ -344,18 +345,18 @@ function PlayerPropsFilterableList({
                   const rowFor = (prop: PlayerPropItem, opts: { sub?: boolean }) => (
                     <tr
                       key={`${prop.playerId}-${prop.propType}-${prop.lineValue}${opts.sub ? '-sub' : ''}`}
-                      className={`border-b border-white/5 last:border-0 ${opts.sub ? 'bg-white/[0.02]' : ''}`}
+                      className={`border-b border-[#DCE9EA] last:border-0 ${opts.sub ? 'bg-[#F8FBFA]' : ''}`}
                     >
-                      <td className={`py-1.5 text-xs text-white ${opts.sub ? 'pl-8' : ''}`}>
+                      <td className={`py-1.5 text-xs text-[#063f46] ${opts.sub ? 'pl-8' : ''}`}>
                         {opts.sub ? (
-                          <span className="text-[10px] text-muted-foreground">↳</span>
+                          <span className="text-[10px] text-[#4a6366]">↳</span>
                         ) : (
                           <div className="flex items-center gap-1 min-w-0">
                             {showExpand ? (
                               <button
                                 type="button"
                                 onClick={() => togglePlayerExpanded(g.playerId)}
-                                className="p-0.5 rounded shrink-0 hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+                                className="p-0.5 rounded shrink-0 hover:bg-[#f7f9f7] text-[#4a6366] hover:text-[#063f46] transition-colors"
                                 aria-expanded={isOpen}
                                 aria-label={isOpen ? `Collapse props for ${g.playerName}` : `Expand ${rest.length} more props for ${g.playerName}`}
                               >
@@ -375,24 +376,24 @@ function PlayerPropsFilterableList({
                                 lineValue: prop.lineValue,
                                 sportsbook: prop.vendor,
                               })}
-                              className="hover:text-[#00d4ff] transition-colors truncate"
+                              className="hover:text-[#075B5C] transition-colors truncate"
                             >
                               {prop.playerName}
                             </Link>
                             {showExpand && (
-                              <span className="text-[10px] text-muted-foreground shrink-0">+{rest.length}</span>
+                              <span className="text-[10px] text-[#4a6366] shrink-0">+{rest.length}</span>
                             )}
                           </div>
                         )}
                       </td>
-                      <td className="py-1.5 text-[10px] text-muted-foreground capitalize">
+                      <td className="py-1.5 text-[10px] text-[#4a6366] capitalize">
                         {prop.propType.replace(/_/g, ' ')}
                       </td>
-                      <td className="py-1.5 text-xs font-mono text-white text-center">{formatLineDisplay(prop)}</td>
-                      <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
+                      <td className="py-1.5 text-xs font-mono text-[#063f46] text-center">{formatLineDisplay(prop)}</td>
+                      <td className="py-1.5 text-[10px] font-mono text-center text-[#4a6366]">
                         {prop.overOdds != null ? (prop.overOdds > 0 ? `+${prop.overOdds}` : prop.overOdds) : '—'}
                       </td>
-                      <td className="py-1.5 text-[10px] font-mono text-center text-muted-foreground">
+                      <td className="py-1.5 text-[10px] font-mono text-center text-[#4a6366]">
                         {prop.underOdds != null ? (prop.underOdds > 0 ? `+${prop.underOdds}` : prop.underOdds) : '—'}
                       </td>
                     </tr>
@@ -408,14 +409,14 @@ function PlayerPropsFilterableList({
                 })
               ) : (
                 <tr>
-                  <td colSpan={5} className="py-6 text-center text-xs text-muted-foreground">
+                  <td colSpan={5} className="py-6 text-center text-xs text-[#4a6366]">
                     No props match the current filters.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
-          <p className="text-[10px] text-muted-foreground mt-2">
+          <p className="text-[10px] text-[#4a6366] mt-2">
             Odds from {playerProps[0]?.vendor ?? 'book'} · American format · Primary row is points when available
           </p>
         </div>
@@ -427,19 +428,19 @@ function PlayerPropsFilterableList({
 // --- Row / gauge helpers (migrated from modal) ---
 function RecentFormRow({ game, teamAbbr }: { game: RecentGameResult; teamAbbr: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
+    <div className="flex items-center justify-between py-1.5 border-b border-[#DCE9EA] last:border-0">
       <div className="flex items-center gap-2">
         <span className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold ${
-          game.result === 'W' ? 'bg-[#39ff14]/20 text-[#39ff14]' : 'bg-[#ff4757]/20 text-[#ff4757]'
+          game.result === 'W' ? 'bg-[#20B95A]/15 text-[#20B95A]' : 'bg-[#c2410c]/15 text-[#c2410c]'
         }`}>
           {game.result}
         </span>
-        <span className="text-xs text-muted-foreground">vs {game.opponent}</span>
+        <span className="text-xs text-[#4a6366]">vs {game.opponent}</span>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-xs text-white font-mono">{game.score}</span>
+        <span className="text-xs text-[#063f46] font-mono">{game.score}</span>
         <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-          game.covered ? 'bg-[#39ff14]/20 text-[#39ff14]' : 'bg-[#ff4757]/20 text-[#ff4757]'
+          game.covered ? 'bg-[#20B95A]/15 text-[#20B95A]' : 'bg-[#c2410c]/15 text-[#c2410c]'
         }`}>
           {game.spread > 0 ? '+' : ''}{game.spread} {game.covered ? '✓' : '✗'}
         </span>
@@ -450,19 +451,19 @@ function RecentFormRow({ game, teamAbbr }: { game: RecentGameResult; teamAbbr: s
 
 function InjuryRow({ injury }: { injury: InjuryReport }) {
   const statusColors: Record<InjuryReport['status'], string> = {
-    Out: 'text-[#ff4757] bg-[#ff4757]/20',
+    Out: 'text-[#c2410c] bg-[#c2410c]/15',
     Questionable: 'text-[#ff6b35] bg-[#ff6b35]/20',
-    Probable: 'text-[#39ff14] bg-[#39ff14]/20',
+    Probable: 'text-[#20B95A] bg-[#20B95A]/15',
     Doubtful: 'text-[#ff9500] bg-[#ff9500]/20',
     GTD: 'text-[#ffcc00] bg-[#ffcc00]/20',
   };
   const statusClass = statusColors[injury.status] ?? statusColors.Out;
   return (
-    <div className="flex items-center justify-between gap-2 py-1.5 border-b border-white/5 last:border-0">
-      <span className="text-xs text-white truncate min-w-0">{injury.player}</span>
+    <div className="flex items-center justify-between gap-2 py-1.5 border-b border-[#DCE9EA] last:border-0">
+      <span className="text-xs text-[#063f46] truncate min-w-0">{injury.player}</span>
       <div className="flex items-center gap-2 shrink-0">
         {injury.injury ? (
-          <span className="text-[10px] text-muted-foreground truncate max-w-[140px]" title={injury.injury}>
+          <span className="text-[10px] text-[#4a6366] truncate max-w-[140px]" title={injury.injury}>
             {injury.injury}
           </span>
         ) : null}
@@ -479,7 +480,7 @@ function AIConfidenceGauge({ label, value, color }: { label: string; value: numb
     <div className="text-center">
       <div className="relative w-16 h-16 mx-auto mb-2">
         <svg className="w-full h-full -rotate-90">
-          <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+          <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(6,63,70,0.12)" strokeWidth="4" />
           <circle
             cx="32" cy="32" r="28"
             fill="none" stroke={color} strokeWidth="4" strokeLinecap="round"
@@ -490,7 +491,7 @@ function AIConfidenceGauge({ label, value, color }: { label: string; value: numb
           <span className="text-sm font-bold" style={{ color }}>{value}%</span>
         </div>
       </div>
-      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <span className="text-[10px] text-[#4a6366]">{label}</span>
     </div>
   );
 }
@@ -527,12 +528,12 @@ function MarketSentimentPanel({
         : 'Source: prediction market';
 
   return (
-    <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5 h-full flex flex-col min-h-[200px]">
+    <div className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-2 sm:px-3 sm:py-2.5 h-full flex flex-col min-h-[200px]">
       <div className="flex items-start gap-2 mb-2">
-        <Users className="w-3.5 h-3.5 text-white/40 shrink-0 mt-0.5" aria-hidden />
+        <Users className="w-3.5 h-3.5 text-[#8aa0a3] shrink-0 mt-0.5" aria-hidden />
         <div>
-          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Human sentiment</p>
-          <p className="text-[10px] text-muted-foreground/90 leading-snug mt-0.5">
+          <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide">Human sentiment</p>
+          <p className="text-[10px] text-[#4a6366] leading-snug mt-0.5">
             Crowd-implied win odds from a prediction market — not a book line.
           </p>
         </div>
@@ -540,32 +541,32 @@ function MarketSentimentPanel({
 
       <div className="mb-2">
         <MarketSentimentChart data={points} homeTeamAbbr={game.homeTeam.abbreviation} />
-        <p className="text-[10px] text-muted-foreground mt-1 leading-snug">{caption}</p>
+        <p className="text-[10px] text-[#4a6366] mt-1 leading-snug">{caption}</p>
       </div>
 
-      <div className="flex h-2.5 rounded-full overflow-hidden bg-white/10 mb-3 mt-1">
+      <div className="flex h-2.5 rounded-full overflow-hidden bg-[#F8FBFA] mb-3 mt-1">
         <div
-          className="h-full bg-[#00d4ff]/90 transition-[width]"
+          className="h-full bg-[#075B5C] transition-[width]"
           style={{ width: `${awayBar}%` }}
           title={`${game.awayTeam.abbreviation} ${lastAway.toFixed(1)}%`}
         />
         <div
-          className="h-full bg-[#39ff14]/90 transition-[width]"
+          className="h-full bg-[#20B95A] transition-[width]"
           style={{ width: `${homeBar}%` }}
           title={`${game.homeTeam.abbreviation} ${lastHome.toFixed(1)}%`}
         />
       </div>
       <div className="space-y-2 text-xs flex-1">
         <div className="flex justify-between gap-2">
-          <span className="text-muted-foreground">{game.awayTeam.abbreviation}</span>
-          <span className="font-mono tabular-nums text-[#00d4ff] font-semibold">{lastAway.toFixed(1)}%</span>
+          <span className="text-[#4a6366]">{game.awayTeam.abbreviation}</span>
+          <span className="font-mono tabular-nums text-[#075B5C] font-semibold">{lastAway.toFixed(1)}%</span>
         </div>
         <div className="flex justify-between gap-2">
-          <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span>
-          <span className="font-mono tabular-nums text-[#39ff14] font-semibold">{lastHome.toFixed(1)}%</span>
+          <span className="text-[#4a6366]">{game.homeTeam.abbreviation}</span>
+          <span className="font-mono tabular-nums text-[#20B95A] font-semibold">{lastHome.toFixed(1)}%</span>
         </div>
       </div>
-      <p className="text-[10px] text-muted-foreground mt-auto pt-2">{sourceLine}</p>
+      <p className="text-[10px] text-[#4a6366] mt-auto pt-2">{sourceLine}</p>
     </div>
   );
 }
@@ -858,59 +859,80 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
   }, [activeSection, isFinalView, showHistoricalTimeline, game.id]);
 
   return (
-    <main className="min-h-screen bg-background gradient-mesh max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
+    <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
       {/* Sticky header: matchup + horizontal section nav (scroll-to-section everywhere) */}
-      <div className="sticky top-0 z-10 glass-card rounded-xl overflow-hidden border border-white/5 bg-background/95 backdrop-blur-sm">
-        <div className="px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-center gap-x-4 gap-y-2 min-w-0 bg-white/[0.02] relative">
-          <button
-            type="button"
-            onClick={() =>
-              router.push(
-                slateHref(typeof game.gameDate === 'string' ? game.gameDate : undefined)
-              )
-            }
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-[#00d4ff] hover:bg-white/10 transition-colors"
-            aria-label="Back to Betting"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2 min-w-0 shrink-0">
-            <Calendar className="w-4 h-4 text-[#00d4ff] shrink-0" />
-            <span className="text-sm font-medium text-muted-foreground truncate">
-              {isFinalView && typeof game.gameDate === 'string' ? game.gameDate : game.startTime}
-            </span>
-            {game.status ? (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-medium">
-                {displayGameStatusLabel(game.status)}
+      <div className="sticky top-16 z-10 bg-white/95 rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm backdrop-blur-sm">
+        <div className="px-3 sm:px-5 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6 min-w-0 bg-[#F8FBFA]">
+          <div className="flex items-center gap-2 min-w-0 sm:w-64 lg:w-80 shrink-0">
+            <button
+              type="button"
+              onClick={() =>
+                router.push(
+                  slateHref(typeof game.gameDate === 'string' ? game.gameDate : undefined)
+                )
+              }
+              className="p-1.5 rounded-lg text-[#4a6366] hover:text-[#075B5C] hover:bg-[#f7f9f7] transition-colors shrink-0"
+              aria-label="Back to Betting"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2 min-w-0">
+              <Calendar className="w-4 h-4 text-[#075B5C] shrink-0" />
+              <span className="text-sm font-medium text-[#4a6366] truncate">
+                {isFinalView && typeof game.gameDate === 'string' ? game.gameDate : game.startTime}
               </span>
-            ) : null}
-            {isFinalView && gameSeason ? (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-medium">
-                {formatNbaSeasonLabel(gameSeason)}
-              </span>
-            ) : null}
+              {game.status ? (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white border border-[#DCE9EA] text-[#4a6366] font-medium shrink-0">
+                  {displayGameStatusLabel(game.status)}
+                </span>
+              ) : null}
+              {isFinalView && gameSeason ? (
+                <span className="hidden md:inline-flex text-[10px] px-2 py-0.5 rounded-full bg-white border border-[#DCE9EA] text-[#4a6366] font-medium shrink-0">
+                  {formatNbaSeasonLabel(gameSeason)}
+                </span>
+              ) : null}
+            </div>
           </div>
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-            <Link href={`/teams/${game.awayTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
-              <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.awayTeam.abbreviation}</span>
-              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                {isFinalView
-                  ? (game.awayScore != null ? String(game.awayScore) : '—')
-                  : (game.awayTeam.record ?? '—')}
+
+          <div className="flex-1 flex items-center justify-between min-w-0 sm:px-6 lg:px-12">
+            <Link
+              href={`/teams/${game.awayTeam.id}`}
+              className="flex items-center gap-2 sm:gap-3 min-w-0 hover:opacity-90 transition-opacity"
+            >
+              <TeamLogo team={game.awayTeam.abbreviation} size="md" decorative />
+              <span className="min-w-0">
+                <span className="block text-sm sm:text-lg font-semibold text-[#063f46] hover:text-[#075B5C] transition-colors">
+                  {game.awayTeam.abbreviation}
+                </span>
+                <span className="block text-base sm:text-xl font-bold tabular-nums text-[#063f46] leading-tight">
+                  {isFinalView
+                    ? (game.awayScore != null ? String(game.awayScore) : '—')
+                    : (game.awayTeam.record ?? '—')}
+                </span>
               </span>
             </Link>
-            <span className="text-xs text-muted-foreground">@</span>
-            <Link href={`/teams/${game.homeTeam.id}`} className="text-center hover:opacity-90 transition-opacity">
-              <span className="block text-base sm:text-lg font-semibold text-white hover:text-[#00d4ff] transition-colors">{game.homeTeam.abbreviation}</span>
-              <span className="block text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                {isFinalView
-                  ? (game.homeScore != null ? String(game.homeScore) : '—')
-                  : (game.homeTeam.record ?? '—')}
+            <span className="text-xs sm:text-sm font-medium text-[#4a6366] shrink-0 px-2">@</span>
+            <Link
+              href={`/teams/${game.homeTeam.id}`}
+              className="flex items-center gap-2 sm:gap-3 min-w-0 hover:opacity-90 transition-opacity"
+            >
+              <TeamLogo team={game.homeTeam.abbreviation} size="md" decorative />
+              <span className="min-w-0">
+                <span className="block text-sm sm:text-lg font-semibold text-[#063f46] hover:text-[#075B5C] transition-colors">
+                  {game.homeTeam.abbreviation}
+                </span>
+                <span className="block text-base sm:text-xl font-bold tabular-nums text-[#063f46] leading-tight">
+                  {isFinalView
+                    ? (game.homeScore != null ? String(game.homeScore) : '—')
+                    : (game.homeTeam.record ?? '—')}
+                </span>
               </span>
             </Link>
           </div>
+
+          <div className="hidden sm:block sm:w-16 lg:w-24 shrink-0" aria-hidden />
         </div>
-        <div className="px-3 sm:px-5 py-2 border-t border-white/5 flex flex-wrap items-center justify-center gap-1.5 bg-white/[0.02]">
+        <div className="px-3 sm:px-5 py-2 border-t border-[#DCE9EA] flex flex-wrap items-center justify-center gap-1.5 bg-[#F8FBFA]">
           {navIds.map((id) => (
             <button
               key={id}
@@ -919,8 +941,8 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               aria-current={activeSection === id ? 'true' : undefined}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 activeSection === id
-                  ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/40'
-                  : 'bg-white/5 text-muted-foreground border border-white/5 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[#063f46] text-white border border-[#063f46]'
+                  : 'bg-[#F8FBFA] text-[#4a6366] border border-[#DCE9EA] hover:bg-[#f7f9f7] hover:text-[#063f46]'
               }`}
             >
               {isFinalView && id === 'section-odds'
@@ -935,13 +957,13 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               gameId: game.id,
               date: typeof game.gameDate === 'string' ? game.gameDate : undefined,
             })}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#00d4ff]/15 text-[#00d4ff] border border-[#00d4ff]/40 hover:bg-[#00d4ff]/25"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#55ddb1] text-[#063f46] border border-[#55ddb1] hover:bg-[#3dcc9f]"
           >
             View props
           </Link>
         </div>
         {coverageLine ? (
-          <p className="px-3 sm:px-5 pb-2 text-[10px] text-center text-muted-foreground">
+          <p className="px-3 sm:px-5 pb-2 text-[10px] text-center text-[#4a6366]">
             {coverageLine}
           </p>
         ) : null}
@@ -1003,11 +1025,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
         ) : null}
         {!isFinalView ? (
         <section id="section-ai-projection" className="scroll-mt-[10rem]">
-          <div className="glass-card rounded-xl overflow-hidden border border-[#bf5af2]/30">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex items-center gap-1.5">
-              <div className="flex items-center justify-center p-1 rounded-md bg-[#bf5af2]/20 shrink-0"><Zap className="w-3 h-3 text-[#bf5af2]" /></div>
-              <span className="text-sm font-semibold text-white">AI Projection Summary</span>
-              <span className="text-[10px] px-1.5 py-0.5 bg-[#bf5af2]/20 text-[#bf5af2] rounded-full">Beta</span>
+          <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
+            <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-1.5">
+              <div className="flex items-center justify-center p-1 rounded-md bg-[#55ddb1]/30 shrink-0"><Zap className="w-3 h-3 text-[#075B5C]" /></div>
+              <span className="text-sm font-semibold text-[#063f46]">AI Projection Summary</span>
+              <span className="text-[10px] px-1.5 py-0.5 bg-[#55ddb1]/30 text-[#075B5C] rounded-full">Beta</span>
             </div>
             <div className="p-3">
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -1019,7 +1041,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 return (
                   <span
                     key={i}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-white/10 text-muted-foreground border border-white/5"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-[#F8FBFA] text-[#4a6366] border border-[#DCE9EA]"
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
                     {label}
@@ -1028,30 +1050,30 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               })}
             </div>
             {aiSummaryStatus === 'loading' && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#bf5af2]/90" aria-hidden />
+              <div className="mt-3 flex items-center gap-2 text-xs text-[#4a6366]">
+                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0 text-[#075B5C]" aria-hidden />
                 <span>Loading briefing…</span>
               </div>
             )}
             {aiSummaryStatus === 'success' && aiSummaryText && (
-              <p className="text-sm text-white/90 leading-relaxed mt-3 border-l-2 border-[#bf5af2]/35 pl-3">
+              <p className="text-sm text-[#063f46] leading-relaxed mt-3 border-l-2 border-[#55ddb1] pl-3">
                 {aiSummaryText}
               </p>
             )}
             {aiSummaryStatus === 'entitlement' && (
               <div className="mt-3 space-y-2">
-                <p className="text-xs font-medium text-white">{UPGRADE_COPY.ai_briefing.title}</p>
-                <p className="text-xs text-muted-foreground">{UPGRADE_COPY.ai_briefing.detail}</p>
+                <p className="text-xs font-medium text-[#063f46]">{UPGRADE_COPY.ai_briefing.title}</p>
+                <p className="text-xs text-[#4a6366]">{UPGRADE_COPY.ai_briefing.detail}</p>
                 <FoundingProUpgradeLink />
               </div>
             )}
             {aiSummaryStatus === 'unavailable' && (
-              <p className="text-xs text-muted-foreground mt-3">
+              <p className="text-xs text-[#4a6366] mt-3">
                 {aiSummaryText
                   ? aiSummaryText
                   : (
                       <>
-                        Add <span className="font-mono text-white/70">OPENAI_API_KEY</span> on the server to enable the
+                        Add <span className="font-mono text-[#4a6366]">OPENAI_API_KEY</span> on the server to enable the
                         AI-written summary.
                       </>
                     )}
@@ -1061,28 +1083,28 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               <p className="text-xs text-amber-400/90 mt-3">Could not load AI summary. Try again later.</p>
             )}
             {injuryMatchupContext?.entries?.length ? (
-              <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              <div className="mt-4 pt-4 border-t border-[#DCE9EA] space-y-3">
+                <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide">
                   Out / doubtful — players to watch (splits)
                 </p>
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                <p className="text-[10px] text-[#4a6366] leading-relaxed">
                   From season box scores: teammate PTS when listed players had minutes vs no minutes. Descriptive only—not a projection; tiny samples can mislead.
                 </p>
-                <details className="group rounded-lg border border-white/10 bg-white/[0.02]">
-                  <summary className="cursor-pointer list-none px-3 py-2 text-[11px] text-muted-foreground hover:text-white/90 [&::-webkit-details-marker]:hidden flex items-center gap-2">
+                <details className="group rounded-lg border border-[#DCE9EA] bg-[#F8FBFA]">
+                  <summary className="cursor-pointer list-none px-3 py-2 text-[11px] text-[#4a6366] hover:text-[#063f46] [&::-webkit-details-marker]:hidden flex items-center gap-2">
                     <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform group-open:rotate-180" />
                     Underlying numbers
                   </summary>
-                  <div className="px-3 pb-3 pt-0 space-y-3 border-t border-white/5">
+                  <div className="px-3 pb-3 pt-0 space-y-3 border-t border-[#DCE9EA]">
                     {injuryMatchupContext?.entries.map((entry) => {
                       const teamLabel =
                         entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
                       return (
-                        <div key={entry.player_id} className="border border-white/5 rounded-lg p-2.5 bg-white/[0.02]">
+                        <div key={entry.player_id} className="border border-[#DCE9EA] rounded-lg p-2.5 bg-[#F8FBFA]">
                           <div className="flex flex-wrap items-baseline gap-2 mb-2">
-                            <span className="text-xs font-medium text-white">{entry.full_name}</span>
-                            <span className="text-[10px] text-muted-foreground">{teamLabel}</span>
-                            <span className="text-[10px] text-muted-foreground">
+                            <span className="text-xs font-medium text-[#063f46]">{entry.full_name}</span>
+                            <span className="text-[10px] text-[#4a6366]">{teamLabel}</span>
+                            <span className="text-[10px] text-[#4a6366]">
                               With minutes {entry.games_played_sample} · No minutes {entry.games_missed_sample} team games
                             </span>
                             {entry.low_sample && (
@@ -1090,12 +1112,12 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                             )}
                           </div>
                           {entry.teammates.length === 0 ? (
-                            <p className="text-[10px] text-muted-foreground">No teammate split data.</p>
+                            <p className="text-[10px] text-[#4a6366]">No teammate split data.</p>
                           ) : (
                             <div className="overflow-x-auto">
                               <table className="w-full text-[10px] text-left">
                                 <thead>
-                                  <tr className="text-muted-foreground border-b border-white/5">
+                                  <tr className="text-[#4a6366] border-b border-[#DCE9EA]">
                                     <th className="py-1 pr-2 font-normal">Teammate</th>
                                     <th className="py-1 px-1 font-normal">PTS (with)</th>
                                     <th className="py-1 px-1 font-normal">PTS (out)</th>
@@ -1105,7 +1127,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                                 </thead>
                                 <tbody>
                                   {entry.teammates.map((t) => (
-                                    <tr key={t.player_id} className="border-b border-white/[0.03] text-white/90">
+                                    <tr key={t.player_id} className="border-b border-[#DCE9EA] text-[#063f46]">
                                       <td className="py-1 pr-2 truncate max-w-[140px]" title={t.full_name}>
                                         {t.full_name}
                                       </td>
@@ -1114,7 +1136,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                                       <td className={`py-1 px-1 ${(t.pts_delta ?? 0) > 0 ? 'text-emerald-400/90' : (t.pts_delta ?? 0) < 0 ? 'text-rose-400/90' : ''}`}>
                                         {t.pts_delta != null ? (t.pts_delta > 0 ? `+${t.pts_delta}` : String(t.pts_delta)) : '—'}
                                       </td>
-                                      <td className="py-1 pl-1 text-right text-muted-foreground">
+                                      <td className="py-1 pl-1 text-right text-[#4a6366]">
                                         {t.n_games_played_with}/{t.n_games_missed}
                                       </td>
                                     </tr>
@@ -1130,7 +1152,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 </details>
               </div>
             ) : null}
-            <p className="text-xs text-muted-foreground mt-3">
+            <p className="text-xs text-[#4a6366] mt-3">
               {aiSummaryStatus === 'success' && aiSummaryText
                 ? 'Generated from on-page signals; not betting advice.'
                 : 'Matchup briefing uses on-page signals when available. It is not a full projection model.'}
@@ -1142,12 +1164,12 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
 
         {(!isFinalView || navIds.includes('section-odds')) ? (
         <section id="section-odds" className="scroll-mt-[10rem]">
-          <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">
+          <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
+            <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+              <h2 className="text-sm font-semibold text-[#063f46]">
                 {isFinalView ? 'Sportsbook lines' : 'Odds & line movement'}
               </h2>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <p className="text-[10px] text-[#4a6366] mt-0.5">
                 {isFinalView
                   ? 'Closing or stored sportsbook lines for this game. Not certified Opening Snapshot Market Movement.'
                   : 'Sportsbook lines and crowd sentiment side by side'}
@@ -1156,41 +1178,41 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             <div className="p-2.5 sm:p-3">
               <div className={`grid grid-cols-1 gap-3 lg:items-stretch ${showSentiment ? 'lg:grid-cols-2' : ''}`}>
                 <div className="space-y-3 min-w-0 flex flex-col">
-                  <div className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-2 sm:px-3 sm:py-2.5">
-                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Odds & lines</p>
+                  <div className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-2 sm:px-3 sm:py-2.5">
+                    <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide mb-2">Odds & lines</p>
                     <div className="flex items-stretch justify-between gap-2 sm:gap-4 w-full">
                       <div className="text-center flex-1 min-w-0">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Spread</p>
-                        <p className="text-base sm:text-lg font-bold text-white tabular-nums">
+                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Spread</p>
+                        <p className="text-base sm:text-lg font-bold text-[#063f46] tabular-nums">
                           {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
                         </p>
                         {(currentOdds?.spreadOddsHome != null || currentOdds?.spreadOddsAway != null) && (
-                          <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
+                          <p className="text-[10px] text-[#4a6366] font-mono mt-0.5 leading-tight">
                             {game.homeTeam.abbreviation} {currentOdds?.spreadOddsHome != null ? (currentOdds.spreadOddsHome > 0 ? `+${currentOdds.spreadOddsHome}` : currentOdds.spreadOddsHome) : '—'} / {game.awayTeam.abbreviation} {currentOdds?.spreadOddsAway != null ? (currentOdds.spreadOddsAway > 0 ? `+${currentOdds.spreadOddsAway}` : currentOdds.spreadOddsAway) : '—'}
                           </p>
                         )}
                       </div>
-                      <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
+                      <div className="w-px min-h-10 bg-[#DCE9EA] shrink-0 self-center" />
                       <div className="text-center flex-1 min-w-0">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Moneyline</p>
-                        <p className="text-xs sm:text-sm font-bold text-white leading-tight">
+                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Moneyline</p>
+                        <p className="text-xs sm:text-sm font-bold text-[#063f46] leading-tight">
                           {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
-                            <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-white/50">/</span> <span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                            <><span className="text-[#4a6366]">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-[#8aa0a3]">/</span> <span className="text-[#4a6366]">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
                           ) : currentOdds?.moneylineHome != null ? (
-                            <><span className="text-muted-foreground">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
+                            <><span className="text-[#4a6366]">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
                           ) : currentOdds?.moneylineAway != null ? (
-                            <><span className="text-muted-foreground">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
+                            <><span className="text-[#4a6366]">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway}</>
                           ) : (
                             '—'
                           )}
                         </p>
                       </div>
-                      <div className="w-px min-h-10 bg-white/10 shrink-0 self-center" />
+                      <div className="w-px min-h-10 bg-[#DCE9EA] shrink-0 self-center" />
                       <div className="text-center flex-1 min-w-0">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Total</p>
-                        <p className="text-base sm:text-lg font-bold text-white tabular-nums">{currentOdds?.overUnder ?? '—'}</p>
+                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Total</p>
+                        <p className="text-base sm:text-lg font-bold text-[#063f46] tabular-nums">{currentOdds?.overUnder ?? '—'}</p>
                         {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
-                          <p className="text-[10px] text-muted-foreground font-mono mt-0.5 leading-tight">
+                          <p className="text-[10px] text-[#4a6366] font-mono mt-0.5 leading-tight">
                             O {currentOdds?.overOdds != null ? (currentOdds.overOdds > 0 ? `+${currentOdds.overOdds}` : currentOdds.overOdds) : '—'} / U {currentOdds?.underOdds != null ? (currentOdds.underOdds > 0 ? `+${currentOdds.underOdds}` : currentOdds.underOdds) : '—'}
                           </p>
                         )}
@@ -1198,14 +1220,14 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                     </div>
                   </div>
 
-                  <div className="border-t border-white/5 pt-3 flex-1 min-h-0">
-                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Line movement</p>
+                  <div className="border-t border-[#DCE9EA] pt-3 flex-1 min-h-0">
+                    <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide mb-2">Line movement</p>
                     <Tabs defaultValue="spread" className="w-full">
-                      <TabsList className="w-full grid grid-cols-2 mb-2 bg-white/10 p-1 rounded-lg h-8">
-                        <TabsTrigger value="spread" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
+                      <TabsList className="w-full grid grid-cols-2 mb-2 bg-[#F8FBFA] p-1 rounded-lg h-8">
+                        <TabsTrigger value="spread" className="data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! text-[#4a6366] rounded text-xs">
                           Spread ({game.homeTeam.abbreviation})
                         </TabsTrigger>
-                        <TabsTrigger value="total" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded text-xs">
+                        <TabsTrigger value="total" className="data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! text-[#4a6366] rounded text-xs">
                           Total (O/U)
                         </TabsTrigger>
                       </TabsList>
@@ -1213,7 +1235,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                         <LineMovementChart
                           data={spreadMovement}
                           label={`Spread: ${game.homeTeam.abbreviation}`}
-                          color="#00d4ff"
+                          color="#075B5C"
                           height={176}
                           width={520}
                           embedded
@@ -1225,7 +1247,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                         <LineMovementChart
                           data={totalMovement}
                           label="Total (O/U)"
-                          color="#39ff14"
+                          color="#20B95A"
                           height={176}
                           width={520}
                           embedded
@@ -1238,7 +1260,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                 </div>
 
                 {showSentiment ? (
-                <div className="min-w-0 lg:border-l lg:border-white/5 lg:pl-3 flex flex-col">
+                <div className="min-w-0 lg:border-l lg:border-[#DCE9EA] lg:pl-3 flex flex-col">
                   <MarketSentimentPanel game={game} sentiment={marketSentiment} />
                 </div>
                 ) : null}
@@ -1253,9 +1275,9 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
         <section id="section-matchup" className="space-y-4 scroll-mt-[10rem]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Column 1: Projected starters */}
-            <div className="glass-card rounded-xl overflow-hidden border border-white/5 min-w-0">
-              <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-                <h2 className="text-sm font-semibold text-white">Projected starters</h2>
+            <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
+              <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+                <h2 className="text-sm font-semibold text-[#063f46]">Projected starters</h2>
               </div>
               <div className="p-3">
               {matchupAnalysis?.starting_lineups && (matchupAnalysis.starting_lineups.home || matchupAnalysis.starting_lineups.away) ? (
@@ -1268,14 +1290,14 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                   )}
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground py-4 text-center">No data yet</p>
+                <p className="text-xs text-[#4a6366] py-4 text-center">No data yet</p>
               )}
               </div>
             </div>
             {/* Column 2: Team stats + O vs D */}
-            <div className="glass-card rounded-xl overflow-hidden border border-white/5 min-w-0">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">Team comparison</h2>
+            <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
+            <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+              <h2 className="text-sm font-semibold text-[#063f46]">Team comparison</h2>
             </div>
             <div className="p-3">
             {(() => {
@@ -1284,8 +1306,8 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               return (
                 <>
                   <Tabs defaultValue="away" className="w-full">
-                    <TabsList className="w-full grid grid-cols-2 mb-4 bg-white/10 p-1 rounded-lg h-10">
-                      <TabsTrigger value="away" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded-md text-sm font-medium flex items-center justify-center gap-2">
+                    <TabsList className="w-full grid grid-cols-2 mb-4 bg-[#F8FBFA] p-1 rounded-lg h-10">
+                      <TabsTrigger value="away" className="data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! text-[#4a6366] rounded-md text-sm font-medium flex items-center justify-center gap-2">
                         <span>{game.awayTeam.abbreviation}</span>
                         {awayB2B && (
                           <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
@@ -1294,7 +1316,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                           </span>
                         )}
                       </TabsTrigger>
-                      <TabsTrigger value="home" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-muted-foreground rounded-md text-sm font-medium flex items-center justify-center gap-2">
+                      <TabsTrigger value="home" className="data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! text-[#4a6366] rounded-md text-sm font-medium flex items-center justify-center gap-2">
                         <span>{game.homeTeam.abbreviation}</span>
                         {homeB2B && (
                           <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
@@ -1306,10 +1328,10 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                     </TabsList>
                     <TabsContent value="away" className="mt-0 outline-none">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
                           <span className="text-xs font-bold">{game.awayTeam.abbreviation}</span>
                         </div>
-                        <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.awayTeam.name}</Link>
+                        <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">{game.awayTeam.name}</Link>
                         {awayB2B && (
                           <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
                             <CalendarDays className="w-3 h-3" />
@@ -1318,36 +1340,36 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                         )}
                       </div>
                       <div className="grid grid-cols-3 gap-2 mb-3">
-                        <div className="text-center p-2 rounded-lg bg-white/5">
-                          <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
-                          <span className="text-sm font-bold text-[#00d4ff]">{awayTeamStats.offensiveRating != null ? awayTeamStats.offensiveRating.toFixed(1) : '—'}</span>
+                        <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
+                          <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#075B5C]" /><span className="text-[10px] text-[#4a6366]">ORTG</span></div>
+                          <span className="text-sm font-bold text-[#075B5C]">{awayTeamStats.offensiveRating != null ? awayTeamStats.offensiveRating.toFixed(1) : '—'}</span>
                         </div>
-                        <div className="text-center p-2 rounded-lg bg-white/5">
-                          <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
-                          <span className="text-sm font-bold text-[#39ff14]">{awayTeamStats.defensiveRating != null ? awayTeamStats.defensiveRating.toFixed(1) : '—'}</span>
+                        <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
+                          <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#20B95A]" /><span className="text-[10px] text-[#4a6366]">DRTG</span></div>
+                          <span className="text-sm font-bold text-[#20B95A]">{awayTeamStats.defensiveRating != null ? awayTeamStats.defensiveRating.toFixed(1) : '—'}</span>
                         </div>
-                        <div className="text-center p-2 rounded-lg bg-white/5">
-                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
+                        <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
+                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-[#4a6366]">PACE</span></div>
                           <span className="text-sm font-bold text-[#ff6b35]">{awayTeamStats.pace != null ? awayTeamStats.pace.toFixed(1) : '—'}</span>
                         </div>
                       </div>
                       {!awayTeamStats.hasSeasonAnalytics && awayTeamStats.offensiveRating == null && (
-                        <p className="text-[10px] text-muted-foreground mb-2">Not enough season data</p>
+                        <p className="text-[10px] text-[#4a6366] mb-2">Not enough season data</p>
                       )}
-                      <div className="border-t border-white/5 pt-2">
-                        <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
+                      <div className="border-t border-[#DCE9EA] pt-2">
+                        <h4 className="text-[10px] font-medium text-[#4a6366] mb-1">L5</h4>
                         {awayTeamStats.recentForm.slice(0, 3).map((g, i) => (
                           <RecentFormRow key={i} game={g} teamAbbr={game.awayTeam.abbreviation} />
                         ))}
-                        {awayTeamStats.recentForm.length === 0 && <p className="text-[10px] text-muted-foreground">—</p>}
+                        {awayTeamStats.recentForm.length === 0 && <p className="text-[10px] text-[#4a6366]">—</p>}
                       </div>
                     </TabsContent>
                     <TabsContent value="home" className="mt-0 outline-none">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
                           <span className="text-xs font-bold">{game.homeTeam.abbreviation}</span>
                         </div>
-                        <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.homeTeam.name}</Link>
+                        <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">{game.homeTeam.name}</Link>
                         {homeB2B && (
                           <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35]" title="Back-to-back (played yesterday)">
                             <CalendarDays className="w-3 h-3" />
@@ -1356,28 +1378,28 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                         )}
                       </div>
                       <div className="grid grid-cols-3 gap-2 mb-3">
-                        <div className="text-center p-2 rounded-lg bg-white/5">
-                          <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#00d4ff]" /><span className="text-[10px] text-muted-foreground">ORTG</span></div>
-                          <span className="text-sm font-bold text-[#00d4ff]">{homeTeamStats.offensiveRating != null ? homeTeamStats.offensiveRating.toFixed(1) : '—'}</span>
+                        <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
+                          <div className="flex items-center justify-center gap-1 mb-1"><Zap className="w-3 h-3 text-[#075B5C]" /><span className="text-[10px] text-[#4a6366]">ORTG</span></div>
+                          <span className="text-sm font-bold text-[#075B5C]">{homeTeamStats.offensiveRating != null ? homeTeamStats.offensiveRating.toFixed(1) : '—'}</span>
                         </div>
-                        <div className="text-center p-2 rounded-lg bg-white/5">
-                          <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#39ff14]" /><span className="text-[10px] text-muted-foreground">DRTG</span></div>
-                          <span className="text-sm font-bold text-[#39ff14]">{homeTeamStats.defensiveRating != null ? homeTeamStats.defensiveRating.toFixed(1) : '—'}</span>
+                        <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
+                          <div className="flex items-center justify-center gap-1 mb-1"><Shield className="w-3 h-3 text-[#20B95A]" /><span className="text-[10px] text-[#4a6366]">DRTG</span></div>
+                          <span className="text-sm font-bold text-[#20B95A]">{homeTeamStats.defensiveRating != null ? homeTeamStats.defensiveRating.toFixed(1) : '—'}</span>
                         </div>
-                        <div className="text-center p-2 rounded-lg bg-white/5">
-                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-muted-foreground">PACE</span></div>
+                        <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
+                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-[#4a6366]">PACE</span></div>
                           <span className="text-sm font-bold text-[#ff6b35]">{homeTeamStats.pace != null ? homeTeamStats.pace.toFixed(1) : '—'}</span>
                         </div>
                       </div>
                       {!homeTeamStats.hasSeasonAnalytics && homeTeamStats.offensiveRating == null && (
-                        <p className="text-[10px] text-muted-foreground mb-2">Not enough season data</p>
+                        <p className="text-[10px] text-[#4a6366] mb-2">Not enough season data</p>
                       )}
-                      <div className="border-t border-white/5 pt-2">
-                        <h4 className="text-[10px] font-medium text-muted-foreground mb-1">L5</h4>
+                      <div className="border-t border-[#DCE9EA] pt-2">
+                        <h4 className="text-[10px] font-medium text-[#4a6366] mb-1">L5</h4>
                         {homeTeamStats.recentForm.slice(0, 3).map((g, i) => (
                           <RecentFormRow key={i} game={g} teamAbbr={game.homeTeam.abbreviation} />
                         ))}
-                        {homeTeamStats.recentForm.length === 0 && <p className="text-[10px] text-muted-foreground">—</p>}
+                        {homeTeamStats.recentForm.length === 0 && <p className="text-[10px] text-[#4a6366]">—</p>}
                       </div>
                     </TabsContent>
                   </Tabs>
@@ -1387,27 +1409,27 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
             </div>
           </div>
-          <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <h2 className="text-sm font-semibold text-white">Historical matchups</h2>
+          <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
+            <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+              <h2 className="text-sm font-semibold text-[#063f46]">Historical matchups</h2>
             </div>
             <div className="p-3 overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left text-[10px] text-muted-foreground py-1.5">Date</th>
-                  <th className="text-left text-[10px] text-muted-foreground py-1.5">Matchup</th>
-                  <th className="text-center text-[10px] text-muted-foreground py-1.5">Score</th>
-                  <th className="text-center text-[10px] text-muted-foreground py-1.5">Total</th>
+                <tr className="border-b border-[#DCE9EA]">
+                  <th className="text-left text-[10px] text-[#4a6366] py-1.5">Date</th>
+                  <th className="text-left text-[10px] text-[#4a6366] py-1.5">Matchup</th>
+                  <th className="text-center text-[10px] text-[#4a6366] py-1.5">Score</th>
+                  <th className="text-center text-[10px] text-[#4a6366] py-1.5">Total</th>
                 </tr>
               </thead>
               <tbody>
                 {historicalMatchups.map((matchup, i) => (
-                  <tr key={i} className="border-b border-white/5 last:border-0">
-                    <td className="py-1.5 text-[10px] text-muted-foreground">{matchup.date}</td>
-                    <td className="py-1.5 text-[10px] text-white">{matchup.awayTeam} @ {matchup.homeTeam}</td>
-                    <td className="py-1.5 text-[10px] text-white text-center font-mono">{matchup.awayScore} – {matchup.homeScore}</td>
-                    <td className="py-1.5 text-[10px] text-center"><span className="px-2 py-0.5 rounded bg-white/5 text-[#00d4ff] font-mono">{matchup.totalPoints}</span></td>
+                  <tr key={i} className="border-b border-[#DCE9EA] last:border-0">
+                    <td className="py-1.5 text-[10px] text-[#4a6366]">{matchup.date}</td>
+                    <td className="py-1.5 text-[10px] text-[#063f46]">{matchup.awayTeam} @ {matchup.homeTeam}</td>
+                    <td className="py-1.5 text-[10px] text-[#063f46] text-center font-mono">{matchup.awayScore} – {matchup.homeScore}</td>
+                    <td className="py-1.5 text-[10px] text-center"><span className="px-2 py-0.5 rounded bg-[#F8FBFA] text-[#075B5C] font-mono">{matchup.totalPoints}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -1424,9 +1446,9 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               date={typeof game.gameDate === 'string' ? game.gameDate : undefined}
             />
           ) : (
-            <div className="glass-card rounded-xl border border-white/5 p-4 space-y-2">
-              <h2 className="text-sm font-semibold text-white">Player props</h2>
-              <p className="text-xs text-muted-foreground">
+            <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4 space-y-2">
+              <h2 className="text-sm font-semibold text-[#063f46]">Player props</h2>
+              <p className="text-xs text-[#4a6366]">
                 Prop research for this game is in Props Explorer. This page does not keep a separate
                 live-only prop board.
               </p>
@@ -1435,7 +1457,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                   gameId: game.id,
                   date: typeof game.gameDate === 'string' ? game.gameDate : undefined,
                 })}
-                className="inline-flex text-xs text-[#00d4ff] hover:underline"
+                className="inline-flex text-xs text-[#075B5C] hover:underline"
               >
                 Open Props Explorer
               </Link>
@@ -1445,32 +1467,32 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
 
         <section id="section-injuries" className="scroll-mt-[10rem]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-              <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
+            <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
+              <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#ff6b35] shrink-0" />
-                <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.awayTeam.name}</Link>
+                <Link href={`/teams/${game.awayTeam.id}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">{game.awayTeam.name}</Link>
                 {(injuries?.away?.length ?? 0) > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F8FBFA] text-[#4a6366]">
                     {(injuries?.away?.length ?? 0)} listed
                   </span>
                 )}
               </div>
               <div className="p-3">
-                {(injuries?.away?.length ?? 0) > 0 ? injuries.away.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">{injuryAbsenceCopy(injuryFeed)}</p>}
+                {(injuries?.away?.length ?? 0) > 0 ? injuries.away.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-[#4a6366]">{injuryAbsenceCopy(injuryFeed)}</p>}
               </div>
             </div>
-            <div className="glass-card rounded-xl overflow-hidden border border-white/5">
-              <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
+            <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
+              <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#ff6b35] shrink-0" />
-                <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">{game.homeTeam.name}</Link>
+                <Link href={`/teams/${game.homeTeam.id}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">{game.homeTeam.name}</Link>
                 {(injuries?.home?.length ?? 0) > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F8FBFA] text-[#4a6366]">
                     {(injuries?.home?.length ?? 0)} listed
                   </span>
                 )}
               </div>
               <div className="p-3">
-                {(injuries?.home?.length ?? 0) > 0 ? injuries.home.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-muted-foreground">{injuryAbsenceCopy(injuryFeed)}</p>}
+                {(injuries?.home?.length ?? 0) > 0 ? injuries.home.map((injury, i) => <InjuryRow key={`${injury.player}-${i}`} injury={injury} />) : <p className="text-xs text-[#4a6366]">{injuryAbsenceCopy(injuryFeed)}</p>}
               </div>
             </div>
           </div>
@@ -1483,65 +1505,65 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           className="hidden lg:flex flex-col w-[17rem] shrink-0 gap-3 self-start sticky top-40 z-[5] pt-1"
           aria-label="Game snapshot"
         >
-          <div className="glass-card rounded-xl border border-white/5 overflow-hidden">
-            <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-              <p className="text-xs font-semibold text-white">At a glance</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">Snapshot only — scroll the page for full sections</p>
+          <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm overflow-hidden">
+            <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+              <p className="text-xs font-semibold text-[#063f46]">At a glance</p>
+              <p className="text-[10px] text-[#4a6366] mt-0.5">Snapshot only — scroll the page for full sections</p>
             </div>
             <div className="p-3 space-y-3 text-xs">
-              <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
+              <div className="flex justify-between gap-2 text-[10px] text-[#4a6366]">
                 <span>{game.awayTeam.abbreviation}</span>
-                <span className="text-white font-mono tabular-nums">
+                <span className="text-[#063f46] font-mono tabular-nums">
                   {isFinalView
                     ? (game.awayScore != null ? String(game.awayScore) : '—')
                     : (game.awayTeam.record ?? '—')}
                 </span>
               </div>
-              <div className="flex justify-between gap-2 text-[10px] text-muted-foreground">
+              <div className="flex justify-between gap-2 text-[10px] text-[#4a6366]">
                 <span>{game.homeTeam.abbreviation}</span>
-                <span className="text-white font-mono tabular-nums">
+                <span className="text-[#063f46] font-mono tabular-nums">
                   {isFinalView
                     ? (game.homeScore != null ? String(game.homeScore) : '—')
                     : (game.homeTeam.record ?? '—')}
                 </span>
               </div>
               {(!isFinalView || hasStoredOdds) ? (
-              <div className="border-t border-white/5 pt-3 space-y-2">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Lines</p>
+              <div className="border-t border-[#DCE9EA] pt-3 space-y-2">
+                <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide">Lines</p>
                 <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Spread</span>
-                  <span className="text-white font-mono tabular-nums text-right">
+                  <span className="text-[#4a6366]">Spread</span>
+                  <span className="text-[#063f46] font-mono tabular-nums text-right">
                     {currentOdds?.spread != null
                       ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}`
                       : '—'}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Total</span>
-                  <span className="text-white font-mono tabular-nums">{currentOdds?.overUnder ?? '—'}</span>
+                  <span className="text-[#4a6366]">Total</span>
+                  <span className="text-[#063f46] font-mono tabular-nums">{currentOdds?.overUnder ?? '—'}</span>
                 </div>
-                <div className="text-[10px] text-muted-foreground leading-snug">
+                <div className="text-[10px] text-[#4a6366] leading-snug">
                   ML{' '}
-                  <span className="text-white/90">
+                  <span className="text-[#063f46]">
                     {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null
                       ? `${game.awayTeam.abbreviation} ${currentOdds.moneylineAway > 0 ? '+' : ''}${currentOdds.moneylineAway} · ${game.homeTeam.abbreviation} ${currentOdds.moneylineHome > 0 ? '+' : ''}${currentOdds.moneylineHome}`
                       : '—'}
                   </span>
                 </div>
                 {currentOdds?.bookmaker && (
-                  <p className="text-[10px] text-muted-foreground pt-1">Book: {currentOdds.bookmaker}</p>
+                  <p className="text-[10px] text-[#4a6366] pt-1">Book: {currentOdds.bookmaker}</p>
                 )}
               </div>
               ) : null}
               {!isFinalView ? (
-              <div className="border-t border-white/5 pt-3">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1">Injuries</p>
-                <p className="text-[11px] text-white/90">
+              <div className="border-t border-[#DCE9EA] pt-3">
+                <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide mb-1">Injuries</p>
+                <p className="text-[11px] text-[#063f46]">
                   {totalListedInjuries === 0
                     ? 'None listed'
                     : `${totalListedInjuries} player${totalListedInjuries === 1 ? '' : 's'} on report`}
                 </p>
-                <p className="text-[10px] text-muted-foreground mt-1">
+                <p className="text-[10px] text-[#4a6366] mt-1">
                   {game.awayTeam.abbreviation} {injuries?.away?.length ?? 0} · {game.homeTeam.abbreviation}{' '}
                   {injuries?.home?.length ?? 0}
                 </p>

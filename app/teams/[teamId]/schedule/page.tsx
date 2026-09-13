@@ -13,6 +13,7 @@ import { resolveTeamScheduleSeason } from '@/lib/analytics/team-schedule-season'
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import { displayGameStatusLabel, resolveDisplayGameStatus } from '@/lib/betting/normalize-game-status';
 import { formatNbaSeasonLabel, getAnalyticsSeason } from '@/lib/season';
+import { gameDetailHref } from '@/lib/betting/research-journey';
 import { teamPageSeasonHref } from '@/lib/teams/team-page-season';
 
 const GAME_DISPLAY_TZ = 'America/New_York';
@@ -267,7 +268,7 @@ export default async function TeamSchedulePage({
                         </TableCell>
                         <TableCell>
                           <Link
-                            href={`/games/${game.game_id}`}
+                            href={gameDetailHref(game.game_id)}
                             className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                           >
                             Box Score

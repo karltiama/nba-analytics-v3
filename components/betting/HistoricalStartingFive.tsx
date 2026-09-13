@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { playerResearchHref } from '@/lib/betting/research-journey';
 import { shouldShowStartingFive } from '@/lib/betting/historical-starters';
 import type { HistoricalStarterPlayer, HistoricalStarters } from '@/lib/betting/historical-starters';
@@ -22,7 +23,7 @@ function StarterList({
 }) {
   return (
     <div className="min-w-0">
-      <h3 className="text-xs font-semibold text-white tracking-wide mb-2">{heading}</h3>
+      <h3 className="text-xs font-semibold text-[#063f46] tracking-wide mb-2">{heading}</h3>
       <p className="sr-only">{teamName} historical starting five</p>
       <ol className="space-y-1.5">
         {rows.map((row) => (
@@ -34,11 +35,16 @@ function StarterList({
                 date,
                 season,
               })}
-              className="flex items-baseline gap-2 min-w-0 text-sm text-white hover:text-[#00d4ff]"
+              className="flex items-center gap-2.5 min-w-0 text-sm text-[#063f46] hover:text-[#075B5C]"
             >
+              <PlayerHeadshot
+                nbaPlayerId={row.nbaPlayerId}
+                name={row.playerName || 'Player'}
+                className="relative h-11 w-9 rounded-lg overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
+              />
               <span className="truncate font-medium">{row.playerName || 'Player'}</span>
               {row.position ? (
-                <span className="shrink-0 text-[11px] text-muted-foreground font-medium">
+                <span className="shrink-0 text-[11px] text-[#4a6366] font-medium">
                   {row.position}
                 </span>
               ) : null}
@@ -77,12 +83,12 @@ export function HistoricalStartingFive({
       className="scroll-mt-[10rem]"
       aria-labelledby="starting-five-heading"
     >
-      <div className="glass-card rounded-xl border border-white/5 overflow-hidden">
-        <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-          <h2 id="starting-five-heading" className="text-sm font-semibold text-white">
+      <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm overflow-hidden">
+        <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+          <h2 id="starting-five-heading" className="text-sm font-semibold text-[#063f46]">
             Starting Five
           </h2>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
+          <p className="text-[10px] text-[#4a6366] mt-0.5">
             Historical designated starters for this game. Not projected, and not a full roster.
           </p>
         </div>

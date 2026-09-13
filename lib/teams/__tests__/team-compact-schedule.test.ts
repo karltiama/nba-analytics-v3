@@ -189,8 +189,8 @@ describe('team-compact-schedule (Phase 2.T.3C)', () => {
     expect(TEAM_ROSTER_CURRENT_SQL).toMatch(/season\s*=\s*\$2/);
   });
 
-  it('game links use existing /games route; full schedule preserves season', () => {
-    expect(compactGameHref('184467')).toBe('/games/184467');
+  it('game links use /betting/games; full schedule preserves season', () => {
+    expect(compactGameHref('184467')).toBe('/betting/games/184467');
     expect(fullScheduleHref('14', '2026')).toBe('/teams/14/schedule?season=2026');
   });
 

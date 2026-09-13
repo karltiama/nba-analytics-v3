@@ -58,6 +58,7 @@ describe('historical Advanced UI contract', () => {
         playerName: `P${n}`,
         teamId,
         position: 'G',
+        nbaPlayerId: null,
       }));
     expect(
       shouldShowStartingFive({ available: true, home: five('13'), away: five('27') })

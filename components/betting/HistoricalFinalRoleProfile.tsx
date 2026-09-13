@@ -60,21 +60,21 @@ function PlaytypeCards({ profile }: { profile: HistoricalPlayerRoleProfile }) {
   if (rows.length === 0) return null;
   return (
     <div>
-      <h4 className="text-xs font-semibold text-white mb-2">Primary actions</h4>
+      <h4 className="text-xs font-semibold text-[#063f46] mb-2">Primary actions</h4>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {rows.map((row) => (
           <div
             key={row.id}
-            className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2"
+            className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2"
           >
-            <p className="text-xs font-medium text-white">{row.label}</p>
-            <p className="mt-1 text-sm font-mono tabular-nums text-white">
+            <p className="text-xs font-medium text-[#063f46]">{row.label}</p>
+            <p className="mt-1 text-sm font-mono tabular-nums text-[#063f46]">
               {row.frequency}
-              <span className="ml-1 text-[10px] text-muted-foreground font-sans">
+              <span className="ml-1 text-[10px] text-[#4a6366] font-sans">
                 <MetricAbbr abbr="freq" label="Frequency" help={ROLE_METRIC_HELP.possPct} />
               </span>
             </p>
-            <p className="text-xs font-mono tabular-nums text-muted-foreground">
+            <p className="text-xs font-mono tabular-nums text-[#4a6366]">
               {row.ppp}{' '}
               <MetricAbbr abbr="PPP" label="Points per possession" help={ROLE_METRIC_HELP.ppp} />
             </p>
@@ -113,21 +113,21 @@ function CreationBlock({ profile }: { profile: HistoricalPlayerRoleProfile }) {
   if (items.length === 0) return null;
   return (
     <div>
-      <h4 className="text-xs font-semibold text-white mb-2">Creation</h4>
+      <h4 className="text-xs font-semibold text-[#063f46] mb-2">Creation</h4>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {items.map((item) => (
           <div
             key={item.label}
-            className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2"
+            className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2"
           >
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[10px] text-[#4a6366]">
               <abbr title={item.help} className="no-underline cursor-help">
                 {item.label}
               </abbr>
             </p>
-            <p className="text-sm font-mono tabular-nums text-white">
+            <p className="text-sm font-mono tabular-nums text-[#063f46]">
               {item.value}
-              <span className="ml-1 text-[10px] text-muted-foreground font-sans">/ game</span>
+              <span className="ml-1 text-[10px] text-[#4a6366] font-sans">/ game</span>
             </p>
           </div>
         ))}
@@ -141,23 +141,23 @@ function ShotProfile({ profile }: { profile: HistoricalPlayerRoleProfile }) {
   const zones = shotProfileRows(profile);
   return (
     <div>
-      <h4 className="text-xs font-semibold text-white mb-2">Shot profile</h4>
+      <h4 className="text-xs font-semibold text-[#063f46] mb-2">Shot profile</h4>
       <ul className="space-y-1.5">
         {zones.map((zone) => (
           <li key={zone.id} className="min-w-0">
             <div className="flex items-baseline justify-between gap-2 text-xs">
-              <span className="text-white">{zone.label}</span>
-              <span className="font-mono tabular-nums text-muted-foreground">
+              <span className="text-[#063f46]">{zone.label}</span>
+              <span className="font-mono tabular-nums text-[#4a6366]">
                 {zone.fga} FGA · {zone.fgPct}
               </span>
             </div>
             <div
-              className="mt-0.5 h-1.5 rounded-full bg-white/10 overflow-hidden"
+              className="mt-0.5 h-1.5 rounded-full bg-[#F8FBFA] overflow-hidden"
               aria-hidden={zone.sharePct == null}
             >
               {zone.sharePct != null ? (
                 <div
-                  className="h-full rounded-full bg-[#00d4ff]/70"
+                  className="h-full rounded-full bg-[#075B5C]/70"
                   style={{ width: `${Math.min(100, Math.max(0, zone.sharePct))}%` }}
                 />
               ) : null}
@@ -202,23 +202,23 @@ export function HistoricalFinalRoleProfile({
   return (
     <section
       id="section-context"
-      className="scroll-mt-[10rem] glass-card rounded-xl overflow-hidden border border-white/5"
+      className="scroll-mt-[10rem] bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm"
       aria-labelledby="season-role-heading"
     >
-      <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Context</p>
-        <h2 id="season-role-heading" className="text-sm font-semibold text-white">
+      <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+        <p className="text-[10px] uppercase tracking-wide text-[#4a6366]">Context</p>
+        <h2 id="season-role-heading" className="text-sm font-semibold text-[#063f46]">
           Season Role — {seasonLabel}
         </h2>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-xs text-[#4a6366] mt-1">
           This season, not this game. Advanced above is game-level performance.
         </p>
       </div>
       <div className="p-3 space-y-4">
         <label className="block">
-          <span className="text-[10px] text-muted-foreground">Player</span>
+          <span className="text-[10px] text-[#4a6366]">Player</span>
           <select
-            className="mt-1 w-full rounded-lg border border-white/10 bg-background px-3 py-2 text-sm text-white"
+            className="mt-1 w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46]"
             value={selected?.playerId ?? ''}
             onChange={(event) => {
               setSelectedId(event.target.value);
@@ -256,22 +256,22 @@ export function HistoricalFinalRoleProfile({
                 {!visiblePlaytypes(profile).length &&
                 !hasCreationMetrics(profile) &&
                 !hasShotProfile(profile) ? (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-[#4a6366]">
                     Season role profile unavailable for this player.
                   </p>
                 ) : null}
               </>
             ) : (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[#4a6366]">
                 Season role profile unavailable for this player.
               </p>
             )}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">No box-score players to profile.</p>
+          <p className="text-xs text-[#4a6366]">No box-score players to profile.</p>
         )}
 
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
+        <p className="text-[10px] text-[#4a6366] leading-relaxed">
           Some play-type metrics appear only when a player meets provider qualification thresholds.
           Missing isolation or pick-and-roll numbers do not mean the player had no role.
         </p>

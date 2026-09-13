@@ -1,6 +1,19 @@
 import Link from 'next/link';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-export function MarketingHeader() {
+async function isSignedIn(): Promise<boolean> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    return Boolean(data.user);
+  } catch {
+    return false;
+  }
+}
+
+export async function MarketingHeader() {
+  const signedIn = await isSignedIn();
+
   return (
     <header className="absolute top-0 w-full z-50">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex justify-between items-center gap-3">
@@ -16,15 +29,26 @@ export function MarketingHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-3 sm:gap-6 shrink-0">
-          <Link href="/login" className="text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors">
-            Sign In
-          </Link>
-          <Link
-            href="/signup"
-            className="text-sm font-semibold bg-[#55ddb1] hover:bg-[#3dcc9f] text-[#063f46] rounded-lg px-3 sm:px-5 py-2 transition-colors"
-          >
-            Get Started
-          </Link>
+          {signedIn ? (
+            <Link
+              href="/betting"
+              className="text-sm font-semibold bg-[#55ddb1] hover:bg-[#3dcc9f] text-[#063f46] rounded-lg px-3 sm:px-5 py-2 transition-colors"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors">
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className="text-sm font-semibold bg-[#55ddb1] hover:bg-[#3dcc9f] text-[#063f46] rounded-lg px-3 sm:px-5 py-2 transition-colors"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

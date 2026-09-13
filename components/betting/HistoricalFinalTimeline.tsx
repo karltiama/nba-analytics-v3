@@ -44,35 +44,35 @@ function EventRow({
   const periodBoundary = event.category === 'period';
 
   return (
-    <li className="min-w-0 py-2 border-t border-white/5 first:border-t-0">
+    <li className="min-w-0 py-2 border-t border-[#DCE9EA] first:border-t-0">
       <div className="flex gap-2 sm:gap-3 min-w-0 items-start">
         <span
-          className="shrink-0 w-[3.25rem] sm:w-14 text-right font-mono tabular-nums text-xs text-muted-foreground pt-0.5"
+          className="shrink-0 w-[3.25rem] sm:w-14 text-right font-mono tabular-nums text-xs text-[#4a6366] pt-0.5"
           aria-label={event.clock ? `Clock ${event.clock}` : undefined}
         >
           {formatTimelineClock(event.clock) || '—'}
         </span>
         <span
           className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-            periodBoundary ? 'bg-white' : scoring ? 'bg-[#00d4ff]' : 'bg-white/30'
+            periodBoundary ? 'bg-[#063f46]' : scoring ? 'bg-[#075B5C]' : 'bg-[#DCE9EA]'
           }`}
           aria-hidden="true"
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{category}</span>
+            <span className="text-[10px] uppercase tracking-wide text-[#4a6366]">{category}</span>
             {team ? (
-              <span className="text-[10px] font-medium text-white/70">{team}</span>
+              <span className="text-[10px] font-medium text-[#4a6366]">{team}</span>
             ) : null}
             {score ? (
-              <span className="ml-auto font-mono tabular-nums text-[11px] text-muted-foreground">
+              <span className="ml-auto font-mono tabular-nums text-[11px] text-[#4a6366]">
                 {score}
               </span>
             ) : null}
           </div>
           <p
             className={`text-sm break-words ${
-              periodBoundary ? 'font-semibold text-white' : scoring ? 'text-white' : 'text-white/90'
+              periodBoundary ? 'font-semibold text-[#063f46]' : scoring ? 'text-[#063f46]' : 'text-[#063f46]'
             }`}
           >
             {headline}
@@ -108,7 +108,7 @@ function EventList({
     <div className="min-w-0">
       {blocks.map((block) => (
         <section key={block.periodLabel} className="min-w-0">
-          <h3 className="sticky top-0 z-[1] bg-background/95 backdrop-blur-sm text-xs font-semibold text-white px-1 py-1.5 border-b border-white/10">
+          <h3 className="sticky top-0 z-[1] bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#063f46] px-1 py-1.5 border-b border-[#DCE9EA]">
             {block.periodLabel}
           </h3>
           <ol className="min-w-0">
@@ -209,15 +209,15 @@ export function HistoricalFinalTimeline({
     <section
       ref={rootRef}
       id="section-timeline"
-      className="scroll-mt-[10rem] glass-card rounded-xl overflow-hidden border border-white/5 min-w-0"
+      className="scroll-mt-[10rem] bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0"
       aria-labelledby="timeline-heading"
     >
-      <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Timeline</p>
-        <h2 id="timeline-heading" className="text-sm font-semibold text-white">
+      <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+        <p className="text-[10px] uppercase tracking-wide text-[#4a6366]">Timeline</p>
+        <h2 id="timeline-heading" className="text-sm font-semibold text-[#063f46]">
           Game chronology
         </h2>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-xs text-[#4a6366] mt-1">
           Play-by-play order. Official final stays in the header
           {showWarning && officialAwayScore != null && officialHomeScore != null
             ? ` (${officialAwayScore}–${officialHomeScore})`
@@ -228,13 +228,13 @@ export function HistoricalFinalTimeline({
 
       <div className="p-3 space-y-3 min-w-0 min-h-[6rem]">
         {status === 'idle' || status === 'loading' ? (
-          <p className="text-xs text-muted-foreground" role="status">
+          <p className="text-xs text-[#4a6366]" role="status">
             Loading play-by-play…
           </p>
         ) : null}
 
         {status === 'error' || timelineOff ? (
-          <p className="text-xs text-muted-foreground" role="status">
+          <p className="text-xs text-[#4a6366]" role="status">
             {TIMELINE_UNAVAILABLE_COPY}
           </p>
         ) : null}
@@ -255,12 +255,12 @@ export function HistoricalFinalTimeline({
                 {summaryItems.map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 min-w-0"
+                    className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2 min-w-0"
                   >
-                    <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <dt className="text-[10px] uppercase tracking-wide text-[#4a6366]">
                       {item.label}
                     </dt>
-                    <dd className="text-sm font-mono tabular-nums text-white break-words">{item.value}</dd>
+                    <dd className="text-sm font-mono tabular-nums text-[#063f46] break-words">{item.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -277,12 +277,18 @@ export function HistoricalFinalTimeline({
             >
               <TabsList
                 aria-label="Timeline view"
-                className="h-8 w-full sm:w-fit max-w-full bg-white/5 border border-white/10"
+                className="h-8 w-full sm:w-fit max-w-full bg-white border border-[#DCE9EA]"
               >
-                <TabsTrigger value={HISTORICAL_TIMELINE_VIEW_KEY} className="px-3 text-xs flex-1 sm:flex-none">
+                <TabsTrigger
+                  value={HISTORICAL_TIMELINE_VIEW_KEY}
+                  className="px-3 text-xs flex-1 sm:flex-none text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+                >
                   Key Events
                 </TabsTrigger>
-                <TabsTrigger value={HISTORICAL_TIMELINE_VIEW_FULL} className="px-3 text-xs flex-1 sm:flex-none">
+                <TabsTrigger
+                  value={HISTORICAL_TIMELINE_VIEW_FULL}
+                  className="px-3 text-xs flex-1 sm:flex-none text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+                >
                   Full Play-by-Play
                 </TabsTrigger>
               </TabsList>

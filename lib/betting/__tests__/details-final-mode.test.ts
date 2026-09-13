@@ -188,18 +188,21 @@ describe('GET /api/betting/games/:id/details Final contract', () => {
       if (s.includes('player_role_profile')) return [];
       if (s.includes('player_game_advanced')) return [];
       if (s.includes('game_starters')) {
+        expect(s).toContain('player_provider_ids');
         return [
           ...[1, 2, 3, 4, 5].map((n) => ({
             player_id: `h${n}`,
             player_name: `Home ${n}`,
             team_id: '13',
             position: n === 1 ? 'C' : 'G',
+            nba_player_id: n === 1 ? '1627747' : null,
           })),
           ...[1, 2, 3, 4, 5].map((n) => ({
             player_id: `a${n}`,
             player_name: `Away ${n}`,
             team_id: '27',
             position: 'F',
+            nba_player_id: null,
           })),
         ];
       }
@@ -229,6 +232,8 @@ describe('GET /api/betting/games/:id/details Final contract', () => {
     expect(body.starters.available).toBe(true);
     expect(body.starters.home).toHaveLength(5);
     expect(body.starters.away).toHaveLength(5);
+    expect(body.starters.home[0].nbaPlayerId).toBe('1627747');
+    expect(body.starters.home[1].nbaPlayerId).toBeNull();
     expect(body.availability.starters).toBe(true);
     expect(fetchLineupsFromBallDontLie).not.toHaveBeenCalled();
   });

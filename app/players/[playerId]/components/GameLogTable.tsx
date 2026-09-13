@@ -65,7 +65,7 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
                 return (
                   <TableRow key={game.game_id}>
                     <TableCell>
-                      <Link href={`/games/${game.game_id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                      <Link href={`/betting/games/${game.game_id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                         {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </Link>
                     </TableCell>
@@ -95,7 +95,7 @@ export function GameLogTable({ games, activeMetric, bettingLine }: GameLogTableP
                   )}
                 >
                   <TableCell>
-                    <Link href={`/games/${game.game_id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                    <Link href={`/betting/games/${game.game_id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                       {gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </Link>
                   </TableCell>

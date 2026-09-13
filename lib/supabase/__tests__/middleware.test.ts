@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import {
@@ -8,6 +10,8 @@ import {
   isSupabaseBrowserAuthConfigured,
   updateSession,
 } from '@/lib/supabase/middleware';
+
+const ROOT = join(__dirname, '../../..');
 
 const getUser = vi.fn();
 
@@ -22,6 +26,18 @@ vi.mock('@supabase/ssr', () => ({
 function makeRequest(path: string): NextRequest {
   return new NextRequest(`http://localhost${path}`);
 }
+
+describe('proxy matcher', () => {
+  it('refreshes cookies on /, /login, and /signup without treating them as auth-gated', () => {
+    const src = readFileSync(join(ROOT, 'proxy.ts'), 'utf8');
+    expect(src).toContain("'/'");
+    expect(src).toContain("'/login'");
+    expect(src).toContain("'/signup'");
+    expect(isSessionProtectedHtmlPath('/')).toBe(false);
+    expect(isSessionProtectedHtmlPath('/login')).toBe(false);
+    expect(isSessionProtectedHtmlPath('/signup')).toBe(false);
+  });
+});
 
 describe('isBettingHtmlPath', () => {
   it('matches betting pages only', () => {
@@ -164,5 +180,21 @@ describe('updateSession', () => {
     const response = await updateSession(makeRequest('/betting'));
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('refreshes session on / without requiring login or redirecting', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon-key');
+    getUser.mockResolvedValue({ data: { user: null } });
+
+    const guest = await updateSession(makeRequest('/'));
+    expect(guest.status).toBe(200);
+    expect(guest.headers.get('location')).toBeNull();
+    expect(getUser).toHaveBeenCalled();
+
+    getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
+    const signedIn = await updateSession(makeRequest('/'));
+    expect(signedIn.status).toBe(200);
+    expect(signedIn.headers.get('location')).toBeNull();
   });
 });

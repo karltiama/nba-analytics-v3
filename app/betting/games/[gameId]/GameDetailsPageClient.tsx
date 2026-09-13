@@ -61,13 +61,13 @@ export function GameDetailsPageClient({ gameId }: { gameId: string }) {
 
   if (error || !data?.game) {
     return (
-      <div className="min-h-screen bg-background gradient-mesh">
+      <div className="min-h-screen bg-[#f7f9f7]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="glass-card rounded-xl border-l-4 border-l-[#ff4757] p-8 text-center">
-            <h1 className="text-xl font-bold text-white mb-2">Game not found</h1>
-            <p className="text-muted-foreground mb-4">{error || 'This game could not be loaded.'}</p>
-            <Link href={slateHref()} className="text-[#00d4ff] hover:underline text-sm">
-              ← Back to Betting
+          <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm border-l-4 border-l-[#c2410c] p-8 text-center">
+            <h1 className="text-xl font-bold text-[#063f46] mb-2">Game not found</h1>
+            <p className="text-[#4a6366] mb-4">{error || 'This game could not be loaded.'}</p>
+            <Link href={slateHref()} className="text-[#075B5C] hover:underline text-sm">
+              ← Back to Dashboard
             </Link>
           </div>
         </div>

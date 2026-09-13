@@ -23,7 +23,7 @@ interface LineMovementChartProps {
 export function LineMovementChart({ 
   data, 
   label, 
-  color = '#00d4ff',
+  color = '#075B5C',
   height = 120,
   width = 400,
   embedded = false,
@@ -35,12 +35,12 @@ export function LineMovementChart({
   if (resolved.kind === 'empty') {
     const empty = (
       <div className="py-6 px-2 text-center">
-        <h4 className="text-xs font-medium text-white mb-1">{label}</h4>
-        <p className="text-xs text-muted-foreground">No movement data</p>
+        <h4 className="text-xs font-medium text-[#063f46] mb-1">{label}</h4>
+        <p className="text-xs text-[#4a6366]">No movement data</p>
       </div>
     );
     if (embedded) return empty;
-    return <div className="glass-card rounded-xl p-4">{empty}</div>;
+    return <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">{empty}</div>;
   }
 
   const safeData = resolved.points;
@@ -67,15 +67,15 @@ export function LineMovementChart({
   const openingValue = safeData[0].value;
   const currentValue = safeData[safeData.length - 1].value;
   const change = currentValue - openingValue;
-  const changeColor = change > 0 ? '#39ff14' : change < 0 ? '#ff4757' : '#8888a0';
+  const changeColor = change > 0 ? '#20B95A' : change < 0 ? '#c2410c' : '#8888a0';
 
   const content = (
     <>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-medium text-white">{label}</h4>
+        <h4 className="text-xs font-medium text-[#063f46]">{label}</h4>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-muted-foreground">
-            {referenceCaption}: <span className="text-white font-mono">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
+          <span className="text-[10px] text-[#4a6366]">
+            {referenceCaption}: <span className="text-[#063f46] font-mono">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
           </span>
           <span className="text-[10px]" style={{ color: changeColor }}>
             {change > 0 ? '+' : ''}{change.toFixed(1)}
@@ -109,13 +109,13 @@ export function LineMovementChart({
                 y1={y}
                 x2={width - padding.right}
                 y2={y}
-                stroke="rgba(255,255,255,0.05)"
+                stroke="rgba(6,63,70,0.08)"
                 strokeDasharray="2,2"
               />
               <text
                 x={width - padding.right + 5}
                 y={y + 3}
-                fill="#8888a0"
+                fill="#8aa0a3"
                 fontSize="9"
                 fontFamily="monospace"
               >
@@ -162,7 +162,7 @@ export function LineMovementChart({
             key={i}
             x={point.x}
             y={height - 8}
-            fill="#8888a0"
+            fill="#8aa0a3"
             fontSize="9"
             textAnchor="middle"
           >
@@ -174,7 +174,7 @@ export function LineMovementChart({
 
       {/* Current Value */}
       <div className="mt-1.5 flex items-center justify-center gap-1.5">
-        <span className="text-[10px] text-muted-foreground">{comparisonCaption}:</span>
+        <span className="text-[10px] text-[#4a6366]">{comparisonCaption}:</span>
         <span className="text-sm font-mono font-bold" style={{ color }}>
           {currentValue > 0 ? `+${currentValue}` : currentValue}
         </span>
@@ -183,7 +183,7 @@ export function LineMovementChart({
   );
 
   if (embedded) return content;
-  return <div className="glass-card rounded-xl p-4">{content}</div>;
+  return <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">{content}</div>;
 }
 
 

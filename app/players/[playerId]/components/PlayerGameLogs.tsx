@@ -99,7 +99,7 @@ export function PlayerGameLogs({ games, seasonLabel }: PlayerGameLogsProps) {
                   <TableRow key={game.game_id}>
                     <TableCell>
                       <Link
-                        href={`/games/${game.game_id}`}
+                        href={`/betting/games/${game.game_id}`}
                         className="text-blue-600 dark:text-blue-400 hover:underline"
                       >
                         {gameDate.toLocaleDateString()}
@@ -124,7 +124,7 @@ export function PlayerGameLogs({ games, seasonLabel }: PlayerGameLogsProps) {
                 <TableRow key={game.game_id}>
                   <TableCell>
                     <Link
-                      href={`/games/${game.game_id}`}
+                      href={`/betting/games/${game.game_id}`}
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       {gameDate.toLocaleDateString()}

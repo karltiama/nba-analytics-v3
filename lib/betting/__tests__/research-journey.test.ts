@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 import {
   explorerGamesApiHref,
@@ -70,5 +72,13 @@ describe('research journey URLs', () => {
     });
     expect(href).toContain('season=2023');
     expect(href).toContain('/betting/players/434?');
+  });
+
+  it('legacy /games/:id route redirects to /betting/games/:id', () => {
+    const page = readFileSync(join(process.cwd(), 'app/games/[gameId]/page.tsx'), 'utf8');
+    expect(page).toMatch(/redirect\(gameDetailHref/);
+    const cfg = readFileSync(join(process.cwd(), 'next.config.ts'), 'utf8');
+    expect(cfg).toMatch(/source: '\/games\/:gameId'/);
+    expect(cfg).toMatch(/destination: '\/betting\/games\/:gameId'/);
   });
 });

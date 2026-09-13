@@ -35,19 +35,19 @@ function TeamBoxTable({
   season?: string;
 }) {
   return (
-    <div className="glass-card rounded-xl overflow-hidden border border-white/5 min-w-0">
-      <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-        <Link href={`/teams/${teamId}`} className="text-sm font-semibold text-white hover:text-[#00d4ff]">
+    <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
+      <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
+        <Link href={`/teams/${teamId}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">
           {teamName}
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="text-xs text-muted-foreground p-4">No player logs for this team.</p>
+        <p className="text-xs text-[#4a6366] p-4">No player logs for this team.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="text-muted-foreground text-left">
+              <tr className="text-[#4a6366] text-left">
                 <th className="px-3 py-2 font-medium">Player</th>
                 <th className="px-2 py-2 font-medium text-right">MIN</th>
                 <th className="px-2 py-2 font-medium text-right">PTS</th>
@@ -59,7 +59,7 @@ function TeamBoxTable({
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={`${row.teamId}-${row.playerId}`} className="border-t border-white/5">
+                <tr key={`${row.teamId}-${row.playerId}`} className="border-t border-[#DCE9EA]">
                   <td className="px-3 py-1.5">
                     <Link
                       href={playerResearchHref({
@@ -68,27 +68,27 @@ function TeamBoxTable({
                         date,
                         season,
                       })}
-                      className="text-white hover:text-[#00d4ff]"
+                      className="text-[#063f46] hover:text-[#075B5C]"
                     >
                       {row.playerName || 'Player'}
                     </Link>
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-muted-foreground">
+                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#4a6366]">
                     {row.minutes ?? '—'}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                     {formatStat(row.points)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                     {formatStat(row.rebounds)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                     {formatStat(row.assists)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                     {formatStat(row.steals)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-white">
+                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
                     {formatStat(row.blocks)}
                   </td>
                 </tr>
@@ -127,9 +127,9 @@ export function HistoricalFinalBoxScore({
 
   if (!boxScore.available) {
     return (
-      <div className="glass-card rounded-xl border border-white/5 p-4">
-        <h2 className="text-sm font-semibold text-white mb-1">Box score</h2>
-        <p className="text-xs text-muted-foreground">
+      <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
+        <h2 className="text-sm font-semibold text-[#063f46] mb-1">Box score</h2>
+        <p className="text-xs text-[#4a6366]">
           Box score is not available for this game. The official final is still shown above.
         </p>
       </div>
@@ -160,7 +160,7 @@ export function HistoricalFinalBoxScore({
   if (!showAdvanced) {
     return (
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-white">Box score</h2>
+        <h2 className="text-sm font-semibold text-[#063f46]">Box score</h2>
         {boxTables}
       </div>
     );
@@ -179,19 +179,25 @@ export function HistoricalFinalBoxScore({
       >
         <div className="flex flex-col gap-2">
           <div>
-            <h2 className="text-sm font-semibold text-white">Players</h2>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
+            <h2 className="text-sm font-semibold text-[#063f46]">Players</h2>
+            <p className="text-[10px] text-[#4a6366] mt-0.5">
               This game — Box Score or Advanced. Not season role.
             </p>
           </div>
           <TabsList
             aria-label="This game player stats"
-            className="h-8 bg-white/5 border border-white/10"
+            className="h-8 bg-white border border-[#DCE9EA]"
           >
-            <TabsTrigger value={HISTORICAL_PLAYER_VIEW_BOX} className="px-3 text-xs">
+            <TabsTrigger
+              value={HISTORICAL_PLAYER_VIEW_BOX}
+              className="px-3 text-xs text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+            >
               Box Score
             </TabsTrigger>
-            <TabsTrigger value={HISTORICAL_PLAYER_VIEW_ADVANCED} className="px-3 text-xs">
+            <TabsTrigger
+              value={HISTORICAL_PLAYER_VIEW_ADVANCED}
+              className="px-3 text-xs text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+            >
               Advanced
             </TabsTrigger>
           </TabsList>

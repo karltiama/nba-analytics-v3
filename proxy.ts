@@ -7,6 +7,11 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Refresh session cookies on public marketing/auth pages too.
+    // Do not session-gate `/` — logged-in users may still visit home.
+    '/',
+    '/login',
+    '/signup',
     '/betting/:path*',
     '/ops',
     '/ops/:path*',
