@@ -159,7 +159,7 @@ export function LandingPropsTablePreview() {
         accent="cyan"
         variant="watermark"
         title="Props Explorer snapshot"
-        description="Model vs market — same grid you get inside the terminal (sample rows; tail as loading placeholders)."
+        description="Court Context projection vs the sportsbook line — same grid you get inside the terminal (sample rows; tail as loading placeholders)."
         href="/betting/props-explorer"
         linkLabel="Open props board"
       />
@@ -175,12 +175,14 @@ export function LandingPropsTablePreview() {
                 <th className="py-2.5 px-3 font-medium text-right">Line</th>
                 <th className="py-2.5 px-3 font-medium">Book</th>
                 <th className="py-2.5 px-3 font-medium text-right">Odds</th>
-                <th className="py-2.5 px-3 font-medium text-right">Implied</th>
+                <th className="py-2.5 px-3 font-medium text-right">Market P</th>
                 <th className="py-2.5 px-3 font-medium text-right" title="Track B.1 confidence tier">
                   Conf
                 </th>
-                <th className="py-2.5 px-3 font-medium text-right">Model</th>
-                <th className="py-2.5 px-3 font-medium text-right">EV</th>
+                <th className="py-2.5 px-3 font-medium text-right" title="Estimated win probability after market anchoring">
+                  Est. P
+                </th>
+                <th className="py-2.5 px-3 font-medium text-right">Est. EV</th>
                 <th className="py-2.5 px-3 font-medium text-right">Proj</th>
                 <th className="py-2.5 px-3 font-medium">Updated</th>
                 <th className="py-2.5 px-3 font-medium w-[72px]">Save</th>

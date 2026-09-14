@@ -22,6 +22,9 @@ export {
 export type { SentimentHistoryPoint, SentimentChartMode } from './MarketSentimentChart';
 export { FilterBar } from './FilterBar';
 export type { SortOption } from './FilterBar';
+export { MarketProbability } from './MarketProbability';
+export { ProjectionVsMarket } from './ProjectionVsMarket';
+export type { ProjectionVsMarketProps } from './ProjectionVsMarket';
 export { DateNav, getTodayET, addDaysET, getDateLabel } from './DateNav';
 export { TrendingPlayerStrip } from './TrendingPlayerStrip';
 export { UnauthorizedPanel } from './UnauthorizedPanel';

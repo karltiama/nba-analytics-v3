@@ -96,7 +96,7 @@ export function BettingInsights({ widgets }: BettingInsightsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#063f46]">Betting Model Insights</h2>
+        <h2 className="text-lg font-semibold text-[#063f46]">Context Signals</h2>
         <span className="text-xs text-[#4a6366]">Updated 2m ago</span>
       </div>
       

@@ -7,6 +7,10 @@ export interface LambdaEnv {
   preferredVendor: string;
   storePropRawJson: boolean;
   propRawJsonSampleRate: number;
+  s3ArchiveEnabled: boolean;
+  nbaDataBucket: string | null;
+  nbaRawPrefix: string;
+  awsRegion: string;
 }
 
 function cleanUrl(raw: string): string {
@@ -51,5 +55,9 @@ export function getLambdaEnv(): LambdaEnv {
     preferredVendor: (process.env.PREFERRED_VENDOR || DEFAULT_PREFERRED_VENDOR).trim().toLowerCase(),
     storePropRawJson: (process.env.STORE_PROP_RAW_JSON || 'false').toLowerCase() === 'true',
     propRawJsonSampleRate: rawJsonSampleRate,
+    s3ArchiveEnabled: (process.env.PLAYER_PROP_S3_ARCHIVE_ENABLED || 'false').toLowerCase() === 'true',
+    nbaDataBucket: process.env.NBA_DATA_BUCKET?.trim() || null,
+    nbaRawPrefix: (process.env.NBA_RAW_PREFIX || 'raw').trim().replace(/\/+$/, '') || 'raw',
+    awsRegion: process.env.AWS_REGION?.trim() || 'us-east-1',
   };
 }

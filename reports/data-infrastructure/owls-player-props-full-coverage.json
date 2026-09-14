@@ -1,0 +1,617 @@
+{
+  "generatedAt": "2026-09-14T20:33:49.513Z",
+  "endpoint": "/api/v1/history/player-props",
+  "missingness": "EMPTY_PROVIDER_HISTORY means Owls returned HTTP 200 with no retained player-prop rows. It is not proof that a sportsbook offered no market.",
+  "seasons": {
+    "2023": {
+      "season": "2023",
+      "gamesTotal": 1319,
+      "populated": 276,
+      "emptyProviderHistory": 1043,
+      "mappingFailed": 0,
+      "requestFailed": 0,
+      "archiveFailed": 0,
+      "coveragePct": 0.2092494313874147,
+      "rows": 79399,
+      "books": {
+        "betmgm": 28719,
+        "caesars": 24013,
+        "draftkings": 26667
+      },
+      "propTypes": {
+        "assists": 9695,
+        "blocks": 11144,
+        "points": 11363,
+        "rebounds": 11867,
+        "steals": 11282,
+        "threes": 11408,
+        "turnovers": 12640
+      },
+      "coreGameCoverage": {
+        "PTS": {
+          "games": 276,
+          "rows": 11363
+        },
+        "REB": {
+          "games": 276,
+          "rows": 11867
+        },
+        "AST": {
+          "games": 276,
+          "rows": 9695
+        },
+        "3PM": {
+          "games": 276,
+          "rows": 11408
+        },
+        "PRA": {
+          "games": 0,
+          "rows": 0
+        },
+        "PA": {
+          "games": 0,
+          "rows": 0
+        },
+        "PR": {
+          "games": 0,
+          "rows": 0
+        },
+        "RA": {
+          "games": 0,
+          "rows": 0
+        }
+      },
+      "quotes": {
+        "FULL_TWO_WAY": 79397,
+        "SINGLE_PRICE": 0,
+        "PARTIAL": 2,
+        "MISSING_PRICE": 0
+      },
+      "quoteFields": {
+        "openingLine": 79398,
+        "openingOver": 79398,
+        "openingUnder": 79397,
+        "closingLine": 79399,
+        "closingOver": 79399,
+        "closingUnder": 79398,
+        "americanPrice": 0
+      },
+      "byPhase": {
+        "regular": {
+          "games": 1231,
+          "populated": 261,
+          "empty": 970,
+          "rows": 74802
+        },
+        "play_in": {
+          "games": 6,
+          "populated": 3,
+          "empty": 3,
+          "rows": 942
+        },
+        "playoff": {
+          "games": 82,
+          "populated": 12,
+          "empty": 70,
+          "rows": 3655
+        }
+      },
+      "byMonth": {
+        "2023-10": {
+          "games": 52,
+          "populated": 29,
+          "empty": 23,
+          "rows": 8410
+        },
+        "2023-11": {
+          "games": 212,
+          "populated": 35,
+          "empty": 177,
+          "rows": 10325
+        },
+        "2023-12": {
+          "games": 212,
+          "populated": 13,
+          "empty": 199,
+          "rows": 3787
+        },
+        "2024-01": {
+          "games": 226,
+          "populated": 25,
+          "empty": 201,
+          "rows": 6253
+        },
+        "2024-02": {
+          "games": 176,
+          "populated": 14,
+          "empty": 162,
+          "rows": 3131
+        },
+        "2024-03": {
+          "games": 237,
+          "populated": 83,
+          "empty": 154,
+          "rows": 24834
+        },
+        "2024-04": {
+          "games": 156,
+          "populated": 77,
+          "empty": 79,
+          "rows": 22659
+        },
+        "2024-05": {
+          "games": 43,
+          "populated": 0,
+          "empty": 43,
+          "rows": 0
+        },
+        "2024-06": {
+          "games": 5,
+          "populated": 0,
+          "empty": 5,
+          "rows": 0
+        }
+      },
+      "byBook": {
+        "betmgm": {
+          "games": 267,
+          "rows": 28719,
+          "PTS": 4183,
+          "REB": 4174,
+          "AST": 4148,
+          "3PM": 3743
+        },
+        "caesars": {
+          "games": 276,
+          "rows": 24013,
+          "PTS": 3425,
+          "REB": 3662,
+          "AST": 3020,
+          "3PM": 3853
+        },
+        "draftkings": {
+          "games": 265,
+          "rows": 26667,
+          "PTS": 3755,
+          "REB": 4031,
+          "AST": 2527,
+          "3PM": 3812
+        }
+      },
+      "requests": 3287,
+      "status429": 0,
+      "status503": 0,
+      "elapsedMs": 2190899,
+      "s3Objects": 3287,
+      "checksumVerifiedPages": 925,
+      "checksumFailedPages": 0
+    },
+    "2024": {
+      "season": "2024",
+      "gamesTotal": 1321,
+      "populated": 324,
+      "emptyProviderHistory": 995,
+      "mappingFailed": 2,
+      "requestFailed": 0,
+      "archiveFailed": 0,
+      "coveragePct": 0.24526873580620742,
+      "rows": 230317,
+      "books": {
+        "espnbet": 230317
+      },
+      "propTypes": {
+        "assists": 17325,
+        "blocks": 9351,
+        "points": 27220,
+        "rebounds": 20187,
+        "steals": 12388,
+        "threes": 13778,
+        "turnovers": 4060,
+        "field_goals": 1045,
+        "total_field_goals_made_(incl._overtime)": 1067,
+        "assists_rebounds": 22464,
+        "points_assists": 26399,
+        "points_rebounds": 28438,
+        "points_rebounds_assists": 29530,
+        "steals_blocks": 17065
+      },
+      "coreGameCoverage": {
+        "PTS": {
+          "games": 310,
+          "rows": 27220
+        },
+        "REB": {
+          "games": 310,
+          "rows": 20187
+        },
+        "AST": {
+          "games": 310,
+          "rows": 17325
+        },
+        "3PM": {
+          "games": 309,
+          "rows": 13778
+        },
+        "PRA": {
+          "games": 241,
+          "rows": 29530
+        },
+        "PA": {
+          "games": 241,
+          "rows": 26399
+        },
+        "PR": {
+          "games": 241,
+          "rows": 28438
+        },
+        "RA": {
+          "games": 241,
+          "rows": 22464
+        }
+      },
+      "quotes": {
+        "FULL_TWO_WAY": 33662,
+        "SINGLE_PRICE": 0,
+        "PARTIAL": 196655,
+        "MISSING_PRICE": 0
+      },
+      "quoteFields": {
+        "openingLine": 230317,
+        "openingOver": 36918,
+        "openingUnder": 37135,
+        "closingLine": 230317,
+        "closingOver": 38126,
+        "closingUnder": 38302,
+        "americanPrice": 201980
+      },
+      "byPhase": {
+        "regular": {
+          "games": 1231,
+          "populated": 289,
+          "empty": 942,
+          "rows": 193300
+        },
+        "play_in": {
+          "games": 6,
+          "populated": 3,
+          "empty": 3,
+          "rows": 3352
+        },
+        "playoff": {
+          "games": 84,
+          "populated": 32,
+          "empty": 50,
+          "rows": 33665
+        }
+      },
+      "byMonth": {
+        "2024-10": {
+          "games": 67,
+          "populated": 35,
+          "empty": 32,
+          "rows": 4862
+        },
+        "2024-11": {
+          "games": 222,
+          "populated": 32,
+          "empty": 190,
+          "rows": 4890
+        },
+        "2024-12": {
+          "games": 192,
+          "populated": 29,
+          "empty": 163,
+          "rows": 9927
+        },
+        "2025-01": {
+          "games": 224,
+          "populated": 29,
+          "empty": 195,
+          "rows": 16517
+        },
+        "2025-02": {
+          "games": 173,
+          "populated": 21,
+          "empty": 152,
+          "rows": 17230
+        },
+        "2025-03": {
+          "games": 245,
+          "populated": 82,
+          "empty": 163,
+          "rows": 82267
+        },
+        "2025-04": {
+          "games": 151,
+          "populated": 85,
+          "empty": 66,
+          "rows": 83333
+        },
+        "2025-05": {
+          "games": 39,
+          "populated": 11,
+          "empty": 26,
+          "rows": 11291
+        },
+        "2025-06": {
+          "games": 8,
+          "populated": 0,
+          "empty": 8,
+          "rows": 0
+        }
+      },
+      "byBook": {
+        "espn_bet": {
+          "games": 324,
+          "rows": 230317,
+          "PTS": 27220,
+          "REB": 20187,
+          "AST": 17325,
+          "3PM": 13778
+        }
+      },
+      "requests": 4788,
+      "status429": 0,
+      "status503": 0,
+      "elapsedMs": 3515806,
+      "s3Objects": 4788,
+      "checksumVerifiedPages": 2472,
+      "checksumFailedPages": 0
+    },
+    "2025": {
+      "season": "2025",
+      "gamesTotal": 1322,
+      "populated": 82,
+      "emptyProviderHistory": 1237,
+      "mappingFailed": 3,
+      "requestFailed": 0,
+      "archiveFailed": 0,
+      "coveragePct": 0.06202723146747353,
+      "rows": 42677,
+      "books": {
+        "espnbet": 37205,
+        "draftkings": 5472
+      },
+      "propTypes": {
+        "basketball_player_prop": 5057,
+        "points": 5860,
+        "points_rebounds": 5640,
+        "rebounds": 5168,
+        "threes": 3728,
+        "steals_blocks": 165,
+        "1st_quarter_total": 3331,
+        "assists": 3161,
+        "assists_rebounds": 512,
+        "blocks": 540,
+        "points_assists": 729,
+        "steals": 1208,
+        "points_rebounds_assists": 4683,
+        "3-point_field_goals_milestones": 274,
+        "assists_milestones": 298,
+        "assists_milestones_-_1st_quarter": 85,
+        "blocks_milestones": 199,
+        "points_+_assists_+_rebounds_milestones": 301,
+        "points_+_assists_milestones": 299,
+        "points_+_rebounds_milestones": 320,
+        "points_milestones": 335,
+        "points_milestones_-_1st_quarter": 200,
+        "rebounds_milestones": 344,
+        "steals_milestones": 230,
+        "total_first_quarter_points": 10
+      },
+      "coreGameCoverage": {
+        "PTS": {
+          "games": 82,
+          "rows": 5860
+        },
+        "REB": {
+          "games": 82,
+          "rows": 5168
+        },
+        "AST": {
+          "games": 82,
+          "rows": 3161
+        },
+        "3PM": {
+          "games": 82,
+          "rows": 3728
+        },
+        "PRA": {
+          "games": 80,
+          "rows": 4683
+        },
+        "PA": {
+          "games": 82,
+          "rows": 729
+        },
+        "PR": {
+          "games": 82,
+          "rows": 5640
+        },
+        "RA": {
+          "games": 27,
+          "rows": 512
+        }
+      },
+      "quotes": {
+        "FULL_TWO_WAY": 5315,
+        "SINGLE_PRICE": 0,
+        "PARTIAL": 37362,
+        "MISSING_PRICE": 0
+      },
+      "quoteFields": {
+        "openingLine": 42677,
+        "openingOver": 6043,
+        "openingUnder": 6162,
+        "closingLine": 42677,
+        "closingOver": 6388,
+        "closingUnder": 6514,
+        "americanPrice": 39073
+      },
+      "byPhase": {
+        "regular": {
+          "games": 1231,
+          "populated": 63,
+          "empty": 1168,
+          "rows": 37477
+        },
+        "play_in": {
+          "games": 6,
+          "populated": 1,
+          "empty": 5,
+          "rows": 276
+        },
+        "playoff": {
+          "games": 85,
+          "populated": 18,
+          "empty": 64,
+          "rows": 4924
+        }
+      },
+      "byMonth": {
+        "2025-10": {
+          "games": 75,
+          "populated": 33,
+          "empty": 42,
+          "rows": 20336
+        },
+        "2025-11": {
+          "games": 221,
+          "populated": 29,
+          "empty": 192,
+          "rows": 16869
+        },
+        "2025-12": {
+          "games": 196,
+          "populated": 0,
+          "empty": 196,
+          "rows": 0
+        },
+        "2026-01": {
+          "games": 233,
+          "populated": 1,
+          "empty": 232,
+          "rows": 272
+        },
+        "2026-02": {
+          "games": 168,
+          "populated": 0,
+          "empty": 168,
+          "rows": 0
+        },
+        "2026-03": {
+          "games": 237,
+          "populated": 0,
+          "empty": 237,
+          "rows": 0
+        },
+        "2026-04": {
+          "games": 147,
+          "populated": 19,
+          "empty": 127,
+          "rows": 5200
+        },
+        "2026-05": {
+          "games": 40,
+          "populated": 0,
+          "empty": 38,
+          "rows": 0
+        },
+        "2026-06": {
+          "games": 5,
+          "populated": 0,
+          "empty": 5,
+          "rows": 0
+        }
+      },
+      "byBook": {
+        "espn_bet": {
+          "games": 62,
+          "rows": 37205,
+          "PTS": 5546,
+          "REB": 4878,
+          "AST": 2920,
+          "3PM": 3482
+        },
+        "draftkings": {
+          "games": 20,
+          "rows": 5472,
+          "PTS": 314,
+          "REB": 290,
+          "AST": 241,
+          "3PM": 246
+        }
+      },
+      "requests": 3028,
+      "status429": 0,
+      "status503": 0,
+      "elapsedMs": 1998892,
+      "s3Objects": 3028,
+      "checksumVerifiedPages": 470,
+      "checksumFailedPages": 0
+    }
+  },
+  "archiveIntegrity": {
+    "runs": {
+      "owls-2026-09-14-season-2023": {
+        "run_id": "owls-2026-09-14-season-2023",
+        "expected_objects": 3287,
+        "actual_objects": 3287,
+        "missing": [],
+        "checksum_mismatch": [],
+        "failed_pages": [],
+        "incomplete_games": [],
+        "ok": true
+      },
+      "owls-2026-09-14-season-2024": {
+        "run_id": "owls-2026-09-14-season-2024",
+        "expected_objects": 4788,
+        "actual_objects": 4788,
+        "missing": [],
+        "checksum_mismatch": [],
+        "failed_pages": [],
+        "incomplete_games": [],
+        "ok": true
+      },
+      "owls-2026-09-14-season-2025": {
+        "run_id": "owls-2026-09-14-season-2025",
+        "expected_objects": 3028,
+        "actual_objects": 3028,
+        "missing": [],
+        "checksum_mismatch": [],
+        "failed_pages": [],
+        "incomplete_games": [],
+        "ok": true
+      }
+    },
+    "expectedUnits": 11103,
+    "actualUnits": 11103,
+    "missing": [],
+    "checksumMismatch": [],
+    "requestFailures": [],
+    "incompleteGames": [],
+    "ok": true
+  },
+  "apiUsage": {
+    "requestsSuccessful": 11103,
+    "status429": 0,
+    "status503": 0,
+    "lastRemainingMonthHeader": "288859",
+    "elapsedMs": 7705597
+  },
+  "s3Storage": {
+    "source": "owls_insight",
+    "objects": 11104,
+    "compressedBytes": 24092016
+  },
+  "namedBooks": [
+    "draftkings",
+    "betmgm",
+    "caesars",
+    "espn bet",
+    "espnbet",
+    "espn_bet"
+  ],
+  "recommendation": "INVESTIGATE /history/props FOR MISSING COVERAGE",
+  "selectionBias": "Market-model evaluations can only use games and players with valid historical market rows. Absence in Owls is not sportsbook-market absence."
+}

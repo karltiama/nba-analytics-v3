@@ -1,0 +1,97 @@
+{
+  "success": true,
+  "fixture": true,
+  "data": {
+    "props": [
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "LeBron James",
+        "propType": "points",
+        "book": "draftkings",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 24.5, "overPrice": -115, "underPrice": -105, "americanPrice": null },
+        "opening": { "line": 25.5, "overPrice": -110, "underPrice": -110, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "Jayson Tatum",
+        "propType": "rebounds",
+        "book": "caesars",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 8.5, "overPrice": -120, "underPrice": 100, "americanPrice": null },
+        "opening": { "line": 8.5, "overPrice": -120, "underPrice": 100, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "Jayson Tatum",
+        "propType": "assists",
+        "book": "betmgm",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 5.5, "overPrice": -110, "underPrice": -110, "americanPrice": null },
+        "opening": { "line": 5.5, "overPrice": -110, "underPrice": -110, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "LeBron James",
+        "propType": "threes",
+        "book": "draftkings",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 1.5, "overPrice": -130, "underPrice": 110, "americanPrice": null },
+        "opening": { "line": 2.5, "overPrice": -110, "underPrice": -110, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "LeBron James",
+        "propType": "points",
+        "book": "betmgm",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 24.5, "overPrice": -115, "underPrice": -105, "americanPrice": null },
+        "opening": { "line": 25.5, "overPrice": -110, "underPrice": -110, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "Jayson Tatum",
+        "propType": "points",
+        "book": "caesars",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 27.5, "overPrice": -110, "underPrice": -110, "americanPrice": null },
+        "opening": { "line": 27.5, "overPrice": -110, "underPrice": -110, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "LeBron James",
+        "propType": "rebounds",
+        "book": "draftkings",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 7.5, "overPrice": -105, "underPrice": -115, "americanPrice": null },
+        "opening": { "line": 7.5, "overPrice": -105, "underPrice": -115, "americanPrice": null }
+      },
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "playerName": "Jayson Tatum",
+        "propType": "threes",
+        "book": "betmgm",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "closing": { "line": 3.5, "overPrice": -110, "underPrice": -110, "americanPrice": null },
+        "opening": { "line": 3.5, "overPrice": -110, "underPrice": -110, "americanPrice": null }
+      }
+    ],
+    "pagination": {
+      "total": 8,
+      "limit": 100,
+      "offset": 0,
+      "hasMore": false
+    }
+  },
+  "meta": {
+    "note": "FIXTURE_SYNTHETIC shaped from the 2026-09-14 live /history/player-props probe (data.props + nested opening/closing + playerName + threes). Combo markets PRA/PA/PR/RA were absent on the live Christmas game and are not synthesized here. No API key material."
+  }
+}

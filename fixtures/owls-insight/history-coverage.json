@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "fixture": true,
+  "data": {
+    "nba": {
+      "games": { "start": "2016-10-25", "end": "2026-06-14" },
+      "playerProps": { "start": "2022-10-18", "end": "2026-06-14" },
+      "note": "FIXTURE_SYNTHETIC. Live /history/coverage must confirm actual ranges."
+    }
+  }
+}

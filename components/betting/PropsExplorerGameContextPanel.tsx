@@ -50,7 +50,7 @@ function GameContextPlaceholder({ message }: { message: string }) {
     <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
       <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
         <Zap className="w-4 h-4 text-[#075B5C] shrink-0" aria-hidden />
-        <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+        <h2 className="text-sm font-semibold text-[#063f46]">AI Matchup Summary</h2>
         <span className="text-[9px] px-1.5 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">Beta</span>
       </div>
       <p className="p-3 text-[11px] text-[#4a6366] leading-relaxed">{message}</p>
@@ -301,7 +301,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
 
   if (!gameId?.trim()) {
     return (
-      <GameContextPlaceholder message="Choose a game from the filter above, or select a player in the table, to load the AI projection summary and split tables for that matchup." />
+      <GameContextPlaceholder message="Choose a game from the filter above, or select a player in the table, to load the AI matchup summary and split tables for that matchup." />
     );
   }
 
@@ -310,7 +310,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
         <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
           <Loader2 className="w-4 h-4 text-[#075B5C] animate-spin shrink-0" aria-hidden />
-          <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+          <h2 className="text-sm font-semibold text-[#063f46]">AI Matchup Summary</h2>
           <span className="text-[9px] px-1.5 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">Beta</span>
         </div>
         <div className="p-3 space-y-2 animate-pulse">
@@ -327,7 +327,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden border-l-4 border-l-amber-500">
         <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
           <LayoutGrid className="w-4 h-4 text-amber-600 shrink-0" aria-hidden />
-          <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+          <h2 className="text-sm font-semibold text-[#063f46]">AI Matchup Summary</h2>
         </div>
         <p className="p-3 text-[11px] text-amber-800">{error}</p>
       </div>
@@ -348,7 +348,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
             <div className="flex items-center justify-center p-1 rounded-md bg-[#55ddb1]/25 shrink-0">
               <Zap className="w-3.5 h-3.5 text-[#075B5C]" aria-hidden />
             </div>
-            <h2 className="text-sm font-semibold text-[#063f46]">AI Projection Summary</h2>
+            <h2 className="text-sm font-semibold text-[#063f46]">AI Matchup Summary</h2>
             <span className="text-[9px] px-1.5 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">Beta</span>
           </div>
           <p className="text-[11px] text-[#4a6366] mt-1 truncate flex items-center gap-1.5" title={matchupLabel}>
@@ -423,6 +423,9 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
         {aiSummaryStatus === 'error' && (
           <p className="text-[10px] text-amber-700">Could not load AI summary. Try again later.</p>
         )}
+        <p className="text-[10px] text-[#8aa0a3]">
+          AI-written matchup briefing from on-page signals. It does not produce win probabilities or game projections.
+        </p>
 
         <UnderlyingNumbersBlock injuryMatchupContext={injuryMatchupContext} game={game} />
 

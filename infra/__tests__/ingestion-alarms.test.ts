@@ -24,6 +24,16 @@ describe('ingestion CloudWatch alarms (13G.1)', () => {
     expect(src).toContain('aws_sqs_queue.player_props_dlq.name');
   });
 
+  it('keeps the props DLQ for 14 days so weekend archive failures remain redriveable', () => {
+    const lambda = fs
+      .readFileSync(path.resolve(__dirname, '../lambda.tf'), 'utf8')
+      .replace(/\r\n/g, '\n');
+    const start = lambda.indexOf('resource "aws_sqs_queue" "player_props_dlq"');
+    const next = lambda.indexOf('\nresource "', start + 10);
+    const block = lambda.slice(start, next === -1 ? undefined : next);
+    expect(block).toContain('message_retention_seconds = 1209600');
+  });
+
   it('adds a quiet game-status-sync Errors alarm gated on create', () => {
     expect(src).toContain('resource "aws_cloudwatch_metric_alarm" "game_status_sync_errors"');
     expect(src).toContain('nba-game-status-sync-errors');

@@ -18,7 +18,8 @@ create table if not exists raw.player_prop_snapshots_v2 (
   odds_decimal        numeric,
   implied_probability numeric,
   fetched_at          timestamptz not null default now(),
-  raw_json            jsonb
+  raw_json            jsonb,
+  pull_run_id         bigint
 );
 
 -- Dropped: game_id_idx (covered by game_player_prop composite), player_id_idx (no standalone queries).
@@ -26,3 +27,6 @@ create index if not exists raw_player_prop_snapshots_v2_fetched_at_idx
   on raw.player_prop_snapshots_v2 (fetched_at);
 create index if not exists raw_player_prop_snapshots_v2_game_player_prop_idx
   on raw.player_prop_snapshots_v2 (game_id, player_id, prop_type);
+create index if not exists raw_player_prop_snapshots_v2_pull_run_idx
+  on raw.player_prop_snapshots_v2 (pull_run_id, game_id)
+  where pull_run_id is not null;

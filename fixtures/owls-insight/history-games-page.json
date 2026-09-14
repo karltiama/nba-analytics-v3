@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "fixture": true,
+  "data": {
+    "games": [
+      {
+        "eventId": "owls-fixture-event-1037995",
+        "sport": "nba",
+        "homeTeam": "Los Angeles Lakers",
+        "awayTeam": "Boston Celtics",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "homeScore": 115,
+        "awayScore": 126,
+        "season": "2023-24",
+        "gameType": "regular",
+        "venue": "crypto.com Arena"
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "limit": 100,
+      "offset": 0,
+      "hasMore": false
+    }
+  },
+  "meta": {
+    "note": "FIXTURE_SYNTHETIC. Wrapper/field names copied from the 2026-09-14 live /history/games probe (data.games + pagination.hasMore + gameDate). Scores/teams are public box-score facts; no API key material."
+  }
+}

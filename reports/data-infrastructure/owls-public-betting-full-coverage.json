@@ -1,0 +1,451 @@
+{
+  "generatedAt": "2026-09-14T23:13:32.315Z",
+  "liveContract": {
+    "endpoint": "GET /api/v1/history/public-betting",
+    "wrapper": "{ success, data: { betting, pagination:{total,limit,offset,hasMore} } }",
+    "rowShape": "one betting[] row per event: eventId, sport, homeTeam, awayTeam, gameDate, spread{homePct,awayPct}, total{overPct,underPct}",
+    "documentedVsLive": "Docs mention bet % and money % by side. Live rows expose a single ticket-style percent per spread/total side. No moneyline object, no money-share fields, no book, no capturedAt.",
+    "requestCost": "1 request/game at limit=100; pagination.hasMore=false on probes"
+  },
+  "captureTimeSemantics": {
+    "class": "TIMING_UNKNOWN",
+    "gameDate": "Owls midnight UTC game identity, not a public-betting capture timestamp",
+    "notSafeAsTimeSpecificModelFeature": true
+  },
+  "missingness": "EMPTY_PROVIDER_HISTORY means Owls returned HTTP 200 with no betting[] rows. It is not proof that no public betting market existed. Provider 0 is preserved and is not rewritten to missing. All-zero snapshots are POPULATED, not empty.",
+  "researchSafety": {
+    "SAFE_FOR_DESCRIPTIVE_RESEARCH": "YES",
+    "SAFE_FOR_PREGAME_MODEL_FEATURES": "NO",
+    "ticketVsMoney": "Live rows do not expose a money-share field. ticket_money_gap cannot be computed from this archive.",
+    "interpretationsForbidden": [
+      "money share != sharp money",
+      "public majority != bad side",
+      "unknown timing can create leakage",
+      "missing provider history != no public betting market",
+      "provider 0 != proven absence of public betting"
+    ]
+  },
+  "seasons": {
+    "2023": {
+      "season": "2023",
+      "gamesTotal": 1319,
+      "gamesMapped": 1319,
+      "populated": 1319,
+      "emptyProviderHistory": 0,
+      "mappingFailed": 0,
+      "requestFailed": 0,
+      "archiveFailed": 0,
+      "coveragePct": 1,
+      "rows": 1319,
+      "gamesWithSpread": 1319,
+      "gamesWithTotal": 1319,
+      "gamesWithMoneyline": 0,
+      "gamesSpreadNonZero": 2,
+      "gamesTotalNonZero": 2,
+      "gamesAllZero": 1317,
+      "gamesWithMoneyShare": 0,
+      "captureTiming": {
+        "TIMING_UNKNOWN": 1319
+      },
+      "byPhase": {
+        "regular": {
+          "games": 1231,
+          "populated": 1231,
+          "empty": 0,
+          "rows": 1231
+        },
+        "play_in": {
+          "games": 6,
+          "populated": 6,
+          "empty": 0,
+          "rows": 6
+        },
+        "playoff": {
+          "games": 82,
+          "populated": 82,
+          "empty": 0,
+          "rows": 82
+        }
+      },
+      "byMonth": {
+        "2023-10": {
+          "games": 52,
+          "populated": 52,
+          "empty": 0,
+          "rows": 52,
+          "allZero": 50
+        },
+        "2023-11": {
+          "games": 212,
+          "populated": 212,
+          "empty": 0,
+          "rows": 212,
+          "allZero": 212
+        },
+        "2023-12": {
+          "games": 212,
+          "populated": 212,
+          "empty": 0,
+          "rows": 212,
+          "allZero": 212
+        },
+        "2024-01": {
+          "games": 226,
+          "populated": 226,
+          "empty": 0,
+          "rows": 226,
+          "allZero": 226
+        },
+        "2024-02": {
+          "games": 176,
+          "populated": 176,
+          "empty": 0,
+          "rows": 176,
+          "allZero": 176
+        },
+        "2024-03": {
+          "games": 237,
+          "populated": 237,
+          "empty": 0,
+          "rows": 237,
+          "allZero": 237
+        },
+        "2024-04": {
+          "games": 156,
+          "populated": 156,
+          "empty": 0,
+          "rows": 156,
+          "allZero": 156
+        },
+        "2024-05": {
+          "games": 43,
+          "populated": 43,
+          "empty": 0,
+          "rows": 43,
+          "allZero": 43
+        },
+        "2024-06": {
+          "games": 5,
+          "populated": 5,
+          "empty": 0,
+          "rows": 5,
+          "allZero": 5
+        }
+      },
+      "requests": 1319,
+      "status429": 0,
+      "status503": 0,
+      "elapsedMs": 374597,
+      "s3Objects": 1319,
+      "checksumVerifiedPages": 1319,
+      "checksumFailedPages": 0,
+      "lastRemainingMonth": "283456",
+      "joinableToClosingOdds": 1319
+    },
+    "2024": {
+      "season": "2024",
+      "gamesTotal": 1321,
+      "gamesMapped": 1319,
+      "populated": 1319,
+      "emptyProviderHistory": 0,
+      "mappingFailed": 2,
+      "requestFailed": 0,
+      "archiveFailed": 0,
+      "coveragePct": 0.9984859954579863,
+      "rows": 1319,
+      "gamesWithSpread": 1319,
+      "gamesWithTotal": 1319,
+      "gamesWithMoneyline": 0,
+      "gamesSpreadNonZero": 1086,
+      "gamesTotalNonZero": 638,
+      "gamesAllZero": 160,
+      "gamesWithMoneyShare": 0,
+      "captureTiming": {
+        "TIMING_UNKNOWN": 1319
+      },
+      "byPhase": {
+        "regular": {
+          "games": 1231,
+          "populated": 1231,
+          "empty": 0,
+          "rows": 1231
+        },
+        "play_in": {
+          "games": 6,
+          "populated": 6,
+          "empty": 0,
+          "rows": 6
+        },
+        "playoff": {
+          "games": 84,
+          "populated": 82,
+          "empty": 0,
+          "rows": 82
+        }
+      },
+      "byMonth": {
+        "2024-10": {
+          "games": 67,
+          "populated": 67,
+          "empty": 0,
+          "rows": 67,
+          "allZero": 1
+        },
+        "2024-11": {
+          "games": 222,
+          "populated": 222,
+          "empty": 0,
+          "rows": 222,
+          "allZero": 51
+        },
+        "2024-12": {
+          "games": 192,
+          "populated": 192,
+          "empty": 0,
+          "rows": 192,
+          "allZero": 12
+        },
+        "2025-01": {
+          "games": 224,
+          "populated": 224,
+          "empty": 0,
+          "rows": 224,
+          "allZero": 3
+        },
+        "2025-02": {
+          "games": 173,
+          "populated": 173,
+          "empty": 0,
+          "rows": 173,
+          "allZero": 48
+        },
+        "2025-03": {
+          "games": 245,
+          "populated": 245,
+          "empty": 0,
+          "rows": 245,
+          "allZero": 12
+        },
+        "2025-04": {
+          "games": 151,
+          "populated": 151,
+          "empty": 0,
+          "rows": 151,
+          "allZero": 1
+        },
+        "2025-05": {
+          "games": 39,
+          "populated": 37,
+          "empty": 0,
+          "rows": 37,
+          "allZero": 24
+        },
+        "2025-06": {
+          "games": 8,
+          "populated": 8,
+          "empty": 0,
+          "rows": 8,
+          "allZero": 8
+        }
+      },
+      "requests": 1319,
+      "status429": 0,
+      "status503": 0,
+      "elapsedMs": 396138,
+      "s3Objects": 1319,
+      "checksumVerifiedPages": 1319,
+      "checksumFailedPages": 0,
+      "lastRemainingMonth": "282136",
+      "joinableToClosingOdds": 1319
+    },
+    "2025": {
+      "season": "2025",
+      "gamesTotal": 1322,
+      "gamesMapped": 1319,
+      "populated": 1268,
+      "emptyProviderHistory": 51,
+      "mappingFailed": 3,
+      "requestFailed": 0,
+      "archiveFailed": 0,
+      "coveragePct": 0.9591527987897126,
+      "rows": 1267,
+      "gamesWithSpread": 1267,
+      "gamesWithTotal": 1267,
+      "gamesWithMoneyline": 0,
+      "gamesSpreadNonZero": 1084,
+      "gamesTotalNonZero": 667,
+      "gamesAllZero": 89,
+      "gamesWithMoneyShare": 0,
+      "captureTiming": {
+        "TIMING_UNKNOWN": 1267
+      },
+      "byPhase": {
+        "regular": {
+          "games": 1231,
+          "populated": 1230,
+          "empty": 1,
+          "rows": 1229
+        },
+        "play_in": {
+          "games": 6,
+          "populated": 6,
+          "empty": 0,
+          "rows": 6
+        },
+        "playoff": {
+          "games": 85,
+          "populated": 32,
+          "empty": 50,
+          "rows": 32
+        }
+      },
+      "byMonth": {
+        "2025-10": {
+          "games": 75,
+          "populated": 75,
+          "empty": 0,
+          "rows": 75,
+          "allZero": 1
+        },
+        "2025-11": {
+          "games": 221,
+          "populated": 221,
+          "empty": 0,
+          "rows": 221,
+          "allZero": 9
+        },
+        "2025-12": {
+          "games": 196,
+          "populated": 196,
+          "empty": 0,
+          "rows": 196,
+          "allZero": 23
+        },
+        "2026-01": {
+          "games": 233,
+          "populated": 233,
+          "empty": 0,
+          "rows": 233,
+          "allZero": 29
+        },
+        "2026-02": {
+          "games": 168,
+          "populated": 168,
+          "empty": 0,
+          "rows": 167,
+          "allZero": 27
+        },
+        "2026-03": {
+          "games": 237,
+          "populated": 237,
+          "empty": 0,
+          "rows": 237,
+          "allZero": 0
+        },
+        "2026-04": {
+          "games": 147,
+          "populated": 138,
+          "empty": 8,
+          "rows": 138,
+          "allZero": 0
+        },
+        "2026-05": {
+          "games": 40,
+          "populated": 0,
+          "empty": 38,
+          "rows": 0,
+          "allZero": 0
+        },
+        "2026-06": {
+          "games": 5,
+          "populated": 0,
+          "empty": 5,
+          "rows": 0,
+          "allZero": 0
+        }
+      },
+      "requests": 1318,
+      "status429": 0,
+      "status503": 0,
+      "elapsedMs": 383847,
+      "s3Objects": 1318,
+      "checksumVerifiedPages": 1267,
+      "checksumFailedPages": 0,
+      "lastRemainingMonth": "280868",
+      "joinableToClosingOdds": 1268
+    }
+  },
+  "archiveIntegrity": {
+    "expectedUnits": 3956,
+    "actualUnits": 3956,
+    "missing": [],
+    "checksumMismatch": [],
+    "incompleteGames": [],
+    "failedPages": [],
+    "ok": true,
+    "byRun": {
+      "owls-2026-09-14-public-2023": {
+        "run_id": "owls-2026-09-14-public-2023",
+        "expected_objects": 1319,
+        "actual_objects": 1319,
+        "missing": [],
+        "checksum_mismatch": [],
+        "failed_pages": [],
+        "incomplete_games": [],
+        "ok": true
+      },
+      "owls-2026-09-14-public-2024": {
+        "run_id": "owls-2026-09-14-public-2024",
+        "expected_objects": 1319,
+        "actual_objects": 1319,
+        "missing": [],
+        "checksum_mismatch": [],
+        "failed_pages": [],
+        "incomplete_games": [],
+        "ok": true
+      },
+      "owls-2026-09-14-public-2025": {
+        "run_id": "owls-2026-09-14-public-2025",
+        "expected_objects": 1318,
+        "actual_objects": 1318,
+        "missing": [],
+        "checksum_mismatch": [],
+        "failed_pages": [],
+        "incomplete_games": [],
+        "ok": true
+      }
+    }
+  },
+  "apiUsage": {
+    "requests": 3956,
+    "status429": 0,
+    "status503": 0,
+    "lastRemainingMonth": "280868",
+    "elapsedMs": 1154582
+  },
+  "storage": {
+    "total": {
+      "objects": 3956,
+      "compressedBytes": 5345405
+    },
+    "bySeason": {
+      "2023": {
+        "objects": 1319,
+        "compressedBytes": 1779342
+      },
+      "2024": {
+        "objects": 1319,
+        "compressedBytes": 1786260
+      },
+      "2025": {
+        "objects": 1318,
+        "compressedBytes": 1779803
+      }
+    }
+  },
+  "joinability": {
+    "key": "Court Context game_id / Owls eventId",
+    "markets": "spread home/away and total over/under can be aligned to historical_closing_odds nested sides. moneyline is not present on live public-betting rows.",
+    "destructiveMerge": false
+  }
+}

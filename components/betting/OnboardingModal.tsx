@@ -20,7 +20,7 @@ export type OnboardingModalProps = {
 };
 
 const GOAL_COPY: Record<PrimaryGoal, { title: string; desc: string }> = {
-  find_edges: { title: 'Find edges', desc: 'Compare lines and model vs market' },
+  find_edges: { title: 'Find edges', desc: 'Compare Court Context projections with market lines' },
   track_picks: { title: 'Track picks', desc: 'Paper trading and saved props' },
   learn: { title: 'Learn & explore', desc: 'Stats and trends without pressure' },
 };

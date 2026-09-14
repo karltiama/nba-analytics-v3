@@ -157,3 +157,37 @@ resource "aws_cloudwatch_metric_alarm" "player_props_dlq_not_empty" {
     QueueName = aws_sqs_queue.player_props_dlq.name
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "player_props_archive_gap" {
+  alarm_name          = "nba-player-props-archive-gap"
+  alarm_description   = "Alerts when a player-props worker batch stored rows without a verified S3 archive (RowsStored > 0 and RowsArchived == 0)."
+  namespace           = "NBA/PlayerProps"
+  metric_name         = "ArchiveGap"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    Component = "WorkerBatch"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "player_props_archive_failed" {
+  alarm_name          = "nba-player-props-archive-failed"
+  alarm_description   = "Alerts when player-prop snapshot archive writes fail."
+  namespace           = "NBA/PlayerProps"
+  metric_name         = "ArchiveFailed"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    Component = "WorkerBatch"
+  }
+}

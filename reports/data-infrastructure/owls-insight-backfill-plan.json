@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-09-14",
+  "networkCallsMade": 0,
+  "trialActivated": false,
+  "phase": 0,
+  "bucket": "nba-analytics-data-260029269390",
+  "sourcePrefix": "raw/source=owls_insight/",
+  "fixturePrefix": "raw/source=owls_insight_fixture/",
+  "protectedPrefixes": [
+    "raw/source=existing_ingestion/",
+    "raw/source=balldontlie/.../opening_player_props",
+    "raw/source=balldontlie/.../player_prop_snapshots"
+  ],
+  "primaryEndpoint": "/api/v1/history/player-props",
+  "gameIdentityEndpoint": "/api/v1/history/games",
+  "optionalSnapshotEndpoint": "/api/v1/history/props",
+  "historyConcurrencyDefault": 2,
+  "historyConcurrencyHardCap": 4,
+  "frozenUniverse": {
+    "2023": { "regularFinal": 1231, "playInFinal": 6, "playoffFinal": 82, "totalFinal": 1319 },
+    "2024": { "regularFinal": 1231, "playInFinal": 6, "playoffFinal": 84, "totalFinal": 1321 },
+    "2025": { "regularFinal": 1231, "playInFinal": 6, "playoffFinal": 85, "totalFinal": 1322 }
+  },
+  "probeGameIds": ["1037995", "15905067", "18444564", "18447233", "21716138"],
+  "estimatedRuntime": "unknown until live probe",
+  "storageEstimate": "unknown until live probe (fixture bytes/object only)"
+}

@@ -34,7 +34,7 @@ async function fetchProfileWithSessionWait(launchFromCta: boolean, signal?: Abor
   return last;
 }
 
-export function OnboardingGate({ children }: { children: React.ReactNode }) {
+export function OnboardingGate({ children }: { children?: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

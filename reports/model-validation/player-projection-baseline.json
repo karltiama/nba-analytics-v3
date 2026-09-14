@@ -1,0 +1,2505 @@
+{
+  "meta": {
+    "runAt": "2026-09-14T00:36:25.186Z",
+    "modelVersion": "trackB.1",
+    "calibrationVersion": "v1-fit-2026-03-25",
+    "primaryFeatureDefinition": "active_season",
+    "featureDefinitions": [
+      "active_season",
+      "career"
+    ],
+    "dateRange": {
+      "from": "2026-04-03 01:30:00+00",
+      "to": "2026-05-02 23:30:00+00"
+    },
+    "seasons": [
+      "2025"
+    ],
+    "propTypes": [
+      "points",
+      "rebounds",
+      "assists",
+      "threes",
+      "points_rebounds_assists",
+      "points_assists",
+      "points_rebounds",
+      "rebounds_assists"
+    ],
+    "sampleCounts": {
+      "bookRows": 40611,
+      "uniqueOpportunities": 11348,
+      "players": 302,
+      "gameLogsLoaded": 69329
+    },
+    "marketLineRule": {
+      "label": "latest available pregame line",
+      "notProvenClosing": true,
+      "source": "research.prop_decision_lines",
+      "side": "over",
+      "aggregation": "median of latest pregame line per sportsbook",
+      "consensusWhenBooksGte": 3,
+      "preferredBookOrder": [
+        "betmgm",
+        "fanduel",
+        "draftkings"
+      ]
+    },
+    "chronologicalSplit": "unique game start_times sorted ascending; first 70% development, last 30% holdout",
+    "productionUnchanged": true
+  },
+  "marketLineInvestigation": {
+    "timestampsExist": true,
+    "multipleSnapshotsExistInRawV2": false,
+    "rawV2RowCount": 0,
+    "multipleBooksExist": true,
+    "bookCount": 8,
+    "postTipRowsInDecisionTable": 0,
+    "minutesBeforeTip": {
+      "p10": 59.8755,
+      "p50": 329.814566666667,
+      "p90": 479.8935
+    },
+    "window": {
+      "minTip": "2026-04-03 01:30:00+00",
+      "maxTip": "2026-05-02 23:30:00+00"
+    },
+    "note": "True closing lines cannot be proven. Median snapshot is ~5.5 hours before tip; p10 is ~1 hour. Label is latest available pregame line, not closing line."
+  },
+  "leakage": {
+    "targetGameInFeatures": 0,
+    "laterGamesInFeatures": 0,
+    "missingStartTime": 0,
+    "postTipMarketLinesInScoredRows": 0,
+    "usedSeasonAverageTable": false,
+    "usedInjuryState": false,
+    "comparedUsingStartTimeNotGameDate": true,
+    "duplicateGameLogsSkipped": 0,
+    "onlyFinalGames": true,
+    "seasonAveragesTableNotUsed": true,
+    "injuryTablesNotUsed": true
+  },
+  "results": {
+    "active_season": {
+      "nOpportunities": 11348,
+      "overall": {
+        "season_avg": {
+          "mae": 5,
+          "rmse": 7.5213,
+          "bias": -1.3575,
+          "medianAe": 2.9359,
+          "p90Ae": 12.3373,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "l10": {
+          "mae": 4.7365,
+          "rmse": 7.1884,
+          "bias": -0.7492,
+          "medianAe": 2.8,
+          "p90Ae": 11.6,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "l5": {
+          "mae": 4.8075,
+          "rmse": 7.2435,
+          "bias": -0.6547,
+          "medianAe": 2.8,
+          "p90Ae": 12,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "track_a": {
+          "mae": 4.6665,
+          "rmse": 7.0285,
+          "bias": -0.9317,
+          "medianAe": 2.7386,
+          "p90Ae": 11.4904,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "track_b": {
+          "mae": 4.64,
+          "rmse": 6.9958,
+          "bias": -0.8474,
+          "medianAe": 2.7621,
+          "p90Ae": 11.3812,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "market_line": {
+          "mae": 4.3989,
+          "rmse": 6.7203,
+          "bias": 0.8423,
+          "medianAe": 2.5,
+          "p90Ae": 10.5,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        }
+      },
+      "byProp": {
+        "PTS": {
+          "season_avg": {
+            "mae": 6.5094,
+            "rmse": 8.4539,
+            "bias": -1.7148,
+            "medianAe": 5.2987,
+            "p90Ae": 13.9647,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "l10": {
+            "mae": 6.1567,
+            "rmse": 8.0775,
+            "bias": -0.8931,
+            "medianAe": 4.8,
+            "p90Ae": 13.5,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "l5": {
+            "mae": 6.2335,
+            "rmse": 8.1493,
+            "bias": -0.7338,
+            "medianAe": 4.8,
+            "p90Ae": 13.6,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "track_a": {
+            "mae": 6.0702,
+            "rmse": 7.9278,
+            "bias": -1.1396,
+            "medianAe": 4.8412,
+            "p90Ae": 13.2186,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "track_b": {
+            "mae": 6.034,
+            "rmse": 7.8968,
+            "bias": -0.9883,
+            "medianAe": 4.7,
+            "p90Ae": 13.1011,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "market_line": {
+            "mae": 5.7495,
+            "rmse": 7.6314,
+            "bias": 0.9773,
+            "medianAe": 4.5,
+            "p90Ae": 12.5,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          }
+        },
+        "REB": {
+          "season_avg": {
+            "mae": 2.4566,
+            "rmse": 3.2579,
+            "bias": -0.6988,
+            "medianAe": 1.9759,
+            "p90Ae": 5.1235,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "l10": {
+            "mae": 2.4019,
+            "rmse": 3.169,
+            "bias": -0.4718,
+            "medianAe": 1.9,
+            "p90Ae": 5.1,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "l5": {
+            "mae": 2.4758,
+            "rmse": 3.2336,
+            "bias": -0.4046,
+            "medianAe": 2,
+            "p90Ae": 5.2,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "track_a": {
+            "mae": 2.3655,
+            "rmse": 3.1188,
+            "bias": -0.5399,
+            "medianAe": 1.8659,
+            "p90Ae": 5.084,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "track_b": {
+            "mae": 2.3732,
+            "rmse": 3.1187,
+            "bias": -0.4916,
+            "medianAe": 1.8687,
+            "p90Ae": 4.9767,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "market_line": {
+            "mae": 2.2774,
+            "rmse": 2.9607,
+            "bias": 0.2527,
+            "medianAe": 1.5,
+            "p90Ae": 4.5,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          }
+        },
+        "AST": {
+          "season_avg": {
+            "mae": 1.8322,
+            "rmse": 2.5429,
+            "bias": -0.3806,
+            "medianAe": 1.3554,
+            "p90Ae": 4.0824,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "l10": {
+            "mae": 1.8191,
+            "rmse": 2.4934,
+            "bias": -0.1595,
+            "medianAe": 1.4,
+            "p90Ae": 3.9,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "l5": {
+            "mae": 1.8168,
+            "rmse": 2.4854,
+            "bias": -0.152,
+            "medianAe": 1.4,
+            "p90Ae": 4,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "track_a": {
+            "mae": 1.7847,
+            "rmse": 2.4402,
+            "bias": -0.2258,
+            "medianAe": 1.3465,
+            "p90Ae": 3.8802,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "track_b": {
+            "mae": 1.7794,
+            "rmse": 2.4289,
+            "bias": -0.2025,
+            "medianAe": 1.3472,
+            "p90Ae": 3.8878,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "market_line": {
+            "mae": 1.7602,
+            "rmse": 2.3087,
+            "bias": 0.2269,
+            "medianAe": 1.5,
+            "p90Ae": 3.5,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          }
+        },
+        "3PM": {
+          "season_avg": {
+            "mae": 1.1579,
+            "rmse": 1.5177,
+            "bias": -0.1631,
+            "medianAe": 0.9226,
+            "p90Ae": 2.4211,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "l10": {
+            "mae": 1.1553,
+            "rmse": 1.507,
+            "bias": -0.0506,
+            "medianAe": 0.9,
+            "p90Ae": 2.4,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "l5": {
+            "mae": 1.1918,
+            "rmse": 1.5566,
+            "bias": -0.0329,
+            "medianAe": 1,
+            "p90Ae": 2.6,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "track_a": {
+            "mae": 1.1362,
+            "rmse": 1.476,
+            "bias": -0.0844,
+            "medianAe": 0.9299,
+            "p90Ae": 2.3063,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "track_b": {
+            "mae": 1.1399,
+            "rmse": 1.4803,
+            "bias": -0.0672,
+            "medianAe": 0.9333,
+            "p90Ae": 2.3629,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "market_line": {
+            "mae": 1.1943,
+            "rmse": 1.4929,
+            "bias": 0.0979,
+            "medianAe": 0.5,
+            "p90Ae": 2.5,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          }
+        },
+        "PRA": {
+          "season_avg": {
+            "mae": 8.7425,
+            "rmse": 11.4254,
+            "bias": -2.3049,
+            "medianAe": 6.859,
+            "p90Ae": 18.7059,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "l10": {
+            "mae": 8.182,
+            "rmse": 10.8706,
+            "bias": -1.2655,
+            "medianAe": 6.3,
+            "p90Ae": 18,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "l5": {
+            "mae": 8.2527,
+            "rmse": 10.9078,
+            "bias": -1.1481,
+            "medianAe": 6.4,
+            "p90Ae": 18.2,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "track_a": {
+            "mae": 8.0651,
+            "rmse": 10.6098,
+            "bias": -1.5773,
+            "medianAe": 6.241,
+            "p90Ae": 17.6075,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "track_b": {
+            "mae": 7.9929,
+            "rmse": 10.5446,
+            "bias": -1.455,
+            "medianAe": 6.225,
+            "p90Ae": 17.5836,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "market_line": {
+            "mae": 7.3906,
+            "rmse": 10.0705,
+            "bias": 1.6789,
+            "medianAe": 5.5,
+            "p90Ae": 15.5,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          }
+        },
+        "PA": {
+          "season_avg": {
+            "mae": 7.7233,
+            "rmse": 10.0517,
+            "bias": -2.2537,
+            "medianAe": 6.0371,
+            "p90Ae": 16.716,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "l10": {
+            "mae": 7.2391,
+            "rmse": 9.6272,
+            "bias": -1.1797,
+            "medianAe": 5.5,
+            "p90Ae": 16.2,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "l5": {
+            "mae": 7.3359,
+            "rmse": 9.6736,
+            "bias": -1.0534,
+            "medianAe": 5.6,
+            "p90Ae": 16,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "track_a": {
+            "mae": 7.1274,
+            "rmse": 9.3922,
+            "bias": -1.5019,
+            "medianAe": 5.7102,
+            "p90Ae": 15.5547,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "track_b": {
+            "mae": 7.0677,
+            "rmse": 9.341,
+            "bias": -1.3795,
+            "medianAe": 5.5257,
+            "p90Ae": 15.71,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "market_line": {
+            "mae": 6.6834,
+            "rmse": 9.0323,
+            "bias": 1.5187,
+            "medianAe": 5,
+            "p90Ae": 14.5,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          }
+        },
+        "PR": {
+          "season_avg": {
+            "mae": 8.034,
+            "rmse": 10.3965,
+            "bias": -2.3757,
+            "medianAe": 6.3728,
+            "p90Ae": 17.0476,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "l10": {
+            "mae": 7.526,
+            "rmse": 9.9274,
+            "bias": -1.4094,
+            "medianAe": 5.7,
+            "p90Ae": 16.8,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "l5": {
+            "mae": 7.6971,
+            "rmse": 10.0532,
+            "bias": -1.1933,
+            "medianAe": 5.8,
+            "p90Ae": 16.8,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "track_a": {
+            "mae": 7.4263,
+            "rmse": 9.7062,
+            "bias": -1.6993,
+            "medianAe": 5.7657,
+            "p90Ae": 16.1693,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "track_b": {
+            "mae": 7.3864,
+            "rmse": 9.6727,
+            "bias": -1.5612,
+            "medianAe": 5.6574,
+            "p90Ae": 16.2815,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "market_line": {
+            "mae": 6.9651,
+            "rmse": 9.2883,
+            "bias": 1.4012,
+            "medianAe": 5.5,
+            "p90Ae": 14.5,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          }
+        },
+        "RA": {
+          "season_avg": {
+            "mae": 3.7344,
+            "rmse": 4.8979,
+            "bias": -1.0718,
+            "medianAe": 3.025,
+            "p90Ae": 7.8851,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "l10": {
+            "mae": 3.5826,
+            "rmse": 4.7003,
+            "bias": -0.6185,
+            "medianAe": 2.8,
+            "p90Ae": 7.5,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "l5": {
+            "mae": 3.632,
+            "rmse": 4.7517,
+            "bias": -0.5789,
+            "medianAe": 3,
+            "p90Ae": 7.6,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "track_a": {
+            "mae": 3.5234,
+            "rmse": 4.6058,
+            "bias": -0.7545,
+            "medianAe": 2.745,
+            "p90Ae": 7.4413,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "track_b": {
+            "mae": 3.5108,
+            "rmse": 4.5871,
+            "bias": -0.7077,
+            "medianAe": 2.7665,
+            "p90Ae": 7.4605,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "market_line": {
+            "mae": 3.327,
+            "rmse": 4.3788,
+            "bias": 0.6815,
+            "medianAe": 2.5,
+            "p90Ae": 7.5,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          }
+        }
+      },
+      "bySampleBucket": {
+        "1-4": {
+          "season_avg": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "l10": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "l5": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "track_a": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "track_b": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "market_line": {
+            "mae": 1,
+            "rmse": 1.118,
+            "bias": 0.25,
+            "medianAe": 1,
+            "p90Ae": 1.5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          }
+        },
+        "5-9": {
+          "season_avg": {
+            "mae": 3.1123,
+            "rmse": 4.4912,
+            "bias": 1.1401,
+            "medianAe": 2.1143,
+            "p90Ae": 5.3333,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "l10": {
+            "mae": 3.1123,
+            "rmse": 4.4912,
+            "bias": 1.1401,
+            "medianAe": 2.1143,
+            "p90Ae": 5.3333,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "l5": {
+            "mae": 2.7333,
+            "rmse": 4.1681,
+            "bias": 1.3,
+            "medianAe": 1.8,
+            "p90Ae": 4.8,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "track_a": {
+            "mae": 3.1123,
+            "rmse": 4.4912,
+            "bias": 1.1401,
+            "medianAe": 2.1143,
+            "p90Ae": 5.3333,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "track_b": {
+            "mae": 3.0302,
+            "rmse": 4.4038,
+            "bias": 1.1574,
+            "medianAe": 2.0217,
+            "p90Ae": 5.0262,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "market_line": {
+            "mae": 2.8333,
+            "rmse": 4.5735,
+            "bias": 2.1667,
+            "medianAe": 1.5,
+            "p90Ae": 8.5,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          }
+        },
+        "10-19": {
+          "season_avg": {
+            "mae": 9.1849,
+            "rmse": 14.397,
+            "bias": -8.9238,
+            "medianAe": 4.1923,
+            "p90Ae": 29.2857,
+            "coverage": 1,
+            "n": 20,
+            "nEligible": 20
+          },
+          "l10": {
+            "mae": 8.88,
+            "rmse": 13.9742,
+            "bias": -8.48,
+            "medianAe": 3.45,
+            "p90Ae": 28.3,
+            "coverage": 1,
+            "n": 20,
+            "nEligible": 20
+          },
+          "l5": {
+            "mae": 9.14,
+            "rmse": 14.2559,
+            "bias": -8.24,
+            "medianAe": 3.8,
+            "p90Ae": 28.2,
+            "coverage": 1,
+            "n": 20,
+            "nEligible": 20
+          },
+          "track_a": {
+            "mae": 8.9565,
+            "rmse": 14.0988,
+            "bias": -8.6131,
+            "medianAe": 3.6727,
+            "p90Ae": 28.5957,
+            "coverage": 1,
+            "n": 20,
+            "nEligible": 20
+          },
+          "track_b": {
+            "mae": 8.9934,
+            "rmse": 14.1293,
+            "bias": -8.5379,
+            "medianAe": 3.7107,
+            "p90Ae": 28.5332,
+            "coverage": 1,
+            "n": 20,
+            "nEligible": 20
+          },
+          "market_line": {
+            "mae": 6.45,
+            "rmse": 9.7031,
+            "bias": -5.15,
+            "medianAe": 2.5,
+            "p90Ae": 18.5,
+            "coverage": 1,
+            "n": 20,
+            "nEligible": 20
+          }
+        },
+        "20+": {
+          "season_avg": {
+            "mae": 4.9954,
+            "rmse": 7.5073,
+            "bias": -1.3466,
+            "medianAe": 2.9359,
+            "p90Ae": 12.3214,
+            "coverage": 1,
+            "n": 11312,
+            "nEligible": 11312
+          },
+          "l10": {
+            "mae": 4.7316,
+            "rmse": 7.174,
+            "bias": -0.7371,
+            "medianAe": 2.8,
+            "p90Ae": 11.6,
+            "coverage": 1,
+            "n": 11312,
+            "nEligible": 11312
+          },
+          "l5": {
+            "mae": 4.8027,
+            "rmse": 7.2286,
+            "bias": -0.6429,
+            "medianAe": 2.8,
+            "p90Ae": 12,
+            "coverage": 1,
+            "n": 11312,
+            "nEligible": 11312
+          },
+          "track_a": {
+            "mae": 4.6612,
+            "rmse": 7.0128,
+            "bias": -0.92,
+            "medianAe": 2.7386,
+            "p90Ae": 11.4584,
+            "coverage": 1,
+            "n": 11312,
+            "nEligible": 11312
+          },
+          "track_b": {
+            "mae": 4.6347,
+            "rmse": 6.9799,
+            "bias": -0.8355,
+            "medianAe": 2.7631,
+            "p90Ae": 11.3764,
+            "coverage": 1,
+            "n": 11312,
+            "nEligible": 11312
+          },
+          "market_line": {
+            "mae": 4.3981,
+            "rmse": 6.7169,
+            "bias": 0.8517,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 11312,
+            "nEligible": 11312
+          }
+        }
+      },
+      "byChronologicalSplit": {
+        "development": {
+          "season_avg": {
+            "mae": 5.0625,
+            "rmse": 7.6125,
+            "bias": -1.4802,
+            "medianAe": 2.939,
+            "p90Ae": 12.5875,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "l10": {
+            "mae": 4.7817,
+            "rmse": 7.2614,
+            "bias": -0.7203,
+            "medianAe": 2.8,
+            "p90Ae": 11.8,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "l5": {
+            "mae": 4.8665,
+            "rmse": 7.3298,
+            "bias": -0.5983,
+            "medianAe": 2.8,
+            "p90Ae": 12.2,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "track_a": {
+            "mae": 4.7127,
+            "rmse": 7.1,
+            "bias": -0.9482,
+            "medianAe": 2.7477,
+            "p90Ae": 11.6887,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "track_b": {
+            "mae": 4.6953,
+            "rmse": 7.0709,
+            "bias": -0.843,
+            "medianAe": 2.7757,
+            "p90Ae": 11.5934,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "market_line": {
+            "mae": 4.4242,
+            "rmse": 6.8023,
+            "bias": 0.9439,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          }
+        },
+        "holdout": {
+          "season_avg": {
+            "mae": 4.805,
+            "rmse": 7.2297,
+            "bias": -0.9748,
+            "medianAe": 2.9101,
+            "p90Ae": 11.3837,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "l10": {
+            "mae": 4.5953,
+            "rmse": 6.9558,
+            "bias": -0.8395,
+            "medianAe": 2.8,
+            "p90Ae": 11,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "l5": {
+            "mae": 4.6232,
+            "rmse": 6.9674,
+            "bias": -0.8306,
+            "medianAe": 2.8,
+            "p90Ae": 11.4,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "track_a": {
+            "mae": 4.5223,
+            "rmse": 6.8005,
+            "bias": -0.8801,
+            "medianAe": 2.7049,
+            "p90Ae": 10.67,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "track_b": {
+            "mae": 4.4679,
+            "rmse": 6.7562,
+            "bias": -0.861,
+            "medianAe": 2.7246,
+            "p90Ae": 10.8398,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "market_line": {
+            "mae": 4.32,
+            "rmse": 6.4579,
+            "bias": 0.5254,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          }
+        }
+      },
+      "bySeason": {
+        "2025": {
+          "season_avg": {
+            "mae": 5,
+            "rmse": 7.5213,
+            "bias": -1.3575,
+            "medianAe": 2.9359,
+            "p90Ae": 12.3373,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "l10": {
+            "mae": 4.7365,
+            "rmse": 7.1884,
+            "bias": -0.7492,
+            "medianAe": 2.8,
+            "p90Ae": 11.6,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "l5": {
+            "mae": 4.8075,
+            "rmse": 7.2435,
+            "bias": -0.6547,
+            "medianAe": 2.8,
+            "p90Ae": 12,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "track_a": {
+            "mae": 4.6665,
+            "rmse": 7.0285,
+            "bias": -0.9317,
+            "medianAe": 2.7386,
+            "p90Ae": 11.4904,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "track_b": {
+            "mae": 4.64,
+            "rmse": 6.9958,
+            "bias": -0.8474,
+            "medianAe": 2.7621,
+            "p90Ae": 11.3812,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "market_line": {
+            "mae": 4.3989,
+            "rmse": 6.7203,
+            "bias": 0.8423,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          }
+        }
+      },
+      "trackAVsTrackB": {
+        "PTS": {
+          "trackAMae": 6.0702,
+          "trackBMae": 6.034,
+          "trackBMinusTrackA": -0.0362
+        },
+        "REB": {
+          "trackAMae": 2.3655,
+          "trackBMae": 2.3732,
+          "trackBMinusTrackA": 0.0077
+        },
+        "AST": {
+          "trackAMae": 1.7847,
+          "trackBMae": 1.7794,
+          "trackBMinusTrackA": -0.0052
+        },
+        "3PM": {
+          "trackAMae": 1.1362,
+          "trackBMae": 1.1399,
+          "trackBMinusTrackA": 0.0038
+        },
+        "PRA": {
+          "trackAMae": 8.0651,
+          "trackBMae": 7.9929,
+          "trackBMinusTrackA": -0.0722
+        },
+        "PA": {
+          "trackAMae": 7.1274,
+          "trackBMae": 7.0677,
+          "trackBMinusTrackA": -0.0597
+        },
+        "PR": {
+          "trackAMae": 7.4263,
+          "trackBMae": 7.3864,
+          "trackBMinusTrackA": -0.0399
+        },
+        "RA": {
+          "trackAMae": 3.5234,
+          "trackBMae": 3.5108,
+          "trackBMinusTrackA": -0.0127
+        }
+      },
+      "vsMarket": {
+        "PTS": {
+          "ccMae": 6.034,
+          "marketMae": 5.7495,
+          "delta": 0.2844,
+          "n": 1607
+        },
+        "REB": {
+          "ccMae": 2.3732,
+          "marketMae": 2.2774,
+          "delta": 0.0958,
+          "n": 1579
+        },
+        "AST": {
+          "ccMae": 1.7794,
+          "marketMae": 1.7602,
+          "delta": 0.0192,
+          "n": 1472
+        },
+        "3PM": {
+          "ccMae": 1.1399,
+          "marketMae": 1.1943,
+          "delta": -0.0544,
+          "n": 1410
+        },
+        "PRA": {
+          "ccMae": 7.9929,
+          "marketMae": 7.3906,
+          "delta": 0.6023,
+          "n": 1526
+        },
+        "PA": {
+          "ccMae": 7.0677,
+          "marketMae": 6.6834,
+          "delta": 0.3842,
+          "n": 1202
+        },
+        "PR": {
+          "ccMae": 7.3864,
+          "marketMae": 6.9651,
+          "delta": 0.4213,
+          "n": 1376
+        },
+        "RA": {
+          "ccMae": 3.5108,
+          "marketMae": 3.327,
+          "delta": 0.1838,
+          "n": 1176
+        }
+      },
+      "gapAnalysis": {
+        "0-1": {
+          "n": 5009,
+          "ccMae": 2.8896261425193908,
+          "marketMae": 2.9033739269315233,
+          "overHitRate": 0.48813056379821956,
+          "underHitRate": 0.5694444444444444,
+          "actualMinusLine": -0.080055899381114,
+          "directionalHitRate": 0.536389223964616
+        },
+        "1-2": {
+          "n": 2249,
+          "ccMae": 4.2110155463008105,
+          "marketMae": 4.217652289906625,
+          "overHitRate": 0.5197568389057751,
+          "underHitRate": 0.6107936507936508,
+          "actualMinusLine": -0.5035571365051134,
+          "directionalHitRate": 0.5839677563815495
+        },
+        "2-3": {
+          "n": 1253,
+          "ccMae": 5.451556858959112,
+          "marketMae": 5.207102952913009,
+          "overHitRate": 0.4520547945205479,
+          "underHitRate": 0.5594111461619348,
+          "actualMinusLine": -0.8423782920989625,
+          "directionalHitRate": 0.5341914722445696
+        },
+        "3-4": {
+          "n": 797,
+          "ccMae": 6.034912862794266,
+          "marketMae": 5.767879548306148,
+          "overHitRate": 0.46357615894039733,
+          "underHitRate": 0.594679186228482,
+          "actualMinusLine": -1.451693851944793,
+          "directionalHitRate": 0.569620253164557
+        },
+        "4+": {
+          "n": 2040,
+          "ccMae": 8.367602357906577,
+          "marketMae": 7.239460784313725,
+          "overHitRate": 0.4649122807017544,
+          "underHitRate": 0.6178477690288714,
+          "actualMinusLine": -2.849264705882353,
+          "directionalHitRate": 0.6092124814264487
+        }
+      },
+      "directional": {
+        "n": 11259,
+        "pushes": 89,
+        "modelPushes": 0,
+        "directionalHitRate": 0.561,
+        "overHitRate": 0.4893,
+        "underHitRate": 0.5899
+      },
+      "confidenceTiers": {
+        "high": {
+          "n": 320,
+          "mae": 4.8498,
+          "rmse": 7.3305,
+          "directionalHitRate": 0.5563,
+          "coverage": 1
+        },
+        "medium": {
+          "n": 2303,
+          "mae": 2.9763,
+          "rmse": 4.54,
+          "directionalHitRate": 0.5482,
+          "coverage": 1
+        },
+        "low": {
+          "n": 8725,
+          "mae": 5.0715,
+          "rmse": 7.4995,
+          "directionalHitRate": 0.5645,
+          "coverage": 1
+        }
+      },
+      "calibration": {
+        "raw": {
+          "brier": 0.2548,
+          "ece": 0.0767,
+          "n": 11259
+        },
+        "calibrated": {
+          "brier": 0.2489,
+          "ece": 0.0519,
+          "n": 11259
+        },
+        "anchored": {
+          "brier": 0.2454,
+          "ece": 0.0471,
+          "n": 11259
+        }
+      }
+    },
+    "career": {
+      "nOpportunities": 11348,
+      "overall": {
+        "season_avg": {
+          "mae": 5.0436,
+          "rmse": 7.5322,
+          "bias": -1.8401,
+          "medianAe": 2.9626,
+          "p90Ae": 12.5083,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "l10": {
+          "mae": 4.7365,
+          "rmse": 7.1884,
+          "bias": -0.7492,
+          "medianAe": 2.8,
+          "p90Ae": 11.6,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "l5": {
+          "mae": 4.8075,
+          "rmse": 7.2435,
+          "bias": -0.6547,
+          "medianAe": 2.8,
+          "p90Ae": 12,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "track_a": {
+          "mae": 4.6432,
+          "rmse": 6.9934,
+          "bias": -1.0765,
+          "medianAe": 2.7585,
+          "p90Ae": 11.3743,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "track_b": {
+          "mae": 4.6211,
+          "rmse": 6.9677,
+          "bias": -0.9413,
+          "medianAe": 2.7636,
+          "p90Ae": 11.4203,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        },
+        "market_line": {
+          "mae": 4.3989,
+          "rmse": 6.7203,
+          "bias": 0.8423,
+          "medianAe": 2.5,
+          "p90Ae": 10.5,
+          "coverage": 1,
+          "n": 11348,
+          "nEligible": 11348
+        }
+      },
+      "byProp": {
+        "PTS": {
+          "season_avg": {
+            "mae": 6.5902,
+            "rmse": 8.5575,
+            "bias": -2.3368,
+            "medianAe": 5.2561,
+            "p90Ae": 13.9516,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "l10": {
+            "mae": 6.1567,
+            "rmse": 8.0775,
+            "bias": -0.8931,
+            "medianAe": 4.8,
+            "p90Ae": 13.5,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "l5": {
+            "mae": 6.2335,
+            "rmse": 8.1493,
+            "bias": -0.7338,
+            "medianAe": 4.8,
+            "p90Ae": 13.6,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "track_a": {
+            "mae": 6.0408,
+            "rmse": 7.9096,
+            "bias": -1.3262,
+            "medianAe": 4.857,
+            "p90Ae": 13.2743,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "track_b": {
+            "mae": 6.0168,
+            "rmse": 7.8839,
+            "bias": -1.0975,
+            "medianAe": 4.6623,
+            "p90Ae": 13.0757,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          },
+          "market_line": {
+            "mae": 5.7495,
+            "rmse": 7.6314,
+            "bias": 0.9773,
+            "medianAe": 4.5,
+            "p90Ae": 12.5,
+            "coverage": 1,
+            "n": 1607,
+            "nEligible": 1607
+          }
+        },
+        "REB": {
+          "season_avg": {
+            "mae": 2.4929,
+            "rmse": 3.285,
+            "bias": -0.8683,
+            "medianAe": 1.9839,
+            "p90Ae": 5.2437,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "l10": {
+            "mae": 2.4019,
+            "rmse": 3.169,
+            "bias": -0.4718,
+            "medianAe": 1.9,
+            "p90Ae": 5.1,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "l5": {
+            "mae": 2.4758,
+            "rmse": 3.2336,
+            "bias": -0.4046,
+            "medianAe": 2,
+            "p90Ae": 5.2,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "track_a": {
+            "mae": 2.3641,
+            "rmse": 3.1128,
+            "bias": -0.5907,
+            "medianAe": 1.8581,
+            "p90Ae": 5.0174,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "track_b": {
+            "mae": 2.3711,
+            "rmse": 3.1118,
+            "bias": -0.5197,
+            "medianAe": 1.8653,
+            "p90Ae": 4.9669,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          },
+          "market_line": {
+            "mae": 2.2774,
+            "rmse": 2.9607,
+            "bias": 0.2527,
+            "medianAe": 1.5,
+            "p90Ae": 4.5,
+            "coverage": 1,
+            "n": 1579,
+            "nEligible": 1579
+          }
+        },
+        "AST": {
+          "season_avg": {
+            "mae": 1.8385,
+            "rmse": 2.5551,
+            "bias": -0.5558,
+            "medianAe": 1.3527,
+            "p90Ae": 3.996,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "l10": {
+            "mae": 1.8191,
+            "rmse": 2.4934,
+            "bias": -0.1595,
+            "medianAe": 1.4,
+            "p90Ae": 3.9,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "l5": {
+            "mae": 1.8168,
+            "rmse": 2.4854,
+            "bias": -0.152,
+            "medianAe": 1.4,
+            "p90Ae": 4,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "track_a": {
+            "mae": 1.7758,
+            "rmse": 2.4336,
+            "bias": -0.2784,
+            "medianAe": 1.3179,
+            "p90Ae": 3.86,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "track_b": {
+            "mae": 1.7727,
+            "rmse": 2.424,
+            "bias": -0.2347,
+            "medianAe": 1.3126,
+            "p90Ae": 3.8361,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          },
+          "market_line": {
+            "mae": 1.7602,
+            "rmse": 2.3087,
+            "bias": 0.2269,
+            "medianAe": 1.5,
+            "p90Ae": 3.5,
+            "coverage": 1,
+            "n": 1472,
+            "nEligible": 1472
+          }
+        },
+        "3PM": {
+          "season_avg": {
+            "mae": 1.1564,
+            "rmse": 1.5287,
+            "bias": -0.2455,
+            "medianAe": 0.9397,
+            "p90Ae": 2.4043,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "l10": {
+            "mae": 1.1553,
+            "rmse": 1.507,
+            "bias": -0.0506,
+            "medianAe": 0.9,
+            "p90Ae": 2.4,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "l5": {
+            "mae": 1.1918,
+            "rmse": 1.5566,
+            "bias": -0.0329,
+            "medianAe": 1,
+            "p90Ae": 2.6,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "track_a": {
+            "mae": 1.1279,
+            "rmse": 1.47,
+            "bias": -0.1091,
+            "medianAe": 0.9161,
+            "p90Ae": 2.3025,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "track_b": {
+            "mae": 1.1333,
+            "rmse": 1.4754,
+            "bias": -0.0829,
+            "medianAe": 0.9143,
+            "p90Ae": 2.3386,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          },
+          "market_line": {
+            "mae": 1.1943,
+            "rmse": 1.4929,
+            "bias": 0.0979,
+            "medianAe": 0.5,
+            "p90Ae": 2.5,
+            "coverage": 1,
+            "n": 1410,
+            "nEligible": 1410
+          }
+        },
+        "PRA": {
+          "season_avg": {
+            "mae": 8.846,
+            "rmse": 11.4015,
+            "bias": -3.2419,
+            "medianAe": 7.1423,
+            "p90Ae": 19.06,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "l10": {
+            "mae": 8.182,
+            "rmse": 10.8706,
+            "bias": -1.2655,
+            "medianAe": 6.3,
+            "p90Ae": 18,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "l5": {
+            "mae": 8.2527,
+            "rmse": 10.9078,
+            "bias": -1.1481,
+            "medianAe": 6.4,
+            "p90Ae": 18.2,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "track_a": {
+            "mae": 8.008,
+            "rmse": 10.5406,
+            "bias": -1.8584,
+            "medianAe": 6.2594,
+            "p90Ae": 17.4289,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "track_b": {
+            "mae": 7.9438,
+            "rmse": 10.4889,
+            "bias": -1.6453,
+            "medianAe": 6.2208,
+            "p90Ae": 17.3981,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          },
+          "market_line": {
+            "mae": 7.3906,
+            "rmse": 10.0705,
+            "bias": 1.6789,
+            "medianAe": 5.5,
+            "p90Ae": 15.5,
+            "coverage": 1,
+            "n": 1526,
+            "nEligible": 1526
+          }
+        },
+        "PA": {
+          "season_avg": {
+            "mae": 7.8131,
+            "rmse": 10.0946,
+            "bias": -3.0829,
+            "medianAe": 6.3388,
+            "p90Ae": 16.8235,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "l10": {
+            "mae": 7.2391,
+            "rmse": 9.6272,
+            "bias": -1.1797,
+            "medianAe": 5.5,
+            "p90Ae": 16.2,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "l5": {
+            "mae": 7.3359,
+            "rmse": 9.6736,
+            "bias": -1.0534,
+            "medianAe": 5.6,
+            "p90Ae": 16,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "track_a": {
+            "mae": 7.1087,
+            "rmse": 9.3536,
+            "bias": -1.7507,
+            "medianAe": 5.4898,
+            "p90Ae": 15.2551,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "track_b": {
+            "mae": 7.0492,
+            "rmse": 9.3112,
+            "bias": -1.5491,
+            "medianAe": 5.3882,
+            "p90Ae": 15.7086,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          },
+          "market_line": {
+            "mae": 6.6834,
+            "rmse": 9.0323,
+            "bias": 1.5187,
+            "medianAe": 5,
+            "p90Ae": 14.5,
+            "coverage": 1,
+            "n": 1202,
+            "nEligible": 1202
+          }
+        },
+        "PR": {
+          "season_avg": {
+            "mae": 8.0488,
+            "rmse": 10.3696,
+            "bias": -3.1441,
+            "medianAe": 6.793,
+            "p90Ae": 17.5039,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "l10": {
+            "mae": 7.526,
+            "rmse": 9.9274,
+            "bias": -1.4094,
+            "medianAe": 5.7,
+            "p90Ae": 16.8,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "l5": {
+            "mae": 7.6971,
+            "rmse": 10.0532,
+            "bias": -1.1933,
+            "medianAe": 5.8,
+            "p90Ae": 16.8,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "track_a": {
+            "mae": 7.3768,
+            "rmse": 9.6486,
+            "bias": -1.9298,
+            "medianAe": 5.7967,
+            "p90Ae": 16.1302,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "track_b": {
+            "mae": 7.3484,
+            "rmse": 9.6255,
+            "bias": -1.7164,
+            "medianAe": 5.6545,
+            "p90Ae": 16.0975,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          },
+          "market_line": {
+            "mae": 6.9651,
+            "rmse": 9.2883,
+            "bias": 1.4012,
+            "medianAe": 5.5,
+            "p90Ae": 14.5,
+            "coverage": 1,
+            "n": 1376,
+            "nEligible": 1376
+          }
+        },
+        "RA": {
+          "season_avg": {
+            "mae": 3.7462,
+            "rmse": 4.824,
+            "bias": -1.3703,
+            "medianAe": 2.9933,
+            "p90Ae": 7.8048,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "l10": {
+            "mae": 3.5826,
+            "rmse": 4.7003,
+            "bias": -0.6185,
+            "medianAe": 2.8,
+            "p90Ae": 7.5,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "l5": {
+            "mae": 3.632,
+            "rmse": 4.7517,
+            "bias": -0.5789,
+            "medianAe": 3,
+            "p90Ae": 7.6,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "track_a": {
+            "mae": 3.513,
+            "rmse": 4.5737,
+            "bias": -0.844,
+            "medianAe": 2.8202,
+            "p90Ae": 7.3314,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "track_b": {
+            "mae": 3.498,
+            "rmse": 4.5602,
+            "bias": -0.7659,
+            "medianAe": 2.7869,
+            "p90Ae": 7.1911,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          },
+          "market_line": {
+            "mae": 3.327,
+            "rmse": 4.3788,
+            "bias": 0.6815,
+            "medianAe": 2.5,
+            "p90Ae": 7.5,
+            "coverage": 1,
+            "n": 1176,
+            "nEligible": 1176
+          }
+        }
+      },
+      "bySampleBucket": {
+        "1-4": {
+          "season_avg": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "l10": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "l5": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "track_a": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "track_b": {
+            "mae": 2.75,
+            "rmse": 3.3624,
+            "bias": -1.9167,
+            "medianAe": 2.6667,
+            "p90Ae": 5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          },
+          "market_line": {
+            "mae": 1,
+            "rmse": 1.118,
+            "bias": 0.25,
+            "medianAe": 1,
+            "p90Ae": 1.5,
+            "coverage": 1,
+            "n": 4,
+            "nEligible": 4
+          }
+        },
+        "5-9": {
+          "season_avg": {
+            "mae": 3.1123,
+            "rmse": 4.4912,
+            "bias": 1.1401,
+            "medianAe": 2.1143,
+            "p90Ae": 5.3333,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "l10": {
+            "mae": 3.1123,
+            "rmse": 4.4912,
+            "bias": 1.1401,
+            "medianAe": 2.1143,
+            "p90Ae": 5.3333,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "l5": {
+            "mae": 2.7333,
+            "rmse": 4.1681,
+            "bias": 1.3,
+            "medianAe": 1.8,
+            "p90Ae": 4.8,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "track_a": {
+            "mae": 3.1123,
+            "rmse": 4.4912,
+            "bias": 1.1401,
+            "medianAe": 2.1143,
+            "p90Ae": 5.3333,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "track_b": {
+            "mae": 3.0302,
+            "rmse": 4.4038,
+            "bias": 1.1574,
+            "medianAe": 2.0217,
+            "p90Ae": 5.0262,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          },
+          "market_line": {
+            "mae": 2.8333,
+            "rmse": 4.5735,
+            "bias": 2.1667,
+            "medianAe": 1.5,
+            "p90Ae": 8.5,
+            "coverage": 1,
+            "n": 12,
+            "nEligible": 12
+          }
+        },
+        "10-19": {
+          "season_avg": {
+            "mae": 10.7137,
+            "rmse": 15.8816,
+            "bias": -10.5887,
+            "medianAe": 5.0385,
+            "p90Ae": 29.2857,
+            "coverage": 1,
+            "n": 16,
+            "nEligible": 16
+          },
+          "l10": {
+            "mae": 10.4063,
+            "rmse": 15.462,
+            "bias": -10.1937,
+            "medianAe": 4.75,
+            "p90Ae": 28.3,
+            "coverage": 1,
+            "n": 16,
+            "nEligible": 16
+          },
+          "l5": {
+            "mae": 10.65,
+            "rmse": 15.7812,
+            "bias": -10,
+            "medianAe": 4.6,
+            "p90Ae": 28.8,
+            "coverage": 1,
+            "n": 16,
+            "nEligible": 16
+          },
+          "track_a": {
+            "mae": 10.4885,
+            "rmse": 15.5862,
+            "bias": -10.3122,
+            "medianAe": 4.7788,
+            "p90Ae": 28.5957,
+            "coverage": 1,
+            "n": 16,
+            "nEligible": 16
+          },
+          "track_b": {
+            "mae": 10.5285,
+            "rmse": 15.623,
+            "bias": -10.2353,
+            "medianAe": 4.7206,
+            "p90Ae": 28.63,
+            "coverage": 1,
+            "n": 16,
+            "nEligible": 16
+          },
+          "market_line": {
+            "mae": 7.3125,
+            "rmse": 10.6888,
+            "bias": -6.375,
+            "medianAe": 3,
+            "p90Ae": 19.5,
+            "coverage": 1,
+            "n": 16,
+            "nEligible": 16
+          }
+        },
+        "20+": {
+          "season_avg": {
+            "mae": 5.0384,
+            "rmse": 7.5174,
+            "bias": -1.8308,
+            "medianAe": 2.9619,
+            "p90Ae": 12.5059,
+            "coverage": 1,
+            "n": 11316,
+            "nEligible": 11316
+          },
+          "l10": {
+            "mae": 4.7309,
+            "rmse": 7.1733,
+            "bias": -0.7375,
+            "medianAe": 2.8,
+            "p90Ae": 11.6,
+            "coverage": 1,
+            "n": 11316,
+            "nEligible": 11316
+          },
+          "l5": {
+            "mae": 4.8021,
+            "rmse": 7.2279,
+            "bias": -0.6431,
+            "medianAe": 2.8,
+            "p90Ae": 12,
+            "coverage": 1,
+            "n": 11316,
+            "nEligible": 11316
+          },
+          "track_a": {
+            "mae": 4.6373,
+            "rmse": 6.9769,
+            "bias": -1.0655,
+            "medianAe": 2.7583,
+            "p90Ae": 11.3638,
+            "coverage": 1,
+            "n": 11316,
+            "nEligible": 11316
+          },
+          "track_b": {
+            "mae": 4.6151,
+            "rmse": 6.951,
+            "bias": -0.93,
+            "medianAe": 2.7636,
+            "p90Ae": 11.4121,
+            "coverage": 1,
+            "n": 11316,
+            "nEligible": 11316
+          },
+          "market_line": {
+            "mae": 4.3976,
+            "rmse": 6.7161,
+            "bias": 0.8513,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 11316,
+            "nEligible": 11316
+          }
+        }
+      },
+      "byChronologicalSplit": {
+        "development": {
+          "season_avg": {
+            "mae": 5.1272,
+            "rmse": 7.6427,
+            "bias": -1.9794,
+            "medianAe": 3.0385,
+            "p90Ae": 12.8583,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "l10": {
+            "mae": 4.7817,
+            "rmse": 7.2614,
+            "bias": -0.7203,
+            "medianAe": 2.8,
+            "p90Ae": 11.8,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "l5": {
+            "mae": 4.8665,
+            "rmse": 7.3298,
+            "bias": -0.5983,
+            "medianAe": 2.8,
+            "p90Ae": 12.2,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "track_a": {
+            "mae": 4.6905,
+            "rmse": 7.0562,
+            "bias": -1.098,
+            "medianAe": 2.7841,
+            "p90Ae": 11.5394,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "track_b": {
+            "mae": 4.6706,
+            "rmse": 7.0318,
+            "bias": -0.9399,
+            "medianAe": 2.7755,
+            "p90Ae": 11.566,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          },
+          "market_line": {
+            "mae": 4.4242,
+            "rmse": 6.8023,
+            "bias": 0.9439,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 8593,
+            "nEligible": 8593
+          }
+        },
+        "holdout": {
+          "season_avg": {
+            "mae": 4.7828,
+            "rmse": 7.1766,
+            "bias": -1.4056,
+            "medianAe": 2.7821,
+            "p90Ae": 11.814,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "l10": {
+            "mae": 4.5953,
+            "rmse": 6.9558,
+            "bias": -0.8395,
+            "medianAe": 2.8,
+            "p90Ae": 11,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "l5": {
+            "mae": 4.6232,
+            "rmse": 6.9674,
+            "bias": -0.8306,
+            "medianAe": 2.8,
+            "p90Ae": 11.4,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "track_a": {
+            "mae": 4.4959,
+            "rmse": 6.794,
+            "bias": -1.0093,
+            "medianAe": 2.6996,
+            "p90Ae": 10.8536,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "track_b": {
+            "mae": 4.4669,
+            "rmse": 6.7637,
+            "bias": -0.9457,
+            "medianAe": 2.7338,
+            "p90Ae": 10.8838,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          },
+          "market_line": {
+            "mae": 4.32,
+            "rmse": 6.4579,
+            "bias": 0.5254,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 2755,
+            "nEligible": 2755
+          }
+        }
+      },
+      "bySeason": {
+        "2025": {
+          "season_avg": {
+            "mae": 5.0436,
+            "rmse": 7.5322,
+            "bias": -1.8401,
+            "medianAe": 2.9626,
+            "p90Ae": 12.5083,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "l10": {
+            "mae": 4.7365,
+            "rmse": 7.1884,
+            "bias": -0.7492,
+            "medianAe": 2.8,
+            "p90Ae": 11.6,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "l5": {
+            "mae": 4.8075,
+            "rmse": 7.2435,
+            "bias": -0.6547,
+            "medianAe": 2.8,
+            "p90Ae": 12,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "track_a": {
+            "mae": 4.6432,
+            "rmse": 6.9934,
+            "bias": -1.0765,
+            "medianAe": 2.7585,
+            "p90Ae": 11.3743,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "track_b": {
+            "mae": 4.6211,
+            "rmse": 6.9677,
+            "bias": -0.9413,
+            "medianAe": 2.7636,
+            "p90Ae": 11.4203,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          },
+          "market_line": {
+            "mae": 4.3989,
+            "rmse": 6.7203,
+            "bias": 0.8423,
+            "medianAe": 2.5,
+            "p90Ae": 10.5,
+            "coverage": 1,
+            "n": 11348,
+            "nEligible": 11348
+          }
+        }
+      },
+      "trackAVsTrackB": {
+        "PTS": {
+          "trackAMae": 6.0408,
+          "trackBMae": 6.0168,
+          "trackBMinusTrackA": -0.024
+        },
+        "REB": {
+          "trackAMae": 2.3641,
+          "trackBMae": 2.3711,
+          "trackBMinusTrackA": 0.007
+        },
+        "AST": {
+          "trackAMae": 1.7758,
+          "trackBMae": 1.7727,
+          "trackBMinusTrackA": -0.0031
+        },
+        "3PM": {
+          "trackAMae": 1.1279,
+          "trackBMae": 1.1333,
+          "trackBMinusTrackA": 0.0054
+        },
+        "PRA": {
+          "trackAMae": 8.008,
+          "trackBMae": 7.9438,
+          "trackBMinusTrackA": -0.0642
+        },
+        "PA": {
+          "trackAMae": 7.1087,
+          "trackBMae": 7.0492,
+          "trackBMinusTrackA": -0.0596
+        },
+        "PR": {
+          "trackAMae": 7.3768,
+          "trackBMae": 7.3484,
+          "trackBMinusTrackA": -0.0284
+        },
+        "RA": {
+          "trackAMae": 3.513,
+          "trackBMae": 3.498,
+          "trackBMinusTrackA": -0.015
+        }
+      },
+      "vsMarket": {
+        "PTS": {
+          "ccMae": 6.0168,
+          "marketMae": 5.7495,
+          "delta": 0.2672,
+          "n": 1607
+        },
+        "REB": {
+          "ccMae": 2.3711,
+          "marketMae": 2.2774,
+          "delta": 0.0937,
+          "n": 1579
+        },
+        "AST": {
+          "ccMae": 1.7727,
+          "marketMae": 1.7602,
+          "delta": 0.0125,
+          "n": 1472
+        },
+        "3PM": {
+          "ccMae": 1.1333,
+          "marketMae": 1.1943,
+          "delta": -0.061,
+          "n": 1410
+        },
+        "PRA": {
+          "ccMae": 7.9438,
+          "marketMae": 7.3906,
+          "delta": 0.5532,
+          "n": 1526
+        },
+        "PA": {
+          "ccMae": 7.0492,
+          "marketMae": 6.6834,
+          "delta": 0.3657,
+          "n": 1202
+        },
+        "PR": {
+          "ccMae": 7.3484,
+          "marketMae": 6.9651,
+          "delta": 0.3833,
+          "n": 1376
+        },
+        "RA": {
+          "ccMae": 3.498,
+          "marketMae": 3.327,
+          "delta": 0.171,
+          "n": 1176
+        }
+      },
+      "gapAnalysis": {
+        "0-1": {
+          "n": 5041,
+          "ccMae": 2.8282153927824383,
+          "marketMae": 2.845467169212458,
+          "overHitRate": 0.4949341438703141,
+          "underHitRate": 0.5682267633487146,
+          "actualMinusLine": -0.06943066851815116,
+          "directionalHitRate": 0.5393370607028753
+        },
+        "1-2": {
+          "n": 2209,
+          "ccMae": 4.302747676491923,
+          "marketMae": 4.279085559076505,
+          "overHitRate": 0.4847457627118644,
+          "underHitRate": 0.599375,
+          "actualMinusLine": -0.49773653236758714,
+          "directionalHitRate": 0.5684931506849316
+        },
+        "2-3": {
+          "n": 1256,
+          "ccMae": 5.3302092086045025,
+          "marketMae": 5.072850318471337,
+          "overHitRate": 0.4523809523809524,
+          "underHitRate": 0.5487437185929648,
+          "actualMinusLine": -0.8539012738853503,
+          "directionalHitRate": 0.529270248596632
+        },
+        "3-4": {
+          "n": 807,
+          "ccMae": 6.047983198873333,
+          "marketMae": 5.7868649318463445,
+          "overHitRate": 0.4519230769230769,
+          "underHitRate": 0.5890804597701149,
+          "actualMinusLine": -1.1722428748451053,
+          "directionalHitRate": 0.57125
+        },
+        "4+": {
+          "n": 2035,
+          "ccMae": 8.40461069210975,
+          "marketMae": 7.410565110565111,
+          "overHitRate": 0.4523809523809524,
+          "underHitRate": 0.6238341968911917,
+          "actualMinusLine": -2.9928746928746928,
+          "directionalHitRate": 0.6166832174776564
+        }
+      },
+      "directional": {
+        "n": 11259,
+        "pushes": 89,
+        "modelPushes": 0,
+        "directionalHitRate": 0.56,
+        "overHitRate": 0.4867,
+        "underHitRate": 0.5867
+      },
+      "confidenceTiers": {
+        "high": {
+          "n": 320,
+          "mae": 4.8573,
+          "rmse": 7.3424,
+          "directionalHitRate": 0.5438,
+          "coverage": 1
+        },
+        "medium": {
+          "n": 2303,
+          "mae": 2.967,
+          "rmse": 4.5272,
+          "directionalHitRate": 0.5473,
+          "coverage": 1
+        },
+        "low": {
+          "n": 8725,
+          "mae": 5.0491,
+          "rmse": 7.4671,
+          "directionalHitRate": 0.564,
+          "coverage": 1
+        }
+      },
+      "calibration": {
+        "raw": {
+          "brier": 0.2541,
+          "ece": 0.0725,
+          "n": 11259
+        },
+        "calibrated": {
+          "brier": 0.2483,
+          "ece": 0.0499,
+          "n": 11259
+        },
+        "anchored": {
+          "brier": 0.2454,
+          "ece": 0.0441,
+          "n": 11259
+        }
+      }
+    }
+  },
+  "trainServeComparison": {
+    "PTS": {
+      "maeDiffCareerMinusActive": -0.0172,
+      "brierDiffCareerMinusActive": -0.0009,
+      "eceDiffCareerMinusActive": -0.0009
+    },
+    "REB": {
+      "maeDiffCareerMinusActive": -0.0021,
+      "brierDiffCareerMinusActive": -0.0009,
+      "eceDiffCareerMinusActive": -0.0006
+    },
+    "AST": {
+      "maeDiffCareerMinusActive": -0.0068,
+      "brierDiffCareerMinusActive": -0.0003,
+      "eceDiffCareerMinusActive": -0.0032
+    },
+    "3PM": {
+      "maeDiffCareerMinusActive": -0.0066,
+      "brierDiffCareerMinusActive": -0.0012,
+      "eceDiffCareerMinusActive": -0.0072
+    },
+    "PRA": {
+      "maeDiffCareerMinusActive": -0.0491,
+      "brierDiffCareerMinusActive": -0.0007,
+      "eceDiffCareerMinusActive": 0.0015
+    },
+    "PA": {
+      "maeDiffCareerMinusActive": -0.0185,
+      "brierDiffCareerMinusActive": -0.0006,
+      "eceDiffCareerMinusActive": -0.0084
+    },
+    "PR": {
+      "maeDiffCareerMinusActive": -0.038,
+      "brierDiffCareerMinusActive": -0.0009,
+      "eceDiffCareerMinusActive": 0.0068
+    },
+    "RA": {
+      "maeDiffCareerMinusActive": -0.0128,
+      "brierDiffCareerMinusActive": -0.0008,
+      "eceDiffCareerMinusActive": 0.0047
+    }
+  }
+}

@@ -335,7 +335,7 @@ export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis 
       <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="w-4 h-4 text-[#075B5C]" />
-          <h4 className="text-xs font-semibold text-[#063f46]">Pace Analysis</h4>
+          <h4 className="text-xs font-semibold text-[#063f46]">Pace Context</h4>
         </div>
         <p className="text-xs text-[#4a6366]">Not enough season data</p>
       </div>
@@ -353,26 +353,29 @@ export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis 
     <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
       <div className="flex items-center gap-2 mb-3">
         <Zap className="w-4 h-4 text-[#075B5C]" />
-        <h4 className="text-xs font-semibold text-[#063f46]">Pace Analysis</h4>
+        <h4 className="text-xs font-semibold text-[#063f46]">Pace Context</h4>
       </div>
       
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
-            <div className="text-[10px] text-[#4a6366] mb-1">Home Pace</div>
+            <div className="text-[10px] text-[#4a6366] mb-1">Home season pace</div>
             <div className="text-sm font-bold text-[#063f46]">{home_team_pace.toFixed(1)}</div>
           </div>
           <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
-            <div className="text-[10px] text-[#4a6366] mb-1">Away Pace</div>
+            <div className="text-[10px] text-[#4a6366] mb-1">Away season pace</div>
             <div className="text-sm font-bold text-[#063f46]">{away_team_pace.toFixed(1)}</div>
           </div>
         </div>
         
         <div className="border-t border-[#DCE9EA] pt-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] text-[#4a6366]">Projected Game Pace</span>
+            <span className="text-[10px] text-[#4a6366]">Projected pace</span>
             <span className={`text-sm font-bold ${paceColor}`}>{projected_pace.toFixed(1)}</span>
           </div>
+          <p className="text-[10px] text-[#8aa0a3] mb-2">
+            Average of the two season paces. Descriptive context only — not a projected total or winner.
+          </p>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#4a6366]">Pace Impact</span>
             <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${

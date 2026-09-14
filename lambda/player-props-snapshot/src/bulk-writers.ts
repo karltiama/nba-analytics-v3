@@ -58,7 +58,14 @@ export async function completeGameRun(
   status: 'success' | 'error',
   rowsFetched: number,
   rowsStored: number,
-  errorMessage?: string
+  errorMessage?: string,
+  archive?: {
+    rowsArchived: number;
+    archiveObjectCount: number;
+    archiveStatus: 'pending' | 'archived' | 'failed';
+    archiveError?: string | null;
+    archiveKey?: string | null;
+  }
 ): Promise<void> {
   await pool.query(
     `UPDATE raw.player_prop_game_runs
@@ -66,10 +73,65 @@ export async function completeGameRun(
          rows_fetched = $4,
          rows_stored = $5,
          error_message = $6,
-         completed_at = now()
+         completed_at = now(),
+         rows_archived = coalesce($7, rows_archived),
+         archive_object_count = coalesce($8, archive_object_count),
+         archive_status = coalesce($9, archive_status),
+         archive_error = $10,
+         archive_key = coalesce($11, archive_key),
+         archive_completed_at = case when $9 = 'archived' then now() else archive_completed_at end
      WHERE pull_run_id = $1 AND game_id = $2`,
-    [pullRunId, gameId, status, rowsFetched, rowsStored, errorMessage ?? null]
+    [
+      pullRunId,
+      gameId,
+      status,
+      rowsFetched,
+      rowsStored,
+      errorMessage ?? null,
+      archive?.rowsArchived ?? null,
+      archive?.archiveObjectCount ?? null,
+      archive?.archiveStatus ?? null,
+      archive?.archiveError ?? null,
+      archive?.archiveKey ?? null,
+    ]
   );
+}
+
+export async function getGameRunStartedAt(
+  pool: Pool,
+  pullRunId: number,
+  gameId: string
+): Promise<Date | null> {
+  const result = await pool.query<{ started_at: Date }>(
+    `SELECT started_at FROM raw.player_prop_game_runs WHERE pull_run_id = $1 AND game_id = $2`,
+    [pullRunId, gameId]
+  );
+  return result.rows[0]?.started_at ?? null;
+}
+
+export async function lookupGameArchiveContext(
+  pool: Pool,
+  gameId: string
+): Promise<{ season: string | null; startTime: Date | null; homeTeamId: string | null; awayTeamId: string | null }> {
+  const result = await pool.query<{
+    season: string | null;
+    start_time: Date | null;
+    home_team_id: string | null;
+    away_team_id: string | null;
+  }>(
+    `SELECT season::text AS season, start_time, home_team_id::text AS home_team_id, away_team_id::text AS away_team_id
+     FROM analytics.games
+     WHERE game_id::text = $1
+     LIMIT 1`,
+    [gameId]
+  );
+  const row = result.rows[0];
+  return {
+    season: row?.season ?? null,
+    startTime: row?.start_time ?? null,
+    homeTeamId: row?.home_team_id ?? null,
+    awayTeamId: row?.away_team_id ?? null,
+  };
 }
 
 export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): Promise<void> {
@@ -114,14 +176,15 @@ export async function bulkInsertRawV2(
   pool: Pool,
   rows: NormalizedPropRow[],
   fetchedAt: Date,
-  rawJsonOptions: RawJsonOptions
+  rawJsonOptions: RawJsonOptions,
+  pullRunId?: number | null
 ): Promise<number> {
   if (rows.length === 0) return 0;
   let inserted = 0;
   for (const group of chunk(rows, CHUNK_SIZE)) {
     const values: unknown[] = [];
     const tuples = group.map((r, i) => {
-      const base = i * 14;
+      const base = i * 15;
       values.push(
         r.game_id,
         r.player_id,
@@ -136,14 +199,15 @@ export async function bulkInsertRawV2(
         r.odds_decimal,
         r.implied_probability,
         fetchedAt,
-        rawJsonOptions.enabled && Math.random() < rawJsonOptions.sampleRate ? JSON.stringify(r.raw_json) : null
+        rawJsonOptions.enabled && Math.random() < rawJsonOptions.sampleRate ? JSON.stringify(r.raw_json) : null,
+        pullRunId ?? null
       );
-      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base + 9},$${base + 10},$${base + 11},$${base + 12},$${base + 13},$${base + 14})`;
+      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base + 9},$${base + 10},$${base + 11},$${base + 12},$${base + 13},$${base + 14},$${base + 15})`;
     });
     const result = await pool.query(
       `INSERT INTO raw.player_prop_snapshots_v2 (
          game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
-         line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json
+         line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json, pull_run_id
        ) VALUES ${tuples.join(',')}
        ON CONFLICT (
          game_id, player_id, sportsbook, prop_type, side, line_value, (date_trunc('hour', fetched_at at time zone 'UTC'))

@@ -5,6 +5,7 @@ import { Plus, Minus, Target } from 'lucide-react';
 import { usePlayerAnalysis } from '@/app/betting/players/[playerId]/components/PlayerAnalysisContext';
 import { METRIC_TO_PROP_TYPE } from '@/lib/players/types';
 import type { MetricKey } from '@/lib/players/types';
+import { ProjectionVsMarket } from '@/components/betting/ProjectionVsMarket';
 
 /**
  * Single useEffect is only for fetching props (async). Filter updates are synchronous like
@@ -353,9 +354,9 @@ export function PlayerPropSelectorSidebar({
             checked={showBestEdgeOnly}
             onChange={(e) => setShowBestEdgeOnly(e.target.checked)}
             className="rounded border-[#DCE9EA] bg-white text-[#075B5C] focus:ring-[#55ddb1]"
-            aria-label="Show best edge only"
+            aria-label="Show best estimated EV only"
           />
-          <span>Best edge only</span>
+          <span title="Highest estimated EV, else best vs-consensus, else best odds">Best EV only</span>
         </label>
       </div>
 
@@ -395,6 +396,10 @@ export function PlayerPropSelectorSidebar({
               if (evB !== evA) return evB - evA;
               return (b.edgeProbability ?? -Infinity) - (a.edgeProbability ?? -Infinity);
             });
+            const groupProjection =
+              rowsToShow.find((r) => r.projection != null && Number.isFinite(r.projection))?.projection ??
+              null;
+            const groupUnit = (propType ?? 'PTS').replace(/_/g, ' ');
             return (
               <div
                 key={key}
@@ -412,11 +417,13 @@ export function PlayerPropSelectorSidebar({
                   <span className="text-xs font-mono text-[#063f46]">
                     {formatLineValue(lineValue)}
                   </span>
-                  {rowsToShow.some((r) => r.projection != null && Number.isFinite(r.projection)) && (
-                    <span className="text-[10px] text-[#4a6366]">
-                      (model {formatLineValue(rowsToShow.find((r) => r.projection != null)?.projection ?? null)})
-                    </span>
-                  )}
+                </div>
+                <div className="mb-2">
+                  <ProjectionVsMarket
+                    projection={groupProjection}
+                    line={lineValue}
+                    label={groupUnit}
+                  />
                 </div>
                 <ul className="space-y-1">
                   {rowsSortedByEdge.map((r) => {
@@ -445,11 +452,17 @@ export function PlayerPropSelectorSidebar({
                           {r.sportsbook ?? '—'}
                         </span>
                         <span className="font-mono text-[#063f46] shrink-0 ml-2 flex items-center gap-2">
-                          <span className="text-xs">
-                            EV {formatEv(r.ev)}
+                          <span
+                            className="text-xs"
+                            title="Estimated EV after calibration and market anchoring. Not the projection gap."
+                          >
+                            Est. EV {formatEv(r.ev)}
                           </span>
-                          <span className="text-[10px] text-[#4a6366]">
-                            Edge {hasEdge ? formatEdge(r.edgeProbability) : '—'}
+                          <span
+                            className="text-[10px] text-[#4a6366]"
+                            title="Sportsbook implied vs consensus — not a Court Context projection gap"
+                          >
+                            vs cons. {hasEdge ? formatEdge(r.edgeProbability) : '—'}
                           </span>
                           <span>
                             {formatOdds(r.oddsAmerican)}

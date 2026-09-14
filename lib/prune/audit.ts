@@ -32,6 +32,12 @@ export type PruneAuditEvent = {
     reason: string | null;
     seasons: Array<{ season: number; ok: boolean; reason: string; recordCount: number | null }>;
   };
+  rawArchivePrune: {
+    required: boolean;
+    blockedMissing: number;
+    deletable: number | null;
+    legacyDumpOk: boolean | null;
+  };
   maxDelete: {
     raw: { allowed: boolean | null; reason: string | null; eligiblePercent: number | null };
     current: { allowed: boolean | null; reason: string | null; eligiblePercent: number | null };

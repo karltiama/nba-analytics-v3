@@ -147,6 +147,11 @@ output "player_props_dlq_not_empty_alarm_name" {
   value       = aws_cloudwatch_metric_alarm.player_props_dlq_not_empty.alarm_name
 }
 
+output "player_props_archive_gap_alarm_name" {
+  description = "CloudWatch alarm name for stored player-prop rows with no S3 archive."
+  value       = aws_cloudwatch_metric_alarm.player_props_archive_gap.alarm_name
+}
+
 output "game_status_sync_errors_alarm_name" {
   description = "CloudWatch alarm name for game-status-sync invocation errors when created."
   value       = var.game_status_sync_create ? aws_cloudwatch_metric_alarm.game_status_sync_errors[0].alarm_name : null

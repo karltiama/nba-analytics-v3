@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "data": {
+    "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+    "opening": true,
+    "timeRange": { "start": null, "end": null },
+    "snapshots": [],
+    "count": 0,
+    "limit": 1,
+    "offset": 0
+  },
+  "meta": {
+    "note": "Wrapper copied from the 2026-09-14 live GET /api/v1/history/props probe. Existence queries returned snapshots=[] and count=0. Snapshot row field names were never observed live. No API key material."
+  }
+}

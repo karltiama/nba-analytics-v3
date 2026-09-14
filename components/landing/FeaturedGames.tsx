@@ -2,8 +2,22 @@
 
 import { Trophy } from 'lucide-react';
 import { GameCard, type Game } from '@/components/betting';
+import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import { LandingSection } from '@/components/landing/LandingSection';
 import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader';
+
+function withMarketDisplay(
+  game: Omit<Game, 'homeImpliedProb' | 'awayImpliedProb' | 'isFavorite' | 'isClose'>
+): Game {
+  const market = twoWayMarketDisplay(game.awayOdds.moneyline, game.homeOdds.moneyline);
+  return {
+    ...game,
+    homeImpliedProb: market?.homePct ?? null,
+    awayImpliedProb: market?.awayPct ?? null,
+    isFavorite: market?.favorite ?? null,
+    isClose: market?.isClose ?? false,
+  };
+}
 
 /**
  * Public landing preview — static demo cards only.
@@ -11,7 +25,7 @@ import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader'
  * (Phase 1A.1). Do not call private betting APIs from this component.
  */
 const DEMO_GAMES: Game[] = [
-  {
+  withMarketDisplay({
     id: 'demo-1',
     homeTeam: {
       id: 'bos',
@@ -31,14 +45,10 @@ const DEMO_GAMES: Game[] = [
     overUnder: 224.5,
     overOdds: -110,
     underOdds: -110,
-    homeImpliedProb: 59,
-    awayImpliedProb: 44,
-    isFavorite: 'home',
-    isClose: false,
     matchupContext:
       'Boston has rest advantage. NYK enters on the second night of a back-to-back.',
-  },
-  {
+  }),
+  withMarketDisplay({
     id: 'demo-2',
     homeTeam: {
       id: 'okc',
@@ -58,14 +68,10 @@ const DEMO_GAMES: Game[] = [
     overUnder: 228.0,
     overOdds: -108,
     underOdds: -112,
-    homeImpliedProb: 62,
-    awayImpliedProb: 43,
-    isFavorite: 'home',
-    isClose: false,
     matchupContext:
       'OKC has rest advantage. DEN enters on the second night of a back-to-back.',
-  },
-  {
+  }),
+  withMarketDisplay({
     id: 'demo-3',
     homeTeam: {
       id: 'lal',
@@ -85,13 +91,9 @@ const DEMO_GAMES: Game[] = [
     overUnder: 231.5,
     overOdds: -110,
     underOdds: -110,
-    homeImpliedProb: 52,
-    awayImpliedProb: 52,
-    isFavorite: 'home',
-    isClose: true,
     matchupContext:
       'Usage shift for Dončić. Scoring and assists rise when Reaves is out.',
-  },
+  }),
 ];
 
 export function FeaturedGames() {

@@ -296,6 +296,24 @@ variable "player_props_schedule_crons" {
   default     = []
 }
 
+variable "nba_data_bucket_name" {
+  description = "Existing NBA archive bucket name (not created by this stack). Empty string skips player-props worker S3 IAM."
+  type        = string
+  default     = ""
+}
+
+variable "nba_raw_prefix" {
+  description = "S3 key prefix for raw archives (no trailing slash)."
+  type        = string
+  default     = "raw"
+}
+
+variable "player_prop_s3_archive_enabled" {
+  description = "Worker writes append-only player-prop snapshot objects. Default false until staged rollout. Does not enable schedulers."
+  type        = bool
+  default     = false
+}
+
 # -----------------------------------------------------------------------------
 # Lambda: boxscore-scraper (Basketball-Reference HTML; not BallDontLie)
 # -----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 'use client';
 
 import type { EditableSlip } from './ReviewEditor';
+import { formatProjectionGap, projectionGap } from '@/lib/betting/market-probability';
 
 type LegAnalysis = {
   index: number;
@@ -64,13 +65,13 @@ export function AnalysisResults({ slip, legs, parlay }: AnalysisResultsProps) {
           <h3 className="text-sm font-semibold text-white">Parlay summary (independent legs)</h3>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>
-              Combined model probability:{' '}
+              Combined estimated probability:{' '}
               <span className="text-white tabular-nums">
                 {formatPct(parlay.combinedModelProbability)}
               </span>
             </li>
             <li>
-              Implied probability (total odds):{' '}
+              Implied probability (market total odds):{' '}
               <span className="text-white tabular-nums">
                 {formatPct(parlay.impliedProbabilityFromTotal)}
               </span>
@@ -142,15 +143,30 @@ export function AnalysisResults({ slip, legs, parlay }: AnalysisResultsProps) {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">Model P</dt>
+                  <dt className="text-muted-foreground">Market line</dt>
+                  <dd className="text-white tabular-nums">{Number.isFinite(leg.line) ? leg.line.toFixed(1) : '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Projection gap</dt>
+                  <dd className="text-white tabular-nums">
+                    {(() => {
+                      const gap = projectionGap(leg.analysis.projection, leg.line);
+                      return gap != null ? formatProjectionGap(gap) : '—';
+                    })()}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground" title="After calibration and market anchoring">
+                    Est. win P
+                  </dt>
                   <dd className="text-white tabular-nums">{formatPct(leg.analysis.modelProbability)}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">Implied P</dt>
+                  <dt className="text-muted-foreground">Market implied P</dt>
                   <dd className="text-white tabular-nums">{formatPct(leg.analysis.marketImpliedProbability)}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">EV</dt>
+                  <dt className="text-muted-foreground">Estimated EV</dt>
                   <dd
                     className={
                       leg.analysis.ev != null && leg.analysis.ev >= 0

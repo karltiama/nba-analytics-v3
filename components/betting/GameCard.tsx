@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { Clock, TrendingUp, ChevronRight, ListFilter } from 'lucide-react';
 import { gameDetailHref, propsExplorerHref } from '@/lib/betting/research-journey';
+import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import { TeamLogo } from '@/components/nba/TeamLogo';
+import { MarketProbability } from '@/components/betting/MarketProbability';
 
 interface TeamInfo {
   id: string;
@@ -34,6 +36,7 @@ export interface Game {
   underOdds: number | null;
   homeImpliedProb: number | null;
   awayImpliedProb: number | null;
+  /** Sportsbook moneyline favorite (not a Court Context pick). */
   isFavorite: 'home' | 'away' | null;
   isClose: boolean;
   paceSignal?: {
@@ -96,7 +99,11 @@ function getStatusBadge(status: string | undefined): { label: string; className:
 
 function FavBadge() {
   return (
-    <span className="text-[9px] px-1 py-px rounded font-bold shrink-0 bg-[#56D6A3]/30 text-[#075B5C]">
+    <span
+      className="text-[9px] px-1 py-px rounded font-bold shrink-0 bg-[#56D6A3]/30 text-[#075B5C]"
+      title="Sportsbook moneyline favorite"
+      aria-label="Market favorite"
+    >
       FAV
     </span>
   );
@@ -164,8 +171,10 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
       game.homeOdds.spread != null ||
       game.awayOdds.spread != null ||
       game.overUnder != null);
-  const awayIsFav = game.isFavorite === 'away';
-  const homeIsFav = game.isFavorite === 'home';
+  const marketDisplay = twoWayMarketDisplay(game.awayOdds.moneyline, game.homeOdds.moneyline);
+  const awayIsFav = (marketDisplay?.favorite ?? game.isFavorite) === 'away';
+  const homeIsFav = (marketDisplay?.favorite ?? game.isFavorite) === 'home';
+  const isCloseMarket = marketDisplay?.isClose ?? game.isClose;
   const isFinal = game.status === 'Final' && game.homeScore != null && game.awayScore != null;
   const statusBadge = getStatusBadge(game.status);
   const favoredValue = (isFav: boolean) => (isFav ? 'text-[#20B95A]' : 'text-[#063F46]');
@@ -179,8 +188,8 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
         </div>
         {statusBadge ? (
           <span className={`text-[10px] px-2 py-0.5 ${statusBadge.className}`}>{statusBadge.label}</span>
-        ) : game.isClose ? (
-          <span className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-semibold">
+        ) : isCloseMarket ? (
+          <span className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-semibold" title="Market implied probabilities within 10 points">
             CLOSE
           </span>
         ) : (
@@ -218,7 +227,7 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
         <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
           <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
             <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
-              SPREAD
+              Market spread
             </div>
             <div className={`text-sm sm:text-base font-semibold ${favoredValue(awayIsFav)}`}>
               {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
@@ -229,7 +238,7 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
           </div>
           <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
             <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
-              TOTAL
+              Market total
             </div>
             <div className="text-sm sm:text-base font-semibold text-[#168DD8]">
               {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
@@ -242,7 +251,7 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
           </div>
           <div className="px-2 py-3 text-center">
             <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
-              ML
+              Market ML
             </div>
             <div className={`text-sm sm:text-base font-semibold ${favoredValue(awayIsFav)}`}>
               {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
@@ -268,28 +277,30 @@ export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
         </div>
       ) : null}
 
-      {hasOdds && game.homeImpliedProb != null && game.awayImpliedProb != null ? (
+      {hasOdds && marketDisplay ? (
         <div className="px-5 sm:px-6 pb-5">
-          <div className="flex items-center gap-2.5">
-            <div className="text-left shrink-0">
-              <div className="text-xs font-medium text-[#72869A] leading-none">{game.awayTeam.abbreviation}</div>
-              <div className="text-sm font-bold text-[#063F46] tabular-nums mt-0.5">{game.awayImpliedProb}%</div>
-            </div>
-            <div className="flex-1 flex h-2 bg-[#E8F0F1] rounded-full overflow-hidden min-w-0">
-              <div
-                className="h-full rounded-l-full bg-[#168DD8] min-w-0"
-                style={{ flex: game.awayImpliedProb }}
-              />
-              <div
-                className="h-full rounded-r-full bg-[#20B95A] min-w-0"
-                style={{ flex: game.homeImpliedProb }}
-              />
-            </div>
-            <div className="text-right shrink-0">
-              <div className="text-xs font-medium text-[#72869A] leading-none">{game.homeTeam.abbreviation}</div>
-              <div className="text-sm font-bold text-[#063F46] tabular-nums mt-0.5">{game.homeImpliedProb}%</div>
-            </div>
-          </div>
+          <MarketProbability
+            awayAbbr={game.awayTeam.abbreviation}
+            homeAbbr={game.homeTeam.abbreviation}
+            awayPct={marketDisplay.awayPct}
+            homePct={marketDisplay.homePct}
+          />
+        </div>
+      ) : null}
+
+      {game.paceSignal ? (
+        <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
+          <p className="text-[10px] uppercase tracking-wide font-medium text-[#72869A] text-center">
+            Pace context
+          </p>
+          <p className="text-[12px] text-[#063F46] text-center mt-0.5 tabular-nums">
+            {game.paceSignal.projected.toFixed(1)} projected pace
+            {game.paceSignal.label === 'FAST'
+              ? ' · Above typical NBA pace'
+              : game.paceSignal.label === 'SLOW'
+                ? ' · Below typical NBA pace'
+                : ' · Near typical NBA pace'}
+          </p>
         </div>
       ) : null}
 

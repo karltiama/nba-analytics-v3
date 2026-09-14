@@ -224,7 +224,8 @@ data "archive_file" "player_props" {
 }
 
 resource "aws_sqs_queue" "player_props_dlq" {
-  name = "nba-player-props-game-dlq"
+  name                      = "nba-player-props-game-dlq"
+  message_retention_seconds = 1209600
 }
 
 resource "aws_sqs_queue" "player_props_game_queue" {
@@ -258,10 +259,13 @@ resource "aws_lambda_function" "player_props_worker" {
       local.bdl_rate_limit_env,
       var.player_props_lambda_env,
       {
-        PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
-        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND = "dynamodb"
-        BDL_RATE_LIMIT_WORKER  = "player-props-worker"
+        PLAYER_PROPS_QUEUE_URL           = aws_sqs_queue.player_props_game_queue.id
+        BDL_RATE_LIMIT_TABLE             = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND           = "dynamodb"
+        BDL_RATE_LIMIT_WORKER            = "player-props-worker"
+        PLAYER_PROP_S3_ARCHIVE_ENABLED   = var.player_prop_s3_archive_enabled ? "true" : "false"
+        NBA_DATA_BUCKET                  = var.nba_data_bucket_name
+        NBA_RAW_PREFIX                   = var.nba_raw_prefix
       }
     )
   }

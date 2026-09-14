@@ -146,25 +146,159 @@ export async function listSeasonsWithEligibleRaw(
   return r.rows.map((row) => Number(row.season)).filter((n) => Number.isFinite(n));
 }
 
+export type RawPruneArchiveOpts = {
+  requireArchive: boolean;
+  requiredAfterIso: string | null;
+  legacyDumpOk: boolean;
+};
+
+/**
+ * Seasons that still have prune-eligible LEGACY raw snapshots
+ * (null pull_run_id, or game run started before PLAYER_PROP_ARCHIVE_REQUIRED_AFTER).
+ * Used only when the per-run S3 archive prune gate is on, so 2026–27
+ * balldontlie objects are not judged by the recovered player_props_raw_v2 dump.
+ */
+export async function listSeasonsWithEligibleLegacyRaw(
+  pool: Pool,
+  retentionDays: number = RETENTION_DAYS,
+  requiredAfterIso: string | null = null
+): Promise<number[]> {
+  const r = await pool.query<{ season: string }>(
+    `
+    SELECT DISTINCT trim(both from g.season)::int AS season
+    FROM raw.player_prop_snapshots_v2 r
+    INNER JOIN analytics.games g ON g.game_id = r.game_id::text
+    LEFT JOIN raw.player_prop_game_runs gr
+      ON r.pull_run_id IS NOT NULL
+     AND gr.pull_run_id = r.pull_run_id
+     AND gr.game_id = r.game_id::text
+    WHERE r.fetched_at < now() - ($1::text || ' days')::interval
+      AND g.season IS NOT NULL
+      AND trim(both from g.season) ~ '^[0-9]+'
+      AND (
+        r.pull_run_id IS NULL
+        OR ($2::timestamptz IS NOT NULL AND gr.started_at IS NOT NULL AND gr.started_at < $2::timestamptz)
+      )
+    ORDER BY 1
+    `,
+    [String(retentionDays), requiredAfterIso]
+  );
+  return r.rows.map((row) => Number(row.season)).filter((n) => Number.isFinite(n));
+}
+
+export async function countRawDeletable(
+  pool: Pool,
+  retentionDays: number = RETENTION_DAYS,
+  archiveOpts: RawPruneArchiveOpts
+): Promise<number> {
+  if (!archiveOpts.requireArchive) {
+    return countRawEligible(pool, retentionDays);
+  }
+  const r = await pool.query<{ count: string }>(
+    `
+    SELECT COUNT(*)::text AS count
+    FROM raw.player_prop_snapshots_v2 r
+    LEFT JOIN raw.player_prop_game_runs gr
+      ON r.pull_run_id IS NOT NULL
+     AND gr.pull_run_id = r.pull_run_id
+     AND gr.game_id = r.game_id::text
+    WHERE r.fetched_at < now() - ($1::text || ' days')::interval
+      AND (
+        coalesce(gr.archive_status, '') = 'archived'
+        OR (
+          $2::boolean
+          AND (
+            r.pull_run_id IS NULL
+            OR ($3::timestamptz IS NOT NULL AND gr.started_at IS NOT NULL AND gr.started_at < $3::timestamptz)
+          )
+        )
+      )
+    `,
+    [String(retentionDays), archiveOpts.legacyDumpOk, archiveOpts.requiredAfterIso]
+  );
+  return Number(r.rows[0]?.count ?? 0);
+}
+
+/**
+ * Age-eligible new-run rows that must stay until a verified S3 archive exists.
+ */
+export async function countRawBlockedByMissingArchive(
+  pool: Pool,
+  retentionDays: number = RETENTION_DAYS,
+  requiredAfterIso: string | null = null
+): Promise<number> {
+  const r = await pool.query<{ count: string }>(
+    `
+    SELECT COUNT(*)::text AS count
+    FROM raw.player_prop_snapshots_v2 r
+    LEFT JOIN raw.player_prop_game_runs gr
+      ON r.pull_run_id IS NOT NULL
+     AND gr.pull_run_id = r.pull_run_id
+     AND gr.game_id = r.game_id::text
+    WHERE r.fetched_at < now() - ($1::text || ' days')::interval
+      AND r.pull_run_id IS NOT NULL
+      AND NOT (
+        $2::timestamptz IS NOT NULL AND gr.started_at IS NOT NULL AND gr.started_at < $2::timestamptz
+      )
+      AND coalesce(gr.archive_status, '') IS DISTINCT FROM 'archived'
+    `,
+    [String(retentionDays), requiredAfterIso]
+  );
+  return Number(r.rows[0]?.count ?? 0);
+}
+
 export async function deleteRawEligibleBatches(
   pool: Pool,
   retentionDays: number = RETENTION_DAYS,
-  batchSize: number = DELETE_BATCH
+  batchSize: number = DELETE_BATCH,
+  archiveOpts?: RawPruneArchiveOpts
 ): Promise<number> {
   let deleted = 0;
   while (true) {
-    const result = await pool.query(
-      `WITH doomed AS (
-         SELECT ctid
-         FROM raw.player_prop_snapshots_v2
-         WHERE fetched_at < now() - ($1::text || ' days')::interval
-         LIMIT $2
-       )
-       DELETE FROM raw.player_prop_snapshots_v2 t
-       USING doomed d
-       WHERE t.ctid = d.ctid`,
-      [String(retentionDays), batchSize]
-    );
+    const result = archiveOpts?.requireArchive
+      ? await pool.query(
+          `WITH doomed AS (
+             SELECT r.ctid
+             FROM raw.player_prop_snapshots_v2 r
+             LEFT JOIN raw.player_prop_game_runs gr
+               ON r.pull_run_id IS NOT NULL
+              AND gr.pull_run_id = r.pull_run_id
+              AND gr.game_id = r.game_id::text
+             WHERE r.fetched_at < now() - ($1::text || ' days')::interval
+               AND (
+                 coalesce(gr.archive_status, '') = 'archived'
+                 OR (
+                   $3::boolean
+                   AND (
+                     r.pull_run_id IS NULL
+                     OR ($4::timestamptz IS NOT NULL AND gr.started_at IS NOT NULL AND gr.started_at < $4::timestamptz)
+                   )
+                 )
+               )
+             LIMIT $2
+           )
+           DELETE FROM raw.player_prop_snapshots_v2 t
+           USING doomed d
+           WHERE t.ctid = d.ctid`,
+          [
+            String(retentionDays),
+            batchSize,
+            archiveOpts.legacyDumpOk,
+            archiveOpts.requiredAfterIso,
+          ]
+        )
+      : await pool.query(
+          `WITH doomed AS (
+             SELECT ctid
+             FROM raw.player_prop_snapshots_v2
+             WHERE fetched_at < now() - ($1::text || ' days')::interval
+             LIMIT $2
+           )
+           DELETE FROM raw.player_prop_snapshots_v2 t
+           USING doomed d
+           WHERE t.ctid = d.ctid`,
+          [String(retentionDays), batchSize]
+        );
     const count = result.rowCount ?? 0;
     deleted += count;
     if (count === 0) break;

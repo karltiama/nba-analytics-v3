@@ -1,0 +1,130 @@
+{
+  "version": "shadow-played-only-trackA-2026-09-14",
+  "note": "RESEARCH ONLY. Do not copy into lib/betting/ev-calibration-artifacts.json. Fit on played-only Track A raw P, chronological split.",
+  "productionArtifactsUntouched": "lib/betting/ev-calibration-artifacts.json",
+  "family": "slope * p_raw + intercept",
+  "shrinkLambda": 0.35,
+  "minSamples": 100,
+  "split": {
+    "rule": "chronological unique start_time",
+    "fitFraction": 0.7,
+    "cutIso": "2026-04-24T01:30:00.000Z",
+    "uniqueStarts": 86,
+    "fitStarts": 60,
+    "holdStarts": 26,
+    "marketMin": "2026-04-03T01:30:00.000Z",
+    "marketMax": "2026-05-02T23:30:00.000Z"
+  },
+  "tracks": {
+    "playedTrackA": {
+      "default": {
+        "slope": 0.41080851189914624,
+        "intercept": 0.2739150475762417,
+        "rawSlope": 0.09355155676791736,
+        "rawIntercept": 0.4214077655019103,
+        "n": 7856,
+        "identityFallback": false,
+        "meanP": 0.506735342062511,
+        "meanY": 0.4688136456211813,
+        "varP": 137.00632750824946,
+        "cov": 12.817155225451877
+      },
+      "points": {
+        "slope": 0.28517035136520263,
+        "intercept": 0.3544321578774684,
+        "rawSlope": -0.09973792097661131,
+        "rawIntercept": 0.5452802428884129,
+        "n": 1122,
+        "identityFallback": false,
+        "meanP": 0.5076087006382747,
+        "meanY": 0.4946524064171123,
+        "varP": 25.853420629649637,
+        "cov": -2.5785664237350883
+      },
+      "rebounds": {
+        "slope": 0.5076553273754275,
+        "intercept": 0.23273887200638094,
+        "rawSlope": 0.24254665750065768,
+        "rawIntercept": 0.3580598030867399,
+        "n": 1101,
+        "identityFallback": false,
+        "meanP": 0.49720728226089217,
+        "meanY": 0.4786557674841054,
+        "varP": 14.747337616342563,
+        "cov": 3.576917445877605
+      },
+      "assists": {
+        "slope": 0.45882804161749857,
+        "intercept": 0.24140605983684163,
+        "rawSlope": 0.16742775633461326,
+        "rawIntercept": 0.3713939382105256,
+        "n": 1036,
+        "identityFallback": false,
+        "meanP": 0.5086956321803934,
+        "meanY": 0.45656370656370654,
+        "varP": 13.073919631721267,
+        "cov": 2.188937030438145
+      },
+      "threes": {
+        "slope": 0.659205631362353,
+        "intercept": 0.12483102580413617,
+        "rawSlope": 0.475700971326697,
+        "rawIntercept": 0.19204773200636333,
+        "n": 995,
+        "identityFallback": false,
+        "meanP": 0.5237708416896969,
+        "meanY": 0.44120603015075377,
+        "varP": 14.435256020278194,
+        "cov": 6.866865310195887
+      },
+      "points_rebounds_assists": {
+        "slope": 0.3338483799654487,
+        "intercept": 0.3108847495184905,
+        "rawSlope": -0.024848646207001977,
+        "rawIntercept": 0.4782842300284469,
+        "n": 1031,
+        "identityFallback": false,
+        "meanP": 0.5117711299532756,
+        "meanY": 0.4655674102812803,
+        "varP": 22.530210962038833,
+        "cov": -0.5598452411648206
+      },
+      "points_assists": {
+        "slope": 0.38380394789271266,
+        "intercept": 0.2892597317453098,
+        "rawSlope": 0.05200607368109643,
+        "rawIntercept": 0.44501497191586115,
+        "n": 830,
+        "identityFallback": false,
+        "meanP": 0.5012754008963443,
+        "meanY": 0.4710843373493976,
+        "varP": 16.729149088027444,
+        "cov": 0.8700173600940024
+      },
+      "points_rebounds": {
+        "slope": 0.407522114681872,
+        "intercept": 0.2753434346155691,
+        "rawSlope": 0.08849556104903387,
+        "rawIntercept": 0.4236052840239525,
+        "n": 935,
+        "identityFallback": false,
+        "meanP": 0.5067363075099649,
+        "meanY": 0.46844919786096256,
+        "varP": 20.228358116932228,
+        "cov": 1.7901199006586959
+      },
+      "rebounds_assists": {
+        "slope": 0.44470044382980506,
+        "intercept": 0.25965397398921725,
+        "rawSlope": 0.1456929905073924,
+        "rawIntercept": 0.3994676522911034,
+        "n": 806,
+        "identityFallback": false,
+        "meanP": 0.4941649375805774,
+        "meanY": 0.47146401985111663,
+        "varP": 8.83687971511299,
+        "cov": 1.2874714324489254
+      }
+    }
+  }
+}

@@ -9,6 +9,10 @@ import { shouldShowLayoutHeader } from '@/components/betting/betting-shell-paths
 /**
  * Shared chrome for betting primary destinations (incl. /teams).
  * Keeps Header/theme when navigating off /betting into the team directory.
+ *
+ * Header must stay outside the OnboardingGate Suspense boundary. Gate uses
+ * useSearchParams(), which suspends during SSR; putting Radix menus in that
+ * fallback vs resolved tree mismatches useId (hydration warning).
  */
 export function BettingAppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || '';
@@ -24,7 +28,7 @@ export function BettingAppShell({ children }: { children: React.ReactNode }) {
 
   const showLayoutHeader = shouldShowLayoutHeader(pathname);
 
-  const renderShell = () => (
+  return (
     <div className="min-h-screen bg-[#f7f9f7] text-[#063f46]">
       <div className="border-b border-[#DCE9EA] bg-[#55ddb1]/20">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-2">
@@ -41,12 +45,9 @@ export function BettingAppShell({ children }: { children: React.ReactNode }) {
         />
       )}
       {children}
+      <Suspense fallback={null}>
+        <OnboardingGate />
+      </Suspense>
     </div>
-  );
-
-  return (
-    <Suspense fallback={renderShell()}>
-      <OnboardingGate>{renderShell()}</OnboardingGate>
-    </Suspense>
   );
 }

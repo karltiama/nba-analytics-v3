@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Search, CalendarDays, ListFilter, ExternalLink } from 'lucide-react';
 import { getTodayET, addDaysET, getDateLabel } from '@/components/betting';
+import { formatProjectionGap, projectionGap } from '@/lib/betting/market-probability';
 import {
   PropsExplorerPlayerPanel,
   PropsExplorerPlayerSidebarPlaceholder,
@@ -486,8 +487,8 @@ export default function PropsExplorerPage(props: PageProps) {
           <h1 className="text-xl font-semibold text-[#063f46]">Props Explorer</h1>
           <p className="text-xs text-[#4a6366] mt-1">
             {marketContext === 'historical'
-              ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Model EV is not computed for historical dates.'
-              : 'Simple mode highlights Good/Fair/Bad value from your model edge.'}
+              ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Estimated EV is not computed for historical dates.'
+              : 'Simple mode grades Good/Fair/Bad from estimated EV (market-anchored). That is not the same as the projection gap.'}
           </p>
           <p className="mt-1.5 inline-flex items-center rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#063f46]">
             {lineLabel}
@@ -775,10 +776,24 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">Confidence</th>
                 {showAdvancedMetrics ? (
                   <>
-                    <th className="py-2 px-2 font-medium text-right">Implied</th>
-                    <th className="py-2 px-2 font-medium text-right">Model</th>
-                    <th className="py-2 px-2 font-medium text-right">EV</th>
-                    <th className="py-2 px-2 font-medium text-right">Proj</th>
+                    <th className="py-2 px-2 font-medium text-right" title="Sportsbook implied probability">
+                      Market P
+                    </th>
+                    <th
+                      className="py-2 px-2 font-medium text-right"
+                      title="Estimated win probability after calibration and market anchoring — not an independent model edge"
+                    >
+                      Est. P
+                    </th>
+                    <th className="py-2 px-2 font-medium text-right" title="Estimated EV after market anchoring">
+                      Est. EV
+                    </th>
+                    <th className="py-2 px-2 font-medium text-right" title="Court Context statistical projection">
+                      Proj
+                    </th>
+                    <th className="py-2 px-2 font-medium text-right" title="Projection minus market line">
+                      Gap
+                    </th>
                   </>
                 ) : null}
                 <th className="py-2 px-2 font-medium">
@@ -792,7 +807,7 @@ export default function PropsExplorerPage(props: PageProps) {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={showAdvancedMetrics ? 16 : 12} className="py-8 text-center text-[#4a6366]">
+                  <td colSpan={showAdvancedMetrics ? 17 : 12} className="py-8 text-center text-[#4a6366]">
                     {(() => {
                       const copy = propsExplorerEmptyCopy({
                         frozen: Boolean(meta?.ingestionFrozen),
@@ -881,10 +896,10 @@ export default function PropsExplorerPage(props: PageProps) {
                         className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${getValueToneClass(r.marketContext === 'historical' ? null : r.ev)}`}
                         title={
                           r.marketContext === 'historical'
-                            ? 'Historical closing line — model EV is not computed'
+                            ? 'Historical closing line — estimated EV is not computed'
                             : r.ev != null && Number.isFinite(r.ev)
-                              ? `Model edge: ${(r.ev * 100).toFixed(1)}%`
-                              : 'No model edge available'
+                              ? `Estimated EV (market-anchored): ${(r.ev * 100).toFixed(1)}%`
+                              : 'No estimated EV available'
                         }
                       >
                         {getValueCopy(r.ev, r.marketContext)}
@@ -915,6 +930,12 @@ export default function PropsExplorerPage(props: PageProps) {
                           {r.projection != null && Number.isFinite(r.projection)
                             ? r.projection.toFixed(1)
                             : '—'}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
+                          {(() => {
+                            const gap = projectionGap(r.projection, r.lineValue);
+                            return gap != null ? formatProjectionGap(gap) : '—';
+                          })()}
                         </td>
                       </>
                     ) : null}

@@ -154,7 +154,7 @@ export function AIInsightPanel({
       {/* Footer */}
       <div className="px-4 py-2.5 border-t border-[#DCE9EA] bg-[#F8FBFA] shrink-0">
         <p className="text-[10px] text-[#4a6366] text-center">
-          Slate text via OpenAI (cached) •{' '}
+          Slate text via OpenAI (cached) • Does not produce numerical projections •{' '}
           <span className="text-[#075B5C]">Not betting advice</span>
         </p>
       </div>

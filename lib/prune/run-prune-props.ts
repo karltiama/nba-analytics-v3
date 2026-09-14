@@ -15,13 +15,18 @@ import {
   countCurrentEligible,
   countCurrentTotal,
   countPendingClosingLinesForPruneEligible,
+  countRawBlockedByMissingArchive,
+  countRawDeletable,
   countRawEligible,
   countRawTotal,
   deleteCurrentEligibleBatches,
   deleteRawEligibleBatches,
+  listSeasonsWithEligibleLegacyRaw,
   listSeasonsWithEligibleRaw,
   materializeClosingLines,
+  type RawPruneArchiveOpts,
 } from '@/lib/prune/closing-lines';
+import { parseArchiveRequiredAfter } from '@/lib/archive/player-prop-snapshot-archive';
 import {
   evaluateDestructivePruneGate,
   evaluateMaterializeGate,
@@ -67,12 +72,31 @@ function emptyAudit(
     materialized: 0,
     pendingClosingLines: null,
     archiveVerification: { ok: null, reason: null, seasons: [] },
+    rawArchivePrune: {
+      required: false,
+      blockedMissing: 0,
+      deletable: null,
+      legacyDumpOk: null,
+    },
     maxDelete: {
       raw: { allowed: null, reason: null, eligiblePercent: null },
       current: { allowed: null, reason: null, eligiblePercent: null },
     },
     outcome: 'skipped',
     reason: '',
+  };
+}
+
+function parsePropArchivePruneEnv(env: Record<string, string | undefined>): {
+  requireArchive: boolean;
+  requiredAfterIso: string | null;
+} {
+  const flag = (env.PLAYER_PROP_ARCHIVE_REQUIRED_FOR_PRUNE ?? '').trim().toLowerCase();
+  const requireArchive = flag === 'true' || flag === '1';
+  const after = parseArchiveRequiredAfter(env.PLAYER_PROP_ARCHIVE_REQUIRED_AFTER);
+  return {
+    requireArchive,
+    requiredAfterIso: after ? after.toISOString() : null,
   };
 }
 
@@ -228,7 +252,16 @@ export async function runPrunePropsJob(
       };
     }
 
-    const seasons = await listSeasonsWithEligibleRaw(input.pool, RETENTION_DAYS);
+    const archivePrune = parsePropArchivePruneEnv(env);
+    audit.rawArchivePrune.required = archivePrune.requireArchive;
+
+    const seasons = archivePrune.requireArchive
+      ? await listSeasonsWithEligibleLegacyRaw(
+          input.pool,
+          RETENTION_DAYS,
+          archivePrune.requiredAfterIso
+        )
+      : await listSeasonsWithEligibleRaw(input.pool, RETENTION_DAYS);
     const rawPrefix = (env.NBA_RAW_PREFIX?.trim() || 'raw').replace(/\/+$/, '');
     const s3 =
       input.s3 !== undefined ? input.s3 : createArchiveS3FromEnv(env);
@@ -248,27 +281,79 @@ export async function runPrunePropsJob(
       })),
     };
 
+    const archiveOpts: RawPruneArchiveOpts = {
+      requireArchive: archivePrune.requireArchive,
+      requiredAfterIso: archivePrune.requiredAfterIso,
+      legacyDumpOk: archive.ok,
+    };
+    audit.rawArchivePrune.legacyDumpOk = archive.ok;
+
+    const blockedMissing = archivePrune.requireArchive
+      ? await countRawBlockedByMissingArchive(
+          input.pool,
+          RETENTION_DAYS,
+          archivePrune.requiredAfterIso
+        )
+      : 0;
+    audit.rawArchivePrune.blockedMissing = blockedMissing;
+    if (blockedMissing > 0) {
+      console.error(
+        JSON.stringify({
+          event: 'PruneBlockedArchiveMissing',
+          runId,
+          blockedMissing,
+          requiredAfter: archivePrune.requiredAfterIso,
+        })
+      );
+    }
+
+    const deletable = archivePrune.requireArchive
+      ? await countRawDeletable(input.pool, RETENTION_DAYS, archiveOpts)
+      : rawEligible;
+    audit.rawArchivePrune.deletable = deletable;
+
+    if (archivePrune.requireArchive) {
+      const deletableMax = evaluateMaxDeleteGuard({
+        table: 'raw.player_prop_snapshots_v2',
+        totalRows: rawBefore,
+        eligibleRows: deletable,
+        maxPercent: pruneGate.snapshot.pruneMaxDeletePercent,
+        maxRows: pruneGate.snapshot.pruneMaxDeleteRows,
+        allowLargeDelete: pruneGate.snapshot.pruneAllowLargeDelete,
+      });
+      audit.maxDelete.raw = {
+        allowed: deletableMax.allowed,
+        reason: deletableMax.reason,
+        eligiblePercent: deletableMax.eligiblePercent,
+      };
+    }
+
     const rawBlockReasons: string[] = [];
     if (pendingClosingLines > 0) {
       rawBlockReasons.push(
         `pending closing-line keys remain (${pendingClosingLines})`
       );
     }
-    if (!rawMax.allowed) {
-      rawBlockReasons.push(rawMax.reason);
+    if (!audit.maxDelete.raw.allowed) {
+      rawBlockReasons.push(audit.maxDelete.raw.reason ?? 'raw max-delete blocked');
     }
-    if (rawEligible > 0 && seasons.length === 0) {
+    if (!archivePrune.requireArchive && rawEligible > 0 && seasons.length === 0) {
       rawBlockReasons.push(
         'eligible raw rows have no resolvable analytics.games.season for archive verification'
       );
     }
-    if (rawEligible > 0 && !archive.ok) {
+    if (!archivePrune.requireArchive && rawEligible > 0 && !archive.ok) {
       rawBlockReasons.push(`archive gate failed: ${archive.reason}`);
     }
 
     let deletedRaw = 0;
     if (rawEligible > 0 && rawBlockReasons.length === 0) {
-      deletedRaw = await deleteRawEligibleBatches(input.pool, RETENTION_DAYS);
+      deletedRaw = await deleteRawEligibleBatches(
+        input.pool,
+        RETENTION_DAYS,
+        undefined,
+        archivePrune.requireArchive ? archiveOpts : undefined
+      );
     }
 
     const deletedCurrent = await deleteCurrentEligibleBatches(
@@ -297,6 +382,7 @@ export async function runPrunePropsJob(
           prunedAnalyticsCurrent: deletedCurrent,
           materialized,
           archiveVerification: audit.archiveVerification,
+          rawArchivePrune: audit.rawArchivePrune,
           maxDelete: audit.maxDelete,
           runId,
           retentionDays: RETENTION_DAYS,
@@ -324,6 +410,7 @@ export async function runPrunePropsJob(
         rowsBefore: audit.rowsBefore,
         rowsAfter: audit.rowsAfter,
         archiveVerification: audit.archiveVerification,
+        rawArchivePrune: audit.rawArchivePrune,
         runId,
       },
       audit,

@@ -573,7 +573,7 @@ function MarketSentimentPanel({
 
 const SECTION_IDS = ['section-ai-projection', 'section-odds', 'section-matchup', 'section-players', 'section-injuries'] as const;
 const SECTION_LABELS: Record<string, string> = {
-  'section-ai-projection': 'AI Projection',
+  'section-ai-projection': 'AI Matchup Summary',
   'section-odds': 'Odds & sentiment',
   'section-matchup': 'Matchup',
   'section-players': 'Players',
@@ -1028,7 +1028,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-1.5">
               <div className="flex items-center justify-center p-1 rounded-md bg-[#55ddb1]/30 shrink-0"><Zap className="w-3 h-3 text-[#075B5C]" /></div>
-              <span className="text-sm font-semibold text-[#063f46]">AI Projection Summary</span>
+              <span className="text-sm font-semibold text-[#063f46]">AI Matchup Summary</span>
               <span className="text-[10px] px-1.5 py-0.5 bg-[#55ddb1]/30 text-[#075B5C] rounded-full">Beta</span>
             </div>
             <div className="p-3">
@@ -1154,8 +1154,8 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             ) : null}
             <p className="text-xs text-[#4a6366] mt-3">
               {aiSummaryStatus === 'success' && aiSummaryText
-                ? 'Generated from on-page signals; not betting advice.'
-                : 'Matchup briefing uses on-page signals when available. It is not a full projection model.'}
+                ? 'AI-written matchup briefing from on-page signals. It is not a numerical projection and not betting advice.'
+                : 'Matchup briefing uses on-page signals when available. It does not produce win probabilities, spreads, or totals.'}
             </p>
             </div>
           </div>
@@ -1179,10 +1179,10 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               <div className={`grid grid-cols-1 gap-3 lg:items-stretch ${showSentiment ? 'lg:grid-cols-2' : ''}`}>
                 <div className="space-y-3 min-w-0 flex flex-col">
                   <div className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-2 sm:px-3 sm:py-2.5">
-                    <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide mb-2">Odds & lines</p>
+                    <p className="text-[10px] font-medium text-[#4a6366] uppercase tracking-wide mb-2">Sportsbook / market</p>
                     <div className="flex items-stretch justify-between gap-2 sm:gap-4 w-full">
                       <div className="text-center flex-1 min-w-0">
-                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Spread</p>
+                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Market spread</p>
                         <p className="text-base sm:text-lg font-bold text-[#063f46] tabular-nums">
                           {currentOdds?.spread != null ? `${game.homeTeam.abbreviation} ${currentOdds.spread > 0 ? '+' : ''}${currentOdds.spread}` : '—'}
                         </p>
@@ -1194,7 +1194,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                       </div>
                       <div className="w-px min-h-10 bg-[#DCE9EA] shrink-0 self-center" />
                       <div className="text-center flex-1 min-w-0">
-                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Moneyline</p>
+                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Market ML</p>
                         <p className="text-xs sm:text-sm font-bold text-[#063f46] leading-tight">
                           {currentOdds?.moneylineAway != null && currentOdds?.moneylineHome != null ? (
                             <><span className="text-[#4a6366]">{game.awayTeam.abbreviation}</span> {currentOdds.moneylineAway > 0 ? '+' : ''}{currentOdds.moneylineAway} <span className="text-[#8aa0a3]">/</span> <span className="text-[#4a6366]">{game.homeTeam.abbreviation}</span> {currentOdds.moneylineHome > 0 ? '+' : ''}{currentOdds.moneylineHome}</>
@@ -1209,7 +1209,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                       </div>
                       <div className="w-px min-h-10 bg-[#DCE9EA] shrink-0 self-center" />
                       <div className="text-center flex-1 min-w-0">
-                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Total</p>
+                        <p className="text-[10px] text-[#4a6366] uppercase tracking-wide mb-0.5">Market total</p>
                         <p className="text-base sm:text-lg font-bold text-[#063f46] tabular-nums">{currentOdds?.overUnder ?? '—'}</p>
                         {(currentOdds?.overOdds != null || currentOdds?.underOdds != null) && (
                           <p className="text-[10px] text-[#4a6366] font-mono mt-0.5 leading-tight">
@@ -1349,7 +1349,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                           <span className="text-sm font-bold text-[#20B95A]">{awayTeamStats.defensiveRating != null ? awayTeamStats.defensiveRating.toFixed(1) : '—'}</span>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
-                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-[#4a6366]">PACE</span></div>
+                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-[#4a6366]" title="Season pace — descriptive context, not a game prediction">SEASON PACE</span></div>
                           <span className="text-sm font-bold text-[#ff6b35]">{awayTeamStats.pace != null ? awayTeamStats.pace.toFixed(1) : '—'}</span>
                         </div>
                       </div>
@@ -1387,7 +1387,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                           <span className="text-sm font-bold text-[#20B95A]">{homeTeamStats.defensiveRating != null ? homeTeamStats.defensiveRating.toFixed(1) : '—'}</span>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
-                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-[#4a6366]">PACE</span></div>
+                          <div className="flex items-center justify-center gap-1 mb-1"><TrendingUp className="w-3 h-3 text-[#ff6b35]" /><span className="text-[10px] text-[#4a6366]" title="Season pace — descriptive context, not a game prediction">SEASON PACE</span></div>
                           <span className="text-sm font-bold text-[#ff6b35]">{homeTeamStats.pace != null ? homeTeamStats.pace.toFixed(1) : '—'}</span>
                         </div>
                       </div>

@@ -22,6 +22,7 @@ import {
 } from '@/components/betting/skeletons';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import { filterSlateGames } from '@/lib/betting/slate-filters';
+import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 
 // ================================
 // DATA FETCHING
@@ -83,32 +84,16 @@ interface ApiGame {
   };
 }
 
-function impliedProbFromMoneyline(ml: number | null): number | null {
-  if (ml == null || !Number.isFinite(ml) || ml === 0) return null;
-  if (ml > 0) return (100 / (ml + 100)) * 100;
-  return (Math.abs(ml) / (Math.abs(ml) + 100)) * 100;
-}
-
 // Transform API game to GameCard format
 function transformGame(apiGame: ApiGame): Game {
   const odds = apiGame.odds;
-  const homeProb = impliedProbFromMoneyline(odds.home.moneyline);
-  const awayProb = impliedProbFromMoneyline(odds.away.moneyline);
+  const market = twoWayMarketDisplay(odds.away.moneyline, odds.home.moneyline);
   const hasOdds =
     odds.home.moneyline != null ||
     odds.away.moneyline != null ||
     odds.home.spread != null ||
     odds.away.spread != null ||
     odds.overUnder != null;
-
-  const isClose =
-    homeProb != null && awayProb != null ? Math.abs(homeProb - awayProb) < 10 : false;
-  const isFavorite =
-    homeProb != null && awayProb != null
-      ? homeProb > awayProb
-        ? 'home'
-        : 'away'
-      : null;
 
   const homePace = apiGame.homeTeam.pace;
   const awayPace = apiGame.awayTeam.pace;
@@ -171,10 +156,10 @@ function transformGame(apiGame: ApiGame): Game {
     overUnder: odds.overUnder,
     overOdds: odds.overOdds,
     underOdds: odds.underOdds,
-    homeImpliedProb: homeProb != null ? Math.round(homeProb) : null,
-    awayImpliedProb: awayProb != null ? Math.round(awayProb) : null,
-    isFavorite,
-    isClose,
+    homeImpliedProb: market?.homePct ?? null,
+    awayImpliedProb: market?.awayPct ?? null,
+    isFavorite: market?.favorite ?? null,
+    isClose: market?.isClose ?? false,
     paceSignal,
     weakness,
     status: apiGame.status || undefined,

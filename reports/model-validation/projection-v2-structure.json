@@ -1,0 +1,3810 @@
+{
+  "meta": {
+    "runAt": "2026-09-14T01:26:16.141Z",
+    "version": "projection-structure-v1",
+    "featureDefinition": "active_season",
+    "seasons": [
+      "2023",
+      "2024",
+      "2025"
+    ],
+    "dateRange": {
+      "from": "2023-10-27T02:00:00.000Z",
+      "to": "2026-06-14T00:30:00.000Z"
+    },
+    "sampleSize": {
+      "finalLogsLoaded": 138296,
+      "duplicateLogs": 0,
+      "corpus": {
+        "n": 138296,
+        "played": 85202,
+        "dnp": 53094,
+        "malformed": 0,
+        "zeroPointPlayed": 10319,
+        "token00": 53094,
+        "token0": 210
+      },
+      "nScored": 83276,
+      "nNoPriorPlayed": 1716,
+      "nPlayers": 793,
+      "limitApplied": null,
+      "dnpShareOfCorpus": 0.3839,
+      "meanDnpShareAsOfSeason": 0.2475,
+      "meanDnpInCurrentL10": 1.8375
+    },
+    "playedGameDefinition": {
+      "version": "played-v1",
+      "predicate": "played if parsed minutes > 0, or minutes token is \"0\"/\"0.0\" (sub-minute appearance), or minutes==0 with box-score activity; else DNP if numeric zero (typically \"00\"); malformed otherwise",
+      "targetUniverse": "Final games with parsed minutes > 0 (same scoring universe as the prior minutes experiment)",
+      "dnpConvention": "analytics.player_game_logs.minutes = \"00\" is the DNP/inactive roster row; no DNP-CD/inactive flags exist on this table",
+      "countingCurrent": "mean over last N Final logs including DNP zeros (production Track A semantics)",
+      "countingPlayed": "mean over last N played games (0-point played games included)",
+      "aggregateRate": "sum(stat) / sum(minutes) over played games with minutes > 0",
+      "meanGameRate": "mean(stat/minutes) over played games with minutes > 0"
+    },
+    "postseasonRule": {
+      "2023": "2024-04-16",
+      "2024": "2025-04-15",
+      "2025": "2026-04-14"
+    },
+    "formulas": {
+      "currentTrackA": "0.7 * L10_all_final_logs + 0.3 * season_all_final_logs",
+      "playedTrackA": "0.7 * L10_played + 0.3 * season_played",
+      "aggregateRate": "sum(stat)/sum(minutes) on played games with minutes>0",
+      "m1": "L5_played_minutes * season_rate",
+      "m4": "TrackA_played_minutes * season_rate"
+    },
+    "productionChange": "none"
+  },
+  "contamination": {
+    "corpusDnpRows": 53094,
+    "corpusPlayedRows": 85202,
+    "corpusMalformedRows": 0,
+    "token00": 53094,
+    "token0": 210,
+    "zeroPointPlayed": 10319,
+    "dnpShareOfCorpus": 0.3839,
+    "meanDnpShareInAsOfSeasonWindows": 0.2475,
+    "meanDnpCountInCurrentL10Window": 1.8375,
+    "meanAbsTrackAShiftByProp": {
+      "PTS": 1.4847,
+      "REB": 0.6016,
+      "AST": 0.3494,
+      "3PM": 0.1693,
+      "PRA": 2.4356,
+      "PA": 1.834,
+      "PR": 2.0862,
+      "RA": 0.951
+    }
+  },
+  "byProp": {
+    "PTS": {
+      "Current Season Avg": {
+        "mae": 4.9818,
+        "rmse": 6.7617,
+        "bias": -2.0048,
+        "medianAe": 3.6923,
+        "p90Ae": 11.0588,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 4.9427,
+        "rmse": 6.7053,
+        "bias": -1.507,
+        "medianAe": 3.7,
+        "p90Ae": 10.9,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 4.8648,
+        "rmse": 6.5941,
+        "bias": -1.6563,
+        "medianAe": 3.6394,
+        "p90Ae": 10.74,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 4.6777,
+        "rmse": 6.1646,
+        "bias": -0.2916,
+        "medianAe": 3.6667,
+        "p90Ae": 10,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 4.6651,
+        "rmse": 6.1551,
+        "bias": -0.1203,
+        "medianAe": 3.6,
+        "p90Ae": 10,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 4.7793,
+        "rmse": 6.3232,
+        "bias": -0.0781,
+        "medianAe": 3.8,
+        "p90Ae": 10.4,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 4.6255,
+        "rmse": 6.0983,
+        "bias": -0.1717,
+        "medianAe": 3.61,
+        "p90Ae": 9.87,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 4.6226,
+        "rmse": 6.1032,
+        "bias": -0.0967,
+        "medianAe": 3.6,
+        "p90Ae": 9.8943,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 4.6747,
+        "rmse": 6.1749,
+        "bias": -0.0612,
+        "medianAe": 3.6373,
+        "p90Ae": 10.0125,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 4.638,
+        "rmse": 6.1239,
+        "bias": -0.0719,
+        "medianAe": 3.6101,
+        "p90Ae": 9.9502,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 4.6219,
+        "rmse": 6.0906,
+        "bias": -0.1808,
+        "medianAe": 3.6139,
+        "p90Ae": 9.8528,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 4.6579,
+        "rmse": 6.1418,
+        "bias": -0.1601,
+        "medianAe": 3.6409,
+        "p90Ae": 9.9561,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 4.6259,
+        "rmse": 6.0974,
+        "bias": -0.1663,
+        "medianAe": 3.6137,
+        "p90Ae": 9.8635,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 4.7801,
+        "rmse": 6.3227,
+        "bias": -0.0705,
+        "medianAe": 3.8,
+        "p90Ae": 10.4,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 4.6321,
+        "rmse": 6.1229,
+        "bias": -0.3165,
+        "medianAe": 3.6063,
+        "p90Ae": 9.9106,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 4.63,
+        "rmse": 6.097,
+        "bias": -0.1737,
+        "medianAe": 3.625,
+        "p90Ae": 9.8574,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 4.6473,
+        "rmse": 6.1108,
+        "bias": -0.1595,
+        "medianAe": 3.6504,
+        "p90Ae": 9.8723,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 3.8122,
+        "rmse": 5.1457,
+        "bias": -0.0112,
+        "medianAe": 2.8513,
+        "p90Ae": 8.4173,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 2.0844,
+        "rmse": 3.3792,
+        "bias": -0.2718,
+        "medianAe": 1.2897,
+        "p90Ae": 5,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 2.0968,
+        "rmse": 3.3815,
+        "bias": -0.359,
+        "medianAe": 1.3042,
+        "p90Ae": 5.0471,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": 4.6255,
+        "rmse": 6.0983,
+        "bias": -0.1717,
+        "medianAe": 3.61,
+        "p90Ae": 9.87,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": 4.638,
+        "rmse": 6.1239,
+        "bias": -0.0719,
+        "medianAe": 3.6101,
+        "p90Ae": 9.9502,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 5.0404,
+        "rmse": 6.5442,
+        "bias": -0.0791,
+        "medianAe": 4,
+        "p90Ae": 10.5,
+        "coverage": 1,
+        "n": 1498,
+        "nEligible": 1498
+      }
+    },
+    "REB": {
+      "Current Season Avg": {
+        "mae": 2.0309,
+        "rmse": 2.7961,
+        "bias": -0.7933,
+        "medianAe": 1.5,
+        "p90Ae": 4.5,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 2.0214,
+        "rmse": 2.7667,
+        "bias": -0.6033,
+        "medianAe": 1.5,
+        "p90Ae": 4.4,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 1.9875,
+        "rmse": 2.7267,
+        "bias": -0.6603,
+        "medianAe": 1.4737,
+        "p90Ae": 4.3867,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 1.931,
+        "rmse": 2.5696,
+        "bias": -0.0987,
+        "medianAe": 1.5,
+        "p90Ae": 4.0882,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 1.9375,
+        "rmse": 2.5754,
+        "bias": -0.0416,
+        "medianAe": 1.5,
+        "p90Ae": 4.1,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 1.9897,
+        "rmse": 2.6454,
+        "bias": -0.0275,
+        "medianAe": 1.6,
+        "p90Ae": 4.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 1.9187,
+        "rmse": 2.5504,
+        "bias": -0.0587,
+        "medianAe": 1.5,
+        "p90Ae": 4.0494,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 1.914,
+        "rmse": 2.5417,
+        "bias": -0.015,
+        "medianAe": 1.4972,
+        "p90Ae": 4.0547,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 1.9402,
+        "rmse": 2.5779,
+        "bias": -0.018,
+        "medianAe": 1.5038,
+        "p90Ae": 4.1254,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 1.9235,
+        "rmse": 2.5554,
+        "bias": -0.0171,
+        "medianAe": 1.5,
+        "p90Ae": 4.0847,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 1.9107,
+        "rmse": 2.5372,
+        "bias": -0.0506,
+        "medianAe": 1.5,
+        "p90Ae": 4.0242,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 1.9351,
+        "rmse": 2.5712,
+        "bias": -0.0545,
+        "medianAe": 1.5,
+        "p90Ae": 4.0933,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 1.919,
+        "rmse": 2.5495,
+        "bias": -0.0533,
+        "medianAe": 1.5,
+        "p90Ae": 4.0504,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 1.9897,
+        "rmse": 2.6445,
+        "bias": -0.0234,
+        "medianAe": 1.6,
+        "p90Ae": 4.2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 1.9248,
+        "rmse": 2.5593,
+        "bias": -0.0668,
+        "medianAe": 1.4996,
+        "p90Ae": 4.0777,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 1.9139,
+        "rmse": 2.54,
+        "bias": -0.0486,
+        "medianAe": 1.5,
+        "p90Ae": 4.0294,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 1.9204,
+        "rmse": 2.5446,
+        "bias": -0.043,
+        "medianAe": 1.5,
+        "p90Ae": 4.0362,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 1.6346,
+        "rmse": 2.1943,
+        "bias": 0.0154,
+        "medianAe": 1.2421,
+        "p90Ae": 3.5641,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 0.9086,
+        "rmse": 1.5891,
+        "bias": -0.0509,
+        "medianAe": 0.5,
+        "p90Ae": 2.24,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 0.9155,
+        "rmse": 1.5924,
+        "bias": -0.0857,
+        "medianAe": 0.5069,
+        "p90Ae": 2.2448,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": null,
+        "rmse": null,
+        "bias": null,
+        "medianAe": null,
+        "p90Ae": null,
+        "coverage": 0,
+        "n": 0,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": null,
+        "rmse": null,
+        "bias": null,
+        "medianAe": null,
+        "p90Ae": null,
+        "coverage": 0,
+        "n": 0,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 2.0665,
+        "rmse": 2.6649,
+        "bias": -0.1128,
+        "medianAe": 1.5,
+        "p90Ae": 4.5,
+        "coverage": 1,
+        "n": 1467,
+        "nEligible": 1467
+      }
+    },
+    "AST": {
+      "Current Season Avg": {
+        "mae": 1.3947,
+        "rmse": 1.9889,
+        "bias": -0.4844,
+        "medianAe": 0.9615,
+        "p90Ae": 3.194,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 1.3923,
+        "rmse": 1.9781,
+        "bias": -0.3571,
+        "medianAe": 1,
+        "p90Ae": 3.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 1.372,
+        "rmse": 1.95,
+        "bias": -0.3953,
+        "medianAe": 0.97,
+        "p90Ae": 3.1111,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 1.3586,
+        "rmse": 1.8678,
+        "bias": -0.0829,
+        "medianAe": 1,
+        "p90Ae": 3,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 1.3624,
+        "rmse": 1.8701,
+        "bias": -0.0301,
+        "medianAe": 1,
+        "p90Ae": 3,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 1.3947,
+        "rmse": 1.9191,
+        "bias": -0.0192,
+        "medianAe": 1,
+        "p90Ae": 3,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 1.3499,
+        "rmse": 1.8518,
+        "bias": -0.0459,
+        "medianAe": 1,
+        "p90Ae": 2.9945,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 1.3454,
+        "rmse": 1.8489,
+        "bias": -0.0393,
+        "medianAe": 1,
+        "p90Ae": 2.9861,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 1.3612,
+        "rmse": 1.8686,
+        "bias": -0.0186,
+        "medianAe": 1,
+        "p90Ae": 3,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 1.3485,
+        "rmse": 1.8507,
+        "bias": -0.0248,
+        "medianAe": 1,
+        "p90Ae": 2.9925,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 1.3477,
+        "rmse": 1.8507,
+        "bias": -0.0578,
+        "medianAe": 1,
+        "p90Ae": 2.9877,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 1.3623,
+        "rmse": 1.8689,
+        "bias": -0.0384,
+        "medianAe": 1,
+        "p90Ae": 3,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 1.3503,
+        "rmse": 1.8517,
+        "bias": -0.0442,
+        "medianAe": 1,
+        "p90Ae": 2.9943,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 1.3952,
+        "rmse": 1.9192,
+        "bias": -0.0172,
+        "medianAe": 1,
+        "p90Ae": 3,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 1.3526,
+        "rmse": 1.8579,
+        "bias": -0.0566,
+        "medianAe": 1,
+        "p90Ae": 2.9909,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 1.3506,
+        "rmse": 1.8527,
+        "bias": -0.0561,
+        "medianAe": 1,
+        "p90Ae": 2.9892,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 1.3561,
+        "rmse": 1.8573,
+        "bias": -0.0545,
+        "medianAe": 1,
+        "p90Ae": 2.9962,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 1.2311,
+        "rmse": 1.7102,
+        "bias": -0.0099,
+        "medianAe": 0.891,
+        "p90Ae": 2.7677,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 0.4881,
+        "rmse": 0.9253,
+        "bias": -0.0331,
+        "medianAe": 0.2308,
+        "p90Ae": 1.2727,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 0.4926,
+        "rmse": 0.9359,
+        "bias": -0.0533,
+        "medianAe": 0.2335,
+        "p90Ae": 1.2809,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": null,
+        "rmse": null,
+        "bias": null,
+        "medianAe": null,
+        "p90Ae": null,
+        "coverage": 0,
+        "n": 0,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": null,
+        "rmse": null,
+        "bias": null,
+        "medianAe": null,
+        "p90Ae": null,
+        "coverage": 0,
+        "n": 0,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 1.6247,
+        "rmse": 2.1206,
+        "bias": -0.0263,
+        "medianAe": 1.5,
+        "p90Ae": 3.5,
+        "coverage": 1,
+        "n": 1367,
+        "nEligible": 1367
+      }
+    },
+    "3PM": {
+      "Current Season Avg": {
+        "mae": 0.882,
+        "rmse": 1.299,
+        "bias": -0.2303,
+        "medianAe": 0.6154,
+        "p90Ae": 2.0638,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 0.8905,
+        "rmse": 1.3065,
+        "bias": -0.1702,
+        "medianAe": 0.6,
+        "p90Ae": 2.1,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 0.8789,
+        "rmse": 1.2893,
+        "bias": -0.1882,
+        "medianAe": 0.6191,
+        "p90Ae": 2.0595,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 0.8853,
+        "rmse": 1.258,
+        "bias": -0.0321,
+        "medianAe": 0.6667,
+        "p90Ae": 2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 0.895,
+        "rmse": 1.276,
+        "bias": -0.0134,
+        "medianAe": 0.7,
+        "p90Ae": 2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 0.9189,
+        "rmse": 1.3195,
+        "bias": -0.0083,
+        "medianAe": 0.6,
+        "p90Ae": 2.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 0.8865,
+        "rmse": 1.261,
+        "bias": -0.019,
+        "medianAe": 0.6568,
+        "p90Ae": 2.01,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 0.8829,
+        "rmse": 1.2543,
+        "bias": -0.0083,
+        "medianAe": 0.6513,
+        "p90Ae": 2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 0.8968,
+        "rmse": 1.2783,
+        "bias": -0.0059,
+        "medianAe": 0.6576,
+        "p90Ae": 2.0577,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 0.8885,
+        "rmse": 1.2643,
+        "bias": -0.0066,
+        "medianAe": 0.6533,
+        "p90Ae": 2.0259,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 0.8822,
+        "rmse": 1.2525,
+        "bias": -0.0185,
+        "medianAe": 0.6563,
+        "p90Ae": 2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 0.8942,
+        "rmse": 1.2742,
+        "bias": -0.0184,
+        "medianAe": 0.6667,
+        "p90Ae": 2.0405,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 0.8866,
+        "rmse": 1.261,
+        "bias": -0.0184,
+        "medianAe": 0.6583,
+        "p90Ae": 2.0072,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 0.9192,
+        "rmse": 1.3196,
+        "bias": -0.0074,
+        "medianAe": 0.6,
+        "p90Ae": 2.2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 0.8858,
+        "rmse": 1.2655,
+        "bias": -0.0406,
+        "medianAe": 0.6505,
+        "p90Ae": 2.0258,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 0.8841,
+        "rmse": 1.2539,
+        "bias": -0.0178,
+        "medianAe": 0.6586,
+        "p90Ae": 2,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 0.8882,
+        "rmse": 1.2572,
+        "bias": -0.0158,
+        "medianAe": 0.6629,
+        "p90Ae": 2,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 0.8205,
+        "rmse": 1.1854,
+        "bias": 0.0008,
+        "medianAe": 0.5852,
+        "p90Ae": 1.9376,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 0.2478,
+        "rmse": 0.5628,
+        "bias": -0.0393,
+        "medianAe": 0.0514,
+        "p90Ae": 0.7,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 0.2497,
+        "rmse": 0.5681,
+        "bias": -0.0495,
+        "medianAe": 0.0524,
+        "p90Ae": 0.7062,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": null,
+        "rmse": null,
+        "bias": null,
+        "medianAe": null,
+        "p90Ae": null,
+        "coverage": 0,
+        "n": 0,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": null,
+        "rmse": null,
+        "bias": null,
+        "medianAe": null,
+        "p90Ae": null,
+        "coverage": 0,
+        "n": 0,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 1.1485,
+        "rmse": 1.453,
+        "bias": -0.0317,
+        "medianAe": 0.5,
+        "p90Ae": 2.5,
+        "coverage": 1,
+        "n": 1310,
+        "nEligible": 1310
+      }
+    },
+    "PRA": {
+      "Current Season Avg": {
+        "mae": 6.9369,
+        "rmse": 9.2548,
+        "bias": -3.2824,
+        "medianAe": 5.3056,
+        "p90Ae": 15.2188,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 6.767,
+        "rmse": 9.0574,
+        "bias": -2.4674,
+        "medianAe": 5.2,
+        "p90Ae": 14.7,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 6.6664,
+        "rmse": 8.8993,
+        "bias": -2.7119,
+        "medianAe": 5.0876,
+        "p90Ae": 14.54,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 6.234,
+        "rmse": 8.0883,
+        "bias": -0.4732,
+        "medianAe": 5,
+        "p90Ae": 13.0667,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 6.1534,
+        "rmse": 7.9879,
+        "bias": -0.1919,
+        "medianAe": 5,
+        "p90Ae": 13,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 6.2681,
+        "rmse": 8.1628,
+        "bias": -0.1248,
+        "medianAe": 5,
+        "p90Ae": 13.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 6.1111,
+        "rmse": 7.9276,
+        "bias": -0.2763,
+        "medianAe": 4.9416,
+        "p90Ae": 12.8229,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 6.1108,
+        "rmse": 7.9484,
+        "bias": -0.151,
+        "medianAe": 4.8955,
+        "p90Ae": 12.8722,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 6.1584,
+        "rmse": 8.0098,
+        "bias": -0.0978,
+        "medianAe": 4.9357,
+        "p90Ae": 13,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 6.1202,
+        "rmse": 7.9591,
+        "bias": -0.1138,
+        "medianAe": 4.9079,
+        "p90Ae": 12.9088,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 6.1173,
+        "rmse": 7.9339,
+        "bias": -0.2892,
+        "medianAe": 4.9553,
+        "p90Ae": 12.8,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 6.142,
+        "rmse": 7.9664,
+        "bias": -0.2529,
+        "medianAe": 4.962,
+        "p90Ae": 12.8841,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 6.1109,
+        "rmse": 7.925,
+        "bias": -0.2638,
+        "medianAe": 4.9456,
+        "p90Ae": 12.8156,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 6.2678,
+        "rmse": 8.1607,
+        "bias": -0.111,
+        "medianAe": 5,
+        "p90Ae": 13.2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 6.1209,
+        "rmse": 7.9561,
+        "bias": -0.44,
+        "medianAe": 4.933,
+        "p90Ae": 12.8809,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 6.1266,
+        "rmse": 7.9413,
+        "bias": -0.2784,
+        "medianAe": 4.9615,
+        "p90Ae": 12.8066,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 6.1467,
+        "rmse": 7.9557,
+        "bias": -0.257,
+        "medianAe": 4.9944,
+        "p90Ae": 12.8185,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 4.4948,
+        "rmse": 6.0061,
+        "bias": -0.0058,
+        "medianAe": 3.4119,
+        "p90Ae": 9.885,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 3.4811,
+        "rmse": 5.1624,
+        "bias": -0.3558,
+        "medianAe": 2.4,
+        "p90Ae": 7.9333,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 3.505,
+        "rmse": 5.1685,
+        "bias": -0.4981,
+        "medianAe": 2.4208,
+        "p90Ae": 7.9899,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": 6.1111,
+        "rmse": 7.9276,
+        "bias": -0.2763,
+        "medianAe": 4.9416,
+        "p90Ae": 12.8229,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": 6.1202,
+        "rmse": 7.9591,
+        "bias": -0.1138,
+        "medianAe": 4.9079,
+        "p90Ae": 12.9088,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 6.2999,
+        "rmse": 8.0604,
+        "bias": 0.2218,
+        "medianAe": 5.5,
+        "p90Ae": 13,
+        "coverage": 1,
+        "n": 1434,
+        "nEligible": 1434
+      }
+    },
+    "PA": {
+      "Current Season Avg": {
+        "mae": 5.6505,
+        "rmse": 7.6284,
+        "bias": -2.4891,
+        "medianAe": 4.2452,
+        "p90Ae": 12.5,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 5.555,
+        "rmse": 7.5116,
+        "bias": -1.8641,
+        "medianAe": 4.2,
+        "p90Ae": 12.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 5.4699,
+        "rmse": 7.3824,
+        "bias": -2.0516,
+        "medianAe": 4.1112,
+        "p90Ae": 12,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 5.1888,
+        "rmse": 6.7996,
+        "bias": -0.3745,
+        "medianAe": 4.0891,
+        "p90Ae": 11,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 5.1401,
+        "rmse": 6.742,
+        "bias": -0.1503,
+        "medianAe": 4,
+        "p90Ae": 11,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 5.2496,
+        "rmse": 6.9074,
+        "bias": -0.0973,
+        "medianAe": 4.2,
+        "p90Ae": 11.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 5.1024,
+        "rmse": 6.6868,
+        "bias": -0.2176,
+        "medianAe": 4,
+        "p90Ae": 10.817,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 5.1031,
+        "rmse": 6.7034,
+        "bias": -0.136,
+        "medianAe": 4,
+        "p90Ae": 10.875,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 5.1463,
+        "rmse": 6.7606,
+        "bias": -0.0798,
+        "medianAe": 4.0135,
+        "p90Ae": 11,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 5.1107,
+        "rmse": 6.712,
+        "bias": -0.0967,
+        "medianAe": 4,
+        "p90Ae": 10.892,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 5.1082,
+        "rmse": 6.6934,
+        "bias": -0.2386,
+        "medianAe": 4.0191,
+        "p90Ae": 10.8076,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 5.1315,
+        "rmse": 6.7263,
+        "bias": -0.1984,
+        "medianAe": 4.0051,
+        "p90Ae": 10.9105,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 5.1028,
+        "rmse": 6.6855,
+        "bias": -0.2105,
+        "medianAe": 4,
+        "p90Ae": 10.8139,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 5.2503,
+        "rmse": 6.9066,
+        "bias": -0.0877,
+        "medianAe": 4.2,
+        "p90Ae": 11.2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 5.1104,
+        "rmse": 6.7132,
+        "bias": -0.3731,
+        "medianAe": 4.0001,
+        "p90Ae": 10.883,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 5.1167,
+        "rmse": 6.7,
+        "bias": -0.2299,
+        "medianAe": 4.0283,
+        "p90Ae": 10.8164,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 5.1347,
+        "rmse": 6.7141,
+        "bias": -0.214,
+        "medianAe": 4.0635,
+        "p90Ae": 10.8331,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 4.0074,
+        "rmse": 5.3874,
+        "bias": -0.0211,
+        "medianAe": 3,
+        "p90Ae": 8.8551,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 2.5725,
+        "rmse": 3.9822,
+        "bias": -0.3049,
+        "medianAe": 1.6889,
+        "p90Ae": 6,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 2.5895,
+        "rmse": 3.9868,
+        "bias": -0.4123,
+        "medianAe": 1.7034,
+        "p90Ae": 6.0568,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": 5.1024,
+        "rmse": 6.6868,
+        "bias": -0.2176,
+        "medianAe": 4,
+        "p90Ae": 10.817,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": 5.1107,
+        "rmse": 6.712,
+        "bias": -0.0967,
+        "medianAe": 4,
+        "p90Ae": 10.892,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 5.6877,
+        "rmse": 7.3601,
+        "bias": 0.1399,
+        "medianAe": 4.5,
+        "p90Ae": 12.5,
+        "coverage": 1,
+        "n": 1119,
+        "nEligible": 1119
+      }
+    },
+    "PR": {
+      "Current Season Avg": {
+        "mae": 6.2329,
+        "rmse": 8.3454,
+        "bias": -2.7981,
+        "medianAe": 4.7368,
+        "p90Ae": 13.7273,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 6.124,
+        "rmse": 8.208,
+        "bias": -2.1103,
+        "medianAe": 4.7,
+        "p90Ae": 13.4,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 6.0282,
+        "rmse": 8.0684,
+        "bias": -2.3166,
+        "medianAe": 4.6,
+        "p90Ae": 13.1991,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 5.6949,
+        "rmse": 7.4126,
+        "bias": -0.3903,
+        "medianAe": 4.5556,
+        "p90Ae": 12,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 5.6515,
+        "rmse": 7.3602,
+        "bias": -0.1619,
+        "medianAe": 4.5,
+        "p90Ae": 12,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 5.7707,
+        "rmse": 7.5369,
+        "bias": -0.1056,
+        "medianAe": 4.6,
+        "p90Ae": 12.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 5.6077,
+        "rmse": 7.2986,
+        "bias": -0.2304,
+        "medianAe": 4.4973,
+        "p90Ae": 11.8064,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 5.6007,
+        "rmse": 7.3097,
+        "bias": -0.1117,
+        "medianAe": 4.4512,
+        "p90Ae": 11.8507,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 5.6585,
+        "rmse": 7.3838,
+        "bias": -0.0792,
+        "medianAe": 4.4938,
+        "p90Ae": 12,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 5.6192,
+        "rmse": 7.3313,
+        "bias": -0.089,
+        "medianAe": 4.4582,
+        "p90Ae": 11.9155,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 5.601,
+        "rmse": 7.2921,
+        "bias": -0.2315,
+        "medianAe": 4.4961,
+        "p90Ae": 11.7689,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 5.6413,
+        "rmse": 7.341,
+        "bias": -0.2146,
+        "medianAe": 4.5,
+        "p90Ae": 11.9,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 5.6076,
+        "rmse": 7.2965,
+        "bias": -0.2196,
+        "medianAe": 4.4995,
+        "p90Ae": 11.8,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 5.7706,
+        "rmse": 7.5351,
+        "bias": -0.0938,
+        "medianAe": 4.6,
+        "p90Ae": 12.2,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 5.6166,
+        "rmse": 7.3257,
+        "bias": -0.3834,
+        "medianAe": 4.4791,
+        "p90Ae": 11.8626,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 5.61,
+        "rmse": 7.2992,
+        "bias": -0.2223,
+        "medianAe": 4.5,
+        "p90Ae": 11.774,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 5.6291,
+        "rmse": 7.3132,
+        "bias": -0.2025,
+        "medianAe": 4.5152,
+        "p90Ae": 11.797,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 4.2877,
+        "rmse": 5.7453,
+        "bias": 0.0041,
+        "medianAe": 3.2391,
+        "p90Ae": 9.4315,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 2.993,
+        "rmse": 4.5524,
+        "bias": -0.3227,
+        "medianAe": 2,
+        "p90Ae": 6.9133,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 3.0123,
+        "rmse": 4.5571,
+        "bias": -0.4447,
+        "medianAe": 2.0213,
+        "p90Ae": 6.9405,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": 5.6077,
+        "rmse": 7.2986,
+        "bias": -0.2304,
+        "medianAe": 4.4973,
+        "p90Ae": 11.8064,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": 5.6192,
+        "rmse": 7.3313,
+        "bias": -0.089,
+        "medianAe": 4.4582,
+        "p90Ae": 11.9155,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 6.0093,
+        "rmse": 7.6595,
+        "bias": 0.079,
+        "medianAe": 5,
+        "p90Ae": 12.5,
+        "coverage": 1,
+        "n": 1291,
+        "nEligible": 1291
+      }
+    },
+    "RA": {
+      "Current Season Avg": {
+        "mae": 2.898,
+        "rmse": 3.9125,
+        "bias": -1.2777,
+        "medianAe": 2.1724,
+        "p90Ae": 6.3944,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current L10": {
+        "mae": 2.8509,
+        "rmse": 3.843,
+        "bias": -0.9604,
+        "medianAe": 2.2,
+        "p90Ae": 6.2,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Current Track A": {
+        "mae": 2.8046,
+        "rmse": 3.7841,
+        "bias": -1.0556,
+        "medianAe": 2.1036,
+        "p90Ae": 6.14,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Season Avg": {
+        "mae": 2.6802,
+        "rmse": 3.5117,
+        "bias": -0.1816,
+        "medianAe": 2.1229,
+        "p90Ae": 5.6552,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L10": {
+        "mae": 2.667,
+        "rmse": 3.4921,
+        "bias": -0.0717,
+        "medianAe": 2.1,
+        "p90Ae": 5.7,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only L5": {
+        "mae": 2.7265,
+        "rmse": 3.5748,
+        "bias": -0.0467,
+        "medianAe": 2.2,
+        "p90Ae": 5.8,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "Played-only Track A": {
+        "mae": 2.6445,
+        "rmse": 3.4621,
+        "bias": -0.1046,
+        "medianAe": 2.09,
+        "p90Ae": 5.58,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Season Rate": {
+        "mae": 2.6377,
+        "rmse": 3.4553,
+        "bias": -0.0543,
+        "medianAe": 2.0871,
+        "p90Ae": 5.5685,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L10 Rate": {
+        "mae": 2.6664,
+        "rmse": 3.4923,
+        "bias": -0.0366,
+        "medianAe": 2.1103,
+        "p90Ae": 5.664,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Blended Rate": {
+        "mae": 2.6455,
+        "rmse": 3.465,
+        "bias": -0.0419,
+        "medianAe": 2.0963,
+        "p90Ae": 5.6046,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate": {
+        "mae": 2.6389,
+        "rmse": 3.454,
+        "bias": -0.1084,
+        "medianAe": 2.0957,
+        "p90Ae": 5.5605,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × L10 Rate": {
+        "mae": 2.6645,
+        "rmse": 3.4866,
+        "bias": -0.0928,
+        "medianAe": 2.109,
+        "p90Ae": 5.635,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Blended Rate": {
+        "mae": 2.6448,
+        "rmse": 3.4609,
+        "bias": -0.0975,
+        "medianAe": 2.0929,
+        "p90Ae": 5.5733,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × L5 Rate": {
+        "mae": 2.7265,
+        "rmse": 3.5737,
+        "bias": -0.0406,
+        "medianAe": 2.2,
+        "p90Ae": 5.8,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Mean-game Blended Rate": {
+        "mae": 2.6507,
+        "rmse": 3.4726,
+        "bias": -0.1234,
+        "medianAe": 2.0982,
+        "p90Ae": 5.6022,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥3 min history)": {
+        "mae": 2.6433,
+        "rmse": 3.4574,
+        "bias": -0.1047,
+        "medianAe": 2.1014,
+        "p90Ae": 5.5646,
+        "coverage": 0.9969,
+        "n": 83021,
+        "nEligible": 83276
+      },
+      "Track-A min × Season Rate (≥5 min history)": {
+        "mae": 2.6522,
+        "rmse": 3.4636,
+        "bias": -0.0975,
+        "medianAe": 2.1135,
+        "p90Ae": 5.575,
+        "coverage": 0.9901,
+        "n": 82453,
+        "nEligible": 83276
+      },
+      "Actual minutes × Blended Rate": {
+        "mae": 2.149,
+        "rmse": 2.8738,
+        "bias": 0.0055,
+        "medianAe": 1.6458,
+        "p90Ae": 4.6825,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "L5 min × Actual Rate": {
+        "mae": 1.3967,
+        "rmse": 2.2066,
+        "bias": -0.084,
+        "medianAe": 0.8889,
+        "p90Ae": 3.2914,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Track-A min × Actual Rate": {
+        "mae": 1.4081,
+        "rmse": 2.2131,
+        "bias": -0.139,
+        "medianAe": 0.9,
+        "p90Ae": 3.3037,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Played-only Track A (summed components)": {
+        "mae": 2.6445,
+        "rmse": 3.4621,
+        "bias": -0.1046,
+        "medianAe": 2.09,
+        "p90Ae": 5.58,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "L5 min × Blended (summed components)": {
+        "mae": 2.6455,
+        "rmse": 3.465,
+        "bias": -0.0419,
+        "medianAe": 2.0963,
+        "p90Ae": 5.6046,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "Market Line": {
+        "mae": 2.8954,
+        "rmse": 3.6828,
+        "bias": 0.0543,
+        "medianAe": 2.5,
+        "p90Ae": 6,
+        "coverage": 1,
+        "n": 1095,
+        "nEligible": 1095
+      }
+    }
+  },
+  "decomposition": {
+    "PTS": {
+      "currentTrackA": 4.8648,
+      "playedTrackA": 4.6255,
+      "bestMinutesRate": {
+        "id": "m4_tamin_season_rate",
+        "label": "Track-A min × Season Rate",
+        "mae": 4.6219
+      },
+      "dnpCleanupGain": 0.2393,
+      "structuralGain": 0.0036,
+      "meanAbsTrackAShift": 1.4847,
+      "n": 83276
+    },
+    "REB": {
+      "currentTrackA": 1.9875,
+      "playedTrackA": 1.9187,
+      "bestMinutesRate": {
+        "id": "m4_tamin_season_rate",
+        "label": "Track-A min × Season Rate",
+        "mae": 1.9107
+      },
+      "dnpCleanupGain": 0.0688,
+      "structuralGain": 0.008,
+      "meanAbsTrackAShift": 0.6016,
+      "n": 83276
+    },
+    "AST": {
+      "currentTrackA": 1.372,
+      "playedTrackA": 1.3499,
+      "bestMinutesRate": {
+        "id": "m1_l5min_season_rate",
+        "label": "L5 min × Season Rate",
+        "mae": 1.3454
+      },
+      "dnpCleanupGain": 0.0221,
+      "structuralGain": 0.0045,
+      "meanAbsTrackAShift": 0.3494,
+      "n": 83276
+    },
+    "3PM": {
+      "currentTrackA": 0.8789,
+      "playedTrackA": 0.8865,
+      "bestMinutesRate": {
+        "id": "m4_tamin_season_rate",
+        "label": "Track-A min × Season Rate",
+        "mae": 0.8822
+      },
+      "dnpCleanupGain": -0.0076,
+      "structuralGain": 0.0043,
+      "meanAbsTrackAShift": 0.1693,
+      "n": 83276
+    },
+    "PRA": {
+      "currentTrackA": 6.6664,
+      "playedTrackA": 6.1111,
+      "bestMinutesRate": {
+        "id": "m1_l5min_season_rate",
+        "label": "L5 min × Season Rate",
+        "mae": 6.1108
+      },
+      "dnpCleanupGain": 0.5553,
+      "structuralGain": 0.0003,
+      "meanAbsTrackAShift": 2.4356,
+      "n": 83276
+    },
+    "PA": {
+      "currentTrackA": 5.4699,
+      "playedTrackA": 5.1024,
+      "bestMinutesRate": {
+        "id": "m6_tamin_blended_rate",
+        "label": "Track-A min × Blended Rate",
+        "mae": 5.1028
+      },
+      "dnpCleanupGain": 0.3675,
+      "structuralGain": -0.0004,
+      "meanAbsTrackAShift": 1.834,
+      "n": 83276
+    },
+    "PR": {
+      "currentTrackA": 6.0282,
+      "playedTrackA": 5.6077,
+      "bestMinutesRate": {
+        "id": "m1_l5min_season_rate",
+        "label": "L5 min × Season Rate",
+        "mae": 5.6007
+      },
+      "dnpCleanupGain": 0.4205,
+      "structuralGain": 0.007,
+      "meanAbsTrackAShift": 2.0862,
+      "n": 83276
+    },
+    "RA": {
+      "currentTrackA": 2.8046,
+      "playedTrackA": 2.6445,
+      "bestMinutesRate": {
+        "id": "m1_l5min_season_rate",
+        "label": "L5 min × Season Rate",
+        "mae": 2.6377
+      },
+      "dnpCleanupGain": 0.1601,
+      "structuralGain": 0.0068,
+      "meanAbsTrackAShift": 0.951,
+      "n": 83276
+    }
+  },
+  "ptsBestMinutesRateModel": {
+    "id": "m4_tamin_season_rate",
+    "label": "Track-A min × Season Rate"
+  },
+  "segments": {
+    "PTS": {
+      "phase": {
+        "regular": {
+          "currentTrackA": {
+            "mae": 4.885,
+            "rmse": 6.6216,
+            "bias": -1.7431,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 77502,
+            "nEligible": 77502
+          },
+          "playedTrackA": {
+            "mae": 4.6207,
+            "rmse": 6.1036,
+            "bias": -0.2723,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 77502,
+            "nEligible": 77502
+          },
+          "m4": {
+            "mae": 4.6134,
+            "rmse": 6.0931,
+            "bias": -0.3031,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 77495,
+            "nEligible": 77495
+          },
+          "m1": {
+            "mae": 4.6167,
+            "rmse": 6.1021,
+            "bias": -0.2079,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 77495,
+            "nEligible": 77495
+          }
+        },
+        "postseason": {
+          "currentTrackA": {
+            "mae": 4.594,
+            "rmse": 6.2131,
+            "bias": -0.4917,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5774,
+            "nEligible": 5774
+          },
+          "playedTrackA": {
+            "mae": 4.691,
+            "rmse": 6.0261,
+            "bias": 1.1796,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5774,
+            "nEligible": 5774
+          },
+          "m4": {
+            "mae": 4.7361,
+            "rmse": 6.0569,
+            "bias": 1.4606,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5774,
+            "nEligible": 5774
+          },
+          "m1": {
+            "mae": 4.7018,
+            "rmse": 6.1174,
+            "bias": 1.3954,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5774,
+            "nEligible": 5774
+          }
+        }
+      },
+      "sample": {
+        "1-4": {
+          "currentTrackA": {
+            "mae": 4.6911,
+            "rmse": 6.6744,
+            "bias": -1.8133,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 6624,
+            "nEligible": 6624
+          },
+          "playedTrackA": {
+            "mae": 4.3797,
+            "rmse": 6.0327,
+            "bias": -0.4806,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 6624,
+            "nEligible": 6624
+          },
+          "m4": {
+            "mae": 4.3824,
+            "rmse": 6.0328,
+            "bias": -0.4618,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 6617,
+            "nEligible": 6617
+          },
+          "m1": {
+            "mae": 4.3824,
+            "rmse": 6.0328,
+            "bias": -0.4618,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 6617,
+            "nEligible": 6617
+          }
+        },
+        "5-9": {
+          "currentTrackA": {
+            "mae": 4.5673,
+            "rmse": 6.4588,
+            "bias": -2.0262,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7759,
+            "nEligible": 7759
+          },
+          "playedTrackA": {
+            "mae": 4.1941,
+            "rmse": 5.6962,
+            "bias": -0.5048,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7759,
+            "nEligible": 7759
+          },
+          "m4": {
+            "mae": 4.1981,
+            "rmse": 5.6959,
+            "bias": -0.4863,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7759,
+            "nEligible": 7759
+          },
+          "m1": {
+            "mae": 4.2212,
+            "rmse": 5.7021,
+            "bias": -0.3499,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7759,
+            "nEligible": 7759
+          }
+        },
+        "10-19": {
+          "currentTrackA": {
+            "mae": 4.712,
+            "rmse": 6.4932,
+            "bias": -1.883,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 14248,
+            "nEligible": 14248
+          },
+          "playedTrackA": {
+            "mae": 4.4085,
+            "rmse": 5.8797,
+            "bias": -0.2989,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 14248,
+            "nEligible": 14248
+          },
+          "m4": {
+            "mae": 4.4029,
+            "rmse": 5.8709,
+            "bias": -0.3002,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 14248,
+            "nEligible": 14248
+          },
+          "m1": {
+            "mae": 4.4201,
+            "rmse": 5.89,
+            "bias": -0.1232,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 14248,
+            "nEligible": 14248
+          }
+        },
+        "20+": {
+          "currentTrackA": {
+            "mae": 4.9679,
+            "rmse": 6.6294,
+            "bias": -1.5257,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 54645,
+            "nEligible": 54645
+          },
+          "playedTrackA": {
+            "mae": 4.7732,
+            "rmse": 6.2162,
+            "bias": -0.0537,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 54645,
+            "nEligible": 54645
+          },
+          "m4": {
+            "mae": 4.7682,
+            "rmse": 6.2069,
+            "bias": -0.0723,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 54645,
+            "nEligible": 54645
+          },
+          "m1": {
+            "mae": 4.7615,
+            "rmse": 6.2202,
+            "bias": -0.0096,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 54645,
+            "nEligible": 54645
+          }
+        }
+      },
+      "role": {
+        "starter": {
+          "currentTrackA": {
+            "mae": 5.9954,
+            "rmse": 7.8391,
+            "bias": -2.3805,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 13027,
+            "nEligible": 13027
+          },
+          "playedTrackA": {
+            "mae": 5.456,
+            "rmse": 7.061,
+            "bias": -0.4682,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 13027,
+            "nEligible": 13027
+          },
+          "m4": {
+            "mae": 5.4652,
+            "rmse": 7.078,
+            "bias": -0.4823,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 13027,
+            "nEligible": 13027
+          },
+          "m1": {
+            "mae": 5.4867,
+            "rmse": 7.0922,
+            "bias": -0.309,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 13027,
+            "nEligible": 13027
+          }
+        },
+        "bench": {
+          "currentTrackA": {
+            "mae": 3.9241,
+            "rmse": 5.3455,
+            "bias": -1.1379,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 15023,
+            "nEligible": 15023
+          },
+          "playedTrackA": {
+            "mae": 3.8951,
+            "rmse": 5.0922,
+            "bias": 0.185,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 15023,
+            "nEligible": 15023
+          },
+          "m4": {
+            "mae": 3.9014,
+            "rmse": 5.0893,
+            "bias": 0.193,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 15019,
+            "nEligible": 15019
+          },
+          "m1": {
+            "mae": 3.8708,
+            "rmse": 5.0736,
+            "bias": 0.1443,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 15019,
+            "nEligible": 15019
+          }
+        },
+        "unknown": {
+          "currentTrackA": {
+            "mae": 4.854,
+            "rmse": 6.5802,
+            "bias": -1.6265,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 55226,
+            "nEligible": 55226
+          },
+          "playedTrackA": {
+            "mae": 4.6283,
+            "rmse": 6.1044,
+            "bias": -0.1987,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 55226,
+            "nEligible": 55226
+          },
+          "m4": {
+            "mae": 4.619,
+            "rmse": 6.0887,
+            "bias": -0.2114,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 55223,
+            "nEligible": 55223
+          },
+          "m1": {
+            "mae": 4.6232,
+            "rmse": 6.1074,
+            "bias": -0.1121,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 55223,
+            "nEligible": 55223
+          }
+        }
+      },
+      "usage": {
+        "high": {
+          "currentTrackA": {
+            "mae": 6.3228,
+            "rmse": 8.1736,
+            "bias": -1.8786,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 25772,
+            "nEligible": 25772
+          },
+          "playedTrackA": {
+            "mae": 5.8218,
+            "rmse": 7.4378,
+            "bias": 0.2055,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 25772,
+            "nEligible": 25772
+          },
+          "m4": {
+            "mae": 5.8057,
+            "rmse": 7.4114,
+            "bias": 0.2502,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 25772,
+            "nEligible": 25772
+          },
+          "m1": {
+            "mae": 5.8474,
+            "rmse": 7.4718,
+            "bias": 0.2855,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 25772,
+            "nEligible": 25772
+          }
+        },
+        "mid": {
+          "currentTrackA": {
+            "mae": 4.6819,
+            "rmse": 6.1476,
+            "bias": -1.3807,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 37214,
+            "nEligible": 37214
+          },
+          "playedTrackA": {
+            "mae": 4.5146,
+            "rmse": 5.7777,
+            "bias": -0.1399,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 37214,
+            "nEligible": 37214
+          },
+          "m4": {
+            "mae": 4.5166,
+            "rmse": 5.7824,
+            "bias": -0.1939,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 37214,
+            "nEligible": 37214
+          },
+          "m1": {
+            "mae": 4.4999,
+            "rmse": 5.7719,
+            "bias": -0.1088,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 37214,
+            "nEligible": 37214
+          }
+        },
+        "low": {
+          "currentTrackA": {
+            "mae": 3.3476,
+            "rmse": 4.9281,
+            "bias": -1.8781,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 20283,
+            "nEligible": 20283
+          },
+          "playedTrackA": {
+            "mae": 3.3087,
+            "rmse": 4.597,
+            "bias": -0.7072,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 20283,
+            "nEligible": 20283
+          },
+          "m4": {
+            "mae": 3.3112,
+            "rmse": 4.5988,
+            "bias": -0.7044,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 20283,
+            "nEligible": 20283
+          },
+          "m1": {
+            "mae": 3.2915,
+            "rmse": 4.5673,
+            "bias": -0.5601,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 20283,
+            "nEligible": 20283
+          }
+        }
+      },
+      "team": {
+        "no_team_change": {
+          "currentTrackA": {
+            "mae": 4.8734,
+            "rmse": 6.6033,
+            "bias": -1.6213,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 78067,
+            "nEligible": 78067
+          },
+          "playedTrackA": {
+            "mae": 4.6305,
+            "rmse": 6.1092,
+            "bias": -0.1599,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 78067,
+            "nEligible": 78067
+          },
+          "m4": {
+            "mae": 4.6247,
+            "rmse": 6.0995,
+            "bias": -0.1712,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 78060,
+            "nEligible": 78060
+          },
+          "m1": {
+            "mae": 4.6312,
+            "rmse": 6.1182,
+            "bias": -0.0904,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 78060,
+            "nEligible": 78060
+          }
+        },
+        "after_team_change": {
+          "currentTrackA": {
+            "mae": 4.7358,
+            "rmse": 6.4544,
+            "bias": -2.181,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5209,
+            "nEligible": 5209
+          },
+          "playedTrackA": {
+            "mae": 4.5516,
+            "rmse": 5.9319,
+            "bias": -0.3485,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5209,
+            "nEligible": 5209
+          },
+          "m4": {
+            "mae": 4.5803,
+            "rmse": 5.9545,
+            "bias": -0.3243,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5209,
+            "nEligible": 5209
+          },
+          "m1": {
+            "mae": 4.4936,
+            "rmse": 5.8737,
+            "bias": -0.191,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 5209,
+            "nEligible": 5209
+          }
+        },
+        "first5_new_team": {
+          "currentTrackA": {
+            "mae": 4.8041,
+            "rmse": 6.5485,
+            "bias": -2.6179,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 706,
+            "nEligible": 706
+          },
+          "playedTrackA": {
+            "mae": 4.6084,
+            "rmse": 5.9698,
+            "bias": -0.4336,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 706,
+            "nEligible": 706
+          },
+          "m4": {
+            "mae": 4.5611,
+            "rmse": 5.9139,
+            "bias": -0.3596,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 706,
+            "nEligible": 706
+          },
+          "m1": {
+            "mae": 4.4859,
+            "rmse": 5.8548,
+            "bias": -0.4506,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 706,
+            "nEligible": 706
+          }
+        },
+        "first10_new_team": {
+          "currentTrackA": {
+            "mae": 4.703,
+            "rmse": 6.416,
+            "bias": -2.6443,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 1462,
+            "nEligible": 1462
+          },
+          "playedTrackA": {
+            "mae": 4.4797,
+            "rmse": 5.8059,
+            "bias": -0.4999,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 1462,
+            "nEligible": 1462
+          },
+          "m4": {
+            "mae": 4.4676,
+            "rmse": 5.7771,
+            "bias": -0.4376,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 1462,
+            "nEligible": 1462
+          },
+          "m1": {
+            "mae": 4.3308,
+            "rmse": 5.6423,
+            "bias": -0.3891,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 1462,
+            "nEligible": 1462
+          }
+        }
+      },
+      "actualMinutesBucket": {
+        "0-3": {
+          "currentTrackA": {
+            "mae": 1.6288,
+            "rmse": 2.4805,
+            "bias": 1.1403,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 3141,
+            "nEligible": 3141
+          },
+          "playedTrackA": {
+            "mae": 2.6815,
+            "rmse": 3.5182,
+            "bias": 2.441,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 3141,
+            "nEligible": 3141
+          },
+          "m4": {
+            "mae": 2.7047,
+            "rmse": 3.5218,
+            "bias": 2.4702,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 3141,
+            "nEligible": 3141
+          },
+          "m1": {
+            "mae": 2.5151,
+            "rmse": 3.3805,
+            "bias": 2.2379,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 3141,
+            "nEligible": 3141
+          }
+        },
+        "3-8": {
+          "currentTrackA": {
+            "mae": 2.3974,
+            "rmse": 3.3103,
+            "bias": 0.923,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7097,
+            "nEligible": 7097
+          },
+          "playedTrackA": {
+            "mae": 2.999,
+            "rmse": 3.9416,
+            "bias": 2.1749,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7097,
+            "nEligible": 7097
+          },
+          "m4": {
+            "mae": 3.0346,
+            "rmse": 3.9647,
+            "bias": 2.2281,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7094,
+            "nEligible": 7094
+          },
+          "m1": {
+            "mae": 2.9592,
+            "rmse": 3.9289,
+            "bias": 2.046,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 7094,
+            "nEligible": 7094
+          }
+        },
+        "8-15": {
+          "currentTrackA": {
+            "mae": 3.2975,
+            "rmse": 4.2777,
+            "bias": 0.5368,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 10102,
+            "nEligible": 10102
+          },
+          "playedTrackA": {
+            "mae": 3.5269,
+            "rmse": 4.5376,
+            "bias": 1.7227,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 10102,
+            "nEligible": 10102
+          },
+          "m4": {
+            "mae": 3.529,
+            "rmse": 4.5317,
+            "bias": 1.758,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 10101,
+            "nEligible": 10101
+          },
+          "m1": {
+            "mae": 3.5453,
+            "rmse": 4.5828,
+            "bias": 1.6721,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 10101,
+            "nEligible": 10101
+          }
+        },
+        "15-25": {
+          "currentTrackA": {
+            "mae": 4.3343,
+            "rmse": 5.5715,
+            "bias": -0.8479,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 23488,
+            "nEligible": 23488
+          },
+          "playedTrackA": {
+            "mae": 4.1799,
+            "rmse": 5.3374,
+            "bias": 0.4973,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 23488,
+            "nEligible": 23488
+          },
+          "m4": {
+            "mae": 4.1561,
+            "rmse": 5.309,
+            "bias": 0.49,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 23486,
+            "nEligible": 23486
+          },
+          "m1": {
+            "mae": 4.2007,
+            "rmse": 5.3622,
+            "bias": 0.5347,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 23486,
+            "nEligible": 23486
+          }
+        },
+        "25-35": {
+          "currentTrackA": {
+            "mae": 5.8168,
+            "rmse": 7.4748,
+            "bias": -2.6475,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 27001,
+            "nEligible": 27001
+          },
+          "playedTrackA": {
+            "mae": 5.2639,
+            "rmse": 6.7176,
+            "bias": -0.9935,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 27001,
+            "nEligible": 27001
+          },
+          "m4": {
+            "mae": 5.2576,
+            "rmse": 6.7122,
+            "bias": -1.0417,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 27000,
+            "nEligible": 27000
+          },
+          "m1": {
+            "mae": 5.2781,
+            "rmse": 6.7399,
+            "bias": -0.8484,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 27000,
+            "nEligible": 27000
+          }
+        },
+        "35+": {
+          "currentTrackA": {
+            "mae": 7.2961,
+            "rmse": 9.4067,
+            "bias": -4.988,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 12447,
+            "nEligible": 12447
+          },
+          "playedTrackA": {
+            "mae": 6.3912,
+            "rmse": 8.2745,
+            "bias": -3.186,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 12447,
+            "nEligible": 12447
+          },
+          "m4": {
+            "mae": 6.3975,
+            "rmse": 8.2761,
+            "bias": -3.1947,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 12447,
+            "nEligible": 12447
+          },
+          "m1": {
+            "mae": 6.3507,
+            "rmse": 8.2263,
+            "bias": -2.903,
+            "medianAe": null,
+            "p90Ae": null,
+            "coverage": 1,
+            "n": 12447,
+            "nEligible": 12447
+          }
+        }
+      }
+    },
+    "3PM": {
+      "all": {
+        "currentTrackA": {
+          "mae": 0.8789,
+          "rmse": 1.2893,
+          "bias": -0.1882,
+          "medianAe": 0.6191,
+          "p90Ae": 2.0595,
+          "coverage": 1,
+          "n": 83276,
+          "nEligible": 83276
+        },
+        "playedTrackA": {
+          "mae": 0.8865,
+          "rmse": 1.261,
+          "bias": -0.019,
+          "medianAe": 0.6568,
+          "p90Ae": 2.01,
+          "coverage": 1,
+          "n": 83276,
+          "nEligible": 83276
+        },
+        "m1": {
+          "mae": 0.8829,
+          "rmse": 1.2543,
+          "bias": -0.0083,
+          "medianAe": 0.6513,
+          "p90Ae": 2,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "m2": {
+          "mae": 0.8968,
+          "rmse": 1.2783,
+          "bias": -0.0059,
+          "medianAe": 0.6576,
+          "p90Ae": 2.0577,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "m3": {
+          "mae": 0.8885,
+          "rmse": 1.2643,
+          "bias": -0.0066,
+          "medianAe": 0.6533,
+          "p90Ae": 2.0259,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "m4": {
+          "mae": 0.8822,
+          "rmse": 1.2525,
+          "bias": -0.0185,
+          "medianAe": 0.6563,
+          "p90Ae": 2,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "m5": {
+          "mae": 0.8942,
+          "rmse": 1.2742,
+          "bias": -0.0184,
+          "medianAe": 0.6667,
+          "p90Ae": 2.0405,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "m6": {
+          "mae": 0.8866,
+          "rmse": 1.261,
+          "bias": -0.0184,
+          "medianAe": 0.6583,
+          "p90Ae": 2.0072,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "l5minL5rate": {
+          "mae": 0.9192,
+          "rmse": 1.3196,
+          "bias": -0.0074,
+          "medianAe": 0.6,
+          "p90Ae": 2.2,
+          "coverage": 0.9999,
+          "n": 83269,
+          "nEligible": 83276
+        },
+        "playedL10": {
+          "mae": 0.895,
+          "rmse": 1.276,
+          "bias": -0.0134,
+          "medianAe": 0.7,
+          "p90Ae": 2,
+          "coverage": 1,
+          "n": 83276,
+          "nEligible": 83276
+        },
+        "playedSeason": {
+          "mae": 0.8853,
+          "rmse": 1.258,
+          "bias": -0.0321,
+          "medianAe": 0.6667,
+          "p90Ae": 2,
+          "coverage": 1,
+          "n": 83276,
+          "nEligible": 83276
+        }
+      }
+    }
+  },
+  "combos": {
+    "PRA": {
+      "directPlayedTrackA": {
+        "mae": 6.1111,
+        "rmse": 7.9276,
+        "bias": -0.2763,
+        "medianAe": 4.9416,
+        "p90Ae": 12.8229,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "summedPlayedTrackA": {
+        "mae": 6.1111,
+        "rmse": 7.9276,
+        "bias": -0.2763,
+        "medianAe": 4.9416,
+        "p90Ae": 12.8229,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "directM3": {
+        "mae": 6.1202,
+        "rmse": 7.9591,
+        "bias": -0.1138,
+        "medianAe": 4.9079,
+        "p90Ae": 12.9088,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "summedM3": {
+        "mae": 6.1202,
+        "rmse": 7.9591,
+        "bias": -0.1138,
+        "medianAe": 4.9079,
+        "p90Ae": 12.9088,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      }
+    },
+    "PA": {
+      "directPlayedTrackA": {
+        "mae": 5.1024,
+        "rmse": 6.6868,
+        "bias": -0.2176,
+        "medianAe": 4,
+        "p90Ae": 10.817,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "summedPlayedTrackA": {
+        "mae": 5.1024,
+        "rmse": 6.6868,
+        "bias": -0.2176,
+        "medianAe": 4,
+        "p90Ae": 10.817,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "directM3": {
+        "mae": 5.1107,
+        "rmse": 6.712,
+        "bias": -0.0967,
+        "medianAe": 4,
+        "p90Ae": 10.892,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "summedM3": {
+        "mae": 5.1107,
+        "rmse": 6.712,
+        "bias": -0.0967,
+        "medianAe": 4,
+        "p90Ae": 10.892,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      }
+    },
+    "PR": {
+      "directPlayedTrackA": {
+        "mae": 5.6077,
+        "rmse": 7.2986,
+        "bias": -0.2304,
+        "medianAe": 4.4973,
+        "p90Ae": 11.8064,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "summedPlayedTrackA": {
+        "mae": 5.6077,
+        "rmse": 7.2986,
+        "bias": -0.2304,
+        "medianAe": 4.4973,
+        "p90Ae": 11.8064,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "directM3": {
+        "mae": 5.6192,
+        "rmse": 7.3313,
+        "bias": -0.089,
+        "medianAe": 4.4582,
+        "p90Ae": 11.9155,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "summedM3": {
+        "mae": 5.6192,
+        "rmse": 7.3313,
+        "bias": -0.089,
+        "medianAe": 4.4582,
+        "p90Ae": 11.9155,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      }
+    },
+    "RA": {
+      "directPlayedTrackA": {
+        "mae": 2.6445,
+        "rmse": 3.4621,
+        "bias": -0.1046,
+        "medianAe": 2.09,
+        "p90Ae": 5.58,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "summedPlayedTrackA": {
+        "mae": 2.6445,
+        "rmse": 3.4621,
+        "bias": -0.1046,
+        "medianAe": 2.09,
+        "p90Ae": 5.58,
+        "coverage": 1,
+        "n": 83276,
+        "nEligible": 83276
+      },
+      "directM3": {
+        "mae": 2.6455,
+        "rmse": 3.465,
+        "bias": -0.0419,
+        "medianAe": 2.0963,
+        "p90Ae": 5.6046,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      },
+      "summedM3": {
+        "mae": 2.6455,
+        "rmse": 3.465,
+        "bias": -0.0419,
+        "medianAe": 2.0963,
+        "p90Ae": 5.6046,
+        "coverage": 0.9999,
+        "n": 83269,
+        "nEligible": 83276
+      }
+    }
+  },
+  "marketOverlap": {
+    "PTS": {
+      "currentTrackA": {
+        "mae": 5.6607,
+        "rmse": 7.4124,
+        "bias": -2.0737,
+        "medianAe": 4.4883,
+        "p90Ae": 12.1679,
+        "coverage": 1,
+        "n": 1498,
+        "nEligible": 1498
+      },
+      "playedTrackA": {
+        "mae": 5.4296,
+        "rmse": 6.9422,
+        "bias": 0.2244,
+        "medianAe": 4.6101,
+        "p90Ae": 11.2763,
+        "coverage": 1,
+        "n": 1498,
+        "nEligible": 1498
+      },
+      "m4": {
+        "mae": 5.5092,
+        "rmse": 7.0479,
+        "bias": 0.1279,
+        "medianAe": 4.5486,
+        "p90Ae": 11.1521,
+        "coverage": 1,
+        "n": 1498,
+        "nEligible": 1498
+      },
+      "m1": {
+        "mae": 5.4586,
+        "rmse": 6.9628,
+        "bias": 0.2091,
+        "medianAe": 4.365,
+        "p90Ae": 11.365,
+        "coverage": 1,
+        "n": 1498,
+        "nEligible": 1498
+      },
+      "market": {
+        "mae": 5.0404,
+        "rmse": 6.5442,
+        "bias": -0.0791,
+        "medianAe": 4,
+        "p90Ae": 10.5,
+        "coverage": 1,
+        "n": 1498,
+        "nEligible": 1498
+      }
+    },
+    "REB": {
+      "currentTrackA": {
+        "mae": 2.2525,
+        "rmse": 2.9915,
+        "bias": -0.8747,
+        "medianAe": 1.7371,
+        "p90Ae": 4.9142,
+        "coverage": 1,
+        "n": 1467,
+        "nEligible": 1467
+      },
+      "playedTrackA": {
+        "mae": 2.1177,
+        "rmse": 2.7801,
+        "bias": -0.0916,
+        "medianAe": 1.6726,
+        "p90Ae": 4.3774,
+        "coverage": 1,
+        "n": 1467,
+        "nEligible": 1467
+      },
+      "m4": {
+        "mae": 2.1207,
+        "rmse": 2.7689,
+        "bias": -0.0321,
+        "medianAe": 1.7243,
+        "p90Ae": 4.4949,
+        "coverage": 1,
+        "n": 1467,
+        "nEligible": 1467
+      },
+      "m1": {
+        "mae": 2.1242,
+        "rmse": 2.7779,
+        "bias": 0.005,
+        "medianAe": 1.7032,
+        "p90Ae": 4.5692,
+        "coverage": 1,
+        "n": 1467,
+        "nEligible": 1467
+      },
+      "market": {
+        "mae": 2.0665,
+        "rmse": 2.6649,
+        "bias": -0.1128,
+        "medianAe": 1.5,
+        "p90Ae": 4.5,
+        "coverage": 1,
+        "n": 1467,
+        "nEligible": 1467
+      }
+    },
+    "AST": {
+      "currentTrackA": {
+        "mae": 1.7086,
+        "rmse": 2.3547,
+        "bias": -0.4564,
+        "medianAe": 1.2484,
+        "p90Ae": 3.7447,
+        "coverage": 1,
+        "n": 1367,
+        "nEligible": 1367
+      },
+      "playedTrackA": {
+        "mae": 1.674,
+        "rmse": 2.2461,
+        "bias": 0.0697,
+        "medianAe": 1.3097,
+        "p90Ae": 3.5815,
+        "coverage": 1,
+        "n": 1367,
+        "nEligible": 1367
+      },
+      "m4": {
+        "mae": 1.6933,
+        "rmse": 2.2685,
+        "bias": 0.0558,
+        "medianAe": 1.3708,
+        "p90Ae": 3.5133,
+        "coverage": 1,
+        "n": 1367,
+        "nEligible": 1367
+      },
+      "m1": {
+        "mae": 1.6829,
+        "rmse": 2.2535,
+        "bias": 0.0914,
+        "medianAe": 1.3378,
+        "p90Ae": 3.5213,
+        "coverage": 1,
+        "n": 1367,
+        "nEligible": 1367
+      },
+      "market": {
+        "mae": 1.6247,
+        "rmse": 2.1206,
+        "bias": -0.0263,
+        "medianAe": 1.5,
+        "p90Ae": 3.5,
+        "coverage": 1,
+        "n": 1367,
+        "nEligible": 1367
+      }
+    },
+    "3PM": {
+      "currentTrackA": {
+        "mae": 1.1146,
+        "rmse": 1.4657,
+        "bias": -0.1991,
+        "medianAe": 0.8855,
+        "p90Ae": 2.2943,
+        "coverage": 1,
+        "n": 1310,
+        "nEligible": 1310
+      },
+      "playedTrackA": {
+        "mae": 1.1382,
+        "rmse": 1.4634,
+        "bias": 0.0796,
+        "medianAe": 0.9383,
+        "p90Ae": 2.3033,
+        "coverage": 1,
+        "n": 1310,
+        "nEligible": 1310
+      },
+      "m4": {
+        "mae": 1.1341,
+        "rmse": 1.4513,
+        "bias": 0.0718,
+        "medianAe": 0.9455,
+        "p90Ae": 2.2522,
+        "coverage": 1,
+        "n": 1310,
+        "nEligible": 1310
+      },
+      "m1": {
+        "mae": 1.1332,
+        "rmse": 1.446,
+        "bias": 0.0855,
+        "medianAe": 0.9527,
+        "p90Ae": 2.2735,
+        "coverage": 1,
+        "n": 1310,
+        "nEligible": 1310
+      },
+      "market": {
+        "mae": 1.1485,
+        "rmse": 1.453,
+        "bias": -0.0317,
+        "medianAe": 0.5,
+        "p90Ae": 2.5,
+        "coverage": 1,
+        "n": 1310,
+        "nEligible": 1310
+      }
+    },
+    "PRA": {
+      "currentTrackA": {
+        "mae": 7.3685,
+        "rmse": 9.5693,
+        "bias": -2.8925,
+        "medianAe": 5.8006,
+        "p90Ae": 16.0125,
+        "coverage": 1,
+        "n": 1434,
+        "nEligible": 1434
+      },
+      "playedTrackA": {
+        "mae": 6.7947,
+        "rmse": 8.5985,
+        "bias": 0.7057,
+        "medianAe": 5.809,
+        "p90Ae": 13.8729,
+        "coverage": 1,
+        "n": 1434,
+        "nEligible": 1434
+      },
+      "m4": {
+        "mae": 6.9344,
+        "rmse": 8.7678,
+        "bias": 0.6984,
+        "medianAe": 5.8764,
+        "p90Ae": 14.1695,
+        "coverage": 1,
+        "n": 1434,
+        "nEligible": 1434
+      },
+      "m1": {
+        "mae": 6.8591,
+        "rmse": 8.7081,
+        "bias": 0.7247,
+        "medianAe": 5.7528,
+        "p90Ae": 14.3032,
+        "coverage": 1,
+        "n": 1434,
+        "nEligible": 1434
+      },
+      "market": {
+        "mae": 6.2999,
+        "rmse": 8.0604,
+        "bias": 0.2218,
+        "medianAe": 5.5,
+        "p90Ae": 13,
+        "coverage": 1,
+        "n": 1434,
+        "nEligible": 1434
+      }
+    },
+    "PA": {
+      "currentTrackA": {
+        "mae": 6.5086,
+        "rmse": 8.5262,
+        "bias": -2.7607,
+        "medianAe": 5.2638,
+        "p90Ae": 14.3463,
+        "coverage": 1,
+        "n": 1119,
+        "nEligible": 1119
+      },
+      "playedTrackA": {
+        "mae": 6.0534,
+        "rmse": 7.7244,
+        "bias": 0.2878,
+        "medianAe": 4.9394,
+        "p90Ae": 12.85,
+        "coverage": 1,
+        "n": 1119,
+        "nEligible": 1119
+      },
+      "m4": {
+        "mae": 6.1858,
+        "rmse": 7.9007,
+        "bias": 0.1942,
+        "medianAe": 5.2387,
+        "p90Ae": 12.8037,
+        "coverage": 1,
+        "n": 1119,
+        "nEligible": 1119
+      },
+      "m1": {
+        "mae": 6.2042,
+        "rmse": 7.907,
+        "bias": 0.401,
+        "medianAe": 5.0989,
+        "p90Ae": 13.0194,
+        "coverage": 1,
+        "n": 1119,
+        "nEligible": 1119
+      },
+      "market": {
+        "mae": 5.6877,
+        "rmse": 7.3601,
+        "bias": 0.1399,
+        "medianAe": 4.5,
+        "p90Ae": 12.5,
+        "coverage": 1,
+        "n": 1119,
+        "nEligible": 1119
+      }
+    },
+    "PR": {
+      "currentTrackA": {
+        "mae": 6.8293,
+        "rmse": 8.8739,
+        "bias": -2.8971,
+        "medianAe": 5.3508,
+        "p90Ae": 14.6177,
+        "coverage": 1,
+        "n": 1291,
+        "nEligible": 1291
+      },
+      "playedTrackA": {
+        "mae": 6.3309,
+        "rmse": 8.0259,
+        "bias": 0.3423,
+        "medianAe": 5.3267,
+        "p90Ae": 12.7456,
+        "coverage": 1,
+        "n": 1291,
+        "nEligible": 1291
+      },
+      "m4": {
+        "mae": 6.4364,
+        "rmse": 8.1376,
+        "bias": 0.3304,
+        "medianAe": 5.4474,
+        "p90Ae": 13.0739,
+        "coverage": 1,
+        "n": 1291,
+        "nEligible": 1291
+      },
+      "m1": {
+        "mae": 6.443,
+        "rmse": 8.1437,
+        "bias": 0.4567,
+        "medianAe": 5.3913,
+        "p90Ae": 13.1388,
+        "coverage": 1,
+        "n": 1291,
+        "nEligible": 1291
+      },
+      "market": {
+        "mae": 6.0093,
+        "rmse": 7.6595,
+        "bias": 0.079,
+        "medianAe": 5,
+        "p90Ae": 12.5,
+        "coverage": 1,
+        "n": 1291,
+        "nEligible": 1291
+      }
+    },
+    "RA": {
+      "currentTrackA": {
+        "mae": 3.2553,
+        "rmse": 4.2391,
+        "bias": -1.3391,
+        "medianAe": 2.5512,
+        "p90Ae": 6.7646,
+        "coverage": 1,
+        "n": 1095,
+        "nEligible": 1095
+      },
+      "playedTrackA": {
+        "mae": 2.9953,
+        "rmse": 3.8602,
+        "bias": 0.032,
+        "medianAe": 2.4188,
+        "p90Ae": 6.2908,
+        "coverage": 1,
+        "n": 1095,
+        "nEligible": 1095
+      },
+      "m4": {
+        "mae": 3.0159,
+        "rmse": 3.861,
+        "bias": 0.0756,
+        "medianAe": 2.4197,
+        "p90Ae": 6.1495,
+        "coverage": 1,
+        "n": 1095,
+        "nEligible": 1095
+      },
+      "m1": {
+        "mae": 3.0118,
+        "rmse": 3.866,
+        "bias": 0.181,
+        "medianAe": 2.4889,
+        "p90Ae": 6.2895,
+        "coverage": 1,
+        "n": 1095,
+        "nEligible": 1095
+      },
+      "market": {
+        "mae": 2.8954,
+        "rmse": 3.6828,
+        "bias": 0.0543,
+        "medianAe": 2.5,
+        "p90Ae": 6,
+        "coverage": 1,
+        "n": 1095,
+        "nEligible": 1095
+      }
+    }
+  },
+  "errorDecompositionPts": {
+    "n": 83269,
+    "pearsonAbsMinutesVsStat": 0.2828,
+    "pearsonAbsRateVsStat": 0.377,
+    "pearsonSignedMinutesVsStat": 0.5419,
+    "pearsonSignedRateVsStat": 0.6792,
+    "actualMinXBlended": {
+      "mae": 3.8122,
+      "rmse": 5.1457,
+      "bias": -0.0112,
+      "medianAe": 2.8513,
+      "p90Ae": 8.4173,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "l5minXActualRate": {
+      "mae": 2.0844,
+      "rmse": 3.3792,
+      "bias": -0.2718,
+      "medianAe": 1.2897,
+      "p90Ae": 5,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "playedTrackA": {
+      "mae": 4.6255,
+      "rmse": 6.0983,
+      "bias": -0.1717,
+      "medianAe": 3.61,
+      "p90Ae": 9.87,
+      "coverage": 1,
+      "n": 83276,
+      "nEligible": 83276
+    },
+    "l5minXBlended": {
+      "mae": 4.638,
+      "rmse": 6.1239,
+      "bias": -0.0719,
+      "medianAe": 3.6101,
+      "p90Ae": 9.9502,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    }
+  },
+  "rateWindowPts": {
+    "season": {
+      "mae": 4.6219,
+      "rmse": 6.0906,
+      "bias": -0.1808,
+      "medianAe": 3.6139,
+      "p90Ae": 9.8528,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "l10": {
+      "mae": 4.6579,
+      "rmse": 6.1418,
+      "bias": -0.1601,
+      "medianAe": 3.6409,
+      "p90Ae": 9.9561,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "blended": {
+      "mae": 4.6259,
+      "rmse": 6.0974,
+      "bias": -0.1663,
+      "medianAe": 3.6137,
+      "p90Ae": 9.8635,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "l5rateWithL5min": {
+      "mae": 4.7801,
+      "rmse": 6.3227,
+      "bias": -0.0705,
+      "medianAe": 3.8,
+      "p90Ae": 10.4,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "meanGameBlended": {
+      "mae": 4.6321,
+      "rmse": 6.1229,
+      "bias": -0.3165,
+      "medianAe": 3.6063,
+      "p90Ae": 9.9106,
+      "coverage": 0.9999,
+      "n": 83269,
+      "nEligible": 83276
+    },
+    "min3": {
+      "mae": 4.63,
+      "rmse": 6.097,
+      "bias": -0.1737,
+      "medianAe": 3.625,
+      "p90Ae": 9.8574,
+      "coverage": 0.9969,
+      "n": 83021,
+      "nEligible": 83276
+    },
+    "min5": {
+      "mae": 4.6473,
+      "rmse": 6.1108,
+      "bias": -0.1595,
+      "medianAe": 3.6504,
+      "p90Ae": 9.8723,
+      "coverage": 0.9901,
+      "n": 82453,
+      "nEligible": 83276
+    }
+  },
+  "recommendation": "A. PLAYED-ONLY TRACK A"
+}

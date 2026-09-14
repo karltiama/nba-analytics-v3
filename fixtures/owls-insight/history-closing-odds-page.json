@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "data": {
+    "odds": [
+      {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "moneyline": { "home": 155, "away": -190 },
+        "spread": { "home": 4.5, "away": -4.5, "homePrice": -105, "awayPrice": -115 },
+        "total": { "line": 234.5, "overPrice": -115, "underPrice": -105 }
+      },
+      {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "sport": "nba",
+        "book": "consensus",
+        "source": "archive-2",
+        "gameDate": "2023-12-25T00:00:00.000Z",
+        "moneyline": { "home": 155, "away": -180 },
+        "spread": { "home": 5, "away": -5, "homePrice": -110, "awayPrice": -110 },
+        "total": { "line": 234.5, "overPrice": -110, "underPrice": -110 }
+      }
+    ],
+    "pagination": { "total": 2, "limit": 100, "offset": 0, "hasMore": false },
+    "dataQuality": {
+      "suppressedFields": 0,
+      "rowsExcluded": 0,
+      "note": "Copied from the 2026-09-14 live GET /api/v1/history/closing-odds probe. No API key material."
+    }
+  }
+}

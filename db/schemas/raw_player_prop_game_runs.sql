@@ -2,17 +2,24 @@
 -- Run after raw_player_props_schema.sql.
 
 create table if not exists raw.player_prop_game_runs (
-  pull_run_id    bigint not null references raw.player_prop_pull_runs(pull_run_id) on delete cascade,
-  game_id        text not null,
-  status         text not null default 'started',
-  rows_fetched   integer not null default 0,
-  rows_stored    integer not null default 0,
-  error_message  text,
-  started_at     timestamptz not null default now(),
-  completed_at   timestamptz,
-  updated_at     timestamptz not null default now(),
+  pull_run_id            bigint not null references raw.player_prop_pull_runs(pull_run_id) on delete cascade,
+  game_id                text not null,
+  status                 text not null default 'started',
+  rows_fetched           integer not null default 0,
+  rows_stored            integer not null default 0,
+  rows_archived          integer not null default 0,
+  archive_object_count   integer not null default 0,
+  archive_completed_at   timestamptz,
+  archive_status         text not null default 'pending',
+  archive_error          text,
+  archive_key            text,
+  error_message          text,
+  started_at             timestamptz not null default now(),
+  completed_at           timestamptz,
+  updated_at             timestamptz not null default now(),
   primary key (pull_run_id, game_id),
-  constraint player_prop_game_runs_status_check check (status in ('started', 'success', 'error'))
+  constraint player_prop_game_runs_status_check check (status in ('started', 'success', 'error')),
+  constraint player_prop_game_runs_archive_status_check check (archive_status in ('pending', 'archived', 'failed'))
 );
 
 create index if not exists raw_player_prop_game_runs_game_idx
@@ -20,3 +27,6 @@ create index if not exists raw_player_prop_game_runs_game_idx
 
 create index if not exists raw_player_prop_game_runs_status_idx
   on raw.player_prop_game_runs (status, started_at desc);
+
+create index if not exists raw_player_prop_game_runs_archive_status_idx
+  on raw.player_prop_game_runs (archive_status, started_at desc);

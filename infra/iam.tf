@@ -117,6 +117,27 @@ resource "aws_iam_role_policy" "lambda_player_props_worker_sqs" {
   })
 }
 
+resource "aws_iam_role_policy" "lambda_player_props_worker_s3_archive" {
+  count = var.nba_data_bucket_name != "" ? 1 : 0
+  name  = "player-props-worker-s3-archive"
+  role  = aws_iam_role.lambda_player_props_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "PlayerPropSnapshotArchiveObjects"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ]
+        Resource = "arn:aws:s3:::${var.nba_data_bucket_name}/${var.nba_raw_prefix}/source=balldontlie/league=nba/season=*/entity=player_prop_snapshots/*"
+      }
+    ]
+  })
+}
+
 # -----------------------------------------------------------------------------
 # IAM role for player-props controller Lambda
 # -----------------------------------------------------------------------------

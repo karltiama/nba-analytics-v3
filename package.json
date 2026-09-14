@@ -62,7 +62,19 @@
     "characterize:lineups-25": "tsx scripts/archive/characterize-lineups-25.ts",
     "analyze:market-intelligence": "tsx scripts/archive/analyze-market-intelligence.ts",
     "ingest:repair-2025-games": "tsx scripts/ingestion/repair-2025-games-from-bdl.ts",
-    "ingest:game-starters-2025": "tsx scripts/ingestion/materialize-game-starters-2025.ts"
+    "ingest:game-starters-2025": "tsx scripts/ingestion/materialize-game-starters-2025.ts",
+    "evaluate:player-projections": "tsx scripts/evaluate-player-projections.ts",
+    "evaluate:minutes-projections": "tsx scripts/evaluate-minutes-projections.ts",
+    "evaluate:projection-structure": "tsx scripts/evaluate-projection-structure.ts",
+    "evaluate:shadow-projection": "tsx scripts/evaluate-shadow-projection.ts",
+    "reconcile:prop-archive": "tsx scripts/reconcile-prop-archive.ts",
+    "simulate:prop-archive": "tsx scripts/simulate-prop-archive.ts",
+    "ops:audit-prop-archive-prune": "tsx scripts/ops/audit-prop-archive-prune.ts",
+    "ops:redrive-player-props-dlq": "tsx scripts/ops/redrive-player-props-dlq.ts",
+    "plan:owls-prop-backfill": "tsx scripts/owls-insight/plan-owls-prop-backfill.ts",
+    "backfill:owls-props": "tsx scripts/owls-insight/backfill-owls-props.ts",
+    "reconcile:owls-prop-backfill": "tsx scripts/owls-insight/reconcile-owls-prop-backfill.ts",
+    "normalize:owls-props": "tsx scripts/owls-insight/normalize-owls-props.ts"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.1130.0",

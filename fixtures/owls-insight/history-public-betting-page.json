@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "data": {
+    "betting": [
+      {
+        "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+        "sport": "nba",
+        "homeTeam": "Boston Celtics",
+        "awayTeam": "Philadelphia 76ers",
+        "gameDate": "2024-12-25T00:00:00.000Z",
+        "spread": {
+          "homePct": 37,
+          "awayPct": 63
+        },
+        "total": {
+          "overPct": 22,
+          "underPct": 78
+        }
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "limit": 100,
+      "offset": 0,
+      "hasMore": false
+    }
+  }
+}

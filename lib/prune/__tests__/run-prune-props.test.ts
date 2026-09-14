@@ -184,6 +184,149 @@ describe('runPrunePropsJob', () => {
     expect(result.audit.outcome).toBe('completed');
   });
 
+  it('refuses raw deletion of required unarchived runs and still deletes verified rows', async () => {
+    let deletedVerified = false;
+    const pool = makePool(async (sql) => {
+      const s = sql.replace(/\s+/g, ' ').toLowerCase();
+      if (s.includes('insert into research.prop_decision_lines')) {
+        return { rows: [], rowCount: 0 };
+      }
+      if (s.includes('from (') && s.includes('prop_decision_lines') && s.includes('pending')) {
+        return { rows: [{ count: '0' }] };
+      }
+      if (s.includes('is distinct from') && s.includes('archived')) {
+        return { rows: [{ count: '40' }] };
+      }
+      if (s.includes('coalesce(gr.archive_status') && s.includes('count')) {
+        return { rows: [{ count: '60' }] };
+      }
+      if (s.includes('from raw.player_prop_snapshots_v2') && s.includes('fetched_at < now()') && s.includes('count')) {
+        return { rows: [{ count: '100' }] };
+      }
+      if (s.includes('from analytics.player_props_current p') && s.includes('count')) {
+        return { rows: [{ count: '10' }] };
+      }
+      if (s.includes('from raw.player_prop_snapshots_v2') && s.includes('count(*)') && !s.includes('fetched_at <')) {
+        return { rows: [{ count: deletedVerified ? '940' : '1000' }] };
+      }
+      if (s.includes('from analytics.player_props_current') && s.includes('count(*)') && !s.includes('inner join')) {
+        return { rows: [{ count: '100' }] };
+      }
+      if (s.includes('distinct') && s.includes('season')) {
+        return { rows: [] };
+      }
+      if (s.includes('delete from raw.player_prop_snapshots_v2')) {
+        if (deletedVerified) return { rows: [], rowCount: 0 };
+        deletedVerified = true;
+        expect(s).toContain('archive_status');
+        return { rows: [], rowCount: 60 };
+      }
+      if (s.includes('delete from analytics.player_props_current')) {
+        return { rows: [], rowCount: 0 };
+      }
+      throw new Error(`unexpected SQL in test: ${s.slice(0, 160)}`);
+    });
+    const result = await runPrunePropsJob({
+      pool,
+      authenticated: true,
+      env: liveEnv({ PLAYER_PROP_ARCHIVE_REQUIRED_FOR_PRUNE: 'true' }),
+      s3: {
+        getJson: async <T>() => successManifest() as T,
+        objectExists: async () => true,
+      },
+    });
+    expect(result.body.ok).toBe(true);
+    expect(result.body.prunedRawV2).toBe(60);
+    expect(result.audit.rawArchivePrune.blockedMissing).toBe(40);
+    expect(result.audit.rawArchivePrune.deletable).toBe(60);
+  });
+
+  it('allows raw prune of archived required runs when dump gate is unused', async () => {
+    let deleted = false;
+    const pool = makePool(async (sql) => {
+      const s = sql.replace(/\s+/g, ' ').toLowerCase();
+      if (s.includes('insert into research.prop_decision_lines')) return { rows: [], rowCount: 0 };
+      if (s.includes('from (') && s.includes('pending')) return { rows: [{ count: '0' }] };
+      if (s.includes('is distinct from') && s.includes('archived')) return { rows: [{ count: '0' }] };
+      if (s.includes('coalesce(gr.archive_status') && s.includes('count')) return { rows: [{ count: '80' }] };
+      if (s.includes('from raw.player_prop_snapshots_v2') && s.includes('fetched_at < now()') && s.includes('count')) {
+        return { rows: [{ count: '80' }] };
+      }
+      if (s.includes('from analytics.player_props_current p') && s.includes('count')) {
+        return { rows: [{ count: '0' }] };
+      }
+      if (s.includes('from raw.player_prop_snapshots_v2') && s.includes('count(*)') && !s.includes('fetched_at <')) {
+        return { rows: [{ count: deleted ? '920' : '1000' }] };
+      }
+      if (s.includes('from analytics.player_props_current') && s.includes('count(*)') && !s.includes('inner join')) {
+        return { rows: [{ count: '0' }] };
+      }
+      if (s.includes('distinct') && s.includes('season')) return { rows: [] };
+      if (s.includes('delete from raw.player_prop_snapshots_v2')) {
+        if (deleted) return { rows: [], rowCount: 0 };
+        deleted = true;
+        return { rows: [], rowCount: 80 };
+      }
+      if (s.includes('delete from analytics.player_props_current')) return { rows: [], rowCount: 0 };
+      throw new Error(`unexpected SQL in test: ${s.slice(0, 160)}`);
+    });
+    const result = await runPrunePropsJob({
+      pool,
+      authenticated: true,
+      env: liveEnv({ PLAYER_PROP_ARCHIVE_REQUIRED_FOR_PRUNE: 'true' }),
+      s3: null,
+    });
+    expect(result.body.ok).toBe(true);
+    expect(result.body.prunedRawV2).toBe(80);
+    expect(result.audit.rawArchivePrune.blockedMissing).toBe(0);
+  });
+
+  it('treats null pull_run_id rows as legacy when archive is required', async () => {
+    const after = '2026-10-01T00:00:00.000Z';
+    let sawLegacySeasonSql = false;
+    const pool = makePool(async (sql) => {
+      const s = sql.replace(/\s+/g, ' ').toLowerCase();
+      if (s.includes('insert into research.prop_decision_lines')) return { rows: [], rowCount: 0 };
+      if (s.includes('from (') && s.includes('pending')) return { rows: [{ count: '0' }] };
+      if (s.includes('is distinct from') && s.includes('archived')) return { rows: [{ count: '0' }] };
+      if (s.includes('coalesce(gr.archive_status') && s.includes('count')) return { rows: [{ count: '25' }] };
+      if (s.includes('from raw.player_prop_snapshots_v2') && s.includes('fetched_at < now()') && s.includes('count')) {
+        return { rows: [{ count: '25' }] };
+      }
+      if (s.includes('from analytics.player_props_current p') && s.includes('count')) {
+        return { rows: [{ count: '0' }] };
+      }
+      if (s.includes('from raw.player_prop_snapshots_v2') && s.includes('count(*)') && !s.includes('fetched_at <')) {
+        return { rows: [{ count: '1000' }] };
+      }
+      if (s.includes('from analytics.player_props_current') && s.includes('count(*)') && !s.includes('inner join')) {
+        return { rows: [{ count: '0' }] };
+      }
+      if (s.includes('distinct') && s.includes('season')) {
+        sawLegacySeasonSql = s.includes('pull_run_id is null');
+        return { rows: [{ season: '2025' }] };
+      }
+      if (s.includes('delete from raw.player_prop_snapshots_v2')) {
+        return { rows: [], rowCount: 0 };
+      }
+      if (s.includes('delete from analytics.player_props_current')) return { rows: [], rowCount: 0 };
+      throw new Error(`unexpected SQL in test: ${s.slice(0, 160)}`);
+    });
+    await runPrunePropsJob({
+      pool,
+      authenticated: true,
+      env: liveEnv({
+        PLAYER_PROP_ARCHIVE_REQUIRED_FOR_PRUNE: 'true',
+        PLAYER_PROP_ARCHIVE_REQUIRED_AFTER: after,
+      }),
+      s3: {
+        getJson: async <T>() => successManifest() as T,
+        objectExists: async () => true,
+      },
+    });
+    expect(sawLegacySeasonSql).toBe(true);
+  });
+
   it('aborts when current max-delete caps exceeded', async () => {
     const pool = makePool(
       defaultSqlHandler({

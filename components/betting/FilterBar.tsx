@@ -38,7 +38,7 @@ export function FilterBar({
     { value: 'time', label: 'Start Time' },
     { value: 'spread', label: 'Spread Size' },
     { value: 'total', label: 'Over/Under' },
-    { value: 'probability', label: 'Win Probability' }
+    { value: 'probability', label: 'Market Probability' }
   ];
 
   const showDateNav = selectedDate != null && onDateChange != null;
@@ -157,6 +157,7 @@ export function FilterBar({
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap">
           <button
             onClick={onFavoritesToggle}
+            title="Games involving your favorite teams"
             className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
               showFavoritesOnly 
                 ? 'bg-[#55ddb1]/25 border-[#55ddb1] text-[#075B5C]' 
@@ -167,6 +168,7 @@ export function FilterBar({
           </button>
           <button
             onClick={onCloseMatchupsToggle}
+            title="Market implied probabilities within 10 points (vig-free display)"
             className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
               showCloseMatchups 
                 ? 'bg-amber-50 border-amber-200 text-amber-800' 

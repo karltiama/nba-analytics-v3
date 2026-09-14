@@ -46,6 +46,6 @@ describe('13R.3 identity ingest copy drift', () => {
     const src = read('lambda/player-props-snapshot/worker.ts');
     expect(src).toContain('classifyBdlPropPlayerIds');
     expect(src).toContain('filterRowsByServingProviderId');
-    expect(src).toContain('bulkInsertRawV2(pool, normalized');
+    expect(src).toMatch(/bulkInsertRawV2\([\s\S]*pool[\s\S]*normalized/);
   });
 });

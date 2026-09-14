@@ -335,7 +335,9 @@ function PaperBetsContent() {
                   <th className="py-2 px-2 font-medium">Book</th>
                   <th className="py-2 px-2 font-medium text-right">Odds</th>
                   <th className="py-2 px-2 font-medium text-right">Stake</th>
-                  <th className="py-2 px-2 font-medium text-right">Model</th>
+                  <th className="py-2 px-2 font-medium text-right" title="Estimated win probability after market anchoring">
+                    Est. P
+                  </th>
                   <th className="py-2 px-2 font-medium text-right">Proj</th>
                   <th className="py-2 px-2 font-medium">Track</th>
                   {validTab === 'open' && <th className="py-2 px-2 font-medium text-right">Actions</th>}

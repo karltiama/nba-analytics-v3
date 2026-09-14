@@ -18,10 +18,10 @@ export function PropsExplorerTableSkeleton() {
               <th className="py-2 px-2 font-medium text-right">Line</th>
               <th className="py-2 px-2 font-medium">Book</th>
               <th className="py-2 px-2 font-medium text-right">Odds</th>
-              <th className="py-2 px-2 font-medium text-right">Implied</th>
+              <th className="py-2 px-2 font-medium text-right">Market P</th>
               <th className="py-2 px-2 font-medium text-right">Conf</th>
-              <th className="py-2 px-2 font-medium text-right">Model</th>
-              <th className="py-2 px-2 font-medium text-right">EV</th>
+              <th className="py-2 px-2 font-medium text-right">Est. P</th>
+              <th className="py-2 px-2 font-medium text-right">Est. EV</th>
               <th className="py-2 px-2 font-medium text-right">Proj</th>
               <th className="py-2 px-2 font-medium">Updated</th>
               <th className="py-2 px-2 font-medium w-[72px]">Save</th>
