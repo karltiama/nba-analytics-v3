@@ -1,0 +1,408 @@
+{
+  "runId": "owls-2026-09-14-closing-odds-probe",
+  "caps": {
+    "maxRequests": 20,
+    "maxRows": 2000,
+    "maxCompressedBytes": 10485760,
+    "maxConcurrency": 1,
+    "maxGames": 3,
+    "pageLimit": 100,
+    "maxPagesPerGame": 5
+  },
+  "budget": {
+    "requests": 3,
+    "rows": 6,
+    "compressedBytes": 4813,
+    "games": 3,
+    "stopReason": null
+  },
+  "clientMetrics": {
+    "requestsAttempted": 3,
+    "requestsSuccessful": 3,
+    "requestsRetried": 0,
+    "status429": 0,
+    "status503": 0,
+    "rowsReceived": 0,
+    "pagesCompleted": 0
+  },
+  "results": [
+    {
+      "game": {
+        "cc": "1037995",
+        "season": "2023",
+        "date": "2023-12-25",
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "phase": "regular",
+        "playerPropsState": "POPULATED"
+      },
+      "status": 200,
+      "durationMs": 721,
+      "remainingMonth": "288735",
+      "pages": [
+        {
+          "pageIndex": 1,
+          "status": 200,
+          "durationMs": 721,
+          "rows": 2,
+          "bytes": 1604,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225/page=0001.json.gz",
+          "pagination": {
+            "total": 2,
+            "hasMore": false,
+            "limit": 100,
+            "offset": 0
+          }
+        }
+      ],
+      "rowCount": 2,
+      "compressedBytes": 1604,
+      "schema": {
+        "topKeys": [
+          "success",
+          "data"
+        ],
+        "dataIsArray": false,
+        "nestedKeys": [
+          "odds",
+          "pagination",
+          "dataQuality"
+        ],
+        "pagination": {
+          "total": 2,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        },
+        "count": null,
+        "rowCountExtracted": 2,
+        "firstRowKeys": [
+          "eventId",
+          "sport",
+          "book",
+          "source",
+          "gameDate",
+          "moneyline",
+          "spread",
+          "total"
+        ],
+        "firstRow": {
+          "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+          "sport": "nba",
+          "book": "betmgm",
+          "source": "archive-1",
+          "gameDate": "2023-12-25T00:00:00.000Z",
+          "moneyline": {
+            "home": 155,
+            "away": -190
+          },
+          "spread": {
+            "home": 4.5,
+            "away": -4.5,
+            "homePrice": -105,
+            "awayPrice": -115
+          },
+          "total": {
+            "line": 234.5,
+            "overPrice": -115,
+            "underPrice": -105
+          }
+        }
+      },
+      "research": {
+        "rows": 2,
+        "books": [
+          "betmgm",
+          "consensus"
+        ],
+        "sources": [
+          "archive-1",
+          "archive-2"
+        ],
+        "markets": [
+          "UNKNOWN"
+        ],
+        "sides": [],
+        "withLine": 0,
+        "withPrice": 0,
+        "withTimestamp": 2,
+        "moneylineHomeOrAwayRows": 0,
+        "spreadHomeOrAwayRows": 0,
+        "totalOverOrUnderRows": 0,
+        "sample": [
+          {
+            "market": "UNKNOWN",
+            "book": "betmgm",
+            "source": "archive-1",
+            "side": null,
+            "line": null,
+            "price": null,
+            "closeTimestamp": "2023-12-25T00:00:00.000Z",
+            "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225"
+          },
+          {
+            "market": "UNKNOWN",
+            "book": "consensus",
+            "source": "archive-2",
+            "side": null,
+            "line": null,
+            "price": null,
+            "closeTimestamp": "2023-12-25T00:00:00.000Z",
+            "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225"
+          }
+        ]
+      }
+    },
+    {
+      "game": {
+        "cc": "15907844",
+        "season": "2024",
+        "date": "2024-12-25",
+        "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+        "phase": "regular",
+        "playerPropsState": "POPULATED"
+      },
+      "status": 200,
+      "durationMs": 337,
+      "remainingMonth": "288734",
+      "pages": [
+        {
+          "pageIndex": 1,
+          "status": 200,
+          "durationMs": 337,
+          "rows": 2,
+          "bytes": 1610,
+          "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_closing_odds/game_date=2024-12-25/provider_game_id=nba:Philadelphia_76ers@Boston_Celtics-20241225/page=0001.json.gz",
+          "pagination": {
+            "total": 2,
+            "hasMore": false,
+            "limit": 100,
+            "offset": 0
+          }
+        }
+      ],
+      "rowCount": 2,
+      "compressedBytes": 1610,
+      "schema": {
+        "topKeys": [
+          "success",
+          "data"
+        ],
+        "dataIsArray": false,
+        "nestedKeys": [
+          "odds",
+          "pagination",
+          "dataQuality"
+        ],
+        "pagination": {
+          "total": 2,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        },
+        "count": null,
+        "rowCountExtracted": 2,
+        "firstRowKeys": [
+          "eventId",
+          "sport",
+          "book",
+          "source",
+          "gameDate",
+          "moneyline",
+          "spread",
+          "total"
+        ],
+        "firstRow": {
+          "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+          "sport": "nba",
+          "book": "betmgm",
+          "source": "archive-1",
+          "gameDate": "2024-12-25T00:00:00.000Z",
+          "moneyline": {
+            "home": -450,
+            "away": 340
+          },
+          "spread": {
+            "home": -10.5,
+            "away": 10.5,
+            "homePrice": -105,
+            "awayPrice": -115
+          },
+          "total": {
+            "line": 223.5,
+            "overPrice": -110,
+            "underPrice": -110
+          }
+        }
+      },
+      "research": {
+        "rows": 2,
+        "books": [
+          "betmgm",
+          "consensus"
+        ],
+        "sources": [
+          "archive-1",
+          "archive-2"
+        ],
+        "markets": [
+          "UNKNOWN"
+        ],
+        "sides": [],
+        "withLine": 0,
+        "withPrice": 0,
+        "withTimestamp": 2,
+        "moneylineHomeOrAwayRows": 0,
+        "spreadHomeOrAwayRows": 0,
+        "totalOverOrUnderRows": 0,
+        "sample": [
+          {
+            "market": "UNKNOWN",
+            "book": "betmgm",
+            "source": "archive-1",
+            "side": null,
+            "line": null,
+            "price": null,
+            "closeTimestamp": "2024-12-25T00:00:00.000Z",
+            "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225"
+          },
+          {
+            "market": "UNKNOWN",
+            "book": "consensus",
+            "source": "archive-2",
+            "side": null,
+            "line": null,
+            "price": null,
+            "closeTimestamp": "2024-12-25T00:00:00.000Z",
+            "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225"
+          }
+        ]
+      }
+    },
+    {
+      "game": {
+        "cc": "18446819",
+        "season": "2025",
+        "date": "2025-10-21",
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "phase": "regular",
+        "playerPropsState": "POPULATED"
+      },
+      "status": 200,
+      "durationMs": 357,
+      "remainingMonth": "288733",
+      "pages": [
+        {
+          "pageIndex": 1,
+          "status": 200,
+          "durationMs": 357,
+          "rows": 2,
+          "bytes": 1599,
+          "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_closing_odds/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+          "pagination": {
+            "total": 2,
+            "hasMore": false,
+            "limit": 100,
+            "offset": 0
+          }
+        }
+      ],
+      "rowCount": 2,
+      "compressedBytes": 1599,
+      "schema": {
+        "topKeys": [
+          "success",
+          "data"
+        ],
+        "dataIsArray": false,
+        "nestedKeys": [
+          "odds",
+          "pagination",
+          "dataQuality"
+        ],
+        "pagination": {
+          "total": 2,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        },
+        "count": null,
+        "rowCountExtracted": 2,
+        "firstRowKeys": [
+          "eventId",
+          "sport",
+          "book",
+          "source",
+          "gameDate",
+          "moneyline",
+          "spread",
+          "total"
+        ],
+        "firstRow": {
+          "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+          "sport": "nba",
+          "book": "betmgm",
+          "source": "archive-1",
+          "gameDate": "2025-10-21T00:00:00.000Z",
+          "moneyline": {
+            "home": -250,
+            "away": 200
+          },
+          "spread": {
+            "home": -6.5,
+            "away": 6.5,
+            "homePrice": -110,
+            "awayPrice": -110
+          },
+          "total": {
+            "line": 225.5,
+            "overPrice": -115,
+            "underPrice": -105
+          }
+        }
+      },
+      "research": {
+        "rows": 2,
+        "books": [
+          "betmgm",
+          "consensus"
+        ],
+        "sources": [
+          "archive-1",
+          "archive-2"
+        ],
+        "markets": [
+          "UNKNOWN"
+        ],
+        "sides": [],
+        "withLine": 0,
+        "withPrice": 0,
+        "withTimestamp": 2,
+        "moneylineHomeOrAwayRows": 0,
+        "spreadHomeOrAwayRows": 0,
+        "totalOverOrUnderRows": 0,
+        "sample": [
+          {
+            "market": "UNKNOWN",
+            "book": "betmgm",
+            "source": "archive-1",
+            "side": null,
+            "line": null,
+            "price": null,
+            "closeTimestamp": "2025-10-21T00:00:00.000Z",
+            "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021"
+          },
+          {
+            "market": "UNKNOWN",
+            "book": "consensus",
+            "source": "archive-2",
+            "side": null,
+            "line": null,
+            "price": null,
+            "closeTimestamp": "2025-10-21T00:00:00.000Z",
+            "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021"
+          }
+        ]
+      }
+    }
+  ]
+}

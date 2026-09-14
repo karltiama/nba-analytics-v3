@@ -1,0 +1,278 @@
+{
+  "runId": "owls-2026-09-14-props-probe",
+  "caps": {
+    "maxRequests": 50,
+    "maxRows": 5000,
+    "maxCompressedBytes": 26214400,
+    "maxConcurrency": 1,
+    "maxGames": 4,
+    "existenceLimit": 1,
+    "expandLimit": 25,
+    "maxPropsSnapshotsToProbe": 50000,
+    "bannedGameIds": [
+      "21716138"
+    ]
+  },
+  "budget": {
+    "requests": 16,
+    "rows": 0,
+    "compressedBytes": 15531,
+    "games": 4,
+    "stopReason": null
+  },
+  "clientMetrics": {
+    "requestsAttempted": 16,
+    "requestsSuccessful": 12,
+    "requestsRetried": 0,
+    "status429": 0,
+    "status503": 0,
+    "rowsReceived": 0,
+    "pagesCompleted": 0
+  },
+  "results": [
+    {
+      "game": {
+        "cc": "1038155",
+        "season": "2023",
+        "date": "2024-01-16",
+        "eventId": "nba:Boston Celtics@Toronto Raptors-20240116",
+        "phase": "regular",
+        "playerPropsState": "EMPTY_PROVIDER_HISTORY",
+        "gamesKey": "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2024-01-16/provider_game_id=cc-1038155/page=0001.json.gz",
+        "propsSnapshots": 0
+      },
+      "classification": "SNAPSHOT_DATA_NOT_FOUND",
+      "triedBooks": [
+        "draftkings",
+        "betmgm",
+        "caesars",
+        "espnbet"
+      ],
+      "booksHit": [],
+      "existence": [
+        {
+          "book": "draftkings",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1289,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2024-01-16/provider_game_id=nba:Boston_Celtics@Toronto_Raptors-20240116__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "betmgm",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1290,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2024-01-16/provider_game_id=nba:Boston_Celtics@Toronto_Raptors-20240116__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "caesars",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1292,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2024-01-16/provider_game_id=nba:Boston_Celtics@Toronto_Raptors-20240116__book=caesars__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "espnbet",
+          "rows": 0,
+          "sample": null,
+          "bytes": 0,
+          "key": null,
+          "paginationTotal": null
+        }
+      ],
+      "expand": [],
+      "schema": {
+        "error": "Owls HTTP 400 {\"success\":false,\"error\":\"Invalid book. Valid options: pinnacle, pinnacle_mqtt, ps3838, fanduel, draftkings, betmgm, bet365, caesars, hardrock, 1xbet, kalshi, polymarket, novig, betonline, circa, south_point, westgate, wynn, stations, betr\"}"
+      },
+      "remainingMonth": "288751",
+      "paginationTotal": null,
+      "stop": false
+    },
+    {
+      "game": {
+        "cc": "15907966",
+        "season": "2024",
+        "date": "2025-01-11",
+        "eventId": "nba:Oklahoma City Thunder@New York Knicks-20250111",
+        "phase": "regular",
+        "playerPropsState": "EMPTY_PROVIDER_HISTORY",
+        "gamesKey": "raw/source=owls_insight/league=nba/season=2024/entity=historical_games/game_date=2025-01-11/provider_game_id=cc-15907966/page=0001.json.gz",
+        "propsSnapshots": 0
+      },
+      "classification": "SNAPSHOT_DATA_NOT_FOUND",
+      "triedBooks": [
+        "draftkings",
+        "betmgm",
+        "caesars",
+        "espnbet"
+      ],
+      "booksHit": [],
+      "existence": [
+        {
+          "book": "draftkings",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1300,
+          "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "betmgm",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1297,
+          "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "caesars",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1295,
+          "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=caesars__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "espnbet",
+          "rows": 0,
+          "sample": null,
+          "bytes": 0,
+          "key": null,
+          "paginationTotal": null
+        }
+      ],
+      "expand": [],
+      "schema": {
+        "error": "Owls HTTP 400 {\"success\":false,\"error\":\"Invalid book. Valid options: pinnacle, pinnacle_mqtt, ps3838, fanduel, draftkings, betmgm, bet365, caesars, hardrock, 1xbet, kalshi, polymarket, novig, betonline, circa, south_point, westgate, wynn, stations, betr\"}"
+      },
+      "remainingMonth": "288747",
+      "paginationTotal": null,
+      "stop": false
+    },
+    {
+      "game": {
+        "cc": "18447233",
+        "season": "2025",
+        "date": "2025-12-25",
+        "eventId": "nba:San Antonio Spurs@Oklahoma City Thunder-20251225",
+        "phase": "regular",
+        "playerPropsState": "EMPTY_PROVIDER_HISTORY",
+        "gamesKey": "raw/source=owls_insight/league=nba/season=2025/entity=historical_games/game_date=2025-12-25/provider_game_id=cc-18447233/page=0001.json.gz",
+        "propsSnapshots": 0
+      },
+      "classification": "SNAPSHOT_DATA_NOT_FOUND",
+      "triedBooks": [
+        "draftkings",
+        "betmgm",
+        "caesars",
+        "espnbet"
+      ],
+      "booksHit": [],
+      "existence": [
+        {
+          "book": "draftkings",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1294,
+          "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "betmgm",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1300,
+          "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "caesars",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1296,
+          "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=caesars__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "espnbet",
+          "rows": 0,
+          "sample": null,
+          "bytes": 0,
+          "key": null,
+          "paginationTotal": null
+        }
+      ],
+      "expand": [],
+      "schema": {
+        "error": "Owls HTTP 400 {\"success\":false,\"error\":\"Invalid book. Valid options: pinnacle, pinnacle_mqtt, ps3838, fanduel, draftkings, betmgm, bet365, caesars, hardrock, 1xbet, kalshi, polymarket, novig, betonline, circa, south_point, westgate, wynn, stations, betr\"}"
+      },
+      "remainingMonth": "288743",
+      "paginationTotal": null,
+      "stop": false
+    },
+    {
+      "game": {
+        "cc": "1037995",
+        "season": "2023",
+        "date": "2023-12-25",
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "phase": "regular",
+        "playerPropsState": "POPULATED",
+        "gamesKey": "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2023-12-25/provider_game_id=cc-1037995/page=0001.json.gz",
+        "propsSnapshots": 0
+      },
+      "classification": "SNAPSHOT_DATA_NOT_FOUND",
+      "triedBooks": [
+        "draftkings",
+        "betmgm",
+        "caesars",
+        "espnbet"
+      ],
+      "booksHit": [],
+      "existence": [
+        {
+          "book": "draftkings",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1297,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "betmgm",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1285,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "caesars",
+          "rows": 0,
+          "sample": null,
+          "bytes": 1296,
+          "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=caesars__prop=points__opening=1/page=0001.json.gz",
+          "paginationTotal": 0
+        },
+        {
+          "book": "espnbet",
+          "rows": 0,
+          "sample": null,
+          "bytes": 0,
+          "key": null,
+          "paginationTotal": null
+        }
+      ],
+      "expand": [],
+      "schema": {
+        "error": "Owls HTTP 400 {\"success\":false,\"error\":\"Invalid book. Valid options: pinnacle, pinnacle_mqtt, ps3838, fanduel, draftkings, betmgm, bet365, caesars, hardrock, 1xbet, kalshi, polymarket, novig, betonline, circa, south_point, westgate, wynn, stations, betr\"}"
+      },
+      "remainingMonth": "288739",
+      "paginationTotal": null,
+      "stop": false
+    }
+  ]
+}

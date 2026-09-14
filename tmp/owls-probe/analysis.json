@@ -1,0 +1,542 @@
+{
+  "pages": [
+    {
+      "file": "page=0001.json.gz",
+      "gzipBytes": 3058,
+      "schema": "owls_historical_player_props.v1",
+      "runId": "owls-2026-09-14-probe",
+      "checksum": "d0fe88599a812ba408c93031d2f53bb175fc9d830e9b18dbf286763c80452c60",
+      "checksumVerified": true,
+      "envelopeRowCount": 100,
+      "extractedRows": 100,
+      "exhausted": false,
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/history/player-props",
+        "query": {
+          "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+          "sport": "nba",
+          "limit": 100,
+          "offset": 0
+        }
+      },
+      "status": 200,
+      "durationMs": 942,
+      "payloadKeys": [
+        "success",
+        "data"
+      ],
+      "nestedKeys": [
+        "props",
+        "pagination"
+      ],
+      "pagination": {
+        "total": 302,
+        "limit": 100,
+        "offset": 0,
+        "hasMore": true
+      },
+      "headers": {
+        "remainingMinute": "399",
+        "remainingMonth": "299998",
+        "remainingDay": "unlimited",
+        "resetMinute": "1789405187357",
+        "resetMonth": "2026-09-17T16:50:19.000Z"
+      },
+      "rawPayloadPreserved": true,
+      "requestPreserved": true
+    },
+    {
+      "file": "page=0002.json.gz",
+      "gzipBytes": 3054,
+      "schema": "owls_historical_player_props.v1",
+      "runId": "owls-2026-09-14-probe",
+      "checksum": "8fa68b83db8c9af970690c048bb173a793a46edfe72e04438728aec6947f1d2d",
+      "checksumVerified": true,
+      "envelopeRowCount": 100,
+      "extractedRows": 100,
+      "exhausted": false,
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/history/player-props",
+        "query": {
+          "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+          "sport": "nba",
+          "limit": 100,
+          "offset": 100
+        }
+      },
+      "status": 200,
+      "durationMs": 842,
+      "payloadKeys": [
+        "success",
+        "data"
+      ],
+      "nestedKeys": [
+        "props",
+        "pagination"
+      ],
+      "pagination": {
+        "total": 302,
+        "limit": 100,
+        "offset": 100,
+        "hasMore": true
+      },
+      "headers": {
+        "remainingMinute": "398",
+        "remainingMonth": "299997",
+        "remainingDay": "unlimited",
+        "resetMinute": "1789405187143",
+        "resetMonth": "2026-09-17T16:50:19.000Z"
+      },
+      "rawPayloadPreserved": true,
+      "requestPreserved": true
+    },
+    {
+      "file": "page=0003.json.gz",
+      "gzipBytes": 3071,
+      "schema": "owls_historical_player_props.v1",
+      "runId": "owls-2026-09-14-probe",
+      "checksum": "ac8d406dde91861be60441501647285fe4c760756a0d49b93799e2b1ca435f3d",
+      "checksumVerified": true,
+      "envelopeRowCount": 100,
+      "extractedRows": 100,
+      "exhausted": false,
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/history/player-props",
+        "query": {
+          "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+          "sport": "nba",
+          "limit": 100,
+          "offset": 200
+        }
+      },
+      "status": 200,
+      "durationMs": 541,
+      "payloadKeys": [
+        "success",
+        "data"
+      ],
+      "nestedKeys": [
+        "props",
+        "pagination"
+      ],
+      "pagination": {
+        "total": 302,
+        "limit": 100,
+        "offset": 200,
+        "hasMore": true
+      },
+      "headers": {
+        "remainingMinute": "397",
+        "remainingMonth": "299996",
+        "remainingDay": "unlimited",
+        "resetMinute": "1789405187158",
+        "resetMonth": "2026-09-17T16:50:19.000Z"
+      },
+      "rawPayloadPreserved": true,
+      "requestPreserved": true
+    },
+    {
+      "file": "page=0004.json.gz",
+      "gzipBytes": 1404,
+      "schema": "owls_historical_player_props.v1",
+      "runId": "owls-2026-09-14-probe",
+      "checksum": "460952eb8cbc5300ba8b7d7b0427e8455c914ddd91f4d5a6def9c6004d06554a",
+      "checksumVerified": true,
+      "envelopeRowCount": 2,
+      "extractedRows": 2,
+      "exhausted": true,
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/history/player-props",
+        "query": {
+          "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+          "sport": "nba",
+          "limit": 100,
+          "offset": 300
+        }
+      },
+      "status": 200,
+      "durationMs": 820,
+      "payloadKeys": [
+        "success",
+        "data"
+      ],
+      "nestedKeys": [
+        "props",
+        "pagination"
+      ],
+      "pagination": {
+        "total": 302,
+        "limit": 100,
+        "offset": 300,
+        "hasMore": false
+      },
+      "headers": {
+        "remainingMinute": "396",
+        "remainingMonth": "299995",
+        "remainingDay": "unlimited",
+        "resetMinute": "1789405186871",
+        "resetMonth": "2026-09-17T16:50:19.000Z"
+      },
+      "rawPayloadPreserved": true,
+      "requestPreserved": true
+    }
+  ],
+  "totalRows": 302,
+  "firstRowKeys": [
+    "eventId",
+    "sport",
+    "playerName",
+    "propType",
+    "book",
+    "gameDate",
+    "closing",
+    "opening"
+  ],
+  "fieldPresence": {
+    "eventId": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": "nba:Boston Celtics@Los Angeles Lakers-20231225"
+    },
+    "sport": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": "nba"
+    },
+    "playerName": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": "Al Horford"
+    },
+    "propType": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": "assists"
+    },
+    "book": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": "betmgm"
+    },
+    "gameDate": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": "2023-12-25T00:00:00.000Z"
+    },
+    "closing": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": {
+        "line": 2.5,
+        "overPrice": 105,
+        "underPrice": -139,
+        "americanPrice": null
+      }
+    },
+    "opening": {
+      "present": 302,
+      "nonNull": 302,
+      "sample": {
+        "line": 2.5,
+        "overPrice": 110,
+        "underPrice": -149,
+        "americanPrice": null
+      }
+    }
+  },
+  "books": {
+    "betmgm": 110,
+    "draftkings": 102,
+    "caesars": 90
+  },
+  "propTypes": {
+    "threes": 48,
+    "turnovers": 48,
+    "rebounds": 45,
+    "points": 42,
+    "steals": 42,
+    "blocks": 40,
+    "assists": 37
+  },
+  "sides": {
+    "overPrice": 0,
+    "underPrice": 0,
+    "overOdds": 0,
+    "underOdds": 0,
+    "american": 0,
+    "decimal": 0,
+    "line": 0,
+    "openingLine": 0,
+    "closingLine": 0,
+    "openingOverPrice": 0,
+    "openingUnderPrice": 0,
+    "closingOverPrice": 0,
+    "closingUnderPrice": 0
+  },
+  "coverage": {
+    "PTS": {
+      "status": "SUPPORTED AND PRESENT",
+      "matchingTypes": [
+        "points"
+      ],
+      "counts": {
+        "points": 42
+      }
+    },
+    "REB": {
+      "status": "SUPPORTED AND PRESENT",
+      "matchingTypes": [
+        "rebounds"
+      ],
+      "counts": {
+        "rebounds": 45
+      }
+    },
+    "AST": {
+      "status": "SUPPORTED AND PRESENT",
+      "matchingTypes": [
+        "assists"
+      ],
+      "counts": {
+        "assists": 37
+      }
+    },
+    "3PM": {
+      "status": "SUPPORTED AND PRESENT",
+      "matchingTypes": [
+        "threes"
+      ],
+      "counts": {
+        "threes": 48
+      }
+    },
+    "PRA": {
+      "status": "UNKNOWN until type scan",
+      "matchingTypes": [],
+      "counts": {}
+    },
+    "PA": {
+      "status": "UNKNOWN until type scan",
+      "matchingTypes": [],
+      "counts": {}
+    },
+    "PR": {
+      "status": "UNKNOWN until type scan",
+      "matchingTypes": [],
+      "counts": {}
+    },
+    "RA": {
+      "status": "UNKNOWN until type scan",
+      "matchingTypes": [],
+      "counts": {}
+    }
+  },
+  "uniquePlayerCount": 16,
+  "uniquePlayers": [
+    {
+      "player": "Al Horford",
+      "playerId": null,
+      "team": null,
+      "count": 17
+    },
+    {
+      "player": "Anthony Davis",
+      "playerId": null,
+      "team": null,
+      "count": 21
+    },
+    {
+      "player": "Austin Reaves",
+      "playerId": null,
+      "team": null,
+      "count": 19
+    },
+    {
+      "player": "Cam Reddish",
+      "playerId": null,
+      "team": null,
+      "count": 20
+    },
+    {
+      "player": "D'Angelo Russell",
+      "playerId": null,
+      "team": null,
+      "count": 17
+    },
+    {
+      "player": "Derrick White",
+      "playerId": null,
+      "team": null,
+      "count": 21
+    },
+    {
+      "player": "Jarred Vanderbilt",
+      "playerId": null,
+      "team": null,
+      "count": 19
+    },
+    {
+      "player": "Jaylen Brown",
+      "playerId": null,
+      "team": null,
+      "count": 21
+    },
+    {
+      "player": "Jayson Tatum",
+      "playerId": null,
+      "team": null,
+      "count": 21
+    },
+    {
+      "player": "Jrue Holiday",
+      "playerId": null,
+      "team": null,
+      "count": 21
+    },
+    {
+      "player": "Kristaps Porzingis",
+      "playerId": null,
+      "team": null,
+      "count": 20
+    },
+    {
+      "player": "LeBron James",
+      "playerId": null,
+      "team": null,
+      "count": 21
+    },
+    {
+      "player": "Payton Pritchard",
+      "playerId": null,
+      "team": null,
+      "count": 13
+    },
+    {
+      "player": "Rui Hachimura",
+      "playerId": null,
+      "team": null,
+      "count": 17
+    },
+    {
+      "player": "Sam Hauser",
+      "playerId": null,
+      "team": null,
+      "count": 14
+    },
+    {
+      "player": "Taurean Prince",
+      "playerId": null,
+      "team": null,
+      "count": 20
+    }
+  ],
+  "sampleRows": [
+    {
+      "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+      "sport": "nba",
+      "playerName": "Al Horford",
+      "propType": "assists",
+      "book": "betmgm",
+      "gameDate": "2023-12-25T00:00:00.000Z",
+      "closing": {
+        "line": 2.5,
+        "overPrice": 105,
+        "underPrice": -139,
+        "americanPrice": null
+      },
+      "opening": {
+        "line": 2.5,
+        "overPrice": 110,
+        "underPrice": -149,
+        "americanPrice": null
+      }
+    },
+    {
+      "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+      "sport": "nba",
+      "playerName": "Al Horford",
+      "propType": "assists",
+      "book": "draftkings",
+      "gameDate": "2023-12-25T00:00:00.000Z",
+      "closing": {
+        "line": 2.5,
+        "overPrice": 105,
+        "underPrice": -135,
+        "americanPrice": null
+      },
+      "opening": {
+        "line": 2.5,
+        "overPrice": 114,
+        "underPrice": -145,
+        "americanPrice": null
+      }
+    },
+    {
+      "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+      "sport": "nba",
+      "playerName": "Al Horford",
+      "propType": "blocks",
+      "book": "betmgm",
+      "gameDate": "2023-12-25T00:00:00.000Z",
+      "closing": {
+        "line": 0.5,
+        "overPrice": -149,
+        "underPrice": 110,
+        "americanPrice": null
+      },
+      "opening": {
+        "line": 0.5,
+        "overPrice": -139,
+        "underPrice": 105,
+        "americanPrice": null
+      }
+    }
+  ],
+  "lastPageSample": [
+    {
+      "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+      "sport": "nba",
+      "playerName": "Taurean Prince",
+      "propType": "turnovers",
+      "book": "caesars",
+      "gameDate": "2023-12-25T00:00:00.000Z",
+      "closing": {
+        "line": 0.5,
+        "overPrice": -213,
+        "underPrice": 152,
+        "americanPrice": null
+      },
+      "opening": {
+        "line": 0.5,
+        "overPrice": -192,
+        "underPrice": 139,
+        "americanPrice": null
+      }
+    },
+    {
+      "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+      "sport": "nba",
+      "playerName": "Taurean Prince",
+      "propType": "turnovers",
+      "book": "draftkings",
+      "gameDate": "2023-12-25T00:00:00.000Z",
+      "closing": {
+        "line": 0.5,
+        "overPrice": -196,
+        "underPrice": 150,
+        "americanPrice": null
+      },
+      "opening": {
+        "line": 0.5,
+        "overPrice": -196,
+        "underPrice": 150,
+        "americanPrice": null
+      }
+    }
+  ],
+  "gzipTotalBytes": 10587
+}

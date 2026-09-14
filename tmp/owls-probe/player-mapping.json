@@ -1,0 +1,170 @@
+{
+  "uniquePlayers": 16,
+  "matched": 15,
+  "ambiguous": 0,
+  "unmatched": 1,
+  "unmatchedOrAmbiguous": [
+    {
+      "playerName": "Cam Reddish",
+      "playerId": null,
+      "rows": 20,
+      "status": "UNMATCHED",
+      "reason": "no_matching_court_context_player",
+      "courtContextPlayerId": null
+    }
+  ],
+  "all": [
+    {
+      "playerName": "Al Horford",
+      "playerId": null,
+      "rows": 17,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "219"
+    },
+    {
+      "playerName": "Anthony Davis",
+      "playerId": null,
+      "rows": 21,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "117"
+    },
+    {
+      "playerName": "Austin Reaves",
+      "playerId": null,
+      "rows": 19,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "17553995"
+    },
+    {
+      "playerName": "Cam Reddish",
+      "playerId": null,
+      "rows": 20,
+      "status": "UNMATCHED",
+      "reason": "no_matching_court_context_player",
+      "courtContextPlayerId": null
+    },
+    {
+      "playerName": "D'Angelo Russell",
+      "playerId": null,
+      "rows": 17,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "405"
+    },
+    {
+      "playerName": "Derrick White",
+      "playerId": null,
+      "rows": 21,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "473"
+    },
+    {
+      "playerName": "Jarred Vanderbilt",
+      "playerId": null,
+      "rows": 19,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "457"
+    },
+    {
+      "playerName": "Jaylen Brown",
+      "playerId": null,
+      "rows": 21,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "70"
+    },
+    {
+      "playerName": "Jayson Tatum",
+      "playerId": null,
+      "rows": 21,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "434"
+    },
+    {
+      "playerName": "Jrue Holiday",
+      "playerId": null,
+      "rows": 21,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "214"
+    },
+    {
+      "playerName": "Kristaps Porzingis",
+      "playerId": null,
+      "rows": 20,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "378"
+    },
+    {
+      "playerName": "LeBron James",
+      "playerId": null,
+      "rows": 21,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "237"
+    },
+    {
+      "playerName": "Payton Pritchard",
+      "playerId": null,
+      "rows": 13,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "3547276"
+    },
+    {
+      "playerName": "Rui Hachimura",
+      "playerId": null,
+      "rows": 17,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "666609"
+    },
+    {
+      "playerName": "Sam Hauser",
+      "playerId": null,
+      "rows": 14,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "17896060"
+    },
+    {
+      "playerName": "Taurean Prince",
+      "playerId": null,
+      "rows": 20,
+      "status": "MATCHED",
+      "reason": "normalized_name_unique",
+      "courtContextPlayerId": "383"
+    }
+  ],
+  "normalizedRows": 604,
+  "openingLines": 604,
+  "closingLines": 604,
+  "americanPrices": 604,
+  "byBook": {
+    "betmgm": {
+      "rows": 220,
+      "withOpening": 220,
+      "withClosing": 220,
+      "withPrice": 220
+    },
+    "draftkings": {
+      "rows": 204,
+      "withOpening": 204,
+      "withClosing": 204,
+      "withPrice": 204
+    },
+    "caesars": {
+      "rows": 180,
+      "withOpening": 180,
+      "withClosing": 180,
+      "withPrice": 180
+    }
+  }
+}

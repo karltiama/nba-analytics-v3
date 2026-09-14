@@ -1,0 +1,162 @@
+{
+  "runId": "owls-2026-09-14-public-betting-probe",
+  "budget": {
+    "requests": 3,
+    "rows": 0,
+    "compressedBytes": 4080,
+    "games": 3
+  },
+  "clientMetrics": {
+    "requestsAttempted": 3,
+    "requestsSuccessful": 3,
+    "requestsRetried": 0,
+    "status429": 0,
+    "status503": 0,
+    "rowsReceived": 0,
+    "pagesCompleted": 0
+  },
+  "perGame": {
+    "requests": 1,
+    "rows": 0,
+    "bytes": 1360
+  },
+  "projected3962": {
+    "requests": 3962,
+    "rows": 0,
+    "bytes": 5388320
+  },
+  "results": [
+    {
+      "game": {
+        "cc": "1037995",
+        "season": "2023",
+        "date": "2023-12-25",
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "phase": "regular"
+      },
+      "status": 200,
+      "durationMs": 1203,
+      "remainingMonth": "284776",
+      "rows": 0,
+      "bytes": 1353,
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225/page=0001.json.gz",
+      "pagination": {
+        "total": 1,
+        "hasMore": false,
+        "limit": 100,
+        "offset": 0
+      },
+      "schema": {
+        "topKeys": [
+          "success",
+          "data"
+        ],
+        "dataIsArray": false,
+        "nestedKeys": [
+          "betting",
+          "pagination"
+        ],
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        },
+        "count": null,
+        "rowCountExtracted": 0,
+        "firstRowKeys": [],
+        "firstRow": null,
+        "timestampKeys": [],
+        "researchSample": []
+      }
+    },
+    {
+      "game": {
+        "cc": "15907844",
+        "season": "2024",
+        "date": "2024-12-25",
+        "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+        "phase": "regular"
+      },
+      "status": 200,
+      "durationMs": 530,
+      "remainingMonth": "284775",
+      "rows": 0,
+      "bytes": 1362,
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-12-25/provider_game_id=nba:Philadelphia_76ers@Boston_Celtics-20241225/page=0001.json.gz",
+      "pagination": {
+        "total": 1,
+        "hasMore": false,
+        "limit": 100,
+        "offset": 0
+      },
+      "schema": {
+        "topKeys": [
+          "success",
+          "data"
+        ],
+        "dataIsArray": false,
+        "nestedKeys": [
+          "betting",
+          "pagination"
+        ],
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        },
+        "count": null,
+        "rowCountExtracted": 0,
+        "firstRowKeys": [],
+        "firstRow": null,
+        "timestampKeys": [],
+        "researchSample": []
+      }
+    },
+    {
+      "game": {
+        "cc": "18446819",
+        "season": "2025",
+        "date": "2025-10-21",
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "phase": "regular"
+      },
+      "status": 200,
+      "durationMs": 274,
+      "remainingMonth": "284774",
+      "rows": 0,
+      "bytes": 1365,
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+      "pagination": {
+        "total": 1,
+        "hasMore": false,
+        "limit": 100,
+        "offset": 0
+      },
+      "schema": {
+        "topKeys": [
+          "success",
+          "data"
+        ],
+        "dataIsArray": false,
+        "nestedKeys": [
+          "betting",
+          "pagination"
+        ],
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        },
+        "count": null,
+        "rowCountExtracted": 0,
+        "firstRowKeys": [],
+        "firstRow": null,
+        "timestampKeys": [],
+        "researchSample": []
+      }
+    }
+  ]
+}

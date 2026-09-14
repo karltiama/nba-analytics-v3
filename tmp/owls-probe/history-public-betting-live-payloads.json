@@ -1,0 +1,215 @@
+[
+  {
+    "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225/page=0001.json.gz",
+    "row_count": 0,
+    "request": {
+      "method": "GET",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    "payload": {
+      "success": true,
+      "data": {
+        "betting": [
+          {
+            "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+            "sport": "nba",
+            "homeTeam": "Los Angeles Lakers",
+            "awayTeam": "Boston Celtics",
+            "gameDate": "2023-12-25T00:00:00.000Z",
+            "spread": {
+              "homePct": 0,
+              "awayPct": 0
+            },
+            "total": {
+              "overPct": 0,
+              "underPct": 0
+            }
+          }
+        ],
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        }
+      }
+    },
+    "payloadSketch": {
+      "success": true,
+      "data": {
+        "betting": {
+          "_type": "array",
+          "length": 1,
+          "first": {
+            "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+            "sport": "nba",
+            "homeTeam": "Los Angeles Lakers",
+            "awayTeam": "Boston Celtics",
+            "gameDate": "2023-12-25T00:00:00.000Z",
+            "spread": {
+              "homePct": 0,
+              "awayPct": 0
+            },
+            "total": {
+              "overPct": 0,
+              "underPct": 0
+            }
+          }
+        },
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        }
+      }
+    }
+  },
+  {
+    "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-12-25/provider_game_id=nba:Philadelphia_76ers@Boston_Celtics-20241225/page=0001.json.gz",
+    "row_count": 0,
+    "request": {
+      "method": "GET",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    "payload": {
+      "success": true,
+      "data": {
+        "betting": [
+          {
+            "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+            "sport": "nba",
+            "homeTeam": "Boston Celtics",
+            "awayTeam": "Philadelphia 76ers",
+            "gameDate": "2024-12-25T00:00:00.000Z",
+            "spread": {
+              "homePct": 37,
+              "awayPct": 63
+            },
+            "total": {
+              "overPct": 22,
+              "underPct": 78
+            }
+          }
+        ],
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        }
+      }
+    },
+    "payloadSketch": {
+      "success": true,
+      "data": {
+        "betting": {
+          "_type": "array",
+          "length": 1,
+          "first": {
+            "eventId": "nba:Philadelphia 76ers@Boston Celtics-20241225",
+            "sport": "nba",
+            "homeTeam": "Boston Celtics",
+            "awayTeam": "Philadelphia 76ers",
+            "gameDate": "2024-12-25T00:00:00.000Z",
+            "spread": {
+              "homePct": 37,
+              "awayPct": 63
+            },
+            "total": {
+              "overPct": 22,
+              "underPct": 78
+            }
+          }
+        },
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        }
+      }
+    }
+  },
+  {
+    "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+    "row_count": 0,
+    "request": {
+      "method": "GET",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    "payload": {
+      "success": true,
+      "data": {
+        "betting": [
+          {
+            "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+            "sport": "nba",
+            "homeTeam": "Oklahoma City Thunder",
+            "awayTeam": "Houston Rockets",
+            "gameDate": "2025-10-21T00:00:00.000Z",
+            "spread": {
+              "homePct": 53,
+              "awayPct": 47
+            },
+            "total": {
+              "overPct": 0,
+              "underPct": 0
+            }
+          }
+        ],
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        }
+      }
+    },
+    "payloadSketch": {
+      "success": true,
+      "data": {
+        "betting": {
+          "_type": "array",
+          "length": 1,
+          "first": {
+            "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+            "sport": "nba",
+            "homeTeam": "Oklahoma City Thunder",
+            "awayTeam": "Houston Rockets",
+            "gameDate": "2025-10-21T00:00:00.000Z",
+            "spread": {
+              "homePct": 53,
+              "awayPct": 47
+            },
+            "total": {
+              "overPct": 0,
+              "underPct": 0
+            }
+          }
+        },
+        "pagination": {
+          "total": 1,
+          "limit": 100,
+          "offset": 0,
+          "hasMore": false
+        }
+      }
+    }
+  }
+]
