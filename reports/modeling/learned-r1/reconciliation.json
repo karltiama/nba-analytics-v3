@@ -1,0 +1,49 @@
+{
+  "run_at": "2026-09-15T01:26:35.104Z",
+  "dataset_sha256": "20d90fedd3b6e25047e81acf32d05aafbd470f1827e96916aaf38de0d556e5fa",
+  "rows_path": "reports\\modeling\\learned-r1\\rows.jsonl",
+  "n_written": 83479,
+  "leakage_ab_total": 0,
+  "leakage_cd_total": 0,
+  "cd_prior_includes_target_game": 0,
+  "skipped_not_played": 53094,
+  "skipped_no_ab_prior": 1723,
+  "ab_eligible": {
+    "train": 27653,
+    "validation": 27696,
+    "test": 28130,
+    "excluded": 0
+  },
+  "common_eligible": {
+    "train": 27653,
+    "validation": 27696,
+    "test": 28130,
+    "excluded": 0
+  },
+  "ab_only_not_common": 0,
+  "benchmark_n": {
+    "train": 27653,
+    "validation": 27696,
+    "test": 28130
+  },
+  "delta_vs_benchmark": {
+    "train": 0,
+    "validation": 0,
+    "test": 0
+  },
+  "common_eligible_delta_vs_ab": {
+    "train": 0,
+    "validation": 0,
+    "test": 0
+  },
+  "temporal_validity": {
+    "cutoff_policy": "exclude_target_et_basketball_date",
+    "basketball_date_tz": "America/New_York",
+    "leakage_ab_must_be_zero": true,
+    "leakage_cd_must_be_zero": true,
+    "target_game_not_in_cd_priors": true,
+    "dnp_targets_excluded": 53094,
+    "missing_ab_history_excluded": 1723
+  },
+  "explanation": "A/B eligible counts match the frozen v1 benchmark."
+}

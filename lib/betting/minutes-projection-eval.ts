@@ -360,15 +360,17 @@ export function productOrNull(a: number | null, b: number | null): number | null
   return a * b;
 }
 
+const ET_CALENDAR_DATE = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/New_York',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 export function etCalendarDate(iso: string): string | null {
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return null;
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date(ms));
+  return ET_CALENDAR_DATE.format(new Date(ms));
 }
 
 export function isPostseasonGame(season: string, startTime: string): boolean {

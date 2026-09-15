@@ -104,6 +104,18 @@ variable "postgame_execution_enabled" {
   default     = false
 }
 
+variable "shadow_create" {
+  description = "When true, create shadow Lambdas, IAM, and Errors alarms. Does not enable execution. Default false."
+  type        = bool
+  default     = false
+}
+
+variable "shadow_execution_enabled" {
+  description = "When true with live_ingestion_enabled and a created schedule, the shadow EventBridge rule is ENABLED."
+  type        = bool
+  default     = false
+}
+
 # -----------------------------------------------------------------------------
 # EventBridge schedule (optional)
 # -----------------------------------------------------------------------------

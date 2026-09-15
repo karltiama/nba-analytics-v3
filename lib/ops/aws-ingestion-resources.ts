@@ -90,6 +90,13 @@ export function ingestionAwsResources(
         schedulerSchedules: [env.OPS_STATUS_SYNC_SCHEDULE ?? 'nba-game-status-sync-schedule'],
         optional: true,
       },
+      {
+        id: 'shadow_projection',
+        familyId: 'shadow_projection',
+        functionName: env.OPS_LAMBDA_SHADOW ?? 'shadow-projection',
+        eventBridgeRules: [`${env.OPS_LAMBDA_SHADOW ?? 'shadow-projection'}-schedule`],
+        optional: true,
+      },
     ],
     queues: [
       {

@@ -176,6 +176,38 @@ export class S3Storage {
     return { written: true, reason: 'written' };
   }
 
+  async putBytes(
+    key: string,
+    body: Buffer | Uint8Array,
+    opts?: { overwrite?: boolean; contentType?: string }
+  ): Promise<WriteResult> {
+    if (!opts?.overwrite && (await this.objectExists(key))) {
+      return { written: false, reason: 'exists' };
+    }
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: body,
+        ContentType: opts?.contentType ?? 'application/octet-stream',
+      })
+    );
+    return { written: true, reason: 'written' };
+  }
+
+  async getBytes(key: string): Promise<Uint8Array | null> {
+    try {
+      const out = await this.client.send(
+        new GetObjectCommand({ Bucket: this.bucket, Key: key })
+      );
+      if (!out.Body) return null;
+      return await out.Body.transformToByteArray();
+    } catch (err: unknown) {
+      if (isNotFound(err)) return null;
+      throw err;
+    }
+  }
+
   async *listByPrefix(prefix: string): AsyncIterable<ListedObject> {
     let token: string | undefined;
     do {

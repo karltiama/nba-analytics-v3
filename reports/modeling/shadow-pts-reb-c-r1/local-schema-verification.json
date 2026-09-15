@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-09-15T02:20:45.649Z",
+  "status": "passed",
+  "database": "docker postgres:16-alpine",
+  "steps": [
+    {
+      "name": "base_schema",
+      "ok": true,
+      "detail": "raw + analytics parents created"
+    },
+    {
+      "name": "pre_migration_inspect",
+      "ok": true,
+      "detail": "injury missing=raw.injury_pull_membership,raw.injury_pull_runs.completeness_reason,raw.injury_pull_runs.health_class shadow missing=analytics.prediction_snapshots,analytics.prediction_settlements,analytics.shadow_run_records,analytics.shadow_window_anchors"
+    },
+    {
+      "name": "optional_missing_schema",
+      "ok": true,
+      "detail": "{\"membershipPersisted\":false,\"healthColumnsPersisted\":false,\"schemaEnrichment\":\"unavailable\",\"schemaMode\":\"optional\",\"missing\":[\"raw.injury_pull_membership\",\"raw.injury_pull_runs.completeness_reason\",\"raw.injury_pull_runs.health_class\"]}"
+    },
+    {
+      "name": "required_missing_schema_preflight",
+      "ok": true,
+      "detail": "required mode threw CollectionSchemaPreflightError"
+    },
+    {
+      "name": "savepoint_recovers_aborted_subtransaction",
+      "ok": true,
+      "detail": "ROLLBACK TO SAVEPOINT left transaction usable"
+    },
+    {
+      "name": "apply_migration",
+      "ok": true,
+      "detail": "injury ready=true shadow ready=true"
+    },
+    {
+      "name": "snapshot_unique_retry",
+      "ok": true,
+      "detail": "first=true retry=false"
+    },
+    {
+      "name": "required_after_migration",
+      "ok": true,
+      "detail": "{\"membershipPersisted\":true,\"healthColumnsPersisted\":true,\"schemaEnrichment\":\"available\",\"schemaMode\":\"required\",\"missing\":[]}"
+    },
+    {
+      "name": "shadow_run_record",
+      "ok": true,
+      "detail": "run_id=1"
+    }
+  ]
+}

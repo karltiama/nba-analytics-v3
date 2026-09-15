@@ -59,6 +59,7 @@ export const FEED_SLA_HOURS = {
   game_flow: 36,
   market_movement_capture: 12,
   game_status_sync: 1,
+  shadow_projection: 6,
 } as const;
 
 export type IngestionFamilyId = keyof typeof FEED_SLA_HOURS;
@@ -87,7 +88,7 @@ export const INGESTION_FAMILY_CATALOG: IngestionFamilyCatalogEntry[] = [
     id: 'injuries',
     label: 'Injuries',
     defaultConfig: 'FROZEN',
-    goatRequired: true,
+    goatRequired: false,
     deployedLambda: true,
     freshnessSource: 'analytics.player_injury_status_current.snapshot_at',
     pullRunTable: 'raw.injury_pull_runs',
@@ -190,6 +191,15 @@ export const INGESTION_FAMILY_CATALOG: IngestionFamilyCatalogEntry[] = [
     deployedLambda: false,
     freshnessSource: 'analytics.games season 2026 updated_at + Lambda last invocation',
     pullRunTable: null,
+  },
+  {
+    id: 'shadow_projection',
+    label: 'PTS C / REB C shadow scoring',
+    defaultConfig: 'FROZEN',
+    goatRequired: false,
+    deployedLambda: false,
+    freshnessSource: 'analytics.shadow_run_records.finished_at',
+    pullRunTable: 'analytics.shadow_run_records',
   },
 ];
 

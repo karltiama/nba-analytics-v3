@@ -140,3 +140,32 @@ export function planInjuryIngest(args: {
     completenessReason: completeness.reason,
   };
 }
+
+export type InjuryMembershipRow = {
+  pullRunId: number;
+  playerId: string;
+  inReport: boolean;
+  observedAt: string;
+};
+
+/** Persist who was on the report without treating non-members as healthy. */
+export function planInjuryPullMembership(args: {
+  pullRunId: number;
+  observedAt: string;
+  inReportPlayerIds: Iterable<string>;
+}): InjuryMembershipRow[] {
+  const seen = new Set<string>();
+  const rows: InjuryMembershipRow[] = [];
+  for (const raw of args.inReportPlayerIds) {
+    const playerId = String(raw);
+    if (!playerId || seen.has(playerId)) continue;
+    seen.add(playerId);
+    rows.push({
+      pullRunId: args.pullRunId,
+      playerId,
+      inReport: true,
+      observedAt: args.observedAt,
+    });
+  }
+  return rows;
+}

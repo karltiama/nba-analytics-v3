@@ -29,6 +29,12 @@ export const PROVIDER_CAPABILITY_CATALOG: ProviderCapabilityRow[] = [
     evidence: '13F.3A canary HTTP 401; parked',
   },
   {
+    id: 'v1_player_injuries',
+    label: '/nba/v1/player_injuries',
+    state: 'UNKNOWN',
+    evidence: 'Independent of GOAT /nba/v1/lineups. Live provider probe not run in this slice.',
+  },
+  {
     id: 'lineups',
     label: '/nba/v1/lineups',
     state: 'BLOCKED_BY_SUBSCRIPTION',

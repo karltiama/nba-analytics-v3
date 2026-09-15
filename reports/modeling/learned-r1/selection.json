@@ -1,0 +1,726 @@
+{
+  "seed": 20260914,
+  "loss": "RMSE",
+  "early_stopping_rounds": 40,
+  "n_configs_per_target_and_set": 6,
+  "dataset_sha256": "20d90fedd3b6e25047e81acf32d05aafbd470f1827e96916aaf38de0d556e5fa",
+  "feature_spec_version": "player-projection-learned-features-r1",
+  "catboost_version": "1.2.8",
+  "pandas_version": "2.2.3",
+  "numpy_version": "2.2.6",
+  "note": "2024 validation only for early stopping and selection. 2025 was not used to pick configs.",
+  "models": {
+    "c_points": {
+      "selected": {
+        "config_id": 1,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.08,
+          "l2_leaf_reg": 3.0,
+          "iterations": 500
+        },
+        "val_mae": 4.603918266110675,
+        "best_iteration": 171,
+        "tree_count": 172,
+        "model_path": "reports/modeling/learned-r1/artifacts/c_points.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 4.609892704467678,
+          "best_iteration": 220,
+          "tree_count": 221
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 4.603918266110675,
+          "best_iteration": 171,
+          "tree_count": 172
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 4.621559673071275,
+          "best_iteration": 64,
+          "tree_count": 65
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 4.608170145957412,
+          "best_iteration": 320,
+          "tree_count": 321
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 4.608805920278148,
+          "best_iteration": 129,
+          "tree_count": 130
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 4.605763273835326,
+          "best_iteration": 200,
+          "tree_count": 201
+        }
+      ]
+    },
+    "d_points": {
+      "selected": {
+        "config_id": 3,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 3.0,
+          "iterations": 800
+        },
+        "val_mae": 4.596856650586215,
+        "best_iteration": 387,
+        "tree_count": 388,
+        "model_path": "reports/modeling/learned-r1/artifacts/d_points.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 4.601130758939187,
+          "best_iteration": 233,
+          "tree_count": 234
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 4.603434418201273,
+          "best_iteration": 131,
+          "tree_count": 132
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 4.6056271427711355,
+          "best_iteration": 103,
+          "tree_count": 104
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 4.596856650586215,
+          "best_iteration": 387,
+          "tree_count": 388
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 4.601558809600908,
+          "best_iteration": 114,
+          "tree_count": 115
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 4.605182307958546,
+          "best_iteration": 130,
+          "tree_count": 131
+        }
+      ]
+    },
+    "c_rebounds": {
+      "selected": {
+        "config_id": 3,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 3.0,
+          "iterations": 800
+        },
+        "val_mae": 1.9215763633856964,
+        "best_iteration": 294,
+        "tree_count": 295,
+        "model_path": "reports/modeling/learned-r1/artifacts/c_rebounds.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9248205134326284,
+          "best_iteration": 217,
+          "tree_count": 218
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9237972081965162,
+          "best_iteration": 83,
+          "tree_count": 84
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9277083277874005,
+          "best_iteration": 82,
+          "tree_count": 83
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 1.9215763633856964,
+          "best_iteration": 294,
+          "tree_count": 295
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9231536710891692,
+          "best_iteration": 93,
+          "tree_count": 94
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9225827618266087,
+          "best_iteration": 136,
+          "tree_count": 137
+        }
+      ]
+    },
+    "d_rebounds": {
+      "selected": {
+        "config_id": 3,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 3.0,
+          "iterations": 800
+        },
+        "val_mae": 1.9193697446826565,
+        "best_iteration": 427,
+        "tree_count": 428,
+        "model_path": "reports/modeling/learned-r1/artifacts/d_rebounds.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.924229014224811,
+          "best_iteration": 143,
+          "tree_count": 144
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9227342278728319,
+          "best_iteration": 141,
+          "tree_count": 142
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9223590931738046,
+          "best_iteration": 129,
+          "tree_count": 130
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 1.9193697446826565,
+          "best_iteration": 427,
+          "tree_count": 428
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9230571295659837,
+          "best_iteration": 124,
+          "tree_count": 125
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 1.9239428563545822,
+          "best_iteration": 139,
+          "tree_count": 140
+        }
+      ]
+    },
+    "c_assists": {
+      "selected": {
+        "config_id": 3,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 3.0,
+          "iterations": 800
+        },
+        "val_mae": 1.34189906404246,
+        "best_iteration": 363,
+        "tree_count": 364,
+        "model_path": "reports/modeling/learned-r1/artifacts/c_assists.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3430324317853353,
+          "best_iteration": 182,
+          "tree_count": 183
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3436335422955985,
+          "best_iteration": 123,
+          "tree_count": 124
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3439229039615335,
+          "best_iteration": 119,
+          "tree_count": 120
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 1.34189906404246,
+          "best_iteration": 363,
+          "tree_count": 364
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3430010909147676,
+          "best_iteration": 143,
+          "tree_count": 144
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3443230672478814,
+          "best_iteration": 149,
+          "tree_count": 150
+        }
+      ]
+    },
+    "d_assists": {
+      "selected": {
+        "config_id": 3,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 3.0,
+          "iterations": 800
+        },
+        "val_mae": 1.3385590800344347,
+        "best_iteration": 403,
+        "tree_count": 404,
+        "model_path": "reports/modeling/learned-r1/artifacts/d_assists.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3407715073843214,
+          "best_iteration": 212,
+          "tree_count": 213
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3395264835953478,
+          "best_iteration": 154,
+          "tree_count": 155
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3395710057467203,
+          "best_iteration": 124,
+          "tree_count": 125
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 1.3385590800344347,
+          "best_iteration": 403,
+          "tree_count": 404
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3402472271823267,
+          "best_iteration": 121,
+          "tree_count": 122
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 1.3396384977873506,
+          "best_iteration": 136,
+          "tree_count": 137
+        }
+      ]
+    },
+    "c_threes": {
+      "selected": {
+        "config_id": 1,
+        "config": {
+          "depth": 6,
+          "learning_rate": 0.08,
+          "l2_leaf_reg": 3.0,
+          "iterations": 500
+        },
+        "val_mae": 0.8921187529352762,
+        "best_iteration": 92,
+        "tree_count": 93,
+        "model_path": "reports/modeling/learned-r1/artifacts/c_threes.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 0.893187802350331,
+          "best_iteration": 80,
+          "tree_count": 81
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8921187529352762,
+          "best_iteration": 92,
+          "tree_count": 93
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8957809963002404,
+          "best_iteration": 54,
+          "tree_count": 55
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 0.8946301515399334,
+          "best_iteration": 175,
+          "tree_count": 176
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8925868993676581,
+          "best_iteration": 84,
+          "tree_count": 85
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 0.892348958622676,
+          "best_iteration": 92,
+          "tree_count": 93
+        }
+      ]
+    },
+    "d_threes": {
+      "selected": {
+        "config_id": 0,
+        "config": {
+          "depth": 4,
+          "learning_rate": 0.08,
+          "l2_leaf_reg": 3.0,
+          "iterations": 500
+        },
+        "val_mae": 0.8929112424786223,
+        "best_iteration": 138,
+        "tree_count": 139,
+        "model_path": "reports/modeling/learned-r1/artifacts/d_threes.cbm"
+      },
+      "trials": [
+        {
+          "config_id": 0,
+          "config": {
+            "depth": 4,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8929112424786223,
+          "best_iteration": 138,
+          "tree_count": 139
+        },
+        {
+          "config_id": 1,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8952123820468794,
+          "best_iteration": 100,
+          "tree_count": 101
+        },
+        {
+          "config_id": 2,
+          "config": {
+            "depth": 8,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 3.0,
+            "iterations": 500
+          },
+          "val_mae": 0.896052928775042,
+          "best_iteration": 71,
+          "tree_count": 72
+        },
+        {
+          "config_id": 3,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 3.0,
+            "iterations": 800
+          },
+          "val_mae": 0.8941810609984081,
+          "best_iteration": 243,
+          "tree_count": 244
+        },
+        {
+          "config_id": 4,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 1.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8954076874400256,
+          "best_iteration": 80,
+          "tree_count": 81
+        },
+        {
+          "config_id": 5,
+          "config": {
+            "depth": 6,
+            "learning_rate": 0.08,
+            "l2_leaf_reg": 10.0,
+            "iterations": 500
+          },
+          "val_mae": 0.8944841414149266,
+          "best_iteration": 103,
+          "tree_count": 104
+        }
+      ]
+    }
+  }
+}

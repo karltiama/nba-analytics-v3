@@ -41,6 +41,7 @@ describe('ingestion schedule fail-closed (frozen configuration)', () => {
       'boxscore_execution_enabled',
       'game_status_sync_execution_enabled',
       'postgame_execution_enabled',
+      'shadow_execution_enabled',
     ]) {
       const block = src.match(new RegExp(`variable "${name}"[\\s\\S]*?default\\s*=\\s*(true|false)`));
       expect(block?.[1], name).toBe('false');
@@ -69,6 +70,9 @@ describe('ingestion schedule fail-closed (frozen configuration)', () => {
     );
     expect(src).toMatch(
       /postgame\s*=\s*var\.live_ingestion_enabled\s*&&\s*var\.postgame_execution_enabled/
+    );
+    expect(src).toMatch(
+      /shadow\s*=\s*var\.live_ingestion_enabled\s*&&\s*var\.shadow_execution_enabled/
     );
     expect(src).not.toMatch(
       /ingestion_schedule_state\s*=\s*var\.live_ingestion_enabled\s*\?\s*"ENABLED"\s*:\s*"DISABLED"/

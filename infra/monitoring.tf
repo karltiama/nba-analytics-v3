@@ -102,6 +102,25 @@ resource "aws_cloudwatch_metric_alarm" "boxscore_scraper_errors" {
   }
 }
 
+# Follows shadow creation. Quiet while unused (notBreaching). No SNS destination configured.
+resource "aws_cloudwatch_metric_alarm" "shadow_projection_errors" {
+  count               = var.shadow_create ? 1 : 0
+  alarm_name          = "nba-shadow-projection-errors"
+  alarm_description   = "Visibility-only Errors alarm for shadow-projection. No notification destination is attached."
+  namespace           = "AWS/Lambda"
+  metric_name         = "Errors"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    FunctionName = aws_lambda_function.shadow_projection[0].function_name
+  }
+}
+
 # Follows status-sync creation. Quiet while frozen (notBreaching).
 resource "aws_cloudwatch_metric_alarm" "game_status_sync_errors" {
   count               = var.game_status_sync_create ? 1 : 0

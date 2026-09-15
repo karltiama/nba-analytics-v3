@@ -16,12 +16,15 @@ player_props_execution_enabled = false
 boxscore_execution_enabled = false
 game_status_sync_execution_enabled = false
 postgame_execution_enabled = false
+shadow_execution_enabled = false
 
 # CODE_ONLY family creation. Independent of live_ingestion_enabled.
 # Frozen baseline: keep false. Authorized status-sync deploy: game_status_sync_create = true
 # while live_ingestion_enabled remains false (Lambda exists, no execution).
 game_status_sync_create = false
 postgame_create = false
+shadow_create = false
+shadow_enable_schedule = false
 
 aws_region          = "us-east-1"
 lambda_function_name = "nightly-bdl-updater"
@@ -109,6 +112,7 @@ injuries_lambda_env = {
   DATA_MODE           = "replay"
   OFFSEASON_MODE      = "1"
   CRON_DRY_RUN        = "1"
+  # COLLECTION_SCHEMA_MODE = "optional" until MIGRATION_context_collection_snapshots.sql is applied, then "required"
 }
 
 # -----------------------------------------------------------------------------
@@ -182,4 +186,15 @@ boxscore_lambda_env = {
 # game_status_sync_schedule_expression = "rate(15 minutes)"
 # Status-sync DATA_MODE/OFFSEASON/CRON_DRY_RUN are family-gated in HCL last-merge.
 # Do not put DATA_MODE=live_api in nightly/odds/injuries/props/boxscore env maps.
+
+# Shadow CODE_ONLY (still disabled). Do not combine with a global thaw of odds/props.
+# shadow_create = true
+# shadow_enable_schedule = true
+# live_ingestion_enabled = true
+# shadow_execution_enabled = true
+# Nightly is required for box freshness + settlement; injuries independent of GOAT:
+# nightly_execution_enabled = true
+# injuries_execution_enabled = true
+# Keep odds_execution_enabled / player_props_execution_enabled / boxscore_execution_enabled / postgame_execution_enabled false
+# unless those families are intentionally activated.
 

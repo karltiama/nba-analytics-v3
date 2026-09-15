@@ -13,15 +13,18 @@ describe('13I.2 Terraform apply boundaries', () => {
     const status = read('infra/game-status-sync.tf');
     const postgame = read('infra/postgame.tf');
     const worker = read('infra/postgame-worker.tf');
+    const shadow = read('infra/shadow-projection.tf');
     expect(status).toMatch(/count\s*=\s*var\.game_status_sync_create \? 1 : 0/);
     expect(postgame).toMatch(/count\s*=\s*var\.postgame_create \? 1 : 0/);
     expect(worker).toMatch(/count\s*=\s*var\.postgame_create \? 1 : 0/);
+    expect(shadow).toMatch(/count\s*=\s*var\.shadow_create \? 1 : 0/);
     expect(status).not.toMatch(/count\s*=\s*var\.live_ingestion_enabled/);
     expect(postgame).not.toMatch(/count\s*=\s*var\.live_ingestion_enabled/);
+    expect(shadow).not.toMatch(/count\s*=\s*var\.live_ingestion_enabled/);
   });
 
   it('does not ignore Lambda source_code_hash', () => {
-    const infra = ['infra/lambda.tf', 'infra/game-status-sync.tf', 'infra/postgame-worker.tf']
+    const infra = ['infra/lambda.tf', 'infra/game-status-sync.tf', 'infra/postgame-worker.tf', 'infra/shadow-projection.tf']
       .map(read)
       .join('\n');
     expect(infra).not.toMatch(/ignore_changes\s*=\s*\[[^\]]*source_code_hash/);

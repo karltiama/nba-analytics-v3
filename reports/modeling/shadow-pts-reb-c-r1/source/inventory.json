@@ -1,0 +1,246 @@
+{
+  "created_at": "2026-09-15T02:22:18.101Z",
+  "git_head_at_archive": "43af63fac6a67775768498a68b4cb577d17230c0",
+  "working_tree_dirty": true,
+  "archive": "shadow-source-r1.1.txt",
+  "archive_sha256": "aa33738837e6c175191997bcdfd06b42e42d79a65ea6f81c9570ce7da590855a",
+  "excluded": [
+    ".env",
+    "infra/terraform.tfvars",
+    "reports/modeling/learned-r1/rows.jsonl",
+    "reports/modeling/learned-r1/predictions.jsonl",
+    "*.cbm"
+  ],
+  "files": [
+    {
+      "path": "lib/betting/player-projection-learned-features.ts",
+      "sha256": "f2f0e4a956b44feaf18061961b131bbb7ee488e57360cd609010e2553942ea72",
+      "bytes": 26785
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-protocol.ts",
+      "sha256": "0aad3d1ee5d8a593d81e64188456ed16c5e9d56d4d887f0f4ee031409a11f5c8",
+      "bytes": 3661
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-scoring.ts",
+      "sha256": "9747802b3a06173b649c7fe918c9b7b1a3e88b61cfbb5726128fa8444e3bf777",
+      "bytes": 14912
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-timing.ts",
+      "sha256": "5cde54f576de0b387bc9297b99603c46982566b1ae510685a777f4173d6f2a8b",
+      "bytes": 3753
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-store.ts",
+      "sha256": "ef5be9da65f841d8d6c33dfec4b55a6823fbcf7145e84432c8392599103162a2",
+      "bytes": 16917
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-worker.ts",
+      "sha256": "554b7cbc9a69fe07945892fca0b18f8886b5aba6b76bb2f42ce1f5448ec28674",
+      "bytes": 15442
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-artifacts.ts",
+      "sha256": "5bb1f934865aa357fe1b422b9c5126cbcee9e6e4997edb72882913704ab9030a",
+      "bytes": 2420
+    },
+    {
+      "path": "lib/betting/player-projection-shadow-health.ts",
+      "sha256": "9fd6753c664655d11e4a6da75b71774ab6c815f6437f178dd77da650882b1a17",
+      "bytes": 4666
+    },
+    {
+      "path": "lib/betting/minutes-projection-eval.ts",
+      "sha256": "edcf8e3392c4469325d2bb082331580e03b395fef1695ea2bd133bd2b95277c4",
+      "bytes": 19442
+    },
+    {
+      "path": "lib/context/collection-asof.ts",
+      "sha256": "dac368426886037572add4469fc7a34ce28103ec532b2661d5f6804b3b473386",
+      "bytes": 10179
+    },
+    {
+      "path": "lib/db/schema-capability.ts",
+      "sha256": "b28768ae502a4ddf7566ecd4a746d3fc604082128b7285ff4516f5288b8225d0",
+      "bytes": 4943
+    },
+    {
+      "path": "lib/injuries/collector-persist.ts",
+      "sha256": "3c45aade32dd50dcbc134fa3c3c01d77eeb77413daa1368e0dbb01697e829e58",
+      "bytes": 5887
+    },
+    {
+      "path": "lib/injuries/ingest-plan.ts",
+      "sha256": "0e9c2951079f211791f1c25de17b68bf1ce2eaf38a7baacda39fdbbcad139009",
+      "bytes": 4971
+    },
+    {
+      "path": "lib/postgame/starters-stage.ts",
+      "sha256": "c8c1c66d0b78a81c8f05b74dcb5643c6a4742dc3ebe0f7adabb5c1506ed59f45",
+      "bytes": 4440
+    },
+    {
+      "path": "lib/aws/s3.ts",
+      "sha256": "6bae23d5aafd620446e2c830ce9b15730066d22c70a532db957ed2ed97d0f30f",
+      "bytes": 7122
+    },
+    {
+      "path": "lib/ops/ingestion-observability.ts",
+      "sha256": "4bfb7188fb50298acd4b4b75cc9b3af47c003c6521638a4f83f53abbd6433bcc",
+      "bytes": 21024
+    },
+    {
+      "path": "lib/ops/ingestion-cadence.ts",
+      "sha256": "43a27161291a77f47f9e4ef6bb7366b9ffbf4ec0c52a69aaaeac3ebb277973c8",
+      "bytes": 2245
+    },
+    {
+      "path": "lib/ops/platform-health.ts",
+      "sha256": "75201a2ffd354a83d9125a04cbc8db595a72695947bd6cbf7d15f2ebd34dae7c",
+      "bytes": 35291
+    },
+    {
+      "path": "lib/ops/provider-capability.ts",
+      "sha256": "5bd3d1d4449dd2286f2c05994f2e76089b7d72a9ff2d18d3f62829ef0efbd254",
+      "bytes": 2017
+    },
+    {
+      "path": "lib/ops/aws-ingestion-resources.ts",
+      "sha256": "51587d81c9fbc6b0cd9f1acc0f1dfc22433d292ebcc8b4191763ba87523ae71b",
+      "bytes": 3726
+    },
+    {
+      "path": "lambda/injuries-snapshot/index.ts",
+      "sha256": "3a29d7deddc6d25de58e4d844f328619d0d532e404909bca65b96bf1747101ba",
+      "bytes": 20158
+    },
+    {
+      "path": "lambda/injuries-snapshot/ingest-plan.ts",
+      "sha256": "de42dd375f34922f01bb58e5729f284cc63b241027a51392a5ba8556f26376ab",
+      "bytes": 4744
+    },
+    {
+      "path": "lambda/injuries-snapshot/collector-persist.ts",
+      "sha256": "6ea727548cc94e6960e58119d45bfb9e7c94992b36272a8d3cb5287dfe6b29ec",
+      "bytes": 5643
+    },
+    {
+      "path": "lambda/injuries-snapshot/schema-capability.ts",
+      "sha256": "0142f74a81a96a14a82302aeb7d3ce2fcfbc2b32532a962d7d6bcb074ffa29c0",
+      "bytes": 3485
+    },
+    {
+      "path": "lambda/shadow-projection/index.ts",
+      "sha256": "a703da77ad41b62b3b88288576a02dbfd389b161ae8e2cbd685541b73914fea9",
+      "bytes": 5884
+    },
+    {
+      "path": "lambda/shadow-projection-scorer/handler.py",
+      "sha256": "13e18d01ee78f906b33ae819462d2874cf90f82d78b80fed8707b8c09f8dbf5a",
+      "bytes": 2405
+    },
+    {
+      "path": "lambda/shadow-projection-scorer/requirements.txt",
+      "sha256": "b168486d5a8563f6f7810223c196fc0b049395265a1efa74b103bef61c0c10d7",
+      "bytes": 46
+    },
+    {
+      "path": "scripts/export-learned-projection-rows.ts",
+      "sha256": "0f93e84211494ba9e6921c91deca268ce5b3728533629e64225abff03305137e",
+      "bytes": 15673
+    },
+    {
+      "path": "scripts/evaluate-learned-projection.ts",
+      "sha256": "72c9881d206e53f61654350df43dde8c5fb9ac5ab04a9048bc9dde06d9e8cb3b",
+      "bytes": 14417
+    },
+    {
+      "path": "scripts/modeling/train_catboost_projection.py",
+      "sha256": "3ecc8399752ce52370f40272a5d8a229f48345b8e0c3b179f671b72417a547a2",
+      "bytes": 7290
+    },
+    {
+      "path": "scripts/modeling/score_catboost_shadow.py",
+      "sha256": "b365f4b572359248f7e9dd6e44a93a0f09ca74834e4afda119ecd6829673293b",
+      "bytes": 2831
+    },
+    {
+      "path": "scripts/modeling/freeze-learned-shadow-bundle.ts",
+      "sha256": "59f78dbb675d68af4028dc3d34b6d893a423291b46a5e3d6cd5c8b7b7a4ea5c2",
+      "bytes": 6938
+    },
+    {
+      "path": "scripts/modeling/verify-learned-shadow-bundle.ts",
+      "sha256": "40a0bcb027c4d06187e565719d66dae57036e4030228a29e8dce2ac182e88894",
+      "bytes": 3356
+    },
+    {
+      "path": "scripts/modeling/upload-learned-shadow-bundle.ts",
+      "sha256": "1ad7ec2833860bcd4dd8d7bdc4772970f5cebc3b383701ba733d59c0b16a4313",
+      "bytes": 3763
+    },
+    {
+      "path": "scripts/modeling/archive-shadow-source.ts",
+      "sha256": "eca37e970d571d1dc0b42ac5cfde0d75e7e24fdea63c4ec5b8b60eb2eae6b730",
+      "bytes": 4270
+    },
+    {
+      "path": "scripts/modeling/verify-shadow-schema-local.ts",
+      "sha256": "aaa312abf0de784245c566ff5dbed24e6c0f5c451351358712712be2a6cebe48",
+      "bytes": 9741
+    },
+    {
+      "path": "scripts/injuries/validate-asof-replay-2026.ts",
+      "sha256": "f6fb0b3af611adcde9fb7946b339d92d5216725ba89f7f6b07989e1c11ed4a35",
+      "bytes": 4280
+    },
+    {
+      "path": "db/schemas/MIGRATION_context_collection_snapshots.sql",
+      "sha256": "948d1e1b1e605f1af9a02e78fea4991c562430c5f9ff63fc403f0908a13edd97",
+      "bytes": 9528
+    },
+    {
+      "path": "infra/shadow-projection.tf",
+      "sha256": "4315bce01201f349f6bebeaf743ff2859ce68ffa883bb9c8d1ac783d82cb6b46",
+      "bytes": 8921
+    },
+    {
+      "path": "infra/lambda.tf",
+      "sha256": "6287628772ff7197e481c77aa9a898031fc5ae52a7a671ff93cbb799eee167e6",
+      "bytes": 18238
+    },
+    {
+      "path": "infra/variables.tf",
+      "sha256": "2f8bdd19809a42b090361a6f19da1ca655bfc8dd7f9e5f69a7d813a9a1587890",
+      "bytes": 13928
+    },
+    {
+      "path": "infra/monitoring.tf",
+      "sha256": "bc535b480a4d0e7eb1b23dc613126db18ffb685a49dba31a87927bce0142d1e8",
+      "bytes": 7852
+    },
+    {
+      "path": "infra/terraform.tfvars.example",
+      "sha256": "bbe67a9abc92ad6c63f4a994b4dfd21de80874f2972993d2b1849cec067bc20c",
+      "bytes": 9077
+    },
+    {
+      "path": "reports/modeling/shadow-pts-reb-c-r1/player-projection-shadow-protocol-r1.md",
+      "sha256": "cfaaccd4de5c84eb4dbcb6d5585ebe843c5264014a5c111a978a251efb3dbdae",
+      "bytes": 4295
+    },
+    {
+      "path": "reports/modeling/shadow-pts-reb-c-r1/deployment-package-r1.1.md",
+      "sha256": "2cb31b1bfaaa875e71851ea623f6af7726059a4daf8ba29393529363daf1080b",
+      "bytes": 8307
+    },
+    {
+      "path": "package.json",
+      "sha256": "ca6bd17c297bc258aab61d1efde2f5cf66595c344b799f9b8632f493f7dcc1c5",
+      "bytes": 8264
+    }
+  ]
+}

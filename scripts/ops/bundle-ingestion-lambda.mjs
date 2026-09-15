@@ -46,6 +46,10 @@ export const INGESTION_LAMBDA_BUNDLES = {
     dir: 'lambda/boxscore-scraper',
     entries: { 'dist/index.js': 'index.ts' },
   },
+  'shadow-projection': {
+    dir: 'lambda/shadow-projection',
+    entries: { 'dist/index.js': 'index.ts' },
+  },
 };
 
 async function resolveEsbuild() {

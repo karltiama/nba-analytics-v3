@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { REMOVED_FROM_REPORT_STATUS } from '@/lib/injuries/leave-report';
-import { injuryTupleChanged, planInjuryIngest } from '@/lib/injuries/ingest-plan';
+import { injuryTupleChanged, planInjuryIngest, planInjuryPullMembership } from '@/lib/injuries/ingest-plan';
 import type { InjuryFieldSnapshot, InjuryPullRow } from '@/lib/injuries/ingest-plan';
 
 const observedAt = '2026-05-06T18:00:00.000Z';
@@ -197,5 +197,18 @@ describe('injury ingest plan', () => {
         { teamId: '1', status: 'Out', description: 'x', returnDateRaw: null }
       )
     ).toBe(false);
+  });
+
+  it('membership lists in-report players only and does not invent healthy absences', () => {
+    const rows = planInjuryPullMembership({
+      pullRunId: 12,
+      observedAt,
+      inReportPlayerIds: ['p1', 'p1', 'p2'],
+    });
+    expect(rows).toEqual([
+      { pullRunId: 12, playerId: 'p1', inReport: true, observedAt },
+      { pullRunId: 12, playerId: 'p2', inReport: true, observedAt },
+    ]);
+    expect(rows.every((r) => r.inReport)).toBe(true);
   });
 });

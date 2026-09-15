@@ -1,0 +1,5 @@
+# Isolated modeling dependencies for the learned projection research experiment.
+# Do not add these to the Next.js application.
+catboost==1.2.8
+numpy==2.2.6
+pandas==2.2.3

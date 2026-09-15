@@ -32,6 +32,8 @@ import { Pool } from 'pg';
 import { z } from 'zod';
 import { REMOVED_FROM_REPORT_STATUS } from './leave-report';
 import { planInjuryIngest, type InjuryFieldSnapshot, type InjuryPullRow } from './ingest-plan';
+import { persistInjuryCollectorExtras, planInjuryCollectorExtras } from './collector-persist';
+import { CollectionSchemaPreflightError } from './schema-capability';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import {
   IDENTITY_BRIDGES_SQL,
@@ -152,6 +154,26 @@ async function createPullRun(): Promise<number> {
   return result.rows[0].pull_run_id;
 }
 
+async function persistCollectorExtras(
+  extras: ReturnType<typeof planInjuryCollectorExtras>
+): Promise<{
+  membershipPersisted: boolean;
+  healthColumnsPersisted: boolean;
+  schemaEnrichment: 'available' | 'unavailable';
+}> {
+  const client = await pool.connect();
+  try {
+    const result = await persistInjuryCollectorExtras(client, extras);
+    return {
+      membershipPersisted: result.membershipPersisted,
+      healthColumnsPersisted: result.healthColumnsPersisted,
+      schemaEnrichment: result.schemaEnrichment,
+    };
+  } finally {
+    client.release();
+  }
+}
+
 async function completePullRun(
   pullRunId: number,
   rowsReturned: number,
@@ -200,7 +222,7 @@ async function insertRawSnapshot(
 async function transformToAnalytics(
   pullRunId: number,
   opts: { rowsStored: number; rowsReturned: number }
-): Promise<{ current: number; history: number; removed: number; massClearBlocked: boolean; completenessReason: string }> {
+) {
   const teamMapRes = await pool.query(
     `SELECT r.id as raw_id, t.team_id
      FROM raw.teams r
@@ -339,6 +361,17 @@ async function transformToAnalytics(
     );
   }
 
+  const extras = planInjuryCollectorExtras({
+    pullRunId,
+    observedAt,
+    pullStatus: 'success',
+    completed: true,
+    rowsStored: opts.rowsStored,
+    rowsReturned: opts.rowsReturned,
+    previousCompleteRowCount,
+    inReportPlayerIds: rawRows.rows.map((row) => String(row.provider_player_id)),
+  });
+
   let historyCount = 0;
   for (const insert of plan.historyInserts) {
     await pool.query(
@@ -402,6 +435,9 @@ async function transformToAnalytics(
     removed: removedCount,
     massClearBlocked: plan.massClearBlocked,
     completenessReason: plan.completenessReason,
+    collectorHealthClass: extras.healthClass,
+    membershipRows: extras.membership.length,
+    collectorExtras: extras,
   };
 }
 
@@ -431,52 +467,110 @@ export const handler = async () => {
       };
     }
 
-    const pullRunId = await createPullRun();
-    console.log('Created pull run:', pullRunId);
+    let pullRunId: number | null = null;
+    try {
+      pullRunId = await createPullRun();
+      console.log('Created pull run:', pullRunId);
 
-    const rows = await fetchAllInjuries();
-    console.log('Fetched', rows.length, 'injury rows from BDL');
+      const rows = await fetchAllInjuries();
+      console.log('Fetched', rows.length, 'injury rows from BDL');
 
-    let stored = 0;
-    for (const row of rows) {
-      try {
-        await insertRawSnapshot(pullRunId, row);
-        stored++;
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        console.error('Error storing snapshot for player', row.player?.id, msg);
+      let stored = 0;
+      for (const row of rows) {
+        try {
+          await insertRawSnapshot(pullRunId, row);
+          stored++;
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error('Error storing snapshot for player', row.player?.id, msg);
+        }
       }
-    }
-    console.log('Stored', stored, '/', rows.length, 'raw snapshots');
+      console.log('Stored', stored, '/', rows.length, 'raw snapshots');
 
-    const transformResult = await transformToAnalytics(pullRunId, {
-      rowsStored: stored,
-      rowsReturned: rows.length,
-    });
-    console.log(
-      'Transform — current:',
-      transformResult.current,
-      'history:',
-      transformResult.history,
-      'removed:',
-      transformResult.removed
-    );
-
-    await completePullRun(pullRunId, rows.length, stored, 'success', {
-      transform: transformResult,
-    });
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        pullRunId,
-        rowsFetched: rows.length,
+      const transformResult = await transformToAnalytics(pullRunId, {
         rowsStored: stored,
-        transform: transformResult,
-        timestamp: new Date().toISOString(),
-      }),
-    };
+        rowsReturned: rows.length,
+      });
+      console.log(
+        'Transform — current:',
+        transformResult.current,
+        'history:',
+        transformResult.history,
+        'removed:',
+        transformResult.removed
+      );
+
+      await completePullRun(pullRunId, rows.length, stored, 'success', {
+        transform: {
+          current: transformResult.current,
+          history: transformResult.history,
+          removed: transformResult.removed,
+          massClearBlocked: transformResult.massClearBlocked,
+          completenessReason: transformResult.completenessReason,
+          collectorHealthClass: transformResult.collectorHealthClass,
+          membershipRows: transformResult.membershipRows,
+        },
+        collector: transformResult.collectorExtras.metadata,
+      });
+      const persist = await persistCollectorExtras(transformResult.collectorExtras);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: true,
+          pullRunId,
+          rowsFetched: rows.length,
+          rowsStored: stored,
+          transform: {
+            ...{
+              current: transformResult.current,
+              history: transformResult.history,
+              removed: transformResult.removed,
+              massClearBlocked: transformResult.massClearBlocked,
+              completenessReason: transformResult.completenessReason,
+              collectorHealthClass: transformResult.collectorHealthClass,
+              membershipRows: transformResult.membershipRows,
+            },
+            membershipPersisted: persist.membershipPersisted,
+            healthColumnsPersisted: persist.healthColumnsPersisted,
+          },
+          timestamp: new Date().toISOString(),
+        }),
+      };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (pullRunId != null) {
+        const extras = planInjuryCollectorExtras({
+          pullRunId,
+          observedAt: new Date().toISOString(),
+          pullStatus: 'error',
+          completed: true,
+          rowsStored: 0,
+          rowsReturned: 0,
+          previousCompleteRowCount: null,
+          inReportPlayerIds: [],
+        });
+        await completePullRun(pullRunId, 0, 0, 'error', extras.metadata, message).catch((completeErr) => {
+          console.error('Failed to complete error pull run', completeErr);
+        });
+        await persistCollectorExtras(extras).catch((persistErr) => {
+          console.error('Failed to persist collector extras on error path', persistErr);
+          if (persistErr instanceof CollectionSchemaPreflightError) {
+            console.error('Injury collection schema preflight failed', persistErr.missing);
+          }
+        });
+      }
+      console.error('Error in injuries snapshot:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          success: false,
+          error: message,
+          timestamp: new Date().toISOString(),
+          lastSuccessfulObservationRetained: true,
+        }),
+      };
+    }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('Error in injuries snapshot:', error);

@@ -66,6 +66,7 @@ import {
 } from './provider-capability';
 import type { AwsLambdaLiveStatus, AwsQueueLiveStatus } from './aws-ingestion-status';
 import { classifyPostgameOpsHealth } from '@/lib/postgame';
+import { summarizeShadowHealth, type ShadowHealthSummary } from '@/lib/betting/player-projection-shadow-health';
 
 export const PRIORITY_RELATIONS = [
   'raw.player_prop_snapshots_v2',
@@ -211,6 +212,7 @@ export type PlatformHealthReport = {
     ageHours: number | null;
     authoritative: boolean;
   };
+  shadow: ShadowHealthSummary;
   archives: ArchiveEntityHealth[];
   coverage: CoverageHealth[];
   prune: HealthSection & {
@@ -640,6 +642,13 @@ export async function collectPlatformHealth(opts?: {
     () => loadServingFreshness(`SELECT max(updated_at) AS ts FROM bbref_player_game_stats`),
     null
   );
+  const shadowFreshness = await safeSection(
+    () =>
+      loadServingFreshness(
+        `SELECT max(finished_at) AS ts FROM analytics.shadow_run_records WHERE status = 'success'`
+      ),
+    null
+  );
   const awsLambdas = opts?.aws?.lambdas ?? [];
   const awsQueues = opts?.aws?.queues ?? [];
   const families: IngestionFamilyHealth[] = INGESTION_FAMILY_CATALOG.map((family) => {
@@ -654,6 +663,8 @@ export async function collectPlatformHealth(opts?: {
         ? nightlyFreshness
         : family.id === 'bbref_boxscore'
           ? bbrefFreshness
+          : family.id === 'shadow_projection'
+            ? shadowFreshness
           : family.id === 'injuries'
             ? lastSuccessBySource.get('injuries') ?? injuryServing.latestSnapshotAt
             : family.id === 'game_odds'
@@ -882,6 +893,45 @@ export async function collectPlatformHealth(opts?: {
     available: Boolean(awsLambdas.length || awsQueues.length),
   };
 
+  const shadowFamily = INGESTION_FAMILY_CATALOG.find((f) => f.id === 'shadow_projection')!;
+  const shadowConfig = resolveFeedConfig({
+    family: shadowFamily,
+    liveIngestionEnabled,
+    freezeSkipsMutations: frozen,
+    goatSubscriptionActive,
+  });
+  const shadowFallback: ShadowHealthSummary = {
+    status: frozen ? 'FROZEN_EXPECTED' : 'UNKNOWN',
+    reason: 'shadow health not queried',
+    schemaEnrichment: 'unavailable',
+    lastSuccessfulCollectionAt: null,
+    lastSuccessfulCollectionAgeHours: null,
+    failedOrIncompletePulls: 0,
+    unresolvedIdentities: 0,
+    due: 0,
+    onTime: 0,
+    late: 0,
+    failed: 0,
+    missing: 0,
+    staleFeatureInputs: false,
+    featureInputAgeHours: null,
+    settlementBacklog: null,
+    windowStart: null,
+    alertsPrepared: false,
+    notificationDestination: null,
+  };
+  const shadow = await safeSection(
+    () =>
+      summarizeShadowHealth({
+        db: {
+          query: async (sql, params) => ({ rows: await query(sql, params) }),
+        },
+        now,
+        config: shadowConfig,
+        env,
+      }),
+    shadowFallback
+  );
   const overall = rollupHealthStatus([
     database.status,
     ...ingestion.filter((i) => i.tracked).map((i) => i.status),
@@ -899,6 +949,9 @@ export async function collectPlatformHealth(opts?: {
       ? [postgameQueueHealth.status]
       : []),
     ...(postgame.status === 'UNKNOWN' || postgame.status === 'FROZEN_EXPECTED' ? [] : [postgame.status]),
+    ...(shadow.status === 'STALE' || shadow.status === 'DEGRADED' || shadow.status === 'FAILED'
+      ? [shadow.status]
+      : []),
     ...families
       .map((f) => f.status)
       .filter((status) => status === 'STALE' || status === 'DEGRADED' || status === 'FAILED'),
@@ -926,6 +979,7 @@ export async function collectPlatformHealth(opts?: {
     aws: awsSection,
     postgame,
     injuryServing,
+    shadow,
     archives,
     coverage,
     prune,

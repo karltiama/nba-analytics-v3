@@ -14,6 +14,12 @@ describe('provider capability catalog', () => {
     expect(PROVIDER_CAPABILITY_CATALOG.find((row) => row.id === 'advanced')?.state).toBe('NOT_IMPLEMENTED');
     expect(PROVIDER_CAPABILITY_CATALOG.find((row) => row.id === 'plays')?.state).toBe('NOT_IMPLEMENTED');
   });
+
+  it('marks injury entitlement as unverified until a live probe', () => {
+    const injuries = PROVIDER_CAPABILITY_CATALOG.find((row) => row.id === 'v1_player_injuries')!;
+    expect(injuries.state).toBe('UNKNOWN');
+    expect(injuries.evidence).toMatch(/Independent of GOAT/);
+  });
 });
 
 describe('ingestion cadence', () => {

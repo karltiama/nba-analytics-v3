@@ -23,6 +23,8 @@ export type StartersStageResult = {
   outputCount: number;
   identitySkipped: number;
   httpStatus: number | null;
+  lineupSourceKind: 'provider_post_tip_confirmed';
+  pregameUsable: false;
 };
 
 export function evaluateStartersStage(input: {
@@ -45,6 +47,8 @@ export function evaluateStartersStage(input: {
     outputCount: 0,
     identitySkipped: 0,
     httpStatus: input.httpStatus,
+    lineupSourceKind: 'provider_post_tip_confirmed',
+    pregameUsable: false,
   });
 
   if (input.httpStatus === 401 || input.httpStatus === 403) {
@@ -90,6 +94,8 @@ export function evaluateStartersStage(input: {
       outputCount: gated.keep.length,
       identitySkipped: gated.skipped.length,
       httpStatus: input.httpStatus,
+      lineupSourceKind: 'provider_post_tip_confirmed',
+      pregameUsable: false,
     };
   }
 
@@ -109,6 +115,8 @@ export function evaluateStartersStage(input: {
       outputCount: 0,
       identitySkipped: gated.skipped.length || extracted.starterCandidates.length,
       httpStatus: input.httpStatus,
+      lineupSourceKind: 'provider_post_tip_confirmed',
+      pregameUsable: false,
     };
   }
 
@@ -123,5 +131,7 @@ export function evaluateStartersStage(input: {
     outputCount: 0,
     identitySkipped: gated.skipped.length,
     httpStatus: input.httpStatus,
+    lineupSourceKind: 'provider_post_tip_confirmed',
+    pregameUsable: false,
   };
 }

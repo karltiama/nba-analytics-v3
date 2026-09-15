@@ -79,8 +79,9 @@ describe('feed config vs freshness', () => {
   });
 
   it('subscription blocked is BLOCKED, not generic FAILED', () => {
+    const odds = INGESTION_FAMILY_CATALOG.find((f) => f.id === 'game_odds')!;
     const config = resolveFeedConfig({
-      family: injuries,
+      family: odds,
       liveIngestionEnabled: true,
       freezeSkipsMutations: false,
       goatSubscriptionActive: false,
@@ -276,6 +277,18 @@ describe('job partial / queues / schedule mismatch', () => {
     expect(INGESTION_FAMILY_CATALOG.find((f) => f.id === 'plays')?.goatRequired).toBe(true);
     expect(INGESTION_FAMILY_CATALOG.find((f) => f.id === 'advanced_postgame')?.goatRequired).toBe(true);
     expect(INGESTION_FAMILY_CATALOG.find((f) => f.id === 'game_flow')?.goatRequired).toBe(false);
+  });
+
+  it('injury collection is not GOAT-gated', () => {
+    expect(INGESTION_FAMILY_CATALOG.find((f) => f.id === 'injuries')?.goatRequired).toBe(false);
+    expect(INGESTION_FAMILY_CATALOG.find((f) => f.id === 'shadow_projection')?.goatRequired).toBe(false);
+    const config = resolveFeedConfig({
+      family: injuries,
+      liveIngestionEnabled: true,
+      freezeSkipsMutations: false,
+      goatSubscriptionActive: false,
+    });
+    expect(config).toBe('ACTIVE');
   });
 });
 

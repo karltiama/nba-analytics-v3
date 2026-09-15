@@ -53,6 +53,11 @@ export const INGESTION_CADENCE: Record<IngestionFamilyId, CadenceSpec> = {
     graceHours: 0.25,
     source: 'EventBridge Scheduler rate(15 minutes); grace 15m',
   },
+  shadow_projection: {
+    intervalHours: 5 / 60,
+    graceHours: 90 / 3600,
+    source: 'EventBridge rate(5 minutes); execution-latency SLA 90s; CADENCE from protocol r1.1',
+  },
 };
 
 export function missedRunDeadlineMs(cadence: CadenceSpec): number | null {
