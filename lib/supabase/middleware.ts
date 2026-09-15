@@ -16,8 +16,17 @@ export function isBillingHtmlPath(pathname: string): boolean {
   return pathname === '/billing' || pathname.startsWith('/billing/');
 }
 
+export function isAdminHtmlPath(pathname: string): boolean {
+  return pathname === '/admin' || pathname.startsWith('/admin/');
+}
+
 export function isSessionProtectedHtmlPath(pathname: string): boolean {
-  return isBettingHtmlPath(pathname) || isOpsHtmlPath(pathname) || isBillingHtmlPath(pathname);
+  return (
+    isBettingHtmlPath(pathname) ||
+    isOpsHtmlPath(pathname) ||
+    isBillingHtmlPath(pathname) ||
+    isAdminHtmlPath(pathname)
+  );
 }
 
 export function isSupabaseBrowserAuthConfigured(
@@ -48,7 +57,7 @@ export async function updateSession(request: NextRequest) {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
   // Protected HTML must not render when auth config is missing (fail-closed).
-  // `/api/betting/*` and `/api/ops/*` stay unblocked here so handlers can return JSON 401.
+  // `/api/betting/*`, `/api/ops/*`, and `/api/admin/*` stay unblocked here so handlers can return JSON 401/403.
   if (!url || !anonKey) {
     if (isSessionProtectedHtmlPath(pathname)) {
       return redirectToLogin(request, { error: 'auth_config' });

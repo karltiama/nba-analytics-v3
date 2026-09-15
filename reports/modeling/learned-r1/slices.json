@@ -1,0 +1,178 @@
+{
+  "experiment_version": "player-projection-learned-r1",
+  "splitId": "selection",
+  "targetId": "points",
+  "eligibility": "2024 validation, common-eligible played games. Pregame slices only (minutes-change, season-to-date minutes volume, prior played count). Realized target minutes are not used.",
+  "historical_validity_class": "reconstructed_historical",
+  "note": "Copied from evaluate-learned-projection slice table. Paired D−C intervals were computed on these slice rows, not by subtracting separate CIs.",
+  "slices": [
+    {
+      "id": "minutes_stable",
+      "family": "minutes_change",
+      "label": "minutes stable",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 19486,
+      "metricsByModel": {
+        "B": { "mae": 4.8841, "n": 19486 },
+        "C": { "mae": 4.8207, "n": 19486 },
+        "D": { "mae": 4.8124, "n": 19486 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0083,
+        "ciLow": -0.0165,
+        "ciHigh": -0.0003,
+        "n": 19486
+      }
+    },
+    {
+      "id": "minutes_moderate",
+      "family": "minutes_change",
+      "label": "minutes moderate",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 5776,
+      "metricsByModel": {
+        "B": { "mae": 4.2460, "n": 5776 },
+        "C": { "mae": 4.2167, "n": 5776 },
+        "D": { "mae": 4.2118, "n": 5776 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0049,
+        "ciLow": -0.0168,
+        "ciHigh": 0.0082,
+        "n": 5776
+      }
+    },
+    {
+      "id": "minutes_large",
+      "family": "minutes_change",
+      "label": "minutes large",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 2433,
+      "metricsByModel": {
+        "B": { "mae": 3.7981, "n": 2433 },
+        "C": { "mae": 3.7867, "n": 2433 },
+        "D": { "mae": 3.7845, "n": 2433 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0023,
+        "ciLow": -0.0211,
+        "ciHigh": 0.0180,
+        "n": 2433
+      }
+    },
+    {
+      "id": "volume_low",
+      "family": "minutes_volume",
+      "label": "volume low",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 6780,
+      "metricsByModel": {
+        "B": { "mae": 3.3251, "n": 6780 },
+        "C": { "mae": 3.3419, "n": 6780 },
+        "D": { "mae": 3.3425, "n": 6780 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": 0.0006,
+        "ciLow": -0.0098,
+        "ciHigh": 0.0116,
+        "n": 6780
+      }
+    },
+    {
+      "id": "volume_rotation",
+      "family": "minutes_volume",
+      "label": "volume rotation",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 12401,
+      "metricsByModel": {
+        "B": { "mae": 4.5720, "n": 12401 },
+        "C": { "mae": 4.5066, "n": 12401 },
+        "D": { "mae": 4.4967, "n": 12401 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0099,
+        "ciLow": -0.0189,
+        "ciHigh": 0.0006,
+        "n": 12401
+      }
+    },
+    {
+      "id": "volume_high",
+      "family": "minutes_volume",
+      "label": "volume high",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 8514,
+      "metricsByModel": {
+        "B": { "mae": 5.8370, "n": 8514 },
+        "C": { "mae": 5.7506, "n": 8514 },
+        "D": { "mae": 5.7415, "n": 8514 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0091,
+        "ciLow": -0.0225,
+        "ciHigh": 0.0045,
+        "n": 8514
+      }
+    },
+    {
+      "id": "limited_history",
+      "family": "limited_history",
+      "label": "limited history (<5 prior played)",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 2209,
+      "metricsByModel": {
+        "B": { "mae": 4.3884, "n": 2209 },
+        "C": { "mae": 4.1428, "n": 2209 },
+        "D": { "mae": 4.1376, "n": 2209 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0051,
+        "ciLow": -0.0226,
+        "ciHigh": 0.0173,
+        "n": 2209
+      }
+    },
+    {
+      "id": "not_limited_history",
+      "family": "limited_history",
+      "label": "not limited history",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 25487,
+      "metricsByModel": {
+        "B": { "mae": 4.6789, "n": 25487 },
+        "C": { "mae": 4.6439, "n": 25487 },
+        "D": { "mae": 4.6367, "n": 25487 }
+      },
+      "pairedDelta": {
+        "leftModelId": "C",
+        "rightModelId": "D",
+        "delta": -0.0072,
+        "ciLow": -0.0135,
+        "ciHigh": -0.0002,
+        "n": 25487
+      }
+    }
+  ]
+}

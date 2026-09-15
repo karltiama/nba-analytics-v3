@@ -15,10 +15,13 @@ export const config = {
     '/betting/:path*',
     '/ops',
     '/ops/:path*',
+    '/admin',
+    '/admin/:path*',
     // Session cookie refresh only — API routes enforce auth in handlers
-    // (JSON 401). Do not redirect APIs to /login from updateSession.
+    // (JSON 401/403). Do not redirect APIs to /login from updateSession.
     '/api/betting/:path*',
     '/api/ops/:path*',
+    '/api/admin/:path*',
     '/api/user/:path*',
     '/billing',
     '/billing/:path*',

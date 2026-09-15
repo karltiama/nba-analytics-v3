@@ -6,6 +6,7 @@ import {
   isBettingHtmlPath,
   isOpsHtmlPath,
   isBillingHtmlPath,
+  isAdminHtmlPath,
   isSessionProtectedHtmlPath,
   isSupabaseBrowserAuthConfigured,
   updateSession,
@@ -33,6 +34,8 @@ describe('proxy matcher', () => {
     expect(src).toContain("'/'");
     expect(src).toContain("'/login'");
     expect(src).toContain("'/signup'");
+    expect(src).toContain("'/admin'");
+    expect(src).toContain("'/api/admin/:path*'");
     expect(isSessionProtectedHtmlPath('/')).toBe(false);
     expect(isSessionProtectedHtmlPath('/login')).toBe(false);
     expect(isSessionProtectedHtmlPath('/signup')).toBe(false);
@@ -55,6 +58,15 @@ describe('ops HTML protection', () => {
     expect(isSessionProtectedHtmlPath('/ops')).toBe(true);
     expect(isBettingHtmlPath('/ops')).toBe(false);
     expect(isOpsHtmlPath('/api/ops/health')).toBe(false);
+  });
+});
+
+describe('admin HTML protection', () => {
+  it('matches /admin pages and not the JSON API', () => {
+    expect(isAdminHtmlPath('/admin')).toBe(true);
+    expect(isAdminHtmlPath('/admin/model-lab')).toBe(true);
+    expect(isSessionProtectedHtmlPath('/admin/model-lab')).toBe(true);
+    expect(isAdminHtmlPath('/api/admin/model-lab/experiments')).toBe(false);
   });
 });
 
@@ -158,6 +170,27 @@ describe('updateSession', () => {
     expect(webhook.status).toBe(200);
     expect(checkout.status).toBe(200);
     expect(webhook.headers.get('location')).toBeNull();
+  });
+
+  it('redirects unauthenticated /admin HTML when auth config is present', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon-key');
+    getUser.mockResolvedValue({ data: { user: null } });
+
+    const response = await updateSession(makeRequest('/admin/model-lab'));
+    expect(response.status).toBe(307);
+    const location = response.headers.get('location') ?? '';
+    expect(location).toContain('/login');
+    expect(location).toContain('next=%2Fadmin%2Fmodel-lab');
+  });
+
+  it('does not redirect /api/admin when public auth config is missing', async () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const response = await updateSession(makeRequest('/api/admin/model-lab/experiments'));
+    expect(response.status).toBe(200);
+    expect(response.headers.get('location')).toBeNull();
   });
 
   it('redirects unauthenticated /billing HTML when auth config is present', async () => {
