@@ -14,7 +14,7 @@ S3 model objects at `s3://nba-analytics-data-260029269390/research/models/player
 
 Preserved original freeze record: `reports/modeling/shadow-pts-reb-c-r1/manifest.v1.json` (HEAD `43af63fa`, `working_tree_dirty: true`).
 
-New versioned record: `reports/modeling/shadow-pts-reb-c-r1/manifest.v1.1.json` (written after the scoped commit). `manifest.json` is updated to the same provenance so loaders keep working. Model and dataset hashes are unchanged.
+New versioned record: `reports/modeling/shadow-pts-reb-c-r1/manifest.v1.1.json` pins commit `da7763d9fa7f18ac0ad79b1e9ea16ff8940b0848`. `manifest.json` matches v1.1 so loaders keep working. Model and dataset hashes are unchanged.
 
 Checksummed source archive (no credentials, no `rows.jsonl`, no `.cbm`):
 
