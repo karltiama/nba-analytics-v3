@@ -99,6 +99,9 @@ function mapLogRow(row: Record<string, unknown>): LearnedEvalLog {
     three_pointers_attempted:
       row.three_pointers_attempted == null ? null : Number(row.three_pointers_attempted),
     free_throws_attempted: row.free_throws_attempted == null ? null : Number(row.free_throws_attempted),
+    // These queries do not join game_starters. Unknown is the honest as-of label;
+    // C features must not use target-game starter.
+    started: 'unknown',
   };
 }
 

@@ -1,5 +1,6 @@
 import { FROZEN_GAME_UNIVERSE, OWLS_DEFAULT_HISTORY_CONCURRENCY, OWLS_HARD_CAP_HISTORY_CONCURRENCY } from './contract';
-import { estimateGzipBytes, type OwlsArchiveEnvelope } from './archive';
+import { estimateGzipBytes } from './archive';
+import type { OwlsArchiveEnvelope } from './types';
 
 export type StorageEstimate = {
   basis: 'fixture' | 'live_probe';

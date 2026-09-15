@@ -2,7 +2,7 @@ import { FIRST_PROBE_GAMES } from './contract';
 import type { CourtContextGame } from './types';
 
 export function probeGamesFromUniverse(games: CourtContextGame[]): CourtContextGame[] {
-  const wanted = new Set(FIRST_PROBE_GAMES.map((g) => g.courtContextGameId));
+  const wanted = new Set<string>(FIRST_PROBE_GAMES.map((g) => g.courtContextGameId));
   const found = games.filter((g) => wanted.has(g.courtContextGameId));
   if (found.length > 0) return found;
   return FIRST_PROBE_GAMES.map((g) => ({

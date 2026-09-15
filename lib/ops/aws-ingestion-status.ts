@@ -364,14 +364,15 @@ async function createLivePorts(region: string): Promise<AwsIngestionPorts> {
         const attrs = await sqs.send(
           new GetQueueAttributesCommand({
             QueueUrl: url.QueueUrl,
+            // SDK types omit ApproximateAgeOfOldestMessage; SQS GetQueueAttributes still returns it.
             AttributeNames: [
               'ApproximateNumberOfMessages',
               'ApproximateNumberOfMessagesNotVisible',
               'ApproximateAgeOfOldestMessage',
-            ],
+            ] as unknown as import('@aws-sdk/client-sqs').QueueAttributeName[],
           })
         );
-        const a = attrs.Attributes ?? {};
+        const a = (attrs.Attributes ?? {}) as Record<string, string | undefined>;
         return {
           exists: true,
           visible: a.ApproximateNumberOfMessages != null ? Number(a.ApproximateNumberOfMessages) : null,

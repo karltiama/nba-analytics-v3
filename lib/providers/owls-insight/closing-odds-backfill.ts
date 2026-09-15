@@ -162,7 +162,7 @@ export async function runOwlsClosingOddsBackfill(
       game_acquisition: {},
     };
   }
-  state.game_acquisition ??= {};
+  const acquisition = (state.game_acquisition ??= {});
 
   const progress = new ProgressTracker();
   progress.gamesTotal = opts.games.length;
@@ -213,7 +213,7 @@ export async function runOwlsClosingOddsBackfill(
       if (stop) return true;
       result.gamesAttempted += 1;
       state.run.games_attempted = result.gamesAttempted;
-      const prior = state.game_acquisition[game.courtContextGameId];
+      const prior = acquisition[game.courtContextGameId];
       if (resume && prior && terminalSkip(prior.state)) {
         if (prior.state === 'POPULATED') progress.populatedGames += 1;
         else if (prior.state === 'EMPTY_PROVIDER_HISTORY') progress.emptyProviderHistory += 1;
@@ -239,7 +239,7 @@ export async function runOwlsClosingOddsBackfill(
 
     const record = async (row: OwlsGameAcquisition) => {
       await lock.run(async () => {
-        state.game_acquisition![row.court_context_game_id] = row;
+        acquisition[row.court_context_game_id] = row;
         if (row.state === 'POPULATED') progress.populatedGames += 1;
         else if (row.state === 'EMPTY_PROVIDER_HISTORY') progress.emptyProviderHistory += 1;
         else if (row.state === 'GAME_MAPPING_FAILED') progress.mappingFailed += 1;

@@ -125,7 +125,7 @@ export async function runOwlsPropBackfill(opts: BackfillOpts): Promise<BackfillR
       game_acquisition: {},
     };
   }
-  state.game_acquisition ??= {};
+  const acquisition = (state.game_acquisition ??= {});
 
   const progress = new ProgressTracker();
   progress.gamesTotal = opts.games.length;
@@ -148,7 +148,7 @@ export async function runOwlsPropBackfill(opts: BackfillOpts): Promise<BackfillR
   for (const game of opts.games) {
     result.gamesAttempted += 1;
     state.run.games_attempted = result.gamesAttempted;
-    const prior = state.game_acquisition[game.courtContextGameId];
+    const prior = acquisition[game.courtContextGameId];
     if (
       resume &&
       prior &&
@@ -536,8 +536,8 @@ function recordGameAcquisition(
     error: string | null;
   }
 ): void {
-  state.game_acquisition ??= {};
-  state.game_acquisition[row.court_context_game_id] = row;
+  const acquisition = (state.game_acquisition ??= {});
+  acquisition[row.court_context_game_id] = row;
 }
 
 async function normalizeArchivedPage(args: {

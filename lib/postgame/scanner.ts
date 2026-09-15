@@ -114,7 +114,7 @@ function shouldEnqueue(input: {
   playsStatus: PostgameStageStatus;
   config: PostgameScanConfig;
 }): boolean {
-  const { stage, row, nextStatus, playsStatus, config } = input;
+  const { stage, row, nextStatus, config } = input;
   if (!isImplementedPostgameStage(stage)) return false;
   if (nextStatus === 'WAITING' && waitingBeforeRetry(config.now, row?.nextAttemptAt)) return false;
   if (nextStatus === 'READY') return false;
@@ -127,10 +127,9 @@ function shouldEnqueue(input: {
   ) {
     return true;
   }
-  if (nextStatus === 'READY' || nextStatus === 'EXPECTED_ABSENCE' || nextStatus === 'BLOCKED') {
+  if (nextStatus === 'EXPECTED_ABSENCE' || nextStatus === 'BLOCKED') {
     return false;
   }
-  if (stage === 'game_flow' && playsStatus !== 'READY') return false;
   if (nextStatus === 'QUEUED' || nextStatus === 'RUNNING') {
     return isStuck(row, config);
   }

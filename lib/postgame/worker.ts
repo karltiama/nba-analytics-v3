@@ -1,7 +1,7 @@
 import type { PlayerIdentityIndex } from '@/lib/identity/player-identity-resolve';
 import { lineupsRawArchiveKey } from './writes';
 import { isImplementedPostgameStage } from './capability';
-import { claimQueuedStage, completeStage, type StageStore } from './claim';
+import { claimQueuedStage, completeStage, type StageRecord, type StageStore } from './claim';
 import { evaluateBoxStage } from './box-stage';
 import type { PlayerGameLogWrite } from './box-transform';
 import { nextAttemptAt } from './retry';
@@ -241,10 +241,12 @@ export async function handlePostgameMessage(
   return runStarters(parsed, claim.record, game, ports, config);
 }
 
+type LoadedGame = NonNullable<Awaited<ReturnType<PostgameWorkerPorts['loadGame']>>>;
+
 async function runBox(
   parsed: PostgameQueueMessage,
-  claimed: ReturnType<typeof claimQueuedStage> extends { ok: true; record: infer R } ? R : never,
-  game: NonNullable<Awaited<PostgameWorkerPorts['loadGame']>>,
+  claimed: StageRecord,
+  game: LoadedGame,
   ports: PostgameWorkerPorts,
   config: PostgameWorkerConfig
 ): Promise<WorkerHandleResult> {
@@ -302,8 +304,8 @@ async function runBox(
 
 async function runStarters(
   parsed: PostgameQueueMessage,
-  claimed: Parameters<typeof completeStage>[1],
-  game: NonNullable<Awaited<PostgameWorkerPorts['loadGame']>>,
+  claimed: StageRecord,
+  game: LoadedGame,
   ports: PostgameWorkerPorts,
   config: PostgameWorkerConfig
 ): Promise<WorkerHandleResult> {
