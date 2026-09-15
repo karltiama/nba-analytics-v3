@@ -14,5 +14,6 @@ export function shouldShowLayoutHeader(pathname: string): boolean {
   if (pathname === '/billing' || pathname.startsWith('/billing/')) return true;
   // Teams directory + profiles (outside /betting/* but part of primary nav)
   if (pathname === '/teams' || pathname.startsWith('/teams/')) return true;
+  if (pathname === '/wowy' || pathname.startsWith('/wowy/')) return true;
   return false;
 }
