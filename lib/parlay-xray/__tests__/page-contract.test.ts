@@ -46,10 +46,14 @@ describe('Parlay XRay page contract', () => {
     expect(view).not.toMatch(/42%–58%/);
     expect(view).not.toMatch(/Estimated Confidence/);
     expect(view).toMatch(/preview=analysis/);
+    expect(view).toMatch(/preview=replay/);
     expect(view).toMatch(/Historical Replay/);
     expect(view).toMatch(/XrayResultsPanel/);
+    expect(view).toMatch(/Confirm\./);
     const results = readFileSync(join(ROOT, 'components/parlay-xray/XrayResultsPanel.tsx'), 'utf8');
     expect(results).toMatch(/Why this could fail/);
+    expect(results).toMatch(/Screenshot read/);
+    expect(results).toMatch(/aria-label="Parlay legs"/);
     expect(results).toMatch(/3-Hour Pre-Tip/);
     expect(results).toMatch(/Decision Close/);
     expect(results).not.toMatch(/Opening/);
@@ -79,6 +83,8 @@ describe('Parlay XRay page contract', () => {
     expect(isXrayDesignPreviewEnabled('1', 'development')).toBe(true);
     expect(isXrayDesignPreviewEnabled('partial', 'development')).toBe(true);
     expect(isXrayDesignPreviewEnabled('analysis', 'development')).toBe(true);
+    expect(isXrayDesignPreviewEnabled('replay', 'development')).toBe(true);
+    expect(isXrayDesignPreviewEnabled('replay', 'production')).toBe(false);
     expect(isXrayDesignPreviewEnabled('analysis', 'production')).toBe(false);
     expect(isXrayDesignPreviewEnabled(null, 'development')).toBe(false);
 
@@ -88,7 +94,9 @@ describe('Parlay XRay page contract', () => {
     expect(client).toMatch(/dev-fixture/);
     expect(client).toMatch(/interpretation\/preview/);
     expect(client).toMatch(/previewFlag === 'analysis'/);
+    expect(client).toMatch(/previewFlag === 'replay'/);
     expect(client).toMatch(/CONFIRM_LEGS/);
+    expect(client).toMatch(/historicalReplayRunRef/);
     expect(client).not.toMatch(/interpretXrayLeg\(/);
     expect(client).not.toMatch(/useSearchParams/);
     const index = readFileSync(join(ROOT, 'lib/parlay-xray/index.ts'), 'utf8');

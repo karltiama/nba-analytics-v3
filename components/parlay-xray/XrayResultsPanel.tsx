@@ -37,6 +37,20 @@ export function XrayResultsPanel({ interpretations, historicalReplay, legs }: Xr
 
   return (
     <section className="space-y-6" aria-labelledby="xray-results-heading">
+      {interpretations.length > 1 ? (
+        <nav aria-label="Parlay legs" className="flex flex-wrap gap-2">
+          {interpretations.map((interp, index) => (
+            <a
+              key={`nav-${index}-${interp.identity.playerDisplayName ?? 'leg'}-${interp.identity.line ?? 'x'}`}
+              href={`#xray-leg-${index}`}
+              className="rounded-full border border-[#DCE9EA] bg-white px-3 py-1 text-xs font-semibold text-[#075B5C] hover:bg-[#f3fbf7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/70"
+            >
+              {index + 1}. {interp.identity.playerDisplayName ?? 'Leg'}
+            </a>
+          ))}
+        </nav>
+      ) : null}
+
       <XrayParlaySummary parlay={parlay} interpretations={interpretations} />
 
       <div className="space-y-6">
@@ -99,6 +113,19 @@ function LegInterpretationCard({
                 {formatSportsbookLabel(interp.identity.sportsbook)}
                 {interp.identity.gameId ? ` · game ${interp.identity.gameId}` : ''}
               </p>
+              {leg?.rawSnippet ? (
+                <p className="text-[11px] text-[#8aa0a3] mt-0.5">
+                  Screenshot read: {leg.rawSnippet}
+                  {leg.playerDisplayName.value && interp.identity.playerDisplayName &&
+                  leg.rawSnippet.includes(leg.playerDisplayName.value) === false
+                    ? ` · confirmed ${interp.identity.playerDisplayName}`
+                    : interp.identity.playerDisplayName &&
+                        leg.playerDisplayName.value &&
+                        interp.identity.playerDisplayName !== leg.playerDisplayName.value
+                      ? ` · canonical ${interp.identity.playerDisplayName}`
+                      : ''}
+                </p>
+              ) : null}
               {leg ? <MatchupLine leg={leg} /> : (
                 <p className="text-xs text-[#4a6366]">
                   {[interp.identity.teamAbbr, interp.identity.opponentAbbr].filter(Boolean).join(' vs ') ||

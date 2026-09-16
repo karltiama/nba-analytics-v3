@@ -277,8 +277,9 @@ describe('xray session', () => {
     });
     expect(state.designPreview).toBe(false);
     expect(state.historicalReplay?.gameId).toBe('18447934');
+    expect(state.interpretations).toHaveLength(4);
     expect(state.interpretations?.[0]?.identity.playerDisplayName).toBe('Ajay Mitchell');
-    expect(state.interpretations?.[0]?.summaryState).toBe('SUPPORTIVE_CONTEXT');
+    expect(state.historicalReplay?.dateLabel).toMatch(/April 2, 2026/);
   });
 
   it('does not attach interpretation when Confirm is pressed', () => {
@@ -311,6 +312,62 @@ describe('xray session', () => {
     expect(confirmed.confirmed).toBe(true);
     expect(confirmed.interpretations).toBeNull();
     expect(confirmed.historicalReplay).toBeNull();
+    expect(confirmed.replayStage).toBeNull();
+  });
+
+  it('keeps historical replay context when a confirmed name is edited', () => {
+    const extracted = reduceXrayState(createInitialXrayState(), {
+      type: 'LOAD_PREVIEW',
+      parlay: {
+        id: 'hist',
+        source: 'screenshot',
+        uploadedImage: file(),
+        legs: [
+          {
+            id: 'a',
+            playerDisplayName: known('Luka Doncik'),
+            playerId: unknown(),
+            nbaPlayerId: unknown(),
+            teamAbbr: unknown(),
+            opponentAbbr: unknown(),
+            matchupLabel: unknown(),
+            propKind: known('points'),
+            propLabel: known('Points'),
+            side: known('over'),
+            line: known(30.5),
+            oddsAmerican: known(-120),
+            sportsbookText: known('DraftKings'),
+            gameDate: known('2026-04-02'),
+            extractionConfidence: known('medium'),
+            resolution: 'resolved',
+            rawSnippet: 'Luka Doncik O 30.5 PTS',
+          } satisfies ExtractedParlayLeg,
+        ],
+        extractionStatus: 'complete',
+        analysisStatus: 'unavailable',
+        createdAt: '2026-04-03T01:30:00.000Z',
+      },
+      analysis: null,
+      confirmed: false,
+      historicalReplay: {
+        cutoffAt: '2026-04-03T01:30:00.000Z',
+        dateLabel: 'April 2, 2026 · LAL @ OKC',
+        gameId: '18447934',
+      },
+    });
+    const edited = reduceXrayState(extracted, {
+      type: 'UPDATE_LEG',
+      legId: 'a',
+      edits: { playerDisplayName: 'Luka Doncic' },
+    });
+    expect(edited.historicalReplay?.gameId).toBe('18447934');
+    expect(edited.parlay.legs[0]?.rawSnippet).toBe('Luka Doncik O 30.5 PTS');
+    expect(edited.parlay.legs[0]?.playerDisplayName.value).toBe('Luka Doncic');
+    const confirmed = reduceXrayState(edited, { type: 'CONFIRM_LEGS' });
+    expect(confirmed.confirmed).toBe(true);
+    expect(confirmed.replayStage).toBe('resolving');
+    expect(confirmed.interpretations).toBeNull();
+    expect(confirmed.historicalReplay?.gameId).toBe('18447934');
   });
 });
 

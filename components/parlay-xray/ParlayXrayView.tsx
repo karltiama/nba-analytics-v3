@@ -1,7 +1,7 @@
 'use client';
 
 import { ScanSearch } from 'lucide-react';
-import { ANALYSIS_STAGE_COPY, EXTRACTION_STAGE_COPY, UPLOAD_ERROR_COPY } from '@/lib/parlay-xray/copy';
+import { ANALYSIS_STAGE_COPY, EXTRACTION_STAGE_COPY, REPLAY_STAGE_COPY, UPLOAD_ERROR_COPY } from '@/lib/parlay-xray/copy';
 import { extractionCounts } from '@/lib/parlay-xray/fields';
 import {
   analysisStageFor,
@@ -52,18 +52,26 @@ export function ParlayXrayView({
   const combined = liveCombinedOdds(state.parlay.legs);
   const error = state.uploadErrorCode ? UPLOAD_ERROR_COPY[state.uploadErrorCode] : null;
   const extractionCopy = EXTRACTION_STAGE_COPY[state.parlay.extractionStatus];
-  const analysisCopy = ANALYSIS_STAGE_COPY[analysisStageFor(state)];
+  const analysisCopy = state.replayStage
+    ? REPLAY_STAGE_COPY[state.replayStage]
+    : ANALYSIS_STAGE_COPY[analysisStageFor(state)];
   const extracting = state.parlay.extractionStatus === 'pending';
   const hasFile = Boolean(state.parlay.uploadedImage);
   const historicalReplay = state.historicalReplay;
   const hasInterpretations = Boolean(state.interpretations && state.interpretations.length > 0);
+  const replayPending = Boolean(
+    historicalReplay &&
+      state.replayStage &&
+      state.replayStage !== 'ready' &&
+      !hasInterpretations
+  );
   const quotaLabel =
     state.quota != null
       ? `${state.quota.remaining} of ${state.quota.limit} XRay analyses remaining today`
       : null;
 
   return (
-    <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
       {historicalReplay ? (
         <p
           className="rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-sm text-[#063f46]"
@@ -71,7 +79,7 @@ export function ParlayXrayView({
         >
           Historical Replay — {historicalReplay.dateLabel}
           {historicalReplay.gameId ? ` · game ${historicalReplay.gameId}` : ''}. Certified as-of cutoff{' '}
-          {historicalReplay.cutoffAt}. This is not a live September 2026 recommendation.
+          {historicalReplay.cutoffAt}. This is not current-season intelligence.
         </p>
       ) : state.designPreview ? (
         <p
@@ -140,6 +148,9 @@ export function ParlayXrayView({
             analysisCopy={analysisCopy}
             pendingExtraction={state.parlay.extractionStatus === 'pending'}
             pendingAnalysis={state.parlay.analysisStatus === 'pending'}
+            confirmed={state.confirmed}
+            hasInterpretations={hasInterpretations}
+            historicalReplay={Boolean(historicalReplay)}
           />
         </section>
 
@@ -150,6 +161,18 @@ export function ParlayXrayView({
             extractionStatusLabel={extractionCopy}
             canConfirm={canConfirmLegs(state)}
             confirmed={state.confirmed}
+            confirmLabel={
+              historicalReplay
+                ? state.confirmed
+                  ? 'Replay confirmed'
+                  : 'Confirm historical replay'
+                : undefined
+            }
+            confirmHint={
+              historicalReplay
+                ? 'Confirm is the boundary between what XRay read and analyzing these confirmed legs. This will not run as live analysis.'
+                : undefined
+            }
             onToggleEditing={onToggleEditing}
             onEditLeg={onEditLeg}
             onAcceptLeg={onAcceptLeg}
@@ -158,12 +181,32 @@ export function ParlayXrayView({
         </div>
       </div>
 
+      {state.replayError ? (
+        <p className="rounded-xl border border-amber-200 bg-[#fff8ee] px-4 py-3 text-sm text-[#9a3412]" role="alert">
+          {state.replayError}
+        </p>
+      ) : null}
+
       {hasInterpretations && state.interpretations ? (
         <XrayResultsPanel
           interpretations={state.interpretations}
           historicalReplay={historicalReplay}
           legs={state.parlay.legs}
         />
+      ) : replayPending ? (
+        <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5" role="status">
+          <h2 className="text-base font-bold text-[#063f46]">Historical replay</h2>
+          <p className="text-sm text-[#4a6366] mt-2">{analysisCopy}</p>
+          {state.replayError ? <p className="text-sm text-[#9a3412] mt-2">{state.replayError}</p> : null}
+        </section>
+      ) : historicalReplay ? (
+        <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5" role="status">
+          <h2 className="text-base font-bold text-[#063f46]">Waiting for confirmation</h2>
+          <p className="text-sm text-[#4a6366] mt-2">
+            Review what XRay read, correct any OCR mistakes, then confirm. Analysis will use the confirmed legs
+            with the labeled historical cutoff — not live current-season context.
+          </p>
+        </section>
       ) : (
         <XrayAnalysisPanel
           analysis={presentation.analysis}
@@ -190,6 +233,10 @@ export function ParlayXrayView({
           <a className="underline text-[#075B5C]" href="/parlay-xray?preview=analysis">
             historical analysis
           </a>
+          {' · '}
+          <a className="underline text-[#075B5C]" href="/parlay-xray?preview=replay">
+            historical confirm flow
+          </a>
         </p>
       ) : null}
 
@@ -206,12 +253,18 @@ function StageList({
   analysisCopy,
   pendingExtraction,
   pendingAnalysis,
+  confirmed,
+  hasInterpretations,
+  historicalReplay,
 }: {
   hasFile: boolean;
   extractionCopy: string;
   analysisCopy: string;
   pendingExtraction: boolean;
   pendingAnalysis: boolean;
+  confirmed: boolean;
+  hasInterpretations: boolean;
+  historicalReplay: boolean;
 }) {
   return (
     <ol className="mt-5 space-y-2 text-xs text-[#4a6366]">
@@ -220,12 +273,24 @@ function StageList({
         {hasFile ? 'Screenshot selected.' : 'Waiting for a screenshot.'}
       </li>
       <li>
-        <span className="font-semibold text-[#063f46]">Extraction.</span>{' '}
+        <span className="font-semibold text-[#063f46]">Extract.</span>{' '}
         {pendingExtraction ? 'Reading the screenshot…' : extractionCopy}
       </li>
       <li>
-        <span className="font-semibold text-[#063f46]">Analysis.</span>{' '}
-        {pendingAnalysis ? 'Building the XRay read…' : analysisCopy}
+        <span className="font-semibold text-[#063f46]">Review.</span>{' '}
+        {hasFile ? 'Edit or accept what XRay read before confirming.' : 'Waiting for extracted legs.'}
+      </li>
+      <li>
+        <span className="font-semibold text-[#063f46]">Confirm.</span>{' '}
+        {confirmed
+          ? historicalReplay
+            ? 'Historical replay confirmed. Analysis uses these confirmed legs.'
+            : 'Legs locked. Live analysis is not connected yet.'
+          : 'Confirm is required before analysis.'}
+      </li>
+      <li>
+        <span className="font-semibold text-[#063f46]">Results.</span>{' '}
+        {pendingAnalysis ? analysisCopy : hasInterpretations ? analysisCopy : analysisCopy}
       </li>
     </ol>
   );

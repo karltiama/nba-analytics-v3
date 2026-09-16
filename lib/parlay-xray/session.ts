@@ -27,6 +27,16 @@ export type XrayHistoricalReplay = {
   gameId: string | null;
 };
 
+export const XRAY_REPLAY_STAGES = [
+  'resolving',
+  'matching',
+  'assembling_context',
+  'interpreting',
+  'ready',
+  'failed',
+] as const;
+export type XrayReplayStage = (typeof XRAY_REPLAY_STAGES)[number];
+
 export type XrayState = {
   parlay: XRayParlay;
   analysis: XRayAnalysis | null;
@@ -38,6 +48,8 @@ export type XrayState = {
   extractNotice: string | null;
   interpretations: XRayLegInterpretation[] | null;
   historicalReplay: XrayHistoricalReplay | null;
+  replayStage: XrayReplayStage | null;
+  replayError: string | null;
 };
 
 export type LegEdits = {
@@ -58,6 +70,8 @@ export type XrayAction =
   | { type: 'ATTACH_HEADSHOTS'; ids: Record<string, string> }
   | { type: 'CONFIRM_LEGS' }
   | { type: 'LOAD_PREVIEW'; parlay: XRayParlay; analysis: XRayAnalysis | null; confirmed?: boolean; interpretations?: XRayLegInterpretation[] | null; historicalReplay?: XrayHistoricalReplay | null }
+  | { type: 'SET_REPLAY_STAGE'; stage: XrayReplayStage | null; error?: string | null }
+  | { type: 'SET_HISTORICAL_ANALYSIS'; interpretations: XRayLegInterpretation[] }
   | { type: 'EXTRACT_STARTED' }
   | { type: 'SET_EXTRACTION'; status: ExtractionStatus; legs: ExtractedParlayLeg[]; notice?: string | null }
   | { type: 'RECOVER_LINES' }
@@ -97,6 +111,8 @@ export function createInitialXrayState(): XrayState {
     extractNotice: null,
     interpretations: null,
     historicalReplay: null,
+    replayStage: null,
+    replayError: null,
   };
 }
 
@@ -150,6 +166,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         extractNotice: null,
         interpretations: null,
         historicalReplay: null,
+        replayStage: null,
+        replayError: null,
         parlay: {
           ...createEmptyParlay(),
           id: newId(),
@@ -179,7 +197,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         confirmed: false,
         analysis: null,
         interpretations: null,
-        historicalReplay: null,
+        replayStage: state.historicalReplay ? null : state.replayStage,
+        replayError: null,
         parlay: {
           ...state.parlay,
           legs,
@@ -204,7 +223,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         confirmed: false,
         analysis: null,
         interpretations: null,
-        historicalReplay: null,
+        replayStage: state.historicalReplay ? null : state.replayStage,
+        replayError: null,
         parlay: {
           ...state.parlay,
           legs,
@@ -225,11 +245,23 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
       return { ...state, parlay: { ...state.parlay, legs } };
     }
     case 'CONFIRM_LEGS': {
-      // Confirm only locks extracted legs. It does not assemble X3C or interpret X3D.
-      // Live-season analysis is a later integration boundary.
+      // Public Confirm only locks extracted legs. It does not invent a historical
+      // date or assemble live analysis. Historical replay analysis runs only when
+      // an explicit historicalReplay context is already on state.
       const counts = extractionCounts(state.parlay.legs);
       if (counts.detected === 0 || counts.needsConfirmation > 0 || counts.unresolved > 0) {
         return state;
+      }
+      if (state.historicalReplay) {
+        return {
+          ...state,
+          editing: false,
+          confirmed: true,
+          interpretations: null,
+          replayStage: 'resolving',
+          replayError: null,
+          parlay: { ...state.parlay, analysisStatus: 'pending' },
+        };
       }
       return {
         ...state,
@@ -249,6 +281,33 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         extractNotice: null,
         interpretations: action.interpretations ?? null,
         historicalReplay: action.historicalReplay ?? null,
+        replayStage: action.interpretations?.length ? 'ready' : action.historicalReplay ? null : null,
+        replayError: null,
+      };
+    case 'SET_REPLAY_STAGE':
+      return {
+        ...state,
+        replayStage: action.stage,
+        replayError: action.error ?? (action.stage === 'failed' ? state.replayError : null),
+        parlay: {
+          ...state.parlay,
+          analysisStatus:
+            action.stage === 'failed'
+              ? 'failed'
+              : action.stage === 'ready'
+                ? 'ready'
+                : action.stage
+                  ? 'pending'
+                  : state.parlay.analysisStatus,
+        },
+      };
+    case 'SET_HISTORICAL_ANALYSIS':
+      return {
+        ...state,
+        interpretations: action.interpretations,
+        replayStage: 'ready',
+        replayError: null,
+        parlay: { ...state.parlay, analysisStatus: 'ready' },
       };
     case 'EXTRACT_STARTED':
       return {
@@ -258,6 +317,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         analysis: null,
         interpretations: null,
         historicalReplay: null,
+        replayStage: null,
+        replayError: null,
         parlay: {
           ...state.parlay,
           extractionStatus: 'pending',
@@ -272,6 +333,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         analysis: null,
         interpretations: null,
         historicalReplay: null,
+        replayStage: null,
+        replayError: null,
         extractNotice: action.notice ?? null,
         parlay: {
           ...state.parlay,
@@ -330,8 +393,10 @@ export function liveStructuralNotes(legs: ExtractedParlayLeg[]): ReturnType<type
 }
 
 export function analysisStageFor(state: XrayState): AnalysisStatus {
+  if (state.replayStage === 'failed') return 'failed';
   if (state.interpretations && state.interpretations.length > 0) return 'ready';
   if (hasRenderableAnalysis(state.analysis)) return 'ready';
+  if (state.replayStage && state.replayStage !== 'ready') return 'pending';
   return state.parlay.analysisStatus;
 }
 

@@ -28,6 +28,7 @@ export function ParlayXrayClient() {
   const objectUrlRef = useRef<string | null>(null);
   const startedRef = useRef(false);
   const extractingRef = useRef(false);
+  const historicalReplayRunRef = useRef(false);
   const headshotAttemptedRef = useRef<Set<string>>(new Set());
   const headshotLegKeyRef = useRef('');
 
@@ -67,6 +68,22 @@ export function ParlayXrayClient() {
           analysis: null,
           confirmed: true,
           interpretations,
+          historicalReplay,
+        });
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+    if (previewFlag === 'replay') {
+      void import('@/lib/parlay-xray/e2e/preview').then((mod) => {
+        if (cancelled) return;
+        const { parlay, historicalReplay } = mod.buildHistoricalReplayReviewPreview();
+        dispatch({
+          type: 'LOAD_PREVIEW',
+          parlay,
+          analysis: null,
+          confirmed: false,
           historicalReplay,
         });
       });
@@ -157,6 +174,36 @@ export function ParlayXrayClient() {
   useEffect(() => {
     dispatch({ type: 'RECOVER_LINES' });
   }, [state.parlay.legs]);
+
+  useEffect(() => {
+    if (!state.confirmed) historicalReplayRunRef.current = false;
+  }, [state.confirmed]);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+    if (!state.confirmed || !state.historicalReplay) return;
+    if (state.replayStage !== 'resolving') return;
+    if (historicalReplayRunRef.current) return;
+    historicalReplayRunRef.current = true;
+    dispatch({ type: 'SET_REPLAY_STAGE', stage: 'interpreting' });
+    void import('@/lib/parlay-xray/e2e').then((mod) => {
+      try {
+        const result = mod.runHistoricalXrayReplay(
+          state.parlay.legs,
+          mod.buildX3fReplayContext(),
+          mod.buildX3fReplayDeps()
+        );
+        dispatch({ type: 'SET_HISTORICAL_ANALYSIS', interpretations: result.interpretations });
+      } catch {
+        historicalReplayRunRef.current = false;
+        dispatch({
+          type: 'SET_REPLAY_STAGE',
+          stage: 'failed',
+          error: 'Historical replay could not be assembled from the confirmed legs.',
+        });
+      }
+    });
+  }, [state.confirmed, state.historicalReplay, state.parlay.legs, state.replayStage]);
 
   const replaceObjectUrl = (next: string | null) => {
     if (objectUrlRef.current && objectUrlRef.current !== next) {

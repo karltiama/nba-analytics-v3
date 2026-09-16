@@ -17,6 +17,8 @@ type ExtractedLegsPanelProps = {
   extractionStatusLabel: string;
   canConfirm: boolean;
   confirmed: boolean;
+  confirmLabel?: string;
+  confirmHint?: string;
   onToggleEditing: () => void;
   onEditLeg: (
     legId: string,
@@ -38,6 +40,8 @@ export function ExtractedLegsPanel({
   extractionStatusLabel,
   canConfirm,
   confirmed,
+  confirmLabel,
+  confirmHint,
   onToggleEditing,
   onEditLeg,
   onAcceptLeg,
@@ -102,8 +106,9 @@ export function ExtractedLegsPanel({
             disabled={!canConfirm || confirmed}
             className="w-full rounded-lg bg-[#063f46] text-white text-sm font-semibold py-2.5 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0a525c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
           >
-            {confirmed ? 'Legs confirmed' : 'Confirm legs'}
+            {confirmLabel ?? (confirmed ? 'Legs confirmed' : 'Confirm legs')}
           </button>
+          {confirmHint ? <p className="text-xs text-[#4a6366]">{confirmHint}</p> : null}
           {showWholeNumberLineNote ? (
             <p className="rounded-md bg-[#E7F6F1] px-2.5 py-2 text-xs text-[#075B5C]">{LINE_WHOLE_NUMBER_HINT}</p>
           ) : null}
@@ -148,6 +153,9 @@ function LegRow({
       />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-[#063f46] truncate">{name}</p>
+        {leg.rawSnippet && !leg.rawSnippet.includes(name) ? (
+          <p className="text-[11px] text-[#8aa0a3] truncate">Screenshot read: {leg.rawSnippet}</p>
+        ) : null}
         <MatchupLine leg={leg} />
       </div>
       <div className="text-right shrink-0">

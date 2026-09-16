@@ -52,5 +52,14 @@ export function isXrayDesignPreviewEnabled(
   env: string | undefined = process.env.NODE_ENV
 ): boolean {
   if (env === 'production') return false;
-  return flag === '1' || flag === 'partial' || flag === 'analysis';
+  return flag === '1' || flag === 'partial' || flag === 'analysis' || flag === 'replay';
 }
+
+export const REPLAY_STAGE_COPY: Record<NonNullable<import('./session').XrayReplayStage>, string> = {
+  resolving: 'Resolving confirmed legs to Court Context identity…',
+  matching: 'Matching historical market rows…',
+  assembling_context: 'Loading historical context as of the certified cutoff…',
+  interpreting: 'Assembling the XRay read…',
+  ready: 'Historical replay ready.',
+  failed: 'Historical replay could not be assembled. Confirmed legs were not dropped.',
+};

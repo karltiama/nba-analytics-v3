@@ -1,1 +1,1 @@
-export { buildHistoricalAnalysisPreview } from './parlay-fixture';
+export { buildHistoricalAnalysisPreview } from '../e2e/preview';
