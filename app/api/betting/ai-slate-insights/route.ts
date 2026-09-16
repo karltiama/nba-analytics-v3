@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
       summary: null,
       eligible: false,
       code: 'NO_OPENAI_KEY' as const,
-      message: 'Set OPENAI_API_KEY on the server to enable AI slate summaries.',
+      message: 'Slate briefing is unavailable right now.',
     });
   }
 

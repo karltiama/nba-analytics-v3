@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/betting/Header';
 import { OnboardingGate } from '@/components/betting/OnboardingGate';
+import { GuidanceHost } from '@/components/onboarding/GuidanceHost';
 import { shouldShowLayoutHeader } from '@/components/betting/betting-shell-paths';
 
 /**
@@ -47,6 +48,7 @@ export function BettingAppShell({ children }: { children: React.ReactNode }) {
       {children}
       <Suspense fallback={null}>
         <OnboardingGate />
+        <GuidanceHost />
       </Suspense>
     </div>
   );

@@ -414,8 +414,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
               ? aiSummaryText
               : (
                 <>
-                  Add <span className="font-mono text-[#063f46]">OPENAI_API_KEY</span> on the server for the AI-written
-                  summary (same as full matchup page).
+                  Matchup briefing is unavailable right now.
                 </>
               )}
           </p>

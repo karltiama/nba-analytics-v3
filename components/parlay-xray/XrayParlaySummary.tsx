@@ -44,7 +44,7 @@ export function XrayParlaySummary({
         <p className="text-sm text-[#4a6366] max-w-3xl">{parlay.summarySentence}</p>
       </header>
 
-      <section aria-labelledby="xray-parlay-fail-heading" className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
+      <section aria-labelledby="xray-parlay-fail-heading" className="rounded-2xl border border-[#DCE9EA] bg-white p-5" data-coachmark="why-fail">
         <h3 id="xray-parlay-fail-heading" className="text-base font-bold text-[#063f46]">
           Why this parlay could fail
         </h3>

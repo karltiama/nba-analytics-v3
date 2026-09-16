@@ -42,7 +42,7 @@ export function LandingHero() {
 
             <div className="flex w-full flex-col items-center gap-2 sm:items-start sm:gap-3">
               <p className="text-[11px] sm:text-[13px] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#8aa0a3]">
-                Basketball analytics, deeper insights into every game
+                More than the trend.
               </p>
               <h1 className="w-full text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] text-[#063f46]">
                 See the game
@@ -53,7 +53,7 @@ export function LandingHero() {
             </div>
 
             <p className="w-full text-base sm:text-lg md:text-xl text-[#4a6366] sm:max-w-[22rem] md:max-w-md lg:max-w-lg">
-              Player props, matchups, injuries, trends, and advanced analytics — all in one place. Court Context gives you the full story behind the numbers.
+              Research player props, parlays, players, and games. Stats tell what happened; context helps explain why it matters.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1 sm:justify-start sm:pt-2">
@@ -61,7 +61,7 @@ export function LandingHero() {
                 href="/betting?onboard=1"
                 className="group inline-flex h-12 w-auto items-center justify-center gap-2 rounded-lg bg-[#063f46] px-5 sm:px-6 text-white font-semibold transition-colors hover:bg-[#0a525c]"
               >
-                Start Winning Now
+                Explore Court Context
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link

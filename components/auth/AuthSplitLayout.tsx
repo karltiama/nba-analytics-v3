@@ -27,7 +27,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
           Court Context
         </span>
         {!compact ? (
-          <span className="block text-[11px] text-white/70 mt-1">More than numbers.</span>
+          <span className="block text-[11px] text-white/70 mt-1">More than the trend.</span>
         ) : null}
       </span>
     </Link>
@@ -68,7 +68,8 @@ function AuthBrandPanel() {
             </span>
           </h2>
           <p className="mt-4 text-sm xl:text-base text-white/75 leading-relaxed">
-            Player props, matchups, injuries, trends, and advanced analytics — all in one place.
+            Research player props, parlays, players, and games. Stats tell what happened; context helps explain why it
+            matters.
           </p>
         </div>
 

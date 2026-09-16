@@ -159,7 +159,7 @@ export function LandingPropsTablePreview() {
         accent="cyan"
         variant="watermark"
         title="Props Explorer snapshot"
-        description="Court Context projection vs the sportsbook line — same grid you get inside the terminal (sample rows; tail as loading placeholders)."
+        description="Sample rows from the Props Explorer grid — not live offers."
         href="/betting/props-explorer"
         linkLabel="Open props board"
       />

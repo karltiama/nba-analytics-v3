@@ -121,9 +121,9 @@ export function LandingTrendingPlayerStripPreview() {
         accent="orange"
         variant="watermark"
         title="Trending Players"
-        description="L5 vs SZN — sample PTS rankings; switch stats in the live strip."
+        description="Sample L5 vs season illustration — not a live ranking."
         href="/betting"
-        linkLabel="View Full Terminal"
+        linkLabel="Open dashboard"
       />
 
       <div className="flex items-center gap-1 mb-3 flex-wrap" aria-hidden>

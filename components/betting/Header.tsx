@@ -4,10 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
-import { Sun, Moon, User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu } from 'lucide-react';
+import { Sun, Moon, User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu, CircleHelp } from 'lucide-react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { PRIMARY_NAV } from '@/components/betting/primary-nav';
+import { ProductTourDialog } from '@/components/onboarding/ProductTourDialog';
+import {
+  contextualWorkspaceNavAriaLabel,
+  contextualWorkspaceNavLabel,
+} from '@/lib/parlay/preview-fixture';
+import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
+import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -54,6 +61,54 @@ function NavLink({
   );
 }
 
+function ContextualParlayNav({
+  variant,
+}: {
+  variant: 'desktop' | 'mobile-badge' | 'mobile-menu';
+}) {
+  const { legs } = useParlaySelection();
+  const label = contextualWorkspaceNavLabel(legs.length);
+  if (!label) return null;
+  const aria = contextualWorkspaceNavAriaLabel(legs.length);
+  if (variant === 'mobile-badge') {
+    return (
+      <Link
+        href={PARLAY_WORKSPACE_HREF}
+        aria-label={aria}
+        className={cn(
+          'md:hidden inline-flex items-center justify-center min-h-[36px] min-w-[36px] px-2 rounded-xl',
+          'bg-white border border-[#DCE9EA] text-xs font-semibold tabular-nums text-[#063f46]',
+          'hover:bg-[#f7f9f7] outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40'
+        )}
+      >
+        <span aria-hidden="true">{legs.length}</span>
+      </Link>
+    );
+  }
+  if (variant === 'mobile-menu') {
+    return (
+      <DropdownMenu.Item
+        className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
+        asChild
+      >
+        <Link href={PARLAY_WORKSPACE_HREF} aria-label={aria}>
+          {label}
+        </Link>
+      </DropdownMenu.Item>
+    );
+  }
+  return (
+    <Link
+      href={PARLAY_WORKSPACE_HREF}
+      aria-label={aria}
+      aria-live="polite"
+      className="hidden md:inline-flex items-center text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors"
+    >
+      {label}
+    </Link>
+  );
+}
+
 export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname() || '/betting';
@@ -63,6 +118,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
 
   const [sessionState, setSessionState] = useState<'loading' | 'guest' | 'user'>('loading');
   const [profile, setProfile] = useState<ProfilePayload | null>(null);
+  const [tourOpen, setTourOpen] = useState(false);
 
   /** Signed-in UI follows the browser Supabase session (same as middleware). Profile API only enriches fields. */
   const syncAccount = useCallback(async () => {
@@ -129,6 +185,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
 
   return (
     <header className="sticky top-0 z-50 bg-[#f7f9f7]/90 backdrop-blur-md border-b border-[#DCE9EA]">
+      <ProductTourDialog open={tourOpen} onOpenChange={setTourOpen} />
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Title */}
@@ -175,41 +232,46 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             {!teamName && (
-              <DropdownMenu.Root modal={false}>
-                <DropdownMenu.Trigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      'md:hidden p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors',
-                      'outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40'
-                    )}
-                    aria-label="Open primary navigation"
-                    aria-haspopup="menu"
-                  >
-                    <Menu className="w-4 h-4 text-[#063f46]" aria-hidden />
-                  </button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Portal>
-                  <DropdownMenu.Content
-                    sideOffset={8}
-                    align="end"
-                    className={cn(
-                      'min-w-[200px] rounded-xl border border-[#DCE9EA] bg-white p-1 shadow-xl z-[300]',
-                      'data-[state=open]:animate-in data-[state=closed]:animate-out'
-                    )}
-                  >
-                    {PRIMARY_NAV.map((item) => (
-                      <DropdownMenu.Item
-                        key={item.href}
-                        className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
-                        asChild
-                      >
-                        <Link href={item.href}>{item.label}</Link>
-                      </DropdownMenu.Item>
-                    ))}
-                  </DropdownMenu.Content>
-                </DropdownMenu.Portal>
-              </DropdownMenu.Root>
+              <>
+                <ContextualParlayNav variant="desktop" />
+                <ContextualParlayNav variant="mobile-badge" />
+                <DropdownMenu.Root modal={false}>
+                  <DropdownMenu.Trigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        'md:hidden p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors',
+                        'outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40'
+                      )}
+                      aria-label="Open primary navigation"
+                      aria-haspopup="menu"
+                    >
+                      <Menu className="w-4 h-4 text-[#063f46]" aria-hidden />
+                    </button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.Content
+                      sideOffset={8}
+                      align="end"
+                      className={cn(
+                        'min-w-[200px] rounded-xl border border-[#DCE9EA] bg-white p-1 shadow-xl z-[300]',
+                        'data-[state=open]:animate-in data-[state=closed]:animate-out'
+                      )}
+                    >
+                      <ContextualParlayNav variant="mobile-menu" />
+                      {PRIMARY_NAV.map((item) => (
+                        <DropdownMenu.Item
+                          key={item.href}
+                          className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
+                          asChild
+                        >
+                          <Link href={item.href}>{item.label}</Link>
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Root>
+              </>
             )}
 
             <button
@@ -296,6 +358,16 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                           Create account
                         </Link>
                       </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setTourOpen(true);
+                        }}
+                      >
+                        <CircleHelp className="w-4 h-4 text-[#075B5C]" />
+                        How Court Context works
+                      </DropdownMenu.Item>
                     </>
                   ) : (
                     <>
@@ -306,6 +378,16 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                         ) : null}
                         <p className="text-[10px] text-[#8aa0a3] mt-1">TZ: {profile?.timezone}</p>
                       </div>
+                      <DropdownMenu.Item
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setTourOpen(true);
+                        }}
+                      >
+                        <CircleHelp className="w-4 h-4 text-[#075B5C]" />
+                        How Court Context works
+                      </DropdownMenu.Item>
                       <DropdownMenu.Item
                         className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
                         asChild

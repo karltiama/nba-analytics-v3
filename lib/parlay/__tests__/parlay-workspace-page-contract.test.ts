@@ -22,7 +22,9 @@ describe('Parlay Workspace page contract', () => {
   it('is routed at /parlay-workspace with Court Context shell and no primary-nav item', () => {
     expect(shouldShowLayoutHeader('/parlay-workspace')).toBe(true);
     expect(layout).toMatch(/BettingAppShell/);
-    expect(page).toMatch(/ParlayWorkspaceClient/);
+    expect(page).toMatch(/ParlayWorkspaceEntry/);
+    expect(read('app/parlay-workspace/ParlayWorkspaceEntry.tsx')).toMatch(/ParlayWorkspaceClient/);
+    expect(read('app/parlay-workspace/ParlayWorkspaceEntry.tsx')).toMatch(/ParlayWorkspacePreviewClient/);
     expect(PRIMARY_NAV.some((item) => item.href === '/parlay-workspace')).toBe(false);
     expect(PRIMARY_NAV.some((item) => item.href.includes('parlay-explorer'))).toBe(false);
   });

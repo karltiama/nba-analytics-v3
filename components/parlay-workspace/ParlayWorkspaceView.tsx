@@ -11,7 +11,7 @@ import {
   type SelectedParlayLeg,
 } from '@/lib/parlay/selection';
 import type { WorkspaceAnalysisEligibility } from '@/lib/parlay/workspace-analysis';
-import type { WorkspaceAnalysisRecord } from '@/lib/parlay/selection-store';
+import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
 
 function formatOdds(odds: number | null): string {
   if (odds == null) return '—';
@@ -113,6 +113,7 @@ function WorkspaceActions({
           onClick={onAnalyze}
           disabled={analysisBusy}
           aria-busy={analysisBusy}
+          data-coachmark="workspace-analyze"
         >
           {analysisBusy ? 'Building Court Context analysis…' : 'Analyze with Court Context'}
         </button>
@@ -148,6 +149,7 @@ export function ParlayWorkspaceView({
   onAnalyze,
   onShowReview,
   editedAfterXrayImport = false,
+  previewLabel = null,
 }: {
   legs: SelectedParlayLeg[];
   explorerHref: string;
@@ -161,6 +163,7 @@ export function ParlayWorkspaceView({
   onAnalyze: () => void;
   onShowReview: () => void;
   editedAfterXrayImport?: boolean;
+  previewLabel?: string | null;
 }) {
   const structure = summarizeCanonicalSelection(legs);
   const sourceLabel = workspaceSourceLabel(legs);
@@ -171,11 +174,20 @@ export function ParlayWorkspaceView({
     gameCounts.set(leg.offer.gameId, (gameCounts.get(leg.offer.gameId) ?? 0) + 1);
   }
 
+  const previewBanner = previewLabel ? (
+    <p className="rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-sm text-[#063f46]" role="status">
+      {previewLabel} — certified historical fixture. This is not a live or current-season parlay.
+    </p>
+  ) : null;
+
   if (legs.length === 0) {
     return (
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+        {previewBanner ? <div className="mb-4">{previewBanner}</div> : null}
         <header className="mb-8 max-w-xl">
-          <h1 className="text-xl font-semibold text-[#063f46]">Parlay Workspace</h1>
+          <h1 className="text-xl font-semibold text-[#063f46]" data-coachmark="workspace-intro">
+            Parlay Workspace
+          </h1>
           <p className="text-sm text-[#4a6366] mt-2">
             Review how your selected legs connect before making your own decision.
           </p>
@@ -183,7 +195,9 @@ export function ParlayWorkspaceView({
         <section className="rounded-2xl border border-[#DCE9EA] bg-white shadow-sm p-6 max-w-xl">
           <p className="text-sm font-medium text-[#063f46]">Your parlay is empty.</p>
           <p className="text-sm text-[#4a6366] mt-2">
-            Add legs from Props Explorer, or import a slip in Parlay XRay.
+            {isPublicXrayExtractionReady()
+              ? 'Add legs from Props Explorer, or import a slip in Parlay XRay.'
+              : 'Add legs from Props Explorer. Screenshot import is not available yet.'}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
           <Link
@@ -192,12 +206,14 @@ export function ParlayWorkspaceView({
           >
             Explore Props
           </Link>
+          {isPublicXrayExtractionReady() ? (
           <Link
             href="/parlay-xray"
             className="inline-flex items-center justify-center min-h-[44px] px-4 text-sm font-semibold rounded-lg border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
           >
             Import with XRay
           </Link>
+          ) : null}
           </div>
         </section>
       </main>
@@ -224,8 +240,11 @@ export function ParlayWorkspaceView({
 
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+      {previewBanner ? <div className="mb-4">{previewBanner}</div> : null}
       <header className="mb-6">
-        <h1 className="text-xl font-semibold text-[#063f46]">Parlay Workspace</h1>
+        <h1 className="text-xl font-semibold text-[#063f46]" data-coachmark="workspace-intro">
+          Parlay Workspace
+        </h1>
         <p className="text-sm text-[#4a6366] mt-2">
           {showingResults
             ? 'Historical Court Context analysis for the selected Decision Close offers.'

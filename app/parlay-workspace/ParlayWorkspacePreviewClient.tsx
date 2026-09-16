@@ -2,20 +2,21 @@
 
 import { useMemo, useState } from 'react';
 import { ParlayWorkspaceView } from '@/components/parlay-workspace/ParlayWorkspaceView';
-import { selectionSourceContext } from '@/lib/parlay/selection';
-import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
+import {
+  buildWorkspaceHistoricalPreviewLegs,
+  PROPS_HISTORICAL_PREVIEW_HREF,
+} from '@/lib/parlay/preview-fixture';
+import { removeSelectedLeg, type SelectedParlayLeg } from '@/lib/parlay/selection';
 import {
   evaluateWorkspaceAnalysisEligibility,
   runWorkspaceHistoricalAnalysis,
   selectionFingerprint,
 } from '@/lib/parlay/workspace-analysis';
-import { completeChecklistItem } from '@/lib/onboarding/progress';
-import { PARLAY_WORKSPACE_ANALYSIS_STARTED } from '@/lib/product-analytics/parlay-xray-events';
-import { trackEvent } from '@/lib/product-analytics/track-event';
+import type { WorkspaceAnalysisRecord } from '@/lib/parlay/selection-store';
 
-export function ParlayWorkspaceClient() {
-  const { legs, analysis, explorerReturnHref, removeLeg, clear, setAnalysis, editedAfterXrayImport } =
-    useParlaySelection();
+export function ParlayWorkspacePreviewClient() {
+  const [legs, setLegs] = useState<SelectedParlayLeg[]>(() => buildWorkspaceHistoricalPreviewLegs());
+  const [analysis, setAnalysis] = useState<WorkspaceAnalysisRecord | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showingResults, setShowingResults] = useState(false);
@@ -27,16 +28,10 @@ export function ParlayWorkspaceClient() {
     setBusy(true);
     setError(null);
     try {
-      trackEvent(PARLAY_WORKSPACE_ANALYSIS_STARTED, {
-        surface: 'parlay_workspace',
-        source: selectionSourceContext(legs),
-        action: 'analysis_started',
-      });
       const { buildX3fReplayContext, buildX3fReplayDeps } = await import('@/lib/parlay-xray/e2e/fixture');
       const result = runWorkspaceHistoricalAnalysis(legs, buildX3fReplayContext(), buildX3fReplayDeps());
       setAnalysis({ fingerprint: selectionFingerprint(legs), result });
       setShowingResults(true);
-      completeChecklistItem('workspace_analyzed');
     } catch {
       setError('Historical analysis could not run for this selection.');
       setShowingResults(false);
@@ -48,9 +43,13 @@ export function ParlayWorkspaceClient() {
   return (
     <ParlayWorkspaceView
       legs={legs}
-      explorerHref={explorerReturnHref}
-      onRemove={removeLeg}
-      onClear={clear}
+      explorerHref={PROPS_HISTORICAL_PREVIEW_HREF}
+      onRemove={(id) => setLegs((current) => removeSelectedLeg(current, id))}
+      onClear={() => {
+        setLegs([]);
+        setAnalysis(null);
+        setShowingResults(false);
+      }}
       eligibility={eligibility}
       analysis={analysisCurrent ? analysis : null}
       analysisBusy={busy}
@@ -58,7 +57,7 @@ export function ParlayWorkspaceClient() {
       showingResults={showingResults && analysisCurrent}
       onAnalyze={onAnalyze}
       onShowReview={() => setShowingResults(false)}
-      editedAfterXrayImport={editedAfterXrayImport}
+      previewLabel="Historical Preview"
     />
   );
 }

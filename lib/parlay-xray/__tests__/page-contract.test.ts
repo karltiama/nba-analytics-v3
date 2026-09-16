@@ -91,13 +91,13 @@ describe('Parlay XRay page contract', () => {
     expect(isXrayDesignPreviewEnabled('partial', 'development')).toBe(true);
     expect(isXrayDesignPreviewEnabled('analysis', 'development')).toBe(true);
     expect(isXrayDesignPreviewEnabled('replay', 'development')).toBe(true);
-    expect(isXrayDesignPreviewEnabled('replay', 'production')).toBe(false);
+    expect(isXrayDesignPreviewEnabled('replay', 'production')).toBe(true);
     expect(isXrayDesignPreviewEnabled('analysis', 'production')).toBe(false);
     expect(isXrayDesignPreviewEnabled(null, 'development')).toBe(false);
 
     const client = readFileSync(join(ROOT, 'app/parlay-xray/ParlayXrayClient.tsx'), 'utf8');
-    expect(client).toMatch(/isXrayDesignPreviewEnabled/);
-    expect(client).toMatch(/NODE_ENV === 'production'/);
+    expect(client).toMatch(/shouldSuppressProductPreviewAnalytics/);
+    expect(client).toMatch(/previewFlag !== 'replay'/);
     expect(client).toMatch(/dev-fixture/);
     expect(client).toMatch(/interpretation\/preview/);
     expect(client).toMatch(/previewFlag === 'analysis'/);
@@ -122,6 +122,8 @@ describe('Parlay XRay page contract', () => {
     expect(view).toMatch(/lg:grid-cols-12/);
     expect(view).toMatch(/lg:col-span-5/);
     expect(view).toMatch(/Upload your slip/);
+    expect(view).toMatch(/Screenshot reading is not available yet/);
+    expect(view).toMatch(/SCREENSHOT_EXTRACTION_AVAILABLE/);
     expect(view).not.toMatch(/guaranteed/i);
     expect(view).not.toMatch(/beat the books/i);
     expect(view).not.toMatch(/instant winning/i);

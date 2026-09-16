@@ -51,8 +51,9 @@ export function isXrayDesignPreviewEnabled(
   flag: string | null | undefined,
   env: string | undefined = process.env.NODE_ENV
 ): boolean {
+  if (flag === 'replay') return true;
   if (env === 'production') return false;
-  return flag === '1' || flag === 'partial' || flag === 'analysis' || flag === 'replay';
+  return flag === '1' || flag === 'partial' || flag === 'analysis';
 }
 
 export const REPLAY_STAGE_COPY: Record<NonNullable<import('./session').XrayReplayStage>, string> = {

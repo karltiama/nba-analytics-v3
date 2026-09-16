@@ -1,5 +1,5 @@
 /**
- * Admin gate for `/admin/model-lab` and `/api/admin/model-lab/*`.
+ * Admin gate for `/admin/model-lab`, `/admin/product-preview`, and `/api/admin/model-lab/*`.
  * Session required, then ADMIN_EMAILS allowlist (fail-closed if empty).
  */
 

@@ -104,10 +104,10 @@ export function FeaturedGames() {
         icon={Trophy}
         accent="lime"
         variant="watermark"
-        title="Today's Matchups"
-        description="Sample slate preview — sign in for live odds and analysis"
+        title="Sample matchups"
+        description="Illustration only — not today’s live slate. Sign in to research historical props and parlays."
         href="/betting"
-        linkLabel="View Full Terminal"
+        linkLabel="Open dashboard"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -117,7 +117,7 @@ export function FeaturedGames() {
             className="fade-in"
             style={{ animationDelay: `${index * 150}ms` }}
           >
-            <GameCard game={game} />
+            <GameCard game={game} samplePreview />
           </div>
         ))}
       </div>

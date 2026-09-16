@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NBA Analytics",
-  description: "NBA game results, player statistics, and team performance analytics",
+  title: "Court Context",
+  description: "Research NBA props, parlays, players, and games. Stats tell what happened; context helps explain why it matters.",
 };
 
 export default function RootLayout({

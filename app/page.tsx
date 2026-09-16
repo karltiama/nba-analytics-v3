@@ -28,9 +28,9 @@ export default function LandingPage() {
         <div className="max-w-[1280px] mx-auto px-6 text-center text-sm text-white/70 flex flex-col items-center gap-4">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4" />
-            <span className="font-bold tracking-tight text-white">NBAEdge</span>
+            <span className="font-bold tracking-tight text-white">Court Context</span>
           </div>
-          <p>© {new Date().getFullYear()} NBA Analytics Edge. For informational purposes only.</p>
+          <p>© {new Date().getFullYear()} Court Context. Research only — not betting advice.</p>
         </div>
       </footer>
     </div>

@@ -65,7 +65,9 @@ describe('admin HTML protection', () => {
   it('matches /admin pages and not the JSON API', () => {
     expect(isAdminHtmlPath('/admin')).toBe(true);
     expect(isAdminHtmlPath('/admin/model-lab')).toBe(true);
+    expect(isAdminHtmlPath('/admin/product-preview')).toBe(true);
     expect(isSessionProtectedHtmlPath('/admin/model-lab')).toBe(true);
+    expect(isSessionProtectedHtmlPath('/admin/product-preview')).toBe(true);
     expect(isAdminHtmlPath('/api/admin/model-lab/experiments')).toBe(false);
   });
 });

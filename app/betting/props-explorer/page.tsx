@@ -32,6 +32,7 @@ import {
   isOfferSelected,
 } from '@/lib/parlay/selection';
 import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
+import { completeChecklistItem } from '@/lib/onboarding/progress';
 
 type ExplorerRow = {
   gameId: number;
@@ -227,6 +228,10 @@ export default function PropsExplorerPage(props: PageProps) {
     clear: clearParlaySelection,
     rememberExplorerReturnHref,
   } = useParlaySelection();
+
+  useEffect(() => {
+    completeChecklistItem('explore_prop');
+  }, []);
 
   const marketContext: 'live' | 'historical' =
     meta?.marketContext ?? (date < getTodayET() ? 'historical' : 'live');
@@ -520,6 +525,7 @@ export default function PropsExplorerPage(props: PageProps) {
     const gameLabel = games.find((g) => g.id === String(r.gameId))?.label ?? null;
     const result = addExplorerOffer(rowToParlayOfferInput(r), { gameLabel });
     setParlayNotice(addResultNotice(result));
+    completeChecklistItem('parlay_leg_added');
   }, [addExplorerOffer, games]);
 
   const clearParlay = useCallback(() => {
@@ -607,7 +613,7 @@ export default function PropsExplorerPage(props: PageProps) {
         </div>
 
         {/* Main Filters Grid */}
-        <div className="p-3 sm:p-4 space-y-4">
+        <div className="p-3 sm:p-4 space-y-4" data-coachmark="props-discover">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
             <div className="relative col-span-2 md:col-span-1">
               <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
@@ -865,9 +871,9 @@ export default function PropsExplorerPage(props: PageProps) {
                   {marketContext === 'historical' ? 'Closed' : 'Updated'}
                 </th>
                 <th className="py-2 px-2 font-medium w-[72px]">Save</th>
-                <th className="py-2 px-2 font-medium w-[88px]">Compare</th>
+                <th className="py-2 px-2 font-medium w-[88px]" data-coachmark="props-compare">Compare</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
-                <th className="py-2 px-2 font-medium w-[80px]">Parlay</th>
+                <th className="py-2 px-2 font-medium w-[80px]" data-coachmark="props-add-parlay">Parlay</th>
               </tr>
             </thead>
             <tbody>
@@ -1024,7 +1030,8 @@ export default function PropsExplorerPage(props: PageProps) {
                     <td className="py-1.5 px-1">
                       <button
                         type="button"
-                        onClick={() =>
+                        onClick={() => {
+                          completeChecklistItem('compare_opened');
                           setSelectedMarket({
                             gameId: r.gameId,
                             playerId: r.playerId,
@@ -1035,8 +1042,8 @@ export default function PropsExplorerPage(props: PageProps) {
                             sportsbook: r.sportsbook,
                             oddsAmerican: r.oddsAmerican,
                             snapshotAt: r.snapshotAt,
-                          })
-                        }
+                          });
+                        }}
                         className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
                         title="Compare books"
                       >

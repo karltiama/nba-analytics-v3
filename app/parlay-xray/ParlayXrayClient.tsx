@@ -4,6 +4,7 @@ import { useEffect, useReducer, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ParlayXrayView } from '@/components/parlay-xray/ParlayXrayView';
 import { handoffConfirmedXrayParlay } from '@/lib/parlay/adapt-xray-confirmed';
+import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
 import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
 import { importConfirmedXrayLegsToStore } from '@/lib/parlay/selection-store';
 import { isXrayDesignPreviewEnabled } from '@/lib/parlay-xray/copy';
@@ -40,6 +41,8 @@ export function ParlayXrayClient() {
   const headshotLegKeyRef = useRef('');
 
   useEffect(() => {
+    const previewFlag = new URLSearchParams(window.location.search).get('preview');
+    if (shouldSuppressProductPreviewAnalytics(previewFlag)) return;
     trackEvent(PARLAY_XRAY_VIEWED, parlayXraySurfaceProperties);
   }, []);
 
@@ -61,9 +64,9 @@ export function ParlayXrayClient() {
   }, []);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') return;
     const previewFlag = new URLSearchParams(window.location.search).get('preview');
     if (!isXrayDesignPreviewEnabled(previewFlag)) return;
+    if (process.env.NODE_ENV === 'production' && previewFlag !== 'replay') return;
     let cancelled = false;
     if (previewFlag === 'analysis') {
       void import('@/lib/parlay-xray/interpretation/preview').then((mod) => {
@@ -229,10 +232,13 @@ export function ParlayXrayClient() {
         return false;
       }
       importConfirmedXrayLegsToStore(result.legs);
-      trackEvent(PARLAY_XRAY_OPEN_WORKSPACE, {
-        surface: 'parlay_xray',
-        action: 'open_workspace',
-      });
+      const previewFlag = new URLSearchParams(window.location.search).get('preview');
+      if (!shouldSuppressProductPreviewAnalytics(previewFlag)) {
+        trackEvent(PARLAY_XRAY_OPEN_WORKSPACE, {
+          surface: 'parlay_xray',
+          action: 'open_workspace',
+        });
+      }
       router.push(PARLAY_WORKSPACE_HREF);
       return true;
     } catch {

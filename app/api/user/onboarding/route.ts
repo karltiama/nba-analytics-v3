@@ -2,20 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { queryOne } from '@/lib/db';
 import { resolveSupabaseAuth } from '@/lib/auth/supabase-user';
+import {
+  mapGuidanceToExperience,
+  mapIntentToLegacyGoal,
+  PRIMARY_INTENTS,
+  GUIDANCE_LEVELS,
+} from '@/lib/onboarding/contract';
 
 const onboardingBodySchema = z.object({
+  skipped: z.boolean().optional(),
+  primaryIntent: z.enum(PRIMARY_INTENTS).nullable().optional(),
+  guidanceLevel: z.enum(GUIDANCE_LEVELS).nullable().optional(),
   preferredSportsbook: z.union([z.string().max(60), z.null()]).optional(),
-  oddsFormat: z.enum(['american', 'decimal', 'fractional']),
-  paperDisplayMode: z.enum(['dollars', 'units', 'off']),
+  oddsFormat: z.enum(['american', 'decimal', 'fractional']).optional(),
+  paperDisplayMode: z.enum(['dollars', 'units', 'off']).optional(),
   primaryGoal: z.enum(['find_edges', 'track_picks', 'learn']).nullable().optional(),
   experienceLevel: z.enum(['novice', 'intermediate', 'advanced']).nullable().optional(),
 });
-
-function normalizeSportsbook(raw: string | null | undefined): string | null {
-  if (raw == null) return null;
-  const t = raw.trim();
-  return t.length === 0 ? null : t;
-}
 
 type SettingsRow = {
   user_id: string;
@@ -44,7 +47,7 @@ export async function POST(request: NextRequest) {
   const { auth, withAuthCookies } = ar;
 
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const parsed = onboardingBodySchema.safeParse(body);
     if (!parsed.success) {
       return withAuthCookies(
@@ -53,7 +56,15 @@ export async function POST(request: NextRequest) {
     }
 
     const d = parsed.data;
-    const preferredSportsbook = normalizeSportsbook(d.preferredSportsbook ?? null);
+    const skipped = d.skipped === true;
+    const primaryGoal = skipped
+      ? null
+      : (d.primaryGoal ?? mapIntentToLegacyGoal(d.primaryIntent ?? null));
+    const experienceLevel = skipped
+      ? null
+      : (d.experienceLevel ?? mapGuidanceToExperience(d.guidanceLevel ?? null));
+    const oddsFormat = d.oddsFormat ?? 'american';
+    const paperDisplayMode = d.paperDisplayMode ?? 'units';
 
     await queryOne(
       `INSERT INTO public.profiles (id)
@@ -70,7 +81,7 @@ export async function POST(request: NextRequest) {
          $1::uuid, $2, $3, $4, $5, $6
        )
        ON CONFLICT (user_id) DO UPDATE SET
-         preferred_sportsbook = EXCLUDED.preferred_sportsbook,
+         preferred_sportsbook = COALESCE(EXCLUDED.preferred_sportsbook, public.user_settings.preferred_sportsbook),
          odds_format = EXCLUDED.odds_format,
          paper_display_mode = EXCLUDED.paper_display_mode,
          primary_goal = EXCLUDED.primary_goal,
@@ -78,14 +89,7 @@ export async function POST(request: NextRequest) {
          updated_at = now()
        RETURNING user_id, preferred_sportsbook, odds_format, paper_display_mode, primary_goal, experience_level,
                  bankroll, risk_tolerance, min_edge_percent, favorite_teams, notification_enabled, created_at, updated_at`,
-      [
-        auth.userId,
-        preferredSportsbook,
-        d.oddsFormat,
-        d.paperDisplayMode,
-        d.primaryGoal ?? null,
-        d.experienceLevel ?? null,
-      ]
+      [auth.userId, null, oddsFormat, paperDisplayMode, primaryGoal, experienceLevel]
     );
 
     if (!settingsRow) {
@@ -107,6 +111,7 @@ export async function POST(request: NextRequest) {
     return withAuthCookies(
       NextResponse.json({
         ok: true,
+        skipped,
         onboardingCompletedAt: profileRow.onboarding_completed_at,
         settings: {
           preferredSportsbook: settingsRow.preferred_sportsbook,

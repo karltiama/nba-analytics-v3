@@ -3,7 +3,7 @@ import { ParlayXrayClient } from './ParlayXrayClient';
 export const metadata = {
   title: 'Parlay XRay · Court Context',
   description:
-    'Upload a parlay screenshot and review the context, risk, and uncertainty behind each leg. Not a win prediction.',
+    'Import an existing slip when screenshot reading is available. Confirm is the trust boundary. Analysis happens in Workspace — not on this page.',
 };
 
 export default function ParlayXrayPage() {

@@ -64,6 +64,8 @@ interface GameCardProps {
   onViewDetails?: (gameId: string) => void;
   /** ET YYYY-MM-DD used for Props Explorer deep links when game.gameDate is missing */
   researchDate?: string;
+  /** Marketing sample cards must not deep-link to fake game ids. */
+  samplePreview?: boolean;
 }
 
 function formatOdds(odds: number | null | undefined): string {
@@ -156,13 +158,13 @@ function TeamMatchupSide({
   );
 }
 
-export function GameCard({ game, onViewDetails, researchDate }: GameCardProps) {
+export function GameCard({ game, onViewDetails, researchDate, samplePreview = false }: GameCardProps) {
   const dateForProps =
     (game.gameDate && /^\d{4}-\d{2}-\d{2}/.test(String(game.gameDate))
       ? String(game.gameDate).slice(0, 10)
       : null) ?? researchDate ?? undefined;
-  const gameHref = gameDetailHref(game.id);
-  const propsHref = propsExplorerHref({ gameId: game.id, date: dateForProps });
+  const gameHref = samplePreview ? '/betting' : gameDetailHref(game.id);
+  const propsHref = samplePreview ? '/betting/props-explorer' : propsExplorerHref({ gameId: game.id, date: dateForProps });
 
   const hasOdds =
     game.hasOdds ??

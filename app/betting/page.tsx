@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   GameCard,
   AIInsightPanel,
@@ -15,6 +16,8 @@ import {
   type Insight,
   type SortOption,
 } from '@/components/betting';
+import { GettingStartedChecklist } from '@/components/onboarding/GettingStartedChecklist';
+import { ExistingUserPrompt } from '@/components/onboarding/ProductTourDialog';
 import {
   GameCardSkeleton,
   BettingInsightsSkeleton,
@@ -342,9 +345,9 @@ export default function BettingDashboard(props: PageProps) {
             typeof data.message === 'string'
               ? data.message
               : data.code === 'NO_OPENAI_KEY'
-                ? 'Add OPENAI_API_KEY on the server to enable the slate summary.'
+                ? 'Slate briefing is unavailable right now.'
                 : data.code === 'OPENAI_ERROR'
-                  ? 'OpenAI request failed. Try again later.'
+                  ? 'Could not load the slate briefing. Try again later.'
                   : 'Summary unavailable.'
           );
         }
@@ -411,6 +414,8 @@ export default function BettingDashboard(props: PageProps) {
           {/* Main Content */}
           <div className="flex-1 min-w-0 pt-8 space-y-6">
             {/* Date + Filters (single bar) */}
+            <ExistingUserPrompt />
+            <GettingStartedChecklist />
             <FilterBar
               searchValue={searchValue}
               onSearchChange={setSearchValue}
@@ -460,10 +465,24 @@ export default function BettingDashboard(props: PageProps) {
                 </div>
               ) : sortedGames.length === 0 ? (
                 <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
-                  <p className="text-[#4a6366]">{emptyGamesMessage}</p>
-                  {dateLabel === 'Today' && (
-                    <p className="text-xs text-[#8aa0a3] mt-2">Check back later or select a different date</p>
-                  )}
+                  <p className="text-[#063f46] font-medium">{emptyGamesMessage}</p>
+                  <p className="text-sm text-[#4a6366] mt-2">
+                    You can still research historical props or open a parlay workspace.
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                    <Link
+                      href="/betting/props-explorer"
+                      className="inline-flex items-center justify-center min-h-[44px] rounded-xl border border-[#075B5C] px-4 text-sm font-semibold text-[#075B5C] hover:bg-[#55ddb1]/20"
+                    >
+                      Explore Props
+                    </Link>
+                    <Link
+                      href="/parlay-workspace"
+                      className="inline-flex items-center justify-center min-h-[44px] rounded-xl border border-[#DCE9EA] px-4 text-sm font-medium text-[#063f46] hover:bg-[#f7f9f7]"
+                    >
+                      Open Workspace
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

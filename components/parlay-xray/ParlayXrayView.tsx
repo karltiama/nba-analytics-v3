@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ANALYSIS_STAGE_COPY, EXTRACTION_STAGE_COPY, REPLAY_STAGE_COPY, UPLOAD_ERROR_COPY } from '@/lib/parlay-xray/copy';
 import { quotaRemainingLabel } from '@/lib/parlay-xray/extraction/copy';
 import { extractionCounts } from '@/lib/parlay-xray/fields';
@@ -17,7 +18,7 @@ import { ExtractedLegsPanel } from './ExtractedLegsPanel';
 import { UploadDropzone } from './UploadDropzone';
 import { XrayAnalysisPanel } from './XrayAnalysisPanel';
 import { XrayResultsPanel } from './XrayResultsPanel';
-import type { UploadErrorCode, UploadedScreenshot } from '@/lib/parlay-xray/types';
+import { SCREENSHOT_EXTRACTION_AVAILABLE, type UploadErrorCode, type UploadedScreenshot } from '@/lib/parlay-xray/types';
 
 type ParlayXrayViewProps = {
   state: XrayState;
@@ -69,10 +70,19 @@ export function ParlayXrayView({
   );
   const quotaLabel =
     state.quota != null ? quotaRemainingLabel(state.quota.used, state.quota.limit) : null;
+  const publicExtractionOff =
+    !SCREENSHOT_EXTRACTION_AVAILABLE && !historicalReplay && !state.designPreview;
 
   return (
     <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
-      {historicalReplay ? (
+      {publicExtractionOff ? (
+        <p
+          className="rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-sm text-[#063f46]"
+          role="status"
+        >
+          Screenshot reading is not available yet. Research a prop, add it to a parlay, then review it in Workspace.
+        </p>
+      ) : historicalReplay ? (
         <p
           className="rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-sm text-[#063f46]"
           role="status"
@@ -92,33 +102,48 @@ export function ParlayXrayView({
         <header className="lg:col-span-3 space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8aa0a3]">Parlay XRay</p>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-[#063f46] leading-[0.95]">
-            Upload your slip.
+            {publicExtractionOff ? 'Parlay XRay' : 'Upload your slip.'}
           </h1>
           <p className="text-sm sm:text-base text-[#4a6366] max-w-md">
-            Verify what XRay read, then review the parlay with Court Context. XRay imports a screenshot — it is not
-            the finished analysis.
+            {publicExtractionOff
+              ? 'XRay imports an existing slip when screenshot reading is available. Confirm stays the trust boundary. Court Context analysis happens in Workspace, not on this page.'
+              : 'Verify what XRay read, then review the parlay with Court Context. XRay imports a screenshot — it is not the finished analysis.'}
           </p>
-          <p className="text-xs font-semibold text-[#075B5C]">
+          <p className="text-xs font-semibold text-[#075B5C]" data-coachmark="xray-flow">
             Upload → Review → Confirm → Workspace
           </p>
         </header>
 
         <section className="lg:col-span-5 bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5">
-          <h2 className="text-base font-bold text-[#063f46]">Upload your parlay</h2>
+          <h2 className="text-base font-bold text-[#063f46]">
+            {publicExtractionOff ? 'Screenshot import' : 'Upload your parlay'}
+          </h2>
           <p className="text-sm text-[#4a6366] mt-1 mb-4">
-            Drag and drop a screenshot of your bet slip, or choose a file. The image stays on this device in this step.
+            {publicExtractionOff
+              ? 'This is not a live upload path. Use Props Explorer to add exact offers to Workspace.'
+              : 'Drag and drop a screenshot of your bet slip, or choose a file. The image stays on this device in this step.'}
           </p>
-          <UploadDropzone
-            screenshot={state.parlay.uploadedImage}
-            error={error}
-            statusHint={historicalReplay ? 'Historical replay fixture — not a live slip' : undefined}
-            thumbnailHint={historicalReplay ? 'Historical replay' : undefined}
-            onSelected={onSelected}
-            onRejected={onRejected}
-            onRemove={onRemove}
-            onUploadStarted={onUploadStarted}
-          />
-          {hasFile && !state.designPreview && !historicalReplay ? (
+          {publicExtractionOff ? (
+            <p className="rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] px-4 py-4 text-sm text-[#063f46]">
+              Screenshot reading is not available yet.{' '}
+              <Link href="/betting/props-explorer" className="font-semibold text-[#075B5C] underline">
+                Open Props Explorer
+              </Link>{' '}
+              to research an offer and add it to Workspace.
+            </p>
+          ) : (
+            <UploadDropzone
+              screenshot={state.parlay.uploadedImage}
+              error={error}
+              statusHint={historicalReplay ? 'Historical replay fixture — not a live slip' : undefined}
+              thumbnailHint={historicalReplay ? 'Historical replay' : undefined}
+              onSelected={onSelected}
+              onRejected={onRejected}
+              onRemove={onRemove}
+              onUploadStarted={onUploadStarted}
+            />
+          )}
+          {hasFile && !state.designPreview && !historicalReplay && !publicExtractionOff ? (
             <div className="mt-4 space-y-2">
               <button
                 type="button"
@@ -133,12 +158,13 @@ export function ParlayXrayView({
               </p>
             </div>
           ) : null}
-          {quotaLabel ? <p className="mt-3 text-xs text-[#4a6366]">{quotaLabel}</p> : null}
+          {quotaLabel && !publicExtractionOff ? <p className="mt-3 text-xs text-[#4a6366]">{quotaLabel}</p> : null}
           {state.extractNotice ? (
             <p className="mt-3 text-sm text-[#9a3412]" role="status">
               {state.extractNotice}
             </p>
           ) : null}
+          {publicExtractionOff ? null : (
           <StageList
             hasFile={Boolean(state.parlay.uploadedImage)}
             extractionCopy={extractionCopy}
@@ -146,6 +172,7 @@ export function ParlayXrayView({
             confirmed={state.confirmed}
             historicalReplay={Boolean(historicalReplay)}
           />
+          )}
         </section>
 
         <div className="lg:col-span-4">
@@ -217,8 +244,9 @@ export function ParlayXrayView({
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
           <h2 className="text-base font-bold text-[#063f46]">What XRay does</h2>
           <p className="text-sm text-[#4a6366] mt-1">
-            XRay reads player, market, side, line, and sportsbook from a screenshot so you can verify them. Court
-            Context analysis runs in Parlay Workspace after you confirm — not on this page.
+            {publicExtractionOff
+              ? 'When screenshot reading is enabled, XRay will read player, market, side, line, and sportsbook so you can verify them. Until then, build a parlay from Props Explorer and review it in Workspace.'
+              : 'XRay reads player, market, side, line, and sportsbook from a screenshot so you can verify them. Court Context analysis runs in Parlay Workspace after you confirm — not on this page.'}
           </p>
         </section>
       )}

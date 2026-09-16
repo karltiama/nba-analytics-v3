@@ -89,3 +89,31 @@ Surface-only. Do **not** send filenames, OCR text, player names, lines, odds, or
 - **Properties:** `surface` = `parlay_workspace`, `source` = `xray` | `props_explorer` | `mixed`, `action` = `analysis_started`
 - Do **not** send OCR text, player, market, line, book, odds, full parlay, or analysis text.
 
+Preview routes (`preview=replay`, `preview=historical`, and other XRay design preview flags) suppress `parlay_xray_viewed`, `parlay_xray_open_workspace`, and Workspace preview Analyze events. They do not emit `preview=true` properties.
+
+# Product events — First-run onboarding
+
+Surface + category only. Do **not** send wager contents, player names, sportsbook preference, or analysis text.
+
+## `onboarding_started`
+
+- **Trigger:** First-run dialog opens.
+- **Properties:** `surface` = `onboarding`
+
+## `onboarding_skipped` / `onboarding_completed`
+
+- **Trigger:** Skip for now, or Continue after guidance level.
+- **Properties:** `surface` = `onboarding`, `primary_intent` (category or `skipped` / `none`), `guidance_level` (category or `skipped` / `none`)
+
+## `coachmark_seen`
+
+- **Properties:** `surface` = `onboarding`, `coachmark_id`
+
+## `checklist_item_completed`
+
+- **Properties:** `surface` = `onboarding`, `item_id`
+
+## `tour_replayed`
+
+- **Properties:** `surface` = `onboarding`, `action` = `replay`
+

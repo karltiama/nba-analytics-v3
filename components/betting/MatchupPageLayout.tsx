@@ -1073,8 +1073,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                   ? aiSummaryText
                   : (
                       <>
-                        Add <span className="font-mono text-[#4a6366]">OPENAI_API_KEY</span> on the server to enable the
-                        AI-written summary.
+                        Matchup briefing is unavailable right now.
                       </>
                     )}
               </p>

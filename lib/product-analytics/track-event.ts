@@ -17,6 +17,12 @@ export const PRODUCT_EVENTS = {
   PARLAY_XRAY_EXTRACT_FAILED: 'parlay_xray_extract_failed',
   PARLAY_XRAY_OPEN_WORKSPACE: 'parlay_xray_open_workspace',
   PARLAY_WORKSPACE_ANALYSIS_STARTED: 'parlay_workspace_analysis_started',
+  ONBOARDING_STARTED: 'onboarding_started',
+  ONBOARDING_SKIPPED: 'onboarding_skipped',
+  ONBOARDING_COMPLETED: 'onboarding_completed',
+  COACHMARK_SEEN: 'coachmark_seen',
+  CHECKLIST_ITEM_COMPLETED: 'checklist_item_completed',
+  TOUR_REPLAYED: 'tour_replayed',
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
@@ -73,6 +79,27 @@ export type ParlayWorkspaceAnalysisStartedProperties = {
   action: 'analysis_started';
 };
 
+export type OnboardingSurfaceProperties = {
+  surface: 'onboarding';
+  primary_intent?: string;
+  guidance_level?: string;
+};
+
+export type CoachmarkSeenProperties = {
+  surface: 'onboarding';
+  coachmark_id: string;
+};
+
+export type ChecklistItemCompletedProperties = {
+  surface: 'onboarding';
+  item_id: string;
+};
+
+export type TourReplayedProperties = {
+  surface: 'onboarding';
+  action: 'replay';
+};
+
 export type ProductEventProperties = {
   [PRODUCT_EVENTS.MARKET_MOVEMENT_VIEWED]: MarketMovementViewedProperties;
   [PRODUCT_EVENTS.MARKET_MOVEMENT_UPGRADE_CLICKED]: MarketMovementUpgradeClickedProperties;
@@ -87,6 +114,12 @@ export type ProductEventProperties = {
   [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_FAILED]: ParlayXrayExtractProperties;
   [PRODUCT_EVENTS.PARLAY_XRAY_OPEN_WORKSPACE]: ParlayXrayOpenWorkspaceProperties;
   [PRODUCT_EVENTS.PARLAY_WORKSPACE_ANALYSIS_STARTED]: ParlayWorkspaceAnalysisStartedProperties;
+  [PRODUCT_EVENTS.ONBOARDING_STARTED]: OnboardingSurfaceProperties;
+  [PRODUCT_EVENTS.ONBOARDING_SKIPPED]: OnboardingSurfaceProperties;
+  [PRODUCT_EVENTS.ONBOARDING_COMPLETED]: OnboardingSurfaceProperties;
+  [PRODUCT_EVENTS.COACHMARK_SEEN]: CoachmarkSeenProperties;
+  [PRODUCT_EVENTS.CHECKLIST_ITEM_COMPLETED]: ChecklistItemCompletedProperties;
+  [PRODUCT_EVENTS.TOUR_REPLAYED]: TourReplayedProperties;
 };
 
 export type AnalyticsPrimitive = string | number | boolean;

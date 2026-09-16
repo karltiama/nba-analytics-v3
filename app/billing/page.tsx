@@ -144,7 +144,7 @@ export default function BillingPage() {
         href="/betting"
         className="text-sm text-[#075B5C] hover:underline inline-block mb-6"
       >
-        ← Back to betting
+        ← Back to dashboard
       </Link>
 
       <h1 className="text-2xl font-bold text-[#063f46] tracking-tight mb-1">Billing</h1>

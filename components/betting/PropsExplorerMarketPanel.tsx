@@ -261,7 +261,7 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
     <div className="flex flex-col h-full min-h-0 bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
       <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-[#063f46] truncate">
+          <h2 className="text-sm font-semibold text-[#063f46] truncate" data-coachmark="props-compare">
             {selection.playerName ?? `Player ${selection.playerId}`}
           </h2>
           <p className="text-[11px] text-[#4a6366] mt-0.5">

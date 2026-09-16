@@ -75,6 +75,19 @@ export type {
   WorkspaceAnalysisEligibility,
 } from './workspace-analysis';
 export {
+  PRODUCT_PREVIEW_FIXTURE,
+  PRODUCT_PREVIEW_HUB_HREF,
+  PROPS_HISTORICAL_PREVIEW_HREF,
+  WORKSPACE_HISTORICAL_PREVIEW_HREF,
+  XRAY_REPLAY_PREVIEW_HREF,
+  buildWorkspaceHistoricalPreviewLegs,
+  contextualWorkspaceNavAriaLabel,
+  contextualWorkspaceNavLabel,
+  isCertifiedXrayReplayPreview,
+  isWorkspaceHistoricalPreview,
+  shouldSuppressProductPreviewAnalytics,
+} from './preview-fixture';
+export {
   emptyParlaySelectionSnapshot,
   getCanonicalParlaySelection,
   getExplorerReturnHref,
