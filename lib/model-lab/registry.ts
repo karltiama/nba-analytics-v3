@@ -43,6 +43,32 @@ export const MODEL_LAB_REGISTRY: RegistryEntry[] = [
     notesRelPath: 'reports/modeling/model-lab/notes/shadow-pts-reb-c-r1.md',
     manifestFile: 'manifest.json',
   },
+  {
+    id: 'wowy-r1',
+    adapter: 'wowy-r1',
+    title: 'WOWY candidate features r1',
+    artifactDir: 'reports/modeling/wowy-r1',
+    notesRelPath: 'reports/modeling/model-lab/notes/wowy-r1.md',
+    resultsFile: 'results.json',
+    slicesFile: 'slices.json',
+    rowsFile: 'rows.jsonl',
+    predictionsFile: 'predictions.jsonl',
+    featureSpecFile: 'feature_spec.json',
+    reconciliationFile: 'reconciliation.json',
+  },
+  {
+    id: 'wowy-known-out-r1',
+    adapter: 'wowy-r1',
+    title: 'WOWY known-Out residual r1',
+    artifactDir: 'reports/modeling/wowy-known-out-r1',
+    notesRelPath: 'reports/modeling/model-lab/notes/wowy-known-out-r1.md',
+    resultsFile: 'results.json',
+    slicesFile: 'slices.json',
+    predictionsFile: 'predictions.jsonl',
+    selectionFile: 'selection.json',
+    featureSpecFile: 'feature_spec.json',
+    reconciliationFile: 'reconciliation.json',
+  },
 ];
 
 export function getRegistryEntry(id: string): RegistryEntry | null {

@@ -1,5 +1,6 @@
 import type { PropMarketResearch } from '@/lib/betting/prop-market-serving';
 import { summarizePlayerMarketMovementForFree } from '@/lib/betting/market-movement-api';
+import { hasFeature } from './resolve';
 import { type ResolvedEntitlement } from './types';
 
 export type EntitledPropMarketResearch = PropMarketResearch & {
@@ -20,14 +21,14 @@ export function sanitizePropMarketResearch(
 ): EntitledPropMarketResearch {
   const shopping = { ...research.shopping };
 
-  if (!entitlement.features.line_shopping_detail) {
+  if (!hasFeature(entitlement, 'line_shopping_detail')) {
     shopping.bestAvailableOverLine = null;
     shopping.bestAvailableUnderLine = null;
     shopping.bestPriceAtSelectedLine = null;
     shopping.books = [];
   }
 
-  const marketMovement = entitlement.features.market_movement
+  const marketMovement = hasFeature(entitlement, 'market_movement')
     ? research.marketMovement
     : summarizePlayerMarketMovementForFree(research.marketMovement);
 

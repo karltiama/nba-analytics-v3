@@ -1,0 +1,56 @@
+{
+  "version": "player-projection-wowy-r1",
+  "feature_spec_version": "player-projection-wowy-features-r1",
+  "dataset_sha256": null,
+  "historical_validity_class": "reconstructed_historical",
+  "predictive_evaluation": "not_trained",
+  "blocked_reason": "2023 and 2024 have no injury tape. Season 2025 includes a Mar–May 2026 tape. A conservative known-Out subset has 399 player-games (36 dates) and was not trained. Three-season evaluation and WITH selection remain closed.",
+  "eligibility": "Played player-games with a primary teammate ranked by prior stint minutes. Known-Out predictive rows require a fresh explicit Out observation before T−60, unambiguous team-night join, and non-insufficient WOWY support.",
+  "periods": {
+    "train": "2023",
+    "validation": "2024",
+    "test": "2025",
+    "prospective": "2026–27 shadow (not started)"
+  },
+  "n": { "train": 0, "validation": 0, "test": 0 },
+  "n_predictive_eligible": { "train": 0, "validation": 0, "test": 0 },
+  "n_known_out_2025_window": 399,
+  "targets": [
+    { "id": "points", "label": "Points", "units": "points", "derived": false },
+    { "id": "rebounds", "label": "Rebounds", "units": "rebounds", "derived": false },
+    { "id": "pra", "label": "PRA (derived)", "units": "points+rebounds+assists", "derived": true }
+  ],
+  "feature_groups": [
+    {
+      "id": "frozen_c",
+      "label": "Frozen PTS C / REB C",
+      "description": "Unchanged learned-r1 C allowlist. Not retrained in this experiment."
+    },
+    {
+      "id": "wowy_ablation",
+      "label": "Matched ablation (C procedure, no WOWY)",
+      "description": "Same training population and 6-config procedure as the candidate, WOWY features removed. Not trained."
+    },
+    {
+      "id": "wowy_candidate",
+      "label": "C + primary-teammate WOWY",
+      "description": "Frozen C plus cutoff-safe primary-teammate WOWY allowlist. Known-Out scenario only when pregame Out is observed."
+    }
+  ],
+  "models": [
+    { "id": "frozen_c", "label": "Frozen C", "feature_group_id": "frozen_c", "role": "frozen_shadow" },
+    { "id": "wowy_ablation", "label": "WOWY ablation", "feature_group_id": "wowy_ablation", "role": "baseline" },
+    { "id": "wowy_candidate", "label": "WOWY candidate", "feature_group_id": "wowy_candidate", "role": "candidate" }
+  ],
+  "note": {
+    "validation": "2024 has no injury tape (n=0). The 399-row known-Out subset lives in late 2025 and is below the 2,000-row nomination floor.",
+    "test": "Previously inspected historical confirmation (2025). Not an untouched holdout. Cannot promote.",
+    "hypothetical": "See hypothetical-scenarios.json. Those outputs are not scored predictions.",
+    "ui_verification": "Model Lab adapter tests passed. Browser verification of /admin/model-lab did not occur."
+  },
+  "results": {},
+  "decision": {
+    "label": "exploratory known-Out subset; not trained",
+    "note": "399 known-Out player-games (36 dates, 172 players, 184 pairs) could support a chronological matched ablation as development evidence. Not trained. WITH and three-season evaluation remain closed. Next independent step is injuries-only collection if the BDL injuries probe passes — not shadow scoring."
+  }
+}

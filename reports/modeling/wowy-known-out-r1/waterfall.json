@@ -1,0 +1,20 @@
+{
+  "source_n": 7083,
+  "terminal": {
+    "no_primary_teammate": 84,
+    "ambiguous_team_et_date": 0,
+    "missing_tip_or_cutoff": 0,
+    "no_precutoff_observation": 3337,
+    "observation_stale": 2155,
+    "status_not_explicit_out": 755,
+    "insufficient_wowy_support": 127,
+    "eligible": 625
+  },
+  "sum": 7083,
+  "diagnostic": {
+    "not_played_in_window": 4333,
+    "no_precutoff_but_had_postcutoff_obs": 1959,
+    "history_change_stale_raw_fresh_eligible": 210,
+    "raw_membership_table_present": false
+  }
+}

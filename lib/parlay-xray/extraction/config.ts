@@ -85,6 +85,10 @@ export function loadXrayExtractionConfig(
   };
 }
 
+/**
+ * Safety / guardrail daily cap. These defaults (Free 3, Pro 10) are technical
+ * spend/abuse limits, not launched product subscription policy.
+ */
 export function dailyLimitForPlan(config: XrayExtractionConfig, isPro: boolean): number {
   return isPro ? config.proDailyLimit : config.freeDailyLimit;
 }

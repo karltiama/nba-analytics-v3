@@ -35,6 +35,7 @@ export function planInjuryCollectorExtras(args: {
   rowsReturned: number;
   previousCompleteRowCount: number | null;
   inReportPlayerIds: Iterable<string>;
+  notInReportPlayerIds?: Iterable<string>;
 }): {
   pullRunId: number;
   membership: InjuryMembershipRow[];
@@ -58,6 +59,7 @@ export function planInjuryCollectorExtras(args: {
     pullRunId: args.pullRunId,
     observedAt: args.observedAt,
     inReportPlayerIds: args.inReportPlayerIds,
+    notInReportPlayerIds: completeness.complete ? args.notInReportPlayerIds : [],
   });
   return {
     pullRunId: args.pullRunId,

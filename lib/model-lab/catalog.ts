@@ -2,6 +2,7 @@ import { learnedR1Adapter } from '@/lib/model-lab/adapters/learned-r1';
 import { shadowPtsRebCR1Adapter } from '@/lib/model-lab/adapters/shadow-pts-reb-c-r1';
 import { v1MinutesRoleAdapter } from '@/lib/model-lab/adapters/v1-minutes-role';
 import { v1UsageRateAdapter } from '@/lib/model-lab/adapters/v1-usage-rate';
+import { wowyR1Adapter } from '@/lib/model-lab/adapters/wowy-r1';
 import { MODEL_LAB_REGISTRY, getRegistryEntry } from '@/lib/model-lab/registry';
 import type { ExperimentAdapter, ExperimentRecord } from '@/lib/model-lab/types';
 
@@ -10,6 +11,7 @@ const ADAPTERS: Record<string, ExperimentAdapter> = {
   [v1MinutesRoleAdapter.id]: v1MinutesRoleAdapter,
   [v1UsageRateAdapter.id]: v1UsageRateAdapter,
   [shadowPtsRebCR1Adapter.id]: shadowPtsRebCR1Adapter,
+  [wowyR1Adapter.id]: wowyR1Adapter,
 };
 
 export function registerAdapter(adapter: ExperimentAdapter): void {

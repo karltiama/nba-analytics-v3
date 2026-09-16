@@ -5,7 +5,7 @@ export {
   X3F_GAME_ID,
   X3F_CUTOFF_AT,
 } from './ground-truth';
-export { runHistoricalXrayReplay } from './run';
+export { runHistoricalCanonicalParlayAnalysis, runHistoricalXrayReplay } from './run';
 export { assertHistoricalReplayContext } from './types';
 export type {
   HistoricalXrayReplayContext,

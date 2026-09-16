@@ -4,7 +4,7 @@ Version-controlled workbench for Court Context projection research. The UI reads
 
 ## Add the next experiment
 
-1. Produce structured artifacts (prefer JSON). See `WOWY_ARTIFACT_CONTRACT.md` if the experiment is WOWY.
+1. Produce structured artifacts (prefer JSON). See `WOWY_ARTIFACT_CONTRACT.md` if the experiment is WOWY (`wowy-r1` is the current registration).
 2. Add a notes file under `reports/modeling/model-lab/notes/<id>.md` using the template below.
 3. Add a `RegistryEntry` in `lib/model-lab/registry.ts` (id, adapter name, artifact paths). Do not hardcode model letters in the page.
 4. If the artifact shape is new, add `lib/model-lab/adapters/<name>.ts` and register it in `lib/model-lab/catalog.ts`.

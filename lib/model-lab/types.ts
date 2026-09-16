@@ -203,6 +203,18 @@ export type ExplorerDetail = {
   featureNote: string;
 };
 
+export type ModelLabResearchStatus = {
+  productionControl: string;
+  frozenShadowCandidates: string[];
+  wowyAvailability: string;
+  liveData: string;
+  prospectiveEvaluation: string;
+  contextEngineContract: string;
+  shadowScoring: string;
+  injuryCollection: string;
+  modelD: string;
+};
+
 export type ModelLabStatus = {
   production: {
     model: string;
@@ -231,6 +243,7 @@ export type ModelLabStatus = {
     started: boolean;
     note: string;
   };
+  research: ModelLabResearchStatus;
 };
 
 export type RegistryEntry = {

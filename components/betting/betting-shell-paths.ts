@@ -16,5 +16,6 @@ export function shouldShowLayoutHeader(pathname: string): boolean {
   if (pathname === '/teams' || pathname.startsWith('/teams/')) return true;
   if (pathname === '/wowy' || pathname.startsWith('/wowy/')) return true;
   if (pathname === '/parlay-xray' || pathname.startsWith('/parlay-xray/')) return true;
+  if (pathname === '/parlay-workspace' || pathname.startsWith('/parlay-workspace/')) return true;
   return false;
 }

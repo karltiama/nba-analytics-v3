@@ -1,0 +1,136 @@
+{
+  "slices": [
+    {
+      "id": "points_low_support",
+      "family": "wowy_support",
+      "label": "points · low_support",
+      "splitId": "historical_confirmation",
+      "targetId": "points",
+      "n": 116,
+      "metricsByModel": {
+        "frozen_c": {
+          "mae": 6.625766110218105,
+          "n": 116
+        },
+        "residual_role": {
+          "mae": 5.948995150692712,
+          "n": 116
+        },
+        "residual_wowy": {
+          "mae": 5.902768713807492,
+          "n": 116
+        }
+      },
+      "pairedDelta": {
+        "leftModelId": "residual_role",
+        "rightModelId": "residual_wowy",
+        "delta": -0.046226436885219435,
+        "ciLow": -0.4705021052718692,
+        "ciHigh": 0.36602225078530015,
+        "n": 116,
+        "nGroups": 9,
+        "iterations": 400,
+        "source": "paired_observations"
+      }
+    },
+    {
+      "id": "points_adequate",
+      "family": "wowy_support",
+      "label": "points · adequate",
+      "splitId": "historical_confirmation",
+      "targetId": "points",
+      "n": 115,
+      "metricsByModel": {
+        "frozen_c": {
+          "mae": 5.795159487906089,
+          "n": 115
+        },
+        "residual_role": {
+          "mae": 5.790094595931876,
+          "n": 115
+        },
+        "residual_wowy": {
+          "mae": 5.7704360099122045,
+          "n": 115
+        }
+      },
+      "pairedDelta": {
+        "leftModelId": "residual_role",
+        "rightModelId": "residual_wowy",
+        "delta": -0.01965858601967163,
+        "ciLow": -0.08248224177854979,
+        "ciHigh": 0.050428374968436884,
+        "n": 115,
+        "nGroups": 12,
+        "iterations": 400,
+        "source": "paired_observations"
+      }
+    },
+    {
+      "id": "rebounds_low_support",
+      "family": "wowy_support",
+      "label": "rebounds · low_support",
+      "splitId": "historical_confirmation",
+      "targetId": "rebounds",
+      "n": 116,
+      "metricsByModel": {
+        "frozen_c": {
+          "mae": 2.794348053970689,
+          "n": 116
+        },
+        "residual_role": {
+          "mae": 2.7476960872883676,
+          "n": 116
+        },
+        "residual_wowy": {
+          "mae": 2.705471037577872,
+          "n": 116
+        }
+      },
+      "pairedDelta": {
+        "leftModelId": "residual_role",
+        "rightModelId": "residual_wowy",
+        "delta": -0.042225049710495455,
+        "ciLow": -0.09467734246024628,
+        "ciHigh": 0.04157257852529117,
+        "n": 116,
+        "nGroups": 9,
+        "iterations": 400,
+        "source": "paired_observations"
+      }
+    },
+    {
+      "id": "rebounds_adequate",
+      "family": "wowy_support",
+      "label": "rebounds · adequate",
+      "splitId": "historical_confirmation",
+      "targetId": "rebounds",
+      "n": 115,
+      "metricsByModel": {
+        "frozen_c": {
+          "mae": 2.3860376907652183,
+          "n": 115
+        },
+        "residual_role": {
+          "mae": 2.3733833304271093,
+          "n": 115
+        },
+        "residual_wowy": {
+          "mae": 2.3786672993542672,
+          "n": 115
+        }
+      },
+      "pairedDelta": {
+        "leftModelId": "residual_role",
+        "rightModelId": "residual_wowy",
+        "delta": 0.005283968927157989,
+        "ciLow": -0.06028551931513837,
+        "ciHigh": 0.058053364533313,
+        "n": 115,
+        "nGroups": 12,
+        "iterations": 400,
+        "source": "paired_observations"
+      }
+    }
+  ]
+}

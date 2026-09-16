@@ -11,11 +11,18 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const FAMILIES: Array<{ id: string; title: string }> = [
-  { id: 'limited_history', title: 'Limited history' },
-  { id: 'minutes_change', title: 'Changing minutes' },
-  { id: 'minutes_volume', title: 'Historical minutes volume' },
-];
+const FAMILY_TITLES: Record<string, string> = {
+  limited_history: 'Limited history',
+  minutes_change: 'Changing minutes',
+  minutes_volume: 'Historical minutes volume',
+  wowy_support: 'Prior WOWY sample support',
+  known_teammate_availability: 'Known teammate availability',
+};
+
+function familiesFor(exp: ExperimentRecord): Array<{ id: string; title: string }> {
+  const ids = [...new Set(exp.slices.map((s) => s.family))];
+  return ids.map((id) => ({ id, title: FAMILY_TITLES[id] ?? id.replace(/_/g, ' ') }));
+}
 
 function SliceTable({ rows }: { rows: SliceRow[] }) {
   const modelIds = Array.from(new Set(rows.flatMap((r) => Object.keys(r.metricsByModel))));
@@ -65,12 +72,10 @@ export function PerformanceSlices({ catalog }: { catalog: ExperimentRecord[] }) 
       {catalog.map((exp) => (
         <LabCard key={exp.id} title={exp.title} badge={exp.slicesAvailable ? 'slices' : 'no slices'}>
           {!exp.slicesAvailable ? (
-            <p className="text-sm text-amber-200">
-              No stored slice table for limited history, changing minutes, or minutes volume on this experiment.
-            </p>
+            <p className="text-sm text-amber-200">No stored slice table on this experiment.</p>
           ) : (
             <div className="space-y-4">
-              {FAMILIES.map((family) => {
+              {familiesFor(exp).map((family) => {
                 const rows = exp.slices.filter((s) => s.family === family.id);
                 if (!rows.length) {
                   return (

@@ -1,0 +1,56 @@
+{
+  "inspected_at": "2026-09-16",
+  "source": "analytics.player_injury_status_history + analytics.games + analytics.player_game_logs (read-only)",
+  "coverage_statement": "Seasons 2023 and 2024 have no injury-history tape. Season 2025 is 2025–26 and includes March–May 2026 (4,801 timestamped rows, 2026-03-10 through 2026-05-06). Missing game_id is a schema gap, not an impossible join: this window has 0 same-team same-ET-date Final collisions, so a unique team-night join is unambiguous. A conservative known-Out player-game subset has 399 rows — not three-season coverage, not WITH, not trained.",
+  "tape": {
+    "rows": 4801,
+    "players": 380,
+    "teams": 30,
+    "min_snapshot_at": "2026-03-10T23:43:43.097Z",
+    "max_snapshot_at": "2026-05-06T18:00:27.420Z",
+    "columns": ["id", "player_id", "team_id", "status", "description", "return_date_raw", "snapshot_at", "pull_run_id", "created_at"],
+    "missing_schema_columns": ["observed_at", "source_published_at", "report_membership", "game_id", "game_link_provenance"],
+    "game_id_note": "Absent on history rows. Association remains possible via unique Final team-night on America/New_York date plus matching injury team_id.",
+    "status_counts": {
+      "Questionable": 1749,
+      "Out": 1462,
+      "RemovedFromReport": 789,
+      "Doubtful": 410,
+      "Probable": 325,
+      "Out For Season": 66,
+      "Available": 0
+    },
+    "max_inter_snapshot_gap_hours": 41.84
+  },
+  "seasons": {
+    "2023": { "injury_history_rows": 0, "final_games": 1319 },
+    "2024": { "injury_history_rows": 0, "final_games": 1321 },
+    "2025": {
+      "injury_history_rows": 4801,
+      "final_games": 1322,
+      "tape_window": "2026-03-10 to 2026-05-06 (late regular season through early playoffs)"
+    }
+  },
+  "team_night_join": {
+    "tape_window_team_games": 656,
+    "same_team_same_et_date_collisions": 0,
+    "unambiguous": true
+  },
+  "known_out_subset": {
+    "artifact": "reports/modeling/wowy-r1/known-out-subset.json",
+    "n": 399,
+    "distinct_game_dates": 36,
+    "distinct_games": 106,
+    "distinct_players": 172,
+    "distinct_teammate_pairs": 184,
+    "low_support": 238,
+    "adequate_support": 161,
+    "not_the_315_of_322_team_game_figure": true
+  },
+  "verdict": "exploratory_known_out_only_not_trained",
+  "closed_claims": [
+    "Do not say there is zero timestamped availability in 2023–2025: 2025 includes this tape.",
+    "Do not train a three-season pregame WOWY backtest.",
+    "Do not treat this subset as WITH-capable or as an untouched holdout."
+  ]
+}

@@ -1,0 +1,39 @@
+# Overlay for injuries-only activation. Do not apply in the preparation slice.
+# Merge onto the CURRENT deployed tfvars. Do not start from a "all flags false"
+# freeze file: that would DISABLE the already-ENABLED game_status_sync schedule.
+#
+# Keep these unchanged from the live account:
+#   live_ingestion_enabled             = true   # already true; required as the master AND-gate
+#   game_status_sync_create            = true
+#   game_status_sync_execution_enabled = true
+#   game_status_sync_enable_schedule   = true
+#   shadow_create                      = false
+#   shadow_execution_enabled           = false
+#   nightly_execution_enabled          = false
+#   odds_execution_enabled             = false
+#   player_props_execution_enabled     = false
+#   boxscore_execution_enabled         = false
+#   postgame_execution_enabled         = false
+#
+# Expected resource changes (no destroy of game_status_sync):
+#   aws_cloudwatch_event_rule.injuries_schedule[0].state: DISABLED -> ENABLED
+#   aws_lambda_function.injuries_snapshot environment:
+#     DATA_MODE replay -> live_api
+#     OFFSEASON_MODE 1 -> 0
+#     CRON_DRY_RUN 1 -> 0
+#     COLLECTION_SCHEMA_MODE optional -> required  (only after SQL migration)
+#
+# Unchanged: nba-game-status-sync-schedule remains ENABLED.
+
+injuries_execution_enabled = true
+injuries_enable_schedule   = true
+injuries_schedule_cron     = "cron(0 13,18,22 * * ? *)"
+
+# Replace only the injuries env map. Do not rewrite nightly/odds/props/boxscore maps.
+# injuries_lambda_env = {
+#   DATA_MODE              = "live_api"
+#   OFFSEASON_MODE         = "0"
+#   CRON_DRY_RUN           = "0"
+#   COLLECTION_SCHEMA_MODE = "required"
+#   BDL_GOAT_SUBSCRIPTION  = unset
+# }

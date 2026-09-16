@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
 import { formatAmericanOdds } from '@/lib/betting/market-movement-format';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { MatchupLine } from '@/components/parlay-xray/MatchupLine';
@@ -30,9 +29,15 @@ type XrayResultsPanelProps = {
   interpretations: XRayLegInterpretation[];
   historicalReplay: XrayHistoricalReplay | null;
   legs: ExtractedParlayLeg[];
+  eyebrow?: string;
 };
 
-export function XrayResultsPanel({ interpretations, historicalReplay, legs }: XrayResultsPanelProps) {
+export function XrayResultsPanel({
+  interpretations,
+  historicalReplay,
+  legs,
+  eyebrow,
+}: XrayResultsPanelProps) {
   const parlay = interpretXrayParlay(interpretations);
 
   return (
@@ -51,7 +56,7 @@ export function XrayResultsPanel({ interpretations, historicalReplay, legs }: Xr
         </nav>
       ) : null}
 
-      <XrayParlaySummary parlay={parlay} interpretations={interpretations} />
+      <XrayParlaySummary parlay={parlay} interpretations={interpretations} eyebrow={eyebrow} />
 
       <div className="space-y-6">
         <h3 className="text-lg font-bold text-[#063f46]">Leg context</h3>
@@ -111,7 +116,6 @@ function LegInterpretationCard({
               </p>
               <p className="text-xs text-[#4a6366] mt-0.5">
                 {formatSportsbookLabel(interp.identity.sportsbook)}
-                {interp.identity.gameId ? ` · game ${interp.identity.gameId}` : ''}
               </p>
               {leg?.rawSnippet ? (
                 <p className="text-[11px] text-[#8aa0a3] mt-0.5">
@@ -185,7 +189,7 @@ function LegInterpretationCard({
             <p className="mt-2 text-xs text-[#8aa0a3]">{sampleBandLabel(interp.recentForm.sampleBand)}</p>
           </ContextBlock>
 
-          <ContextBlock title="Minutes">
+          <ContextBlock title="Role">
             <dl className="grid grid-cols-2 gap-2 text-sm">
               <Stat label="Season" value={formatAvg(interp.role.seasonMinutes)} />
               <Stat label="Last game" value={formatAvg(interp.role.priorGameMinutes)} />
@@ -234,11 +238,8 @@ function LegInterpretationCard({
           />
         </div>
 
-        <div className="rounded-xl border border-amber-200 bg-[#fff8ee] p-4">
-          <h4 className="text-sm font-semibold text-[#063f46] flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-[#b45309]" aria-hidden />
-            Why this could fail
-          </h4>
+        <div className="rounded-xl border border-[#DCE9EA] bg-white p-4">
+          <h4 className="text-sm font-semibold text-[#063f46]">Why this could fail</h4>
           <p className="text-[11px] text-[#4a6366] mt-1">
             Factual gaps and contrary packet fields. Not a prediction.
           </p>
@@ -254,7 +255,6 @@ function LegInterpretationCard({
         {historicalReplay ? (
           <p className="text-xs text-[#8aa0a3]">
             Historical Replay · {historicalReplay.dateLabel}
-            {historicalReplay.gameId ? ` · game ${historicalReplay.gameId}` : ''} · cutoff {historicalReplay.cutoffAt}
           </p>
         ) : null}
       </div>

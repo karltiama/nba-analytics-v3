@@ -1,0 +1,49 @@
+{
+  "note": "These are not evaluated predictions. Do not treat deltas as causal effects or automatic projection boosts.",
+  "examples": [
+    {
+      "id": "historical-jokic-murray-2024-den-regular",
+      "use": "historical_scenario_analysis",
+      "label": "reconstructed_historical",
+      "question": "What happened to Nikola Jokić in previous 2024 DEN regular-season games Jamal Murray missed?",
+      "not": "A pregame backtest. Murray's without games are verified DNP roster rows (minutes=00), reconstructed after the game, not timestamp-verified pregame availability.",
+      "source": "reports/product/game-level-wowy-v1.md (certified page example)",
+      "query": {
+        "subjectPlayerId": "246",
+        "teammatePlayerId": "335",
+        "season": "2024",
+        "teamId": "8",
+        "seasonType": "regular"
+      },
+      "with": { "games": 58, "pts": 28.4, "reb": 12.7, "ast": 10.2, "minutes": 36.8 },
+      "without_verified_dnp": { "games": 12, "pts": 35.3, "reb": 12.9, "ast": 10.2, "minutes": 36.8 },
+      "scenario": { "status": "unknown", "source": "pregame_availability_unknown" },
+      "predictive_eligible": false
+    },
+    {
+      "id": "fixture-primary-teammate-hypothetical-without",
+      "use": "pregame_prediction_contract",
+      "label": "hypothetical",
+      "question": "Using only information available before this game, what should we predict for A if B were observed out?",
+      "not": "An evaluated prediction. No timestamped availability was supplied; choice is user_explicit.",
+      "source": "lib/wowy/__tests__/candidate-features.test.ts fixture (not live box scores)",
+      "query": {
+        "subjectPlayerId": "A",
+        "teammatePlayerId": "B",
+        "season": "2024",
+        "teamId": "8",
+        "cutoffStartTime": "2025-01-10T17:00:00.000Z"
+      },
+      "reconstructed_history": {
+        "with_games": 2,
+        "without_games": 2,
+        "with_pts": 18,
+        "without_pts": 24,
+        "delta_pts": -6,
+        "support_tier": "low_support"
+      },
+      "scenario": { "status": "hypothetical", "choice": "without", "source": "user_explicit" },
+      "predictive_eligible": false
+    }
+  ]
+}

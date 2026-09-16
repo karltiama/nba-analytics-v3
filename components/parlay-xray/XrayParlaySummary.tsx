@@ -1,4 +1,3 @@
-import { AlertTriangle } from 'lucide-react';
 import {
   formatMarketLabel,
   parlayDependencyKindLabel,
@@ -12,9 +11,11 @@ import { cn } from '@/lib/utils';
 export function XrayParlaySummary({
   parlay,
   interpretations,
+  eyebrow = 'Parlay XRay',
 }: {
   parlay: XRayParlayInterpretation;
   interpretations: XRayLegInterpretation[];
+  eyebrow?: string;
 }) {
   const sharedGameCount = parlay.dependencyGroups.filter((g) => g.kind === 'SHARED_GAME').length;
   const cover = parlay.contextCoverage;
@@ -22,10 +23,10 @@ export function XrayParlaySummary({
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8aa0a3]">Parlay XRay</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8aa0a3]">{eyebrow}</p>
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <h2 id="xray-results-heading" className="text-2xl font-black tracking-tight text-[#063f46]">
-            Shared context across this slip
+            Parlay summary
           </h2>
           <p
             className={cn(
@@ -43,45 +44,25 @@ export function XrayParlaySummary({
         <p className="text-sm text-[#4a6366] max-w-3xl">{parlay.summarySentence}</p>
       </header>
 
-      <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <SummaryStat label="Legs" value={String(cover.legCount)} />
-        <SummaryStat label="Full context" value={String(cover.recentFormCount)} />
-        <SummaryStat label="Limited context" value={String(cover.legCount - cover.recentFormCount)} />
-        <SummaryStat label="Market matches" value={String(cover.marketMatchCount)} />
-        <SummaryStat label="Partial market" value={String(cover.partialMarketCount)} />
-        <SummaryStat label="Shared-game groups" value={String(sharedGameCount)} />
-      </dl>
-
-      <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <SummaryStat label="Better than close" value={String(parlay.marketPositionCounts.betterThanClose)} />
-        <SummaryStat label="Same as close" value={String(parlay.marketPositionCounts.sameAsClose)} />
-        <SummaryStat label="Worse than close" value={String(parlay.marketPositionCounts.worseThanClose)} />
-        <SummaryStat label="Close unknown" value={String(parlay.marketPositionCounts.unknown)} />
-      </dl>
-
-      <section aria-labelledby="xray-data-coverage-heading" className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
-        <h3 id="xray-data-coverage-heading" className="text-base font-bold text-[#063f46]">
-          Data coverage
+      <section aria-labelledby="xray-parlay-fail-heading" className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
+        <h3 id="xray-parlay-fail-heading" className="text-base font-bold text-[#063f46]">
+          Why this parlay could fail
         </h3>
-        <p className="text-xs text-[#4a6366] mt-1">What XRay knows from certified packets. Missing sources are not errors.</p>
-        <ul className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-          <CoverageRow label="Canonical identity" have={parlay.dataQuality.canonical.have} of={parlay.dataQuality.canonical.of} />
-          <CoverageRow
-            label="Market history"
-            have={parlay.dataQuality.historicalMarket.exact}
-            of={parlay.dataQuality.historicalMarket.of}
-            hint={
-              parlay.dataQuality.historicalMarket.partial > 0
-                ? `${parlay.dataQuality.historicalMarket.partial} partial`
-                : undefined
-            }
-          />
-          <CoverageRow label="Recent form" have={parlay.dataQuality.recentForm.have} of={parlay.dataQuality.recentForm.of} />
-          <CoverageRow label="Role context" have={parlay.dataQuality.role.have} of={parlay.dataQuality.role.of} />
-          <CoverageRow label="WOWY" have={parlay.dataQuality.wowy.have} of={parlay.dataQuality.wowy.of} />
-          <CoverageRow label="Projection" have={parlay.dataQuality.projection.have} of={parlay.dataQuality.projection.of} />
-          <CoverageRow label="Availability" have={parlay.dataQuality.availability.have} of={parlay.dataQuality.availability.of} />
-        </ul>
+        <p className="text-[11px] text-[#4a6366] mt-1">
+          Ways multiple legs can fail together, or where the slip is concentrated. Not a prediction.
+        </p>
+        {parlay.whyThisParlayCouldFail.length === 0 ? (
+          <p className="mt-3 text-sm text-[#4a6366]">No cross-leg failure notes from certified packet fields.</p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {parlay.whyThisParlayCouldFail.map((item) => (
+              <li key={item.code + item.detail} className="rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] px-3 py-2">
+                <p className="text-sm font-semibold text-[#063f46]">{item.title}</p>
+                <p className="text-sm text-[#4a6366] mt-0.5">{item.detail}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section aria-labelledby="xray-shared-context-heading" className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
@@ -106,28 +87,6 @@ export function XrayParlaySummary({
                     ? ` · ${group.markets.map((m) => formatMarketLabel(m)).join(' · ')}`
                     : ''}
                 </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section aria-labelledby="xray-parlay-fail-heading" className="rounded-2xl border border-amber-200 bg-[#fff8ee] p-5">
-        <h3 id="xray-parlay-fail-heading" className="text-base font-bold text-[#063f46] flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-[#b45309]" aria-hidden />
-          Why this parlay could fail
-        </h3>
-        <p className="text-[11px] text-[#4a6366] mt-1">
-          Ways multiple legs can fail together, or where the slip is concentrated. Not a prediction.
-        </p>
-        {parlay.whyThisParlayCouldFail.length === 0 ? (
-          <p className="mt-3 text-sm text-[#4a6366]">No cross-leg failure notes from certified packet fields.</p>
-        ) : (
-          <ul className="mt-3 space-y-2">
-            {parlay.whyThisParlayCouldFail.map((item) => (
-              <li key={item.code + item.detail} className="rounded-xl border border-amber-200 bg-white px-3 py-2">
-                <p className="text-sm font-semibold text-[#063f46]">{item.title}</p>
-                <p className="text-sm text-[#4a6366] mt-0.5">{item.detail}</p>
               </li>
             ))}
           </ul>
@@ -197,6 +156,48 @@ export function XrayParlaySummary({
           ))}
         </nav>
       ) : null}
+
+      <section aria-labelledby="xray-data-coverage-heading" className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
+        <h3 id="xray-data-coverage-heading" className="text-base font-bold text-[#063f46]">
+          Data coverage
+        </h3>
+        <p className="text-xs text-[#4a6366] mt-1">
+          What we could verify from certified packets. Missing WOWY, projection, or availability does not mean the rest of
+          the read is broken.
+        </p>
+        <dl className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <SummaryStat label="Legs" value={String(cover.legCount)} />
+          <SummaryStat label="Full context" value={String(cover.recentFormCount)} />
+          <SummaryStat label="Limited context" value={String(cover.legCount - cover.recentFormCount)} />
+          <SummaryStat label="Market matches" value={String(cover.marketMatchCount)} />
+          <SummaryStat label="Partial market" value={String(cover.partialMarketCount)} />
+          <SummaryStat label="Shared-game groups" value={String(sharedGameCount)} />
+        </dl>
+        <dl className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <SummaryStat label="Better than close" value={String(parlay.marketPositionCounts.betterThanClose)} />
+          <SummaryStat label="Same as close" value={String(parlay.marketPositionCounts.sameAsClose)} />
+          <SummaryStat label="Worse than close" value={String(parlay.marketPositionCounts.worseThanClose)} />
+          <SummaryStat label="Close unknown" value={String(parlay.marketPositionCounts.unknown)} />
+        </dl>
+        <ul className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          <CoverageRow label="Canonical identity" have={parlay.dataQuality.canonical.have} of={parlay.dataQuality.canonical.of} />
+          <CoverageRow
+            label="Market history"
+            have={parlay.dataQuality.historicalMarket.exact}
+            of={parlay.dataQuality.historicalMarket.of}
+            hint={
+              parlay.dataQuality.historicalMarket.partial > 0
+                ? `${parlay.dataQuality.historicalMarket.partial} partial`
+                : undefined
+            }
+          />
+          <CoverageRow label="Recent form" have={parlay.dataQuality.recentForm.have} of={parlay.dataQuality.recentForm.of} />
+          <CoverageRow label="Role context" have={parlay.dataQuality.role.have} of={parlay.dataQuality.role.of} />
+          <CoverageRow label="WOWY" have={parlay.dataQuality.wowy.have} of={parlay.dataQuality.wowy.of} />
+          <CoverageRow label="Projection" have={parlay.dataQuality.projection.have} of={parlay.dataQuality.projection.of} />
+          <CoverageRow label="Availability" have={parlay.dataQuality.availability.have} of={parlay.dataQuality.availability.of} />
+        </ul>
+      </section>
     </div>
   );
 }

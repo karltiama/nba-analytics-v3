@@ -1,5 +1,12 @@
 import { asString, isRecord, readJsonIfExists } from '@/lib/model-lab/fs';
 import type { ModelLabStatus } from '@/lib/model-lab/types';
+import { MODEL_D } from '@/lib/model-lab/lifecycle-registry';
+import {
+  INJURY_COLLECTION_STATUS,
+  PROVIDER_ENTITLEMENT,
+  SHADOW_SCORING_STATUS,
+} from '@/lib/model-lab/prospective-shadow-protocol';
+import { CONTEXT_ENGINE_CONTRACT_VERSION } from '@/lib/context-engine/contract';
 
 const MANIFEST = 'reports/modeling/shadow-pts-reb-c-r1/manifest.json';
 
@@ -47,6 +54,17 @@ export async function loadModelLabStatus(): Promise<ModelLabStatus> {
     prospectiveEvaluation: {
       started: false,
       note: 'Prospective 2026–27 evaluation has not started. Empty metrics are not a completed holdout.',
+    },
+    research: {
+      productionControl: '70/30',
+      frozenShadowCandidates: ['PTS C', 'REB C'],
+      wowyAvailability: 'Inconclusive · awaiting prospective availability data',
+      liveData: 'Blocked by provider entitlement',
+      prospectiveEvaluation: 'Not started',
+      contextEngineContract: CONTEXT_ENGINE_CONTRACT_VERSION,
+      shadowScoring: SHADOW_SCORING_STATUS,
+      injuryCollection: `${INJURY_COLLECTION_STATUS} · ${PROVIDER_ENTITLEMENT}`,
+      modelD: MODEL_D.status,
     },
   };
 

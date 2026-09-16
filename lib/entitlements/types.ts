@@ -12,7 +12,7 @@ export const SUBSCRIPTION_STATUSES = [
 ] as const;
 export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
 
-/** Near-term gated capabilities. Do not add Stripe price IDs here. */
+/** API aliases for currently gated modules. Source of truth is CAPABILITY_REGISTRY. */
 export const FEATURE_KEYS = [
   'line_shopping_detail',
   'market_movement',
@@ -56,15 +56,15 @@ export const UPGRADE_COPY: Record<FeatureKey, { title: string; detail: string }>
     detail: 'Founding Pro adds a synthesized slate and matchup briefing from the research context you already see.',
   },
   advanced_history: {
-    title: 'Deeper historical research available with Founding Pro',
-    detail: 'Unlock expanded historical exploration when that surface ships.',
+    title: 'Expanded historical research is not available yet',
+    detail: 'This module has not shipped. It is not a Founding Pro unlock.',
   },
   wowy: {
-    title: 'WOWY / role-shift analytics available with Founding Pro',
-    detail: 'Unlock game-level with/without research splits with Founding Pro.',
+    title: 'WOWY research is on the WOWY page',
+    detail: 'Game-level with/without splits are already available. They are not a Founding Pro exclusive.',
   },
   alerts: {
-    title: 'Alerts available with Founding Pro',
-    detail: 'Unlock line and research alerts when that surface ships.',
+    title: 'Alerts are not available yet',
+    detail: 'Line and research alerts are not part of Court Context yet. They are not a Founding Pro unlock.',
   },
 };

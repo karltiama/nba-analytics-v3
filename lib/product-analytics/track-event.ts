@@ -15,6 +15,8 @@ export const PRODUCT_EVENTS = {
   PARLAY_XRAY_EXTRACT_STARTED: 'parlay_xray_extract_started',
   PARLAY_XRAY_EXTRACT_COMPLETED: 'parlay_xray_extract_completed',
   PARLAY_XRAY_EXTRACT_FAILED: 'parlay_xray_extract_failed',
+  PARLAY_XRAY_OPEN_WORKSPACE: 'parlay_xray_open_workspace',
+  PARLAY_WORKSPACE_ANALYSIS_STARTED: 'parlay_workspace_analysis_started',
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
@@ -60,6 +62,17 @@ export type ParlayXrayExtractProperties = {
   result_category: string;
 };
 
+export type ParlayXrayOpenWorkspaceProperties = {
+  surface: 'parlay_xray';
+  action: 'open_workspace';
+};
+
+export type ParlayWorkspaceAnalysisStartedProperties = {
+  surface: 'parlay_workspace';
+  source: 'xray' | 'props_explorer' | 'mixed';
+  action: 'analysis_started';
+};
+
 export type ProductEventProperties = {
   [PRODUCT_EVENTS.MARKET_MOVEMENT_VIEWED]: MarketMovementViewedProperties;
   [PRODUCT_EVENTS.MARKET_MOVEMENT_UPGRADE_CLICKED]: MarketMovementUpgradeClickedProperties;
@@ -72,6 +85,8 @@ export type ProductEventProperties = {
   [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_STARTED]: ParlayXraySurfaceProperties;
   [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_COMPLETED]: ParlayXrayExtractProperties;
   [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_FAILED]: ParlayXrayExtractProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_OPEN_WORKSPACE]: ParlayXrayOpenWorkspaceProperties;
+  [PRODUCT_EVENTS.PARLAY_WORKSPACE_ANALYSIS_STARTED]: ParlayWorkspaceAnalysisStartedProperties;
 };
 
 export type AnalyticsPrimitive = string | number | boolean;

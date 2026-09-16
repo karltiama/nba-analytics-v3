@@ -4,6 +4,7 @@
  */
 
 import { queryOne } from '@/lib/db';
+import { evaluateFeature, type CapabilityDecision } from './capabilities';
 import {
   foundingProEntitlement,
   freeEntitlement,
@@ -51,8 +52,12 @@ export async function requireEntitlement(
   userId: string,
   feature: FeatureKey,
   now?: Date
-): Promise<{ ok: true; entitlement: ResolvedEntitlement } | { ok: false; entitlement: ResolvedEntitlement }> {
+): Promise<
+  | { ok: true; entitlement: ResolvedEntitlement; decision: CapabilityDecision }
+  | { ok: false; entitlement: ResolvedEntitlement; decision: CapabilityDecision }
+> {
   const entitlement = await getUserEntitlements(userId, now);
-  if (entitlement.features[feature]) return { ok: true, entitlement };
-  return { ok: false, entitlement };
+  const decision = evaluateFeature({ isPro: entitlement.isPro, authenticated: true }, feature);
+  if (decision.access === 'allow') return { ok: true, entitlement, decision };
+  return { ok: false, entitlement, decision };
 }

@@ -61,8 +61,7 @@ export function XrayAnalysisPanel({
         <div className="rounded-2xl border border-dashed border-[#DCE9EA] bg-white px-5 py-8">
           <p className="text-sm font-semibold text-[#063f46]">Analysis unavailable</p>
           <p className="text-sm text-[#4a6366] mt-1 max-w-2xl">
-            XRay does not invent a read from an unread screenshot. Overall context, strongest/riskiest legs, market
-            movement, and WOWY evidence stay empty until a real analysis contract is attached.
+            XRay does not invent a read from an unread screenshot. Confirm legs, then examine the parlay in Workspace.
           </p>
         </div>
       )}

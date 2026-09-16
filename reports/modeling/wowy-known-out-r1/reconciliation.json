@@ -1,0 +1,24 @@
+{
+  "dataset_sha256": "b1db16cbbb9b324bc7fdb7a25e7692e0a4b18421205f3788453d7cd31c9b3dc4",
+  "n_cohort": 625,
+  "n_dropped_missing_frozen_c": 0,
+  "n_modeled": 625,
+  "n_train": 394,
+  "n_eval": 231,
+  "teammate_ultimately_played": 16,
+  "eval_et_dates": [
+    "2026-04-07",
+    "2026-04-08",
+    "2026-04-09",
+    "2026-04-10",
+    "2026-04-12",
+    "2026-04-18",
+    "2026-04-21",
+    "2026-04-24",
+    "2026-04-26",
+    "2026-04-29",
+    "2026-05-01",
+    "2026-05-05"
+  ],
+  "decision": "inconclusive"
+}

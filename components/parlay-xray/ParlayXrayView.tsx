@@ -1,7 +1,7 @@
 'use client';
 
-import { ScanSearch } from 'lucide-react';
 import { ANALYSIS_STAGE_COPY, EXTRACTION_STAGE_COPY, REPLAY_STAGE_COPY, UPLOAD_ERROR_COPY } from '@/lib/parlay-xray/copy';
+import { quotaRemainingLabel } from '@/lib/parlay-xray/extraction/copy';
 import { extractionCounts } from '@/lib/parlay-xray/fields';
 import {
   analysisStageFor,
@@ -29,6 +29,7 @@ type ParlayXrayViewProps = {
   onEditLeg: (legId: string, edits: LegEdits) => void;
   onAcceptLeg: (legId: string) => void;
   onConfirm: () => void;
+  onReviewInWorkspace?: () => void;
   onUploadStarted: () => void;
   showDesignPreviewLink: boolean;
 };
@@ -43,6 +44,7 @@ export function ParlayXrayView({
   onEditLeg,
   onAcceptLeg,
   onConfirm,
+  onReviewInWorkspace,
   onUploadStarted,
   showDesignPreviewLink,
 }: ParlayXrayViewProps) {
@@ -66,9 +68,7 @@ export function ParlayXrayView({
       !hasInterpretations
   );
   const quotaLabel =
-    state.quota != null
-      ? `${state.quota.remaining} of ${state.quota.limit} XRay analyses remaining today`
-      : null;
+    state.quota != null ? quotaRemainingLabel(state.quota.used, state.quota.limit) : null;
 
   return (
     <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
@@ -77,9 +77,7 @@ export function ParlayXrayView({
           className="rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-sm text-[#063f46]"
           role="status"
         >
-          Historical Replay — {historicalReplay.dateLabel}
-          {historicalReplay.gameId ? ` · game ${historicalReplay.gameId}` : ''}. Certified as-of cutoff{' '}
-          {historicalReplay.cutoffAt}. This is not current-season intelligence.
+          Historical Replay — {historicalReplay.dateLabel}. This is not current-season intelligence.
         </p>
       ) : state.designPreview ? (
         <p
@@ -94,15 +92,14 @@ export function ParlayXrayView({
         <header className="lg:col-span-3 space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8aa0a3]">Parlay XRay</p>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-[#063f46] leading-[0.95]">
-            See beyond the bet slip.
+            Upload your slip.
           </h1>
           <p className="text-sm sm:text-base text-[#4a6366] max-w-md">
-            Upload a parlay screenshot and Court Context will help you review each leg — the context, risk, sample
-            quality, and uncertainty behind the slip. This is not a win call.
+            Verify what XRay read, then review the parlay with Court Context. XRay imports a screenshot — it is not
+            the finished analysis.
           </p>
-          <p className="inline-flex items-center gap-2 rounded-full bg-[#55ddb1] px-3 py-1.5 text-xs font-semibold text-[#063f46]">
-            <ScanSearch className="h-3.5 w-3.5" aria-hidden />
-            More than the trend.
+          <p className="text-xs font-semibold text-[#075B5C]">
+            Upload → Review → Confirm → Workspace
           </p>
         </header>
 
@@ -132,7 +129,7 @@ export function ParlayXrayView({
                 {extracting ? 'Reading screenshot…' : 'Extract screenshot'}
               </button>
               <p className="text-xs text-[#4a6366]">
-                Extraction starts only when you click this button. Review legs before any analysis.
+                Extraction starts only when you click this button. Review legs before you confirm.
               </p>
             </div>
           ) : null}
@@ -145,11 +142,8 @@ export function ParlayXrayView({
           <StageList
             hasFile={Boolean(state.parlay.uploadedImage)}
             extractionCopy={extractionCopy}
-            analysisCopy={analysisCopy}
             pendingExtraction={state.parlay.extractionStatus === 'pending'}
-            pendingAnalysis={state.parlay.analysisStatus === 'pending'}
             confirmed={state.confirmed}
-            hasInterpretations={hasInterpretations}
             historicalReplay={Boolean(historicalReplay)}
           />
         </section>
@@ -170,13 +164,15 @@ export function ParlayXrayView({
             }
             confirmHint={
               historicalReplay
-                ? 'Confirm is the boundary between what XRay read and analyzing these confirmed legs. This will not run as live analysis.'
-                : undefined
+                ? 'Confirm is the boundary between what XRay read and reviewing these legs in Workspace. This will not run as live analysis.'
+                : 'Confirm is the boundary between what XRay read and Parlay Workspace. Current-season analysis is not enabled yet.'
             }
             onToggleEditing={onToggleEditing}
             onEditLeg={onEditLeg}
             onAcceptLeg={onAcceptLeg}
             onConfirm={onConfirm}
+            onReviewInWorkspace={onReviewInWorkspace}
+            workspaceHandoffAvailable={Boolean(state.confirmed && historicalReplay?.gameId)}
           />
         </div>
       </div>
@@ -195,7 +191,7 @@ export function ParlayXrayView({
         />
       ) : replayPending ? (
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5" role="status">
-          <h2 className="text-base font-bold text-[#063f46]">Historical replay</h2>
+          <h2 className="text-base font-bold text-[#063f46]">Resolving confirmed legs</h2>
           <p className="text-sm text-[#4a6366] mt-2">{analysisCopy}</p>
           {state.replayError ? <p className="text-sm text-[#9a3412] mt-2">{state.replayError}</p> : null}
         </section>
@@ -203,11 +199,11 @@ export function ParlayXrayView({
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5" role="status">
           <h2 className="text-base font-bold text-[#063f46]">Waiting for confirmation</h2>
           <p className="text-sm text-[#4a6366] mt-2">
-            Review what XRay read, correct any OCR mistakes, then confirm. Analysis will use the confirmed legs
-            with the labeled historical cutoff — not live current-season context.
+            Review what XRay read, correct any OCR mistakes, then confirm. After Confirm, review the parlay in
+            Workspace — not live current-season context.
           </p>
         </section>
-      ) : (
+      ) : state.designPreview ? (
         <XrayAnalysisPanel
           analysis={presentation.analysis}
           legs={state.parlay.legs}
@@ -217,6 +213,14 @@ export function ParlayXrayView({
           designPreview={state.designPreview}
           showExplorerPlacement={state.designPreview}
         />
+      ) : (
+        <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
+          <h2 className="text-base font-bold text-[#063f46]">What XRay does</h2>
+          <p className="text-sm text-[#4a6366] mt-1">
+            XRay reads player, market, side, line, and sportsbook from a screenshot so you can verify them. Court
+            Context analysis runs in Parlay Workspace after you confirm — not on this page.
+          </p>
+        </section>
       )}
 
       {showDesignPreviewLink ? (
@@ -250,22 +254,21 @@ export function ParlayXrayView({
 function StageList({
   hasFile,
   extractionCopy,
-  analysisCopy,
   pendingExtraction,
-  pendingAnalysis,
   confirmed,
-  hasInterpretations,
   historicalReplay,
 }: {
   hasFile: boolean;
   extractionCopy: string;
-  analysisCopy: string;
   pendingExtraction: boolean;
-  pendingAnalysis: boolean;
   confirmed: boolean;
-  hasInterpretations: boolean;
   historicalReplay: boolean;
 }) {
+  const reviewCopy = pendingExtraction
+    ? 'Reading your screenshot…'
+    : hasFile
+      ? extractionCopy
+      : 'Waiting for extracted legs.';
   return (
     <ol className="mt-5 space-y-2 text-xs text-[#4a6366]">
       <li>
@@ -273,24 +276,21 @@ function StageList({
         {hasFile ? 'Screenshot selected.' : 'Waiting for a screenshot.'}
       </li>
       <li>
-        <span className="font-semibold text-[#063f46]">Extract.</span>{' '}
-        {pendingExtraction ? 'Reading the screenshot…' : extractionCopy}
-      </li>
-      <li>
-        <span className="font-semibold text-[#063f46]">Review.</span>{' '}
-        {hasFile ? 'Edit or accept what XRay read before confirming.' : 'Waiting for extracted legs.'}
+        <span className="font-semibold text-[#063f46]">Review.</span> {reviewCopy}
       </li>
       <li>
         <span className="font-semibold text-[#063f46]">Confirm.</span>{' '}
         {confirmed
           ? historicalReplay
-            ? 'Historical replay confirmed. Analysis uses these confirmed legs.'
-            : 'Legs locked. Live analysis is not connected yet.'
-          : 'Confirm is required before analysis.'}
+            ? 'Confirmed. Review this parlay in Workspace.'
+            : 'Confirmed. Current-season Court Context analysis is not enabled yet.'
+          : 'Confirm is required before Workspace.'}
       </li>
       <li>
-        <span className="font-semibold text-[#063f46]">Results.</span>{' '}
-        {pendingAnalysis ? analysisCopy : hasInterpretations ? analysisCopy : analysisCopy}
+        <span className="font-semibold text-[#063f46]">Workspace.</span>{' '}
+        {confirmed
+          ? 'Parlay Workspace is where you examine the slip as a whole.'
+          : 'After Confirm, review the parlay in Workspace.'}
       </li>
     </ol>
   );

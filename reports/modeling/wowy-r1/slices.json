@@ -1,0 +1,105 @@
+{
+  "note": "Slice families were specified before any metrics existed. n=0 because predictive evaluation is blocked.",
+  "slices": [
+    {
+      "id": "wowy_support_adequate",
+      "family": "wowy_support",
+      "label": "Points · primary pair adequate support (≥8 games each side)",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "wowy_support_low",
+      "family": "wowy_support",
+      "label": "Points · primary pair low support (2–7 games on a side)",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "wowy_support_insufficient",
+      "family": "wowy_support",
+      "label": "Points · primary pair insufficient support (<2 games on a side)",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "availability_observed_without",
+      "family": "known_teammate_availability",
+      "label": "Points · primary teammate observed Out before cutoff",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "availability_unknown",
+      "family": "known_teammate_availability",
+      "label": "Points · primary teammate availability unknown before cutoff",
+      "splitId": "selection",
+      "targetId": "points",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "wowy_support_adequate_reb",
+      "family": "wowy_support",
+      "label": "Rebounds · primary pair adequate support (≥8 games each side)",
+      "splitId": "selection",
+      "targetId": "rebounds",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "wowy_support_low_reb",
+      "family": "wowy_support",
+      "label": "Rebounds · primary pair low support (2–7 games on a side)",
+      "splitId": "selection",
+      "targetId": "rebounds",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "wowy_support_insufficient_reb",
+      "family": "wowy_support",
+      "label": "Rebounds · primary pair insufficient support (<2 games on a side)",
+      "splitId": "selection",
+      "targetId": "rebounds",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "availability_observed_without_reb",
+      "family": "known_teammate_availability",
+      "label": "Rebounds · primary teammate observed Out before cutoff",
+      "splitId": "selection",
+      "targetId": "rebounds",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    },
+    {
+      "id": "availability_unknown_reb",
+      "family": "known_teammate_availability",
+      "label": "Rebounds · primary teammate availability unknown before cutoff",
+      "splitId": "selection",
+      "targetId": "rebounds",
+      "n": 0,
+      "metricsByModel": {},
+      "pairedDelta": null
+    }
+  ]
+}

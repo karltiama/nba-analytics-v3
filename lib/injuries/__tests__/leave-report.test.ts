@@ -64,8 +64,8 @@ describe('leave-report semantics', () => {
         rowsStored: 0,
         rowsReturned: 0,
         previousRowsStored: prev,
-      }).complete
-    ).toBe(false);
+      })
+    ).toEqual({ complete: false, reason: 'empty_successful_provider_response' });
     expect(
       evaluateInjuryPullCompleteness({
         status: 'success',

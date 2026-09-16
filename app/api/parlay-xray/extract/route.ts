@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
 
   const { config, store, provider } = await getXrayRuntime();
   const entitlement = await getUserEntitlements(gate.auth.userId);
+  // Plan cannot bypass the extraction kill switch. isPro is only a safety-quota input.
 
   let form: FormData;
   try {

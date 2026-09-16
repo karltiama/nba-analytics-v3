@@ -1,6 +1,8 @@
-# WOWY artifact contract (for a future experiment)
+# WOWY artifact contract
 
-The WOWY page and calculations are owned by a separate agent. Model Lab does not implement WOWY. When a WOWY experiment exists, register it like any other experiment. Do not hardcode feature-group letters in the UI.
+Registered experiment: `wowy-r1` (`reports/modeling/wowy-r1/`, adapter `lib/model-lab/adapters/wowy-r1.ts`).
+
+The WOWY calculator is `lib/wowy/`. Model Lab does not reimplement classification. Frozen PTS C / REB C stay on their own registry row.
 
 Commit JSON. Do not commit large row dumps or model binaries.
 

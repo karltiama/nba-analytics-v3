@@ -16,6 +16,7 @@ import {
   type PropsExplorerMarketSelection,
 } from '@/components/betting/PropsExplorerMarketPanel';
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
+import { PropsExplorerParlayTray } from '@/components/betting/PropsExplorerParlayTray';
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
@@ -25,6 +26,12 @@ import {
   playerResearchHref,
 } from '@/lib/betting/research-journey';
 import { savedResearchHref } from '@/lib/betting/saved-research';
+import type { PropsExplorerOfferInput } from '@/lib/parlay/adapt-props-explorer-offer';
+import {
+  addResultNotice,
+  isOfferSelected,
+} from '@/lib/parlay/selection';
+import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
 
 type ExplorerRow = {
   gameId: number;
@@ -139,6 +146,22 @@ function formatPlayerLabel(playerName: string | null, playerId: number): string 
   return `${first[0]}. ${last}`;
 }
 
+function rowToParlayOfferInput(r: ExplorerRow): PropsExplorerOfferInput {
+  return {
+    playerId: r.playerId,
+    playerName: r.playerName,
+    gameId: r.gameId,
+    propType: r.propType,
+    side: r.side,
+    lineValue: r.lineValue,
+    sportsbook: r.sportsbook,
+    oddsAmerican: r.oddsAmerican,
+    snapshotAt: r.snapshotAt,
+    marketContext: r.marketContext,
+    sourceTable: r.sourceTable,
+  };
+}
+
 const SORT_OPTIONS = [
   { value: 'snapshot_at', label: 'Snapshot time' },
   { value: 'ev', label: 'EV' },
@@ -196,6 +219,14 @@ export default function PropsExplorerPage(props: PageProps) {
   const [selectedMarket, setSelectedMarket] = useState<PropsExplorerMarketSelection | null>(null);
   const [isXlViewport, setIsXlViewport] = useState(false);
   const [showAdvancedMetrics, setShowAdvancedMetrics] = useState(false);
+  const [parlayNotice, setParlayNotice] = useState<string | null>(null);
+  const {
+    legs: selectedParlayLegs,
+    addExplorerOffer,
+    removeLeg: removeParlayLeg,
+    clear: clearParlaySelection,
+    rememberExplorerReturnHref,
+  } = useParlaySelection();
 
   const marketContext: 'live' | 'historical' =
     meta?.marketContext ?? (date < getTodayET() ? 'historical' : 'live');
@@ -222,6 +253,11 @@ export default function PropsExplorerPage(props: PageProps) {
   useEffect(() => {
     setSelectedMarket(null);
   }, [date, gameId]);
+
+  useEffect(() => {
+    const qs = searchParams.toString();
+    rememberExplorerReturnHref(qs ? `/betting/props-explorer?${qs}` : '/betting/props-explorer');
+  }, [rememberExplorerReturnHref, searchParams]);
 
   const buildSavedPropKey = useCallback((v: SavedProp | ExplorerRow) => {
     return [
@@ -480,8 +516,23 @@ export default function PropsExplorerPage(props: PageProps) {
     [buildSavedPropKey, savedPropIdByKey, date]
   );
 
+  const addToParlay = useCallback((r: ExplorerRow) => {
+    const gameLabel = games.find((g) => g.id === String(r.gameId))?.label ?? null;
+    const result = addExplorerOffer(rowToParlayOfferInput(r), { gameLabel });
+    setParlayNotice(addResultNotice(result));
+  }, [addExplorerOffer, games]);
+
+  const clearParlay = useCallback(() => {
+    clearParlaySelection();
+    setParlayNotice(null);
+  }, [clearParlaySelection]);
+
   return (
-    <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+    <main
+      className={`max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 ${
+        selectedParlayLegs.length > 0 ? 'pb-28' : 'pb-12'
+      }`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-semibold text-[#063f46]">Props Explorer</h1>
@@ -715,6 +766,20 @@ export default function PropsExplorerPage(props: PageProps) {
           </p>
         </div>
       )}
+      {parlayNotice && (
+        <div
+          className={`bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-3 mb-4 border-l-4 ${
+            parlayNotice === 'Already added' ||
+            parlayNotice.startsWith('Added') ||
+            parlayNotice.includes('legs selected')
+              ? 'border-l-[#20B95A]'
+              : 'border-l-amber-500'
+          }`}
+          role="status"
+        >
+          <p className="text-sm text-[#075B5C]">{parlayNotice}</p>
+        </div>
+      )}
 
       <div className="flex items-center justify-between gap-2 mb-2 text-xs text-[#4a6366]">
         <span className="flex items-center gap-2 min-h-[1.125rem]">
@@ -802,12 +867,13 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium w-[72px]">Save</th>
                 <th className="py-2 px-2 font-medium w-[88px]">Compare</th>
                 <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
+                <th className="py-2 px-2 font-medium w-[80px]">Parlay</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={showAdvancedMetrics ? 17 : 12} className="py-8 text-center text-[#4a6366]">
+                  <td colSpan={showAdvancedMetrics ? 18 : 13} className="py-8 text-center text-[#4a6366]">
                     {(() => {
                       const copy = propsExplorerEmptyCopy({
                         frozen: Boolean(meta?.ingestionFrozen),
@@ -838,6 +904,8 @@ export default function PropsExplorerPage(props: PageProps) {
                   const paperKey = `${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}`;
                   const saveKey = buildSavedPropKey(r);
                   const isSaved = Boolean(savedPropIdByKey[saveKey]);
+                  const parlayOffer = rowToParlayOfferInput(r);
+                  const isOnParlay = isOfferSelected(selectedParlayLegs, parlayOffer);
                   return (
                   <tr
                     key={`${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
@@ -994,6 +1062,22 @@ export default function PropsExplorerPage(props: PageProps) {
                         {addingPaperKey === paperKey ? '…' : 'Add'}
                       </button>
                     </td>
+                    <td className="py-1.5 px-1">
+                      <button
+                        type="button"
+                        aria-label={isOnParlay ? 'Added to parlay' : 'Add to Parlay'}
+                        aria-pressed={isOnParlay}
+                        onClick={() => addToParlay(r)}
+                        className={`text-[10px] px-1.5 py-0.5 rounded border ${
+                          isOnParlay
+                            ? 'border-[#075B5C] bg-[#F8FBFA] text-[#075B5C]'
+                            : 'border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]'
+                        }`}
+                        title={isOnParlay ? 'Already added' : 'Add to Parlay'}
+                      >
+                        {isOnParlay ? 'Added' : '+ Parlay'}
+                      </button>
+                    </td>
                   </tr>
                   );
                 })
@@ -1045,6 +1129,11 @@ export default function PropsExplorerPage(props: PageProps) {
           onClose={() => setSelectedMarket(null)}
         />
       ) : null}
+      <PropsExplorerParlayTray
+        legs={selectedParlayLegs}
+        onRemove={removeParlayLeg}
+        onClear={clearParlay}
+      />
     </main>
   );
 }

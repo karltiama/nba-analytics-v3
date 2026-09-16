@@ -370,6 +370,7 @@ async function transformToAnalytics(
     rowsReturned: opts.rowsReturned,
     previousCompleteRowCount,
     inReportPlayerIds: rawRows.rows.map((row) => String(row.provider_player_id)),
+    notInReportPlayerIds: plan.currentDeletes,
   });
 
   let historyCount = 0;

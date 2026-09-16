@@ -1,0 +1,17 @@
+{
+  "probe": "bdl-injuries-entitlement-probe",
+  "executed": true,
+  "requestedAt": "2026-09-16T12:06:56.221Z",
+  "method": "GET",
+  "url": "https://api.balldontlie.io/nba/v1/player_injuries?per_page=1",
+  "status": 401,
+  "ok": false,
+  "structureMatchesExpected": false,
+  "dataIsArray": false,
+  "recordCount": null,
+  "hasMetaObject": false,
+  "parseError": "body is not JSON",
+  "rateLimit": {},
+  "access": "denied",
+  "note": "Single bounded GET using the local configured credential. No pagination, ingestion, or database writes. Credentials and response body omitted. HTTP 401 means this request was denied; it does not identify the precise subscription or credential cause. Empty-success vs full-feed completeness was not reached."
+}

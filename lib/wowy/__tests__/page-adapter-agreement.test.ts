@@ -23,6 +23,8 @@ describe('WOWY page and model adapter share one summarizer', () => {
       'lib/wowy/queries.ts',
       'lib/wowy/model-adapter.ts',
       'lib/wowy/aggregate.ts',
+      'lib/wowy/candidate-features.ts',
+      'lib/wowy/availability-gate.ts',
       'app/api/wowy/pair/route.ts',
     ];
     for (const file of files) {

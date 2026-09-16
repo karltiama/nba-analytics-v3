@@ -61,3 +61,31 @@ Surface-only. Do **not** send filenames, OCR text, player names, lines, odds, or
 
 - **Trigger:** A screenshot passes client validation and is kept in local preview state.
 - **Properties:** `surface` = `parlay_xray`
+
+## `parlay_xray_extract_started`
+
+- **Trigger:** User starts screenshot extraction.
+- **Properties:** `surface` = `parlay_xray`
+
+## `parlay_xray_extract_completed`
+
+- **Trigger:** Screenshot extraction returns a handled result category.
+- **Properties:** `surface` = `parlay_xray`, `result_category`
+
+## `parlay_xray_extract_failed`
+
+- **Trigger:** Screenshot extraction returns a failed result category or client catch.
+- **Properties:** `surface` = `parlay_xray`, `result_category`
+
+## `parlay_xray_open_workspace`
+
+- **Trigger:** Confirmed XRay legs are handed to Parlay Workspace.
+- **Properties:** `surface` = `parlay_xray`, `action` = `open_workspace`
+- Do **not** send OCR text, player, market, line, book, odds, or the parlay.
+
+## `parlay_workspace_analysis_started`
+
+- **Trigger:** User clicks Analyze with Court Context.
+- **Properties:** `surface` = `parlay_workspace`, `source` = `xray` | `props_explorer` | `mixed`, `action` = `analysis_started`
+- Do **not** send OCR text, player, market, line, book, odds, full parlay, or analysis text.
+

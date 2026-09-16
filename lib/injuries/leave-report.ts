@@ -63,7 +63,7 @@ export function evaluateInjuryPullCompleteness(
     return { complete: false, reason: 'rows_stored does not equal rows_returned' };
   }
   if (stored <= 0) {
-    return { complete: false, reason: 'pull stored zero rows' };
+    return { complete: false, reason: 'empty_successful_provider_response' };
   }
   const floor = completeInjuryRowFloor(input.previousRowsStored);
   if (stored < floor) {

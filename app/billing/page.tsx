@@ -207,14 +207,21 @@ export default function BillingPage() {
       <section className={cardCls}>
         <h2 className="text-sm font-semibold text-[#063f46] mb-1">Founding Pro</h2>
         <p className="text-lg font-semibold text-[#063f46] mb-2">{priceLabel}</p>
-        <p className="text-sm text-[#063f46] mb-4">Stop checking multiple sportsbooks manually.</p>
+        <p className="text-sm text-[#063f46] mb-4">
+          Deeper sportsbook research on top of the Court Context Free already includes — Props Explorer, Add to
+          Parlay, Workspace analysis, Why this parlay could fail, and close consensus. Founding Pro does not sell locks
+          or win calls.
+        </p>
         <ul className="text-sm text-[#4a6366] space-y-1.5 list-disc pl-5">
           <li>Exact best sportsbook for the selected market</li>
           <li>Best available Over/Under line and best same-line price</li>
-          <li>Deeper sportsbook comparison</li>
-          <li>Movement history when real snapshot history exists</li>
-          <li>AI research briefings as a supporting benefit</li>
+          <li>3-Hour Pre-Tip to Decision Close movement, including per-book history when snapshots exist</li>
+          <li>AI research briefings as supporting context, not picks</li>
         </ul>
+        <p className="text-xs text-[#4a6366] mt-4">
+          Historical WOWY research stays on the WOWY page for everyone. Saved parlays, live current analysis, alerts,
+          and screenshot extraction are not part of Founding Pro yet.
+        </p>
       </section>
     </main>
   );

@@ -1,5 +1,5 @@
+import { evaluateFeature, featureFlagsForPlan } from './capabilities';
 import {
-  FEATURE_KEYS,
   PLANS,
   SUBSCRIPTION_STATUSES,
   type EntitlementRow,
@@ -33,7 +33,7 @@ function isStatus(value: string | null | undefined): value is SubscriptionStatus
 }
 
 function featuresFor(isPro: boolean): Record<FeatureKey, boolean> {
-  return Object.fromEntries(FEATURE_KEYS.map((key) => [key, isPro])) as Record<FeatureKey, boolean>;
+  return featureFlagsForPlan(isPro);
 }
 
 export function freeEntitlement(
@@ -119,7 +119,7 @@ export function resolveEntitlementFromRow(
 }
 
 export function hasFeature(entitlement: ResolvedEntitlement, feature: FeatureKey): boolean {
-  return entitlement.features[feature] === true;
+  return evaluateFeature({ isPro: entitlement.isPro, authenticated: true }, feature).access === 'allow';
 }
 
 export function parseDevGrantUserIds(

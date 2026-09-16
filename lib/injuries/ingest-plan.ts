@@ -155,6 +155,7 @@ export function planInjuryPullMembership(args: {
   pullRunId: number;
   observedAt: string;
   inReportPlayerIds: Iterable<string>;
+  notInReportPlayerIds?: Iterable<string>;
 }): InjuryMembershipRow[] {
   const seen = new Set<string>();
   const rows: InjuryMembershipRow[] = [];
@@ -166,6 +167,17 @@ export function planInjuryPullMembership(args: {
       pullRunId: args.pullRunId,
       playerId,
       inReport: true,
+      observedAt: args.observedAt,
+    });
+  }
+  for (const raw of args.notInReportPlayerIds ?? []) {
+    const playerId = String(raw);
+    if (!playerId || seen.has(playerId)) continue;
+    seen.add(playerId);
+    rows.push({
+      pullRunId: args.pullRunId,
+      playerId,
+      inReport: false,
       observedAt: args.observedAt,
     });
   }

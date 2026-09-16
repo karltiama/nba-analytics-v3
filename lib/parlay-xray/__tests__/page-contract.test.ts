@@ -50,6 +50,12 @@ describe('Parlay XRay page contract', () => {
     expect(view).toMatch(/Historical Replay/);
     expect(view).toMatch(/XrayResultsPanel/);
     expect(view).toMatch(/Confirm\./);
+    expect(view).toMatch(/Workspace\./);
+    expect(view).not.toMatch(/Results\./);
+    expect(view).not.toMatch(/See beyond the bet slip/);
+    expect(view).toMatch(/Upload your slip/);
+    expect(view).toMatch(/What XRay does/);
+    expect(view).not.toMatch(/strongest\/riskiest/);
     const results = readFileSync(join(ROOT, 'components/parlay-xray/XrayResultsPanel.tsx'), 'utf8');
     expect(results).toMatch(/Why this could fail/);
     expect(results).toMatch(/Screenshot read/);
@@ -68,6 +74,7 @@ describe('Parlay XRay page contract', () => {
     expect(parlaySummary).toMatch(/Legs needing review/);
     expect(parlaySummary).toMatch(/not measured correlations/);
     expect(parlaySummary).not.toMatch(/positively correlated|win probability|strongest leg/i);
+    expect(parlaySummary.indexOf('Why this parlay could fail')).toBeLessThan(parlaySummary.indexOf('Data coverage'));
     const parlaySrc = readFileSync(join(ROOT, 'lib/parlay-xray/interpretation/parlay.ts'), 'utf8');
     expect(parlaySrc).not.toMatch(/correlat|openai|balldontlie|Date\.now\(/i);
     const interpret = readFileSync(join(ROOT, 'lib/parlay-xray/interpretation/interpret.ts'), 'utf8');
@@ -97,8 +104,15 @@ describe('Parlay XRay page contract', () => {
     expect(client).toMatch(/previewFlag === 'replay'/);
     expect(client).toMatch(/CONFIRM_LEGS/);
     expect(client).toMatch(/historicalReplayRunRef/);
+    expect(client).toMatch(/handoffConfirmedXrayParlay/);
+    expect(client).toMatch(/importConfirmedXrayLegsToStore/);
+    expect(client).toMatch(/PARLAY_WORKSPACE_HREF/);
+    expect(client).not.toMatch(/runHistoricalXrayReplay/);
+    expect(client).not.toMatch(/runWorkspaceHistoricalAnalysis/);
     expect(client).not.toMatch(/interpretXrayLeg\(/);
     expect(client).not.toMatch(/useSearchParams/);
+    const panel = readFileSync(join(ROOT, 'components/parlay-xray/ExtractedLegsPanel.tsx'), 'utf8');
+    expect(panel).toMatch(/Review in Workspace/);
     const index = readFileSync(join(ROOT, 'lib/parlay-xray/index.ts'), 'utf8');
     expect(index).not.toMatch(/dev-fixture/);
   });
@@ -107,7 +121,7 @@ describe('Parlay XRay page contract', () => {
     const view = readFileSync(join(ROOT, 'components/parlay-xray/ParlayXrayView.tsx'), 'utf8');
     expect(view).toMatch(/lg:grid-cols-12/);
     expect(view).toMatch(/lg:col-span-5/);
-    expect(view).toMatch(/See beyond the bet slip/);
+    expect(view).toMatch(/Upload your slip/);
     expect(view).not.toMatch(/guaranteed/i);
     expect(view).not.toMatch(/beat the books/i);
     expect(view).not.toMatch(/instant winning/i);

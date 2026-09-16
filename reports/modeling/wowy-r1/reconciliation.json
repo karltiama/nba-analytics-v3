@@ -1,0 +1,15 @@
+{
+  "dataset_sha256": null,
+  "predictive_evaluation": "not_trained",
+  "n_player_game_logs_2023_2025": 138296,
+  "n_injury_history_2023": 0,
+  "n_injury_history_2024": 0,
+  "n_injury_history_2025": 4801,
+  "n_predictive_eligible_2023": 0,
+  "n_predictive_eligible_2024": 0,
+  "n_known_out_eligible_2025_window": 399,
+  "coverage_vs_full_population": "399 / 7083 played subject-games in the tape window (5.6%). 0% of 2023–24. Not comparable to learned-r1 common-eligible ~27k/season.",
+  "selection_bias": "Subset is nights when the primary prior-minutes teammate is explicitly listed Out. Healthy and questionable nights are out of sample. WITH cannot be certified.",
+  "common_eligible_learned_r1": { "train": 27653, "validation": 27696, "test": 28130 },
+  "note": "No WOWY training rows were exported. Frozen C artifacts were not modified. Adapter tests passed; browser Model Lab verification did not occur."
+}

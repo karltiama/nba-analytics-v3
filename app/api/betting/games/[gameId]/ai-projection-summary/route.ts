@@ -134,7 +134,7 @@ export async function POST(
   if (!gate.ok) return gate.response;
 
   const access = await requireEntitlement(gate.auth.userId, 'ai_briefing');
-  if (!access.ok) return entitlementRequiredResponse('ai_briefing', gate.withAuthCookies);
+  if (!access.ok) return entitlementRequiredResponse('ai_briefing', gate.withAuthCookies, access.decision);
 
   if (isIngestionFrozen()) {
     return NextResponse.json({

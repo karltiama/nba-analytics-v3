@@ -199,16 +199,19 @@ describe('injury ingest plan', () => {
     ).toBe(false);
   });
 
-  it('membership lists in-report players only and does not invent healthy absences', () => {
+  it('membership lists in-report players and omitted players without inventing Available', () => {
     const rows = planInjuryPullMembership({
       pullRunId: 12,
       observedAt,
       inReportPlayerIds: ['p1', 'p1', 'p2'],
+      notInReportPlayerIds: ['p3', 'p1'],
     });
     expect(rows).toEqual([
       { pullRunId: 12, playerId: 'p1', inReport: true, observedAt },
       { pullRunId: 12, playerId: 'p2', inReport: true, observedAt },
+      { pullRunId: 12, playerId: 'p3', inReport: false, observedAt },
     ]);
-    expect(rows.every((r) => r.inReport)).toBe(true);
+    expect(rows.some((r) => r.inReport === false)).toBe(true);
+    expect(JSON.stringify(rows)).not.toMatch(/Available/);
   });
 });

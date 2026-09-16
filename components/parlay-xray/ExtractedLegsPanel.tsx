@@ -32,6 +32,8 @@ type ExtractedLegsPanelProps = {
   ) => void;
   onAcceptLeg: (legId: string) => void;
   onConfirm: () => void;
+  onReviewInWorkspace?: () => void;
+  workspaceHandoffAvailable?: boolean;
 };
 
 export function ExtractedLegsPanel({
@@ -46,6 +48,8 @@ export function ExtractedLegsPanel({
   onEditLeg,
   onAcceptLeg,
   onConfirm,
+  onReviewInWorkspace,
+  workspaceHandoffAvailable = false,
 }: ExtractedLegsPanelProps) {
   const counts = extractionCounts(legs);
   const showWholeNumberLineNote = legs.some(isWholeNumberPlayerPropLine);
@@ -108,6 +112,15 @@ export function ExtractedLegsPanel({
           >
             {confirmLabel ?? (confirmed ? 'Legs confirmed' : 'Confirm legs')}
           </button>
+          {confirmed && workspaceHandoffAvailable && onReviewInWorkspace ? (
+            <button
+              type="button"
+              onClick={onReviewInWorkspace}
+              className="w-full rounded-lg border border-[#075B5C] bg-white text-[#075B5C] text-sm font-semibold py-2.5 hover:bg-[#E7F6F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
+            >
+              Review in Workspace
+            </button>
+          ) : null}
           {confirmHint ? <p className="text-xs text-[#4a6366]">{confirmHint}</p> : null}
           {showWholeNumberLineNote ? (
             <p className="rounded-md bg-[#E7F6F1] px-2.5 py-2 text-xs text-[#075B5C]">{LINE_WHOLE_NUMBER_HINT}</p>
@@ -169,7 +182,7 @@ function LegRow({
         <button
           type="button"
           onClick={onAccept}
-          aria-label={`Confirm ${name} as shown`}
+          aria-label={`Mark ${name} as reviewed`}
           className="shrink-0 rounded-full border border-[#075B5C] bg-[#E7F6F1] p-1.5 text-[#075B5C] hover:bg-[#d5efe8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
         >
           <Check className="h-4 w-4" aria-hidden />

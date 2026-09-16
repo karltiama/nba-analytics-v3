@@ -1,0 +1,709 @@
+{
+  "version": "player-projection-wowy-known-out-r1",
+  "feature_spec_version": "wowy-known-out-residual-r1",
+  "dataset_sha256": "b1db16cbbb9b324bc7fdb7a25e7692e0a4b18421205f3788453d7cd31c9b3dc4",
+  "historical_validity_class": "reconstructed_historical",
+  "season": "2025",
+  "model_lab_splits": [
+    {
+      "id": "training",
+      "kind": "training",
+      "label": "Train 2026-03-10 to 2026-04-06 ET (frozen)",
+      "season": "2025",
+      "n": 394,
+      "note": "Ridge fit on frozen training dates. Preprocessing (median impute, standardize) fit on training rows only."
+    },
+    {
+      "id": "selection",
+      "kind": "selection",
+      "label": "Inner chrono lambda selection (last 30% of train ET dates)",
+      "season": "2025",
+      "n": 127,
+      "note": "Lambda selected on chronological inner holdout of training ET dates only. Not the frozen eval set."
+    },
+    {
+      "id": "historical_confirmation",
+      "kind": "historical_confirmation",
+      "label": "Eval 2026-04-07 to 2026-05-05 ET (frozen, once)",
+      "season": "2025",
+      "n": 231,
+      "note": "Twelve evaluation dates. Previously inspected development period. Limited uncertainty evidence."
+    },
+    {
+      "id": "prospective_shadow",
+      "kind": "prospective_shadow",
+      "label": "Prospective known-Out (not started)",
+      "season": "2026",
+      "n": 0,
+      "note": "No production promotion, shadow activation, or provider collection in this experiment."
+    }
+  ],
+  "predictive_evaluation": "complete",
+  "eligibility": "Frozen known-Out subset: primary teammate last-observed Out/Out For Season before T−60 on a unique team-night, subject played, WOWY support not insufficient. Previously inspected 2025 window.",
+  "periods": {
+    "train": "2026-03-10 to 2026-04-06 ET (frozen)",
+    "validation": null,
+    "test": "2026-04-07 to 2026-05-05 ET (frozen eval, once)",
+    "prospective": null
+  },
+  "n": {
+    "train": 394,
+    "validation": 0,
+    "test": 231
+  },
+  "n_dropped_missing_frozen_c": 0,
+  "targets": [
+    {
+      "id": "points",
+      "label": "Points",
+      "units": "points",
+      "derived": false
+    },
+    {
+      "id": "rebounds",
+      "label": "Rebounds",
+      "units": "rebounds",
+      "derived": false
+    }
+  ],
+  "feature_groups": [
+    {
+      "id": "frozen_c",
+      "label": "Frozen C",
+      "description": "Unchanged learned-r1 C prediction."
+    },
+    {
+      "id": "residual_role",
+      "label": "Ridge residual on role/history",
+      "description": "A plus ridge(actual−A) on declared role features."
+    },
+    {
+      "id": "residual_wowy",
+      "label": "Ridge residual + WOWY",
+      "description": "Same procedure plus declared primary-teammate WOWY features."
+    }
+  ],
+  "models": [
+    {
+      "id": "frozen_c",
+      "label": "Frozen C",
+      "feature_group_id": "frozen_c",
+      "role": "frozen_shadow"
+    },
+    {
+      "id": "residual_role",
+      "label": "Residual role",
+      "feature_group_id": "residual_role",
+      "role": "baseline"
+    },
+    {
+      "id": "residual_wowy",
+      "label": "Residual + WOWY",
+      "feature_group_id": "residual_wowy",
+      "role": "candidate"
+    }
+  ],
+  "note": {
+    "validation": "Lambda selected on chronological inner holdout of training ET dates only.",
+    "test": "Frozen evaluation dates used once. Previously inspected development period. About 12 eval dates: limited uncertainty evidence.",
+    "ui_verification": "Model Lab adapter tests can load this artifact. Browser verification of /admin/model-lab is separate and was not claimed."
+  },
+  "results": {
+    "test|points": {
+      "metrics": {
+        "frozen_c": {
+          "mae": 6.212260648893938,
+          "rmse": 8.178510038070014,
+          "bias": -3.460576125035065,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_role": {
+          "mae": 5.869888813907011,
+          "rmse": 7.656924464197345,
+          "bias": -1.5052935389059598,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_wowy": {
+          "mae": 5.836888796283865,
+          "rmse": 7.6649219529240975,
+          "bias": -1.0360091566719334,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        }
+      },
+      "paired_deltas": [
+        {
+          "left_model_id": "frozen_c",
+          "right_model_id": "residual_role",
+          "delta": -0.3423718349869276,
+          "ci_low": -0.5542673180271844,
+          "ci_high": 0.08360054340260348,
+          "n": 231,
+          "n_groups": 12,
+          "iterations": 400,
+          "source": "paired_observations"
+        },
+        {
+          "left_model_id": "frozen_c",
+          "right_model_id": "residual_wowy",
+          "delta": -0.37537185261007355,
+          "ci_low": -0.7045367363553439,
+          "ci_high": 0.08986782321858566,
+          "n": 231,
+          "n_groups": 12,
+          "iterations": 400,
+          "source": "paired_observations"
+        },
+        {
+          "left_model_id": "residual_role",
+          "right_model_id": "residual_wowy",
+          "delta": -0.03300001762314597,
+          "ci_low": -0.20207939415092468,
+          "ci_high": 0.17094260350549018,
+          "n": 231,
+          "n_groups": 12,
+          "iterations": 400,
+          "source": "paired_observations"
+        }
+      ]
+    },
+    "test|rebounds": {
+      "metrics": {
+        "frozen_c": {
+          "mae": 2.591076661032901,
+          "rmse": 3.5479353026004166,
+          "bias": -1.272581559651082,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_role": {
+          "mae": 2.5613499096301653,
+          "rmse": 3.498157635235679,
+          "bias": -1.1348858253657708,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_wowy": {
+          "mae": 2.542776535864822,
+          "rmse": 3.4931781725931947,
+          "bias": -1.0977760701593653,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        }
+      },
+      "paired_deltas": [
+        {
+          "left_model_id": "frozen_c",
+          "right_model_id": "residual_role",
+          "delta": -0.02972675140273573,
+          "ci_low": -0.05663775754129441,
+          "ci_high": 0.0022913049469028834,
+          "n": 231,
+          "n_groups": 12,
+          "iterations": 400,
+          "source": "paired_observations"
+        },
+        {
+          "left_model_id": "frozen_c",
+          "right_model_id": "residual_wowy",
+          "delta": -0.0483001251680788,
+          "ci_low": -0.10630570200575828,
+          "ci_high": 0.013672395641159962,
+          "n": 231,
+          "n_groups": 12,
+          "iterations": 400,
+          "source": "paired_observations"
+        },
+        {
+          "left_model_id": "residual_role",
+          "right_model_id": "residual_wowy",
+          "delta": -0.01857337376534307,
+          "ci_low": -0.06400194126969838,
+          "ci_high": 0.03127157059784835,
+          "n": 231,
+          "n_groups": 12,
+          "iterations": 400,
+          "source": "paired_observations"
+        }
+      ]
+    }
+  },
+  "per_target": {
+    "points": {
+      "lambda_b": {
+        "lambda": 30,
+        "innerN": 127,
+        "selected": true,
+        "innerMaeByLambda": {
+          "1": 4.98309174166824,
+          "3": 4.983207387436206,
+          "10": 4.981288299430013,
+          "30": 4.974321642684951,
+          "0.3": 4.982977272323018
+        }
+      },
+      "lambda_c": {
+        "lambda": 0.3,
+        "innerN": 127,
+        "selected": true,
+        "innerMaeByLambda": {
+          "1": 4.962651195863682,
+          "3": 4.967202406714062,
+          "10": 4.973274088524571,
+          "30": 4.971799384360437,
+          "0.3": 4.961652497622361
+        }
+      },
+      "metrics": {
+        "frozen_c": {
+          "mae": 6.212260648893938,
+          "rmse": 8.178510038070014,
+          "bias": -3.460576125035065,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_role": {
+          "mae": 5.869888813907011,
+          "rmse": 7.656924464197345,
+          "bias": -1.5052935389059598,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_wowy": {
+          "mae": 5.836888796283865,
+          "rmse": 7.6649219529240975,
+          "bias": -1.0360091566719334,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        }
+      },
+      "paired": {
+        "b_minus_a": {
+          "delta": -0.3423718349869276,
+          "ciLow": -0.5542673180271844,
+          "ciHigh": 0.08360054340260348,
+          "n": 231,
+          "nGroups": 12,
+          "iterations": 400
+        },
+        "c_minus_a": {
+          "delta": -0.37537185261007355,
+          "ciLow": -0.7045367363553439,
+          "ciHigh": 0.08986782321858566,
+          "n": 231,
+          "nGroups": 12,
+          "iterations": 400
+        },
+        "c_minus_b": {
+          "delta": -0.03300001762314597,
+          "ciLow": -0.20207939415092468,
+          "ciHigh": 0.17094260350549018,
+          "n": 231,
+          "nGroups": 12,
+          "iterations": 400
+        }
+      },
+      "by_date": [
+        {
+          "date": "2026-04-07",
+          "n": 40,
+          "mae_a": 5.771014425132499,
+          "mae_b": 5.61895111742706,
+          "mae_c": 6.080246029896761
+        },
+        {
+          "date": "2026-04-08",
+          "n": 4,
+          "mae_a": 5.813957364075,
+          "mae_b": 5.2162392689897485,
+          "mae_c": 4.399826625124545
+        },
+        {
+          "date": "2026-04-09",
+          "n": 25,
+          "mae_a": 5.557603097712001,
+          "mae_b": 5.03108859936895,
+          "mae_c": 5.026561871874829
+        },
+        {
+          "date": "2026-04-10",
+          "n": 43,
+          "mae_a": 5.799091758746512,
+          "mae_b": 5.347184865717114,
+          "mae_c": 5.327783724706725
+        },
+        {
+          "date": "2026-04-12",
+          "n": 70,
+          "mae_a": 7.727556210767143,
+          "mae_b": 7.004901335534433,
+          "mae_c": 6.841180043691768
+        },
+        {
+          "date": "2026-04-18",
+          "n": 7,
+          "mae_a": 6.219527840285714,
+          "mae_b": 6.05296429067937,
+          "mae_c": 5.029566693270458
+        },
+        {
+          "date": "2026-04-21",
+          "n": 6,
+          "mae_a": 6.183167740933334,
+          "mae_b": 6.728104530031423,
+          "mae_c": 6.636606683089532
+        },
+        {
+          "date": "2026-04-24",
+          "n": 6,
+          "mae_a": 7.357318127149999,
+          "mae_b": 6.4991685935569015,
+          "mae_c": 6.546646275742425
+        },
+        {
+          "date": "2026-04-26",
+          "n": 7,
+          "mae_a": 4.89593025937143,
+          "mae_b": 5.658943215000616,
+          "mae_c": 5.603723143646211
+        },
+        {
+          "date": "2026-04-29",
+          "n": 8,
+          "mae_a": 3.4050483545999994,
+          "mae_b": 4.3377176505261295,
+          "mae_c": 4.23573440734334
+        },
+        {
+          "date": "2026-05-01",
+          "n": 8,
+          "mae_a": 4.800799378999999,
+          "mae_b": 4.771072681322439,
+          "mae_c": 4.69417195537142
+        },
+        {
+          "date": "2026-05-05",
+          "n": 7,
+          "mae_a": 3.8582774050571422,
+          "mae_b": 4.293534657990069,
+          "mae_c": 4.128430959199137
+        }
+      ],
+      "slices": [
+        {
+          "id": "points_low_support",
+          "family": "wowy_support",
+          "label": "points · low_support",
+          "splitId": "historical_confirmation",
+          "targetId": "points",
+          "n": 116,
+          "metricsByModel": {
+            "frozen_c": {
+              "mae": 6.625766110218105,
+              "n": 116
+            },
+            "residual_role": {
+              "mae": 5.948995150692712,
+              "n": 116
+            },
+            "residual_wowy": {
+              "mae": 5.902768713807492,
+              "n": 116
+            }
+          },
+          "pairedDelta": {
+            "leftModelId": "residual_role",
+            "rightModelId": "residual_wowy",
+            "delta": -0.046226436885219435,
+            "ciLow": -0.4705021052718692,
+            "ciHigh": 0.36602225078530015,
+            "n": 116,
+            "nGroups": 9,
+            "iterations": 400,
+            "source": "paired_observations"
+          }
+        },
+        {
+          "id": "points_adequate",
+          "family": "wowy_support",
+          "label": "points · adequate",
+          "splitId": "historical_confirmation",
+          "targetId": "points",
+          "n": 115,
+          "metricsByModel": {
+            "frozen_c": {
+              "mae": 5.795159487906089,
+              "n": 115
+            },
+            "residual_role": {
+              "mae": 5.790094595931876,
+              "n": 115
+            },
+            "residual_wowy": {
+              "mae": 5.7704360099122045,
+              "n": 115
+            }
+          },
+          "pairedDelta": {
+            "leftModelId": "residual_role",
+            "rightModelId": "residual_wowy",
+            "delta": -0.01965858601967163,
+            "ciLow": -0.08248224177854979,
+            "ciHigh": 0.050428374968436884,
+            "n": 115,
+            "nGroups": 12,
+            "iterations": 400,
+            "source": "paired_observations"
+          }
+        }
+      ]
+    },
+    "rebounds": {
+      "lambda_b": {
+        "lambda": 30,
+        "innerN": 127,
+        "selected": true,
+        "innerMaeByLambda": {
+          "1": 2.0602303470888974,
+          "3": 2.0600455897600596,
+          "10": 2.059494192200398,
+          "30": 2.058535134277166,
+          "0.3": 2.0602968963653536
+        }
+      },
+      "lambda_c": {
+        "lambda": 30,
+        "innerN": 127,
+        "selected": true,
+        "innerMaeByLambda": {
+          "1": 2.062651021445911,
+          "3": 2.0624019833435603,
+          "10": 2.0621647882110143,
+          "30": 2.061973100253443,
+          "0.3": 2.0627985103584408
+        }
+      },
+      "metrics": {
+        "frozen_c": {
+          "mae": 2.591076661032901,
+          "rmse": 3.5479353026004166,
+          "bias": -1.272581559651082,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_role": {
+          "mae": 2.5613499096301653,
+          "rmse": 3.498157635235679,
+          "bias": -1.1348858253657708,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        },
+        "residual_wowy": {
+          "mae": 2.542776535864822,
+          "rmse": 3.4931781725931947,
+          "bias": -1.0977760701593653,
+          "coverage": 1,
+          "n": 231,
+          "nFinite": 231
+        }
+      },
+      "paired": {
+        "b_minus_a": {
+          "delta": -0.02972675140273573,
+          "ciLow": -0.05663775754129441,
+          "ciHigh": 0.0022913049469028834,
+          "n": 231,
+          "nGroups": 12,
+          "iterations": 400
+        },
+        "c_minus_a": {
+          "delta": -0.0483001251680788,
+          "ciLow": -0.10630570200575828,
+          "ciHigh": 0.013672395641159962,
+          "n": 231,
+          "nGroups": 12,
+          "iterations": 400
+        },
+        "c_minus_b": {
+          "delta": -0.01857337376534307,
+          "ciLow": -0.06400194126969838,
+          "ciHigh": 0.03127157059784835,
+          "n": 231,
+          "nGroups": 12,
+          "iterations": 400
+        }
+      },
+      "by_date": [
+        {
+          "date": "2026-04-07",
+          "n": 40,
+          "mae_a": 2.2916685220775,
+          "mae_b": 2.1903776382031244,
+          "mae_c": 2.143232215604577
+        },
+        {
+          "date": "2026-04-08",
+          "n": 4,
+          "mae_a": 1.1522580652,
+          "mae_b": 0.9406852574362302,
+          "mae_c": 0.6267259426399389
+        },
+        {
+          "date": "2026-04-09",
+          "n": 25,
+          "mae_a": 2.516588331052,
+          "mae_b": 2.4865277560934906,
+          "mae_c": 2.5680207712191763
+        },
+        {
+          "date": "2026-04-10",
+          "n": 43,
+          "mae_a": 2.876653624876744,
+          "mae_b": 2.8336835173159365,
+          "mae_c": 2.8950452609768274
+        },
+        {
+          "date": "2026-04-12",
+          "n": 70,
+          "mae_a": 3.004143074287143,
+          "mae_b": 2.9890994662335575,
+          "mae_c": 2.9377982084810443
+        },
+        {
+          "date": "2026-04-18",
+          "n": 7,
+          "mae_a": 2.154492756542857,
+          "mae_b": 2.221230334902852,
+          "mae_c": 2.1260262489099913
+        },
+        {
+          "date": "2026-04-21",
+          "n": 6,
+          "mae_a": 1.4778093059666666,
+          "mae_b": 1.5690644870864592,
+          "mae_c": 1.5606365093172634
+        },
+        {
+          "date": "2026-04-24",
+          "n": 6,
+          "mae_a": 2.0114302067499996,
+          "mae_b": 2.0864780559467815,
+          "mae_c": 2.011533599327805
+        },
+        {
+          "date": "2026-04-26",
+          "n": 7,
+          "mae_a": 2.173287251957143,
+          "mae_b": 2.2393325834746594,
+          "mae_c": 2.0971532445716745
+        },
+        {
+          "date": "2026-04-29",
+          "n": 8,
+          "mae_a": 3.00780276275,
+          "mae_b": 3.0172952857866724,
+          "mae_c": 2.885421695166788
+        },
+        {
+          "date": "2026-05-01",
+          "n": 8,
+          "mae_a": 2.1893840855875,
+          "mae_b": 2.151543400505538,
+          "mae_c": 2.3480021510699878
+        },
+        {
+          "date": "2026-05-05",
+          "n": 7,
+          "mae_a": 1.7935306123,
+          "mae_b": 1.7910756580352927,
+          "mae_c": 1.7070256311055427
+        }
+      ],
+      "slices": [
+        {
+          "id": "rebounds_low_support",
+          "family": "wowy_support",
+          "label": "rebounds · low_support",
+          "splitId": "historical_confirmation",
+          "targetId": "rebounds",
+          "n": 116,
+          "metricsByModel": {
+            "frozen_c": {
+              "mae": 2.794348053970689,
+              "n": 116
+            },
+            "residual_role": {
+              "mae": 2.7476960872883676,
+              "n": 116
+            },
+            "residual_wowy": {
+              "mae": 2.705471037577872,
+              "n": 116
+            }
+          },
+          "pairedDelta": {
+            "leftModelId": "residual_role",
+            "rightModelId": "residual_wowy",
+            "delta": -0.042225049710495455,
+            "ciLow": -0.09467734246024628,
+            "ciHigh": 0.04157257852529117,
+            "n": 116,
+            "nGroups": 9,
+            "iterations": 400,
+            "source": "paired_observations"
+          }
+        },
+        {
+          "id": "rebounds_adequate",
+          "family": "wowy_support",
+          "label": "rebounds · adequate",
+          "splitId": "historical_confirmation",
+          "targetId": "rebounds",
+          "n": 115,
+          "metricsByModel": {
+            "frozen_c": {
+              "mae": 2.3860376907652183,
+              "n": 115
+            },
+            "residual_role": {
+              "mae": 2.3733833304271093,
+              "n": 115
+            },
+            "residual_wowy": {
+              "mae": 2.3786672993542672,
+              "n": 115
+            }
+          },
+          "pairedDelta": {
+            "leftModelId": "residual_role",
+            "rightModelId": "residual_wowy",
+            "delta": 0.005283968927157989,
+            "ciLow": -0.06028551931513837,
+            "ciHigh": 0.058053364533313,
+            "n": 115,
+            "nGroups": 12,
+            "iterations": 400,
+            "source": "paired_observations"
+          }
+        }
+      ]
+    }
+  },
+  "decision": {
+    "label": "inconclusive",
+    "note": "C vs B did not clear the predeclared paired bar on this small, previously inspected known-Out window. ~12 evaluation dates provide limited uncertainty evidence."
+  }
+}

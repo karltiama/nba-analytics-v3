@@ -1,0 +1,80 @@
+{
+  "feature_spec_version": "player-projection-wowy-features-r1",
+  "experiment_version": "player-projection-wowy-r1",
+  "cutoff_policy": "exclude_target_et_basketball_date",
+  "basketball_date_tz": "America/New_York",
+  "historical_validity_class": "reconstructed_historical",
+  "overlap_policy": "primary_teammate_only",
+  "teammate_selection": {
+    "rule": "Rank teammates by prior played minutes on the queried team stint in subject-played games strictly before cutoff.",
+    "not_used": [
+      "full-season WOWY impact",
+      "largest historical PTS/REB difference",
+      "target-game box score",
+      "target-game teammate participation"
+    ],
+    "max_tracked_teammates": 3,
+    "min_primary_prior_minutes": 50,
+    "min_primary_shared_played_games": 2
+  },
+  "availability_requirements": {
+    "predictive_eligible": "Primary teammate has a timestamped Out / Out For Season observation strictly before cutoff. Questionable/Doubtful/Probable/RemovedFromReport stay unknown. No Available membership exists on the current tape.",
+    "do_not_use": [
+      "target-game minutes token 00",
+      "missing teammate row as absence",
+      "observations at or after cutoff"
+    ]
+  },
+  "feature_allowlist": [
+    "wowy_primary_with_games",
+    "wowy_primary_without_games",
+    "wowy_primary_with_minutes",
+    "wowy_primary_without_minutes",
+    "wowy_primary_with_pts",
+    "wowy_primary_without_pts",
+    "wowy_primary_delta_pts",
+    "wowy_primary_with_reb",
+    "wowy_primary_without_reb",
+    "wowy_primary_delta_reb",
+    "wowy_primary_with_ast",
+    "wowy_primary_without_ast",
+    "wowy_primary_delta_ast",
+    "wowy_primary_with_fga",
+    "wowy_primary_without_fga",
+    "wowy_primary_delta_fga",
+    "wowy_primary_with_tpa",
+    "wowy_primary_without_tpa",
+    "wowy_primary_delta_tpa",
+    "wowy_primary_with_fta",
+    "wowy_primary_without_fta",
+    "wowy_primary_delta_fta",
+    "wowy_primary_with_pts_per_min",
+    "wowy_primary_without_pts_per_min",
+    "wowy_primary_delta_pts_per_min",
+    "wowy_primary_with_reb_per_min",
+    "wowy_primary_without_reb_per_min",
+    "wowy_primary_delta_reb_per_min",
+    "wowy_primary_support_insufficient",
+    "wowy_primary_support_low",
+    "wowy_primary_support_adequate",
+    "wowy_unknown_participation_count",
+    "wowy_unknown_membership_count",
+    "wowy_excluded_count",
+    "wowy_days_since_last_with",
+    "wowy_days_since_last_without",
+    "wowy_tracked_teammate_count",
+    "wowy_overlap_flag",
+    "wowy_scenario_known",
+    "wowy_scenario_without",
+    "wowy_predictive_eligible"
+  ],
+  "missing_policy": "Unknown or insufficient-support diffs stay null. Do not fill zero. Do not sum primary and secondary teammate diffs.",
+  "shared_calculations": [
+    "lib/wowy/appearance.ts",
+    "lib/wowy/cutoff.ts",
+    "lib/wowy/eligibility.ts",
+    "lib/wowy/aggregate.ts",
+    "lib/wowy/model-adapter.ts",
+    "lib/wowy/policy.ts"
+  ]
+}

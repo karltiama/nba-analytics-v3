@@ -14,7 +14,7 @@ export function LabCard({
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-white">{title}</h2>
         {badge ? (
-          <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{badge}</span>
+          <span className="text-[11px] tracking-wide text-muted-foreground">{badge}</span>
         ) : null}
       </header>
       {children}

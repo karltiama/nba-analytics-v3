@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useReducer, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { ParlayXrayView } from '@/components/parlay-xray/ParlayXrayView';
+import { handoffConfirmedXrayParlay } from '@/lib/parlay/adapt-xray-confirmed';
+import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
+import { importConfirmedXrayLegsToStore } from '@/lib/parlay/selection-store';
 import { isXrayDesignPreviewEnabled } from '@/lib/parlay-xray/copy';
 import {
   createInitialXrayState,
@@ -14,6 +18,7 @@ import {
   PARLAY_XRAY_EXTRACT_COMPLETED,
   PARLAY_XRAY_EXTRACT_FAILED,
   PARLAY_XRAY_EXTRACT_STARTED,
+  PARLAY_XRAY_OPEN_WORKSPACE,
   PARLAY_XRAY_UPLOAD_SELECTED,
   PARLAY_XRAY_UPLOAD_STARTED,
   PARLAY_XRAY_VIEWED,
@@ -24,11 +29,13 @@ import { trackEvent } from '@/lib/product-analytics/track-event';
 const SUCCESS_RESULTS = new Set(['SUCCESS', 'PARTIAL', 'NEEDS_CONFIRMATION', 'NO_LEGS_FOUND']);
 
 export function ParlayXrayClient() {
+  const router = useRouter();
   const [state, dispatch] = useReducer(reduceXrayState, undefined, createInitialXrayState);
   const objectUrlRef = useRef<string | null>(null);
   const startedRef = useRef(false);
   const extractingRef = useRef(false);
   const historicalReplayRunRef = useRef(false);
+  const workspaceHandoffRef = useRef(false);
   const headshotAttemptedRef = useRef<Set<string>>(new Set());
   const headshotLegKeyRef = useRef('');
 
@@ -177,6 +184,7 @@ export function ParlayXrayClient() {
 
   useEffect(() => {
     if (!state.confirmed) historicalReplayRunRef.current = false;
+    if (!state.confirmed) workspaceHandoffRef.current = false;
   }, [state.confirmed]);
 
   useEffect(() => {
@@ -184,26 +192,62 @@ export function ParlayXrayClient() {
     if (!state.confirmed || !state.historicalReplay) return;
     if (state.replayStage !== 'resolving') return;
     if (historicalReplayRunRef.current) return;
+    // E5: Workspace owns analysis after Confirm. Keep this ref so the
+    // historical replay harness still records that Confirm happened.
     historicalReplayRunRef.current = true;
-    dispatch({ type: 'SET_REPLAY_STAGE', stage: 'interpreting' });
-    void import('@/lib/parlay-xray/e2e').then((mod) => {
-      try {
-        const result = mod.runHistoricalXrayReplay(
-          state.parlay.legs,
-          mod.buildX3fReplayContext(),
-          mod.buildX3fReplayDeps()
-        );
-        dispatch({ type: 'SET_HISTORICAL_ANALYSIS', interpretations: result.interpretations });
-      } catch {
-        historicalReplayRunRef.current = false;
+  }, [state.confirmed, state.historicalReplay, state.parlay.legs, state.replayStage]);
+
+  async function openWorkspaceFromConfirmed() {
+    if (!state.confirmed) return false;
+    if (!state.historicalReplay?.gameId) return false;
+    try {
+      const [{ X3F_CATALOG }, { X3F_GAME_ID, X3F_HISTORICAL_DATE }] = await Promise.all([
+        import('@/lib/parlay-xray/e2e/fixture'),
+        import('@/lib/parlay-xray/e2e/ground-truth'),
+      ]);
+      if (state.historicalReplay.gameId !== X3F_GAME_ID) {
+        workspaceHandoffRef.current = false;
+        return false;
+      }
+      const result = handoffConfirmedXrayParlay({
+        confirmed: true,
+        legs: state.parlay.legs,
+        catalog: X3F_CATALOG,
+        historicalReplay: state.historicalReplay,
+        resolveContext: { eventDate: X3F_HISTORICAL_DATE, slateDate: X3F_HISTORICAL_DATE },
+      });
+      if (!result.ok) {
+        workspaceHandoffRef.current = false;
         dispatch({
           type: 'SET_REPLAY_STAGE',
           stage: 'failed',
-          error: 'Historical replay could not be assembled from the confirmed legs.',
+          error:
+            result.code === 'UNRESOLVED'
+              ? 'Confirmed legs could not be resolved to Workspace identity. Edit any OCR names that still look wrong, then open Workspace.'
+              : 'These confirmed legs cannot open in Workspace yet.',
         });
+        return false;
       }
-    });
-  }, [state.confirmed, state.historicalReplay, state.parlay.legs, state.replayStage]);
+      importConfirmedXrayLegsToStore(result.legs);
+      trackEvent(PARLAY_XRAY_OPEN_WORKSPACE, {
+        surface: 'parlay_xray',
+        action: 'open_workspace',
+      });
+      router.push(PARLAY_WORKSPACE_HREF);
+      return true;
+    } catch {
+      workspaceHandoffRef.current = false;
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if (!state.confirmed || !state.historicalReplay?.gameId) return;
+    if (state.interpretations && state.interpretations.length > 0) return;
+    if (workspaceHandoffRef.current) return;
+    workspaceHandoffRef.current = true;
+    void openWorkspaceFromConfirmed();
+  }, [state.confirmed, state.historicalReplay, state.interpretations, state.parlay.legs]);
 
   const replaceObjectUrl = (next: string | null) => {
     if (objectUrlRef.current && objectUrlRef.current !== next) {
@@ -278,7 +322,7 @@ export function ParlayXrayClient() {
           type: 'SET_EXTRACTION',
           status: 'failed',
           legs: [],
-          notice: 'Screenshot analysis could not finish. Try again later.',
+          notice: 'Screenshot read could not finish. Try again later.',
         });
       } finally {
         extractingRef.current = false;
@@ -297,6 +341,9 @@ export function ParlayXrayClient() {
       onEditLeg={onEditLeg}
       onAcceptLeg={(legId) => dispatch({ type: 'ACCEPT_LEG', legId })}
       onConfirm={() => dispatch({ type: 'CONFIRM_LEGS' })}
+      onReviewInWorkspace={() => {
+        void openWorkspaceFromConfirmed();
+      }}
       onUploadStarted={onUploadStarted}
       showDesignPreviewLink={process.env.NODE_ENV !== 'production'}
     />

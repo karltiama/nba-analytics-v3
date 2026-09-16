@@ -1,0 +1,36 @@
+{
+  "prior_history_audit_eligible": 399,
+  "freeze_last_observed_eligible": 625,
+  "net": 226,
+  "arithmetic": "625 - 399 = 226, not 210",
+  "exclusive_terminal_movement": {
+    "observation_stale": { "from": 2300, "to": 2155, "delta": -145 },
+    "status_not_explicit_out": { "from": 837, "to": 755, "delta": -82 },
+    "insufficient_wowy_support": { "from": 126, "to": 127, "delta": 1 },
+    "no_precutoff_observation_including_postcutoff_diagnostic": { "from": 3337, "to": 3337, "delta": 0 },
+    "no_primary_teammate": { "from": 84, "to": 84, "delta": 0 },
+    "eligible": { "from": 399, "to": 625, "delta": 226 },
+    "identity": "(-145) + (-82) + 1 + 226 = 0"
+  },
+  "freshness_diagnostic": {
+    "history_change_stale_raw_fresh_eligible": 210,
+    "note": "210 is histGate.reason===observation_stale among raw-eligible rows. It is not the net eligible delta."
+  },
+  "among_625_eligible": {
+    "history_timestamp_stale_and_raw_fresh": 210,
+    "history_timestamp_fresh": 415,
+    "implied_already_eligible_on_history_audit": 399,
+    "other_raw_vs_history_status_or_terminal_correction": 16
+  },
+  "cross_flows": {
+    "stale_to_eligible": 210,
+    "other_terminals_into_stale": 65,
+    "stale_net": -145,
+    "not_out_to_eligible": 16,
+    "not_out_to_other_terminals": 66,
+    "not_out_net": -82,
+    "insufficient_net": 1
+  },
+  "cohort_sha256": "b1db16cbbb9b324bc7fdb7a25e7692e0a4b18421205f3788453d7cd31c9b3dc4",
+  "retrained": false
+}

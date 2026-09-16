@@ -16,6 +16,9 @@ describe('resolveEntitlementFromRow', () => {
     expect(ent.isPro).toBe(false);
     expect(ent.features.line_shopping_detail).toBe(false);
     expect(ent.features.ai_briefing).toBe(false);
+    expect(ent.features.wowy).toBe(true);
+    expect(ent.features.alerts).toBe(false);
+    expect(ent.features.advanced_history).toBe(false);
   });
 
   it('grants Founding Pro when active', () => {
@@ -32,6 +35,11 @@ describe('resolveEntitlementFromRow', () => {
     expect(ent.plan).toBe('founding_pro');
     expect(ent.isPro).toBe(true);
     expect(ent.features.line_shopping_detail).toBe(true);
+    expect(ent.features.market_movement).toBe(true);
+    expect(ent.features.ai_briefing).toBe(true);
+    expect(ent.features.wowy).toBe(true);
+    expect(ent.features.alerts).toBe(false);
+    expect(ent.features.advanced_history).toBe(false);
   });
 
   it('treats malformed/unknown state as Free', () => {
@@ -139,10 +147,17 @@ describe('dev grant override', () => {
 });
 
 describe('helpers', () => {
-  it('freeEntitlement never grants Pro features', () => {
+  it('freeEntitlement never grants Pro-gated available features', () => {
     expect(freeEntitlement().isPro).toBe(false);
+    expect(freeEntitlement().features.line_shopping_detail).toBe(false);
+    expect(freeEntitlement().features.market_movement).toBe(false);
+    expect(freeEntitlement().features.ai_briefing).toBe(false);
+    expect(freeEntitlement().features.wowy).toBe(true);
     expect(foundingProEntitlement({ status: 'active', currentPeriodEnd: null, source: 'row' }).isPro).toBe(
       true
     );
+    expect(
+      foundingProEntitlement({ status: 'active', currentPeriodEnd: null, source: 'row' }).features.alerts
+    ).toBe(false);
   });
 });

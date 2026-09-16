@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
   if (!gate.ok) return gate.response;
 
   const access = await requireEntitlement(gate.auth.userId, 'ai_briefing');
-  if (!access.ok) return entitlementRequiredResponse('ai_briefing', gate.withAuthCookies);
+  if (!access.ok) return entitlementRequiredResponse('ai_briefing', gate.withAuthCookies, access.decision);
 
   const dateParam = request.nextUrl.searchParams.get('date');
   const dateEt =

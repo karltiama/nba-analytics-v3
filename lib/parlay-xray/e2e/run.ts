@@ -6,6 +6,7 @@ import { interpretXrayParlay } from '@/lib/parlay-xray/interpretation/parlay';
 import { matchHistoricalParlayLeg } from '@/lib/parlay-xray/replay/match';
 import { replayInputFromResolution } from '@/lib/parlay-xray/replay/types';
 import { resolveCanonicalParlayLegs } from '@/lib/parlay-xray/resolution/resolve-leg';
+import type { CanonicalParlayLegResolution } from '@/lib/parlay-xray/resolution/types';
 import type { ExtractedParlayLeg } from '@/lib/parlay-xray/types';
 import {
   assertHistoricalReplayContext,
@@ -27,26 +28,20 @@ function elapsed(now: () => number, started: number): number {
 }
 
 /**
- * Deterministic historical replay. Requires an explicit replay context.
- * Does not invent a date. Does not call providers. Analysis uses confirmed
- * legs, not a stale OCR-only copy.
+ * Source-neutral historical analysis from already-canonical resolutions.
+ * Skips screenshot name matching. Match → assemble → interpret stay shared with XRay.
  */
-export function runHistoricalXrayReplay(
-  confirmedLegs: ExtractedParlayLeg[],
+export function runHistoricalCanonicalParlayAnalysis(
+  resolutions: CanonicalParlayLegResolution[],
   context: HistoricalXrayReplayContext,
-  deps: HistoricalXrayReplayDeps
+  deps: HistoricalXrayReplayDeps,
+  options?: { confirmedLegs?: ExtractedParlayLeg[]; resolveMs?: number }
 ): HistoricalXrayReplayResult {
   assertHistoricalReplayContext(context);
   const now = deps.nowMs ?? (() => 0);
   const t0 = now();
-
-  const tResolve = now();
-  const resolutions = resolveCanonicalParlayLegs(confirmedLegs, deps.catalog, {
-    eventDate: context.historicalDate,
-    slateDate: context.historicalDate,
-    asOfDate: context.historicalDate,
-  });
-  const resolveMs = elapsed(now, tResolve);
+  const resolveMs = options?.resolveMs ?? 0;
+  const confirmedLegs = options?.confirmedLegs ?? resolutions.map((row) => row.originalLeg);
 
   const tMatch = now();
   const matches = resolutions.map((resolution) => {
@@ -99,7 +94,7 @@ export function runHistoricalXrayReplay(
     matchMs,
     contextMs,
     interpretMs,
-    totalMs: elapsed(now, t0),
+    totalMs: elapsed(now, t0) + resolveMs,
   };
 
   return {
@@ -117,4 +112,28 @@ export function runHistoricalXrayReplay(
     identityLayers,
     timings,
   };
+}
+
+/**
+ * Deterministic historical replay. Requires an explicit replay context.
+ * Does not invent a date. Does not call providers. Analysis uses confirmed
+ * legs, not a stale OCR-only copy.
+ */
+export function runHistoricalXrayReplay(
+  confirmedLegs: ExtractedParlayLeg[],
+  context: HistoricalXrayReplayContext,
+  deps: HistoricalXrayReplayDeps
+): HistoricalXrayReplayResult {
+  assertHistoricalReplayContext(context);
+  const now = deps.nowMs ?? (() => 0);
+  const tResolve = now();
+  const resolutions = resolveCanonicalParlayLegs(confirmedLegs, deps.catalog, {
+    eventDate: context.historicalDate,
+    slateDate: context.historicalDate,
+    asOfDate: context.historicalDate,
+  });
+  return runHistoricalCanonicalParlayAnalysis(resolutions, context, deps, {
+    confirmedLegs,
+    resolveMs: elapsed(now, tResolve),
+  });
 }

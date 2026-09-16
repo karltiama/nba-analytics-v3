@@ -1,0 +1,56 @@
+{
+  "audited_at": "2026-09-16T04:20:22.081Z",
+  "season": "2025",
+  "window": {
+    "from": "2026-03-10T00:00:00.000Z",
+    "to": "2026-05-07T00:00:00.000Z",
+    "note": "Season 2025 includes March–May 2026."
+  },
+  "cutoff_minutes_before_tip": 60,
+  "freshness_max_hours": 48,
+  "join_rule": "Unique Final team-night on America/New_York date + injury team_id equals subject team_id. Missing game_id is a schema gap, not an impossible join. Collisions → exclude.",
+  "do_not_infer": [
+    "Available from report omission",
+    "Out from missing PGL row",
+    "WITH from Probable"
+  ],
+  "candidate_played_subject_games": 7083,
+  "eligible_known_out": {
+    "n": 399,
+    "distinct_game_dates": 36,
+    "distinct_games": 106,
+    "distinct_players": 172,
+    "distinct_teammate_pairs": 184,
+    "low_support": 238,
+    "adequate_support": 161,
+    "min_start": "2026-03-11T02:00:00.000Z",
+    "max_start": "2026-05-06T00:30:00.000Z"
+  },
+  "chrono_split_by_game_date": {
+    "rule": "First 70% of distinct UTC date prefixes train; remaining dates eval. Same calendar date is not split.",
+    "train_n": 247,
+    "eval_n": 152,
+    "train_dates": 25,
+    "eval_dates": 11,
+    "train_min": "2026-03-11T02:00:00.000Z",
+    "train_max": "2026-04-07T23:30:00.000Z",
+    "eval_min": "2026-04-08T00:00:00.000Z",
+    "eval_max": "2026-05-06T00:30:00.000Z"
+  },
+  "exclusions": {
+    "subject_not_played": 4333,
+    "incomplete_game": 0,
+    "no_primary_teammate": 84,
+    "ambiguous_team_et_date": 0,
+    "unique_game_mismatch": 0,
+    "no_observation_before_cutoff": 1378,
+    "observation_on_or_after_cutoff": 1959,
+    "observation_stale": 2300,
+    "status_not_explicit_out": 837,
+    "missing_tip_or_cutoff": 0,
+    "insufficient_wowy_support": 126
+  },
+  "feasibility": "exploratory_known_out_only",
+  "feasibility_note": "Subset can support a chronological exploratory comparison with a matched no-WOWY ablation on explicitly known-Out rows only. It is not a three-season backtest, cannot certify WITH, remains development evidence (season 2025 already inspected), and is below the original 2,000-row 2024 nomination floor.",
+  "compared_to_315_of_322": "315/322 is team-games with some pre-tip Out on either roster. This audit is player-games whose primary prior-minutes teammate is explicitly Out before T−60 with unambiguous team-night join and WOWY support."
+}

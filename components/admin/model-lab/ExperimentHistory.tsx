@@ -7,8 +7,14 @@ export function ExperimentHistory({ catalog }: { catalog: ExperimentRecord[] }) 
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground max-w-3xl">{HISTORICAL_VALIDITY_NOTE}</p>
-      {catalog.map((exp) => (
-        <LabCard key={exp.id} title={exp.title} badge={exp.status}>
+      {catalog.map((exp) => {
+        const decision = exp.decisions[0]?.label;
+        const exploratory = exp.id.includes('wowy');
+        const badge = [exp.status, exploratory ? 'exploratory' : null, decision]
+          .filter(Boolean)
+          .join(' · ');
+        return (
+        <LabCard key={exp.id} title={exp.title} badge={badge}>
           <dl className="grid gap-2 text-xs sm:grid-cols-2">
             <div>
               <dt className="text-muted-foreground">Version</dt>
@@ -53,7 +59,7 @@ export function ExperimentHistory({ catalog }: { catalog: ExperimentRecord[] }) 
                 {exp.featureGroups.map((g) => g.label).join(' · ') || '—'}
                 {exp.modelVersions.length ? (
                   <span className="block font-mono text-[11px] mt-1">
-                    {exp.modelVersions.map((m) => m.id).join(', ')}
+                    {exp.modelVersions.map((m) => `${m.id} (${m.role})`).join(', ')}
                   </span>
                 ) : null}
               </dd>
@@ -63,7 +69,10 @@ export function ExperimentHistory({ catalog }: { catalog: ExperimentRecord[] }) 
             {exp.splits.map((s) => (
               <li key={s.id}>
                 <span className="text-white/80">{s.label}</span>
-                {s.n != null ? ` · n=${fmtInt(s.n)}` : ''} — {SPLIT_KIND_COPY[s.kind] ?? s.note}
+                {s.n != null ? ` · n=${fmtInt(s.n)}` : ''} —{' '}
+                {s.kind === 'prospective_shadow' && (s.n ?? 0) === 0
+                  ? 'Not started.'
+                  : (SPLIT_KIND_COPY[s.kind] ?? s.note)}
               </li>
             ))}
           </ul>
@@ -78,6 +87,12 @@ export function ExperimentHistory({ catalog }: { catalog: ExperimentRecord[] }) 
               ))}
             </div>
           ) : null}
+          {exp.historicalValidityClass === 'reconstructed_historical' ? (
+            <p className="text-xs text-amber-200/90">
+              Historical with/without scenarios are reconstructed. They are not predictive claims and are
+              distinct from hypothetical scenario files.
+            </p>
+          ) : null}
           {exp.notesMarkdown ? (
             <pre className="whitespace-pre-wrap text-xs text-white/80 bg-black/20 rounded-md p-3 overflow-x-auto">
               {exp.notesMarkdown}
@@ -89,7 +104,8 @@ export function ExperimentHistory({ catalog }: { catalog: ExperimentRecord[] }) 
             </p>
           ))}
         </LabCard>
-      ))}
+        );
+      })}
     </div>
   );
 }

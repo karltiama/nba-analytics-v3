@@ -5,27 +5,27 @@ export const UPLOAD_ERROR_COPY: Record<UploadErrorCode, string> = {
   file_too_large: 'That screenshot is too large. Please use a file under 10 MB.',
   unreadable_screenshot: 'We couldn’t read that screenshot. Try a clearer, well-lit image of the full slip.',
   no_recognizable_legs: 'No parlay legs were recognizable in that screenshot.',
-  partial_extraction: 'Some legs still need confirmation before analysis can run.',
-  analysis_unavailable: 'Analysis isn’t available yet. Context scoring for this slip has not been connected.',
+  partial_extraction: 'Some legs still need confirmation before you continue.',
+  analysis_unavailable: 'Court Context analysis is not available on this page. Confirm legs, then review them in Workspace.',
 };
 
 export const EXTRACTION_STAGE_COPY: Record<ExtractionStatus, string> = {
   idle: 'Waiting for a screenshot.',
-  unavailable: 'Screenshot analysis is temporarily unavailable.',
-  pending: 'Reading the screenshot…',
+  unavailable: 'Screenshot reading is temporarily unavailable.',
+  pending: 'Reading your screenshot…',
   partial: 'Some legs still need confirmation.',
-  complete: 'Legs extracted. Review them before analysis.',
+  complete: 'Legs extracted. Review them before you confirm.',
   failed: 'Extraction could not finish. The screenshot was not applied as a parlay.',
   no_legs: 'No recognizable legs were found.',
 };
 
 export const ANALYSIS_STAGE_COPY: Record<AnalysisStatus, string> = {
-  idle: 'Analysis has not started.',
-  unavailable: 'Analysis is unavailable until legs are extracted and confirmed.',
-  pending: 'Building the XRay read…',
-  ready: 'XRay analysis',
-  failed: 'Analysis could not be completed for this slip.',
-  insufficient_data: 'There is not enough confirmed context to analyze this slip.',
+  idle: 'Confirm legs to review them in Workspace.',
+  unavailable: 'Workspace review is unavailable until legs are extracted and confirmed.',
+  pending: 'Resolving confirmed legs…',
+  ready: 'Confirmed legs are ready for Workspace.',
+  failed: 'These confirmed legs could not be handed to Workspace.',
+  insufficient_data: 'There is not enough confirmed context to continue.',
 };
 
 export const CONTEXT_READ_COPY: Record<ContextReadLabel, string> = {
@@ -56,10 +56,10 @@ export function isXrayDesignPreviewEnabled(
 }
 
 export const REPLAY_STAGE_COPY: Record<NonNullable<import('./session').XrayReplayStage>, string> = {
-  resolving: 'Resolving confirmed legs to Court Context identity…',
+  resolving: 'Resolving confirmed legs…',
   matching: 'Matching historical market rows…',
   assembling_context: 'Loading historical context as of the certified cutoff…',
-  interpreting: 'Assembling the XRay read…',
-  ready: 'Historical replay ready.',
+  interpreting: 'Preparing Workspace handoff…',
+  ready: 'Confirmed. Review this parlay in Workspace.',
   failed: 'Historical replay could not be assembled. Confirmed legs were not dropped.',
 };

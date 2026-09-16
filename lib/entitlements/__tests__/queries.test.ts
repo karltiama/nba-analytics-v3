@@ -94,4 +94,23 @@ describe('requireEntitlement', () => {
     const allowed = await requireEntitlement(USER_A, 'line_shopping_detail', NOW);
     expect(allowed.ok).toBe(true);
   });
+
+  it('allows Free WOWY and denies Pro alerts as not-ready rather than upgrade', async () => {
+    mockQueryOne.mockResolvedValueOnce(null);
+    const wowy = await requireEntitlement(USER_A, 'wowy', NOW);
+    expect(wowy.ok).toBe(true);
+    expect(wowy.decision.showUpgrade).toBe(false);
+
+    mockQueryOne.mockResolvedValueOnce({
+      user_id: USER_A,
+      plan: 'founding_pro',
+      status: 'active',
+      current_period_end: null,
+      provider: 'manual',
+    });
+    const alerts = await requireEntitlement(USER_A, 'alerts', NOW);
+    expect(alerts.ok).toBe(false);
+    expect(alerts.decision.reason).toBe('FEATURE_NOT_READY');
+    expect(alerts.decision.showUpgrade).toBe(false);
+  });
 });
