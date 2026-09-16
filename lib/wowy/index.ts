@@ -4,6 +4,7 @@ export {
   WOWY_STAT_KEYS,
   WOWY_RATE_STAT_KEYS,
   WOWY_SEASON_TYPES,
+  isSelfWowyQuery,
 } from './types';
 export type {
   WowyPairQuery,
@@ -25,8 +26,24 @@ export {
   WOWY_INSUFFICIENT_MIN_GAMES,
   WOWY_LOW_SUPPORT_MIN_GAMES,
   wowySupportTier,
+  wowyShowsComparisonHero,
 } from './policy';
 export { wowyCacheKey, WOWY_CACHE_REVALIDATE_SECONDS } from './cache';
+export {
+  buildWowyInsights,
+  rankedPerGameDiffs,
+  wowyChartStats,
+  wowyDiffPolarity,
+  wowyDiffTone,
+  WOWY_CHART_STATS,
+} from './insights';
+export type { WowyInsight, WowyInsightTone } from './insights';
+export {
+  resolveWowyExplorerSelection,
+  wowySummaryMatchesSelection,
+  formatWowyTeammatePickerLabel,
+} from './explorer-selection';
+export { teammatePickerCountsFromGames } from './picker-counts';
 export {
   searchWowyPlayers,
   loadWowyTeamStints,

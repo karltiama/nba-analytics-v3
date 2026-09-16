@@ -84,4 +84,11 @@ describe('trackEvent', () => {
       trackEvent('market_movement_upgrade_clicked', { surface: 'market_movement' })
     ).not.toThrow();
   });
+
+  it('forwards parlay xray surface events without payload extras', () => {
+    const track = vi.fn();
+    (globalThis as typeof globalThis & { umami: { track: typeof track } }).umami = { track };
+    trackEvent('parlay_xray_viewed', { surface: 'parlay_xray' });
+    expect(track).toHaveBeenCalledWith('parlay_xray_viewed', { surface: 'parlay_xray' });
+  });
 });

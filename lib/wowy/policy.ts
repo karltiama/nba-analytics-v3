@@ -41,3 +41,8 @@ export function wowySupportTier(withGames: number, withoutGames: number): WowySu
 export function wowySupportLabel(tier: WowySupportTier): string {
   return WOWY_SUPPORT_COPY[tier];
 }
+
+/** Numeric WITH/WITHOUT comparison cards and bars. Insufficient sample is not comparable. */
+export function wowyShowsComparisonHero(tier: WowySupportTier): boolean {
+  return tier !== 'insufficient';
+}

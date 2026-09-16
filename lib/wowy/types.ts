@@ -7,11 +7,12 @@
  */
 
 export const WOWY_CALCULATION_VERSION = 'game-level-wowy-v1';
-export const WOWY_DATA_VERSION = 'analytics.player_game_logs+analytics.games';
+export const WOWY_DATA_VERSION = 'analytics.player_game_logs+analytics.games+analytics.team_game_stats';
 
 export const WOWY_STAT_KEYS = [
   'minutes',
   'pts',
+  'oppPts',
   'reb',
   'ast',
   'tpm',
@@ -60,6 +61,9 @@ export type WowyExcludeReason = (typeof WOWY_EXCLUDE_REASONS)[number];
 export const WOWY_SUPPORT_TIERS = ['insufficient', 'low_support', 'adequate'] as const;
 export type WowySupportTier = (typeof WOWY_SUPPORT_TIERS)[number];
 
+export const WOWY_SPLIT_MODES = ['subject', 'teammate'] as const;
+export type WowySplitMode = (typeof WOWY_SPLIT_MODES)[number];
+
 export type WowyMembershipEvidenceKind =
   | 'same_team_game_log'
   | 'different_team_game_log'
@@ -76,7 +80,8 @@ export interface WowyMembershipEvidence {
 
 export interface WowyPairQuery {
   subjectPlayerId: string;
-  teammatePlayerId: string;
+  /** Null/empty means team with/without the subject, not a teammate split. */
+  teammatePlayerId: string | null;
   season: string;
   /** Required so distinct team stints are not silently pooled. */
   teamId: string;
@@ -99,6 +104,7 @@ export interface WowyLoadedGame {
   homeScore: number | null;
   awayScore: number | null;
   subjectTeamId: string;
+  homeTeamId: string | null;
   opponentTeamId: string | null;
   opponentAbbr: string | null;
   subjectMinutes: string | number | null;
@@ -118,6 +124,18 @@ export interface WowyLoadedGame {
   teammateTpm: number | null;
   teammateFga: number | null;
   teammateFta: number | null;
+  teamPts: number | null;
+  teamReb: number | null;
+  teamAst: number | null;
+  teamTpm: number | null;
+  teamFga: number | null;
+  teamTpa: number | null;
+  teamFta: number | null;
+  teamOppPts: number | null;
+}
+
+export function isSelfWowyQuery(query: Pick<WowyPairQuery, 'teammatePlayerId'>): boolean {
+  return !query.teammatePlayerId;
 }
 
 export interface WowyPlayerIdentity {
@@ -199,8 +217,11 @@ export interface WowyPairSummary {
   calculationVersion: typeof WOWY_CALCULATION_VERSION;
   dataVersion: typeof WOWY_DATA_VERSION;
   query: WowyPairQuery;
+  /** `subject` = team box with/without this player. `teammate` = player's box with/without the teammate. */
+  mode: WowySplitMode;
   subject: { playerId: string; fullName: string };
-  teammate: { playerId: string; fullName: string };
+  teammate: { playerId: string; fullName: string } | null;
+  team: { teamId: string; abbreviation: string; fullName: string };
   with: WowyGroupSummary;
   without: WowyGroupSummary;
   diff: WowyDiffSummary;

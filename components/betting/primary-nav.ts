@@ -3,6 +3,7 @@ export const PRIMARY_NAV = [
   { href: '/betting', label: 'Dashboard' },
   { href: '/teams', label: 'Teams' },
   { href: '/wowy', label: 'WOWY' },
+  { href: '/parlay-xray', label: 'Parlay XRay' },
   { href: '/betting/props-explorer', label: 'Props Explorer' },
   { href: '/betting/saved', label: 'Saved' },
   { href: '/betting/paper', label: 'Paper' },

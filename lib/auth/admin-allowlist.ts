@@ -1,10 +1,10 @@
 /**
  * Fail-closed staff allowlist for private admin surfaces (Model Lab).
- * Empty or unset ADMIN_EMAILS admits nobody.
+ * Empty or unset ADMIN_EMAILS (or alias ADMIN_EMAIL) admits nobody.
  */
 
 export function parseAdminEmails(env: Record<string, string | undefined> = process.env): string[] {
-  const raw = env.ADMIN_EMAILS ?? '';
+  const raw = env.ADMIN_EMAILS ?? env.ADMIN_EMAIL ?? '';
   const seen = new Set<string>();
   const out: string[] = [];
   for (const part of raw.split(',')) {

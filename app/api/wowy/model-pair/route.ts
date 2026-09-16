@@ -17,7 +17,8 @@ import { WOWY_SCENARIO_UNKNOWN } from '@/lib/wowy/model-adapter';
 export async function GET(request: NextRequest) {
   const parsed = parseWowyPairQuery(request.nextUrl.searchParams);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.error }, { status: 400 });
+    const status = parsed.code === 'same_player' ? 422 : 400;
+    return NextResponse.json({ error: parsed.error, code: parsed.code ?? 'invalid_query' }, { status });
   }
   if (!parsed.query.cutoffStartTime) {
     return NextResponse.json(

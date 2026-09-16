@@ -3,6 +3,7 @@ import {
   WOWY_DATA_VERSION,
   WOWY_RATE_STAT_KEYS,
   WOWY_STAT_KEYS,
+  isSelfWowyQuery,
   type WowyClassifiedGame,
   type WowyDiffSummary,
   type WowyExclusionTally,
@@ -38,6 +39,7 @@ function emptyStatMap(): WowyStatMap {
   return {
     minutes: null,
     pts: null,
+    oppPts: null,
     reb: null,
     ast: null,
     tpm: null,
@@ -73,6 +75,7 @@ export function aggregateWowyGroup(games: WowyClassifiedGame[]): WowyGroupSummar
   const totals: Record<WowyStatKey, number> = {
     minutes: 0,
     pts: 0,
+    oppPts: 0,
     reb: 0,
     ast: 0,
     tpm: 0,
@@ -83,6 +86,7 @@ export function aggregateWowyGroup(games: WowyClassifiedGame[]): WowyGroupSummar
   const counts: Record<WowyStatKey, number> = {
     minutes: 0,
     pts: 0,
+    oppPts: 0,
     reb: 0,
     ast: 0,
     tpm: 0,
@@ -191,7 +195,9 @@ export function summarizeWowyPair(args: {
   query: WowyPairQuery;
   classified: WowyClassifiedGame[];
   subjectName: string;
-  teammateName: string;
+  teammateName: string | null;
+  teamAbbreviation?: string;
+  teamFullName?: string;
 }): WowyPairSummary {
   const withGames = args.classified.filter((g) => g.bucket === 'with');
   const withoutGames = args.classified.filter((g) => g.bucket === 'without');
@@ -199,20 +205,28 @@ export function summarizeWowyPair(args: {
   const withGroup = aggregateWowyGroup(withGames);
   const withoutGroup = aggregateWowyGroup(withoutGames);
   const supportTier = wowySupportTier(withGroup.gameCount, withoutGroup.gameCount);
+  const self = isSelfWowyQuery(args.query);
 
   return {
     calculationVersion: WOWY_CALCULATION_VERSION,
     dataVersion: WOWY_DATA_VERSION,
     query: args.query,
+    mode: self ? 'subject' : 'teammate',
     subject: { playerId: args.query.subjectPlayerId, fullName: args.subjectName },
-    teammate: { playerId: args.query.teammatePlayerId, fullName: args.teammateName },
+    teammate:
+      self || !args.query.teammatePlayerId || !args.teammateName
+        ? null
+        : { playerId: args.query.teammatePlayerId, fullName: args.teammateName },
+    team: {
+      teamId: args.query.teamId,
+      abbreviation: args.teamAbbreviation ?? args.query.teamId,
+      fullName: args.teamFullName ?? args.teamAbbreviation ?? args.query.teamId,
+    },
     with: withGroup,
     without: withoutGroup,
     diff: diffWowyGroups(withGroup, withoutGroup),
     excludedCount: excluded.length,
-    unknownParticipationCount: excluded.filter(
-      (g) => g.excludeReason === 'teammate_unknown_participation' || g.excludeReason === 'malformed_teammate_minutes'
-    ).length,
+    unknownParticipationCount: excluded.filter((g) => g.excludeReason === 'malformed_teammate_minutes').length,
     unknownMembershipCount: excluded.filter(
       (g) => g.excludeReason === 'teammate_unknown_membership' || g.excludeReason === 'ambiguous_team_membership'
     ).length,

@@ -9,6 +9,12 @@ export const PRODUCT_EVENTS = {
   HISTORICAL_GAME_VIEWED: 'historical_game_viewed',
   HISTORICAL_PLAYER_OPENED: 'historical_player_opened',
   HISTORICAL_TIMELINE_OPENED: 'historical_timeline_opened',
+  PARLAY_XRAY_VIEWED: 'parlay_xray_viewed',
+  PARLAY_XRAY_UPLOAD_STARTED: 'parlay_xray_upload_started',
+  PARLAY_XRAY_UPLOAD_SELECTED: 'parlay_xray_upload_selected',
+  PARLAY_XRAY_EXTRACT_STARTED: 'parlay_xray_extract_started',
+  PARLAY_XRAY_EXTRACT_COMPLETED: 'parlay_xray_extract_completed',
+  PARLAY_XRAY_EXTRACT_FAILED: 'parlay_xray_extract_failed',
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
@@ -45,12 +51,27 @@ export type HistoricalTimelineOpenedProperties = {
   mode: 'key' | 'full';
 };
 
+export type ParlayXraySurfaceProperties = {
+  surface: 'parlay_xray';
+};
+
+export type ParlayXrayExtractProperties = {
+  surface: 'parlay_xray';
+  result_category: string;
+};
+
 export type ProductEventProperties = {
   [PRODUCT_EVENTS.MARKET_MOVEMENT_VIEWED]: MarketMovementViewedProperties;
   [PRODUCT_EVENTS.MARKET_MOVEMENT_UPGRADE_CLICKED]: MarketMovementUpgradeClickedProperties;
   [PRODUCT_EVENTS.HISTORICAL_GAME_VIEWED]: HistoricalGameViewedProperties;
   [PRODUCT_EVENTS.HISTORICAL_PLAYER_OPENED]: HistoricalPlayerOpenedProperties;
   [PRODUCT_EVENTS.HISTORICAL_TIMELINE_OPENED]: HistoricalTimelineOpenedProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_VIEWED]: ParlayXraySurfaceProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_UPLOAD_STARTED]: ParlayXraySurfaceProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_UPLOAD_SELECTED]: ParlayXraySurfaceProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_STARTED]: ParlayXraySurfaceProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_COMPLETED]: ParlayXrayExtractProperties;
+  [PRODUCT_EVENTS.PARLAY_XRAY_EXTRACT_FAILED]: ParlayXrayExtractProperties;
 };
 
 export type AnalyticsPrimitive = string | number | boolean;

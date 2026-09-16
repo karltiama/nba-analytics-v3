@@ -42,3 +42,22 @@ Same `trackEvent` helper. Capability flags and IDs only. No player names, user i
 - **Trigger:** The user navigates to Timeline (sticky nav or scrolling the section into the active slot). Once per `game_id`.
 - **Properties:** `game_id`, `mode` (`key` | `full`) — first open is Key Events default
 - **Purpose:** Are people opening Timeline?
+
+# Product events — Parlay XRay
+
+Surface-only. Do **not** send filenames, OCR text, player names, lines, odds, or analysis copy.
+
+## `parlay_xray_viewed`
+
+- **Trigger:** Parlay XRay page mounts.
+- **Properties:** `surface` = `parlay_xray`
+
+## `parlay_xray_upload_started`
+
+- **Trigger:** First file-picker / drag interaction on the page.
+- **Properties:** `surface` = `parlay_xray`
+
+## `parlay_xray_upload_selected`
+
+- **Trigger:** A screenshot passes client validation and is kept in local preview state.
+- **Properties:** `surface` = `parlay_xray`

@@ -61,7 +61,7 @@ export const UPGRADE_COPY: Record<FeatureKey, { title: string; detail: string }>
   },
   wowy: {
     title: 'WOWY / role-shift analytics available with Founding Pro',
-    detail: 'Unlock with/without-you splits when that surface ships.',
+    detail: 'Unlock game-level with/without research splits with Founding Pro.',
   },
   alerts: {
     title: 'Alerts available with Founding Pro',

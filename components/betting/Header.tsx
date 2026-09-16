@@ -23,20 +23,29 @@ type ProfilePayload = {
   timezone: string;
 };
 
+function navItemActive(pathname: string, href: string): boolean {
+  if (href === '/betting') return pathname === '/betting';
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 function NavLink({
   href,
   label,
+  active,
   className,
 }: {
   href: string;
   label: string;
+  active?: boolean;
   className?: string;
 }) {
   return (
     <Link
       href={href}
+      aria-current={active ? 'page' : undefined}
       className={cn(
-        'hover:text-[#063f46] transition-colors text-[#4a6366]',
+        'transition-colors',
+        active ? 'text-[#063f46] font-semibold' : 'text-[#4a6366] hover:text-[#063f46]',
         className
       )}
     >
@@ -149,11 +158,16 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
 
           {!teamName && (
             <nav
-              className="hidden md:flex items-center gap-4 text-sm"
+              className="hidden md:flex items-center gap-3 lg:gap-4 text-sm"
               aria-label="Primary"
             >
               {PRIMARY_NAV.map((item) => (
-                <NavLink key={item.href} href={item.href} label={item.label} />
+                <NavLink
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  active={navItemActive(pathname, item.href)}
+                />
               ))}
             </nav>
           )}

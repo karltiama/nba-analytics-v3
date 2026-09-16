@@ -3,8 +3,8 @@ import { betSlipExtractionSchema, type BetSlipExtraction } from '@/lib/betting/b
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 
 /**
- * System + user instructions for bet slip JSON extraction.
- * Keep in sync with BetSlipExtraction Zod schema.
+ * Leftover bet-slip parser. Isolated from Parlay XRay.
+ * XRay must not import this module — use lib/parlay-xray/extraction instead.
  */
 export const BET_SLIP_EXTRACTION_SYSTEM = `You extract structured data from NBA betting screenshots (sportsbook or social).
 Return ONLY a single JSON object. No markdown, no code fences.

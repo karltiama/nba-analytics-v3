@@ -8,6 +8,15 @@ describe('parseAdminEmails', () => {
     expect(parseAdminEmails({ ADMIN_EMAILS: '  ,  ' })).toEqual([]);
   });
 
+  it('accepts ADMIN_EMAIL as a singular alias', () => {
+    expect(parseAdminEmails({ ADMIN_EMAIL: 'a@x.com' })).toEqual(['a@x.com']);
+    expect(isAdminEmail('a@x.com', { ADMIN_EMAIL: 'a@x.com' })).toBe(true);
+  });
+
+  it('prefers ADMIN_EMAILS when both are set', () => {
+    expect(parseAdminEmails({ ADMIN_EMAILS: 'a@x.com', ADMIN_EMAIL: 'b@x.com' })).toEqual(['a@x.com']);
+  });
+
   it('trims, lowercases, and dedupes', () => {
     expect(parseAdminEmails({ ADMIN_EMAILS: 'A@X.com, a@x.com, b@x.com ' })).toEqual([
       'a@x.com',

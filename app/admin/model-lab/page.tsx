@@ -15,15 +15,31 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-function Forbidden() {
+function Forbidden({
+  reason,
+  email,
+}: {
+  reason: 'forbidden' | 'allowlist_empty';
+  email: string | null;
+}) {
   return (
     <main className="max-w-xl mx-auto px-4 py-16 space-y-3">
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Internal · admin</p>
       <h1 className="text-2xl font-bold text-white">Forbidden</h1>
-      <p className="text-sm text-muted-foreground">
-        Model Lab is limited to ADMIN_EMAILS. Signed-in accounts that are not on the allowlist do not see experiment
-        data. If the allowlist is empty, nobody is admitted.
-      </p>
+      {reason === 'allowlist_empty' ? (
+        <p className="text-sm text-muted-foreground">
+          The admin allowlist is empty. In <code className="text-white/80">.env</code> or{' '}
+          <code className="text-white/80">.env.local</code> set{' '}
+          <code className="text-white/80">ADMIN_EMAILS=your-login-email</code> (plural), then restart{' '}
+          <code className="text-white/80">npm run dev</code>.
+        </p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Signed in as {email ?? 'an account with no email'} — that address is not on{' '}
+          <code className="text-white/80">ADMIN_EMAILS</code>. Use the same email you sign in with, then restart the
+          dev server.
+        </p>
+      )}
     </main>
   );
 }
@@ -33,7 +49,7 @@ export default async function ModelLabPage() {
   if (!auth.ok && auth.reason === 'unauthenticated') {
     redirect('/login?next=%2Fadmin%2Fmodel-lab');
   }
-  if (!auth.ok) return <Forbidden />;
+  if (!auth.ok) return <Forbidden reason={auth.reason} email={auth.email} />;
 
   const catalog = loadCatalog();
   const status = await loadModelLabStatus();

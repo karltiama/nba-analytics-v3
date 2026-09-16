@@ -11,7 +11,8 @@ import { WOWY_CACHE_REVALIDATE_SECONDS, wowyCacheKey } from '@/lib/wowy/cache';
 export async function GET(request: NextRequest) {
   const parsed = parseWowyPairQuery(request.nextUrl.searchParams);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.error }, { status: 400 });
+    const status = parsed.code === 'same_player' ? 422 : 400;
+    return NextResponse.json({ error: parsed.error, code: parsed.code ?? 'invalid_query' }, { status });
   }
 
   try {

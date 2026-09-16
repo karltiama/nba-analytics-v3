@@ -24,7 +24,8 @@ export type AdminAuthDenied = {
 
 export type AdminPageDenied = {
   ok: false;
-  reason: 'unauthenticated' | 'forbidden';
+  reason: 'unauthenticated' | 'forbidden' | 'allowlist_empty';
+  email: string | null;
 };
 
 export type AdminPageOk = {
@@ -60,13 +61,16 @@ export async function requireAdminPage(): Promise<AdminPageOk | AdminPageDenied>
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase.auth.getUser();
     const user = data.user;
-    if (!user) return { ok: false, reason: 'unauthenticated' };
+    if (!user) return { ok: false, reason: 'unauthenticated', email: null };
     const email = user.email ?? null;
-    if (allow.length === 0 || !isAdminEmail(email)) {
-      return { ok: false, reason: 'forbidden' };
+    if (allow.length === 0) {
+      return { ok: false, reason: 'allowlist_empty', email };
+    }
+    if (!isAdminEmail(email)) {
+      return { ok: false, reason: 'forbidden', email };
     }
     return { ok: true, userId: user.id, email: email as string };
   } catch {
-    return { ok: false, reason: 'unauthenticated' };
+    return { ok: false, reason: 'unauthenticated', email: null };
   }
 }

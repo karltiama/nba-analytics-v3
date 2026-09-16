@@ -40,6 +40,15 @@ function game(partial: Partial<WowyLoadedGame> = {}): WowyLoadedGame {
     teammateTpm: 3,
     teammateFga: 14,
     teammateFta: 2,
+    homeTeamId: '8',
+    teamPts: null,
+    teamReb: null,
+    teamAst: null,
+    teamTpm: null,
+    teamFga: null,
+    teamTpa: null,
+    teamFta: null,
+    teamOppPts: null,
     ...partial,
   };
 }
@@ -146,5 +155,25 @@ describe('classifyWowyGame', () => {
     );
     expect(classified.excludeReason).toBe('season_type_mismatch');
     expect(classified.seasonType).toBe('playoffs');
+  });
+
+  it('uses team box with/without the subject when no teammate is selected', () => {
+    const selfQuery = { ...query, teammatePlayerId: null };
+    const withPlayer = classifyWowyGame(
+      game({ teamPts: 120, teamOppPts: 108, teamReb: 45, teamAst: 28 }),
+      selfQuery
+    );
+    expect(withPlayer.bucket).toBe('with');
+    expect(withPlayer.subject.stats.pts).toBe(120);
+    expect(withPlayer.subject.stats.oppPts).toBe(108);
+
+    const withoutPlayer = classifyWowyGame(
+      game({ subjectMinutes: '00', subjectPts: 0, teamPts: 99, teamOppPts: 110 }),
+      selfQuery
+    );
+    expect(withoutPlayer.bucket).toBe('without');
+    expect(withoutPlayer.teammate.participation).toBe('verified_dnp');
+    expect(withoutPlayer.subject.stats.pts).toBe(99);
+    expect(withoutPlayer.excludeReason).toBeNull();
   });
 });

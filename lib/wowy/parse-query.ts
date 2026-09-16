@@ -2,17 +2,32 @@ import type { WowyPairQuery, WowySeasonType } from './types';
 
 const SEASON_TYPES = new Set(['regular', 'playoffs', 'all']);
 
-export function parseWowyPairQuery(sp: URLSearchParams): { ok: true; query: WowyPairQuery } | { ok: false; error: string } {
+export type WowyParseFailure = {
+  ok: false;
+  error: string;
+  code?: 'same_player';
+};
+
+export function parseWowyPairQuery(
+  sp: URLSearchParams
+): { ok: true; query: WowyPairQuery } | WowyParseFailure {
   const subjectPlayerId = sp.get('subjectPlayerId')?.trim() || '';
-  const teammatePlayerId = sp.get('teammatePlayerId')?.trim() || '';
+  const teammateRaw = sp.get('teammatePlayerId')?.trim() || '';
   const season = sp.get('season')?.trim() || '';
   const teamId = sp.get('teamId')?.trim() || '';
   const seasonTypeRaw = (sp.get('seasonType')?.trim() || 'regular') as WowySeasonType | 'all';
 
-  if (!subjectPlayerId || !teammatePlayerId || !season || !teamId) {
+  if (!subjectPlayerId || !season || !teamId) {
     return {
       ok: false,
-      error: 'subjectPlayerId, teammatePlayerId, season, and teamId are required.',
+      error: 'subjectPlayerId, season, and teamId are required.',
+    };
+  }
+  if (teammateRaw && teammateRaw === subjectPlayerId) {
+    return {
+      ok: false,
+      error: 'Subject and teammate must be different players.',
+      code: 'same_player',
     };
   }
   if (!/^\d{4}$/.test(season)) {
@@ -36,7 +51,7 @@ export function parseWowyPairQuery(sp: URLSearchParams): { ok: true; query: Wowy
     ok: true,
     query: {
       subjectPlayerId,
-      teammatePlayerId,
+      teammatePlayerId: teammateRaw || null,
       season,
       teamId,
       seasonType: seasonTypeRaw,

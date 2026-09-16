@@ -5,12 +5,28 @@ import { fetchBetSlipExtractionFromOpenAi } from '@/lib/betting/bet-slip/openai-
 const MAX_BYTES = 6 * 1024 * 1024;
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
+function isLegacyParseEnabled(): boolean {
+  const raw = (process.env.BET_SLIP_PARSE_ENABLED ?? '').trim().toLowerCase();
+  return raw === 'true' || raw === '1' || raw === 'yes';
+}
+
 /**
  * POST /api/betting/bet-slip/parse
- * multipart/form-data: field "image" — JPEG/PNG/WebP, max 6MB.
- * Auth required — OpenAI-backed / expensive.
+ * Leftover bet-slip vision parser. NOT the Parlay XRay contract.
+ * Disabled by default (`BET_SLIP_PARSE_ENABLED` missing/false) so it cannot
+ * spend OpenAI credits. XRay uses POST /api/parlay-xray/extract instead.
  */
 export async function POST(request: NextRequest) {
+  if (!isLegacyParseEnabled()) {
+    return NextResponse.json(
+      {
+        error: 'Legacy bet-slip parsing is disabled. Use Parlay XRay.',
+        code: 'PARSE_DISABLED' as const,
+      },
+      { status: 503 }
+    );
+  }
+
   const gate = await requireBettingAuth(request);
   if (!gate.ok) return gate.response;
 

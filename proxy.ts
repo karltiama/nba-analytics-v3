@@ -30,5 +30,7 @@ export const config = {
     '/api/billing/checkout',
     '/api/billing/portal',
     '/api/billing/status',
+    '/parlay-xray',
+    '/api/parlay-xray/:path*',
   ],
 };

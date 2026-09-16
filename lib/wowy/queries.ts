@@ -1,4 +1,5 @@
 import { query, queryOne } from '@/lib/db';
+import { WOWY_POSTSEASON_START_ET } from './calendar';
 import { classifyWowyGames } from './eligibility';
 import { summarizeWowyPair } from './aggregate';
 import { summarizeWowyBeforeCutoff } from './model-adapter';
@@ -9,6 +10,7 @@ import type {
   WowyPairSummary,
   WowyPlayerIdentity,
   WowyScenarioSelection,
+  WowySeasonType,
   WowyTeamStintOption,
   WowyTeammateOption,
 } from './types';
@@ -159,11 +161,22 @@ export async function loadWowyTeamStints(playerId: string, season: string): Prom
   }));
 }
 
+/**
+ * Game-level played token, matching classifyWowyAppearance for numeric logs:
+ * "00" is never played; "0"/"0.0" and minutes > 0 are played.
+ */
+const PGL_PLAYED_SQL = (alias: string) =>
+  `${alias}.minutes ~ '^[0-9]+(\\.[0-9]+)?$'
+   AND ${alias}.minutes IS DISTINCT FROM '00'
+   AND (NULLIF(${alias}.minutes, '')::numeric > 0 OR ${alias}.minutes IN ('0', '0.0'))`;
+
 export async function loadWowyTeammates(args: {
   subjectPlayerId: string;
   season: string;
   teamId: string;
+  seasonType: WowySeasonType | 'all';
 }): Promise<WowyTeammateOption[]> {
+  const postseasonStart = WOWY_POSTSEASON_START_ET[args.season] ?? null;
   const rows = await query<{
     player_id: string;
     full_name: string;
@@ -179,15 +192,13 @@ export async function loadWowyTeammates(args: {
             nba.provider_player_id::text AS nba_player_id,
             count(*)::int AS shared,
             count(*) FILTER (
-              WHERE a.minutes IS DISTINCT FROM '00'
-                AND COALESCE(NULLIF(a.minutes, '')::numeric, 0) > 0
-                AND b.minutes IS DISTINCT FROM '00'
-                AND (
-                  COALESCE(NULLIF(b.minutes, '')::numeric, 0) > 0
-                  OR b.minutes IN ('0', '0.0')
-                )
+              WHERE ${PGL_PLAYED_SQL('a')}
+                AND ${PGL_PLAYED_SQL('b')}
             )::int AS together,
-            count(*) FILTER (WHERE b.minutes = '00')::int AS dnp
+            count(*) FILTER (
+              WHERE ${PGL_PLAYED_SQL('a')}
+                AND b.minutes = '00'
+            )::int AS dnp
      FROM analytics.player_game_logs a
      JOIN analytics.games g ON g.game_id = a.game_id
      JOIN analytics.player_game_logs b
@@ -201,11 +212,32 @@ export async function loadWowyTeammates(args: {
        AND a.season = $2
        AND a.team_id = $3
        AND g.status = 'Final'
+       AND g.start_time IS NOT NULL
+       AND g.home_score IS NOT NULL
+       AND g.away_score IS NOT NULL
        AND p.player_entity_id IS NOT NULL
+       AND (
+         $4::text = 'all'
+         OR (
+           $4::text = 'regular'
+           AND (
+             $5::date IS NULL
+             OR (g.start_time AT TIME ZONE 'America/New_York')::date < $5::date
+           )
+         )
+         OR (
+           $4::text = 'playoffs'
+           AND $5::date IS NOT NULL
+           AND (g.start_time AT TIME ZONE 'America/New_York')::date >= $5::date
+         )
+       )
      GROUP BY b.player_id, p.full_name, p.position, nba.provider_player_id
-     ORDER BY count(*) DESC, p.full_name
+     ORDER BY count(*) FILTER (
+              WHERE ${PGL_PLAYED_SQL('a')}
+                AND ${PGL_PLAYED_SQL('b')}
+            ) DESC, p.full_name
      LIMIT 80`,
-    [args.subjectPlayerId, args.season, args.teamId]
+    [args.subjectPlayerId, args.season, args.teamId, args.seasonType, postseasonStart]
   );
   return rows.map((row) => ({
     playerId: row.player_id,
@@ -230,6 +262,7 @@ export async function loadWowyPairGames(pairQuery: WowyPairQuery): Promise<WowyL
     subject_team_id: string;
     opponent_team_id: string | null;
     opponent_abbr: string | null;
+    home_team_id: string | null;
     subject_minutes: string | null;
     subject_pts: number | null;
     subject_reb: number | null;
@@ -247,6 +280,14 @@ export async function loadWowyPairGames(pairQuery: WowyPairQuery): Promise<WowyL
     teammate_tpm: number | null;
     teammate_fga: number | null;
     teammate_fta: number | null;
+    team_pts: number | null;
+    team_reb: number | null;
+    team_ast: number | null;
+    team_tpm: number | null;
+    team_fga: number | null;
+    team_tpa: number | null;
+    team_fta: number | null;
+    team_opp_pts: number | null;
   }>(
     `SELECT g.game_id::text AS game_id,
             g.start_time,
@@ -258,6 +299,7 @@ export async function loadWowyPairGames(pairQuery: WowyPairQuery): Promise<WowyL
             l.team_id::text AS subject_team_id,
             l.opponent_team_id::text AS opponent_team_id,
             opp.abbreviation AS opponent_abbr,
+            g.home_team_id::text AS home_team_id,
             l.minutes AS subject_minutes,
             l.points AS subject_pts,
             l.rebounds AS subject_reb,
@@ -274,17 +316,27 @@ export async function loadWowyPairGames(pairQuery: WowyPairQuery): Promise<WowyL
             t.assists AS teammate_ast,
             t.three_pointers_made AS teammate_tpm,
             t.field_goals_attempted AS teammate_fga,
-            t.free_throws_attempted AS teammate_fta
+            t.free_throws_attempted AS teammate_fta,
+            tgs.team_points AS team_pts,
+            tgs.team_rebounds AS team_reb,
+            tgs.team_assists AS team_ast,
+            tgs.team_3pm AS team_tpm,
+            tgs.team_fga AS team_fga,
+            tgs.team_3pa AS team_tpa,
+            tgs.team_fta AS team_fta,
+            tgs.points_allowed AS team_opp_pts
      FROM analytics.player_game_logs l
      JOIN analytics.games g ON g.game_id = l.game_id
      LEFT JOIN analytics.teams opp ON opp.team_id = l.opponent_team_id
      LEFT JOIN analytics.player_game_logs t
-       ON t.game_id = l.game_id AND t.player_id = $2
+       ON t.game_id = l.game_id AND $2 <> '' AND t.player_id = $2
+     LEFT JOIN analytics.team_game_stats tgs
+       ON tgs.game_id = l.game_id AND tgs.team_id = l.team_id
      WHERE l.player_id = $1
        AND l.season = $3
        AND l.team_id = $4
      ORDER BY g.start_time ASC NULLS LAST, l.game_date ASC NULLS LAST`,
-     [pairQuery.subjectPlayerId, pairQuery.teammatePlayerId, pairQuery.season, pairQuery.teamId]
+     [pairQuery.subjectPlayerId, pairQuery.teammatePlayerId ?? '', pairQuery.season, pairQuery.teamId]
   );
 
   return rows.map((row) => ({
@@ -296,6 +348,7 @@ export async function loadWowyPairGames(pairQuery: WowyPairQuery): Promise<WowyL
     homeScore: toNum(row.home_score),
     awayScore: toNum(row.away_score),
     subjectTeamId: row.subject_team_id,
+    homeTeamId: row.home_team_id,
     opponentTeamId: row.opponent_team_id,
     opponentAbbr: row.opponent_abbr,
     subjectMinutes: row.subject_minutes,
@@ -315,6 +368,14 @@ export async function loadWowyPairGames(pairQuery: WowyPairQuery): Promise<WowyL
     teammateTpm: toNum(row.teammate_tpm),
     teammateFga: toNum(row.teammate_fga),
     teammateFta: toNum(row.teammate_fta),
+    teamPts: toNum(row.team_pts),
+    teamReb: toNum(row.team_reb),
+    teamAst: toNum(row.team_ast),
+    teamTpm: toNum(row.team_tpm),
+    teamFga: toNum(row.team_fga),
+    teamTpa: toNum(row.team_tpa),
+    teamFta: toNum(row.team_fta),
+    teamOppPts: toNum(row.team_opp_pts),
   }));
 }
 
@@ -322,20 +383,24 @@ export async function loadWowyPairSummary(query: WowyPairQuery): Promise<
   | { ok: true; summary: WowyPairSummary }
   | { ok: false; error: string; code: 'not_found' | 'ambiguous_identity' | 'same_player' }
 > {
-  if (query.subjectPlayerId === query.teammatePlayerId) {
+  if (query.teammatePlayerId && query.subjectPlayerId === query.teammatePlayerId) {
     return { ok: false, error: 'Subject and teammate must be different players.', code: 'same_player' };
   }
-  const [subject, teammate] = await Promise.all([
+  const [subject, teammate, team] = await Promise.all([
     resolveWowyPlayerIdentity(query.subjectPlayerId),
-    resolveWowyPlayerIdentity(query.teammatePlayerId),
+    query.teammatePlayerId ? resolveWowyPlayerIdentity(query.teammatePlayerId) : Promise.resolve(null),
+    queryOne<{ abbreviation: string; full_name: string }>(
+      `SELECT abbreviation, full_name FROM analytics.teams WHERE team_id = $1`,
+      [query.teamId]
+    ),
   ]);
-  if (!subject || !teammate) {
+  if (!subject || (query.teammatePlayerId && !teammate)) {
     return { ok: false, error: 'Player not found in analytics.players.', code: 'not_found' };
   }
-  if (!subject.identityOk || !teammate.identityOk) {
+  if (!subject.identityOk || (teammate && !teammate.identityOk)) {
     return {
       ok: false,
-      error: `Ambiguous identity: ${subject.identityReason ?? teammate.identityReason ?? 'unresolved'}`,
+      error: `Ambiguous identity: ${subject.identityReason ?? teammate?.identityReason ?? 'unresolved'}`,
       code: 'ambiguous_identity',
     };
   }
@@ -348,7 +413,9 @@ export async function loadWowyPairSummary(query: WowyPairQuery): Promise<
       query,
       classified,
       subjectName: subject.fullName,
-      teammateName: teammate.fullName,
+      teammateName: teammate?.fullName ?? null,
+      teamAbbreviation: team?.abbreviation,
+      teamFullName: team?.full_name,
     }),
   };
 }
@@ -372,7 +439,7 @@ export async function loadWowyModelPair(args: {
       games,
       query: args.query,
       subjectName: loaded.summary.subject.fullName,
-      teammateName: loaded.summary.teammate.fullName,
+      teammateName: loaded.summary.teammate?.fullName ?? loaded.summary.subject.fullName,
       identityOk: true,
       scenario: args.scenario,
     }),

@@ -13,6 +13,7 @@ import type {
   WowyStatKey,
   WowyTeammateParticipation,
 } from './types';
+import { isSelfWowyQuery } from './types';
 
 function appearanceRef(log: {
   minutes: string | number | null;
@@ -44,16 +45,45 @@ function numOrNull(value: number | null | undefined): number | null {
   return value != null && Number.isFinite(value) ? value : null;
 }
 
+function derivedTeamScores(game: WowyLoadedGame): { pts: number | null; oppPts: number | null } {
+  const pts = numOrNull(game.teamPts);
+  const oppPts = numOrNull(game.teamOppPts);
+  if (pts != null || oppPts != null) return { pts, oppPts };
+  if (game.homeScore == null || game.awayScore == null || !game.homeTeamId) {
+    return { pts: null, oppPts: null };
+  }
+  const isHome = game.homeTeamId === game.subjectTeamId;
+  return isHome
+    ? { pts: game.homeScore, oppPts: game.awayScore }
+    : { pts: game.awayScore, oppPts: game.homeScore };
+}
+
 function subjectStats(game: WowyLoadedGame, minutes: number | null): Record<WowyStatKey, number | null> {
   return {
     minutes,
     pts: numOrNull(game.subjectPts),
+    oppPts: null,
     reb: numOrNull(game.subjectReb),
     ast: numOrNull(game.subjectAst),
     tpm: numOrNull(game.subjectTpm),
     fga: numOrNull(game.subjectFga),
     tpa: numOrNull(game.subjectTpa),
     fta: numOrNull(game.subjectFta),
+  };
+}
+
+function teamStats(game: WowyLoadedGame): Record<WowyStatKey, number | null> {
+  const scores = derivedTeamScores(game);
+  return {
+    minutes: null,
+    pts: scores.pts,
+    oppPts: scores.oppPts,
+    reb: numOrNull(game.teamReb),
+    ast: numOrNull(game.teamAst),
+    tpm: numOrNull(game.teamTpm),
+    fga: numOrNull(game.teamFga),
+    tpa: numOrNull(game.teamTpa),
+    fta: numOrNull(game.teamFta),
   };
 }
 
@@ -193,6 +223,8 @@ export function classifyWowyGame(
     fga: game.subjectFga,
     fta: game.subjectFta,
   });
+  const self = isSelfWowyQuery(query);
+  const stats = self ? teamStats(game) : subjectStats(game, subjectAppearance.minutes);
 
   const placeholder: WowyClassifiedGame = {
     gameId: game.gameId,
@@ -205,7 +237,7 @@ export function classifyWowyGame(
     opponentAbbr: game.opponentAbbr,
     subject: {
       ...subjectAppearance,
-      stats: subjectStats(game, subjectAppearance.minutes),
+      stats,
     },
     teammate: {
       participation: 'unknown',
@@ -260,6 +292,41 @@ export function classifyWowyGame(
   if (subjectAppearance.class === 'malformed') {
     return exclude('subject_malformed_minutes', { startTime, basketballDateEt, seasonType });
   }
+
+  if (self) {
+    const selfMembership: WowyMembershipEvidence = {
+      kind: 'subject_row_only',
+      subjectTeamId: game.subjectTeamId,
+      teammateTeamId: null,
+      note: 'Team with/without this player. Without requires a verified DNP roster row (minutes = 00), not a missing log.',
+    };
+    const teammate = {
+      participation: subjectAppearance.class === 'dnp' ? ('verified_dnp' as const) : ('played' as const),
+      appearance: subjectAppearance,
+      membership: selfMembership,
+    };
+    if (subjectAppearance.class === 'dnp') {
+      return {
+        ...placeholder,
+        startTime,
+        basketballDateEt,
+        seasonType,
+        teammate,
+        bucket: 'without',
+        excludeReason: null,
+      };
+    }
+    return {
+      ...placeholder,
+      startTime,
+      basketballDateEt,
+      seasonType,
+      teammate,
+      bucket: 'with',
+      excludeReason: null,
+    };
+  }
+
   if (subjectAppearance.class !== 'played') {
     return exclude('subject_did_not_play', { startTime, basketballDateEt, seasonType });
   }

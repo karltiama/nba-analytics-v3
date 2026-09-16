@@ -10,7 +10,7 @@ export function wowyCacheKey(query: WowyPairQuery): string {
     WOWY_CALCULATION_VERSION,
     WOWY_DATA_VERSION,
     query.subjectPlayerId,
-    query.teammatePlayerId,
+    query.teammatePlayerId ?? '',
     query.teamId,
     query.season,
     query.seasonType,

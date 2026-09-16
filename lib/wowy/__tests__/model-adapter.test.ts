@@ -48,6 +48,15 @@ function game(
     teammateTpm: 1,
     teammateFga: 9,
     teammateFta: 2,
+    homeTeamId: '8',
+    teamPts: null,
+    teamReb: null,
+    teamAst: null,
+    teamTpm: null,
+    teamFga: null,
+    teamTpa: null,
+    teamFta: null,
+    teamOppPts: null,
     ...extra,
   };
 }

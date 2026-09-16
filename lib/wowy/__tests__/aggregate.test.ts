@@ -44,6 +44,15 @@ function game(
     teammateTpm: 1,
     teammateFga: 10,
     teammateFta: 2,
+    homeTeamId: '8',
+    teamPts: null,
+    teamReb: null,
+    teamAst: null,
+    teamTpm: null,
+    teamFga: null,
+    teamTpa: null,
+    teamFta: null,
+    teamOppPts: null,
     ...extra,
   };
 }
@@ -159,5 +168,27 @@ describe('summarizeWowyPair', () => {
     expect(summary.exclusions.some((e) => e.reason === 'teammate_unknown_membership' && e.count === 1)).toBe(
       true
     );
+  });
+
+  it('maps malformed teammate minutes to unknownParticipationCount, not WITH/WITHOUT', () => {
+    const classified = classifyWowyGames(
+      [
+        game('w1', '2025-01-02T00:00:00.000Z'),
+        game('bad', '2025-01-04T00:00:00.000Z', { teammateMinutes: 'DNP-CD' }),
+        game('wo1', '2025-01-06T00:00:00.000Z', { teammateMinutes: '00' }),
+      ],
+      query
+    );
+    const summary = summarizeWowyPair({
+      query,
+      classified,
+      subjectName: 'A',
+      teammateName: 'B',
+    });
+    expect(summary.with.gameCount).toBe(1);
+    expect(summary.without.gameCount).toBe(1);
+    expect(summary.unknownParticipationCount).toBe(1);
+    expect(summary.unknownMembershipCount).toBe(0);
+    expect(summary.exclusions.some((e) => e.reason === 'malformed_teammate_minutes' && e.count === 1)).toBe(true);
   });
 });
