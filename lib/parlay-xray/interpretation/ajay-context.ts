@@ -1,0 +1,138 @@
+import { known, unknown, withDerivedResolution } from '@/lib/parlay-xray/fields';
+import type { XRayLegContext } from '@/lib/parlay-xray/context/types';
+import type { ExtractedParlayLeg } from '@/lib/parlay-xray/types';
+
+function ajayLeg(): ExtractedParlayLeg {
+  return withDerivedResolution({
+    id: 'leg-ajay',
+    playerDisplayName: known('Ajay Mitchell'),
+    playerId: unknown(),
+    nbaPlayerId: unknown(),
+    teamAbbr: known('OKC'),
+    opponentAbbr: known('DEN'),
+    matchupLabel: known('OKC @ DEN'),
+    propKind: known('points'),
+    propLabel: known('Points'),
+    side: known('over'),
+    line: known(11.5),
+    oddsAmerican: known(-130),
+    sportsbookText: known('DraftKings'),
+    gameDate: known('2026-04-03'),
+    extractionConfidence: known('high'),
+    resolution: 'resolved',
+    rawSnippet: null,
+  });
+}
+
+/** Certified X3C Ajay Mitchell packet. No final points. No hit/miss. */
+export function buildAjayMitchellContext(): XRayLegContext {
+  return {
+    identity: {
+      status: 'AVAILABLE',
+      reason: null,
+      originalLeg: ajayLeg(),
+      playerId: '1028037477',
+      playerDisplayName: 'Ajay Mitchell',
+      gameId: '18447934',
+      gameStartTime: '2026-04-03T01:30:00.000Z',
+      teamAbbr: 'OKC',
+      opponentAbbr: 'DEN',
+      market: 'points',
+      side: 'over',
+      line: 11.5,
+      sportsbook: 'draftkings',
+      historicalDate: '2026-04-03',
+      contextCutoffAt: '2026-04-03T01:30:00.000Z',
+    },
+    market: {
+      status: 'AVAILABLE',
+      reason: null,
+      requestedBook: 'draftkings',
+      matchedBook: 'draftkings',
+      matchStatus: 'MATCHED',
+      lineQuality: 'EXACT_LINE_MATCH',
+      requestedLine: 11.5,
+      threeHourLine: 11.5,
+      threeHourOdds: -130,
+      threeHourTimestamp: '2026-04-02T22:30:00.000Z',
+      closeLine: 12.5,
+      closeOdds: -107,
+      closeTimestamp: '2026-04-03T01:15:29.542Z',
+      lineDeltaCloseMinusThreeHour: 1,
+      lineDeltaThreeHourMinusRequested: 0,
+      americanOddsDeltaCloseMinusThreeHour: 23,
+      snapshotAvailable: { threeHourPreTip: true, decisionClose: true },
+    },
+    playerForm: {
+      status: 'AVAILABLE',
+      reason: null,
+      market: 'points',
+      seasonToDate: { gameCount: 53, average: 14 },
+      last5: { gameCount: 5, average: 11.8 },
+      last10: { gameCount: 10, average: 13.5 },
+      lineRelative: {
+        sampleCount: 10,
+        aboveRequestedLine: 6,
+        belowRequestedLine: 4,
+        equalRequestedLine: 0,
+      },
+    },
+    role: {
+      status: 'AVAILABLE',
+      reason: null,
+      priorGameMinutes: 36,
+      seasonToDateMinutes: { gameCount: 53, average: 26.2 },
+      last5Minutes: { gameCount: 5, average: 25 },
+      last10Minutes: { gameCount: 10, average: 26.2 },
+      gamesPlayed: 102,
+      startersPregame: { status: 'UNAVAILABLE', reason: 'STARTERS_POSTGAME_CONFIRMED' },
+    },
+    matchup: {
+      status: 'AVAILABLE',
+      reason: null,
+      opponentAbbr: 'DEN',
+      opponentTeamId: '14',
+      playerTeamId: '21',
+      teamPace: { gameCount: 76, average: 101.9 },
+      opponentPace: { gameCount: 76, average: 100.3 },
+      opponentPointsAllowed: { gameCount: 76, average: 114.7 },
+      teamPoints: { gameCount: 76, average: 118.6 },
+    },
+    wowy: { status: 'UNAVAILABLE', reason: 'NO_AS_OF_SAFE_WOWY_SOURCE' },
+    projection: {
+      status: 'UNAVAILABLE',
+      reason: 'NO_ARCHIVED_PREGAME_PROJECTION',
+      modelVersion: null,
+      generatedAt: null,
+      intendedCutoffAt: null,
+      projectedStat: null,
+      requestedLine: 11.5,
+      difference: null,
+    },
+    availability: { status: 'UNAVAILABLE', reason: 'NO_HISTORICAL_INJURY_SNAPSHOT' },
+    dataQuality: {
+      canonicalPlayerResolved: true,
+      canonicalGameResolved: true,
+      marketExact: true,
+      marketPartial: false,
+      sameBookMatch: true,
+      exactLineMatch: true,
+      threeHourSnapshotAvailable: true,
+      closeSnapshotAvailable: true,
+      playerPriorSampleCount: 53,
+      last5AvailableCount: 5,
+      last10AvailableCount: 10,
+      wowy: 'UNAVAILABLE',
+      projection: 'UNAVAILABLE',
+      availability: 'UNAVAILABLE',
+      playerForm: 'AVAILABLE',
+      matchup: 'AVAILABLE',
+      role: 'AVAILABLE',
+      market: 'AVAILABLE',
+    },
+  };
+}
+
+export function cloneContext(context: XRayLegContext): XRayLegContext {
+  return JSON.parse(JSON.stringify(context)) as XRayLegContext;
+}

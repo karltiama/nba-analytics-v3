@@ -2,6 +2,7 @@ import { AlertTriangle, BarChart3, FileText, GitBranch, ShieldAlert, TrendingUp 
 import { formatAmericanOdds } from '@/lib/betting/market-movement-format';
 import { formatCombinedOddsLabel } from '@/lib/parlay-xray/combined-odds';
 import { LEG_OUTLOOK_COPY } from '@/lib/parlay-xray/copy';
+import { formatXrayPropLine } from '@/lib/parlay-xray/extraction/line-value';
 import { XRAY_PROP_KIND_LABEL } from '@/lib/parlay-xray/types';
 import type {
   ExtractedParlayLeg,
@@ -11,6 +12,7 @@ import type {
   XrayLegOutlook,
 } from '@/lib/parlay-xray/types';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
+import { MatchupLine } from '@/components/parlay-xray/MatchupLine';
 import { cn } from '@/lib/utils';
 
 type XrayAnalysisPanelProps = {
@@ -160,9 +162,7 @@ function LegByLegList({
                       <p className="text-sm font-semibold text-[#063f46] truncate">
                         {leg.playerDisplayName.value ?? 'Unknown player'}
                       </p>
-                      <p className="text-xs text-[#4a6366] truncate">
-                        {leg.matchupLabel.value ?? 'Matchup unavailable'}
-                      </p>
+                      <MatchupLine leg={leg} />
                     </div>
                   </div>
                   <p className="text-sm text-[#063f46] mt-2 md:mt-0">
@@ -173,7 +173,7 @@ function LegByLegList({
                   <p className="text-sm text-[#063f46]">
                     <span className="md:hidden text-xs text-[#8aa0a3] mr-2">Line</span>
                     {leg.side.value ? (leg.side.value === 'over' ? 'Over' : 'Under') : '—'}{' '}
-                    {leg.line.value ?? '—'}
+                    {formatXrayPropLine(leg.line.value)}
                   </p>
                   <p className="text-sm tabular-nums text-[#063f46]">
                     <span className="md:hidden text-xs text-[#8aa0a3] mr-2">Odds</span>

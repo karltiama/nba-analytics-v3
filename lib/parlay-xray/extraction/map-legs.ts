@@ -7,6 +7,7 @@ import {
 import type { ExtractedParlayLeg, FieldStatus, XrayField } from '@/lib/parlay-xray/types';
 import type { XrayExtractResult } from './result-codes';
 import type { XrayVisionLeg, XrayVisionOutput } from './schema';
+import { recoverExtractedLine, recoverLineOnExtractedLeg } from './line-value';
 import { resolveLegMarket } from './market-identity';
 
 const PROMO_ONLY_LABEL =
@@ -67,6 +68,18 @@ function numberField(
   return status === 'known' ? known(value) : needsConfirmation(value);
 }
 
+function recoveredLineField(
+  value: number | null | undefined,
+  evidence: string | null | undefined,
+  snippet: string | null | undefined,
+  confidence: 'high' | 'medium' | 'low' | null | undefined
+): XrayField<number> {
+  const recovered = recoverExtractedLine(value, evidence, snippet);
+  if (recovered.value == null) return unknown();
+  if (recovered.confirm) return needsConfirmation(recovered.value);
+  return numberField(recovered.value, evidence, confidence);
+}
+
 export function visibleOverUnder(text: string | null | undefined): 'over' | 'under' | null {
   const cleaned = cleanText(text);
   if (!cleaned) return null;
@@ -96,25 +109,27 @@ export function mapVisionLeg(leg: XrayVisionLeg, id: string, slipSportsbook: str
   const { propKind, propLabel } = resolveLegMarket(leg);
   const sportsbook = textField(leg.sportsbook ?? slipSportsbook, leg.sportsbook ?? slipSportsbook, conf);
 
-  return withDerivedResolution({
-    id,
-    playerDisplayName: textField(leg.player_name, leg.player_evidence ?? leg.player_name, playerConf),
-    playerId: unknown(),
-    nbaPlayerId: unknown(),
-    teamAbbr: textField(leg.team_abbr, leg.team_abbr, conf),
-    opponentAbbr: textField(leg.opponent_abbr, leg.opponent_abbr, conf),
-    matchupLabel: textField(leg.matchup_label, leg.matchup_label, conf),
-    propKind,
-    propLabel,
-    side: mapSide(leg),
-    line: numberField(leg.line, leg.line_evidence, conf),
-    oddsAmerican: numberField(leg.odds_american, leg.odds_evidence, conf),
-    sportsbookText: sportsbook,
-    gameDate: textField(leg.game_date, leg.game_date, conf),
-    extractionConfidence: conf ? known(conf) : unknown(),
-    resolution: 'unresolved',
-    rawSnippet: cleanText(leg.raw_snippet)?.slice(0, 240) ?? null,
-  });
+  return recoverLineOnExtractedLeg(
+    withDerivedResolution({
+      id,
+      playerDisplayName: textField(leg.player_name, leg.player_evidence ?? leg.player_name, playerConf),
+      playerId: unknown(),
+      nbaPlayerId: unknown(),
+      teamAbbr: textField(leg.team_abbr, leg.team_abbr, conf),
+      opponentAbbr: textField(leg.opponent_abbr, leg.opponent_abbr, conf),
+      matchupLabel: textField(leg.matchup_label, leg.matchup_label, conf),
+      propKind,
+      propLabel,
+      side: mapSide(leg),
+      line: recoveredLineField(leg.line, leg.line_evidence, leg.raw_snippet, conf),
+      oddsAmerican: numberField(leg.odds_american, leg.odds_evidence, conf),
+      sportsbookText: sportsbook,
+      gameDate: textField(leg.game_date, leg.game_date, conf),
+      extractionConfidence: conf ? known(conf) : unknown(),
+      resolution: 'unresolved',
+      rawSnippet: cleanText(leg.raw_snippet)?.slice(0, 240) ?? null,
+    })
+  );
 }
 
 export function mapVisionOutput(output: XrayVisionOutput, idFactory: () => string): ExtractedParlayLeg[] {

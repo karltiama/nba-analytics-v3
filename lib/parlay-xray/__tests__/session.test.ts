@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildFullPreviewFixture, buildPartialExtractionFixture } from '../dev-fixture';
 import { known, needsConfirmation, unknown } from '../fields';
+import { buildHistoricalAnalysisPreview } from '../interpretation/preview';
 import {
   canConfirmLegs,
   createInitialXrayState,
@@ -144,6 +145,46 @@ describe('xray session', () => {
     expect(canConfirmLegs(edited)).toBe(true);
   });
 
+  it('accepts a needs-confirmation leg without retyping fields', () => {
+    const seeded = reduceXrayState(createInitialXrayState(), {
+      type: 'SET_EXTRACTION',
+      status: 'partial',
+      legs: [
+        {
+          id: 'a',
+          playerDisplayName: needsConfirmation('Luka Dončić'),
+          playerId: unknown(),
+          nbaPlayerId: unknown(),
+          teamAbbr: needsConfirmation('DAL'),
+          opponentAbbr: unknown(),
+          matchupLabel: unknown(),
+          propKind: known('assists'),
+          propLabel: known('Assists'),
+          side: known('over'),
+          line: needsConfirmation(8),
+          oddsAmerican: known(100),
+          sportsbookText: unknown(),
+          gameDate: unknown(),
+          extractionConfidence: known('low'),
+          resolution: 'needs_confirmation',
+          rawSnippet: null,
+        } satisfies ExtractedParlayLeg,
+      ],
+    });
+    expect(canConfirmLegs(seeded)).toBe(false);
+
+    const accepted = reduceXrayState(seeded, { type: 'ACCEPT_LEG', legId: 'a' });
+    const leg = accepted.parlay.legs[0];
+    expect(leg?.playerDisplayName).toEqual({ value: 'Luka Dončić', status: 'known' });
+    expect(leg?.line).toEqual({ value: 8, status: 'known' });
+    expect(leg?.teamAbbr).toEqual({ value: 'DAL', status: 'known' });
+    expect(leg?.resolution).toBe('resolved');
+    expect(canConfirmLegs(accepted)).toBe(true);
+
+    const confirmed = reduceXrayState(accepted, { type: 'CONFIRM_LEGS' });
+    expect(confirmed.confirmed).toBe(true);
+  });
+
   it('does not confirm while any leg still needs confirmation', () => {
     const { parlay } = buildPartialExtractionFixture();
     const state = reduceXrayState(createInitialXrayState(), {
@@ -222,6 +263,54 @@ describe('xray session', () => {
     });
     expect(selectAnalysisPresentation(state).visible).toBe(false);
     expect(selectAnalysisPresentation(state).analysis).toBeNull();
+  });
+
+  it('loads historical interpretation preview without marking it as fictional design data', () => {
+    const { parlay, interpretations, historicalReplay } = buildHistoricalAnalysisPreview();
+    const state = reduceXrayState(createInitialXrayState(), {
+      type: 'LOAD_PREVIEW',
+      parlay,
+      analysis: null,
+      confirmed: true,
+      interpretations,
+      historicalReplay,
+    });
+    expect(state.designPreview).toBe(false);
+    expect(state.historicalReplay?.gameId).toBe('18447934');
+    expect(state.interpretations?.[0]?.identity.playerDisplayName).toBe('Ajay Mitchell');
+    expect(state.interpretations?.[0]?.summaryState).toBe('SUPPORTIVE_CONTEXT');
+  });
+
+  it('does not attach interpretation when Confirm is pressed', () => {
+    const extracted = reduceXrayState(createInitialXrayState(), {
+      type: 'SET_EXTRACTION',
+      status: 'complete',
+      legs: [
+        {
+          id: 'a',
+          playerDisplayName: known('Luka Dončić'),
+          playerId: unknown(),
+          nbaPlayerId: unknown(),
+          teamAbbr: unknown(),
+          opponentAbbr: unknown(),
+          matchupLabel: unknown(),
+          propKind: known('assists'),
+          propLabel: known('Assists'),
+          side: known('over'),
+          line: known(7.5),
+          oddsAmerican: known(100),
+          sportsbookText: unknown(),
+          gameDate: unknown(),
+          extractionConfidence: known('high'),
+          resolution: 'resolved',
+          rawSnippet: null,
+        } satisfies ExtractedParlayLeg,
+      ],
+    });
+    const confirmed = reduceXrayState(extracted, { type: 'CONFIRM_LEGS' });
+    expect(confirmed.confirmed).toBe(true);
+    expect(confirmed.interpretations).toBeNull();
+    expect(confirmed.historicalReplay).toBeNull();
   });
 });
 

@@ -64,6 +64,7 @@ Independence rules — decide every field from THAT leg's visible text only:
 - OVER and UNDER are high-integrity. If the image visibly says Over, return "over". If it visibly says Under, return "under". If side is unreadable or absent, return null.
 - Never infer side from a statistical value, the sign of odds, a neighboring leg, expected player performance, or market convention. A wrong confident side is worse than null.
 - Do not infer a betting line from box-score totals, season averages, displayed historical stats, or projection values. Only extract a line that belongs to the visible wager. If uncertain, line=null.
+- Copy the visible line exactly, including the decimal. 8.5 must stay 8.5. Never convert a half-point line to a whole number (8.5 → 8 or 27.5 → 27).
 - Prefer null / low confidence over a confident guess for market, side, line, odds, and sportsbook.
 
 Evidence anchors (internal; quote the visible fragment, do not infer):

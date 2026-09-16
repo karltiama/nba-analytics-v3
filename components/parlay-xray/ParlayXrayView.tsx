@@ -16,6 +16,7 @@ import type { LegEdits } from '@/lib/parlay-xray/session';
 import { ExtractedLegsPanel } from './ExtractedLegsPanel';
 import { UploadDropzone } from './UploadDropzone';
 import { XrayAnalysisPanel } from './XrayAnalysisPanel';
+import { XrayResultsPanel } from './XrayResultsPanel';
 import type { UploadErrorCode, UploadedScreenshot } from '@/lib/parlay-xray/types';
 
 type ParlayXrayViewProps = {
@@ -26,6 +27,7 @@ type ParlayXrayViewProps = {
   onExtract: () => void;
   onToggleEditing: () => void;
   onEditLeg: (legId: string, edits: LegEdits) => void;
+  onAcceptLeg: (legId: string) => void;
   onConfirm: () => void;
   onUploadStarted: () => void;
   showDesignPreviewLink: boolean;
@@ -39,6 +41,7 @@ export function ParlayXrayView({
   onExtract,
   onToggleEditing,
   onEditLeg,
+  onAcceptLeg,
   onConfirm,
   onUploadStarted,
   showDesignPreviewLink,
@@ -52,6 +55,8 @@ export function ParlayXrayView({
   const analysisCopy = ANALYSIS_STAGE_COPY[analysisStageFor(state)];
   const extracting = state.parlay.extractionStatus === 'pending';
   const hasFile = Boolean(state.parlay.uploadedImage);
+  const historicalReplay = state.historicalReplay;
+  const hasInterpretations = Boolean(state.interpretations && state.interpretations.length > 0);
   const quotaLabel =
     state.quota != null
       ? `${state.quota.remaining} of ${state.quota.limit} XRay analyses remaining today`
@@ -59,7 +64,16 @@ export function ParlayXrayView({
 
   return (
     <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {state.designPreview ? (
+      {historicalReplay ? (
+        <p
+          className="rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-sm text-[#063f46]"
+          role="status"
+        >
+          Historical Replay — {historicalReplay.dateLabel}
+          {historicalReplay.gameId ? ` · game ${historicalReplay.gameId}` : ''}. Certified as-of cutoff{' '}
+          {historicalReplay.cutoffAt}. This is not a live September 2026 recommendation.
+        </p>
+      ) : state.designPreview ? (
         <p
           className="rounded-xl border border-amber-200 bg-[#fff8ee] px-4 py-3 text-sm text-[#9a3412]"
           role="status"
@@ -92,12 +106,14 @@ export function ParlayXrayView({
           <UploadDropzone
             screenshot={state.parlay.uploadedImage}
             error={error}
+            statusHint={historicalReplay ? 'Historical replay fixture — not a live slip' : undefined}
+            thumbnailHint={historicalReplay ? 'Historical replay' : undefined}
             onSelected={onSelected}
             onRejected={onRejected}
             onRemove={onRemove}
             onUploadStarted={onUploadStarted}
           />
-          {hasFile && !state.designPreview ? (
+          {hasFile && !state.designPreview && !historicalReplay ? (
             <div className="mt-4 space-y-2">
               <button
                 type="button"
@@ -136,20 +152,29 @@ export function ParlayXrayView({
             confirmed={state.confirmed}
             onToggleEditing={onToggleEditing}
             onEditLeg={onEditLeg}
+            onAcceptLeg={onAcceptLeg}
             onConfirm={onConfirm}
           />
         </div>
       </div>
 
-      <XrayAnalysisPanel
-        analysis={presentation.analysis}
-        legs={state.parlay.legs}
-        combinedOdds={combined}
-        structural={structural}
-        analysisStageCopy={analysisCopy}
-        designPreview={state.designPreview}
-        showExplorerPlacement={state.designPreview}
-      />
+      {hasInterpretations && state.interpretations ? (
+        <XrayResultsPanel
+          interpretations={state.interpretations}
+          historicalReplay={historicalReplay}
+          legs={state.parlay.legs}
+        />
+      ) : (
+        <XrayAnalysisPanel
+          analysis={presentation.analysis}
+          legs={state.parlay.legs}
+          combinedOdds={combined}
+          structural={structural}
+          analysisStageCopy={analysisCopy}
+          designPreview={state.designPreview}
+          showExplorerPlacement={state.designPreview}
+        />
+      )}
 
       {showDesignPreviewLink ? (
         <p className="text-xs text-[#8aa0a3]">
@@ -160,6 +185,10 @@ export function ParlayXrayView({
           {' · '}
           <a className="underline text-[#075B5C]" href="/parlay-xray?preview=partial">
             partial extraction
+          </a>
+          {' · '}
+          <a className="underline text-[#075B5C]" href="/parlay-xray?preview=analysis">
+            historical analysis
           </a>
         </p>
       ) : null}

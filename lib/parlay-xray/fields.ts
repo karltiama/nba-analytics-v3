@@ -38,6 +38,32 @@ export function withDerivedResolution(leg: ExtractedParlayLeg): ExtractedParlayL
   return { ...leg, resolution: deriveLegResolution(leg) };
 }
 
+function acceptField<T>(field: XrayField<T>): XrayField<T> {
+  if (field.status !== 'needs_confirmation') return field;
+  if (field.value == null || field.value === '') return field;
+  return { value: field.value, status: 'known' };
+}
+
+/** Keep extracted values; mark them known so the user does not have to retype them. */
+export function acceptExtractedLeg(leg: ExtractedParlayLeg): ExtractedParlayLeg {
+  return withDerivedResolution({
+    ...leg,
+    playerDisplayName: acceptField(leg.playerDisplayName),
+    playerId: acceptField(leg.playerId),
+    nbaPlayerId: acceptField(leg.nbaPlayerId),
+    teamAbbr: acceptField(leg.teamAbbr),
+    opponentAbbr: acceptField(leg.opponentAbbr),
+    matchupLabel: acceptField(leg.matchupLabel),
+    propKind: acceptField(leg.propKind),
+    propLabel: acceptField(leg.propLabel),
+    side: acceptField(leg.side),
+    line: acceptField(leg.line),
+    oddsAmerican: acceptField(leg.oddsAmerican),
+    sportsbookText: acceptField(leg.sportsbookText),
+    gameDate: acceptField(leg.gameDate),
+  });
+}
+
 export function extractionCounts(legs: ExtractedParlayLeg[]): {
   detected: number;
   resolved: number;

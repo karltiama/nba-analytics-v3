@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import { XRAY_PROP_KINDS } from '@/lib/parlay-xray/types';
+import { parseJsonLine } from './line-value';
 
 const confidence = z.enum(['high', 'medium', 'low']);
 const documentType = z.enum(['BET_SLIP', 'NOT_BET_SLIP', 'UNCERTAIN']);
 const shortEvidence = z.string().max(80).nullable().optional();
+const jsonLine = z.union([z.number(), z.string(), z.null()]).transform((v) => parseJsonLine(v));
 
 export const xrayVisionLegSchema = z.object({
   player_name: z.string().nullable(),
@@ -13,7 +15,7 @@ export const xrayVisionLegSchema = z.object({
   matchup_label: z.string().nullable(),
   prop_kind: z.enum(XRAY_PROP_KINDS).nullable(),
   side: z.enum(['over', 'under']).nullable(),
-  line: z.number().nullable(),
+  line: jsonLine,
   odds_american: z.number().nullable(),
   sportsbook: z.string().nullable(),
   game_date: z.string().nullable(),

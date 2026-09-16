@@ -1,5 +1,6 @@
+import { recoverLineOnExtractedLeg } from './extraction/line-value';
 import { combinedAmericanOdds, knownLegOdds } from './combined-odds';
-import { extractionCounts, withDerivedResolution } from './fields';
+import { acceptExtractedLeg, extractionCounts, withDerivedResolution } from './fields';
 import { detectStructuralDependencies, structuralFailureNotes } from './structural';
 import type {
   AnalysisStatus,
@@ -12,11 +13,18 @@ import type {
   XRayParlay,
   XrayPropKind,
 } from './types';
+import type { XRayLegInterpretation } from './interpretation/types';
 
 export type XrayQuotaView = {
   used: number;
   limit: number;
   remaining: number;
+};
+
+export type XrayHistoricalReplay = {
+  cutoffAt: string;
+  dateLabel: string;
+  gameId: string | null;
 };
 
 export type XrayState = {
@@ -28,6 +36,8 @@ export type XrayState = {
   designPreview: boolean;
   quota: XrayQuotaView | null;
   extractNotice: string | null;
+  interpretations: XRayLegInterpretation[] | null;
+  historicalReplay: XrayHistoricalReplay | null;
 };
 
 export type LegEdits = {
@@ -44,11 +54,13 @@ export type XrayAction =
   | { type: 'FILE_REMOVED' }
   | { type: 'TOGGLE_EDITING' }
   | { type: 'UPDATE_LEG'; legId: string; edits: LegEdits }
+  | { type: 'ACCEPT_LEG'; legId: string }
   | { type: 'ATTACH_HEADSHOTS'; ids: Record<string, string> }
   | { type: 'CONFIRM_LEGS' }
-  | { type: 'LOAD_PREVIEW'; parlay: XRayParlay; analysis: XRayAnalysis | null; confirmed?: boolean }
+  | { type: 'LOAD_PREVIEW'; parlay: XRayParlay; analysis: XRayAnalysis | null; confirmed?: boolean; interpretations?: XRayLegInterpretation[] | null; historicalReplay?: XrayHistoricalReplay | null }
   | { type: 'EXTRACT_STARTED' }
   | { type: 'SET_EXTRACTION'; status: ExtractionStatus; legs: ExtractedParlayLeg[]; notice?: string | null }
+  | { type: 'RECOVER_LINES' }
   | { type: 'SET_QUOTA'; quota: XrayQuotaView | null }
   | { type: 'SET_ANALYSIS'; analysis: XRayAnalysis | null };
 
@@ -83,6 +95,8 @@ export function createInitialXrayState(): XrayState {
     designPreview: false,
     quota: null,
     extractNotice: null,
+    interpretations: null,
+    historicalReplay: null,
   };
 }
 
@@ -134,6 +148,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         analysis: null,
         designPreview: false,
         extractNotice: null,
+        interpretations: null,
+        historicalReplay: null,
         parlay: {
           ...createEmptyParlay(),
           id: newId(),
@@ -162,6 +178,33 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         ...state,
         confirmed: false,
         analysis: null,
+        interpretations: null,
+        historicalReplay: null,
+        parlay: {
+          ...state.parlay,
+          legs,
+          extractionStatus,
+          analysisStatus: 'unavailable',
+        },
+      };
+    }
+    case 'ACCEPT_LEG': {
+      const legs = state.parlay.legs.map((leg) =>
+        leg.id === action.legId ? acceptExtractedLeg(leg) : leg
+      );
+      const counts = extractionCounts(legs);
+      const extractionStatus: ExtractionStatus =
+        counts.detected === 0
+          ? state.parlay.extractionStatus
+          : counts.needsConfirmation > 0 || counts.unresolved > 0
+            ? 'partial'
+            : 'complete';
+      return {
+        ...state,
+        confirmed: false,
+        analysis: null,
+        interpretations: null,
+        historicalReplay: null,
         parlay: {
           ...state.parlay,
           legs,
@@ -182,6 +225,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
       return { ...state, parlay: { ...state.parlay, legs } };
     }
     case 'CONFIRM_LEGS': {
+      // Confirm only locks extracted legs. It does not assemble X3C or interpret X3D.
+      // Live-season analysis is a later integration boundary.
       const counts = extractionCounts(state.parlay.legs);
       if (counts.detected === 0 || counts.needsConfirmation > 0 || counts.unresolved > 0) {
         return state;
@@ -200,8 +245,10 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         uploadErrorCode: null,
         editing: false,
         confirmed: action.confirmed ?? action.analysis?.status === 'ready',
-        designPreview: true,
+        designPreview: !action.historicalReplay,
         extractNotice: null,
+        interpretations: action.interpretations ?? null,
+        historicalReplay: action.historicalReplay ?? null,
       };
     case 'EXTRACT_STARTED':
       return {
@@ -209,6 +256,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         extractNotice: null,
         confirmed: false,
         analysis: null,
+        interpretations: null,
+        historicalReplay: null,
         parlay: {
           ...state.parlay,
           extractionStatus: 'pending',
@@ -221,10 +270,12 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
         ...state,
         confirmed: false,
         analysis: null,
+        interpretations: null,
+        historicalReplay: null,
         extractNotice: action.notice ?? null,
         parlay: {
           ...state.parlay,
-          legs: action.legs.map(withDerivedResolution),
+          legs: action.legs.map((leg) => recoverLineOnExtractedLeg(withDerivedResolution(leg))),
           extractionStatus: action.status,
           analysisStatus: counts.detected === 0 ? 'unavailable' : 'unavailable',
         },
@@ -232,6 +283,11 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
     }
     case 'SET_QUOTA':
       return { ...state, quota: action.quota };
+    case 'RECOVER_LINES': {
+      const legs = state.parlay.legs.map(recoverLineOnExtractedLeg);
+      if (legs.every((leg, i) => leg === state.parlay.legs[i])) return state;
+      return { ...state, parlay: { ...state.parlay, legs } };
+    }
     case 'SET_ANALYSIS':
       return {
         ...state,
@@ -274,6 +330,7 @@ export function liveStructuralNotes(legs: ExtractedParlayLeg[]): ReturnType<type
 }
 
 export function analysisStageFor(state: XrayState): AnalysisStatus {
+  if (state.interpretations && state.interpretations.length > 0) return 'ready';
   if (hasRenderableAnalysis(state.analysis)) return 'ready';
   return state.parlay.analysisStatus;
 }

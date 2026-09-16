@@ -13,6 +13,8 @@ type UploadDropzoneProps = {
   screenshot: UploadedScreenshot | null;
   error: string | null;
   disabled?: boolean;
+  statusHint?: string;
+  thumbnailHint?: string;
   onSelected: (file: UploadedScreenshot) => void;
   onRejected: (code: Extract<UploadErrorCode, 'unsupported_file' | 'file_too_large'>) => void;
   onReplaceRequest?: () => void;
@@ -24,6 +26,8 @@ export function UploadDropzone({
   screenshot,
   error,
   disabled,
+  statusHint,
+  thumbnailHint,
   onSelected,
   onRejected,
   onReplaceRequest,
@@ -110,6 +114,8 @@ export function UploadDropzone({
         <ScreenshotPreviewCard
           screenshot={screenshot}
           inputId={inputId}
+          statusHint={statusHint}
+          thumbnailHint={thumbnailHint}
           onReplace={() => {
             onReplaceRequest?.();
             openPicker();
@@ -134,11 +140,15 @@ export function UploadDropzone({
 function ScreenshotPreviewCard({
   screenshot,
   inputId,
+  statusHint,
+  thumbnailHint,
   onReplace,
   onRemove,
 }: {
   screenshot: UploadedScreenshot;
   inputId: string;
+  statusHint?: string;
+  thumbnailHint?: string;
   onReplace: () => void;
   onRemove?: () => void;
 }) {
@@ -154,14 +164,14 @@ function ScreenshotPreviewCard({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] font-semibold text-[#8aa0a3]">
-            Design preview
+            {thumbnailHint ?? 'Design preview'}
           </div>
         )}
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-[#063f46]">{screenshot.filename}</p>
         <p className="text-xs text-[#4a6366]">
-          {screenshot.sizeBytes > 0 ? 'Ready on this device' : 'Design-preview placeholder'}
+          {statusHint ?? (screenshot.sizeBytes > 0 ? 'Ready on this device' : 'Design-preview placeholder')}
         </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">

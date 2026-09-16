@@ -4,6 +4,7 @@ import { estimateCostUsd } from './cost';
 import { XRAY_EXTRACT_MESSAGE } from './copy';
 import { toDataUrl, validateAndNormalizeScreenshot } from './image';
 import { applyXrayExtractionContract } from './document-contract';
+import { recoverLineOnExtractedLeg } from './line-value';
 import { XrayProviderError, type XrayVisionProvider } from './provider';
 import type { XrayExtractResult } from './result-codes';
 import type { XrayExtractionStore, XrayReservation, XrayUsageRecord } from './store';
@@ -226,7 +227,7 @@ export async function runXrayExtraction(
     return {
       result: cached.result,
       message: cached.message ?? XRAY_EXTRACT_MESSAGE[cached.result],
-      legs: cached.legs,
+      legs: cached.legs.map(recoverLineOnExtractedLeg),
       cacheHit: true,
       providerAttempted: false,
       quota,

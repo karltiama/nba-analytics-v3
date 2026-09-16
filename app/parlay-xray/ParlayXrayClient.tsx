@@ -57,6 +57,23 @@ export function ParlayXrayClient() {
     const previewFlag = new URLSearchParams(window.location.search).get('preview');
     if (!isXrayDesignPreviewEnabled(previewFlag)) return;
     let cancelled = false;
+    if (previewFlag === 'analysis') {
+      void import('@/lib/parlay-xray/interpretation/preview').then((mod) => {
+        if (cancelled) return;
+        const { parlay, interpretations, historicalReplay } = mod.buildHistoricalAnalysisPreview();
+        dispatch({
+          type: 'LOAD_PREVIEW',
+          parlay,
+          analysis: null,
+          confirmed: true,
+          interpretations,
+          historicalReplay,
+        });
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     void import('@/lib/parlay-xray/dev-fixture').then((mod) => {
       if (cancelled) return;
       if (previewFlag === 'partial') {
@@ -135,6 +152,10 @@ export function ParlayXrayClient() {
     return () => {
       cancelled = true;
     };
+  }, [state.parlay.legs]);
+
+  useEffect(() => {
+    dispatch({ type: 'RECOVER_LINES' });
   }, [state.parlay.legs]);
 
   const replaceObjectUrl = (next: string | null) => {
@@ -227,6 +248,7 @@ export function ParlayXrayClient() {
       onExtract={onExtract}
       onToggleEditing={() => dispatch({ type: 'TOGGLE_EDITING' })}
       onEditLeg={onEditLeg}
+      onAcceptLeg={(legId) => dispatch({ type: 'ACCEPT_LEG', legId })}
       onConfirm={() => dispatch({ type: 'CONFIRM_LEGS' })}
       onUploadStarted={onUploadStarted}
       showDesignPreviewLink={process.env.NODE_ENV !== 'production'}

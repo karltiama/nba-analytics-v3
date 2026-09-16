@@ -44,10 +44,13 @@ export const LEG_OUTLOOK_COPY: Record<XrayLegOutlook, string> = {
   unavailable: 'Unavailable',
 };
 
+export const LINE_WHOLE_NUMBER_HINT =
+  'Confirm the line. Player props are usually X.5.';
+
 export function isXrayDesignPreviewEnabled(
   flag: string | null | undefined,
   env: string | undefined = process.env.NODE_ENV
 ): boolean {
   if (env === 'production') return false;
-  return flag === '1' || flag === 'partial';
+  return flag === '1' || flag === 'partial' || flag === 'analysis';
 }

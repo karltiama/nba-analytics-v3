@@ -1,11 +1,12 @@
 'use client';
 
-import { Pencil } from 'lucide-react';
+import { Check, Pencil } from 'lucide-react';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
-import { TeamLogo } from '@/components/nba/TeamLogo';
+import { MatchupLine } from '@/components/parlay-xray/MatchupLine';
 import { formatAmericanOdds } from '@/lib/betting/market-movement-format';
+import { LINE_WHOLE_NUMBER_HINT } from '@/lib/parlay-xray/copy';
 import { extractionCounts } from '@/lib/parlay-xray/fields';
-import { matchupDisplayFromLeg } from '@/lib/parlay-xray/matchup-display';
+import { formatXrayPropLine, isWholeNumberPlayerPropLine } from '@/lib/parlay-xray/extraction/line-value';
 import { XRAY_PROP_KIND_LABEL, XRAY_PROP_KINDS } from '@/lib/parlay-xray/types';
 import type { ExtractedParlayLeg, ParlayLegSide, XrayPropKind } from '@/lib/parlay-xray/types';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,7 @@ type ExtractedLegsPanelProps = {
       oddsAmerican?: number | null;
     }
   ) => void;
+  onAcceptLeg: (legId: string) => void;
   onConfirm: () => void;
 };
 
@@ -38,9 +40,11 @@ export function ExtractedLegsPanel({
   confirmed,
   onToggleEditing,
   onEditLeg,
+  onAcceptLeg,
   onConfirm,
 }: ExtractedLegsPanelProps) {
   const counts = extractionCounts(legs);
+  const showWholeNumberLineNote = legs.some(isWholeNumberPlayerPropLine);
 
   return (
     <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5 h-full flex flex-col">
@@ -75,7 +79,11 @@ export function ExtractedLegsPanel({
               {editing ? (
                 <LegEditor leg={leg} onEdit={onEditLeg} />
               ) : (
-                <LegRow leg={leg} />
+                <LegRow
+                  leg={leg}
+                  showAccept={!confirmed && leg.resolution === 'needs_confirmation'}
+                  onAccept={() => onAcceptLeg(leg.id)}
+                />
               )}
             </li>
           ))}
@@ -96,9 +104,12 @@ export function ExtractedLegsPanel({
           >
             {confirmed ? 'Legs confirmed' : 'Confirm legs'}
           </button>
+          {showWholeNumberLineNote ? (
+            <p className="rounded-md bg-[#E7F6F1] px-2.5 py-2 text-xs text-[#075B5C]">{LINE_WHOLE_NUMBER_HINT}</p>
+          ) : null}
           {!canConfirm ? (
             <p className="text-xs text-[#9a3412]">
-              Confirm every highlighted field before analysis. Uncertain values stay marked until you verify them.
+              Accept each highlighted leg with the check, or edit a value that looks wrong.
             </p>
           ) : null}
         </div>
@@ -107,10 +118,18 @@ export function ExtractedLegsPanel({
   );
 }
 
-function LegRow({ leg }: { leg: ExtractedParlayLeg }) {
+function LegRow({
+  leg,
+  showAccept,
+  onAccept,
+}: {
+  leg: ExtractedParlayLeg;
+  showAccept: boolean;
+  onAccept: () => void;
+}) {
   const name = leg.playerDisplayName.value ?? 'Unknown player';
   const side = leg.side.value ? titleSide(leg.side.value) : '—';
-  const line = leg.line.value != null ? String(leg.line.value) : '—';
+  const line = formatXrayPropLine(leg.line.value);
   const prop = leg.propLabel.value ?? (leg.propKind.value ? XRAY_PROP_KIND_LABEL[leg.propKind.value] : '—');
   const odds = formatAmericanOdds(leg.oddsAmerican.status === 'known' ? leg.oddsAmerican.value : null);
   const uncertain = leg.resolution !== 'resolved';
@@ -138,6 +157,16 @@ function LegRow({ leg }: { leg: ExtractedParlayLeg }) {
         <p className="text-xs text-[#4a6366]">{prop}</p>
       </div>
       <p className="w-12 text-right text-sm tabular-nums text-[#063f46] shrink-0">{odds}</p>
+      {showAccept ? (
+        <button
+          type="button"
+          onClick={onAccept}
+          aria-label={`Confirm ${name} as shown`}
+          className="shrink-0 rounded-full border border-[#075B5C] bg-[#E7F6F1] p-1.5 text-[#075B5C] hover:bg-[#d5efe8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
+        >
+          <Check className="h-4 w-4" aria-hidden />
+        </button>
+      ) : null}
       {uncertain ? (
         <span className="sr-only">Needs confirmation</span>
       ) : null}
@@ -198,7 +227,7 @@ function LegEditor({
         <Field
           label="Line"
           warning={leg.line.status !== 'known'}
-          value={leg.line.value == null ? '' : String(leg.line.value)}
+          value={leg.line.value == null ? '' : formatXrayPropLine(leg.line.value)}
           inputMode="decimal"
           onChange={(value) => {
             const n = Number(value);
@@ -254,24 +283,6 @@ function Field({
         )}
       />
     </label>
-  );
-}
-
-function MatchupLine({ leg }: { leg: ExtractedParlayLeg }) {
-  const display = matchupDisplayFromLeg(leg);
-  if (!display) {
-    return (
-      <p className="text-xs text-[#4a6366] truncate">{leg.matchupLabel.value ?? 'Matchup unavailable'}</p>
-    );
-  }
-  return (
-    <p className="flex items-center gap-1 text-xs text-[#4a6366] min-w-0">
-      <TeamLogo team={display.left} size="xs" decorative />
-      <span className="font-medium text-[#063f46]">{display.left}</span>
-      <span>{display.separator}</span>
-      <TeamLogo team={display.right} size="xs" decorative />
-      <span className="font-medium text-[#063f46]">{display.right}</span>
-    </p>
   );
 }
 

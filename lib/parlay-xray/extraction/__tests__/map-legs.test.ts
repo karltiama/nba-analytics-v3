@@ -63,4 +63,62 @@ describe('xray vision → ExtractedParlayLeg', () => {
     expect(legs[1]?.resolution).toBe('unresolved');
     expect(resultFromLegs(legs, 'good')).toBe('PARTIAL');
   });
+
+  it('does not keep a truncated integer when the slip text shows a half-point', () => {
+    const truncated = sampleVision({
+      legs: [
+        {
+          player_name: 'Giannis Antetokounmpo',
+          player_name_confidence: 'high',
+          team_abbr: 'MIL',
+          opponent_abbr: 'MIA',
+          matchup_label: 'MIL vs MIA',
+          prop_kind: 'rebounds',
+          side: 'over',
+          line: 8,
+          odds_american: -132,
+          sportsbook: 'FanDuel',
+          game_date: null,
+          field_confidence: 'high',
+          raw_snippet: 'Giannis Over 8.5 Rebounds',
+          player_evidence: 'Giannis Antetokounmpo',
+          market_evidence: 'Rebounds',
+          side_evidence: 'Over',
+          line_evidence: '8.5',
+          odds_evidence: '-132',
+        },
+      ],
+    });
+    const legs = mapVisionOutput(truncated, () => 'leg-1');
+    expect(legs[0]?.line).toEqual({ value: 8.5, status: 'known' });
+  });
+
+  it('does not invent .5 when the decimal is missing from slip text', () => {
+    const rounded = sampleVision({
+      legs: [
+        {
+          player_name: 'Bam Adebayo',
+          player_name_confidence: 'high',
+          team_abbr: 'MIA',
+          opponent_abbr: 'MIL',
+          matchup_label: 'MIA vs MIL',
+          prop_kind: 'rebounds',
+          side: 'over',
+          line: 5,
+          odds_american: -110,
+          sportsbook: 'FanDuel',
+          game_date: null,
+          field_confidence: 'high',
+          raw_snippet: 'Bam Over 5 Rebounds',
+          player_evidence: 'Bam Adebayo',
+          market_evidence: 'Rebounds',
+          side_evidence: 'Over',
+          line_evidence: '5',
+          odds_evidence: '-110',
+        },
+      ],
+    });
+    const legs = mapVisionOutput(rounded, () => 'leg-1');
+    expect(legs[0]?.line).toEqual({ value: 5, status: 'known' });
+  });
 });
