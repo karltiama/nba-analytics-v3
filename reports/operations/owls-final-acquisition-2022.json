@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-09-16T23:33:46.416Z",
+  "provider": "owls_insight",
+  "run_id": "owls-2026-09-16-season-2022",
+  "season": "2022",
+  "owls_season_label": "2022-23",
+  "universe_source": "Owls /history/games season=2022-23 gameType=regular|playin|playoff (analytics.games Final count was 0)",
+  "court_context_final_games": 0,
+  "eligible_games": 1321,
+  "universe": {
+    "regular": 1237,
+    "play_in": 0,
+    "playoff": 84,
+    "earliest": "2022-10-18T00:00:00.000Z",
+    "latest": "2023-06-13T00:00:00.000Z"
+  },
+  "mapped_games": 1321,
+  "mapping_failures": 0,
+  "mapping_ambiguous_rematch": 17,
+  "populated_games": 316,
+  "empty_provider_history_games": 1005,
+  "request_failed_games": 0,
+  "archive_failed_games": 0,
+  "archive_objects": 1935,
+  "games_archive_objects": 1321,
+  "rows": 78911,
+  "unique_player_names": 410,
+  "books": ["draftkings", "betmgm", "caesars"],
+  "markets": ["rebounds", "points", "turnovers", "assists", "steals", "blocks", "threes"],
+  "full_two_way_rows": 78783,
+  "partial_rows": 128,
+  "single_price_rows": 0,
+  "missing_price_rows": 0,
+  "opening_line_rows": 78797,
+  "closing_line_rows": 78911,
+  "opening_over_rows": 78792,
+  "opening_under_rows": 78788,
+  "closing_over_rows": 78908,
+  "closing_under_rows": 78902,
+  "checksum_failures": 0,
+  "checksum_verified": 1935,
+  "missing_archive_units": 0,
+  "coverage": 0.2392127176381529,
+  "earliest_game_date": "2022-10-18",
+  "latest_game_date": "2023-06-13",
+  "requests_attempted": 3271,
+  "requests_successful": 3271,
+  "requests_retried": 0,
+  "status_429": 0,
+  "status_503": 0,
+  "destination_prefix": "raw/source=owls_insight/league=nba/season=2022/entity=historical_player_props/",
+  "prior_player_prop_archive_unchanged": {
+    "2023": { "expected_objects": 1968, "actual_objects": 1968, "unchanged": true },
+    "2024": { "expected_objects": 3467, "actual_objects": 3467, "unchanged": true },
+    "2025": { "expected_objects": 1706, "actual_objects": 1706, "unchanged": true }
+  },
+  "prior_archive_object_counts": {
+    "historical_games": { "2023": 1319, "2024": 1321, "2025": 1322 },
+    "historical_closing_odds": { "2023": 1319, "2024": 1319, "2025": 1318 },
+    "historical_public_betting": { "2023": 1319, "2024": 1319, "2025": 1318 }
+  },
+  "comparison": [
+    {
+      "season": "2022-23",
+      "eligible_games": 1321,
+      "populated_games": 316,
+      "coverage": 0.2392,
+      "rows": 78911,
+      "books": "BetMGM/Caesars/DK",
+      "full_two_way": 78783
+    },
+    {
+      "season": "2023-24",
+      "eligible_games": 1319,
+      "populated_games": 276,
+      "coverage": 0.2092,
+      "rows": 79399,
+      "books": "BetMGM/Caesars/DK",
+      "full_two_way": 79397
+    },
+    {
+      "season": "2024-25",
+      "eligible_games": 1321,
+      "populated_games": 324,
+      "coverage": 0.2453,
+      "rows": 230317,
+      "books": "ESPN BET",
+      "full_two_way": 33662
+    },
+    {
+      "season": "2025-26",
+      "eligible_games": 1322,
+      "populated_games": 82,
+      "coverage": 0.062,
+      "rows": 42677,
+      "books": "ESPN BET/DK",
+      "full_two_way": 5315
+    }
+  ],
+  "snapshot_probes": {
+    "control_game": {
+      "court_context_game_id": "1037995",
+      "date": "2023-12-25",
+      "matchup": "LAL vs BOS",
+      "event_id": "nba:Boston Celtics@Los Angeles Lakers-20231225"
+    },
+    "history_props": {
+      "games_tested": 1,
+      "books": ["fanduel", "pinnacle"],
+      "prop_type": "points",
+      "opening": true,
+      "rows": 0,
+      "http_status": 200,
+      "classification": "empty"
+    },
+    "history_odds": {
+      "games_tested": 1,
+      "rows": 0,
+      "http_status": 200,
+      "books": [],
+      "markets": [],
+      "chronological_observations": false,
+      "classification": "empty"
+    }
+  },
+  "recommendation": "cancel_owls_subscription",
+  "recommendation_reason": "2022-23 player-props were the last high-value advertised dataset and are now archived. Snapshot probes on a known populated 2023 game were empty. Do not launch another crawl."
+}

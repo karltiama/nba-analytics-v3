@@ -9,12 +9,14 @@ import {
   OWLS_CLOSING_ODDS_ARCHIVE_SCHEMA,
   OWLS_ENTITY_CLOSING_ODDS,
   OWLS_ENTITY_GAMES,
+  OWLS_ENTITY_ODDS,
   OWLS_ENTITY_PLAYER_PROPS,
   OWLS_ENTITY_PROP_SNAPSHOTS,
   OWLS_ENTITY_PUBLIC_BETTING,
   OWLS_FIXTURE_SOURCE_PREFIX,
   OWLS_GAMES_ARCHIVE_SCHEMA,
   OWLS_LEAGUE,
+  OWLS_ODDS_ARCHIVE_SCHEMA,
   OWLS_PROTECTED_ENTITIES,
   OWLS_PROTECTED_SOURCES,
   OWLS_PROVIDER,
@@ -84,6 +86,7 @@ export function entityForEndpoint(endpoint: string): string {
   if (endpoint.includes('player-props') || endpoint === 'history_player_props') return OWLS_ENTITY_PLAYER_PROPS;
   if (endpoint.includes('closing-odds') || endpoint === 'history_closing_odds') return OWLS_ENTITY_CLOSING_ODDS;
   if (endpoint.includes('public-betting') || endpoint === 'history_public_betting') return OWLS_ENTITY_PUBLIC_BETTING;
+  if (endpoint.includes('history/odds') || endpoint === 'history_odds') return OWLS_ENTITY_ODDS;
   if (endpoint.includes('history/props') || endpoint === 'history_props') return OWLS_ENTITY_PROP_SNAPSHOTS;
   return OWLS_ENTITY_GAMES;
 }
@@ -93,6 +96,7 @@ export function schemaForEntity(entity: string): string {
   if (entity === OWLS_ENTITY_GAMES) return OWLS_GAMES_ARCHIVE_SCHEMA;
   if (entity === OWLS_ENTITY_CLOSING_ODDS) return OWLS_CLOSING_ODDS_ARCHIVE_SCHEMA;
   if (entity === OWLS_ENTITY_PUBLIC_BETTING) return OWLS_PUBLIC_BETTING_ARCHIVE_SCHEMA;
+  if (entity === OWLS_ENTITY_ODDS) return OWLS_ODDS_ARCHIVE_SCHEMA;
   return OWLS_ARCHIVE_SCHEMA;
 }
 

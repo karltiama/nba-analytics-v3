@@ -26,9 +26,23 @@ function presentCoachmarkIds(): CoachmarkId[] {
 export function GuidanceHost() {
   const pathname = usePathname() || '';
   const previewFlag = useSearchParams().get('preview');
+  const previewMode = shouldSuppressProductPreviewAnalytics(previewFlag);
   const [active, setActive] = useState<CoachmarkId | null>(null);
+  const [previewDismissed, setPreviewDismissed] = useState<CoachmarkId[]>([]);
 
   const refresh = useCallback(() => {
+    if (previewMode) {
+      const next = nextCoachmark({
+        surface: surfaceForPath(pathname),
+        level: 'getting_started',
+        dismissed: previewDismissed,
+        presentIds: presentCoachmarkIds(),
+        replay: true,
+        previewFlag,
+      });
+      setActive(next);
+      return;
+    }
     const state = readOnboardingState();
     if (!state.completed && !state.replay) {
       setActive(null);
@@ -43,7 +57,7 @@ export function GuidanceHost() {
       previewFlag,
     });
     setActive(next);
-  }, [pathname, previewFlag]);
+  }, [pathname, previewFlag, previewMode, previewDismissed]);
 
   useEffect(() => {
     refresh();
@@ -66,9 +80,9 @@ export function GuidanceHost() {
 
   useEffect(() => {
     if (!active) return;
-    if (shouldSuppressProductPreviewAnalytics(previewFlag)) return;
+    if (previewMode) return;
     trackEvent('coachmark_seen', { surface: 'onboarding', coachmark_id: active });
-  }, [active, previewFlag]);
+  }, [active, previewMode]);
 
   if (!active) return null;
 
@@ -76,8 +90,38 @@ export function GuidanceHost() {
     <CoachmarkCallout
       id={active}
       onDismiss={() => {
-        dismissCoachmark(active);
-        setActive(null);
+        if (previewMode) {
+          const dismissed = previewDismissed.includes(active)
+            ? previewDismissed
+            : [...previewDismissed, active];
+          setPreviewDismissed(dismissed);
+          setActive(
+            nextCoachmark({
+              surface: surfaceForPath(pathname),
+              level: 'getting_started',
+              dismissed,
+              presentIds: presentCoachmarkIds(),
+              replay: true,
+              previewFlag,
+            })
+          );
+          return;
+        }
+        const after = dismissCoachmark(active);
+        if (!after.completed && !after.replay) {
+          setActive(null);
+          return;
+        }
+        setActive(
+          nextCoachmark({
+            surface: surfaceForPath(pathname),
+            level: after.replay ? 'getting_started' : after.guidanceLevel,
+            dismissed: after.dismissedCoachmarks,
+            presentIds: presentCoachmarkIds(),
+            replay: after.replay,
+            previewFlag,
+          })
+        );
       }}
     />
   );

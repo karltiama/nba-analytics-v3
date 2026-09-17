@@ -95,9 +95,9 @@ export function ProductPreviewHub() {
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
           <h2 className="text-base font-semibold">Onboarding guidance QA</h2>
           <p className="text-sm text-[#4a6366] mt-1">
-            Replay Help → How Court Context works → Take a quick tour, then open a preview card.
-            Coachmarks can appear on these fixture routes. Preview Analyze / Add does not complete
-            live checklist items or change production onboarding answers.
+            Open a preview card to see guided coachmarks on these fixture routes. Dismissals stay
+            on the preview session. Preview Analyze / Add does not complete live checklist items,
+            replay production Help, or change onboarding answers.
           </p>
         </section>
       </div>

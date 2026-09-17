@@ -1,0 +1,329 @@
+{
+  "generated_at": "2026-09-16T22:32:13.518Z",
+  "provider": "owls_insight",
+  "audit_kind": "read_only_inventory",
+  "owls_api_calls_this_audit": 0,
+  "bucket": "nba-analytics-data-260029269390",
+  "s3_prefix": "raw/source=owls_insight/",
+  "eligible_final_games": {
+    "2023": 1319,
+    "2024": 1321,
+    "2025": 1322,
+    "source": "analytics.games status=Final frozen 2026-09-14 / confirmed 2026-09-16"
+  },
+  "datasets": {
+    "historical_player_props": {
+      "endpoint": "/api/v1/history/player-props",
+      "possessed": true,
+      "seasons": ["2023", "2024", "2025"],
+      "missing_seasons": ["2022"],
+      "s3_objects": { "2023": 1968, "2024": 3467, "2025": 1706, "total": 7141 },
+      "rows": { "2023": 79399, "2024": 230317, "2025": 42677, "total": 352393 },
+      "populated_games": { "2023": 276, "2024": 324, "2025": 82, "total": 682 },
+      "empty_provider_history_games": { "2023": 1043, "2024": 995, "2025": 1237, "total": 3275 },
+      "mapping_failed_games": { "2023": 0, "2024": 2, "2025": 3 },
+      "coverage_pct_final_games": { "2023": 0.2092, "2024": 0.2453, "2025": 0.062 },
+      "books": {
+        "2023": ["betmgm", "caesars", "draftkings"],
+        "2024": ["espnbet"],
+        "2025": ["espnbet", "draftkings"]
+      },
+      "unique_player_names_populated_scan": 515,
+      "unique_provider_player_ids": 0,
+      "earliest_game_date": "2023-10-24",
+      "latest_game_date": "2026-04-28",
+      "snapshot_at_present_on_scanned_rows": 0,
+      "opening_nested_object_present": true,
+      "closing_nested_object_present": true,
+      "intermediate_snapshots": false,
+      "open_close_reconstructable": "FULL_TWO_WAY rows only; 2023 almost all; 2024-25 minority",
+      "empty_responses_preserved": true,
+      "cannot_distinguish_no_market_from_no_record": true,
+      "usable_today": "research subset only"
+    },
+    "historical_games": {
+      "endpoint": "/api/v1/history/games",
+      "possessed": true,
+      "s3_objects": { "2023": 1319, "2024": 1321, "2025": 1322, "total": 3962 },
+      "sample_fields": [
+        "eventId",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ]
+    },
+    "historical_closing_odds": {
+      "endpoint": "/api/v1/history/closing-odds",
+      "possessed": true,
+      "s3_objects": { "2023": 1319, "2024": 1319, "2025": 1318, "total": 3956 },
+      "rows": { "2023": 2638, "2024": 2638, "2025": 2517, "total": 7793 },
+      "populated_games": { "2023": 1319, "2024": 1319, "2025": 1268 },
+      "coverage_pct_final_games": { "2023": 1.0, "2024": 0.9985, "2025": 0.9592 },
+      "books": ["betmgm", "consensus"],
+      "sources_verbatim": ["archive-1", "archive-2"],
+      "markets": ["moneyline", "spread", "total"],
+      "close_timestamp": "unavailable; gameDate is midnight UTC",
+      "line_movement_reconstructable": false,
+      "empty_responses_preserved": true
+    },
+    "historical_public_betting": {
+      "endpoint": "/api/v1/history/public-betting",
+      "possessed": true,
+      "s3_objects": { "2023": 1319, "2024": 1319, "2025": 1318, "total": 3956 },
+      "fields_present": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread.homePct",
+        "spread.awayPct",
+        "total.overPct",
+        "total.underPct"
+      ],
+      "fields_absent": ["moneyline", "moneyPct", "moneyShare", "book", "capturedAt"],
+      "money_share_established_by_schema": false,
+      "capture_timing": "TIMING_UNKNOWN",
+      "nonzero_spread_pct": { "2023": 2, "2024": 1086, "2025": 1084 },
+      "all_zero_snapshots": { "2023": 1317, "2024": 160, "2025": 89 }
+    },
+    "historical_prop_snapshots": {
+      "endpoint": "/api/v1/history/props",
+      "possessed": "probe_only",
+      "s3_objects": 14,
+      "games_probed": 4,
+      "classification": "SNAPSHOT_DATA_NOT_FOUND",
+      "books_tried": ["draftkings", "betmgm", "caesars", "espnbet"],
+      "espnbet_invalid_on_this_endpoint": true,
+      "books_not_tried": ["fanduel", "pinnacle", "bet365"],
+      "filter": "opening=true propType=points",
+      "rows_found": 0,
+      "includes_positive_control_populated_player_props_game": true
+    },
+    "historical_coverage": {
+      "endpoint": "/api/v1/history/coverage",
+      "possessed": true,
+      "s3_objects": 1,
+      "nba_games_range": { "earliest": "2016-10-25", "latest": "2026-07-20" },
+      "nba_player_props_range": { "earliest": "2022-10-18", "latest": "2026-04-28" },
+      "notes": "Coverage within a range is not guaranteed to be uniform."
+    },
+    "historical_odds": {
+      "endpoint": "/api/v1/history/odds",
+      "possessed": false,
+      "s3_objects": 0
+    },
+    "historical_stats": {
+      "endpoint": "/api/v1/history/stats",
+      "possessed": false,
+      "s3_objects": 0
+    },
+    "owls_plays": { "possessed": false, "s3_objects": 0 },
+    "owls_starters": { "possessed": false, "s3_objects": 0 },
+    "owls_advanced_stats": { "possessed": false, "s3_objects": 0 },
+    "owls_season_averages": { "possessed": false, "s3_objects": 0 },
+    "bdl_plays_2025_not_owls": {
+      "possessed": true,
+      "source": "balldontlie",
+      "games": 1322,
+      "events": 642354,
+      "substitutions": 82649,
+      "s3_objects": 1334,
+      "s3_bytes": 598114275,
+      "postgres_table": "analytics.game_flow",
+      "postgres_source": "bdl_plays_2025_canonical",
+      "rotation_available_games": 1284,
+      "rotation_failure_games": 38
+    },
+    "bdl_starters_2025_not_owls": {
+      "postgres_table": "analytics.game_starters",
+      "rows": 13200,
+      "games": 1320,
+      "teams": 30,
+      "players": 447
+    },
+    "bdl_advanced_not_owls": {
+      "postgres_table": "analytics.player_game_advanced",
+      "rows_by_season": { "2023": 34843, "2024": 35103, "2025": 34810 }
+    }
+  },
+  "storage_locations": {
+    "s3_bucket": "nba-analytics-data-260029269390",
+    "owls_objects": 19030,
+    "owls_bytes": 35864516,
+    "fixture_prefix_objects": 0,
+    "local_checkpoints": "data/owls-insight/runs/",
+    "local_probe_dumps": "tmp/owls-probe/",
+    "fixtures": "fixtures/owls-insight/",
+    "prior_coverage_reports": "reports/data-infrastructure/",
+    "supabase_owls_tables": [],
+    "supabase_owls_provider_ids": 0
+  },
+  "coverage": {
+    "player_props": {
+      "2022-23": "not_captured",
+      "2023-24": "sparse",
+      "2024-25": "sparse",
+      "2025-26": "sparse",
+      "quality_derivation": "populated Final-game share 20.9% / 24.5% / 6.2%"
+    },
+    "game_odds": {
+      "2022-23": "not_captured",
+      "2023-24": "complete",
+      "2024-25": "near-complete",
+      "2025-26": "near-complete",
+      "quality_derivation": "populated share 100% / 99.8% / 95.9%; two books; no movement"
+    },
+    "public_betting": {
+      "2022-23": "not_captured",
+      "2023-24": "sparse",
+      "2024-25": "partial",
+      "2025-26": "partial",
+      "quality_derivation": "objects near-complete; usable non-zero spread % is 0.2% / 82.3% / 85.5%"
+    },
+    "advanced_stats": { "owls": "not_captured", "bdl": "2023-2025 player-game" },
+    "season_averages": { "owls": "not_captured", "bdl": "2023-2025" },
+    "starters": { "owls": "not_captured", "bdl": "2025 only" },
+    "plays": { "owls": "not_captured", "bdl_2025": "complete_archive_still_present" },
+    "substitutions": { "owls": "not_captured", "bdl_2025": "near-complete_with_cleanup" }
+  },
+  "raw_preservation": {
+    "player_props": {
+      "raw_provider_response": true,
+      "normalized_persisted": false,
+      "manifest_checkpoints": true,
+      "acquisition_timestamp": true,
+      "endpoint_identification": true,
+      "request_parameters": true,
+      "provider_ids": "eventId only; player names only",
+      "checksums": true,
+      "empty_response_logs": true
+    },
+    "closing_odds": {
+      "raw_provider_response": true,
+      "normalized_persisted": false,
+      "checksums": true,
+      "empty_response_logs": true
+    },
+    "public_betting": {
+      "raw_provider_response": true,
+      "normalized_persisted": false,
+      "checksums": true,
+      "empty_response_logs": true
+    },
+    "prop_snapshots": {
+      "raw_provider_response": true,
+      "rows": 0,
+      "normalized_persisted": false
+    },
+    "normalized_without_raw": []
+  },
+  "gaps": {
+    "already_safely_captured": [
+      "2023-2025 history/player-props including EMPTY_PROVIDER_HISTORY",
+      "2023-2025 history/games",
+      "2023-2025 history/closing-odds",
+      "2023-2025 history/public-betting",
+      "live history/coverage payload"
+    ],
+    "captured_but_incomplete": [
+      {
+        "dataset": "player_props",
+        "missing_seasons": ["2022-23 not in this archive; 2023-25 sparse"],
+        "missing_games": "3275 EMPTY_PROVIDER_HISTORY Final games",
+        "missing_fields": ["provider player id", "snapshot timestamp", "intermediate quotes"],
+        "sparse_books": "FanDuel absent; 2024 ESPN BET only",
+        "sparse_markets": "2023 no PRA/PA/PR/RA",
+        "raw_preservation_problems": []
+      },
+      {
+        "dataset": "closing_odds",
+        "missing_games": "2025 May-June playoffs EMPTY; 5 mapping failures across 2024-25",
+        "sparse_books": "betmgm + consensus only",
+        "missing_timestamps": true
+      },
+      {
+        "dataset": "public_betting",
+        "missing_fields": ["money share", "moneyline", "capture timestamp", "book"],
+        "sparse_usable_percentages": "2023 almost all provider zeros"
+      }
+    ],
+    "not_captured": [
+      "2022-23 history/player-props",
+      "/history/odds",
+      "/history/stats",
+      "owls plays",
+      "owls substitutions",
+      "owls starters",
+      "owls advanced stats",
+      "owls season averages",
+      "FanDuel/Pinnacle /history/props snapshots"
+    ]
+  },
+  "replacement_difficulty": {
+    "HIGH": [
+      "historical player prop open/close quotes",
+      "historical sportsbook closing game odds 2023-25",
+      "historical public betting percents"
+    ],
+    "MEDIUM": [
+      "unproven /history/props snapshot tape",
+      "unproven /history/odds snapshot tape"
+    ],
+    "LOW": [
+      "schedules",
+      "scores",
+      "box scores",
+      "season averages",
+      "2025 plays/starters/advanced already on BDL"
+    ],
+    "forward_stack_cannot_replace": {
+      "analytics.player_prop_history_window": "2026-03-09 to 2026-03-17, 38 games",
+      "analytics.game_odds_history_window": "2026-01-25 to 2026-05-06"
+    }
+  },
+  "wowy": {
+    "from_owls": "not_possible",
+    "from_bdl_2025_plays": "possible_with_cleanup",
+    "blockers_owls": [
+      "no play-by-play",
+      "no substitutions",
+      "no period/clock events",
+      "no starter list"
+    ],
+    "bdl_rotation_available_pct": 0.9713
+  },
+  "projection_vs_market_vs_actual": {
+    "2023-24": "yes_on_276_populated_games_with_name_mapping_and_selection_bias",
+    "2024-25": "weak_espnbet_partial_quotes",
+    "2025-26": "too_sparse",
+    "do_not_claim_season_wide_validation": true
+  },
+  "cancellation_priorities": {
+    "P0": [
+      "Backfill 2022-23 /history/player-props with the existing envelope pipeline. Owls coverage earliest=2022-10-18; zero season=2022 objects stored."
+    ],
+    "P1": [
+      "Capped /history/props existence check on one populated 2023 game for FanDuel and Pinnacle only. Stop if empty. Do not season-crawl.",
+      "Capped /history/odds existence check on the same game. Treat as likely empty (sample oddsSnapshots=0)."
+    ],
+    "P2": [
+      "Re-fetch 2023-26 EMPTY_PROVIDER_HISTORY player-prop games",
+      "Re-fetch 2025 May-June closing odds",
+      "Owls plays/starters/advanced/stats",
+      "Public-betting re-pulls",
+      "Keep subscription because 2023-26 prop coverage is imperfect"
+    ]
+  },
+  "keep_subscription": false,
+  "another_acquisition_pass_before_cancel": true,
+  "another_acquisition_pass_reason": "Only the unacquired 2022-23 player-prop closing tape. Do not keep the subscription for sparse 2023-26 gaps already archived as empty provider history."
+}

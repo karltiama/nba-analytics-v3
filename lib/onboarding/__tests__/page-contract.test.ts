@@ -74,6 +74,12 @@ describe('E9 first-run page contract', () => {
     );
     expect(read('lib/onboarding/storage.ts')).toMatch(/dismissedCoachmarks: \[\]/);
     expect(read('lib/onboarding/storage.ts')).toMatch(/primaryIntent/);
+    expect(read('lib/onboarding/storage.ts')).toMatch(/shouldSuppressProductPreviewAnalytics/);
     expect(read('lib/onboarding/progress.ts')).toMatch(/shouldSuppressProductPreviewAnalytics/);
+    expect(read('components/onboarding/ProductTourDialog.tsx')).toMatch(
+      /shouldSuppressProductPreviewAnalytics/
+    );
+    expect(read('components/onboarding/GuidanceHost.tsx')).toMatch(/previewDismissed/);
+    expect(read('components/onboarding/GuidanceHost.tsx')).toMatch(/level: 'getting_started'/);
   });
 });

@@ -56,6 +56,9 @@ describe('Owls archive', () => {
     expect(entityForEndpoint('history_closing_odds')).toBe(OWLS_ENTITY_CLOSING_ODDS);
     expect(entityForEndpoint('/api/v1/history/player-props')).not.toBe(OWLS_ENTITY_CLOSING_ODDS);
     expect(entityForEndpoint('/api/v1/history/props')).not.toBe(OWLS_ENTITY_CLOSING_ODDS);
+    expect(entityForEndpoint('/api/v1/history/odds')).toBe('historical_odds');
+    expect(entityForEndpoint('history_odds')).toBe('historical_odds');
+    expect(entityForEndpoint('/api/v1/history/props')).not.toBe('historical_odds');
     const key = buildOwlsArchiveKey({
       season: '2023',
       entity: OWLS_ENTITY_CLOSING_ODDS,

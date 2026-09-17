@@ -1,0 +1,62 @@
+{
+  "season": "2022",
+  "eligible_games": 1321,
+  "mapped_games": 1321,
+  "mapping_failures": 0,
+  "populated_games": 316,
+  "empty_provider_history_games": 1005,
+  "request_failed_games": 0,
+  "archive_failed_games": 0,
+  "archive_objects": 1935,
+  "games_archive_objects": 1321,
+  "rows": 78911,
+  "unique_player_names": 410,
+  "books": [
+    "draftkings",
+    "betmgm",
+    "caesars"
+  ],
+  "markets": [
+    "rebounds",
+    "points",
+    "turnovers",
+    "assists",
+    "steals",
+    "blocks",
+    "threes"
+  ],
+  "full_two_way_rows": 78783,
+  "partial_rows": 128,
+  "single_price_rows": 0,
+  "missing_price_rows": 0,
+  "opening_line_rows": 78797,
+  "closing_line_rows": 78911,
+  "opening_over_rows": 78792,
+  "opening_under_rows": 78788,
+  "closing_over_rows": 78908,
+  "closing_under_rows": 78902,
+  "checksum_failures": 0,
+  "checksum_verified": 1935,
+  "missing_archive_units": 1321,
+  "coverage": 0.2392127176381529,
+  "earliest_game_date": "2022-10-18",
+  "latest_game_date": "2023-06-13",
+  "prior_archive_unchanged": {
+    "2023": {
+      "expected_objects": 1968,
+      "actual_objects": 1968,
+      "unchanged": true
+    },
+    "2024": {
+      "expected_objects": 3467,
+      "actual_objects": 3467,
+      "unchanged": true
+    },
+    "2025": {
+      "expected_objects": 1706,
+      "actual_objects": 1706,
+      "unchanged": true
+    }
+  },
+  "universe_source": "Owls /history/games season=2022-23 gameType=regular|playin|playoff"
+}

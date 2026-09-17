@@ -2,7 +2,9 @@
 
 ## Executive Result
 
-The existing E9 onboarding stack was audited, not rebuilt. Gaps closed in this recert pass were preview-harness isolation (no auto-open, no live checklist/analytics pollution) and readiness-honest XRay guidance (Upload → Review → Confirm → Workspace only on certified replay preview). New users still get a short, skippable, destination-changing flow. Existing accounts are not force-blocked. Public extraction stays disabled.
+Existing E9 onboarding was audited, not rebuilt. Public XRay honesty from the later product-QA pass is preserved. The only recert gaps closed were preview-harness isolation: guided coachmarks can appear on certified preview routes without live onboarding completion, preview dismiss/tour/analytics do not write production onboarding state, and sequential dismiss computes the next mark in-session.
+
+New users still get a short, skippable, destination-changing flow. Existing accounts are not force-blocked. Public extraction stays disabled.
 
 **Verdict: GREEN**
 
@@ -26,13 +28,15 @@ Inventory on this branch before recert edits:
 | Checklist | **IMPLEMENTED** | Four generic actions. No Try Parlay XRay. Dismissible. Does not gate. |
 | Tour / help replay | **IMPLEMENTED** | Account menu **How Court Context works**. Replay clears dismissed coachmarks only. |
 | Readiness checks | **IMPLEMENTED** | `evaluateCapability(..., XRAY_EXTRACTION)` + `SCREENSHOT_EXTRACTION_AVAILABLE`. |
-| Analytics | **IMPLEMENTED** | Category-only events. |
+| Analytics | **IMPLEMENTED** | Category-only events. Preview suppressed. |
 | Tests | **IMPLEMENTED** | Contract + page-contract suites. |
 | Schema assumptions | **IMPLEMENTED** | Maps onto existing `find_edges` / `track_picks` / `learn` and `novice` / `intermediate` / `advanced`. |
 | Sportsbook question | **UNNECESSARY** | Not asked. `SPORTSBOOK_OPTIONS` remains for Profile only. |
-| Preview harness integration | **PARTIAL → IMPLEMENTED** | Recert: no auto-open on `/admin` or `?preview=`; checklist/analytics no-op; hub QA copy; `xray-flow` on replay only. |
-| Public XRay coachmarks | **CONFLICTING → IMPLEMENTED** | Recert: public XRay sequence is empty; replay preview may show Upload → Review → Confirm → Workspace. |
+| Preview harness integration | **PARTIAL → IMPLEMENTED** | Recert: preview shows guided coachmarks without live `completed`; dismiss/tour stay session-local; no live checklist/analytics. |
+| Public XRay coachmarks | **IMPLEMENTED** | Public sequence empty. Replay preview may show Upload → Review → Confirm → Workspace. Public page no longer shows a dropzone. |
 | Permanent Workspace nav | **UNNECESSARY** | Not added. Contextual `Parlay · n` from E8.5 only. |
+
+No second onboarding system was created.
 
 ## Reused Infrastructure
 
@@ -44,8 +48,6 @@ Inventory on this branch before recert edits:
 - `trackEvent` / Umami category events
 - Profile `SPORTSBOOK_OPTIONS` list (not an onboarding question)
 
-No second onboarding system.
-
 ## Onboarding Eligibility
 
 | Eligibility | Rule | Auto-open |
@@ -55,7 +57,7 @@ No second onboarding system.
 | `existing_user_prompt` | Older account, no completion | No. Dismissible dashboard prompt only |
 | `completed` | Profile timestamp or local complete | Never |
 
-Logged-in Founding Pro (`onboardingCompletedAt=2026-04-03`) opened `/betting` with full dashboard access and no modal.
+Logged-in Founding Pro (`KrazyKarlHD`, `onboardingCompletedAt=2026-04-03`) opened `/betting` with full dashboard access and no modal.
 
 ## Welcome
 
@@ -107,22 +109,22 @@ Does not change entitlements, analysis, model output, or basketball truth.
 - Product map: “Screenshot reading is not available yet.”
 - Workspace empty copy: “Screenshot import is not available yet.”
 - Checklist omits XRay.
-- Public XRay coachmark sequence is empty.
+- Public `/parlay-xray` shows the honesty banner, hides the dropzone, and does not auto-open `xray-flow`.
 - Certified replay preview (`?preview=replay`) may show `xray-flow` for internal QA only. Confirm stays disabled until OCR correction. Copy states this preview does not enable public screenshot reading.
 
 ## Props Explorer Guidance
 
-Coachmarks: Find an offer → Compare books (**3-Hour Pre-Tip → Decision Close**) → Add to Parlay. Browser-verified on Props Preview after tour replay. Bottom/right callout, not a spotlight overlay. Does not explain every control.
+Coachmarks: Find an offer → Compare books (**3-Hour Pre-Tip → Decision Close**) → Add to Parlay. Browser-verified on Props Preview (`?preview=historical`) without requiring live onboarding completion. Bottom/right callout, not a spotlight overlay. Does not explain every control.
 
 ## XRay Guidance
 
-Public: **BLOCKED_BY_READINESS** — no automatic Results stage, no “XRay owns analysis.”
+Public: **BLOCKED_BY_READINESS** — no dropzone, no automatic Results stage, no “XRay owns analysis.”
 
-Replay preview: Upload → Review → Confirm → Workspace. Browser-verified. Confirm remains the trust boundary. Analysis is described as a Workspace step.
+Replay preview: Upload → Review → Confirm → Workspace. Browser-verified after fixture hydrate. Confirm remains the trust boundary. Analysis is described as a Workspace step.
 
 ## Workspace Guidance
 
-`workspace-intro` (“This is your Parlay Workspace”) then `workspace-analyze` (“Analyze with Court Context”). Analysis does not auto-run. Source provenance stays secondary. Browser-verified on `/parlay-workspace?preview=historical`. Live `/parlay-workspace` stayed empty after preview Analyze (no store contamination).
+`workspace-intro` (“This is your Parlay Workspace”) then `workspace-analyze` (“Analyze with Court Context”). Analysis does not auto-run. Source provenance stays secondary. Browser-verified on `/parlay-workspace?preview=historical`. Live dashboard header never showed `Parlay · n` from the 4-leg fixture.
 
 ## First Analysis Guidance
 
@@ -141,21 +143,23 @@ Account menu **How Court Context works** (guest and signed-in). Concise product 
 - Players & Games — Research deeper basketball context.
 - Parlay XRay — Import a slip you have already built. Screenshot reading is not available yet.
 
-**Take a quick tour** sets `replay: true` and clears dismissed coachmarks. Does **not** reset `primaryIntent`, `guidanceLevel`, or `onboardingCompleted`. No extra primary nav item.
+**Take a quick tour** sets `replay: true` and clears dismissed coachmarks. Does **not** reset `primaryIntent`, `guidanceLevel`, or `onboardingCompleted`. Preview routes no-op that write. No extra primary nav item.
 
 ## Preview Harness Integration
 
-`/admin/product-preview` includes **Onboarding guidance QA**. Internal testers replay Help → tour, then open Props / XRay / Workspace preview cards.
+`/admin/product-preview` includes **Onboarding guidance QA**. Internal testers open Props / XRay / Workspace preview cards; guided coachmarks appear without a live completed profile.
 
 Isolation:
 
 - `shouldAutoOpenOnboarding` is false on `/admin/*` and `?preview=`
 - `completeChecklistItem` no-ops when `shouldSuppressProductPreviewAnalytics`
-- `coachmark_seen` is not sent on preview
+- `requestTourReplay` no-ops on preview routes
+- `coachmark_seen` / `tour_replayed` are not sent on preview
+- Preview coachmark dismissals stay in `GuidanceHost` session state
 - Props hub href includes `&preview=historical`
 - Live header `Parlay · n` reads the live store only
 
-Browser: preview Analyze did not add `compare_opened`; live Workspace stayed empty; header never showed `Parlay · n` from the 4-leg fixture.
+Browser: preview Analyze did not add `Parlay · n` on `/betting`; public XRay stayed non-uploadable; replay preview still hydrates the certified fixture.
 
 ## Persistence
 
@@ -172,7 +176,7 @@ Local `completed: false` can coexist with a profile timestamp (this Founding Pro
 
 ## Existing User Behavior
 
-**NOT_FORCE_BLOCKED.** Session `KrazyKarlHD` / `onboardingCompletedAt=2026-04-03` used Dashboard, Props, Workspace, and XRay without a forced modal. Optional Help map and dismissible existing-user prompt remain available. `/betting?onboard=1` does not hijack completed or existing-prompt users.
+**NOT_FORCE_BLOCKED.** Session `KrazyKarlHD` used Dashboard, Props Preview, Workspace Preview, and XRay without a forced modal. Optional Help map remains in the account menu. `/betting?onboard=1` does not hijack completed or existing-prompt users.
 
 ## Redirect Safety
 
@@ -186,7 +190,7 @@ Local `completed: false` can coexist with a profile timestamp (this Founding Pro
 | Logout/login | Profile `onboarding_completed_at` persists |
 | Preview routes | Auto-open suppressed |
 
-No redirect loop observed on `/betting`, preview Workspace, preview XRay, or live Workspace.
+No redirect loop observed on `/betting`, preview Workspace, preview XRay, or public XRay.
 
 ## Dashboard First Run
 
@@ -198,8 +202,7 @@ Emulated **390px**:
 
 - Welcome/questions/Skip: code + tests (bottom sheet, 44px targets). This signed-in account is already completed, so the modal did not open (correct).
 - Coachmarks: bottom-sheet readable on Props and XRay preview.
-- Checklist: readable on dashboard; Skip/dismiss 44px.
-- Replayable Help: account menu → How Court Context works.
+- Replayable Help: account menu → How Court Context works (desktop verified; same dialog is a bottom sheet on small screens).
 - Next.js issues badge can overlap **Got it** in local dev; that overlay is not production chrome.
 - Coachmark sheet can sit over the lower filter row on Props; it does not use a spotlight that traps the target.
 
@@ -207,7 +210,7 @@ Emulated **390px**:
 
 - Modal: compact 28rem Court Context card (not a marketing deck).
 - Coachmarks: bottom-right, did not cover Analyze with Court Context.
-- Checklist: optional “3 of 4 done” card; does not dominate the slate.
+- Checklist: optional card; does not dominate the slate for this completed account (not shown).
 - Help: unobtrusive account-menu item.
 
 ## Accessibility
@@ -224,18 +227,18 @@ Events: `onboarding_started`, `onboarding_skipped`, `onboarding_completed`, `coa
 
 Properties: `surface`, `primary_intent` category, `guidance_level` category, generic `coachmark_id` / `item_id`. No player, line, odds, parlay contents, or analysis text.
 
-Preview interactions do not emit `coachmark_seen` or `checklist_item_completed`.
+Preview interactions do not emit `coachmark_seen`, `checklist_item_completed`, or `tour_replayed`.
 
 ## Tests
 
 | Suite | PASSED | FAILED | EXCLUDED | WHY |
 | --- | --- | --- | --- | --- |
-| `lib/onboarding` | 19 | 0 | 0 | Contract, page contract, preview isolation |
+| `lib/onboarding` | 20 | 0 | 0 | Contract, page contract, preview isolation |
 | `lib/parlay/__tests__/product-preview-harness.test.ts` | 8 | 0 | 0 | Hub QA copy, isolation, header |
-| `lib/entitlements` | 43 | 0 | 0 | Unchanged matrix; XRay kill switch |
-| `lib/auth` + workspace/XRay page-contract + middleware | 47 | 0 | 0 | Auth/account + UI contracts |
-| `lib/parlay-xray` postgres persistence (prior full run) | — | — | 16 | Docker/Postgres not running |
-| Prior combined E9 recert run | **437** | 0 (1 suite throw in beforeAll) | **16** | `postgres-persistence.test.ts` needs Docker |
+| Workspace + XRay page-contract | 8 | 0 | 0 | UI contracts unchanged |
+| `lib/entitlements` + `lib/auth` + middleware + betting shell/dashboard | 84 | 0 | 0 | Unchanged matrix; auth fail-closed |
+| Combined targeted recert (onboarding + entitlements + auth + preview + parlay contracts) | **148** | 0 | 0 | First post-edit run |
+| `lib/parlay-xray/extraction/__tests__/postgres-persistence.test.ts` | 0 | 0 | **16** | Docker daemon not running; suite throws in `beforeAll` |
 
 ## Regression
 
@@ -243,6 +246,7 @@ Preview interactions do not emit `coachmark_seen` or `checklist_item_completed`.
 | --- | --- |
 | Onboarding tests | PASSED |
 | Auth/account tests | PASSED |
+| Dashboard / betting-shell tests | PASSED |
 | Entitlement tests | PASSED |
 | Admin preview harness tests | PASSED |
 | Parlay workspace page contract | PASSED |
@@ -264,27 +268,20 @@ No matrix edits. Onboarding only **reads** XRay readiness. No answer unlocks Pro
 - PREVIEW_FIXTURE_ISOLATION: CERTIFIED
 - CONTEXTUAL_WORKSPACE_HEADER_ACCESS: CERTIFIED
 - PERMANENT_WORKSPACE_NAV: NOT_ADDED
-- Preview Analyze did not write the live selection store
+- Preview Analyze did not write a `Parlay · n` header on `/betting`
 
 ## Files Changed
 
 Recert / certify (this step):
 
-- `lib/onboarding/contract.ts` — preview auto-open block; `xray-flow`; `coachmarksForSurface(..., previewFlag)`
-- `lib/onboarding/copy.ts` — analyze dest + `xray-flow` copy
-- `lib/onboarding/progress.ts` — preview checklist no-op
+- `components/onboarding/GuidanceHost.tsx` — preview-session coachmarks; synchronous next-mark on dismiss
+- `lib/onboarding/storage.ts` — `requestTourReplay` no-op on preview flags
+- `components/onboarding/ProductTourDialog.tsx` — suppress `tour_replayed` on preview
+- `components/admin/product-preview/ProductPreviewHub.tsx` — Onboarding guidance QA copy
 - `lib/onboarding/__tests__/contract.test.ts`, `page-contract.test.ts`
-- `components/betting/OnboardingGate.tsx` — pass `preview` search param
-- `components/betting/OnboardingModal.tsx` — `motion-reduce`
-- `components/onboarding/GuidanceHost.tsx` — previewFlag; skip preview analytics
-- `components/betting/BettingAppShell.tsx` — GuidanceHost beside gate
-- `components/parlay-xray/ParlayXrayView.tsx` — `data-coachmark="xray-flow"`
-- `components/admin/product-preview/ProductPreviewHub.tsx` — Onboarding guidance QA
-- `lib/parlay/preview-fixture.ts` — Props href `&preview=historical`
-- `lib/parlay/__tests__/product-preview-harness.test.ts`
 - This report + `notes/learning-log/2026-09-16/e9-first-run-onboarding-certify.mdx`
 
-Existing E9 surfaces reused (not rebuilt): `OnboardingModal`, `storage.ts`, `GettingStartedChecklist`, `ProductTourDialog`, `CoachmarkCallout`, dashboard checklist/prompt, Props/Workspace `data-coachmark` hooks, `POST /api/user/onboarding`.
+Existing E9 surfaces reused (not rebuilt): `OnboardingModal`, `OnboardingGate`, `GettingStartedChecklist`, `CoachmarkCallout`, dashboard checklist/prompt, Props/Workspace `data-coachmark` hooks, `POST /api/user/onboarding`, `lib/onboarding/contract.ts`, `lib/onboarding/copy.ts`, `lib/onboarding/progress.ts`.
 
 ## Schema Changes
 
@@ -294,13 +291,13 @@ Existing E9 surfaces reused (not rebuilt): `OnboardingModal`, `storage.ts`, `Get
 
 - Guest/new-user modal was unit-tested; this browser session was an already-completed existing account (correctly not blocked).
 - Local `cc_onboarding_v2.completed` can be false while `profiles.onboarding_completed_at` is set. Eligibility uses the profile timestamp.
-- Landing CTA still says “Start Winning Now” (out of scope).
+- Replay preview still flashes the public “not available” shell for a moment before the certified fixture hydrates.
 - Public XRay coachmarks remain blocked until extraction is intentionally enabled.
 - Mobile coachmark sheet can overlap lower filters; local Next.js issues badge can cover Got it in development.
 
 ## Recommended Next Step
 
-**PRE_BDL_PRODUCT_QA** — walk the certified Props → Workspace → historical analysis loop (and preview hub) as a product QA pass before any BDL/live-data work. Landing conversion polish remains optional and must not enable checkout.
+**LANDING_CONVERSION_POLISH** — first-run onboarding is certified. Pre-BDL product QA already landed on this branch. Remaining work is optional landing/sample-card polish, not extraction, checkout, or modeling.
 
 ## Verification Checklist
 
@@ -308,7 +305,7 @@ Existing E9 surfaces reused (not rebuilt): `OnboardingModal`, `storage.ts`, `Get
 2. Existing signed-in account: product usable; no forced modal.
 3. Analyze a parlay lands on Workspace; Help map says screenshot reading is not available.
 4. Guided/replay Props shows Find an offer / Compare / Add to Parlay; 3-Hour Pre-Tip → Decision Close preserved.
-5. Replay Help → tour, then `/admin/product-preview` cards: coachmarks appear; live checklist and `Parlay · n` do not change from preview Analyze.
+5. `/admin/product-preview` cards show coachmarks without completing live checklist or changing `Parlay · n`.
 6. Checklist has no Try Parlay XRay; dismiss does not lock features.
 7. `$10`, checkout disabled, public extraction disabled remain true.
 

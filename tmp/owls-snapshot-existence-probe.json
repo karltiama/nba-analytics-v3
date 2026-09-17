@@ -1,0 +1,102 @@
+{
+  "run_id": "owls-2026-09-16-snapshot-existence",
+  "control": {
+    "cc": "1037995",
+    "season": "2023",
+    "date": "2023-12-25",
+    "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+    "label": "2023-12-25 LAL vs BOS"
+  },
+  "history_props": {
+    "games_tested": 1,
+    "books": [
+      "fanduel",
+      "pinnacle"
+    ],
+    "rows": 0,
+    "by_book": [
+      {
+        "book": "fanduel",
+        "rows": 0,
+        "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=fanduel__prop=points__opening=1/page=0001.json.gz",
+        "status": 200,
+        "schema": {
+          "topKeys": [
+            "success",
+            "data"
+          ],
+          "dataIsArray": false,
+          "nestedKeys": [
+            "eventId",
+            "opening",
+            "timeRange",
+            "snapshots",
+            "count",
+            "limit",
+            "offset"
+          ],
+          "pagination": null,
+          "rowCountExtracted": 0,
+          "firstRowKeys": [],
+          "firstRow": null
+        }
+      },
+      {
+        "book": "pinnacle",
+        "rows": 0,
+        "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=pinnacle__prop=points__opening=1/page=0001.json.gz",
+        "status": 200,
+        "schema": {
+          "topKeys": [
+            "success",
+            "data"
+          ],
+          "dataIsArray": false,
+          "nestedKeys": [
+            "eventId",
+            "opening",
+            "timeRange",
+            "snapshots",
+            "count",
+            "limit",
+            "offset"
+          ],
+          "pagination": null,
+          "rowCountExtracted": 0,
+          "firstRowKeys": [],
+          "firstRow": null
+        }
+      }
+    ]
+  },
+  "history_odds": {
+    "games_tested": 1,
+    "rows": 0,
+    "books": [],
+    "markets": [],
+    "timestamps": [],
+    "chronological_observations": false,
+    "schema": {
+      "topKeys": [
+        "success",
+        "data"
+      ],
+      "dataIsArray": false,
+      "nestedKeys": [
+        "eventId",
+        "opening",
+        "timeRange",
+        "snapshots",
+        "count",
+        "limit",
+        "offset",
+        "dataQuality"
+      ],
+      "pagination": null,
+      "rowCountExtracted": 0,
+      "firstRowKeys": [],
+      "firstRow": null
+    },
+    "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_odds/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__odds-existence/page=0001.json.gz"
+  }
+}

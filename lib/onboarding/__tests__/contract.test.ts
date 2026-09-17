@@ -242,4 +242,25 @@ describe('preview harness isolation', () => {
       })
     ).toBe('xray-flow');
   });
+
+  it('lets preview harness show guided coachmarks without live onboarding completion', () => {
+    expect(
+      nextCoachmark({
+        surface: 'props',
+        level: 'getting_started',
+        dismissed: [],
+        presentIds: ['props-discover', 'props-compare', 'props-add-parlay'],
+        previewFlag: 'historical',
+      })
+    ).toBe('props-discover');
+    expect(
+      nextCoachmark({
+        surface: 'workspace',
+        level: 'getting_started',
+        dismissed: [],
+        presentIds: ['workspace-intro', 'workspace-analyze'],
+        previewFlag: 'historical',
+      })
+    ).toBe('workspace-intro');
+  });
 });

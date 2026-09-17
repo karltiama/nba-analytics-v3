@@ -32,6 +32,11 @@ describe('Owls CLI parsing', () => {
     expect(args.execute).toBe(false);
   });
 
+  it('parses --season 2022', () => {
+    expect(parseOwlsCliArgs(['--season', '2022']).season).toBe('2022');
+    expect(parseOwlsCliArgs(['--season=2022']).season).toBe('2022');
+  });
+
   it('parses --season=2024', () => {
     expect(parseOwlsCliArgs(['--season=2024']).season).toBe('2024');
   });

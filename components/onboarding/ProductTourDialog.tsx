@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { EXISTING_USER_PROMPT, PRODUCT_MAP, XRAY_MAP_UNAVAILABLE } from '@/lib/onboarding/copy';
 import { isPublicXrayExtractionReady, ONBOARDING_CHANGED_EVENT } from '@/lib/onboarding/contract';
 import { patchOnboardingState, readOnboardingState, requestTourReplay } from '@/lib/onboarding/storage';
+import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
 import { trackEvent } from '@/lib/product-analytics/track-event';
 
 export function ProductTourDialog({
@@ -58,7 +59,13 @@ export function ProductTourDialog({
               className="inline-flex items-center justify-center min-h-[44px] rounded-xl bg-[#063f46] px-4 text-sm font-semibold text-white hover:bg-[#075B5C]"
               onClick={() => {
                 requestTourReplay();
-                trackEvent('tour_replayed', { surface: 'onboarding', action: 'replay' });
+                const preview =
+                  typeof window === 'undefined'
+                    ? null
+                    : new URLSearchParams(window.location.search).get('preview');
+                if (!shouldSuppressProductPreviewAnalytics(preview)) {
+                  trackEvent('tour_replayed', { surface: 'onboarding', action: 'replay' });
+                }
                 onOpenChange(false);
               }}
             >

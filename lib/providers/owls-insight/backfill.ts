@@ -22,7 +22,7 @@ import { asRecord, attachArchiveKey, normalizePayloadRows } from './normalize';
 import { ProgressTracker } from './progress';
 import { evaluateStopConditions, type StopEvaluation } from './validation';
 import type { CourtContextGame, OwlsAcquisitionState, OwlsGameLike, OwlsMode, OwlsPage } from './types';
-import { OwlsExecuteRequiredError } from './errors';
+import { isOwlsAbortError, OwlsExecuteRequiredError } from './errors';
 
 export type BackfillOpts = {
   runId: string;
@@ -395,6 +395,21 @@ export async function runOwlsPropBackfill(opts: BackfillOpts): Promise<BackfillR
       progress.failures += 1;
       progress.gamesComplete += 1;
       logger(err instanceof Error ? err.message : String(err));
+      if (isOwlsAbortError(err)) {
+        const metrics = opts.client.getMetrics();
+        progress.requests = metrics.requestsAttempted;
+        progress.requestsSuccessful = metrics.requestsSuccessful;
+        progress.requestsRetried = metrics.requestsRetried;
+        progress.status429 = metrics.status429;
+        progress.status503 = metrics.status503;
+        state.run.requests_attempted = metrics.requestsAttempted;
+        state.run.requests_successful = metrics.requestsSuccessful;
+        state.run.requests_retried = metrics.requestsRetried;
+        state.run.status_429 = metrics.status429;
+        state.run.status_503 = metrics.status503;
+        await opts.checkpoints.save(state);
+        throw err;
+      }
     }
     const metrics = opts.client.getMetrics();
     progress.requests = metrics.requestsAttempted;

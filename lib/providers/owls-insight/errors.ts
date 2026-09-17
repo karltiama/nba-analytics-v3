@@ -43,6 +43,13 @@ export class OwlsServiceBusyError extends OwlsInsightError {
   }
 }
 
+export function isOwlsAbortError(err: unknown): boolean {
+  if (!(err instanceof OwlsInsightError)) return false;
+  const status = err.status;
+  if (status == null) return false;
+  return status === 401 || status === 403 || status === 429 || status >= 500;
+}
+
 export class OwlsExecuteRequiredError extends OwlsInsightError {
   constructor(message = 'Network Owls requests require --execute') {
     super(message, { code: 'EXECUTE_REQUIRED' });

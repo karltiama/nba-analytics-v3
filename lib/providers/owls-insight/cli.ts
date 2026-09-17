@@ -131,7 +131,7 @@ export function parseOwlsCliArgs(
 
   const seasonExplicit = Boolean(seasonRead.present || season);
   if (season && !ALLOWED_SEASONS.has(season)) {
-    throw new Error(`Invalid --season ${season}. Use 2023, 2024, or 2025.`);
+    throw new Error(`Invalid --season ${season}. Use 2022, 2023, 2024, or 2025.`);
   }
   if (execute && fixture) {
     throw new Error('Pass either --fixture or --execute, not both.');

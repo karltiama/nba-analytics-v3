@@ -1,0 +1,3683 @@
+{
+  "generated_at": "2026-09-16T22:32:13.518Z",
+  "bucket": "nba-analytics-data-260029269390",
+  "method": "s3_list_and_sample_getobject_read_only",
+  "owlsApiCalls": 0,
+  "totals": {
+    "owls_insight_objects": 19030,
+    "owls_insight_bytes": 35864516,
+    "fixture_objects": 0,
+    "fixture_bytes": 0,
+    "bdl_plays_2025_objects": 1334,
+    "bdl_plays_2025_bytes": 598114275,
+    "bdl_plays_game_objects": 1332
+  },
+  "entities": {
+    "historical_closing_odds": {
+      "2023": {
+        "objects": 1319,
+        "bytes": 2139647,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-24/provider_game_id=nba:Los_Angeles_Lakers@Denver_Nuggets-20231024/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-25/provider_game_id=nba:Atlanta_Hawks@Charlotte_Hornets-20231025/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-25/provider_game_id=nba:Boston_Celtics@New_York_Knicks-20231025/page=0001.json.gz"
+        ]
+      },
+      "2024": {
+        "objects": 1319,
+        "bytes": 2141063,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_closing_odds/game_date=2024-10-22/provider_game_id=nba:New_York_Knicks@Boston_Celtics-20241022/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_closing_odds/game_date=2024-10-23/provider_game_id=nba:Brooklyn_Nets@Atlanta_Hawks-20241023/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_closing_odds/game_date=2024-10-23/provider_game_id=nba:Cleveland_Cavaliers@Toronto_Raptors-20241023/page=0001.json.gz"
+        ]
+      },
+      "2025": {
+        "objects": 1318,
+        "bytes": 2128298,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_closing_odds/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_closing_odds/game_date=2025-10-22/provider_game_id=nba:Brooklyn_Nets@Charlotte_Hornets-20251022/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_closing_odds/game_date=2025-10-22/provider_game_id=nba:Cleveland_Cavaliers@New_York_Knicks-20251022/page=0001.json.gz"
+        ]
+      }
+    },
+    "historical_games": {
+      "2023": {
+        "objects": 1319,
+        "bytes": 3129086,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2023-10-24/provider_game_id=cc-1037593/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2023-10-25/provider_game_id=cc-1037594/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2023-10-25/provider_game_id=cc-1037595/page=0001.json.gz"
+        ]
+      },
+      "2024": {
+        "objects": 1321,
+        "bytes": 3119918,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_games/game_date=2024-10-22/provider_game_id=cc-15907438/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_games/game_date=2024-10-23/provider_game_id=cc-15907439/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_games/game_date=2024-10-23/provider_game_id=cc-15907440/page=0001.json.gz"
+        ]
+      },
+      "2025": {
+        "objects": 1322,
+        "bytes": 3286787,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_games/game_date=2025-10-21/provider_game_id=cc-18446819/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_games/game_date=2025-10-22/provider_game_id=cc-18446820/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_games/game_date=2025-10-22/provider_game_id=cc-18446821/page=0001.json.gz"
+        ]
+      }
+    },
+    "historical_player_props": {
+      "2023": {
+        "objects": 1968,
+        "bytes": 3965047,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_player_props/game_date=2023-10-24/provider_game_id=nba:Los Angeles Lakers@Denver Nuggets-20231024/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_player_props/game_date=2023-10-24/provider_game_id=nba:Los Angeles Lakers@Denver Nuggets-20231024/page=0002.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_player_props/game_date=2023-10-24/provider_game_id=nba:Los Angeles Lakers@Denver Nuggets-20231024/page=0003.json.gz"
+        ]
+      },
+      "2024": {
+        "objects": 3467,
+        "bytes": 7783242,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_player_props/game_date=2024-10-22/provider_game_id=nba:New York Knicks@Boston Celtics-20241022/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_player_props/game_date=2024-10-22/provider_game_id=nba:New York Knicks@Boston Celtics-20241022/page=0002.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_player_props/game_date=2024-10-22/provider_game_id=nba:New York Knicks@Boston Celtics-20241022/page=0003.json.gz"
+        ]
+      },
+      "2025": {
+        "objects": 1706,
+        "bytes": 2806239,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_player_props/game_date=2025-10-21/provider_game_id=nba:Houston Rockets@Oklahoma City Thunder-20251021/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_player_props/game_date=2025-10-21/provider_game_id=nba:Houston Rockets@Oklahoma City Thunder-20251021/page=0002.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_player_props/game_date=2025-10-21/provider_game_id=nba:Houston Rockets@Oklahoma City Thunder-20251021/page=0003.json.gz"
+        ]
+      }
+    },
+    "historical_prop_snapshots": {
+      "2023": {
+        "objects": 8,
+        "bytes": 10305,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=any__prop=points__opening=1/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=caesars__prop=points__opening=1/page=0001.json.gz"
+        ]
+      },
+      "2024": {
+        "objects": 3,
+        "bytes": 3892,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=caesars__prop=points__opening=1/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=draftkings__prop=points__opening=1/page=0001.json.gz"
+        ]
+      },
+      "2025": {
+        "objects": 3,
+        "bytes": 3890,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=caesars__prop=points__opening=1/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=draftkings__prop=points__opening=1/page=0001.json.gz"
+        ]
+      }
+    },
+    "historical_public_betting": {
+      "2023": {
+        "objects": 1319,
+        "bytes": 1779342,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-24/provider_game_id=nba:Los_Angeles_Lakers@Denver_Nuggets-20231024/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-25/provider_game_id=nba:Atlanta_Hawks@Charlotte_Hornets-20231025/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-25/provider_game_id=nba:Boston_Celtics@New_York_Knicks-20231025/page=0001.json.gz"
+        ]
+      },
+      "2024": {
+        "objects": 1319,
+        "bytes": 1786260,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-10-22/provider_game_id=nba:New_York_Knicks@Boston_Celtics-20241022/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-10-23/provider_game_id=nba:Brooklyn_Nets@Atlanta_Hawks-20241023/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-10-23/provider_game_id=nba:Cleveland_Cavaliers@Toronto_Raptors-20241023/page=0001.json.gz"
+        ]
+      },
+      "2025": {
+        "objects": 1318,
+        "bytes": 1779803,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-22/provider_game_id=nba:Brooklyn_Nets@Charlotte_Hornets-20251022/page=0001.json.gz",
+          "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-22/provider_game_id=nba:Cleveland_Cavaliers@New_York_Knicks-20251022/page=0001.json.gz"
+        ]
+      }
+    },
+    "historical_coverage": {
+      "all": {
+        "objects": 1,
+        "bytes": 1697,
+        "sample_keys": [
+          "raw/source=owls_insight/league=nba/season=all/entity=historical_coverage/game_date=2026-09-14/provider_game_id=history-coverage/page=0001.json.gz"
+        ]
+      }
+    }
+  },
+  "missing_entities_checked": {
+    "historical_odds": 0,
+    "historical_stats": 0,
+    "plays": 0,
+    "starters": 0,
+    "season_2022": 0
+  },
+  "samples": [
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-24/provider_game_id=nba:Los_Angeles_Lakers@Denver_Nuggets-20231024/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-closing-2023",
+      "requested_at": "2026-09-14T21:15:58.324Z",
+      "archived_at": "2026-09-14T21:15:58.324Z",
+      "fetched_at": "2026-09-14T21:15:58.324Z",
+      "path": "/api/v1/history/closing-odds",
+      "query": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288731",
+      "row_count": 2,
+      "extracted_rows": 2,
+      "checksum": "edcc27f2316cff29e12eac7ee083a5da6144bbd3c8d1561dcabdfdae4d5cffe6",
+      "fixture": false,
+      "provider_game_id": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+      "court_context_game_id": "1037593",
+      "season": "2023",
+      "game_date": "2023-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.odds",
+        "data.odds[].eventId",
+        "data.odds[].sport",
+        "data.odds[].book",
+        "data.odds[].source",
+        "data.odds[].gameDate",
+        "data.odds[].moneyline",
+        "data.odds[].moneyline.home",
+        "data.odds[].moneyline.away",
+        "data.odds[].spread",
+        "data.odds[].spread.home",
+        "data.odds[].spread.away",
+        "data.odds[].spread.homePrice",
+        "data.odds[].spread.awayPrice",
+        "data.odds[].total",
+        "data.odds[].total.line",
+        "data.odds[].total.overPrice",
+        "data.odds[].total.underPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore",
+        "data.dataQuality",
+        "data.dataQuality.suppressedFields",
+        "data.dataQuality.rowsExcluded",
+        "data.dataQuality.note"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2023-10-24T00:00:00.000Z",
+        "moneyline": {
+          "home": -200,
+          "away": 165
+        },
+        "spread": {
+          "home": -4.5,
+          "away": 4.5,
+          "homePrice": -115,
+          "awayPrice": -105
+        },
+        "total": {
+          "line": 228.5,
+          "overPrice": -110,
+          "underPrice": -110
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-25/provider_game_id=nba:Phoenix_Suns@Golden_State_Warriors-20231025/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-closing-2023",
+      "requested_at": "2026-09-14T21:15:58.262Z",
+      "archived_at": "2026-09-14T21:15:58.262Z",
+      "fetched_at": "2026-09-14T21:15:58.262Z",
+      "path": "/api/v1/history/closing-odds",
+      "query": {
+        "eventId": "nba:Phoenix Suns@Golden State Warriors-20231025",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288732",
+      "row_count": 2,
+      "extracted_rows": 2,
+      "checksum": "7fc751317d40fef45eeb3aae51b03c44eefc0b6baede564aae97fe4623702449",
+      "fixture": false,
+      "provider_game_id": "nba:Phoenix Suns@Golden State Warriors-20231025",
+      "court_context_game_id": "1037594",
+      "season": "2023",
+      "game_date": "2023-10-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.odds",
+        "data.odds[].eventId",
+        "data.odds[].sport",
+        "data.odds[].book",
+        "data.odds[].source",
+        "data.odds[].gameDate",
+        "data.odds[].moneyline",
+        "data.odds[].moneyline.home",
+        "data.odds[].moneyline.away",
+        "data.odds[].spread",
+        "data.odds[].spread.home",
+        "data.odds[].spread.away",
+        "data.odds[].spread.homePrice",
+        "data.odds[].spread.awayPrice",
+        "data.odds[].total",
+        "data.odds[].total.line",
+        "data.odds[].total.overPrice",
+        "data.odds[].total.underPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore",
+        "data.dataQuality",
+        "data.dataQuality.suppressedFields",
+        "data.dataQuality.rowsExcluded",
+        "data.dataQuality.note"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Phoenix Suns@Golden State Warriors-20231025",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "moneyline": {
+          "home": -145,
+          "away": 120
+        },
+        "spread": {
+          "home": -2.5,
+          "away": 2.5,
+          "homePrice": -115,
+          "awayPrice": -105
+        },
+        "total": {
+          "line": 234.5,
+          "overPrice": -115,
+          "underPrice": -105
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_closing_odds/game_date=2024-10-22/provider_game_id=nba:New_York_Knicks@Boston_Celtics-20241022/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-closing-2024",
+      "requested_at": "2026-09-14T21:24:11.064Z",
+      "archived_at": "2026-09-14T21:24:11.064Z",
+      "fetched_at": "2026-09-14T21:24:11.064Z",
+      "path": "/api/v1/history/closing-odds",
+      "query": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "287412",
+      "row_count": 2,
+      "extracted_rows": 2,
+      "checksum": "f0eef8c150fc10c9515c849d3fd88a7543b27c9b5faf5fbbe35dba39cb23872e",
+      "fixture": false,
+      "provider_game_id": "nba:New York Knicks@Boston Celtics-20241022",
+      "court_context_game_id": "15907438",
+      "season": "2024",
+      "game_date": "2024-10-22",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.odds",
+        "data.odds[].eventId",
+        "data.odds[].sport",
+        "data.odds[].book",
+        "data.odds[].source",
+        "data.odds[].gameDate",
+        "data.odds[].moneyline",
+        "data.odds[].moneyline.home",
+        "data.odds[].moneyline.away",
+        "data.odds[].spread",
+        "data.odds[].spread.home",
+        "data.odds[].spread.away",
+        "data.odds[].spread.homePrice",
+        "data.odds[].spread.awayPrice",
+        "data.odds[].total",
+        "data.odds[].total.line",
+        "data.odds[].total.overPrice",
+        "data.odds[].total.underPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore",
+        "data.dataQuality",
+        "data.dataQuality.suppressedFields",
+        "data.dataQuality.rowsExcluded",
+        "data.dataQuality.note"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2024-10-22T00:00:00.000Z",
+        "moneyline": {
+          "home": -250,
+          "away": 195
+        },
+        "spread": {
+          "home": -5.5,
+          "away": 5.5,
+          "homePrice": -115,
+          "awayPrice": -105
+        },
+        "total": {
+          "line": 221.5,
+          "overPrice": -110,
+          "underPrice": -110
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_closing_odds/game_date=2024-10-24/provider_game_id=nba:Boston_Celtics@Washington_Wizards-20241024/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-closing-2024",
+      "requested_at": "2026-09-14T21:24:14.465Z",
+      "archived_at": "2026-09-14T21:24:14.465Z",
+      "fetched_at": "2026-09-14T21:24:14.465Z",
+      "path": "/api/v1/history/closing-odds",
+      "query": {
+        "eventId": "nba:Boston Celtics@Washington Wizards-20241024",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "287400",
+      "row_count": 2,
+      "extracted_rows": 2,
+      "checksum": "a215b9f60f273695f55a6663939e7b79c26aefb2de4fae73b05e5ad6a5db764b",
+      "fixture": false,
+      "provider_game_id": "nba:Boston Celtics@Washington Wizards-20241024",
+      "court_context_game_id": "15907450",
+      "season": "2024",
+      "game_date": "2024-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.odds",
+        "data.odds[].eventId",
+        "data.odds[].sport",
+        "data.odds[].book",
+        "data.odds[].source",
+        "data.odds[].gameDate",
+        "data.odds[].moneyline",
+        "data.odds[].moneyline.home",
+        "data.odds[].moneyline.away",
+        "data.odds[].spread",
+        "data.odds[].spread.home",
+        "data.odds[].spread.away",
+        "data.odds[].spread.homePrice",
+        "data.odds[].spread.awayPrice",
+        "data.odds[].total",
+        "data.odds[].total.line",
+        "data.odds[].total.overPrice",
+        "data.odds[].total.underPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore",
+        "data.dataQuality",
+        "data.dataQuality.suppressedFields",
+        "data.dataQuality.rowsExcluded",
+        "data.dataQuality.note"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Boston Celtics@Washington Wizards-20241024",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2024-10-24T00:00:00.000Z",
+        "moneyline": {
+          "home": 700,
+          "away": -1100
+        },
+        "spread": {
+          "home": 13.5,
+          "away": -13.5,
+          "homePrice": -105,
+          "awayPrice": -115
+        },
+        "total": {
+          "line": 231.5,
+          "overPrice": -105,
+          "underPrice": -115
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_closing_odds/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-closing-odds-probe",
+      "requested_at": "2026-09-14T21:05:38.094Z",
+      "archived_at": "2026-09-14T21:05:38.094Z",
+      "path": "/api/v1/history/closing-odds",
+      "query": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288733",
+      "row_count": 2,
+      "extracted_rows": 2,
+      "checksum": "a65a5309511e2d291eaccd987264aaf8259c3dc8ae5393a191f591d27aae6b4b",
+      "fixture": false,
+      "provider_game_id": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+      "season": "2025",
+      "game_date": "2025-10-21",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.odds",
+        "data.odds[].eventId",
+        "data.odds[].sport",
+        "data.odds[].book",
+        "data.odds[].source",
+        "data.odds[].gameDate",
+        "data.odds[].moneyline",
+        "data.odds[].moneyline.home",
+        "data.odds[].moneyline.away",
+        "data.odds[].spread",
+        "data.odds[].spread.home",
+        "data.odds[].spread.away",
+        "data.odds[].spread.homePrice",
+        "data.odds[].spread.awayPrice",
+        "data.odds[].total",
+        "data.odds[].total.line",
+        "data.odds[].total.overPrice",
+        "data.odds[].total.underPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore",
+        "data.dataQuality",
+        "data.dataQuality.suppressedFields",
+        "data.dataQuality.rowsExcluded",
+        "data.dataQuality.note"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2025-10-21T00:00:00.000Z",
+        "moneyline": {
+          "home": -250,
+          "away": 200
+        },
+        "spread": {
+          "home": -6.5,
+          "away": 6.5,
+          "homePrice": -110,
+          "awayPrice": -110
+        },
+        "total": {
+          "line": 225.5,
+          "overPrice": -115,
+          "underPrice": -105
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_closing_odds/game_date=2025-10-23/provider_game_id=nba:Detroit_Pistons@Chicago_Bulls-20251023/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-closing-2025",
+      "requested_at": "2026-09-14T21:32:11.512Z",
+      "archived_at": "2026-09-14T21:32:11.512Z",
+      "fetched_at": "2026-09-14T21:32:11.512Z",
+      "path": "/api/v1/history/closing-odds",
+      "query": {
+        "eventId": "nba:Detroit Pistons@Chicago Bulls-20251023",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "286088",
+      "row_count": 2,
+      "extracted_rows": 2,
+      "checksum": "1c7ee18679a1767b872888f8ee5b04f4b796db9225997ca1fb8ca91ba99b5bb4",
+      "fixture": false,
+      "provider_game_id": "nba:Detroit Pistons@Chicago Bulls-20251023",
+      "court_context_game_id": "18446827",
+      "season": "2025",
+      "game_date": "2025-10-23",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.odds",
+        "data.odds[].eventId",
+        "data.odds[].sport",
+        "data.odds[].book",
+        "data.odds[].source",
+        "data.odds[].gameDate",
+        "data.odds[].moneyline",
+        "data.odds[].moneyline.home",
+        "data.odds[].moneyline.away",
+        "data.odds[].spread",
+        "data.odds[].spread.home",
+        "data.odds[].spread.away",
+        "data.odds[].spread.homePrice",
+        "data.odds[].spread.awayPrice",
+        "data.odds[].total",
+        "data.odds[].total.line",
+        "data.odds[].total.overPrice",
+        "data.odds[].total.underPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore",
+        "data.dataQuality",
+        "data.dataQuality.suppressedFields",
+        "data.dataQuality.rowsExcluded",
+        "data.dataQuality.note"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Detroit Pistons@Chicago Bulls-20251023",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2025-10-23T00:00:00.000Z",
+        "moneyline": {
+          "home": 125,
+          "away": -150
+        },
+        "spread": {
+          "home": 2.5,
+          "away": -2.5,
+          "homePrice": -105,
+          "awayPrice": -115
+        },
+        "total": {
+          "line": 236.5,
+          "overPrice": -110,
+          "underPrice": -110
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=all/entity=historical_coverage/game_date=2026-09-14/provider_game_id=history-coverage/page=0001.json.gz",
+      "schema": "owls_historical_coverage.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-probe",
+      "requested_at": "2026-09-14T17:21:14.035Z",
+      "archived_at": "2026-09-14T17:21:14.035Z",
+      "path": "/api/v1/history/coverage",
+      "query": {},
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "299974",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "bab377f6d6b9d39c4fa25a9602f220353dec78f2b93f3f7d85acb00060870b96",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": null,
+      "game_date": "2026-09-14",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.datasets",
+        "data.datasets.games",
+        "data.datasets.games.description",
+        "data.datasets.games.sports",
+        "data.datasets.games.sports.nba",
+        "data.datasets.games.sports.ncaab",
+        "data.datasets.games.sports.nfl",
+        "data.datasets.games.sports.nhl",
+        "data.datasets.games.sports.ncaaf",
+        "data.datasets.games.sports.mlb",
+        "data.datasets.games.sports.soccer",
+        "data.datasets.games.sports.tennis",
+        "data.datasets.games.sports.cs2",
+        "data.datasets.playerProps",
+        "data.datasets.playerProps.description",
+        "data.datasets.playerProps.sports",
+        "data.datasets.playerProps.sports.nba",
+        "data.datasets.playerProps.sports.mlb",
+        "data.notes",
+        "data.generatedAt",
+        "meta",
+        "meta.cached",
+        "meta.cacheTtlSeconds"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2023-10-24/provider_game_id=cc-1037593/page=0001.json.gz",
+      "schema": "owls_historical_games.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2023",
+      "requested_at": "2026-09-14T17:43:16.080Z",
+      "archived_at": "2026-09-14T17:43:16.080Z",
+      "path": "/api/v1/history/games",
+      "query": {
+        "sport": "nba",
+        "season": "2023-24",
+        "startDate": "2023-10-24",
+        "endDate": "2023-10-24",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "299861",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "e8dce47b86312d2d9471004850fd41fac0c3e4731f20adeb507da2ac2b990f2a",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": "2023",
+      "game_date": "2023-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.games",
+        "data.games[].eventId",
+        "data.games[].sport",
+        "data.games[].homeTeam",
+        "data.games[].awayTeam",
+        "data.games[].gameDate",
+        "data.games[].homeScore",
+        "data.games[].awayScore",
+        "data.games[].periodScores",
+        "data.games[].season",
+        "data.games[].gameType",
+        "data.games[].venue",
+        "data.games[].archivedAt",
+        "data.games[].source",
+        "data.games[].oddsSnapshots",
+        "data.games[].propsSnapshots",
+        "data.games[].playerStats",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "venue",
+        "archivedAt",
+        "source",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "homeTeam": "Denver Nuggets",
+        "awayTeam": "Los Angeles Lakers",
+        "gameDate": "2023-10-24T00:00:00.000Z",
+        "homeScore": 119,
+        "awayScore": 107,
+        "periodScores": [
+          {
+            "away": 20,
+            "home": 34,
+            "period": "Q1"
+          },
+          {
+            "away": 34,
+            "home": 29,
+            "period": "Q2"
+          },
+          {
+            "away": 26,
+            "home": 24,
+            "period": "Q3"
+          },
+          {
+            "away": 27,
+            "home": 32,
+            "period": "Q4"
+          }
+        ],
+        "season": "2023-24",
+        "gameType": "regular",
+        "venue": "Ball Arena",
+        "archivedAt": "2026-03-13T06:38:46.000Z",
+        "source": "backfill",
+        "oddsSnapshots": 0,
+        "propsSnapshots": 0,
+        "playerStats": 0
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_games/game_date=2023-10-25/provider_game_id=cc-1037600/page=0001.json.gz",
+      "schema": "owls_historical_games.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2023",
+      "requested_at": "2026-09-14T17:43:33.809Z",
+      "archived_at": "2026-09-14T17:43:33.809Z",
+      "path": "/api/v1/history/games",
+      "query": {
+        "sport": "nba",
+        "season": "2023-24",
+        "startDate": "2023-10-25",
+        "endDate": "2023-10-25",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "299835",
+      "row_count": 8,
+      "extracted_rows": 8,
+      "checksum": "0d17f0bf9655a00c4514d7d0a82d5af2086735901ab6c546e6d0897a0cc896d1",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": "2023",
+      "game_date": "2023-10-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.games",
+        "data.games[].eventId",
+        "data.games[].sport",
+        "data.games[].homeTeam",
+        "data.games[].awayTeam",
+        "data.games[].gameDate",
+        "data.games[].homeScore",
+        "data.games[].awayScore",
+        "data.games[].periodScores",
+        "data.games[].season",
+        "data.games[].gameType",
+        "data.games[].venue",
+        "data.games[].archivedAt",
+        "data.games[].source",
+        "data.games[].oddsSnapshots",
+        "data.games[].propsSnapshots",
+        "data.games[].playerStats",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "venue",
+        "archivedAt",
+        "source",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Detroit Pistons@Miami Heat-20231025",
+        "sport": "nba",
+        "homeTeam": "Miami Heat",
+        "awayTeam": "Detroit Pistons",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "homeScore": 103,
+        "awayScore": 102,
+        "periodScores": [
+          {
+            "away": 29,
+            "home": 26,
+            "period": "Q1"
+          },
+          {
+            "away": 18,
+            "home": 32,
+            "period": "Q2"
+          },
+          {
+            "away": 28,
+            "home": 25,
+            "period": "Q3"
+          },
+          {
+            "away": 27,
+            "home": 20,
+            "period": "Q4"
+          }
+        ],
+        "season": "2023-24",
+        "gameType": "regular",
+        "venue": "Kaseya Center",
+        "archivedAt": "2026-03-13T06:38:50.000Z",
+        "source": "backfill",
+        "oddsSnapshots": 0,
+        "propsSnapshots": 0,
+        "playerStats": 0
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_games/game_date=2024-10-22/provider_game_id=cc-15907438/page=0001.json.gz",
+      "schema": "owls_historical_games.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2024",
+      "requested_at": "2026-09-14T18:25:00.187Z",
+      "archived_at": "2026-09-14T18:25:00.187Z",
+      "path": "/api/v1/history/games",
+      "query": {
+        "sport": "nba",
+        "season": "2024-25",
+        "startDate": "2024-10-22",
+        "endDate": "2024-10-22",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "296574",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "00f7252d665770ce6d296d211c3965774cec0a32a02661eab351a8f1d114ef78",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": "2024",
+      "game_date": "2024-10-22",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.games",
+        "data.games[].eventId",
+        "data.games[].sport",
+        "data.games[].homeTeam",
+        "data.games[].awayTeam",
+        "data.games[].gameDate",
+        "data.games[].homeScore",
+        "data.games[].awayScore",
+        "data.games[].periodScores",
+        "data.games[].season",
+        "data.games[].gameType",
+        "data.games[].venue",
+        "data.games[].archivedAt",
+        "data.games[].source",
+        "data.games[].oddsSnapshots",
+        "data.games[].propsSnapshots",
+        "data.games[].playerStats",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "venue",
+        "archivedAt",
+        "source",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "sport": "nba",
+        "homeTeam": "Boston Celtics",
+        "awayTeam": "New York Knicks",
+        "gameDate": "2024-10-22T00:00:00.000Z",
+        "homeScore": 132,
+        "awayScore": 109,
+        "periodScores": [
+          {
+            "away": 24,
+            "home": 43,
+            "period": "Q1"
+          },
+          {
+            "away": 31,
+            "home": 31,
+            "period": "Q2"
+          },
+          {
+            "away": 32,
+            "home": 39,
+            "period": "Q3"
+          },
+          {
+            "away": 22,
+            "home": 19,
+            "period": "Q4"
+          }
+        ],
+        "season": "2024-25",
+        "gameType": "regular",
+        "venue": "TD Garden",
+        "archivedAt": "2026-03-13T06:51:50.000Z",
+        "source": "backfill",
+        "oddsSnapshots": 0,
+        "propsSnapshots": 0,
+        "playerStats": 0
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_games/game_date=2024-10-24/provider_game_id=cc-15907445/page=0001.json.gz",
+      "schema": "owls_historical_games.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2024",
+      "requested_at": "2026-09-14T18:25:16.481Z",
+      "archived_at": "2026-09-14T18:25:16.481Z",
+      "path": "/api/v1/history/games",
+      "query": {
+        "sport": "nba",
+        "season": "2024-25",
+        "startDate": "2024-10-23",
+        "endDate": "2024-10-24",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "296553",
+      "row_count": 13,
+      "extracted_rows": 13,
+      "checksum": "8ea4288302329508d43921dfbf87ac5027044f28b6e6f1d5498b368a24c14b81",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": "2024",
+      "game_date": "2024-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.games",
+        "data.games[].eventId",
+        "data.games[].sport",
+        "data.games[].homeTeam",
+        "data.games[].awayTeam",
+        "data.games[].gameDate",
+        "data.games[].homeScore",
+        "data.games[].awayScore",
+        "data.games[].periodScores",
+        "data.games[].season",
+        "data.games[].gameType",
+        "data.games[].venue",
+        "data.games[].archivedAt",
+        "data.games[].source",
+        "data.games[].oddsSnapshots",
+        "data.games[].propsSnapshots",
+        "data.games[].playerStats",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "venue",
+        "archivedAt",
+        "source",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Boston Celtics@Washington Wizards-20241024",
+        "sport": "nba",
+        "homeTeam": "Washington Wizards",
+        "awayTeam": "Boston Celtics",
+        "gameDate": "2024-10-24T00:00:00.000Z",
+        "homeScore": 102,
+        "awayScore": 122,
+        "periodScores": [
+          {
+            "away": 33,
+            "home": 32,
+            "period": "Q1"
+          },
+          {
+            "away": 31,
+            "home": 22,
+            "period": "Q2"
+          },
+          {
+            "away": 34,
+            "home": 19,
+            "period": "Q3"
+          },
+          {
+            "away": 24,
+            "home": 29,
+            "period": "Q4"
+          }
+        ],
+        "season": "2024-25",
+        "gameType": "regular",
+        "venue": "Capital One Arena",
+        "archivedAt": "2026-03-13T06:51:57.000Z",
+        "source": "backfill",
+        "oddsSnapshots": 0,
+        "propsSnapshots": 0,
+        "playerStats": 0
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_games/game_date=2025-10-21/provider_game_id=cc-18446819/page=0001.json.gz",
+      "schema": "owls_historical_games.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2025",
+      "requested_at": "2026-09-14T19:31:20.522Z",
+      "archived_at": "2026-09-14T19:31:20.522Z",
+      "path": "/api/v1/history/games",
+      "query": {
+        "sport": "nba",
+        "season": "2025-26",
+        "startDate": "2025-10-21",
+        "endDate": "2025-10-21",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "291786",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "5c0d7faebe5ac56e9228df5ac99d4eeb0833e9c169a3498b6ae1d8a78f424ef3",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": "2025",
+      "game_date": "2025-10-21",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.games",
+        "data.games[].eventId",
+        "data.games[].sport",
+        "data.games[].homeTeam",
+        "data.games[].awayTeam",
+        "data.games[].gameDate",
+        "data.games[].homeScore",
+        "data.games[].awayScore",
+        "data.games[].periodScores",
+        "data.games[].season",
+        "data.games[].gameType",
+        "data.games[].venue",
+        "data.games[].archivedAt",
+        "data.games[].source",
+        "data.games[].oddsSnapshots",
+        "data.games[].propsSnapshots",
+        "data.games[].playerStats",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "venue",
+        "archivedAt",
+        "source",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "homeTeam": "Oklahoma City Thunder",
+        "awayTeam": "Houston Rockets",
+        "gameDate": "2025-10-21T00:00:00.000Z",
+        "homeScore": 125,
+        "awayScore": 124,
+        "periodScores": [
+          {
+            "away": 30,
+            "home": 27,
+            "period": "Q1"
+          },
+          {
+            "away": 27,
+            "home": 24,
+            "period": "Q2"
+          },
+          {
+            "away": 22,
+            "home": 24,
+            "period": "Q3"
+          },
+          {
+            "away": 25,
+            "home": 29,
+            "period": "Q4"
+          },
+          {
+            "away": 11,
+            "home": 11,
+            "period": "OT1"
+          },
+          {
+            "away": 9,
+            "home": 10,
+            "period": "OT2"
+          }
+        ],
+        "season": "2025-26",
+        "gameType": "regular",
+        "venue": "Paycom Center",
+        "archivedAt": "2026-04-08T04:14:07.000Z",
+        "source": "backfill",
+        "oddsSnapshots": 0,
+        "propsSnapshots": 0,
+        "playerStats": 0
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_games/game_date=2025-10-23/provider_game_id=cc-18446822/page=0001.json.gz",
+      "schema": "owls_historical_games.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2025",
+      "requested_at": "2026-09-14T19:32:03.322Z",
+      "archived_at": "2026-09-14T19:32:03.322Z",
+      "path": "/api/v1/history/games",
+      "query": {
+        "sport": "nba",
+        "season": "2025-26",
+        "startDate": "2025-10-22",
+        "endDate": "2025-10-23",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "291729",
+      "row_count": 14,
+      "extracted_rows": 14,
+      "checksum": "947312a40a47659fb8e0d3fdf671017afcb6ffcdd0e94efeb3f0d6d864449d2c",
+      "fixture": false,
+      "provider_game_id": null,
+      "season": "2025",
+      "game_date": "2025-10-23",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.games",
+        "data.games[].eventId",
+        "data.games[].sport",
+        "data.games[].homeTeam",
+        "data.games[].awayTeam",
+        "data.games[].gameDate",
+        "data.games[].homeScore",
+        "data.games[].awayScore",
+        "data.games[].periodScores",
+        "data.games[].season",
+        "data.games[].gameType",
+        "data.games[].venue",
+        "data.games[].archivedAt",
+        "data.games[].source",
+        "data.games[].oddsSnapshots",
+        "data.games[].propsSnapshots",
+        "data.games[].playerStats",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "homeScore",
+        "awayScore",
+        "periodScores",
+        "season",
+        "gameType",
+        "venue",
+        "archivedAt",
+        "source",
+        "oddsSnapshots",
+        "propsSnapshots",
+        "playerStats"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Oklahoma City Thunder@Indiana Pacers-20251023",
+        "sport": "nba",
+        "homeTeam": "Indiana Pacers",
+        "awayTeam": "Oklahoma City Thunder",
+        "gameDate": "2025-10-23T00:00:00.000Z",
+        "homeScore": 135,
+        "awayScore": 141,
+        "periodScores": [
+          {
+            "away": 22,
+            "home": 25,
+            "period": "Q1"
+          },
+          {
+            "away": 32,
+            "home": 22,
+            "period": "Q2"
+          },
+          {
+            "away": 27,
+            "home": 31,
+            "period": "Q3"
+          },
+          {
+            "away": 32,
+            "home": 35,
+            "period": "Q4"
+          },
+          {
+            "away": 11,
+            "home": 11,
+            "period": "OT1"
+          },
+          {
+            "away": 17,
+            "home": 11,
+            "period": "OT2"
+          }
+        ],
+        "season": "2025-26",
+        "gameType": "regular",
+        "venue": "Gainbridge Fieldhouse",
+        "archivedAt": "2026-04-08T04:15:24.000Z",
+        "source": "backfill",
+        "oddsSnapshots": 0,
+        "propsSnapshots": 0,
+        "playerStats": 0
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_player_props/game_date=2023-10-24/provider_game_id=nba:Los Angeles Lakers@Denver Nuggets-20231024/page=0001.json.gz",
+      "schema": "owls_historical_player_props.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2023",
+      "requested_at": "2026-09-14T17:43:17.186Z",
+      "archived_at": "2026-09-14T17:43:17.186Z",
+      "path": "/api/v1/history/player-props",
+      "query": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "299860",
+      "row_count": 100,
+      "extracted_rows": 100,
+      "checksum": "e76ed25e0dbf0a3a1eaf4c9124938387f16b29a1afb5304c04158bfa2dbbadca",
+      "fixture": false,
+      "provider_game_id": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+      "season": "2023",
+      "game_date": "2023-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.props",
+        "data.props[].eventId",
+        "data.props[].sport",
+        "data.props[].playerName",
+        "data.props[].propType",
+        "data.props[].book",
+        "data.props[].gameDate",
+        "data.props[].closing",
+        "data.props[].closing.line",
+        "data.props[].closing.overPrice",
+        "data.props[].closing.underPrice",
+        "data.props[].closing.americanPrice",
+        "data.props[].opening",
+        "data.props[].opening.line",
+        "data.props[].opening.overPrice",
+        "data.props[].opening.underPrice",
+        "data.props[].opening.americanPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "playerName",
+        "propType",
+        "book",
+        "gameDate",
+        "closing",
+        "opening"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "playerName": "Aaron Gordon",
+        "propType": "assists",
+        "book": "betmgm",
+        "gameDate": "2023-10-24T00:00:00.000Z",
+        "closing": {
+          "line": 2.5,
+          "overPrice": -149,
+          "underPrice": 110,
+          "americanPrice": null
+        },
+        "opening": {
+          "line": 2.5,
+          "overPrice": -149,
+          "underPrice": 110,
+          "americanPrice": null
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_player_props/game_date=2023-10-25/provider_game_id=nba:Boston Celtics@New York Knicks-20231025/page=0002.json.gz",
+      "schema": "owls_historical_player_props.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2023",
+      "requested_at": "2026-09-14T17:43:27.509Z",
+      "archived_at": "2026-09-14T17:43:27.509Z",
+      "path": "/api/v1/history/player-props",
+      "query": {
+        "eventId": "nba:Boston Celtics@New York Knicks-20231025",
+        "sport": "nba",
+        "limit": 100,
+        "offset": 100
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "299845",
+      "row_count": 100,
+      "extracted_rows": 100,
+      "checksum": "6539f47710aefd62798a2cd57807e96341e452d9cd499b926d30298177268056",
+      "fixture": false,
+      "provider_game_id": "nba:Boston Celtics@New York Knicks-20231025",
+      "season": "2023",
+      "game_date": "2023-10-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.props",
+        "data.props[].eventId",
+        "data.props[].sport",
+        "data.props[].playerName",
+        "data.props[].propType",
+        "data.props[].book",
+        "data.props[].gameDate",
+        "data.props[].closing",
+        "data.props[].closing.line",
+        "data.props[].closing.overPrice",
+        "data.props[].closing.underPrice",
+        "data.props[].closing.americanPrice",
+        "data.props[].opening",
+        "data.props[].opening.line",
+        "data.props[].opening.overPrice",
+        "data.props[].opening.underPrice",
+        "data.props[].opening.americanPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "playerName",
+        "propType",
+        "book",
+        "gameDate",
+        "closing",
+        "opening"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Boston Celtics@New York Knicks-20231025",
+        "sport": "nba",
+        "playerName": "Jaylen Brown",
+        "propType": "assists",
+        "book": "caesars",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "closing": {
+          "line": 3.5,
+          "overPrice": -106,
+          "underPrice": -128,
+          "americanPrice": null
+        },
+        "opening": {
+          "line": 3.5,
+          "overPrice": -120,
+          "underPrice": -114,
+          "americanPrice": null
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_player_props/game_date=2024-10-22/provider_game_id=nba:New York Knicks@Boston Celtics-20241022/page=0001.json.gz",
+      "schema": "owls_historical_player_props.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2024",
+      "requested_at": "2026-09-14T18:25:01.230Z",
+      "archived_at": "2026-09-14T18:25:01.230Z",
+      "path": "/api/v1/history/player-props",
+      "query": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "sport": "nba",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "296573",
+      "row_count": 100,
+      "extracted_rows": 100,
+      "checksum": "e09ce3d586dd10f50f0986d403887de3e3bc20c7b2f3cb1845eeeb0d09d5bab7",
+      "fixture": false,
+      "provider_game_id": "nba:New York Knicks@Boston Celtics-20241022",
+      "season": "2024",
+      "game_date": "2024-10-22",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.props",
+        "data.props[].eventId",
+        "data.props[].sport",
+        "data.props[].playerName",
+        "data.props[].propType",
+        "data.props[].book",
+        "data.props[].gameDate",
+        "data.props[].closing",
+        "data.props[].closing.line",
+        "data.props[].closing.overPrice",
+        "data.props[].closing.underPrice",
+        "data.props[].closing.americanPrice",
+        "data.props[].opening",
+        "data.props[].opening.line",
+        "data.props[].opening.overPrice",
+        "data.props[].opening.underPrice",
+        "data.props[].opening.americanPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "playerName",
+        "propType",
+        "book",
+        "gameDate",
+        "closing",
+        "opening"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "sport": "nba",
+        "playerName": "Al Horford",
+        "propType": "assists",
+        "book": "espnbet",
+        "gameDate": "2024-10-22T00:00:00.000Z",
+        "closing": {
+          "line": 1.5,
+          "overPrice": -300,
+          "underPrice": 185,
+          "americanPrice": null
+        },
+        "opening": {
+          "line": 2.5,
+          "overPrice": 125,
+          "underPrice": -170,
+          "americanPrice": null
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_player_props/game_date=2024-10-23/provider_game_id=nba:Indiana Pacers@Detroit Pistons-20241023/page=0001.json.gz",
+      "schema": "owls_historical_player_props.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2024",
+      "requested_at": "2026-09-14T18:25:05.110Z",
+      "archived_at": "2026-09-14T18:25:05.110Z",
+      "path": "/api/v1/history/player-props",
+      "query": {
+        "eventId": "nba:Indiana Pacers@Detroit Pistons-20241023",
+        "sport": "nba",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "296567",
+      "row_count": 100,
+      "extracted_rows": 100,
+      "checksum": "7b72f50a5a5cb7b193508f3cd011b0234bc623c93d93a336d5f18ee5f993e3d3",
+      "fixture": false,
+      "provider_game_id": "nba:Indiana Pacers@Detroit Pistons-20241023",
+      "season": "2024",
+      "game_date": "2024-10-23",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.props",
+        "data.props[].eventId",
+        "data.props[].sport",
+        "data.props[].playerName",
+        "data.props[].propType",
+        "data.props[].book",
+        "data.props[].gameDate",
+        "data.props[].closing",
+        "data.props[].closing.line",
+        "data.props[].closing.overPrice",
+        "data.props[].closing.underPrice",
+        "data.props[].closing.americanPrice",
+        "data.props[].opening",
+        "data.props[].opening.line",
+        "data.props[].opening.overPrice",
+        "data.props[].opening.underPrice",
+        "data.props[].opening.americanPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "playerName",
+        "propType",
+        "book",
+        "gameDate",
+        "closing",
+        "opening"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Indiana Pacers@Detroit Pistons-20241023",
+        "sport": "nba",
+        "playerName": "Aaron Nesmith",
+        "propType": "assists",
+        "book": "espnbet",
+        "gameDate": "2024-10-23T00:00:00.000Z",
+        "closing": {
+          "line": 1.5,
+          "overPrice": 120,
+          "underPrice": -170,
+          "americanPrice": null
+        },
+        "opening": {
+          "line": 1.5,
+          "overPrice": null,
+          "underPrice": -130,
+          "americanPrice": null
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_player_props/game_date=2025-10-21/provider_game_id=nba:Houston Rockets@Oklahoma City Thunder-20251021/page=0001.json.gz",
+      "schema": "owls_historical_player_props.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2025",
+      "requested_at": "2026-09-14T19:31:21.418Z",
+      "archived_at": "2026-09-14T19:31:21.418Z",
+      "path": "/api/v1/history/player-props",
+      "query": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "291785",
+      "row_count": 100,
+      "extracted_rows": 100,
+      "checksum": "3f1cd09b055df01cfe7cda18b126394d1a14266d235fb1e9c407ed218bebbad1",
+      "fixture": false,
+      "provider_game_id": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+      "season": "2025",
+      "game_date": "2025-10-21",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.props",
+        "data.props[].eventId",
+        "data.props[].sport",
+        "data.props[].playerName",
+        "data.props[].propType",
+        "data.props[].book",
+        "data.props[].gameDate",
+        "data.props[].closing",
+        "data.props[].closing.line",
+        "data.props[].closing.overPrice",
+        "data.props[].closing.underPrice",
+        "data.props[].closing.americanPrice",
+        "data.props[].opening",
+        "data.props[].opening.line",
+        "data.props[].opening.overPrice",
+        "data.props[].opening.underPrice",
+        "data.props[].opening.americanPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "playerName",
+        "propType",
+        "book",
+        "gameDate",
+        "closing",
+        "opening"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "playerName": "Aaron Wiggins",
+        "propType": "basketball_player_prop",
+        "book": "espnbet",
+        "gameDate": "2025-10-21T00:00:00.000Z",
+        "closing": {
+          "line": 7.5,
+          "overPrice": null,
+          "underPrice": null,
+          "americanPrice": -3500
+        },
+        "opening": {
+          "line": 7.5,
+          "overPrice": null,
+          "underPrice": null,
+          "americanPrice": -3500
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_player_props/game_date=2025-10-21/provider_game_id=nba:Houston Rockets@Oklahoma City Thunder-20251021/page=0008.json.gz",
+      "schema": "owls_historical_player_props.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-season-2025",
+      "requested_at": "2026-09-14T19:31:26.772Z",
+      "archived_at": "2026-09-14T19:31:26.772Z",
+      "path": "/api/v1/history/player-props",
+      "query": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "limit": 100,
+        "offset": 700
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "291778",
+      "row_count": 88,
+      "extracted_rows": 88,
+      "checksum": "8a51cca295ad331851fe370342e7fd968769bb39637d7206dc7d220d35953d16",
+      "fixture": false,
+      "provider_game_id": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+      "season": "2025",
+      "game_date": "2025-10-21",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.props",
+        "data.props[].eventId",
+        "data.props[].sport",
+        "data.props[].playerName",
+        "data.props[].propType",
+        "data.props[].book",
+        "data.props[].gameDate",
+        "data.props[].closing",
+        "data.props[].closing.line",
+        "data.props[].closing.overPrice",
+        "data.props[].closing.underPrice",
+        "data.props[].closing.americanPrice",
+        "data.props[].opening",
+        "data.props[].opening.line",
+        "data.props[].opening.overPrice",
+        "data.props[].opening.underPrice",
+        "data.props[].opening.americanPrice",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "playerName",
+        "propType",
+        "book",
+        "gameDate",
+        "closing",
+        "opening"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "playerName": "Shai Gilgeous-Alexander",
+        "propType": "steals",
+        "book": "espnbet",
+        "gameDate": "2025-10-21T00:00:00.000Z",
+        "closing": {
+          "line": 0.5,
+          "overPrice": null,
+          "underPrice": null,
+          "americanPrice": -800
+        },
+        "opening": {
+          "line": 0.5,
+          "overPrice": null,
+          "underPrice": null,
+          "americanPrice": -800
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=any__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-props-probe",
+      "requested_at": "2026-09-14T20:54:01.809Z",
+      "archived_at": "2026-09-14T20:54:01.809Z",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "propType": "points",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288737",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "6d9da20444662706032d0c54df4f42f3589335727b6e9bab3dc8cd07d182c589",
+      "fixture": false,
+      "provider_game_id": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+      "season": "2023",
+      "game_date": "2023-12-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2024-01-16/provider_game_id=nba:Boston_Celtics@Toronto_Raptors-20240116__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-props-probe",
+      "requested_at": "2026-09-14T20:51:10.502Z",
+      "archived_at": "2026-09-14T20:51:10.502Z",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Toronto Raptors-20240116",
+        "propType": "points",
+        "book": "draftkings",
+        "opening": true,
+        "limit": 1,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288758",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "7db0ccdd1218e31f736b0ca16cc89e30bee56fc2d1c6a8ddec0fbe6fea5f395d",
+      "fixture": false,
+      "provider_game_id": "nba:Boston Celtics@Toronto Raptors-20240116",
+      "season": "2023",
+      "game_date": "2024-01-16",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-props-probe",
+      "requested_at": "2026-09-14T20:53:18.683Z",
+      "archived_at": "2026-09-14T20:53:18.683Z",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Oklahoma City Thunder@New York Knicks-20250111",
+        "propType": "points",
+        "book": "betmgm",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288748",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "b4fd6434022332f230d1a2e7f6ab5d225fc76ba4f65b2d05103c6f5222e19e58",
+      "fixture": false,
+      "provider_game_id": "nba:Oklahoma City Thunder@New York Knicks-20250111",
+      "season": "2024",
+      "game_date": "2025-01-11",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_prop_snapshots/game_date=2025-01-11/provider_game_id=nba:Oklahoma_City_Thunder@New_York_Knicks-20250111__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-props-probe",
+      "requested_at": "2026-09-14T20:53:18.270Z",
+      "archived_at": "2026-09-14T20:53:18.270Z",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Oklahoma City Thunder@New York Knicks-20250111",
+        "propType": "points",
+        "book": "draftkings",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288749",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "b4fd6434022332f230d1a2e7f6ab5d225fc76ba4f65b2d05103c6f5222e19e58",
+      "fixture": false,
+      "provider_game_id": "nba:Oklahoma City Thunder@New York Knicks-20250111",
+      "season": "2024",
+      "game_date": "2025-01-11",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-props-probe",
+      "requested_at": "2026-09-14T20:53:20.384Z",
+      "archived_at": "2026-09-14T20:53:20.384Z",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:San Antonio Spurs@Oklahoma City Thunder-20251225",
+        "propType": "points",
+        "book": "betmgm",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288744",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "d2c635dd7735b0162025f2de34762dd25c9550dcc2aad1b0d49318506ea891f0",
+      "fixture": false,
+      "provider_game_id": "nba:San Antonio Spurs@Oklahoma City Thunder-20251225",
+      "season": "2025",
+      "game_date": "2025-12-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_prop_snapshots/game_date=2025-12-25/provider_game_id=nba:San_Antonio_Spurs@Oklahoma_City_Thunder-20251225__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-props-probe",
+      "requested_at": "2026-09-14T20:53:19.996Z",
+      "archived_at": "2026-09-14T20:53:19.996Z",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:San Antonio Spurs@Oklahoma City Thunder-20251225",
+        "propType": "points",
+        "book": "draftkings",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "288745",
+      "row_count": 0,
+      "extracted_rows": 0,
+      "checksum": "d2c635dd7735b0162025f2de34762dd25c9550dcc2aad1b0d49318506ea891f0",
+      "fixture": false,
+      "provider_game_id": "nba:San Antonio Spurs@Oklahoma City Thunder-20251225",
+      "season": "2025",
+      "game_date": "2025-12-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ],
+      "first_row_keys": [],
+      "first_row_sample": null
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-24/provider_game_id=nba:Los_Angeles_Lakers@Denver_Nuggets-20231024/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-public-2023",
+      "requested_at": "2026-09-14T22:40:24.552Z",
+      "archived_at": "2026-09-14T22:40:24.552Z",
+      "fetched_at": "2026-09-14T22:40:24.552Z",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "284773",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "a3e97e753a7babdea8354561acdf605fbefb3cb0a11a2ee3fa2e9511dcd496f8",
+      "fixture": false,
+      "provider_game_id": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+      "court_context_game_id": "1037593",
+      "season": "2023",
+      "game_date": "2023-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.betting",
+        "data.betting[].eventId",
+        "data.betting[].sport",
+        "data.betting[].homeTeam",
+        "data.betting[].awayTeam",
+        "data.betting[].gameDate",
+        "data.betting[].spread",
+        "data.betting[].spread.homePct",
+        "data.betting[].spread.awayPct",
+        "data.betting[].total",
+        "data.betting[].total.overPct",
+        "data.betting[].total.underPct",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "homeTeam": "Denver Nuggets",
+        "awayTeam": "Los Angeles Lakers",
+        "gameDate": "2023-10-24T00:00:00.000Z",
+        "spread": {
+          "homePct": 74,
+          "awayPct": 26
+        },
+        "total": {
+          "overPct": 50,
+          "underPct": 50
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-25/provider_game_id=nba:Phoenix_Suns@Golden_State_Warriors-20231025/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-public-2023",
+      "requested_at": "2026-09-14T22:40:25.262Z",
+      "archived_at": "2026-09-14T22:40:25.262Z",
+      "fetched_at": "2026-09-14T22:40:25.262Z",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Phoenix Suns@Golden State Warriors-20231025",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "284772",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "f4ff67d0d539544e62b53d6e6b0b97ba0f3ca2ec30baa7f8fa6676c787585ecf",
+      "fixture": false,
+      "provider_game_id": "nba:Phoenix Suns@Golden State Warriors-20231025",
+      "court_context_game_id": "1037594",
+      "season": "2023",
+      "game_date": "2023-10-25",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.betting",
+        "data.betting[].eventId",
+        "data.betting[].sport",
+        "data.betting[].homeTeam",
+        "data.betting[].awayTeam",
+        "data.betting[].gameDate",
+        "data.betting[].spread",
+        "data.betting[].spread.homePct",
+        "data.betting[].spread.awayPct",
+        "data.betting[].total",
+        "data.betting[].total.overPct",
+        "data.betting[].total.underPct",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Phoenix Suns@Golden State Warriors-20231025",
+        "sport": "nba",
+        "homeTeam": "Golden State Warriors",
+        "awayTeam": "Phoenix Suns",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "spread": {
+          "homePct": 80,
+          "awayPct": 20
+        },
+        "total": {
+          "overPct": 42,
+          "underPct": 58
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-10-22/provider_game_id=nba:New_York_Knicks@Boston_Celtics-20241022/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-public-2024",
+      "requested_at": "2026-09-14T22:48:19.110Z",
+      "archived_at": "2026-09-14T22:48:19.110Z",
+      "fetched_at": "2026-09-14T22:48:19.110Z",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "283454",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "938bacea32201fc997f01d54eea83ab650283b155030e56b0f0b495d917692d7",
+      "fixture": false,
+      "provider_game_id": "nba:New York Knicks@Boston Celtics-20241022",
+      "court_context_game_id": "15907438",
+      "season": "2024",
+      "game_date": "2024-10-22",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.betting",
+        "data.betting[].eventId",
+        "data.betting[].sport",
+        "data.betting[].homeTeam",
+        "data.betting[].awayTeam",
+        "data.betting[].gameDate",
+        "data.betting[].spread",
+        "data.betting[].spread.homePct",
+        "data.betting[].spread.awayPct",
+        "data.betting[].total",
+        "data.betting[].total.overPct",
+        "data.betting[].total.underPct",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:New York Knicks@Boston Celtics-20241022",
+        "sport": "nba",
+        "homeTeam": "Boston Celtics",
+        "awayTeam": "New York Knicks",
+        "gameDate": "2024-10-22T00:00:00.000Z",
+        "spread": {
+          "homePct": 65,
+          "awayPct": 35
+        },
+        "total": {
+          "overPct": 40,
+          "underPct": 60
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2024/entity=historical_public_betting/game_date=2024-10-24/provider_game_id=nba:Boston_Celtics@Washington_Wizards-20241024/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-public-2024",
+      "requested_at": "2026-09-14T22:48:22.412Z",
+      "archived_at": "2026-09-14T22:48:22.412Z",
+      "fetched_at": "2026-09-14T22:48:22.412Z",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Boston Celtics@Washington Wizards-20241024",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "283442",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "f2dffe266ec5707753bbd71a87d06aa2f4ee6232424537961c9e172a0b5063f8",
+      "fixture": false,
+      "provider_game_id": "nba:Boston Celtics@Washington Wizards-20241024",
+      "court_context_game_id": "15907450",
+      "season": "2024",
+      "game_date": "2024-10-24",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.betting",
+        "data.betting[].eventId",
+        "data.betting[].sport",
+        "data.betting[].homeTeam",
+        "data.betting[].awayTeam",
+        "data.betting[].gameDate",
+        "data.betting[].spread",
+        "data.betting[].spread.homePct",
+        "data.betting[].spread.awayPct",
+        "data.betting[].total",
+        "data.betting[].total.overPct",
+        "data.betting[].total.underPct",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Boston Celtics@Washington Wizards-20241024",
+        "sport": "nba",
+        "homeTeam": "Washington Wizards",
+        "awayTeam": "Boston Celtics",
+        "gameDate": "2024-10-24T00:00:00.000Z",
+        "spread": {
+          "homePct": 84,
+          "awayPct": 16
+        },
+        "total": {
+          "overPct": 21,
+          "underPct": 79
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-21/provider_game_id=nba:Houston_Rockets@Oklahoma_City_Thunder-20251021/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-public-betting-probe",
+      "requested_at": "2026-09-14T22:35:16.510Z",
+      "archived_at": "2026-09-14T22:35:16.510Z",
+      "fetched_at": "2026-09-14T22:35:16.510Z",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "284774",
+      "row_count": 0,
+      "extracted_rows": 1,
+      "checksum": "daf20760ee69c4c21e02419956f09c0757fe86fa1afc0bf1e1a5d2f0d1072663",
+      "fixture": false,
+      "provider_game_id": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+      "court_context_game_id": "18446819",
+      "season": "2025",
+      "game_date": "2025-10-21",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.betting",
+        "data.betting[].eventId",
+        "data.betting[].sport",
+        "data.betting[].homeTeam",
+        "data.betting[].awayTeam",
+        "data.betting[].gameDate",
+        "data.betting[].spread",
+        "data.betting[].spread.homePct",
+        "data.betting[].spread.awayPct",
+        "data.betting[].total",
+        "data.betting[].total.overPct",
+        "data.betting[].total.underPct",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Houston Rockets@Oklahoma City Thunder-20251021",
+        "sport": "nba",
+        "homeTeam": "Oklahoma City Thunder",
+        "awayTeam": "Houston Rockets",
+        "gameDate": "2025-10-21T00:00:00.000Z",
+        "spread": {
+          "homePct": 53,
+          "awayPct": 47
+        },
+        "total": {
+          "overPct": 0,
+          "underPct": 0
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2025/entity=historical_public_betting/game_date=2025-10-23/provider_game_id=nba:Detroit_Pistons@Chicago_Bulls-20251023/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "provider": "owls_insight",
+      "backfill_run_id": "owls-2026-09-14-public-2025",
+      "requested_at": "2026-09-14T22:56:42.066Z",
+      "archived_at": "2026-09-14T22:56:42.066Z",
+      "fetched_at": "2026-09-14T22:56:42.066Z",
+      "path": "/api/v1/history/public-betting",
+      "query": {
+        "eventId": "nba:Detroit Pistons@Chicago Bulls-20251023",
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "rateLimitRemainingMonth": "282128",
+      "row_count": 1,
+      "extracted_rows": 1,
+      "checksum": "62c962dd7ad1889c5f205fe6dbc367c101e88fd3d5279bb4d71ad9a348ac45c0",
+      "fixture": false,
+      "provider_game_id": "nba:Detroit Pistons@Chicago Bulls-20251023",
+      "court_context_game_id": "18446827",
+      "season": "2025",
+      "game_date": "2025-10-23",
+      "envelope_keys": [
+        "schema",
+        "provider",
+        "backfill_run_id",
+        "requested_at",
+        "archived_at",
+        "fetched_at",
+        "request",
+        "response_metadata",
+        "row_count",
+        "checksum",
+        "page_index",
+        "offset",
+        "limit",
+        "provider_game_id",
+        "court_context_game_id",
+        "season",
+        "game_date",
+        "fixture",
+        "payload"
+      ],
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.betting",
+        "data.betting[].eventId",
+        "data.betting[].sport",
+        "data.betting[].homeTeam",
+        "data.betting[].awayTeam",
+        "data.betting[].gameDate",
+        "data.betting[].spread",
+        "data.betting[].spread.homePct",
+        "data.betting[].spread.awayPct",
+        "data.betting[].total",
+        "data.betting[].total.overPct",
+        "data.betting[].total.underPct",
+        "data.pagination",
+        "data.pagination.total",
+        "data.pagination.limit",
+        "data.pagination.offset",
+        "data.pagination.hasMore"
+      ],
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row_sample": {
+        "eventId": "nba:Detroit Pistons@Chicago Bulls-20251023",
+        "sport": "nba",
+        "homeTeam": "Chicago Bulls",
+        "awayTeam": "Detroit Pistons",
+        "gameDate": "2025-10-23T00:00:00.000Z",
+        "spread": {
+          "homePct": 21,
+          "awayPct": 79
+        },
+        "total": {
+          "overPct": 0,
+          "underPct": 0
+        }
+      }
+    }
+  ],
+  "snapshot_probe_objects": 14,
+  "snapshot_samples": [
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=any__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "propType": "points",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "row_count": 0,
+      "extracted_rows": 0,
+      "httpStatus": 200,
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ]
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "propType": "points",
+        "book": "betmgm",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "row_count": 0,
+      "extracted_rows": 0,
+      "httpStatus": 200,
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ]
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=caesars__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "propType": "points",
+        "book": "caesars",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "row_count": 0,
+      "extracted_rows": 0,
+      "httpStatus": 200,
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ]
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=draftkings__prop=points__opening=0/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "propType": "points",
+        "book": "draftkings",
+        "limit": 1,
+        "offset": 0
+      },
+      "row_count": 0,
+      "extracted_rows": 0,
+      "httpStatus": 200,
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ]
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2023-12-25/provider_game_id=nba:Boston_Celtics@Los_Angeles_Lakers-20231225__book=draftkings__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Los Angeles Lakers-20231225",
+        "propType": "points",
+        "book": "draftkings",
+        "opening": "true",
+        "limit": 1,
+        "offset": 0
+      },
+      "row_count": 0,
+      "extracted_rows": 0,
+      "httpStatus": 200,
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ]
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_prop_snapshots/game_date=2024-01-16/provider_game_id=nba:Boston_Celtics@Toronto_Raptors-20240116__book=betmgm__prop=points__opening=1/page=0001.json.gz",
+      "schema": "owls_historical_prop_snapshots.v1",
+      "path": "/api/v1/history/props",
+      "query": {
+        "eventId": "nba:Boston Celtics@Toronto Raptors-20240116",
+        "propType": "points",
+        "book": "betmgm",
+        "opening": true,
+        "limit": 1,
+        "offset": 0
+      },
+      "row_count": 0,
+      "extracted_rows": 0,
+      "httpStatus": 200,
+      "payload_key_paths": [
+        "success",
+        "data",
+        "data.eventId",
+        "data.opening",
+        "data.timeRange",
+        "data.timeRange.start",
+        "data.timeRange.end",
+        "data.snapshots",
+        "data.count",
+        "data.limit",
+        "data.offset"
+      ]
+    }
+  ],
+  "coverage_objects": [
+    "raw/source=owls_insight/league=nba/season=all/entity=historical_coverage/game_date=2026-09-14/provider_game_id=history-coverage/page=0001.json.gz"
+  ],
+  "coverage_samples": [
+    {
+      "key": "raw/source=owls_insight/league=nba/season=all/entity=historical_coverage/game_date=2026-09-14/provider_game_id=history-coverage/page=0001.json.gz",
+      "schema": "owls_historical_coverage.v1",
+      "payload": {
+        "success": true,
+        "data": {
+          "datasets": {
+            "games": {
+              "description": "Archived games, box scores and odds snapshots",
+              "sports": {
+                "nba": {
+                  "earliest": "2016-10-25",
+                  "latest": "2026-07-20"
+                },
+                "ncaab": {
+                  "earliest": "2026-01-28",
+                  "latest": "2026-04-07"
+                },
+                "nfl": {
+                  "earliest": "2026-02-08",
+                  "latest": "2026-09-12"
+                },
+                "nhl": {
+                  "earliest": "2026-01-29",
+                  "latest": "2026-08-22"
+                },
+                "ncaaf": {
+                  "earliest": "2026-08-26",
+                  "latest": "2026-09-12"
+                },
+                "mlb": {
+                  "earliest": "2017-04-02",
+                  "latest": "2026-09-13"
+                },
+                "soccer": {
+                  "earliest": "2026-02-18",
+                  "latest": "2026-09-14"
+                },
+                "tennis": {
+                  "earliest": "2026-02-18",
+                  "latest": "2026-09-14"
+                },
+                "cs2": {
+                  "earliest": "2026-02-18",
+                  "latest": "2026-09-30"
+                }
+              }
+            },
+            "playerProps": {
+              "description": "Backfilled closing player prop lines",
+              "sports": {
+                "nba": {
+                  "earliest": "2022-10-18",
+                  "latest": "2026-04-28"
+                },
+                "mlb": {
+                  "earliest": "2024-03-28",
+                  "latest": "2025-10-31"
+                }
+              }
+            }
+          },
+          "notes": [
+            "Dates are the first and last game_date present for that sport, derived from the data. Cached briefly, so `generatedAt` is when the figures were computed, not when you asked.",
+            "Coverage within a range is not guaranteed to be uniform. Backfilled datasets can be sparse at the edges, so probe a specific window before assuming density.",
+            "Player prop history is a backfilled dataset, not a live feed. For current lines use /api/v1/{sport}/props."
+          ],
+          "generatedAt": "2026-09-14T15:56:28.529Z"
+        },
+        "meta": {
+          "cached": true,
+          "cacheTtlSeconds": 21600
+        }
+      },
+      "requested_at": "2026-09-14T17:21:14.035Z"
+    }
+  ],
+  "closing_samples": [
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-24/provider_game_id=nba:Los_Angeles_Lakers@Denver_Nuggets-20231024/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "path": "/api/v1/history/closing-odds",
+      "extracted_rows": 2,
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2023-10-24T00:00:00.000Z",
+        "moneyline": {
+          "home": -200,
+          "away": 165
+        },
+        "spread": {
+          "home": -4.5,
+          "away": 4.5,
+          "homePrice": -115,
+          "awayPrice": -105
+        },
+        "total": {
+          "line": 228.5,
+          "overPrice": -110,
+          "underPrice": -110
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_closing_odds/game_date=2023-10-25/provider_game_id=nba:Atlanta_Hawks@Charlotte_Hornets-20231025/page=0001.json.gz",
+      "schema": "owls_historical_closing_odds.v1",
+      "path": "/api/v1/history/closing-odds",
+      "extracted_rows": 2,
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "book",
+        "source",
+        "gameDate",
+        "moneyline",
+        "spread",
+        "total"
+      ],
+      "first_row": {
+        "eventId": "nba:Atlanta Hawks@Charlotte Hornets-20231025",
+        "sport": "nba",
+        "book": "betmgm",
+        "source": "archive-1",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "moneyline": {
+          "home": 150,
+          "away": -185
+        },
+        "spread": {
+          "home": 4.5,
+          "away": -4.5,
+          "homePrice": -115,
+          "awayPrice": -105
+        },
+        "total": {
+          "line": 236.5,
+          "overPrice": -110,
+          "underPrice": -110
+        }
+      }
+    }
+  ],
+  "public_betting_samples": [
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-24/provider_game_id=nba:Los_Angeles_Lakers@Denver_Nuggets-20231024/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "path": "/api/v1/history/public-betting",
+      "extracted_rows": 1,
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row": {
+        "eventId": "nba:Los Angeles Lakers@Denver Nuggets-20231024",
+        "sport": "nba",
+        "homeTeam": "Denver Nuggets",
+        "awayTeam": "Los Angeles Lakers",
+        "gameDate": "2023-10-24T00:00:00.000Z",
+        "spread": {
+          "homePct": 74,
+          "awayPct": 26
+        },
+        "total": {
+          "overPct": 50,
+          "underPct": 50
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-25/provider_game_id=nba:Atlanta_Hawks@Charlotte_Hornets-20231025/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "path": "/api/v1/history/public-betting",
+      "extracted_rows": 1,
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row": {
+        "eventId": "nba:Atlanta Hawks@Charlotte Hornets-20231025",
+        "sport": "nba",
+        "homeTeam": "Charlotte Hornets",
+        "awayTeam": "Atlanta Hawks",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "spread": {
+          "homePct": 0,
+          "awayPct": 0
+        },
+        "total": {
+          "overPct": 0,
+          "underPct": 0
+        }
+      }
+    },
+    {
+      "key": "raw/source=owls_insight/league=nba/season=2023/entity=historical_public_betting/game_date=2023-10-25/provider_game_id=nba:Boston_Celtics@New_York_Knicks-20231025/page=0001.json.gz",
+      "schema": "owls_historical_public_betting.v1",
+      "path": "/api/v1/history/public-betting",
+      "extracted_rows": 1,
+      "first_row_keys": [
+        "eventId",
+        "sport",
+        "homeTeam",
+        "awayTeam",
+        "gameDate",
+        "spread",
+        "total"
+      ],
+      "first_row": {
+        "eventId": "nba:Boston Celtics@New York Knicks-20231025",
+        "sport": "nba",
+        "homeTeam": "New York Knicks",
+        "awayTeam": "Boston Celtics",
+        "gameDate": "2023-10-25T00:00:00.000Z",
+        "spread": {
+          "homePct": 0,
+          "awayPct": 0
+        },
+        "total": {
+          "overPct": 0,
+          "underPct": 0
+        }
+      }
+    }
+  ],
+  "player_prop_scan": {
+    "size_threshold_bytes": 1800,
+    "candidate_objects": 3677,
+    "listed_player_prop_objects": 7141,
+    "objectsScanned": 3677,
+    "objectsFailed": 0,
+    "checksumPresent": 3677,
+    "emptyRowObjects": 0,
+    "populatedObjects": 3677,
+    "rows": 350062,
+    "unique_player_names": 515,
+    "unique_player_ids": 0,
+    "books": {
+      "espnbet": 266011,
+      "draftkings": 31839,
+      "betmgm": 28454,
+      "caesars": 23758
+    },
+    "propTypes": {
+      "points": 44324,
+      "rebounds": 36855,
+      "points_rebounds_assists": 34027,
+      "points_rebounds": 33984,
+      "assists": 30141,
+      "threes": 28348,
+      "points_assists": 27118,
+      "steals": 24581,
+      "assists_rebounds": 22971,
+      "blocks": 20971,
+      "steals_blocks": 16976,
+      "turnovers": 16391,
+      "basketball_player_prop": 5057,
+      "1st_quarter_total": 3331,
+      "total_field_goals_made_(incl._overtime)": 1058,
+      "field_goals": 1041,
+      "rebounds_milestones": 341,
+      "points_milestones": 335,
+      "points_+_rebounds_milestones": 320,
+      "points_+_assists_+_rebounds_milestones": 301,
+      "points_+_assists_milestones": 299,
+      "assists_milestones": 298,
+      "3-point_field_goals_milestones": 274,
+      "steals_milestones": 227,
+      "points_milestones_-_1st_quarter": 200,
+      "blocks_milestones": 199,
+      "assists_milestones_-_1st_quarter": 85,
+      "total_first_quarter_points": 9
+    },
+    "openingPresent": 350061,
+    "closingPresent": 350062,
+    "snapshotAtPresent": 0,
+    "earliestGameDate": "2023-10-24",
+    "latestGameDate": "2026-04-28",
+    "earliestRequestedAt": "2026-09-14T16:58:46.531Z",
+    "latestRequestedAt": "2026-09-14T20:03:33.442Z",
+    "seasons": {
+      "2023": {
+        "rows": 78599,
+        "unique_games": 276,
+        "unique_players": 404
+      },
+      "2024": {
+        "rows": 229131,
+        "unique_games": 321,
+        "unique_players": 395
+      },
+      "2025": {
+        "rows": 42332,
+        "unique_games": 82,
+        "unique_players": 271
+      }
+    }
+  }
+}

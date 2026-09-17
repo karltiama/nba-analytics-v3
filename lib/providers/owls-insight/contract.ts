@@ -21,6 +21,7 @@ export const OWLS_GAMES_ARCHIVE_SCHEMA = 'owls_historical_games.v1';
 export const OWLS_SNAPSHOT_ARCHIVE_SCHEMA = 'owls_historical_prop_snapshots.v1';
 export const OWLS_CLOSING_ODDS_ARCHIVE_SCHEMA = 'owls_historical_closing_odds.v1';
 export const OWLS_PUBLIC_BETTING_ARCHIVE_SCHEMA = 'owls_historical_public_betting.v1';
+export const OWLS_ODDS_ARCHIVE_SCHEMA = 'owls_historical_odds.v1';
 
 export const OWLS_SOURCE_PREFIX = 'owls_insight';
 export const OWLS_FIXTURE_SOURCE_PREFIX = 'owls_insight_fixture';
@@ -30,6 +31,7 @@ export const OWLS_ENTITY_PROP_SNAPSHOTS = 'historical_prop_snapshots';
 export const OWLS_ENTITY_GAMES = 'historical_games';
 export const OWLS_ENTITY_CLOSING_ODDS = 'historical_closing_odds';
 export const OWLS_ENTITY_PUBLIC_BETTING = 'historical_public_betting';
+export const OWLS_ENTITY_ODDS = 'historical_odds';
 
 export const OWLS_PROTECTED_SOURCES = ['existing_ingestion', 'balldontlie'] as const;
 export const OWLS_PROTECTED_ENTITIES = [
@@ -377,6 +379,7 @@ export const SEASON_PHASE_WINDOWS: Record<
   string,
   { playInStartEt: string; playoffStartEt: string }
 > = {
+  '2022': { playInStartEt: '2023-04-11', playoffStartEt: '2023-04-15' },
   '2023': { playInStartEt: '2024-04-16', playoffStartEt: '2024-04-20' },
   '2024': { playInStartEt: '2025-04-15', playoffStartEt: '2025-04-19' },
   '2025': { playInStartEt: '2026-04-14', playoffStartEt: '2026-04-18' },

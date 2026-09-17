@@ -1,3 +1,4 @@
+import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
 import {
   CHECKLIST_ITEM_IDS,
   COACHMARK_IDS,
@@ -158,7 +159,19 @@ export function markChecklistItem(id: ChecklistItemId): OnboardingLocalState {
   });
 }
 
+function previewFlagFromWindow(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return new URLSearchParams(window.location.search).get('preview');
+  } catch {
+    return null;
+  }
+}
+
 export function requestTourReplay(): OnboardingLocalState {
+  if (shouldSuppressProductPreviewAnalytics(previewFlagFromWindow())) {
+    return readOnboardingState();
+  }
   return patchOnboardingState({
     replay: true,
     checklistDismissed: false,
