@@ -46,10 +46,12 @@ function Forbidden({
 
 export default async function ModelLabPage() {
   const auth = await requireAdminPage();
-  if (!auth.ok && auth.reason === 'unauthenticated') {
-    redirect('/login?next=%2Fadmin%2Fmodel-lab');
+  if (!auth.ok) {
+    if (auth.reason === 'unauthenticated') {
+      redirect('/login?next=%2Fadmin%2Fmodel-lab');
+    }
+    return <Forbidden reason={auth.reason} email={auth.email} />;
   }
-  if (!auth.ok) return <Forbidden reason={auth.reason} email={auth.email} />;
 
   const catalog = loadCatalog();
   const status = await loadModelLabStatus();

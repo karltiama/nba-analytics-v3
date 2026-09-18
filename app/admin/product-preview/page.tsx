@@ -40,10 +40,12 @@ function Forbidden({
 
 export default async function ProductPreviewPage() {
   const auth = await requireAdminPage();
-  if (!auth.ok && auth.reason === 'unauthenticated') {
-    redirect('/login?next=%2Fadmin%2Fproduct-preview');
+  if (!auth.ok) {
+    if (auth.reason === 'unauthenticated') {
+      redirect('/login?next=%2Fadmin%2Fproduct-preview');
+    }
+    return <Forbidden reason={auth.reason} email={auth.email} />;
   }
-  if (!auth.ok) return <Forbidden reason={auth.reason} email={auth.email} />;
 
   return <ProductPreviewHub />;
 }
