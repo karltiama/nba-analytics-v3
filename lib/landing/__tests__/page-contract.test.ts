@@ -33,4 +33,37 @@ describe('landing honesty contract (E10)', () => {
     expect(featured).not.toMatch(/live odds and analysis/);
     expect(cards).toMatch(/samplePreview \? '\/betting'/);
   });
+
+  it('frames teammate impact as historical context, not a prediction or tip', () => {
+    const page = read('app/page.tsx');
+    const section = read('components/landing/WowyImpactSection.tsx');
+    const demo = read('lib/landing/wowy-demo.ts');
+    expect(page).toMatch(/WowyImpactSection/);
+    expect(section).toMatch(/WowyResults/);
+    expect(section).toMatch(/href="\/wowy"/);
+    expect(section).toMatch(/Historical context only/);
+    expect(section).toMatch(/not shared-court possessions/);
+    expect(section).not.toMatch(/Start winning/i);
+    expect(section).not.toMatch(/good bet/i);
+    expect(demo).toMatch(/classifyWowyGames/);
+    expect(demo).toMatch(/summarizeWowyPair/);
+    expect(demo).toMatch(/Illustration only/);
+    expect(demo).not.toMatch(/will score/i);
+    expect(demo).not.toMatch(/causes/i);
+  });
+
+  it('labels Parlay XRay landing preview as illustration and reuses real panels', () => {
+    const page = read('app/page.tsx');
+    const section = read('components/landing/LandingParlayXrayPreview.tsx');
+    const demo = read('lib/landing/parlay-xray-demo.ts');
+    expect(page).toMatch(/LandingParlayXrayPreview/);
+    expect(section).toMatch(/illustration only/i);
+    expect(section).toMatch(/Design preview — fictional layout data/);
+    expect(section).toMatch(/ExtractedLegsPanel/);
+    expect(section).toMatch(/XrayAnalysisPanel/);
+    expect(section).toMatch(/href="\/parlay-xray"/);
+    expect(section).not.toMatch(/Start winning/i);
+    expect(demo).toMatch(/Illustration only/);
+    expect(demo).toMatch(/buildFullPreviewFixture/);
+  });
 });

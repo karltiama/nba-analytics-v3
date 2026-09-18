@@ -1,9 +1,11 @@
 import { Activity } from 'lucide-react';
 import { FeaturedGames } from '@/components/landing/FeaturedGames';
 import { LandingHero } from '@/components/landing/LandingHero';
+import { LandingParlayXrayPreview } from '@/components/landing/LandingParlayXrayPreview';
 import { LandingPropsTablePreview } from '@/components/landing/LandingPropsTablePreview';
 import { LandingTrendingPlayerStripPreview } from '@/components/landing/LandingTrendingPlayerStripPreview';
 import { MarketingHeader } from '@/components/landing/MarketingHeader';
+import { WowyImpactSection } from '@/components/landing/WowyImpactSection';
 
 export default function LandingPage() {
   return (
@@ -20,6 +22,10 @@ export default function LandingPage() {
         <LandingPropsTablePreview />
 
         <LandingTrendingPlayerStripPreview />
+
+        <WowyImpactSection />
+
+        <LandingParlayXrayPreview />
         </div>
       </main>
       

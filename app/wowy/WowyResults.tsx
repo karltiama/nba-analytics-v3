@@ -66,6 +66,7 @@ export function WowyResults({
   teammateNbaId,
   view,
   onView,
+  linkGames = true,
 }: {
   summary: WowyPairSummary;
   drill: 'with' | 'without';
@@ -75,6 +76,8 @@ export function WowyResults({
   teammateNbaId?: string | null;
   view: 'perGame' | 'perMinute';
   onView: (value: 'perGame' | 'perMinute') => void;
+  /** Landing/demo previews pass false so fictional game ids are not deep-linked. */
+  linkGames?: boolean;
 }) {
   const blocked = !wowyShowsComparisonHero(summary.support.tier);
   const low = summary.support.tier === 'low_support';
@@ -335,9 +338,13 @@ export function WowyResults({
                     </>
                   )}
                   <td className="px-4 py-2">
-                    <Link href={gameDetailHref(g.gameId)} className="text-[#075B5C] hover:underline font-mono text-xs">
-                      {g.gameId}
-                    </Link>
+                    {linkGames ? (
+                      <Link href={gameDetailHref(g.gameId)} className="text-[#075B5C] hover:underline font-mono text-xs">
+                        {g.gameId}
+                      </Link>
+                    ) : (
+                      <span className="font-mono text-xs text-[#8aa0a3]">{g.gameId}</span>
+                    )}
                   </td>
                 </tr>
               ))}
