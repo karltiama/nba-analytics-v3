@@ -1,0 +1,26 @@
+{
+  "fixture_id": "syn-dup-subject-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "duplicate_subject_pgl",
+  "input": {
+    "mode": "validate_subjects",
+    "subjects": [
+      {
+        "game_id": "SYN8",
+        "team_id": "1",
+        "player_entity_id": "s1",
+        "player_id": "1"
+      },
+      {
+        "game_id": "SYN8",
+        "team_id": "1",
+        "player_entity_id": "s1",
+        "player_id": "2"
+      }
+    ]
+  },
+  "expected": {
+    "hard_failure": "PGL_DUPLICATE_SUBJECT_ENTITY"
+  }
+}

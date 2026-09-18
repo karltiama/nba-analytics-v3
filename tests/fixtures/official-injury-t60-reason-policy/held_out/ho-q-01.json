@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-q-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "questionable_health",
+  "source_player_state_id": "1037609|4|McGowens, Bryce|Questionable|Injury/Illness - Left Ankle; Sprain",
+  "input": {
+    "game_id": "1037609",
+    "team_id": "4",
+    "season": "2023",
+    "player_name_raw": "McGowens, Bryce",
+    "player_entity_id": "37b5e83d-ce0a-5cd7-8d52-befd3ed2d076",
+    "status_raw": "Questionable",
+    "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "NON_BINARY_EXPLICIT",
+    "reason_side_eligibility": "NON_BINARY_UNKNOWN",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_BINARY_UNKNOWN"
+  }
+}

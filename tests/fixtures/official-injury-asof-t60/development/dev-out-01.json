@@ -1,0 +1,2712 @@
+{
+  "fixture_id": "dev-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "out_at_cutoff",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21707975",
+    "season": "2025",
+    "start_time": "2026-05-10T23:30:00Z",
+    "cutoff_at": "2026-05-10T22:30:00Z",
+    "away_team_id": "27",
+    "home_team_id": "18",
+    "away_abbr": "SAS",
+    "home_abbr": "MIN",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "47392c861d15a0e241bf7bd30cf3bf42bea8cbaff38e60a961570eec522394a0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_00AM/Injury-Report_2026-05-09_08_00AM.pdf",
+        "source_sha256": "1f5bd3f9707450ec9d58d988aebf8923f583bfcef031a2184412126892ee7dea",
+        "report_published_at": "2026-05-09T12:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1e5153396e7df0d1e1eb8835504c25b6def50dc1aa22522617b09211b9086c57"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "f72d511a9e41e502667c996fae4484341fcb64332ff3973c6c74c8b9b4368a5e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_30AM/Injury-Report_2026-05-09_08_30AM.pdf",
+        "source_sha256": "cba797265f905ce069ac4c352a5afade5525db61ecd86c82c7836aba47c0e1fa",
+        "report_published_at": "2026-05-09T12:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "71670e5ccdba97bcf6c61e59546d87406713219251e146c5447fac618dd32e41"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "5a5bfbd9ce7c4d5b24102db99aec22ad3e95cf90fd8fab522b430a8c2a1b6035",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_00AM/Injury-Report_2026-05-09_09_00AM.pdf",
+        "source_sha256": "4cd878e190f6698fec4b284da686f2a6063b12f1513e7afd558b720efbad18a0",
+        "report_published_at": "2026-05-09T13:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "835e375b3a8c72670f3df859796d37403a027518aa8352fabcf4901a8fc5d2a9"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "00e1c438265a68c0ac1bc6733fec0cbed5bd61774eced10b4be61880d5799196",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_30AM/Injury-Report_2026-05-09_09_30AM.pdf",
+        "source_sha256": "0c4c9e08f4b70203e160c651699f7fd64a544ad4661d457469debc308c48f676",
+        "report_published_at": "2026-05-09T13:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "edff46a336ac71fd3d8aed375f6b88b9cc38d82847acd9ba7446bb817ff96abd"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "eb8a0b2bf5b1a1460df30862d1517e9676341f0f8083e763bdcbec92a7441531",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_00AM/Injury-Report_2026-05-09_10_00AM.pdf",
+        "source_sha256": "be385c4ad1c3046df399c3f52b29913601961087ba370086731fbf8b801f1e11",
+        "report_published_at": "2026-05-09T14:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "07c7c362827ea176a0922d4116b5923fd7809bad3b932e070e96d30088d7e287"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "be9458c6ca4a458c5a3aa9ab8461e052f3ccfaa6ac834e84067e60fa5a5890a6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_30AM/Injury-Report_2026-05-09_10_30AM.pdf",
+        "source_sha256": "416fb1db44d8b9d0e69fd99696f4a53518772dd481dabc46a1d4b83177f0fa0c",
+        "report_published_at": "2026-05-09T14:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "965062f2e6a035eb095fe0c752461accb3e818a225d8d332414da533eecaca17"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "9cdf2b7785993f6554cd3e82df367eddf91d17afa61d5ecd2baa350c5fe38aaa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_00AM/Injury-Report_2026-05-09_11_00AM.pdf",
+        "source_sha256": "c09bfd0a9c98cb61d3b7cdc2f05d4dc2ffbdcb969bdb16481d39442b83c93610",
+        "report_published_at": "2026-05-09T15:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ee414123fd9c5a1d91f9a762810438742307dfea1f1088cd37692a57890a7663"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "5f66abc092cb13ccfdb67842f11059c36578bdec0e700e92b51da971d61f1212",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_30AM/Injury-Report_2026-05-09_11_30AM.pdf",
+        "source_sha256": "6762273e1d45225f2a916f1030e10e59ad7d65c0138d5e7eb04c36d2d04af27d",
+        "report_published_at": "2026-05-09T15:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "5d28839e2d81d18e0222dd5428265bb5cc8e31dccd9dbd8e3b9a0960ecade9eb"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "42400fe8cf9f90611d62d11c4ef605d2e62d755d23d89ed11b6540f23a218be0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=12_00PM/Injury-Report_2026-05-09_12_00PM.pdf",
+        "source_sha256": "3f956959d8bb1fa29116f8106f66dc9d8e8b79e2375328ee0065c24ffe28c498",
+        "report_published_at": "2026-05-09T16:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4c1368e38d5e39c04837261bc0bd01499f5c3513985531751083b272c4c733e7"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "013954b809e0fc49274f8da618abde8aad466af753df6583e135adfe52ea6ddc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=12_30PM/Injury-Report_2026-05-09_12_30PM.pdf",
+        "source_sha256": "a0a3afb65de950b2b9476b29402cabad378fc5d65ff3666722d30fa6a4452d5a",
+        "report_published_at": "2026-05-09T16:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f9df55d979734ae7d21baf5d263420b5693ee4e373bbddb940e98712a739c52d"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "dd94fcafd0074530b5c45074d786b26c2ff26c631274fcc29afefd95b89e340f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=01_00PM/Injury-Report_2026-05-09_01_00PM.pdf",
+        "source_sha256": "db7767f87d33c61194ac2e1e5b2502a8017d0dc89ee583b0c890a3fbdda9a98d",
+        "report_published_at": "2026-05-09T17:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "137e400d506d41294cef0ae3c991cd3c133f743415fa36f28ef4083beca9b708"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "07154265e619c695e20d73ac478562c465d16ba5f2226cc186bb3c181a277dab",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=01_30PM/Injury-Report_2026-05-09_01_30PM.pdf",
+        "source_sha256": "4b80d1ff7553b282e7ae8ea9b939ff2911677e2938882804570af0de8bbc14a1",
+        "report_published_at": "2026-05-09T17:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4b76f3abfb4881fc82c6165c846e23c2e4ed89a0f543e1dee8d905d74edcca64"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "50cbdb1284bf1338867ab5d60f7c1ca6ed857edb601d3adabce2fdefb574817d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=02_00PM/Injury-Report_2026-05-09_02_00PM.pdf",
+        "source_sha256": "3e4f4e084be90bfe003c81d484f154d41d8fc4dac43011dddbf0d5f4680dbd18",
+        "report_published_at": "2026-05-09T18:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "066036d8709edd1d410010c0534de46bddb1761565ba2f7c0debd60569b52d1b"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "69c649f913b8d42df9bc83079a38b433dad189b070656811bdd1c8024f22a291",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=02_30PM/Injury-Report_2026-05-09_02_30PM.pdf",
+        "source_sha256": "2191e5cc4bec1627e3d2a617e388828943977dee64134affba9503ed6da14954",
+        "report_published_at": "2026-05-09T18:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4ce990ebb914583b2ab64cde445d15aa3f09568d46f8df7b4ffaf07ca2737930"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "29f519095c8cc26c75e4a953c6ee2464a7df1f85692268d57e95b0f932893a0d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=03_00PM/Injury-Report_2026-05-09_03_00PM.pdf",
+        "source_sha256": "d5cc7b83c64748b5de54543003a2fdd3e35a8c36842409f6f22add8c15f27ad9",
+        "report_published_at": "2026-05-09T19:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "6b055d4ea62a8ef6d6eac212ba8c4bed2ebcf3bbebe13e6cbe4edf26db6ffbef"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "ffa4655e9c6820b56aa9acc872776a3b73066235b0c995e6387ce06f3f2f007e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=03_30PM/Injury-Report_2026-05-09_03_30PM.pdf",
+        "source_sha256": "1f83c1729bbbb1c816ffd4f37f4638cec0a05256a333ba23a159c3ff1c5badf9",
+        "report_published_at": "2026-05-09T19:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1ee6c4c6fbd6ddd189a5785c44f0a469b788b63d3078e96447c2d2c2459cfab5"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "321cb5fc056aeb5582cdb9c2e4c02d6d3b8854a4551c91de10646acc4212b5c6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=04_00PM/Injury-Report_2026-05-09_04_00PM.pdf",
+        "source_sha256": "39ed07d44f22831e4cf4f9c5666e8ca0d9b9e1a9eb188ae8bbb9c9613c816c90",
+        "report_published_at": "2026-05-09T20:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "2272eb0c0d77db54c043084a1d92de7b3394cce02585f87ab135db2ffdc6a809"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "91a49cb04e7560d7e62956f01735d3df56ccc3b5399d02c2e8345973ff68a81e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=04_30PM/Injury-Report_2026-05-09_04_30PM.pdf",
+        "source_sha256": "ef62d39ca30918d810356ebd3a71a1d84d627e4eff124d66aa94cdff90a8847b",
+        "report_published_at": "2026-05-09T20:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d29f2dce4067f5e21c503d38ac06dabfa6e202ad998b4768d04d46a2efcdbb1f"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "ad37b518ae40d5d6e8163b4df956724e7e63ad2cbc282667f1d0311499752488",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_00PM/Injury-Report_2026-05-09_05_00PM.pdf",
+        "source_sha256": "3b7423c4c472eb94b160b0aeecedc8f70ba435d36a760ca5fa802f4323e5d076",
+        "report_published_at": "2026-05-09T21:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "8f6a3f9db774fed394908de71486b5e19e05d6c23133873ca4b75259a13e843c"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "301ebb3174fd76194af0ba021820290e9c5a0315df987fc0f73e3da81ed6e9b9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_15PM/Injury-Report_2026-05-09_05_15PM.pdf",
+        "source_sha256": "618dab39fd753d1b087c108a3062b77379288a357d4d64a9124ddd0f0435c390",
+        "report_published_at": "2026-05-09T21:15:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7715353b0eaf9bb178232de0d25c3303a62b0e103feb6c26722d798aa2f06cd9"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "a86873656b2f1c533c5626721d63e35410b7e82f21349f130ab1e504bf892af3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_30PM/Injury-Report_2026-05-09_05_30PM.pdf",
+        "source_sha256": "5096ef79341c5b435d6125689d3398cbff4b39a137aad780350ad341fc8587c1",
+        "report_published_at": "2026-05-09T21:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d18ed8c56d62a4bd432776d938deae58b9f829edf5f54a7af65c3de6f35b3128"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "9ee6ab0d3294bec9424c6e8e9cbbd2fb458075a16126393dc7b1593357641504",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_45PM/Injury-Report_2026-05-09_05_45PM.pdf",
+        "source_sha256": "2aff22e99eee9c12368d2c47fa0c3f38c08f87d7980817cdf5d4b7fe31eeff36",
+        "report_published_at": "2026-05-09T21:45:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d41b8c9ef902426664e8f0cbca76f9657b0d4b0bbc7b82c7045fed49679986c8"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "86ea58777ea87b4b2659deb18a4911a18c5f898a83928e4619bfebd2dd1f75a6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=06_00PM/Injury-Report_2026-05-09_06_00PM.pdf",
+        "source_sha256": "0ee7b06b465282854a83d75fec8c3c0f63df7209c1e1340b378d9ea05e4eab33",
+        "report_published_at": "2026-05-09T22:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 11
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "85c90e88c0493bde2fd4379d886b07ec70d154a6bb0d4f91fea96d71d26fddd9"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "379daf8d90f177515e863533655b2758debcb4ff24a9905bcd4f7db321ecb474",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=06_30PM/Injury-Report_2026-05-09_06_30PM.pdf",
+        "source_sha256": "d65e4b143f49327400ee011904adf26f36009690805c780053cc35ee16c7de96",
+        "report_published_at": "2026-05-09T22:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "b29f0d77cc5425f18618f36663cb3cf4b50625d73f9389cd5412d0e0d344a300"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "34dc9069dc932e142e85cc004ed49738ec2cfbaab112b341cc13deedb8050644",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=07_00PM/Injury-Report_2026-05-09_07_00PM.pdf",
+        "source_sha256": "2fd026a59d2865ad8b1bdb7c00f9d4404c3d23fa670a310f4bf6d9bec2a91f46",
+        "report_published_at": "2026-05-09T23:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "ad35c3255003bc79fb4bf469128ca75dd3b9cb6783d0ab3c1836c0351a2b97d8"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "513171656a6469996117056346f704245da6a89c8272315f2ffcab4a4dcc9d07",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=07_30PM/Injury-Report_2026-05-09_07_30PM.pdf",
+        "source_sha256": "b3a9f90eb5a781dc5f070ad0a17762a3c76544494799d44d3f2d91f2f859d937",
+        "report_published_at": "2026-05-09T23:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "697a884ee91eb6053f740c01fa49da69e9af933789f2a2bf78b848903998268d"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "056e7c622ff67c39bd6be3ce687fbe6537ad0ce3744031f0c98743b1b0a423ac",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_00PM/Injury-Report_2026-05-09_08_00PM.pdf",
+        "source_sha256": "a673e0b533fea860467fb931b5f933f77ef0cf1905fe32effb8948d4710d2f51",
+        "report_published_at": "2026-05-10T00:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "dfbbac67cd2d5ea465e8faa7f7bca17d43bd3a7cd9d5748885b19554d1ab283d"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "1faf451983eabed3e830c65df18111c3f7bb46f9ff82c153b6c87628eff09804",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_30PM/Injury-Report_2026-05-09_08_30PM.pdf",
+        "source_sha256": "7e78637b631fff54052801125edb72c0e26f14126014b92beccc76e42505a0c2",
+        "report_published_at": "2026-05-10T00:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "0091892f880109e2f4b78fbcc1045565a6b3fcc8f0235e3f6f242683a041cee1"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "df5a3ec8ab141295fa7f3b593043a0bedad2f05253f03349e9b3527d67d70f04",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_00PM/Injury-Report_2026-05-09_09_00PM.pdf",
+        "source_sha256": "c870844b846549ed999e1c10607336445e7c940da62e3a5c68566378ffff3e78",
+        "report_published_at": "2026-05-10T01:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "3fc7d1ac2049e9071cb8d046fdcb8f2f65e2955a7d8436687c579835107ae142"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "57e14a4d8df39687a9c77e0a9be58e886f89130dff1ed71b928a92fcc27a0c85",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_30PM/Injury-Report_2026-05-09_09_30PM.pdf",
+        "source_sha256": "cfc5311153784fe225a72a449ef1245a0aca76e3fe1a735206d3dcadc7798145",
+        "report_published_at": "2026-05-10T01:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "44185674c33e8a6f9d42f0c369105983e456ed998ec4e5e2df3ce24a30445556"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "a3161912fc0dd34403ff27ca37e6e15ad2f83270c8074f505fbcc8335a6a2502",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_00PM/Injury-Report_2026-05-09_10_00PM.pdf",
+        "source_sha256": "17174ddd8e73da25117718ec2d3a399558e20a0ef21b75f4e483eeb0ceec3261",
+        "report_published_at": "2026-05-10T02:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "ca333e4691fa0a7290d5bcdc38df489a4c16e2dcdf35c76f9399e16b70fcad89"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "4f52a3bf5840298d3355759f79e638e749830b6535db549d55838555a9531ea9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_30PM/Injury-Report_2026-05-09_10_30PM.pdf",
+        "source_sha256": "55ff2aab2baaef095baa5a2d2947c83a889f8f2270afa7205c5cf81e1b2f45cb",
+        "report_published_at": "2026-05-10T02:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "59056312846cb8c518dcc79a8bc859b9679a11e76434cc6a323e7099a2562643"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "33345c6519138830bd33ef1b48794aba5e7b4ed2135727767088135bcae7c777",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_00PM/Injury-Report_2026-05-09_11_00PM.pdf",
+        "source_sha256": "36388810844a8ac589502a0292c6b2941f7b578c2f1e1584711f803d6bc820a2",
+        "report_published_at": "2026-05-10T03:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "6feaa61d8e1d58ec261ba0f13e64baab306ab0379dc38095f79ff171029991c4"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "158cd703523ec1bb4cd62fe145f35558c641783f7c31e05adc8f8ab6be84ba7a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_30PM/Injury-Report_2026-05-09_11_30PM.pdf",
+        "source_sha256": "bbb17c6db43a4ca2149c1ff127f7b132b708d896dbd958fca6e1a68ea2122cce",
+        "report_published_at": "2026-05-10T03:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "a91b7030bae92c850640278e0a1b61ca9d68860254df4bf873d382363f271ad1"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "8fd923a806cedf173bba4ea0ce068ceb34d07f1a99dc334b6a88df8b481fbb51",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_00AM/Injury-Report_2026-05-10_08_00AM.pdf",
+        "source_sha256": "c64f0b8b098328f7f9d74ac07d596c98dcd4796134c8db3114883299c07aaef7",
+        "report_published_at": "2026-05-10T12:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "5b49b9a7a2ad16e3e6a81cd680d3bfb0c70876d0d0e7f969e8d7231feb82b464"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "dfdfde309baab33776c8f440bf5189518c6739734a8a8d4266ef5565b757d27b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_30AM/Injury-Report_2026-05-10_08_30AM.pdf",
+        "source_sha256": "47669e700bc046d31916751c4caae4a57d877904534060e852d03c96c061ea74",
+        "report_published_at": "2026-05-10T12:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "24701033f39ff21cd34415a779e1703b3fba554f6671be6893b5e86f36cea103"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "7fa6fa95efe72898036c8eb6e156440a7e2748c9d3572a75cb857c755c3b3a11",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_00AM/Injury-Report_2026-05-10_09_00AM.pdf",
+        "source_sha256": "9c6c86e33dad1fa835727dbde41661df9ef14dd9ea444a44c179e55e4e9f6974",
+        "report_published_at": "2026-05-10T13:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "cc267b91fc53cee49e49dd29639b8e29e60a285ce4366b3b0ea57997baa2966e"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "8b1a68bc23452b04c4eae5e2dc4ee9d28945a54aa2c095d72cc54228ba6372d7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_30AM/Injury-Report_2026-05-10_09_30AM.pdf",
+        "source_sha256": "064037e94c4fef721c6b58ec5f51e3666ae5c6fe69b0b445510ac3b641a7119a",
+        "report_published_at": "2026-05-10T13:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "e33b03f2f245f2119707ae84318b1bb73a9a1a0dd05e4ac962e02442e783f4ae"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "d7d47439790e96e1e49e015c02ddcb33bde82510bc79c4660941bda285c4466e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_00AM/Injury-Report_2026-05-10_10_00AM.pdf",
+        "source_sha256": "c77e44315553a69d86753dc9a2b5e7872ff3a38723f63a423adaba81f94cf48d",
+        "report_published_at": "2026-05-10T14:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "680ec8f07ccf02baf295531bd5022b7062d97a0d87737c6805c1b5c4a09c0e7e"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "74545d942ee1fc39aa8659f61e63c3b081d1ebbeda7345434decd2f7d7fcdea4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_30AM/Injury-Report_2026-05-10_10_30AM.pdf",
+        "source_sha256": "56f8576737b1754f0063cf72f2f534c3a67921ffbfe542e7e6adc4ddc7eecfc4",
+        "report_published_at": "2026-05-10T14:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "03f576ca725c4a4ae466384906d5b2b3dabf3215d00abb6b87076349d308b202"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "b1445ed5eff1f5a33365f376a01fe47e6e20b491d9ce0f8181c86b0052499d8f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_00AM/Injury-Report_2026-05-10_11_00AM.pdf",
+        "source_sha256": "65034c2cab2e37ee39ac54ff63e5fe7202a8c21efa5643031d10d25f16139a4d",
+        "report_published_at": "2026-05-10T15:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "1bace02d91c5c3cadcf5c65033ba96c511a00a184119ccb02f2905e440d18b89"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "bb1ac6b53dd638f45ab07c045afc6433af9d9e0abac363fcd1118b0643b083a4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_30AM/Injury-Report_2026-05-10_11_30AM.pdf",
+        "source_sha256": "da3680cba899511cc5d02c9966b286a3336adc3b34a637ff8abc4af865107b42",
+        "report_published_at": "2026-05-10T15:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "249ad220f8b4c1f3d42ec580088e40105e9f349c0d3c92579b8992d993342389"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "c7408d619fa7802c3d1d77713ba1d77ed826816e1ad9918d03b7815f9a43eeed",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=12_00PM/Injury-Report_2026-05-10_12_00PM.pdf",
+        "source_sha256": "506e868751dfdbeeaebf4dbcd91fbf80268f6874703887b3ee52f8fadb19b1f9",
+        "report_published_at": "2026-05-10T16:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "e119d0d70c46d5006b2155461c25e277d4c78482557d8d3fcfa6e5f97fcfda70"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "8622e175bc614d9a94648a772fc467e6e4eb72346ea5a3996e14286483964ab6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=12_30PM/Injury-Report_2026-05-10_12_30PM.pdf",
+        "source_sha256": "d963054973fe5f1517efb60d2c3b78082d9045f122468ddf0eb7fefe941d0781",
+        "report_published_at": "2026-05-10T16:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "e8e081519972f6f215e68cfd10a18795838647dc2c7634220f295c5b51a7b26d"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "6d818fe65abd22b32500b76e21b3ee053f8ca17485e3674c811c24e59e396ec0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=01_00PM/Injury-Report_2026-05-10_01_00PM.pdf",
+        "source_sha256": "73fa59eacaf1a6daabb04ee12a80e63827d709b71dc361a13fa077742e90d606",
+        "report_published_at": "2026-05-10T17:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "7b4235fa0cc18190147301f8e61f2a2cc111ec7d3571e17eae1f3befb5c7d42d"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "f385859f10b9e0f05fccb39e8cd107929eff6e25016d6f7313d0874d55794693",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=01_30PM/Injury-Report_2026-05-10_01_30PM.pdf",
+        "source_sha256": "28495e46cb73445569714445f6a8da6a1ff518b47dca5d518ff1ed5b6fcf80f9",
+        "report_published_at": "2026-05-10T17:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "d831157b86a844d43dbc5984485a9a0a1df65d298609fa1a4b94b291ddeeeada"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "36df6ba219b343ae0e2e73d4532d70380458bd5f00cbfe7701a6160a24108152",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=02_00PM/Injury-Report_2026-05-10_02_00PM.pdf",
+        "source_sha256": "7d90782c9dad57d5c4d61f7409a874d973edb6b19dbc566638a7ed2babf05aed",
+        "report_published_at": "2026-05-10T18:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "844f55ccac6878673432446d2660d928ca2b349f08c351d23a1511450a441c38"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "a84df5e22489d7eb83fe0dbcdb1e4a3014175bd64d5923f9a20b36e38aaa4124",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=02_30PM/Injury-Report_2026-05-10_02_30PM.pdf",
+        "source_sha256": "4cd1511b431e9e897f716b2a4db415a4a9b239c376a884820a3623c63e72ee6c",
+        "report_published_at": "2026-05-10T18:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "895b51492662e1bb62ca4bd4dcc5f99c1c02daa86eab3aeddcfeb4e66457c434"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "540e09ee57d782868ade632b4bb7ea1a54a611dc1d64fe0914fa3fd4a1773f14",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=03_00PM/Injury-Report_2026-05-10_03_00PM.pdf",
+        "source_sha256": "8797412bd761e9f09c1da72c0b143d893c76f8e232c50e35f1280936b8fda062",
+        "report_published_at": "2026-05-10T19:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "cb27a2020265ad73c13acfdab402ad68d77f129cbb1648db4f4fe710ced89f5c"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "917a45249138d12cd1d8eb9fde86e8de82221883d8c108516ee2028532e9cb83",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=03_30PM/Injury-Report_2026-05-10_03_30PM.pdf",
+        "source_sha256": "a9e2d5756b6b0ec974ac1b2f8f8bc3fc49f1ed81a6a8a19b3f602fdb79f45353",
+        "report_published_at": "2026-05-10T19:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "672c18f4321389d0286b22cd15838f2644cc912d4d47587142630cad24a7d1d3"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "1e457e1140bb33c6af66ef661340edf0f2ab36a126342e074b9beeddb5cc5ddc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=04_00PM/Injury-Report_2026-05-10_04_00PM.pdf",
+        "source_sha256": "71dca0a99249884aba4e841be00dd40ca3aeed1ff791c4ce10fb72afbc8c5d3f",
+        "report_published_at": "2026-05-10T20:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "4a2f9b0c11eb17a8cb6c5588f8c5f48c2ac7fe40dbc3e2586f12a7fff40865d6"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "7882c78e5bf7e7d226366a415b694ce119ea7929101955bc18080fc4ec120363",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=04_30PM/Injury-Report_2026-05-10_04_30PM.pdf",
+        "source_sha256": "255cf5c83e10745e3dd50cf17b4ff2e7aae2aa6ba66449a0f6c30ab38e18123e",
+        "report_published_at": "2026-05-10T20:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "e11a5f7b01b3f644ad0a6f8483ae187121ff62d4d833f94d10ebeed1bedc57c3"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "d6a8de99d99c0e0f4fc053e58e0c146efce9061cac6469f6f3654b0717390506",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_00PM/Injury-Report_2026-05-10_05_00PM.pdf",
+        "source_sha256": "7b38aa9196fa83f2f8bacd035c5392acea4bfa609fd353454b98a21d32c60931",
+        "report_published_at": "2026-05-10T21:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "f3d4d8215a7b8f9846fcd889a6007be536b46eecd23b4b16c16accb35e4e5a79"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "6744a25c3f3e3dcb7eab4241a36417e8162dda2a482e4ef5f720ae27eaf674db",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_15PM/Injury-Report_2026-05-10_05_15PM.pdf",
+        "source_sha256": "7efcb1c5f7241f0e398aa061f2ea04b6141ea5bebf394cd82f103cb90e501d50",
+        "report_published_at": "2026-05-10T21:15:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "760dd430aa81d7b21d0fc5ecee0cdffc0cd1452a93aa41aa9a8023f0b636a29a"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "a3dff415e00cf8b6fa330817b1ee4bac32e0c537b57e720b895b71c6581437e1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_30PM/Injury-Report_2026-05-10_05_30PM.pdf",
+        "source_sha256": "50d630d655efdf488b35a8f6608282e38b56a8d781d3dea74d1669a9ee7fefe9",
+        "report_published_at": "2026-05-10T21:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "ab0a0a7566537a0c6a1e024708c9d1c6b91348f7eec2ee61c709d213f01da5b6"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "dd369e792c6dffc7e35e9a4fbdcfef5ddc9d8860547405b903e8f0aa89fe2b2e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_45PM/Injury-Report_2026-05-10_05_45PM.pdf",
+        "source_sha256": "8144ba863131363c2f66ebaff36010b009502b3367d283d3ecdf9cf27ccbe1af",
+        "report_published_at": "2026-05-10T21:45:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "7174c1b47aa20f72ff7c29ff98e353c56047f0b3af55d61dbd22859121b4e397"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "34ea1746dccac9ed7018e882307fa5868029d2fdfb1d2e3a92dec75945d8511e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=06_00PM/Injury-Report_2026-05-10_06_00PM.pdf",
+        "source_sha256": "8f8c8c054b1f27f4cfb361ec90bd8d7c1e9d78f48877083e2cdd3c6db1f12d0d",
+        "report_published_at": "2026-05-10T22:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "a453c5545e212dc83f4c906cb8e2e2a34a047fa379da53e1b2e89aeeed39041e"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "338349f4cd30a3ce32de028a87bad15b2915d015a90266c8b2ca1356e85b6816",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=06_30PM/Injury-Report_2026-05-10_06_30PM.pdf",
+        "source_sha256": "40d3c67b2292e93ac37fcefcb381da16a86627173c7fb3f6885c91973349ae64",
+        "report_published_at": "2026-05-10T22:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "e22c6e9abc50e4aec4ac6c661cf260cfae22513cb24ae9ba6a01c8deba06cf93"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "e0e7d3724ba20fb8d674c85ba2920b51bfa51a90b1282c0c1dd667ea9dd4646b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=07_00PM/Injury-Report_2026-05-10_07_00PM.pdf",
+        "source_sha256": "88137de3c68ee6d8a4f84753181da28b48662025cfb606a35250ba7a0eba69fe",
+        "report_published_at": "2026-05-10T23:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "fd40839b4bcf37f9b97fa0efd6f0f89db67098534a7d5bee8a3e746986e5f4d4"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "986980f48063c0d423828e3a5390b0dd5ec06688356a09436d5b7663c13f4d9b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=07_30PM/Injury-Report_2026-05-10_07_30PM.pdf",
+        "source_sha256": "0615804a8942d4b408dee91704d70a288f17f9456617580d7c588ffe49bf552b",
+        "report_published_at": "2026-05-10T23:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "3c4b2f040d33e08612282e3921b31bab086831f88dea7da836dcffaacdbb85fa"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "fbf2d8e164309e501dc67b6da20a017000363d2eb5ddc0efb3be75fe868c1dea",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_00PM/Injury-Report_2026-05-10_08_00PM.pdf",
+        "source_sha256": "50685fecb4ab26e34009b2e89e5cb45e6efed4d81042851c2189452ad6562659",
+        "report_published_at": "2026-05-11T00:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "3085c16f7617dfbe6855a94b46095515af7f225da719a0ad4a44960d3f55ed5e"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "41e1453f75e7f7de5b7e1ff9c5705e1076de8ae19cb42e2287145b3526d3e340",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_30PM/Injury-Report_2026-05-10_08_30PM.pdf",
+        "source_sha256": "742b83c5926998d57618f528987199d33d7501c221a17efc3b248d25eac4a871",
+        "report_published_at": "2026-05-11T00:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "128952ebdc1ef3acc38cb3cbe8c5f285cc43c6fb09d91f304d6af521ae66b7a2"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "59b64bc8e52dd87058d25d63459406fabd1634f927af1e2c8bab4ad3806cd516",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_00PM/Injury-Report_2026-05-10_09_00PM.pdf",
+        "source_sha256": "439bf6b522d15a19b34c06c4fbd8780bc0d76273b4b0e9078846dc61a9be1682",
+        "report_published_at": "2026-05-11T01:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "aa4ffb7bc45ab6973d7ca8b0cf799fd7dce2bc511a989157e4fdd717d87aa921"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "7ac3c3a09f89834fe89ea1d1cc82f3685445f9f5f75d45149422cabd52cff0c2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_30PM/Injury-Report_2026-05-10_09_30PM.pdf",
+        "source_sha256": "1c1139fce26bf18dc8b70055046c7b574dfbb7a4fd0ecff8d23f4712b13077e9",
+        "report_published_at": "2026-05-11T01:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "d9f969fd58be0a222c761bf934c5851a4511db08f9b880aedd5b45161095eaa6"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "3b9ad15aba2f4a482e0fc65f9bfac46d1cf3b98a37be50d5c0c38794c47ccfc9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_00PM/Injury-Report_2026-05-10_10_00PM.pdf",
+        "source_sha256": "0e8ed34d963a8f3c78da730885bb051c8929ad1d888143d5bedb1c9161a6fe78",
+        "report_published_at": "2026-05-11T02:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "8fefb8718fb22660cfa016ee0f3be593e886b760c89302de67657022bc989778"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "20854467ab55c53a21ddcc16b17e15165ffbb5136bc334b964a9285096db0236",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_30PM/Injury-Report_2026-05-10_10_30PM.pdf",
+        "source_sha256": "b9011babe33d6ad4fdead465d757704ac108a224614b33e61fce335d56fe4398",
+        "report_published_at": "2026-05-11T02:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "3e72b516c0febf7506e8934ff2ac7d8ea630b3b1d40d16fbb4c553671fb07d63"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "963b86e83fa608da033f53a93a66d9d67a16a04a8a84d9d379b294fc657dd2eb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_00PM/Injury-Report_2026-05-10_11_00PM.pdf",
+        "source_sha256": "caa0a2f207e14fa964dd16afbefb779d8822cca426319f6884f62d4f0e6248f1",
+        "report_published_at": "2026-05-11T03:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "2dc639e9c73735c0d988aab5b7aa516a88646532b447683a6f1a290c0570221d"
+      },
+      {
+        "game_id": "21707975",
+        "source_game_block_id": "0c24a78262cfef4b0a3f3200f7d2aa5b52c21f73d1a19b2d2d225120b24fc273",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_30PM/Injury-Report_2026-05-10_11_30PM.pdf",
+        "source_sha256": "f401507a90f7f0045674d6cb60869fdb319e29c2a63fb00dba69eb927c96e076",
+        "report_published_at": "2026-05-11T03:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "SAS@MIN",
+        "away_abbr": "SAS",
+        "home_abbr": "MIN",
+        "away_team_id": "27",
+        "home_team_id": "18",
+        "teams": {
+          "18": {
+            "team_id": "18",
+            "abbr": "MIN",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "DiVincenzo, Donte",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles Tendon; Repair",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          }
+        },
+        "semantic_hash": "3f91563e6f189410cedcd9c9ca9364374396daf77b37a95f621f857c804a54c0"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-10T22:00:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "TEAM_BLOCK_MISSING",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 0,
+    "home_player_count": 1,
+    "selected_source_game_block_id": "34ea1746dccac9ed7018e882307fa5868029d2fdfb1d2e3a92dec75945d8511e"
+  }
+}

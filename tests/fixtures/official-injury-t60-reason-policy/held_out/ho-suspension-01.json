@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-suspension-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "suspension",
+  "source_player_state_id": "1037603|15|Morant, Ja|Out|League Suspension",
+  "input": {
+    "game_id": "1037603",
+    "team_id": "15",
+    "season": "2023",
+    "player_name_raw": "Morant, Ja",
+    "player_entity_id": "751a030c-1940-525c-bd69-1ae5adc733fc",
+    "status_raw": "Out",
+    "reason_raw": "League Suspension",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "SUSPENSION",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "KEYWORD_SUSPENSION",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

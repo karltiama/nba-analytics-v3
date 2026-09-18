@@ -1,0 +1,18 @@
+{
+  "expected": {
+    "raw_delta": -5.0
+  },
+  "fixture_id": "syn-sign-negative",
+  "input": {
+    "with_values": [
+      15.0,
+      15.0
+    ],
+    "without_values": [
+      10.0,
+      10.0
+    ]
+  },
+  "kind": "raw_delta_only",
+  "split": "synthetic"
+}

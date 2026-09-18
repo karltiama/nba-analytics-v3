@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-inj-mgmt-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "injury_management_out",
+  "source_player_state_id": "1037629|17|Middleton, Khris|Out|Injury/Illness - Right Knee; Injury Management",
+  "input": {
+    "game_id": "1037629",
+    "team_id": "17",
+    "season": "2023",
+    "player_name_raw": "Middleton, Khris",
+    "player_entity_id": "7566c4a2-891c-553c-b8f8-6f695b59a8fc",
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - Right Knee; Injury Management",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_MANAGEMENT",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}

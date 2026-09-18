@@ -1,0 +1,17 @@
+{
+  "expected": {
+    "observed_s2": 0.0,
+    "variance_source": "POOLED_ZERO_VARIANCE_FALLBACK",
+    "variance_used": 25.0
+  },
+  "fixture_id": "syn-zero-variance-fallback",
+  "input": {
+    "sigma2_pool": 25.0,
+    "values": [
+      7.0,
+      7.0
+    ]
+  },
+  "kind": "state_variance_rule",
+  "split": "synthetic"
+}

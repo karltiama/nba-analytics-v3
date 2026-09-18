@@ -1,0 +1,1971 @@
+{
+  "fixture_id": "dev-submitted-09",
+  "kind": "real",
+  "split": "development",
+  "category": "ordinary_submitted",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "18446826",
+    "season": "2025",
+    "start_time": "2025-10-22T23:30:00Z",
+    "cutoff_at": "2025-10-22T22:30:00Z",
+    "away_team_id": "23",
+    "home_team_id": "2",
+    "away_abbr": "PHI",
+    "home_abbr": "BOS",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "68619b3a763b95a5410f3ca540becc7bb55b3c1d57167f9ce4a4a97ccc0b757c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=08AM/Injury-Report_2025-10-21_08AM.pdf",
+        "source_sha256": "21d2497d1c3f21989ea28d4f4aa4feef379ee51dcafb5f4e591ee9452bfcda7e",
+        "report_published_at": "2025-10-21T12:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7682ec853f99169f0f8c2855ea6b105473796429e7d608348c68d14ed1d87ae2"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "1ffaffc9100cac71bdd16e735c44d5582e56a0b6c5e468183d54c047edeb8b0f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=09AM/Injury-Report_2025-10-21_09AM.pdf",
+        "source_sha256": "f148b3a2bcdb58f071925643a34a4c6d3495f95f60e01d835176bc632847a095",
+        "report_published_at": "2025-10-21T13:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d307de8c367a62e000430f293d8a3d1de47fe8ab112f819b4990f62485150439"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "d0d3d0a9d78233a15cbeb624a0bd52f2219697311370c04d4a8b4ddbe5b78aad",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=10AM/Injury-Report_2025-10-21_10AM.pdf",
+        "source_sha256": "b2b44c75f18dbf0a76ea51d093bb200305573a830726312f60d4b9b4fc722735",
+        "report_published_at": "2025-10-21T14:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "5ec885cf4053bb765ac3737add581d2b5062bdebfe842f3ffda30103e416ac06"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "af83bf59368071b6db759327b4278f941124cdcaa27e226a78f3a6602630c203",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=11AM/Injury-Report_2025-10-21_11AM.pdf",
+        "source_sha256": "ec96c733d36caca41a6d426ecba76148051973bb34e904777b2a864864d65fcd",
+        "report_published_at": "2025-10-21T15:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "086b2a14e73e7dd820156c40aebc67f802806a2a326df9b270bf449191b9617e"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "0cff7e4757813ab1706a415da645273b053278d9fcd7c0d04ede71538a09ed54",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=12PM/Injury-Report_2025-10-21_12PM.pdf",
+        "source_sha256": "4dafb0e52017670fa5b8d9d608ebfef33e93f4f9f59d82c91575c0848e07c17d",
+        "report_published_at": "2025-10-21T16:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "6a14ce18b63fa5b8c3ae3ab7734942ddcb5c3bba5a23175ad2b16c13ccd51380"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "df0a8d9e5872c6121bada0f13bd245a6ab8fa3a1c0635b47bc6934c904c11a18",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=01PM/Injury-Report_2025-10-21_01PM.pdf",
+        "source_sha256": "5be6f259e3634c8986743ee13a1c6b61a0a6d134490b4b59b8a4d6e0c4b58194",
+        "report_published_at": "2025-10-21T17:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "aa6ec72ccc669d3fab47f51bcfdee8e2e84d5c6253dd6171bb75eaf3e86c5649"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "09b891e3e6b337f0ddffa81a4fdea34b01db66c987cd14c0cda5264b281c1939",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=02PM/Injury-Report_2025-10-21_02PM.pdf",
+        "source_sha256": "4f3cb4fb49cfe8985e1f9135f6a1fec0f82d6d146dd1bb930314f8f7009d5f43",
+        "report_published_at": "2025-10-21T18:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "db84a4e3f6f23b85d23ec79802a566f680a7894dee0ab5b7c670801e168371b0"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "4449637d3611e01a1846a119567e9e3adbfa88a11328349050a3f7f778b2e104",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=03PM/Injury-Report_2025-10-21_03PM.pdf",
+        "source_sha256": "58679f5299bafe303a9988bf51ca49d3a42d575ef6619507bf9e7f79188862f2",
+        "report_published_at": "2025-10-21T19:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e327f1b616383ea360ebe86972afe4b0e3579946da0c6c0dbc7de46bc45ecc27"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "bbf1f912c558ba8a5248517c45a80d5a6f57d815c84192cf1808b35881e76662",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=04PM/Injury-Report_2025-10-21_04PM.pdf",
+        "source_sha256": "bac296e797a343b3508569355ccd106385db25f7c37950dcdb94bdf84aeb118d",
+        "report_published_at": "2025-10-21T20:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f20347cc389b35c4ad8307b9f1592f8e8dfa7bc37ed320f1fbbc5e09c2076652"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "1a88e9bb2db221397c041923bdc04c7d99606cf70dbefb35c66bd3c8979ef133",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=05PM/Injury-Report_2025-10-21_05PM.pdf",
+        "source_sha256": "8485d77f7a327f862c7af8501a0e8ab650d5603bb9e904016a02ebb8db336ec6",
+        "report_published_at": "2025-10-21T21:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "af7b1880c80576a136d99fc650d809e58e04be4bcef2b7447b2cdb5859726d9c"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "c7bd58979f93caf6d242ea426db38e0a32200b39e048504f1702bf3aeaabd9e0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=06PM/Injury-Report_2025-10-21_06PM.pdf",
+        "source_sha256": "8a7893637086d2eb7e1d547beb518d6a0d6e431cb1a7e8b057cb6dca7ac993cf",
+        "report_published_at": "2025-10-21T22:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "985a4a33d663e3027da496830dab782463fd62a42e9c92f181ecae81fa4b8058"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "dcc575c496a59487fd3f807ad6e27e3b4af7c37101201ea97ba2012aec8873dc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=07PM/Injury-Report_2025-10-21_07PM.pdf",
+        "source_sha256": "9618ecfff933e6c8b70db936746abafceee2175ae5003e7fe3b9c89b4a7c720c",
+        "report_published_at": "2025-10-21T23:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "25e183ea3fdeeb05de0faebfed016d9a8ac4ef27a5ce4bbcdc2b6b0c4ffeeb19"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "13560d5f86e8a31d49973a6d749776c215dad1fce2367379294ea67c84cdfd77",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=08PM/Injury-Report_2025-10-21_08PM.pdf",
+        "source_sha256": "e9cab97cdc1a55f6f87ca3c2270578be7a8dbde9408a3a1ecea98cd5dcddea00",
+        "report_published_at": "2025-10-22T00:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c873c0b666a7cbc3692d6a899e88be610ec8bed420ff9468d7c21a83f9bf2083"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "008c6a2b3b71a13135a8e7097b9f5d94a2461c6b8430bfabd3c9f8a505bb0d90",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=09PM/Injury-Report_2025-10-21_09PM.pdf",
+        "source_sha256": "1e5dd3a478b04615e8924622458a482c0940386a14d79b62de0b2eab8cd82fe7",
+        "report_published_at": "2025-10-22T01:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b5ab7cd73a40676567e97dd700e1a3d2f95f26742f4149c48e52e8a983f92ba3"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "dda5ed49bd9c96f065de5f882956ce9bd0e0b9da65925a698fddb22e8bbe6e52",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=10PM/Injury-Report_2025-10-21_10PM.pdf",
+        "source_sha256": "74f976baa5f1e26d9342557d9c14df3dbcef6e98ca0f5144761452837178ac79",
+        "report_published_at": "2025-10-22T02:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "518e6fdd64a2baf31d4f460cfbbd57efdb01e2598209fe9cdaaed728b0a608b3"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "52091b8a00e5d9b2fcaa233444095b353cfa52b68135bcfb6fa12fcc9fc65f3c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=11PM/Injury-Report_2025-10-21_11PM.pdf",
+        "source_sha256": "dad083fb499c644d8158032b66d3e81d4f56c529b5f18b858d5cc8b6bde85731",
+        "report_published_at": "2025-10-22T03:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 3,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 3,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 3,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 3,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e28f66a429739f01edf53ec5f158ad803e61c70f479a967106d5dba5279e3b8d"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "3f7efebe8bbd30bfa7935b49eb0b5f2aa6dd1bdd6ff41833d2f3321bf8fe979d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=08AM/Injury-Report_2025-10-22_08AM.pdf",
+        "source_sha256": "c48b08f93179287f3065ac480a78f727745a65983a0dd77f7bb6a04ad62f6ebf",
+        "report_published_at": "2025-10-22T12:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "aee0f7ad2b9a8ca5ad70ba49637991784de1cb5bbd6f30385a16c85349855cd0"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "e8180530e78be11709c48add1f50d7f888b05479a24256aa19e714de7f2e989c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=09AM/Injury-Report_2025-10-22_09AM.pdf",
+        "source_sha256": "9131dde7bd1eb876d5ee228f8c234d85d42f4c57269409ef4bbabcbf0730a1ab",
+        "report_published_at": "2025-10-22T13:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "27e6ac29a2c8a9ff0ec4363efb0947d2454e08e8e76cc6521b92ef58a18def7b"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "a9ae41adafcacf541d6f7fd836c37d21e51d4ba6c4d2985a308a82b2a0c622c3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=10AM/Injury-Report_2025-10-22_10AM.pdf",
+        "source_sha256": "c0d93dda3a9fc6337f93db78043e991e6c6a0e281361b447d66495cda2795aa6",
+        "report_published_at": "2025-10-22T14:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3d1edf812757d7b0796502a01dfa09bcde70f9e329b6a4aae03520cc33c2d0cb"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "d598a648189ef8a9f70315b19855a0bb86eebd8d36a461fbb8929c9947ac6ef7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=11AM/Injury-Report_2025-10-22_11AM.pdf",
+        "source_sha256": "67621a279a9f50fbdbf5707d9600898626602ed4942f378d306473810f53c281",
+        "report_published_at": "2025-10-22T15:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "645ff74a56dea688342b79600ecaaf8b25f644c1d7ab1ff0dfb00aed9688986c"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "563136fd0d35856fbdcf91a3afda167d11c3fc6905be52ee8068b23cfe377bdb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=12PM/Injury-Report_2025-10-22_12PM.pdf",
+        "source_sha256": "edbadcfdcf732804f9d2d7150cad1bde4c6a6c377af91e44ca6b515aaf522b73",
+        "report_published_at": "2025-10-22T16:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a3c4ab6b8cc9d390972d412f4a333967341a22b71213ce9272d0a41f06dd4d7d"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "863dd2f6f56ac67e99fe2869414c1e8b576a2275c42f344efe5fce4423e56faa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=01PM/Injury-Report_2025-10-22_01PM.pdf",
+        "source_sha256": "b698300e55cd8a1d34a182d1c41c76faa52fa6e52fb950969c71d8476172a33b",
+        "report_published_at": "2025-10-22T17:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c0a9bb11bb3b5596d45e519788ae51d9bb667332fab4e176609e6b29f50c3707"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "518337f37ffd731b9e021b02cfff4cb823bf515719398a7435eab238dc387c60",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=02PM/Injury-Report_2025-10-22_02PM.pdf",
+        "source_sha256": "833aa5635ee1aed7e16bacb6112777fc4725f028a7cd4328e0e5226676413d65",
+        "report_published_at": "2025-10-22T18:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "07c94e2f158bcafc40a84efd9d7cf0cadb9134db280fcee699ad5d949ac923e2"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "a7dceb375467cb82ffc8de63d800a9e9c64a2f810f9b5861a6b874fac18b49e7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=03PM/Injury-Report_2025-10-22_03PM.pdf",
+        "source_sha256": "0c5104a7bad87b88775caa5f5e2bf25690b56cbf599dcdf3c724fa1aa3f3eb4b",
+        "report_published_at": "2025-10-22T19:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a618c37ab9150e8758a4afffd0d22374d9fa87bc281f98cd6c0576a0991d960f"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "0f3cf90361423dabc97d82eb2cd430b623431bfcf2da4d9de2ec922907fddc97",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=04PM/Injury-Report_2025-10-22_04PM.pdf",
+        "source_sha256": "e3d9984c378e457fb07b2c8de0242abc1b1f53a0ddadbdccf4e6d56da8c21344",
+        "report_published_at": "2025-10-22T20:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "eba323897d994c6ec4cc0b2448284b04cdecd082cd627e0344021b5895cc15cb"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "f4ece6399d6c091cb3a4331b5003d809c5aefa87441a87faf56a07de9e3555f7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=05PM/Injury-Report_2025-10-22_05PM.pdf",
+        "source_sha256": "03864a0abb77643f0d3a5d7e050fff206e60aa38fc78af1953006ee0d06d2259",
+        "report_published_at": "2025-10-22T21:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f5f5399cbed3510948785abf63372615f5c7a18e371b840783bbd7b1c07dc9d3"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "5aecd4c72d4811881c08f42e17ff454f9640356ce939973d5df2dd2309294497",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=06PM/Injury-Report_2025-10-22_06PM.pdf",
+        "source_sha256": "cabb5878ecf5622bee9be9082b835cc53c0e461af8d9173c22e3c6a305c41a54",
+        "report_published_at": "2025-10-22T22:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5f90fb50d3cead76041f0e37ea3dc8d45c201bf2820ba350b5a35e1832b38603"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "25199795a003d84f0113c77df7d9abb969180b4d31f0961d5b10e5aea067fbf3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=07PM/Injury-Report_2025-10-22_07PM.pdf",
+        "source_sha256": "a99d0bdad3f2730ba824de9b9d8e6cb03c680b18973498a4209e9de5b91257b9",
+        "report_published_at": "2025-10-22T23:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ec16688f434953d13f879590ee99b826ebde3cabec22b160b4a7572f259acae6"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "1df2c97da935a2a1bbc267cff50ec754f5a0bb76fcb6c7b5f4454c7d377dc1ab",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=08PM/Injury-Report_2025-10-22_08PM.pdf",
+        "source_sha256": "9466f19ec6f7b37bb04cb30892a5fe57f0187950a39bb509521610203959324c",
+        "report_published_at": "2025-10-23T00:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "18fad26f745e9e96dbd35022953763316cdc4b111d50ad69b287929f7916455f"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "ef7f20692f5e64c26a18fbae90825a18844c02cf77b767e7a7f4892fe70edf89",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=09PM/Injury-Report_2025-10-22_09PM.pdf",
+        "source_sha256": "4f55f3d22535815aca3564b1151ae7fdccfa769ae0588ae2bb4b6b034e827748",
+        "report_published_at": "2025-10-23T01:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "60763e385c24b5b339d21dcf87cd4578580fae9652f3c2733d63e4fe50a2a5a2"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "4a3c20ab83bf10ce55659a6c946196ec6c56ad3853acac6650288917415a5af3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=10PM/Injury-Report_2025-10-22_10PM.pdf",
+        "source_sha256": "0347a9a506a8849b2adbcb110047fdd2cc97645e0cc285e7cad753aff1a54ca4",
+        "report_published_at": "2025-10-23T02:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "df25383bbb2813ac64a74f17af3b10e051af9577f2ad2e4c3a0a0e6c030d0f8b"
+      },
+      {
+        "game_id": "18446826",
+        "source_game_block_id": "40ee5c0d4bf3e4750c0673402f63446933c3833dff6fccc76af2dba04e59d36b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=11PM/Injury-Report_2025-10-22_11PM.pdf",
+        "source_sha256": "0e8c59c24f07eeba397a986067f6193a6acc672b93c2d610b85d7346b432739f",
+        "report_published_at": "2025-10-23T03:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "PHI@BOS",
+        "away_abbr": "PHI",
+        "home_abbr": "BOS",
+        "away_team_id": "23",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Brown, Jaylen",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Tatum, Jayson",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Achilles; Repair",
+                "page_number": 2,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "George, Paul",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "McCain, Jared",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right thumb; surgery recovery",
+                "page_number": 2,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "Watford, Trendon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; tightness",
+                "page_number": 2,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "728790d79df7d616276a6f412877390bcd8c1a94cf657bc754a21198759bdc8c"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2025-10-22T21:30:00.000Z",
+    "snapshot_age_minutes": 60,
+    "age_bucket": "AGE_31_60_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 3,
+    "home_player_count": 2,
+    "selected_source_game_block_id": "f4ece6399d6c091cb3a4331b5003d809c5aefa87441a87faf56a07de9e3555f7"
+  }
+}

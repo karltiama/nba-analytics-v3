@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-entity-only-01",
+  "kind": "real",
+  "split": "development",
+  "category": "entity_only_health_out",
+  "source_player_state_id": "18447644|25|Lillard, Damian|Out|Injury/Illness - Left Achilles Tendon; Injury Management",
+  "input": {
+    "game_id": "18447644",
+    "team_id": "25",
+    "season": "2025",
+    "player_name_raw": "Lillard, Damian",
+    "player_entity_id": "483e0509-f0be-5566-bff7-3b0300db5338",
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - Left Achilles Tendon; Injury Management",
+    "identity_bucket": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_MANAGEMENT",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "fixture_id": "dev-u2-00-01",
+  "kind": "real",
+  "split": "development",
+  "category": "u2_00_unique",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "1037593|14|Castleton, Colin",
+  "input": {
+    "game_id": "1037593",
+    "team_id": "14",
+    "team_abbreviation": "LAL",
+    "game_date_et": "2023-10-24",
+    "season": "2023",
+    "player_name_raw": "Castleton, Colin",
+    "name_key": "colin castleton",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "unique",
+      "playerId": "56677738",
+      "playerEntityId": "fec4ff53-b093-57a4-b8c3-464e3c40daeb",
+      "minutes": "00"
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "fec4ff53-b093-57a4-b8c3-464e3c40daeb",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_CANONICAL_ENTITY",
+    "player_entity_id": "fec4ff53-b093-57a4-b8c3-464e3c40daeb",
+    "serving_player_id": "56677738",
+    "confidence_class": "B",
+    "provenance_category": "U2_SAME_GAME",
+    "independent_source_count": 1,
+    "quarantine_reason": null
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_UNIQUE_DNP_00",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "UNIQUE_CANDIDATE",
+    "serving_projection": true
+  }
+}

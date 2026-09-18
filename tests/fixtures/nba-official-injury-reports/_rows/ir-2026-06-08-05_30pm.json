@@ -1,0 +1,23 @@
+{
+  "fixture_id": "ir-2026-06-08-05_30pm",
+  "title_raw": "Injury Report: 06/08/26 05:30 PM",
+  "page_count": 1,
+  "rows": [
+    {
+      "page_number": 1,
+      "visual_row_index": 1,
+      "row_kind": "player",
+      "game_date": "2026-06-08",
+      "game_time_et": "20:30",
+      "matchup": "SAS@NYK",
+      "team_name": "New York Knicks",
+      "player_name_raw": "Robinson, Mitchell",
+      "status_raw": "Available",
+      "reason_raw": "Injury/Illness - Right Hand; Fractured Right 5th Metacarpal",
+      "game_date_printed_on_row": true,
+      "game_time_printed_on_row": true,
+      "matchup_printed_on_row": true,
+      "team_printed_on_row": true
+    }
+  ]
+}

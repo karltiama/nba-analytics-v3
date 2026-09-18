@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "estimated_delta": null,
+    "estimation_status": "NO_HISTORY",
+    "raw_delta": null,
+    "ui_display_eligible": false
+  },
+  "fixture_id": "syn-no-history",
+  "input": {
+    "with_n": 0,
+    "without_n": 0
+  },
+  "kind": "status_counts",
+  "split": "synthetic"
+}

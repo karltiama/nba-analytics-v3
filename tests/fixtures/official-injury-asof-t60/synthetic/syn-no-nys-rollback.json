@@ -1,0 +1,99 @@
+{
+  "fixture_id": "syn-no-nys-rollback",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "no_nys_rollback",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "SYN2",
+    "season": "2024",
+    "start_time": "2025-01-15T01:00:00.000Z",
+    "cutoff_at": "2025-01-15T00:00:00.000Z",
+    "away_team_id": "1",
+    "home_team_id": "2",
+    "away_abbr": "AAA",
+    "home_abbr": "BBB",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "source_game_block_id": "early",
+        "s3_key": "ke",
+        "report_published_at": "2025-01-14T20:00:00.000Z",
+        "game_date": "2025-01-14",
+        "matchup": "AAA@BBB",
+        "away_abbr": "AAA",
+        "home_abbr": "BBB",
+        "away_team_id": "1",
+        "home_team_id": "2",
+        "teams": {
+          "1": {
+            "team_id": "1",
+            "abbr": "AAA",
+            "side": "away",
+            "nys": false,
+            "structural_conflict": false,
+            "players": [
+              {
+                "player_name_raw": "X, X",
+                "status_raw": "Out",
+                "reason_raw": "injury"
+              }
+            ]
+          },
+          "2": {
+            "team_id": "2",
+            "abbr": "BBB",
+            "side": "home",
+            "nys": false,
+            "structural_conflict": false,
+            "players": []
+          }
+        },
+        "semantic_hash": "579b9bf5371cf546bd98536de9e8ef55d9afd8da61266ecd424a62e06be372b4"
+      },
+      {
+        "source_game_block_id": "late",
+        "s3_key": "kl",
+        "report_published_at": "2025-01-14T23:30:00.000Z",
+        "game_date": "2025-01-14",
+        "matchup": "AAA@BBB",
+        "away_abbr": "AAA",
+        "home_abbr": "BBB",
+        "away_team_id": "1",
+        "home_team_id": "2",
+        "teams": {
+          "1": {
+            "team_id": "1",
+            "abbr": "AAA",
+            "side": "away",
+            "nys": true,
+            "structural_conflict": false,
+            "players": []
+          },
+          "2": {
+            "team_id": "2",
+            "abbr": "BBB",
+            "side": "home",
+            "nys": false,
+            "structural_conflict": false,
+            "players": [
+              {
+                "player_name_raw": "Y, Y",
+                "status_raw": "Available",
+                "reason_raw": null
+              }
+            ]
+          }
+        },
+        "semantic_hash": "7ddfe3735b46f64f085e79efa565e9795ea19c34acffbee0a3b3e77da88a51dc"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2025-01-14T23:30:00.000Z",
+    "away_team_state": "NOT_YET_SUBMITTED",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "note": "must NOT roll back to earlier submitted Out for AAA"
+  }
+}

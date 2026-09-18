@@ -1,0 +1,30 @@
+{
+  "fixture_id": "syn-overlap-rest-inj-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "precedence_rest_over_injury_words",
+  "source_player_state_id": null,
+  "input": {
+    "game_id": "SYNTH",
+    "team_id": "0",
+    "season": "2025",
+    "player_name_raw": "Synthetic, Player",
+    "player_entity_id": "00000000-0000-0000-0000-000000000001",
+    "status_raw": "Out",
+    "reason_raw": "Rest - Left Knee Injury Management",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "REST",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_OR_EXACT_REST",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

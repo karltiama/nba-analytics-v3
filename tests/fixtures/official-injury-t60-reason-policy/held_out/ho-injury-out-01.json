@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-injury-out-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "injury_illness_out",
+  "source_player_state_id": "1037594|10|Green, Draymond|Out|Injury/Illness - Left Ankle; Sprain",
+  "input": {
+    "game_id": "1037594",
+    "team_id": "10",
+    "season": "2023",
+    "player_name_raw": "Green, Draymond",
+    "player_entity_id": "06b0798b-9925-5780-b52d-9ffced065207",
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}

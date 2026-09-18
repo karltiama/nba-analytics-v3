@@ -1,0 +1,291 @@
+{
+  "locked_at": "2026-09-17T16:28:41.000Z",
+  "pair_policy_version": "injury-wowy-pair-policy-v1",
+  "golden_pair_observations_sha256": "b7c390b9c869d69c768c2aa9feebc1730f727845679426de0e371e44d5502143",
+  "note": "Real fixture expectations locked from Phase 6A golden pair observations before builder implementation. P1/P2/P3 match Phase 6A design-audit semantics.",
+  "phase6a_semantics": {
+    "other_health_without_count": "Out + HEALTH_RELATED excluding focal",
+    "other_health_with_count": "Available + HEALTH_RELATED excluding focal",
+    "P1": "other_health_without_count == 0",
+    "P2": "other_eligible_with_count == 0 AND other_eligible_without_count == 0",
+    "P3": "other_health_without_count == 0 AND other_non_health_out_count == 0"
+  },
+  "counts": {
+    "development": 21,
+    "held_out": 16,
+    "synthetic": 8,
+    "total": 45
+  },
+  "fixtures": [
+    {
+      "fixture_id": "dev-with-ordinary-01",
+      "kind": "real",
+      "split": "development",
+      "category": "with_ordinary"
+    },
+    {
+      "fixture_id": "dev-without-ordinary-01",
+      "kind": "real",
+      "split": "development",
+      "category": "without_ordinary"
+    },
+    {
+      "fixture_id": "dev-with-dnp-01",
+      "kind": "real",
+      "split": "development",
+      "category": "with_focal_dnp"
+    },
+    {
+      "fixture_id": "dev-without-dnp-01",
+      "kind": "real",
+      "split": "development",
+      "category": "without_focal_dnp"
+    },
+    {
+      "fixture_id": "dev-out-played-01",
+      "kind": "real",
+      "split": "development",
+      "category": "t60_out_but_played"
+    },
+    {
+      "fixture_id": "dev-no-pgl-01",
+      "kind": "real",
+      "split": "development",
+      "category": "focal_no_pgl"
+    },
+    {
+      "fixture_id": "dev-entity-only-01",
+      "kind": "real",
+      "split": "development",
+      "category": "entity_only_focal"
+    },
+    {
+      "fixture_id": "dev-multi-wo-01",
+      "kind": "real",
+      "split": "development",
+      "category": "two_plus_other_health_out"
+    },
+    {
+      "fixture_id": "dev-one-wo-01",
+      "kind": "real",
+      "split": "development",
+      "category": "one_other_health_out"
+    },
+    {
+      "fixture_id": "dev-mixed-01",
+      "kind": "real",
+      "split": "development",
+      "category": "mixed_with_without"
+    },
+    {
+      "fixture_id": "dev-nonhealth-01",
+      "kind": "real",
+      "split": "development",
+      "category": "non_health_out_concurrency"
+    },
+    {
+      "fixture_id": "dev-nonbinary-01",
+      "kind": "real",
+      "split": "development",
+      "category": "nonbinary_health_concurrency"
+    },
+    {
+      "fixture_id": "dev-p1-eligible-01",
+      "kind": "real",
+      "split": "development",
+      "category": "p1_eligible"
+    },
+    {
+      "fixture_id": "dev-p1-ineligible-01",
+      "kind": "real",
+      "split": "development",
+      "category": "p1_ineligible"
+    },
+    {
+      "fixture_id": "dev-p2-eligible-01",
+      "kind": "real",
+      "split": "development",
+      "category": "p2_eligible"
+    },
+    {
+      "fixture_id": "dev-p2-ineligible-01",
+      "kind": "real",
+      "split": "development",
+      "category": "p2_ineligible"
+    },
+    {
+      "fixture_id": "dev-p3-eligible-01",
+      "kind": "real",
+      "split": "development",
+      "category": "p3_eligible"
+    },
+    {
+      "fixture_id": "dev-p3-ineligible-01",
+      "kind": "real",
+      "split": "development",
+      "category": "p3_ineligible"
+    },
+    {
+      "fixture_id": "dev-metrics-01",
+      "kind": "real",
+      "split": "development",
+      "category": "complete_metrics"
+    },
+    {
+      "fixture_id": "dev-multi-focal-a-01",
+      "kind": "real",
+      "split": "development",
+      "category": "subject_multi_focal_a"
+    },
+    {
+      "fixture_id": "ho-with-played-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "with_played"
+    },
+    {
+      "fixture_id": "ho-without-p1-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "without_p1"
+    },
+    {
+      "fixture_id": "ho-out-played-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "t60_out_but_played"
+    },
+    {
+      "fixture_id": "ho-with-dnp-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "with_dnp"
+    },
+    {
+      "fixture_id": "ho-multi-wo-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "multi_health_out"
+    },
+    {
+      "fixture_id": "ho-mixed-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "mixed_context"
+    },
+    {
+      "fixture_id": "ho-p2-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "p2_edge"
+    },
+    {
+      "fixture_id": "ho-p3-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "p3_edge"
+    },
+    {
+      "fixture_id": "ho-entity-only-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "entity_only"
+    },
+    {
+      "fixture_id": "ho-nonbinary-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "nonbinary"
+    },
+    {
+      "fixture_id": "ho-no-pgl-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "no_pgl"
+    },
+    {
+      "fixture_id": "ho-without-deep-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "without_deep_contam"
+    },
+    {
+      "fixture_id": "ho-with-contam-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "with_health_out_present"
+    },
+    {
+      "fixture_id": "ho-season-2023-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "season_2023"
+    },
+    {
+      "fixture_id": "ho-season-2025-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "season_2025"
+    },
+    {
+      "fixture_id": "ho-multi-focal-b-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "subject_multi_focal_b"
+    },
+    {
+      "fixture_id": "dev-multi-focal-b-01",
+      "kind": "real",
+      "split": "development",
+      "category": "subject_multi_focal_b"
+    },
+    {
+      "fixture_id": "syn-self-pair-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "self_pair"
+    },
+    {
+      "fixture_id": "syn-subject-unresolved-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "subject_identity_missing"
+    },
+    {
+      "fixture_id": "syn-counter-excl-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "counter_excludes_focal"
+    },
+    {
+      "fixture_id": "syn-p1-symmetry-with-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "p1_symmetry_with"
+    },
+    {
+      "fixture_id": "syn-p1-symmetry-without-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "p1_symmetry_without"
+    },
+    {
+      "fixture_id": "syn-entity-only-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "entity_only_focal"
+    },
+    {
+      "fixture_id": "syn-focal-conflict-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "focal_state_conflict"
+    },
+    {
+      "fixture_id": "syn-dup-subject-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "duplicate_subject_pgl"
+    }
+  ]
+}

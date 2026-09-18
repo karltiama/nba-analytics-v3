@@ -1,0 +1,51 @@
+{
+  "fixture_id": "ho-no-safe-02",
+  "kind": "real",
+  "split": "held_out",
+  "category": "no_safe",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "1037617|13|Hyland, Bones",
+  "input": {
+    "game_id": "1037617",
+    "team_id": "13",
+    "team_abbreviation": "LAC",
+    "game_date_et": "2023-10-27",
+    "season": "2023",
+    "player_name_raw": "Hyland, Bones",
+    "name_key": "bones hyland",
+    "ever_out": false
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "none",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE",
+    "player_entity_id": null,
+    "serving_player_id": null,
+    "confidence_class": null,
+    "provenance_category": null,
+    "independent_source_count": 0,
+    "quarantine_reason": "NO_SAFE_CANDIDATE"
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_NO_MATCH",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "NO_CANDIDATE",
+    "serving_projection": false
+  }
+}

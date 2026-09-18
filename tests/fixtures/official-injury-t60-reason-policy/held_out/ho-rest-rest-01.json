@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-rest-rest-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "rest_rest",
+  "source_player_state_id": "1037737|30|Gallinari, Danilo|Out|Rest - Rest",
+  "input": {
+    "game_id": "1037737",
+    "team_id": "30",
+    "season": "2023",
+    "player_name_raw": "Gallinari, Danilo",
+    "player_entity_id": "67aac3fa-5cb3-551b-9f38-1ee765e42d24",
+    "status_raw": "Out",
+    "reason_raw": "Rest - Rest",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "REST",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_OR_EXACT_REST",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "fixture_id": "dev-inferred-only-02",
+  "kind": "real",
+  "split": "development",
+  "category": "inferred_only",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "1038441|4|Bolden, Marques",
+  "input": {
+    "game_id": "1038441",
+    "team_id": "4",
+    "team_abbreviation": "CHA",
+    "game_date_et": "2024-02-29",
+    "season": "2023",
+    "player_name_raw": "Bolden, Marques",
+    "name_key": "marques bolden",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "none",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "9a92cd29-08fc-57b6-ad4c-51438b5db87f",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "QUARANTINED_INFERRED_ONLY",
+    "player_entity_id": null,
+    "serving_player_id": null,
+    "confidence_class": null,
+    "provenance_category": null,
+    "independent_source_count": 0,
+    "quarantine_reason": "INFERRED_ONLY_NOT_ACCEPTED"
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_NO_MATCH",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "UNIQUE_CANDIDATE",
+    "serving_projection": false
+  }
+}

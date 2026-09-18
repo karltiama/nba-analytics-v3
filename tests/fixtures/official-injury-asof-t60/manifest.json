@@ -1,0 +1,307 @@
+{
+  "locked_at": "2026-09-17T15:11:05.402Z",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "counts": {
+    "development": 24,
+    "held_out": 13,
+    "synthetic": 5,
+    "total": 42
+  },
+  "fixtures": [
+    {
+      "fixture_id": "dev-submitted-01",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-nys-01",
+      "kind": "real",
+      "split": "development",
+      "category": "nys_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-available-01",
+      "kind": "real",
+      "split": "development",
+      "category": "available_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-out-01",
+      "kind": "real",
+      "split": "development",
+      "category": "out_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-questionable-01",
+      "kind": "real",
+      "split": "development",
+      "category": "questionable_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-doubtful-01",
+      "kind": "real",
+      "split": "development",
+      "category": "doubtful_or_probable",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-source-absent-01",
+      "kind": "real",
+      "split": "development",
+      "category": "source_absent_1037597",
+      "expected_game_level_status": "NO_OFFICIAL_SOURCE_CONTENT"
+    },
+    {
+      "fixture_id": "dev-fresh-01",
+      "kind": "real",
+      "split": "development",
+      "category": "near_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-entity-only-01",
+      "kind": "real",
+      "split": "development",
+      "category": "entity_only_player",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-id-q-01",
+      "kind": "real",
+      "split": "development",
+      "category": "identity_quarantined_player",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-exact-cutoff-01",
+      "kind": "real",
+      "split": "development",
+      "category": "exact_cutoff_exists",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-02",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-03",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-04",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-05",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-06",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-07",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-08",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-09",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-10",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-11",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-12",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-submitted-13",
+      "kind": "real",
+      "split": "development",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "dev-nys-02",
+      "kind": "real",
+      "split": "development",
+      "category": "nys_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-submitted-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-nys-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "nys_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-available-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "available_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-out-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "out_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-questionable-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "questionable_at_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-fresh-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "near_cutoff",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-id-q-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "identity_quarantined_player",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-exact-cutoff-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "exact_cutoff_exists",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-submitted-02",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-submitted-03",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-submitted-04",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-submitted-05",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "ho-submitted-06",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ordinary_submitted",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "syn-strict-cutoff-exclude",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "strict_cutoff",
+      "expected_game_level_status": "STALE_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "syn-no-nys-rollback",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "no_nys_rollback",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "syn-no-player-carryforward",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "no_player_carryforward",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "syn-future-leakage",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "future_leakage",
+      "expected_game_level_status": "VALID_PRE_T60_SNAPSHOT"
+    },
+    {
+      "fixture_id": "syn-timestamp-conflict",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "timestamp_conflict",
+      "expected_game_level_status": "SNAPSHOT_TIMESTAMP_CONFLICT"
+    }
+  ],
+  "note": "Real fixture expectations frozen from Phase 5A policy via as-of-t60 selector; do not retune to pass held-out."
+}

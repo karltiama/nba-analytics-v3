@@ -1,0 +1,3144 @@
+{
+  "fixture_id": "ho-submitted-03",
+  "kind": "real",
+  "split": "held_out",
+  "category": "ordinary_submitted",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21713895",
+    "season": "2025",
+    "start_time": "2026-05-20T00:00:00Z",
+    "cutoff_at": "2026-05-19T23:00:00Z",
+    "away_team_id": "6",
+    "home_team_id": "20",
+    "away_abbr": "CLE",
+    "home_abbr": "NYK",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "cbee201603eff97ad32660b3ab4f39fe632aa9b87fdbdebfc36534ad0fbdab1b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_00AM/Injury-Report_2026-05-18_08_00AM.pdf",
+        "source_sha256": "5cc9e793a440154f2dba0c6c97f394843e20300a9895d36c914eefb976bf67e5",
+        "report_published_at": "2026-05-18T12:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "2f641cf45c6d0c1b3c7d0242b6458868b81b28e16d94f3dea2b7cc30d998ff98"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "426ad768aee42b50a9c239c41526101182c4f88663ef8388e51b92fad18aba9f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_30AM/Injury-Report_2026-05-18_08_30AM.pdf",
+        "source_sha256": "c938508c83c714bc6b3c437a37f5c70b3ce1b21113b6807c002b532d3d2ac512",
+        "report_published_at": "2026-05-18T12:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1189c5c5ae327278cdd86efda9e9eb48b83da8ad3f25d5f13d8f9464cbf011ed"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "96f7ea940b2276949db055919f553f83e0c50c7b762037f4f3feecd4e4d48480",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_00AM/Injury-Report_2026-05-18_09_00AM.pdf",
+        "source_sha256": "c69a7a54db27140b55e6338c6c36c1cbf68f1b72fd1ba9d38ec558337ac79b00",
+        "report_published_at": "2026-05-18T13:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "35060b5df09292ea96be3534f4275fcccb4d960618cc70796dd6e43c8ba0adcd"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "be7718b46c47fadc5ba5d2eef7a3484e285f55453913ee70037ff1c766ff43e4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_30AM/Injury-Report_2026-05-18_09_30AM.pdf",
+        "source_sha256": "830b56f514e4727c47da265d89d307485f09b0a02da48cfd65c31d1233998a02",
+        "report_published_at": "2026-05-18T13:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "290629243af287923bb2b5478f02ac6a912503858b4cdc9bd22cec525f9d6eda"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "57019890533fe743c2640812fe1d2b052b61e569985d2da9a94fa031cd7861ef",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_00AM/Injury-Report_2026-05-18_10_00AM.pdf",
+        "source_sha256": "4eefb8df786df29f4dcd003dad643388af55b2c51c37d9601c0afc214cdc5bef",
+        "report_published_at": "2026-05-18T14:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "29ebcadc35dfeb7eae2515fc57738a38741867de36f0c47bf865931392ebe808"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "179a0abad4c6023d40e36abe0521ee3b321a49171855500edf7db5ee41d30059",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_30AM/Injury-Report_2026-05-18_10_30AM.pdf",
+        "source_sha256": "6ca97e551d406aa06d3786692a09a1c47b8fd6f8fa90c64ef37468a0a5213674",
+        "report_published_at": "2026-05-18T14:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "404f42d404a8e0ca623dff51bcbd30822e52d457f505b09b7b2aa2b6f44ef520"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "42d1053c3d992cc939514425513f720f3829aae2c13214717c9dd643f0054dd5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_00AM/Injury-Report_2026-05-18_11_00AM.pdf",
+        "source_sha256": "80855b3b5179f244f470da78f6065508801b973cd6bc3f1e7daeef357754e77e",
+        "report_published_at": "2026-05-18T15:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4cd98cac0071d627b601ec548af1e9138857aa3f9366ad2951a2a31aa1bdb4c8"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "3badfe9c031f60998e7e8274617f6297a217996b553fc0504ff10df8e282d987",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_30AM/Injury-Report_2026-05-18_11_30AM.pdf",
+        "source_sha256": "6c9a340eb28546e56b091c632e2a52db4bf6fa358aeaa54c970965e04335d888",
+        "report_published_at": "2026-05-18T15:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "87255d23db5643a1c939b411f7473abbaa61961eb2f34256002b4ee130506a56"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "31d18f74b2f013df71b13258fd56aa7f18c8ebcbfbd95311d58be6aa65efd39c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=12_00PM/Injury-Report_2026-05-18_12_00PM.pdf",
+        "source_sha256": "e52c0dc3d36977d13b5f3cd4eb16ca871fab6004c91b7dbe28e5234917680dbd",
+        "report_published_at": "2026-05-18T16:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "6fe9da63155b7f6bcbe939a0257f784f271eb5b65db10d32f45fe00ec600c491"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "1f1a987f0b4d02af46a6f999c10b683111b835fe85daed123f97499fb495793d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=12_30PM/Injury-Report_2026-05-18_12_30PM.pdf",
+        "source_sha256": "a7fbc115cd72035023b876a2819ca51b4e389c771baf95a41ef3a2824f092ced",
+        "report_published_at": "2026-05-18T16:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "cb10edb026d01ca6551dd42447b6e544dc4c3581f5aa954a2c4fed18e9934184"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "b42fd7062fae8e8e482daf1adc68910c9abec6b0c2913f8f16eb01a9d47ef7de",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=01_00PM/Injury-Report_2026-05-18_01_00PM.pdf",
+        "source_sha256": "d57305467a10b5542890e4d2cd4284e27c050868fca69362c30b32321adb7677",
+        "report_published_at": "2026-05-18T17:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e895b0cedcc54ac24b4c94e2bd4a7e688d1e44f7724e9d4d75477e2a8611555b"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "9973bf680b17de6cc172473b4e73057bea20a0b382aa1b801a502218fb738d13",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=01_30PM/Injury-Report_2026-05-18_01_30PM.pdf",
+        "source_sha256": "1266b1aa56d46b7aca9ea2ca67c431f497db9404067571dfc83d81d032f957c1",
+        "report_published_at": "2026-05-18T17:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ff8c5f843009e6b808238918000ca5a320343f2e472463cac8f2a39ac5e70390"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "10171df867ec5875d02e0f23a327348a4f88a98c8e5ba7b04b523c9f5b2675e0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=02_00PM/Injury-Report_2026-05-18_02_00PM.pdf",
+        "source_sha256": "149e3a4e661917cc997c5c1dcd35ca8c0463f475c0b16b42bd81acb678bf9331",
+        "report_published_at": "2026-05-18T18:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "46a05e7acce24018cbe86746d82b21d7535a05dbca49dcb8bc27da814438b207"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "78b0b955f17be55fc0dfa76b2e909c5227eda343e366c0d6e6ec113a38bf9eaf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=02_30PM/Injury-Report_2026-05-18_02_30PM.pdf",
+        "source_sha256": "cd43367d8d7308bbd745fbebb1148239f2f279f255064eed874652bd9b3e4854",
+        "report_published_at": "2026-05-18T18:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7d1fa566fe384b3da0e054823544fb6591f4f067a5a1d0814c8fd3c5e1c154a4"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "882b72749b863440660a66d7475a8cd78d28154ec6ea06ea4ca72d907ca95817",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=03_00PM/Injury-Report_2026-05-18_03_00PM.pdf",
+        "source_sha256": "0e22d2301206f4d54b128a7aa8f4045dc5dfd68bcd7f85f5bbada5167cb6d138",
+        "report_published_at": "2026-05-18T19:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9a6e211a773f8638d0ffd073173ffac6489d15f4a32eff2ec9eb432bdcd2543e"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "7e8537ac166dd71e12ece69f3157568bfdbf4e53b7754e67047fc1cf77c4100e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=03_30PM/Injury-Report_2026-05-18_03_30PM.pdf",
+        "source_sha256": "0f885463c934fae7ecb9da3955db85da83f6ced76794f43e7810a4e566abd5ef",
+        "report_published_at": "2026-05-18T19:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "72ceab051686673869a3abfdac4c25a7ce14f23b40f3825dfb990cb4986a222c"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "4cf4e11ff21bca00e42e2856756a5a89a4ebec2c1f4e46d6734c4d1929537e8d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=04_00PM/Injury-Report_2026-05-18_04_00PM.pdf",
+        "source_sha256": "8bd011997786bdc2017b3461158cc9f506d18612a6adff02c16162f9fee0fe93",
+        "report_published_at": "2026-05-18T20:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9db09023cdb249077dd59d6c4b73d8d76821be73a554419e850faa52f397e5f0"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "051db19cf6e36d125097fc17a05d1b6bf50459b62228dcb1a7ee3a1a7d038b7a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=04_30PM/Injury-Report_2026-05-18_04_30PM.pdf",
+        "source_sha256": "3c48a9fe48f9ce57dc4fc498787de8a72a1cbec8bd571e9dc9321abdb94fe900",
+        "report_published_at": "2026-05-18T20:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "0be624d3a76b361ecefd5d671da65e7804005378c5a3273213544db730b2a202"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "48e853defa8d6e9b41c942f4ef81325952b5c33f497355f2b44a582f2e738bb6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_00PM/Injury-Report_2026-05-18_05_00PM.pdf",
+        "source_sha256": "1063fecb90334e82fb476d3fc5ae0c8edce8c7487db1df64b5c2d8744ee5220b",
+        "report_published_at": "2026-05-18T21:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "abff131703cf8bea25d27d24789dfb04ba921d6f81c942def77e133655582523"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "31e910d2a368b133a39d765fe32a83f3f15f6105e64dd7dd040484fe8dd6b38c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_15PM/Injury-Report_2026-05-18_05_15PM.pdf",
+        "source_sha256": "e7ad131315c3f597d1e367d084a1de88129958c706dbdb95db904c831ecf6db4",
+        "report_published_at": "2026-05-18T21:15:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b093db998d7089aa6683992e2a1e244635c28c8b0fb083bed68802ab0fc05be3"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "d2f4ecbcec6e03ac1f50e61c7849bb5e3bcf5118b2cde28eaf0fe4b3c0dcb4b3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_30PM/Injury-Report_2026-05-18_05_30PM.pdf",
+        "source_sha256": "aead9dd5c9b86ba2045cffcc6a903e48b7dfc5ab2813e47d125d29c59504d7b0",
+        "report_published_at": "2026-05-18T21:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "56ced0e651479a908a335447a41ddb1b5eef69686d7b90ff045abf7341c52597"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "45986bf2e6e3afbc6ae67ef0955e18f8466d43dff07623b5d8fc1865a2961288",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_45PM/Injury-Report_2026-05-18_05_45PM.pdf",
+        "source_sha256": "13f999cbab465fbbbfa37261fd179e1f358a1b2b44cf5a2ccf42a499db72f613",
+        "report_published_at": "2026-05-18T21:45:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "18970f645fa59ad2fca0ade3df16a87408be49cc50fc20764ece00d8a8459f49"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "0e6db1697c11a72472e0b58dd9bb8834ee7b3c010fa1098a4e60a5cc46e24280",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=06_00PM/Injury-Report_2026-05-18_06_00PM.pdf",
+        "source_sha256": "c847b2fc9316917d9f567e8208883eabff7f0d11ad2b320653837c4962785682",
+        "report_published_at": "2026-05-18T22:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "30184e838bc749e8738b829aa832e148fc6e91b8fc07bbaa94694a6b859c56cb"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "9be934c5b7f3652e3bcb9f360ffee987a4044717d0f33e043cfc6c3a71edcf1c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=06_30PM/Injury-Report_2026-05-18_06_30PM.pdf",
+        "source_sha256": "2eb3e9ce423b139bcd11c2344021fc97cbfcfa7cb3dbfff392e342f22134b2a7",
+        "report_published_at": "2026-05-18T22:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "197ab48a699e9d2413eb67665eda116c8a49dca7e965ba74147ceed83c1645b3"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "6314132d631b5a27e64a100c446b4e4286b103ed10b09dfeab8c31e7051b127d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=07_00PM/Injury-Report_2026-05-18_07_00PM.pdf",
+        "source_sha256": "71f8739cfda0401bd732e1fa1b18e12b94141f84f04dc854e50989938e8f60b1",
+        "report_published_at": "2026-05-18T23:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e6432e0dd95f2185471325acb6e9f985375aa9fcff7a199e83e2771cea991c21"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "c941cb9148e5c84672b2bbbaaefcdb84c0862aed782f811766f0cebb1afa7e49",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=07_30PM/Injury-Report_2026-05-18_07_30PM.pdf",
+        "source_sha256": "e1b2b1950b80a1bca4f14bbe290ce55791f51f44c8b590d966cdd19931fa5982",
+        "report_published_at": "2026-05-18T23:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "dded722b202b997163eea1678e5d16f5a79e768d548420a590b62bc11232c4cf"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "b8af4f34a6740fdfc5779ac14bb7884dd5bbee56f9786b199ed06d7b8308f72a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_00PM/Injury-Report_2026-05-18_08_00PM.pdf",
+        "source_sha256": "d4ce3ccb29aff8d3958d6d0ad5e3dc680935be6fda618e393d03772c1dd16ebc",
+        "report_published_at": "2026-05-19T00:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "97c48d4644560dc62b8d7be53fe3c877df040074388e62cc1bf3f117b83f8fc8"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "dd577ea94cdb524814cba7237190dfc284b02a4b87de26e4a458f996ab61eccc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_30PM/Injury-Report_2026-05-18_08_30PM.pdf",
+        "source_sha256": "92e6638a2d53630ebf4d86ec951b0b256bc54d5db97c99b549c5c6c9365d6781",
+        "report_published_at": "2026-05-19T00:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1def905c6f71ce78b3abad5bd676db2fa9afb85ae7eef19e5d4865f0bbd8d181"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "a01c468842263619b9704883f2253560a56c3c9ea2188ec60a33da4d8751e828",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_00PM/Injury-Report_2026-05-18_09_00PM.pdf",
+        "source_sha256": "775b5459dac8558979fc0d8456a93442b5606ad800e5f34a3b303ef057032ea1",
+        "report_published_at": "2026-05-19T01:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "782966fca665ab22f33818b7db53c72541f70198455650152ff2735e5e0a5e2e"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "d70a2763df3186722a28590434e9fc26080f0b01a3430cd78a4eda2fe8585400",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_30PM/Injury-Report_2026-05-18_09_30PM.pdf",
+        "source_sha256": "60f96c331a80ed4220819460251703e59beb5f9cc0d5421d9a97f01432bb9a6b",
+        "report_published_at": "2026-05-19T01:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5f947a851b29ffcdcf4ae0e67ace1d67cd6fc2f4f516a232efe8fc3be30d5356"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "b154ecfbaf2398309a02cad9fe56cc9345e22fcd47c85d6bd8a1922d2109abc1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_00PM/Injury-Report_2026-05-18_10_00PM.pdf",
+        "source_sha256": "e942db1d5638fe0483e62faea1c074707e96a17ee9fb4b8e53b982687dc07e2c",
+        "report_published_at": "2026-05-19T02:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "408f7f9290afa4a71f461112510e43a809404c7260c47a0db1560a24b0539e0f"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "e381ad496fe42f7cc99c0b75af24bf6f57be38366b744ff4012c9b9a29bbf012",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_30PM/Injury-Report_2026-05-18_10_30PM.pdf",
+        "source_sha256": "12faf71cadec82c5cc49228f6033e3fa3c744fe1a3eb943017093b25629698db",
+        "report_published_at": "2026-05-19T02:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6dfc9d0f73fc0813eb8f3858156b711eab4d52acfcb07042a627385607020980"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "12e18e3f6cb6b5c528c8a3b3e373069c51054ecd064d1807d68c46326e601b6e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_00PM/Injury-Report_2026-05-18_11_00PM.pdf",
+        "source_sha256": "4e308d0b6156cc42d23060fdf6b065581d46b1586dd07744686411a23952afbf",
+        "report_published_at": "2026-05-19T03:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6725c758f75534e3003e34f4b925bd884204d494345dcf0c2fe1220d86f70cb3"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "46afa5b7eda180f64a9dfb288f45817e0f189a14c7b96bdf4a9060f8226b7413",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_30PM/Injury-Report_2026-05-18_11_30PM.pdf",
+        "source_sha256": "185dbe1044e939d75e45076dbd06d576960718330ffd554dca44106881c84018",
+        "report_published_at": "2026-05-19T03:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "527756e2a391fc72e58414137a284bd3d716dc46d588bf02b197646160abcc34"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "5f84594df2636f33890a7f1081d8b4d7d102f28e6a034025f26ba0a588fc28fa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=08_00AM/Injury-Report_2026-05-19_08_00AM.pdf",
+        "source_sha256": "f1ffd9baaa2326280854e652f250140566be2fea390f03ed80f28d83f7148fa5",
+        "report_published_at": "2026-05-19T12:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d9b36f6e18440d0fddec08ca4b756afb8c43d8f1e8b30c9b64e5422de805477e"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "2dc282901a567ce3f8b2e23eb7cfd89d4b26dcbda6cd5bbf86888c2085c7b094",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=08_30AM/Injury-Report_2026-05-19_08_30AM.pdf",
+        "source_sha256": "5acd732c7eb1fadf805a4f34a1d40d25536e5c47d6ce1d4cc32d2ed3acafe2a0",
+        "report_published_at": "2026-05-19T12:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "157bfe10debd81d6a0564b4131298f1a65f28bd50ac8a8a75054722e3d6faf88"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "c8c2dd762bf0d125f93f9e87a8ca9aa0d50d4d0b2ced868b13f4b894974ee9c8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=09_00AM/Injury-Report_2026-05-19_09_00AM.pdf",
+        "source_sha256": "75653e513f96349fd45a706f60f77363b8196d8f1300cd6b02ae9e48d27e849c",
+        "report_published_at": "2026-05-19T13:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d2e3ad6401b63fd1627530068445f4f7529f4af2633a8f490a740bb7fa482e0d"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "3c8867a1ac6b72f9b91bbd781b3ae482ace2c2d3790884ba98a726cadbe4dacb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=09_30AM/Injury-Report_2026-05-19_09_30AM.pdf",
+        "source_sha256": "d5ee60a0f65d82ff1cde2e6c836bd89bd07d5d03eb1bceadced6b29480a6b45c",
+        "report_published_at": "2026-05-19T13:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f80bff608a9bcbb8ba5a4e60a3d68956afc608c9c0911be82eaeb40a1c7334f3"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "9fc7ea1d3da802f7190335fc391ec0fa2744d2adaaf66babe0cc5d26d499be79",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=10_00AM/Injury-Report_2026-05-19_10_00AM.pdf",
+        "source_sha256": "2dacd280fc8646a3fbc3642fd3ced36bc2c56ebdfe85e1fca0a397c0d8ffb271",
+        "report_published_at": "2026-05-19T14:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "555653e8341a83c39751d2aeba2242bbe139238702fdfca941c9b733110de478"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "ac1f8c1832fb19f0218c43c132b3fec5bc0f21b48075d0461f22a1ba4601dd06",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=10_30AM/Injury-Report_2026-05-19_10_30AM.pdf",
+        "source_sha256": "d3574e446b6c63814a273e32453413ec8ce000509586336bfc60822868d9af97",
+        "report_published_at": "2026-05-19T14:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cdac5a7859dbab97e1fd6fa6b807f167ea6eb7d364b94943e5889013aa2e9daf"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "1c96ccfdde0ccc95602225999bd34e56bb8ca16281a8ed714b2da3d540f8a71a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=11_00AM/Injury-Report_2026-05-19_11_00AM.pdf",
+        "source_sha256": "65ccc97a4397ec0e57503bcc10cfd0c9886430d7ca6fa8742d1c2c3ad8732f8e",
+        "report_published_at": "2026-05-19T15:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9b43787c433d93f8e776848cd8e85736176ff85cf2b7fc32d2c16ea3999033d0"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "4e64a5165539512bd4372c8e42d71d31626ca6da514f86b8eac8cef1603d136b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=11_30AM/Injury-Report_2026-05-19_11_30AM.pdf",
+        "source_sha256": "f36d30fbd08885558638d2bbc90a3b2f3e30051ff3884cda0ef60e3bb4a45aea",
+        "report_published_at": "2026-05-19T15:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ec45d22504cf744fbdce2d98a40ffe02c89808fedf36e8c39b3a67f6a2906943"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "384f8d2ef87eb9b9d32b9576d0351e72bbebfd363d07392c75761119d9cde5d8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=12_00PM/Injury-Report_2026-05-19_12_00PM.pdf",
+        "source_sha256": "ed31220528946d7729a969807005ecf4552d35017a7e332a91d3eba9b410bfcc",
+        "report_published_at": "2026-05-19T16:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9fb9928d1d4a15e3606939ec63ede4673111e4e429ba151de9500f9329224974"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "45dceaa521d05c182a9326f2c4a72f42a7b297d73a6c93bb611019bca66d0d6d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=12_30PM/Injury-Report_2026-05-19_12_30PM.pdf",
+        "source_sha256": "387097910928071e68f3a7ff2eb62228013aee8d0fb50c3174191a1abe2ff566",
+        "report_published_at": "2026-05-19T16:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ade8122ee361e0a517f1ed3c277d8ee708fac759caa50ce0d0090cfe06fe20d5"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "1e33b7333b1ef32f681c64ee1bcab1c1f2cd23b39daa5f049035f0ef66155e67",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=01_00PM/Injury-Report_2026-05-19_01_00PM.pdf",
+        "source_sha256": "80d8ef6f662c8e4eb6417133730260a1c56cfb53f6b90a80d26503d44d40ade9",
+        "report_published_at": "2026-05-19T17:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "310e2e996cd0e8ecae8ab07665b8c709638b98a5734de26dad8d7e7759a275b8"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "0712c659243457f6347f09aceab5fa44d20b2cfdc5e7d920e3cfbfe489ae84d4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=01_30PM/Injury-Report_2026-05-19_01_30PM.pdf",
+        "source_sha256": "7159e5d8b9be388fe5e4c72932fa2b4e1c4d160ea242008662b21e059b3f4bdc",
+        "report_published_at": "2026-05-19T17:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1820e3f53db4b5ce12a293d9416a386570f2e1666bea6a707d23f20e07259853"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "ab19180a43ca946bff165ef60d96945a940ff75daf5384e2b1411b7bee32f434",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=02_00PM/Injury-Report_2026-05-19_02_00PM.pdf",
+        "source_sha256": "6ce83d7b0598039b3a4ef99790654f982f1f8ac5973c30015635c8d4c967a2af",
+        "report_published_at": "2026-05-19T18:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7226031bca73ad509772de0c26e9e53d3a435c02f9b2b689bc04e68052c53a24"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "fa26809ee73275bf922b04c262ee56e9b4267fa201afe269d48acaaffccb6dde",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=02_30PM/Injury-Report_2026-05-19_02_30PM.pdf",
+        "source_sha256": "04411872157cd78e3415eb00b7a03f8e03a49fc3ec9d175b5cafa1499021b9a4",
+        "report_published_at": "2026-05-19T18:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "afe7360bfbd5675e91efb2423d1edfbaeb6920f632383ef6137f3cdcf5407c43"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "03be07c80f48c6156b09ee11631221a24fa20e96f89c54572282e92919c8c335",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=03_00PM/Injury-Report_2026-05-19_03_00PM.pdf",
+        "source_sha256": "881524f68008d50b9a7002b6dae789b1b9fef576d512b2ee9c879222c8f89e0c",
+        "report_published_at": "2026-05-19T19:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "757e2b3b4dcc015eb17b2ac8f4d84385e6c841e4029c069ea4f0109375f652a6"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "1bb3ee15d2bac931e323abdfd29937c8f1d87e644168d1c9e90ce959f4ba8a1d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=03_30PM/Injury-Report_2026-05-19_03_30PM.pdf",
+        "source_sha256": "da6c09b3d395929fc9fe7a95b0aea97f89f8758b209f4843a1e2dbaf6f29c32a",
+        "report_published_at": "2026-05-19T19:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "dd754115e02a2d6954bb157c124d246d3a2ccf569819ad94d74183d10baf2245"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "47e1ef8af06e86409f0a08c355e253f9b2c1b95bbf27e4411e1e60d171c88832",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=04_00PM/Injury-Report_2026-05-19_04_00PM.pdf",
+        "source_sha256": "cd576325bd18602a6828672a34044436c2af167e131a760daa99577ae1269504",
+        "report_published_at": "2026-05-19T20:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8a7a1f99d15e6bf088a8223792dff635e1ff0610dee9f090fc9dd319e4644c7e"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "4ed8d36b7a7723471f9d2b5e4643fc2e3ed34412fa1ae1f632f48309211ffe28",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=04_30PM/Injury-Report_2026-05-19_04_30PM.pdf",
+        "source_sha256": "f813453074ea62b3af3c256ddf1f88ff660335258a45a8d80962365c58f3e287",
+        "report_published_at": "2026-05-19T20:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "bef7361cb8c360cace0c5ef4b14688d7074f48273df7b17800df4119846ac31f"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "89d0d1227231a9bf7ecf68e6fc80da03e001af9d65738a2fcbf59859e8d6f04b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=05_00PM/Injury-Report_2026-05-19_05_00PM.pdf",
+        "source_sha256": "f302f9da667cf08c37db20017f0bd1935497fdcc7c123a014b91c641b261ca11",
+        "report_published_at": "2026-05-19T21:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "06c2e18c00a4b8d36cad1499aeb6bd54dc2b4deae191c982bccbaa9374537cef"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "b9108f7d0bb57a7306b1061ae5952b0e491c93b1ccdd472d9f6b38353d4c42fa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=05_15PM/Injury-Report_2026-05-19_05_15PM.pdf",
+        "source_sha256": "03d8f4a64712c2411460404cf2fb6b0f47089d3169467ba2c6a6b6889fa17e1b",
+        "report_published_at": "2026-05-19T21:15:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "47e8cbc447a1cf076b2d5b75cb553b58c9bc5eabd01e54f0a258dd5b6f9cff63"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "592583219230bf3c6ce3113dc09cb3c5b02d4a04b82414f27cababa07acd6f85",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=05_30PM/Injury-Report_2026-05-19_05_30PM.pdf",
+        "source_sha256": "f1703909a906c355efc3d75f76b215001476fcbb4a04a24416078796d7dbaeca",
+        "report_published_at": "2026-05-19T21:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d91a82b61cf36328a506c9ccacf0a06fdbf2ee1c978f8e37c2b1128f3fb2fe9c"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "eaba46923341efd6c740a7847d5401aab40b30c3f82864ccda0664d27d043d07",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=05_45PM/Injury-Report_2026-05-19_05_45PM.pdf",
+        "source_sha256": "28274571b0b049c4d81f7349812ddc9b17396786929bdab422c80313f6f30e0a",
+        "report_published_at": "2026-05-19T21:45:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "812f363335a0fb7abd13a0539dbd813f261bc5d3a07e48500b3e348f20361774"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "2b78bbbba2fe674a8a5253f676cc6a770ed7fc7542ad5677e32d426f6ca9974b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=06_00PM/Injury-Report_2026-05-19_06_00PM.pdf",
+        "source_sha256": "9e60861b3d940b6332613ecfb25ab6f84637d224bc6630b575d9c4ba8eb03b5c",
+        "report_published_at": "2026-05-19T22:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cb3e8a4080eb64bca8c4412372acfdfac7a6d45d794cb649462a01fb9d1d4896"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "2e0c25442e1814663a11fc921de57a230298724c23f244e5303792180c661302",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=06_30PM/Injury-Report_2026-05-19_06_30PM.pdf",
+        "source_sha256": "50726bb7dbcff1f159af6fd98c1adb660ccf9699b1b6d3ddc7b5fc755c7a8867",
+        "report_published_at": "2026-05-19T22:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "711c0783527fa813454a826249816e14444ce2bf3a60b4bb9e96f43f51cb7abf"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "ae4a36e01f5721dc7d1d5d68bae71fee4f8549e7555ace66f19043a98329d63c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=07_00PM/Injury-Report_2026-05-19_07_00PM.pdf",
+        "source_sha256": "5a0d0b6261daf313eb27e04d37a40b68dfe422f12adb35ae38493dd42273c25d",
+        "report_published_at": "2026-05-19T23:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7c19791c16941e0cbe052d90bc45bd51371a71a1aed4f5d9d6862ac1df498885"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "c4c5de86ec4aa1bce6dc06a2bbf81c21554b794959a543f2d5ef8630b474c3f8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=07_30PM/Injury-Report_2026-05-19_07_30PM.pdf",
+        "source_sha256": "ba15d731ed4c03a8b528e9eb69c24e2c959d37bae99b50f2131a96bd2cf7a22c",
+        "report_published_at": "2026-05-19T23:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e78637a920571064ca5e22074e3126eb003fd1a069a2aaea352ea9928bb05259"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "b1b1075354331fe96ee2c75653711e5a4db31c49bf15e48c76f3f05d30b2ce1e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=08_00PM/Injury-Report_2026-05-19_08_00PM.pdf",
+        "source_sha256": "c2a8c44c51ad5014d870f416f1c6b1857559a2595f08f1777b59cd2cdeb26ca6",
+        "report_published_at": "2026-05-20T00:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cdb6c6f331d71ee05b0b87620ffaca6c38f80e8cd8a09c8df52762eab6388e39"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "7b924f395f546b281f360838749a457030af85bfe6bd156cf4d91f3362377685",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=08_30PM/Injury-Report_2026-05-19_08_30PM.pdf",
+        "source_sha256": "0586b2ef6490acfa76de7f4803e502412cd61cce2eb3386f172bae45ac5078ae",
+        "report_published_at": "2026-05-20T00:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d80a6f8b3a43703c07690f4be289362a6539c55b838544ebac886d5c9a2b2ace"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "79c1942a5d6e5ad12dcfb4bb0f030f3e5191842035288260dc7760f5064d5784",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=09_00PM/Injury-Report_2026-05-19_09_00PM.pdf",
+        "source_sha256": "e1eb1ac44b4150fe804d4737bf1673fbab85ec19126dcc38e81aaee2b8da8ffd",
+        "report_published_at": "2026-05-20T01:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "82c5433c34ac9bcdcef8fbdbe1da9ea3e5aed6a85c86475fe2b27a8a381c3941"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "1b2c58b23914dcb509799d42696d3e57240855cb4888c1905638576f30b1bffb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=09_30PM/Injury-Report_2026-05-19_09_30PM.pdf",
+        "source_sha256": "f1bc2f8a304ca0bd97715d2a6d519e5c53ae09246b74e4169ee43db1d8937211",
+        "report_published_at": "2026-05-20T01:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7e397a927fc7ba928b8b86cc06c0bc7d96597429cab6a020deeadaa53b62f423"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "8b436b2c622345aa35e46fdd8605ce3d26cad0e8481a02832a4d1dab619b819b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=10_00PM/Injury-Report_2026-05-19_10_00PM.pdf",
+        "source_sha256": "e2ea5974133d776d7736209cd0e6ba8e8cdd8edacadbefdd48cdc382ee6818f1",
+        "report_published_at": "2026-05-20T02:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0026b5f3830c5f101298a3406fa76278e468588ddfb49722d9a31a8887184dae"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "4db041d28dcee2b3f55471d22fd7c88956f3abeb3867712493af09db0f58b863",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=10_30PM/Injury-Report_2026-05-19_10_30PM.pdf",
+        "source_sha256": "1acf786882fd5c08d8c947d2710f4dca23592fe6b8cf6ff88885b9df705fc73e",
+        "report_published_at": "2026-05-20T02:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "34675ad62711fd1bae0905ffdb372280a61a8e6797c21bdac649432be83a4ad2"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "46da984094a85381875b5ad5b96b3a0c6eeaaecb970271e39dabf43f0df97010",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=11_00PM/Injury-Report_2026-05-19_11_00PM.pdf",
+        "source_sha256": "ce9ad3bf86a7744a06e9b73f137233ca2e0da2aa4678cc29ad3f1908e6ca7285",
+        "report_published_at": "2026-05-20T03:00:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c6215a6b04698e3deeba4c8f04554a4a16153ce2bb535185ec6f4b03e98064c0"
+      },
+      {
+        "game_id": "21713895",
+        "source_game_block_id": "8903c955559ae20dce2da76ac15a493cb3cd9abdacb3c2770fb821696f88cb31",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-19/report_time=11_30PM/Injury-Report_2026-05-19_11_30PM.pdf",
+        "source_sha256": "48ea06daaa5c3be9d4ed6b4a63cc18635e91a3a08b644b9e5a595826ed081e8c",
+        "report_published_at": "2026-05-20T03:30:00.000Z",
+        "game_date": "2026-05-19",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7e6f0473bab69e8e56fcb827b3b562d25b7cd985ed20cfb9797613cd2be3fd11"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-19T22:30:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 1,
+    "home_player_count": 1,
+    "selected_source_game_block_id": "2e0c25442e1814663a11fc921de57a230298724c23f244e5303792180c661302"
+  }
+}

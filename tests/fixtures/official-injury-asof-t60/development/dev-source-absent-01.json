@@ -1,0 +1,31 @@
+{
+  "fixture_id": "dev-source-absent-01",
+  "kind": "real",
+  "split": "development",
+  "category": "source_absent_1037597",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "1037597",
+    "season": "2023",
+    "start_time": "2023-10-25T23:00:00Z",
+    "cutoff_at": "2023-10-25T22:00:00Z",
+    "away_team_id": "2",
+    "home_team_id": "20",
+    "away_abbr": "BOS",
+    "home_abbr": "NYK",
+    "source_content_absent": true,
+    "snapshots": []
+  },
+  "expected": {
+    "game_level_status": "NO_OFFICIAL_SOURCE_CONTENT",
+    "selected_published_at": null,
+    "snapshot_age_minutes": null,
+    "age_bucket": "NO_PRE_CUTOFF_GAME_SNAPSHOT",
+    "exact_cutoff_count": 0,
+    "away_team_state": "SOURCE_ABSENT",
+    "home_team_state": "SOURCE_ABSENT",
+    "away_player_count": 0,
+    "home_player_count": 0,
+    "selected_source_game_block_id": null
+  }
+}

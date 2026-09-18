@@ -1,0 +1,488 @@
+[
+  {
+    "fixture_id": "ir-2023-10-24-05pm",
+    "report_date": "2023-10-24",
+    "token": "05PM",
+    "split": "development",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "page_boundary",
+      "nys",
+      "suffix",
+      "wrapped_reason",
+      "g_league",
+      "suspension",
+      "hyphen_name",
+      "apostrophe",
+      "hourly",
+      "late_tip",
+      "out",
+      "questionable",
+      "doubtful",
+      "probable",
+      "next_game",
+      "next_team"
+    ],
+    "notes": [
+      "Visual page order top-to-bottom.",
+      "Game times 12h afternoon/evening stored as 24h ET (07:30\u219219:30)."
+    ],
+    "stem": "Injury-Report_2023-10-24_05PM"
+  },
+  {
+    "fixture_id": "ir-2024-10-22-05pm",
+    "report_date": "2024-10-22",
+    "token": "05PM",
+    "split": "development",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "page_boundary",
+      "available",
+      "suffix",
+      "g_league",
+      "hourly",
+      "out",
+      "questionable",
+      "probable",
+      "apostrophe"
+    ],
+    "notes": [
+      "2024 opening night hourly control."
+    ],
+    "stem": "Injury-Report_2024-10-22_05PM"
+  },
+  {
+    "fixture_id": "ir-2025-12-06-11am",
+    "report_date": "2025-12-06",
+    "token": "11AM",
+    "split": "development",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "page_boundary",
+      "nys",
+      "suffix",
+      "wrapped_reason",
+      "g_league",
+      "hourly",
+      "out",
+      "questionable",
+      "probable",
+      "butler_iii"
+    ],
+    "notes": [
+      "REQUIRED Missi Questionable / Clowney Probable control.",
+      "Heavy NYS morning slate."
+    ],
+    "stem": "Injury-Report_2025-12-06_11AM"
+  },
+  {
+    "fixture_id": "ir-2025-12-06-05pm",
+    "report_date": "2025-12-06",
+    "token": "05PM",
+    "split": "development",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "page_boundary",
+      "nys",
+      "available",
+      "suffix",
+      "wrapped_reason",
+      "g_league",
+      "rest",
+      "concussion",
+      "hourly",
+      "out",
+      "questionable",
+      "doubtful",
+      "probable"
+    ],
+    "notes": [
+      "REQUIRED Missi Available / Clowney Available control.",
+      "9 pages."
+    ],
+    "stem": "Injury-Report_2025-12-06_05PM"
+  },
+  {
+    "fixture_id": "ir-2026-03-18-05_30pm",
+    "report_date": "2026-03-18",
+    "token": "05_30PM",
+    "split": "development",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "page_boundary",
+      "available",
+      "suffix",
+      "wrapped_reason",
+      "butler_iii",
+      "minute",
+      "rest",
+      "g_league",
+      "concussion",
+      "out",
+      "questionable",
+      "doubtful",
+      "probable"
+    ],
+    "notes": [
+      "Minute-family control.",
+      "Butler III, Jimmy preserved exactly (not III, Jimmy)."
+    ],
+    "stem": "Injury-Report_2026-03-18_05_30PM"
+  },
+  {
+    "fixture_id": "ir-2024-04-16-05pm",
+    "report_date": "2024-04-16",
+    "token": "05PM",
+    "split": "development",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "available",
+      "postseason",
+      "hourly",
+      "out",
+      "questionable",
+      "probable",
+      "hyphen_name",
+      "apostrophe"
+    ],
+    "notes": [
+      "Postseason / play-in start."
+    ],
+    "stem": "Injury-Report_2024-04-16_05PM"
+  },
+  {
+    "fixture_id": "ir-2026-04-14-05_30pm",
+    "report_date": "2026-04-14",
+    "token": "05_30PM",
+    "split": "held_out",
+    "scope": "full_pdf",
+    "pages": null,
+    "cats": [
+      "forward_fill",
+      "available",
+      "postseason",
+      "minute",
+      "out",
+      "questionable",
+      "probable",
+      "apostrophe"
+    ],
+    "notes": [
+      "Postseason minute-family held-out."
+    ],
+    "stem": "Injury-Report_2026-04-14_05_30PM"
+  },
+  {
+    "fixture_id": "ir-2023-10-24-11pm",
+    "report_date": "2023-10-24",
+    "token": "11PM",
+    "split": "held_out",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      3,
+      4
+    ],
+    "cats": [
+      "available",
+      "suffix",
+      "hourly",
+      "out",
+      "questionable",
+      "doubtful",
+      "suspension",
+      "page_boundary"
+    ],
+    "notes": [
+      "Targeted pages with Available + name suffixes."
+    ],
+    "stem": "Injury-Report_2023-10-24_11PM"
+  },
+  {
+    "fixture_id": "ir-2024-01-15-05pm",
+    "report_date": "2024-01-15",
+    "token": "05PM",
+    "split": "held_out",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2,
+      3
+    ],
+    "cats": [
+      "available",
+      "iv",
+      "trade",
+      "suffix",
+      "g_league",
+      "hourly",
+      "page_boundary",
+      "wrapped_reason"
+    ],
+    "notes": [
+      "Pages covering Council IV, Trade Pending, Available, page-boundary reason wrap (Ingram)."
+    ],
+    "stem": "Injury-Report_2024-01-15_05PM"
+  },
+  {
+    "fixture_id": "ir-2024-06-06-05pm",
+    "report_date": "2024-06-06",
+    "token": "05PM",
+    "split": "held_out",
+    "scope": "targeted_pages",
+    "pages": [
+      1
+    ],
+    "cats": [
+      "finals",
+      "hourly",
+      "probable",
+      "questionable",
+      "hyphen_name"
+    ],
+    "notes": [
+      "Finals hourly; single page labeled in full."
+    ],
+    "stem": "Injury-Report_2024-06-06_05PM"
+  },
+  {
+    "fixture_id": "ir-2024-10-22-11am",
+    "report_date": "2024-10-22",
+    "token": "11AM",
+    "split": "held_out",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2
+    ],
+    "cats": [
+      "nys",
+      "forward_fill",
+      "hourly",
+      "out",
+      "g_league"
+    ],
+    "notes": [
+      "NYS-heavy morning; all pages."
+    ],
+    "stem": "Injury-Report_2024-10-22_11AM"
+  },
+  {
+    "fixture_id": "ir-2025-04-15-05pm",
+    "report_date": "2025-04-15",
+    "token": "05PM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2,
+      3
+    ],
+    "cats": [
+      "postseason",
+      "available",
+      "concussion",
+      "g_league",
+      "hourly",
+      "out",
+      "questionable",
+      "doubtful",
+      "probable"
+    ],
+    "notes": [
+      "Postseason development; all pages (short PDF)."
+    ],
+    "stem": "Injury-Report_2025-04-15_05PM"
+  },
+  {
+    "fixture_id": "ir-2025-10-21-05pm",
+    "report_date": "2025-10-21",
+    "token": "05PM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2,
+      3
+    ],
+    "cats": [
+      "available",
+      "suffix",
+      "butler_iii",
+      "hourly",
+      "out",
+      "questionable",
+      "doubtful",
+      "probable",
+      "page_boundary"
+    ],
+    "notes": [
+      "2025 opening hourly; pages with Available + Butler III + LeBron Sciatica literal trailing dash."
+    ],
+    "stem": "Injury-Report_2025-10-21_05PM"
+  },
+  {
+    "fixture_id": "ir-2025-12-21-05pm",
+    "report_date": "2025-12-21",
+    "token": "05PM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      6,
+      7
+    ],
+    "cats": [
+      "nys",
+      "available",
+      "title_delta",
+      "hourly",
+      "out",
+      "questionable",
+      "doubtful",
+      "probable"
+    ],
+    "notes": [
+      "Title is 05:45 PM (not 05:30). Pages with NYS + Available with literal reason \"-\"."
+    ],
+    "stem": "Injury-Report_2025-12-21_05PM"
+  },
+  {
+    "fixture_id": "ir-2025-12-23-08_00am",
+    "report_date": "2025-12-23",
+    "token": "08_00AM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2
+    ],
+    "cats": [
+      "minute",
+      "nys",
+      "available",
+      "forward_fill"
+    ],
+    "notes": [
+      "Minute :00 early; title matches token (delta 0)."
+    ],
+    "stem": "Injury-Report_2025-12-23_08_00AM"
+  },
+  {
+    "fixture_id": "ir-2025-12-23-08_15am",
+    "report_date": "2025-12-23",
+    "token": "08_15AM",
+    "split": "held_out",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2
+    ],
+    "cats": [
+      "minute",
+      "quarter",
+      "nys",
+      "available"
+    ],
+    "notes": [
+      "Minute :15 held-out; title 08:15 AM."
+    ],
+    "stem": "Injury-Report_2025-12-23_08_15AM"
+  },
+  {
+    "fixture_id": "ir-2025-12-23-08_30am",
+    "report_date": "2025-12-23",
+    "token": "08_30AM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2
+    ],
+    "cats": [
+      "minute",
+      "nys",
+      "available"
+    ],
+    "notes": [
+      "Minute :30; title matches."
+    ],
+    "stem": "Injury-Report_2025-12-23_08_30AM"
+  },
+  {
+    "fixture_id": "ir-2025-12-23-08_45am",
+    "report_date": "2025-12-23",
+    "token": "08_45AM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1,
+      2
+    ],
+    "cats": [
+      "minute",
+      "quarter",
+      "nys",
+      "available"
+    ],
+    "notes": [
+      "Minute :45; title matches."
+    ],
+    "stem": "Injury-Report_2025-12-23_08_45AM"
+  },
+  {
+    "fixture_id": "ir-2026-01-15-08_00am",
+    "report_date": "2026-01-15",
+    "token": "08_00AM",
+    "split": "held_out",
+    "scope": "targeted_pages",
+    "pages": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "cats": [
+      "minute",
+      "nys",
+      "available",
+      "concussion",
+      "morning"
+    ],
+    "notes": [
+      "Morning NYS held-out pages."
+    ],
+    "stem": "Injury-Report_2026-01-15_08_00AM"
+  },
+  {
+    "fixture_id": "ir-2026-06-08-05_30pm",
+    "report_date": "2026-06-08",
+    "token": "05_30PM",
+    "split": "development",
+    "scope": "targeted_pages",
+    "pages": [
+      1
+    ],
+    "cats": [
+      "finals",
+      "minute",
+      "available"
+    ],
+    "notes": [
+      "Finals minute; single page."
+    ],
+    "stem": "Injury-Report_2026-06-08_05_30PM"
+  }
+]

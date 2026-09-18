@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-coach-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "coachs_decision",
+  "source_player_state_id": "1037646|13|Morris Sr., Marcus|Out|Coach's Decision",
+  "input": {
+    "game_id": "1037646",
+    "team_id": "13",
+    "season": "2023",
+    "player_name_raw": "Morris Sr., Marcus",
+    "player_entity_id": null,
+    "status_raw": "Out",
+    "reason_raw": "Coach's Decision",
+    "identity_bucket": "IDENTITY_QUARANTINED"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "COACHS_DECISION",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "EXACT_COACHS_DECISION",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "IDENTITY_QUARANTINED",
+    "canonical_identity_resolved": false,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "expected": {
+    "data_weight_high": 0.07407407407407407,
+    "data_weight_low": 0.6666666666666666,
+    "est_high": 2.2222222222222223,
+    "est_low": 4.0,
+    "ordering": "high_v_closer_to_mu0"
+  },
+  "fixture_id": "syn-case-c-shrinkage-order",
+  "input": {
+    "mu0": 2.0,
+    "tau2": 4.0,
+    "v_high": 50.0,
+    "v_low": 2.0,
+    "y": 5.0
+  },
+  "kind": "shrinkage_order",
+  "split": "synthetic"
+}

@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-idq-out-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "identity_quarantined_health_out",
+  "source_player_state_id": "1037633|3|Claxton, Nic|Out|Injury/Illness - Left Ankle; Sprain",
+  "input": {
+    "game_id": "1037633",
+    "team_id": "3",
+    "season": "2023",
+    "player_name_raw": "Claxton, Nic",
+    "player_entity_id": null,
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+    "identity_bucket": "IDENTITY_QUARANTINED"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "IDENTITY_QUARANTINED",
+    "canonical_identity_resolved": false,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "INELIGIBLE_IDENTITY"
+  }
+}

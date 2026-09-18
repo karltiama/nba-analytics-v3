@@ -1,0 +1,39 @@
+{
+  "fixture_id": "ir-2024-06-06-05pm",
+  "title_raw": "Injury Report: 06/06/24 05:30 PM",
+  "page_count": 1,
+  "rows": [
+    {
+      "page_number": 1,
+      "visual_row_index": 1,
+      "row_kind": "player",
+      "game_date": "2024-06-06",
+      "game_time_et": "20:30",
+      "matchup": "DAL@BOS",
+      "team_name": "Dallas Mavericks",
+      "player_name_raw": "Doncic, Luka",
+      "status_raw": "Probable",
+      "reason_raw": "Injury/Illness - Right Knee; Sprain; Left Ankle Soreness",
+      "game_date_printed_on_row": true,
+      "game_time_printed_on_row": true,
+      "matchup_printed_on_row": true,
+      "team_printed_on_row": true
+    },
+    {
+      "page_number": 1,
+      "visual_row_index": 2,
+      "row_kind": "player",
+      "game_date": "2024-06-06",
+      "game_time_et": "20:30",
+      "matchup": "DAL@BOS",
+      "team_name": "Dallas Mavericks",
+      "player_name_raw": "Prosper, Olivier-Maxence",
+      "status_raw": "Questionable",
+      "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+      "game_date_printed_on_row": false,
+      "game_time_printed_on_row": false,
+      "matchup_printed_on_row": false,
+      "team_printed_on_row": false
+    }
+  ]
+}

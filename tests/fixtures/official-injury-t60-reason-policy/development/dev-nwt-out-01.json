@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-nwt-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "not_with_team_out",
+  "source_player_state_id": "1037599|6|Rubio, Ricky|Out|Not With Team",
+  "input": {
+    "game_id": "1037599",
+    "team_id": "6",
+    "season": "2023",
+    "player_name_raw": "Rubio, Ricky",
+    "player_entity_id": "6aca3cbe-9f13-5fec-9dcb-8943c46eebc8",
+    "status_raw": "Out",
+    "reason_raw": "Not With Team",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "NOT_WITH_TEAM",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_OR_EXACT_NOT_WITH_TEAM",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

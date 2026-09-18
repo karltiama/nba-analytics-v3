@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-personal-rtc-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "personal_return_to_competition",
+  "source_player_state_id": "1038645|28|Porter, Jontay|Out|Personal Reasons Return to Competition",
+  "input": {
+    "game_id": "1038645",
+    "team_id": "28",
+    "season": "2023",
+    "player_name_raw": "Porter, Jontay",
+    "player_entity_id": "e9d57659-3a2b-5c1a-a72c-54cf66fd568d",
+    "status_raw": "Out",
+    "reason_raw": "Personal Reasons Return to Competition",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "PERSONAL",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_OR_EXACT_PERSONAL",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

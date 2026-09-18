@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-concussion-avail-01",
+  "kind": "real",
+  "split": "development",
+  "category": "concussion_available",
+  "source_player_state_id": "1037702|14|Hachimura, Rui|Available|Injury/Illness - Concussion; Protocol",
+  "input": {
+    "game_id": "1037702",
+    "team_id": "14",
+    "season": "2023",
+    "player_name_raw": "Hachimura, Rui",
+    "player_entity_id": "e704416e-cddc-540d-8a59-777822a97b96",
+    "status_raw": "Available",
+    "reason_raw": "Injury/Illness - Concussion; Protocol",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "CONCUSSION",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "WITH_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITH_CANDIDATE"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "fixture_id": "syn-p1-symmetry-with-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "p1_symmetry_with",
+  "input": {
+    "mode": "compute_counters",
+    "game_id": "SYN4",
+    "team_id": "1",
+    "season": "2025",
+    "focal_player_entity_id": "focal-a",
+    "focal_eligibility": "WITH_CANDIDATE",
+    "focal_state": "PRE_GAME_AVAILABLE",
+    "subject_player_entity_id": "subj-1",
+    "subject_serving_player_id": "10",
+    "teammates": [
+      {
+        "player_entity_id": "focal-a",
+        "status_raw": "Available",
+        "health_relation": "HEALTH_RELATED",
+        "injury_wowy_eligibility": "WITH_CANDIDATE",
+        "canonical_model_eligible": true
+      },
+      {
+        "player_entity_id": "x",
+        "status_raw": "Out",
+        "health_relation": "NON_HEALTH_RELATED",
+        "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED",
+        "canonical_model_eligible": false
+      }
+    ],
+    "subject_metrics": {
+      "minutes": 20,
+      "pts": 10,
+      "reb": 2,
+      "ast": 3,
+      "tpm": 1,
+      "fga": 8,
+      "tpa": 3,
+      "fta": 2
+    },
+    "focal_realized_participation": "PLAYED"
+  },
+  "expected": {
+    "emitted": true,
+    "other_health_without_count": 0,
+    "cohort_p1": true,
+    "cohort_p3": false
+  }
+}

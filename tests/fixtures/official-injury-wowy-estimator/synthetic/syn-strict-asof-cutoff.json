@@ -1,0 +1,18 @@
+{
+  "expected": {
+    "eligible_game_starts": [
+      "2023-12-31T23:59:59.000Z"
+    ]
+  },
+  "fixture_id": "syn-strict-asof-cutoff",
+  "input": {
+    "as_of": "2024-01-01T00:00:00.000Z",
+    "game_starts": [
+      "2023-12-31T23:59:59.000Z",
+      "2024-01-01T00:00:00.000Z",
+      "2024-01-01T00:00:01.000Z"
+    ]
+  },
+  "kind": "asof_filter",
+  "split": "synthetic"
+}

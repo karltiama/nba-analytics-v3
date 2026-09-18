@@ -1,0 +1,3379 @@
+{
+  "fixture_id": "dev-submitted-08",
+  "kind": "real",
+  "split": "development",
+  "category": "ordinary_submitted",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21713528",
+    "season": "2025",
+    "start_time": "2026-05-19T00:30:00Z",
+    "cutoff_at": "2026-05-18T23:30:00Z",
+    "away_team_id": "27",
+    "home_team_id": "21",
+    "away_abbr": "SAS",
+    "home_abbr": "OKC",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "3027a92532e33c63acf831601efc80ad36617758162efb23044ddb268c0b0ffa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_00AM/Injury-Report_2026-05-17_08_00AM.pdf",
+        "source_sha256": "5711b4e5d007e640ef9b8d8326b8db3836897b90d8b1ec87896d98ae0b6ec170",
+        "report_published_at": "2026-05-17T12:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "32b89f5e5efaf10b6e074653f82295bc7256b2d78eee584c79543d995a0284cd"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "45fdbf33df81fd5ab20969d8b8875e3e134c029adfd007783f965dba66985e78",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_30AM/Injury-Report_2026-05-17_08_30AM.pdf",
+        "source_sha256": "d6abee7d7acae71d5b8382fd9f3c1392430e390bafc4b69f1eda90bd097e17ea",
+        "report_published_at": "2026-05-17T12:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "74309a68d39310fc7d6b3eb628833e056fd62edcf69397b0611d57fd40494c7b"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "0a190edbf356b91a494e6b4ac78de8cf28102f523005952a8079aa1ed5b1d5fb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_00AM/Injury-Report_2026-05-17_09_00AM.pdf",
+        "source_sha256": "9e2be1c1e0b2febe38ac610eb2096221f0b23b798b5134c81b2d3297683c30ab",
+        "report_published_at": "2026-05-17T13:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f02433c0494d46b51f64d0ce9558829c6066926f53d51a7a8bdaf05174ce99bb"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "aa9e314babd758b9aaa31de2665a2c462f10a618fc65ece1dd743d97ea899614",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_30AM/Injury-Report_2026-05-17_09_30AM.pdf",
+        "source_sha256": "69990225388a2dc55126e5a20ed4feb7e45303619001251d00caac1bd46ed901",
+        "report_published_at": "2026-05-17T13:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "6c6c4fd775da15d9c1e583804cce192fa6274a9c331a2d3ad272bbf5fffb15ff"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "5de55727cfcff97a345543c7455e1db3fde26ec426eb650f309175e5c07594fd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_00AM/Injury-Report_2026-05-17_10_00AM.pdf",
+        "source_sha256": "cb9449dcc8857208c0a1fc51d55444a3b7f9b9acd98b0c25052b8ab679be2b29",
+        "report_published_at": "2026-05-17T14:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7d758feb40e5a90f02cbd5087e01d74de183814a6145ad21fe0bc67f3511348c"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "90c6f517b64b31071600c62b29ad1195a94c4bac1b8aa670c7fedf764e6986ec",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_30AM/Injury-Report_2026-05-17_10_30AM.pdf",
+        "source_sha256": "000e89e2a7d7d9400421cbe3761369b052d31f8f681f891f09a42ec0fd33918b",
+        "report_published_at": "2026-05-17T14:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "72ee0ec7157a906cc5e08545d872ceb5880938c71083afee072791d920f38a59"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "47fc8bb6abb9b6ec246a3e5594296a5e834aed29226298471006eb483c6347dd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_00AM/Injury-Report_2026-05-17_11_00AM.pdf",
+        "source_sha256": "dcabac0d2522417740cf1d4ddc8c2df1bbb3d37c27c2913fe1f214c02fb4db69",
+        "report_published_at": "2026-05-17T15:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "681eb4d78477e8de8858be67dfce227c2fccda95dbeb515fc3a23c5d69cb7b60"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "11be4600a0e709273eef38586d76eaca3a3bbe1e16c23a423aaaf4928d3d7ed5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_30AM/Injury-Report_2026-05-17_11_30AM.pdf",
+        "source_sha256": "75f51e7a620686a219529ca78705465e27683e77c4633be92e52ff6ad4ae107a",
+        "report_published_at": "2026-05-17T15:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "0d959b7afee6fefa94e99dd94849916e9706e7e5c8a67790cb1c18915371082b"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "a39198d93daca9bddcb2f58889d636af2c2111eddc84f54d3e4aac1820874e6d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=12_00PM/Injury-Report_2026-05-17_12_00PM.pdf",
+        "source_sha256": "dd383f910509b07b53c27d38c8fd3983f88282190ed269d50b66968eb249e179",
+        "report_published_at": "2026-05-17T16:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "18779b066b0f434ba4bb1729ee0c3e6c6b265db53c85738514678736939f1954"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "6eac9e2f021d03983d481728f04d2a20dc7d0c63ef56949a2d06501f59027b9e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=12_30PM/Injury-Report_2026-05-17_12_30PM.pdf",
+        "source_sha256": "173b99feb03a756dbe1f282ac62886afb52dbbe46c959fb1a8443486fb73eef8",
+        "report_published_at": "2026-05-17T16:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c1e83218df231f6e83a1839a3791749166bd88234856909390a23cf22a53e2d9"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "d24487584a7d086d28f3135816d741c275e9b53724b235eb59302c9b9f3bfea7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=01_00PM/Injury-Report_2026-05-17_01_00PM.pdf",
+        "source_sha256": "bb445fbd97e2aff901dfb877134905687745714e646ddf478245e5b75d78902b",
+        "report_published_at": "2026-05-17T17:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "207e3ae42b0ecfd81feef37273730ab92e384e4ac34136296681e6fe497a9502"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "9ab3d47cadf19cb0429f41f191279723e611efb84c741219361bb379634b8016",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=01_30PM/Injury-Report_2026-05-17_01_30PM.pdf",
+        "source_sha256": "49343b9c840d59131e96e05dbb7092da38964ef00af3f0092b3d1759c2a4060a",
+        "report_published_at": "2026-05-17T17:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f6dfb88ab5632ef837a22bb8c34ecd8b8ebd0edf53c4d6eb9954b03ade02fa20"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "921e8b00afe78aba00fd7db4ef7c66a25a16d4f955b7c6348b51608d418fcc9b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=02_00PM/Injury-Report_2026-05-17_02_00PM.pdf",
+        "source_sha256": "603986990f5c0c391d8268d8b34b714233240eba3508b5c584b9b5a59c5883f6",
+        "report_published_at": "2026-05-17T18:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "25a9d71714b85366cb99fab407b9b6f835e4556cbb2cefe313eab753a7e82608"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "6ffd0ce606d4a7d2e45f23452072630b7cde3111e6880bc0bbfddfb5cffd6679",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=02_30PM/Injury-Report_2026-05-17_02_30PM.pdf",
+        "source_sha256": "0b5cd5953f1c93cf17fca7a60ad340f51f606e14a9954ad21434cb75ab00db72",
+        "report_published_at": "2026-05-17T18:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "efb095d37f67ce6c4eae9210038a5cae562a8776ef2e8d5a94e83708214fb9f2"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "716528920bce28688c8a6388f78088d1bdd865717baefc65dce8fd917e4b00cb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=03_00PM/Injury-Report_2026-05-17_03_00PM.pdf",
+        "source_sha256": "476a1a8bbc4e0da29052d14701c94cc6b20d35ea6231c1b773cd2cfabb7f3c8b",
+        "report_published_at": "2026-05-17T19:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4f4939045007f1a23a80f5eb2b8187e6ae87cd475d8630ddd19742f677fe7da9"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "da49f41d7c6df308daf0e4589b3d07664bb0b27c9e7a14b4f24528a0996666d9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=03_30PM/Injury-Report_2026-05-17_03_30PM.pdf",
+        "source_sha256": "b843ea48e8eb33458561d3319d6aed3e34f5de51993cc8014c9ef04f33a2369c",
+        "report_published_at": "2026-05-17T19:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d64ff832d4ec7936a1ba3a9f0a2b478930587115753944c8907717e74aaf07bd"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "989f602262341534d85355e042c0c7e0566a18903f501e2cd3176d66e217c381",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=04_00PM/Injury-Report_2026-05-17_04_00PM.pdf",
+        "source_sha256": "d21cb6b82ee2dcebbb74bfad719b3a162093547427df336fab0a64546b7bb022",
+        "report_published_at": "2026-05-17T20:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "b73ec63fc6d7196369b0da23f5090eb82258d23088b08a5efa93fc7d1590aa59"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "193499448f53c1ea1a0939fe34675a15c5e529abf28cb62fafb156bf2a2fb709",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=04_30PM/Injury-Report_2026-05-17_04_30PM.pdf",
+        "source_sha256": "5c4b69f583d3228ff29c6749f9d5b65f211071127182961400cf452118d06927",
+        "report_published_at": "2026-05-17T20:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "45f96ec405090d69db160bb1d0e021962a4c2db76737cbe7b131e17656da61c9"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "bc2ecf08c71f8bf243abc4e387143b2105a6116a7d23cb287f8f767dc99f087c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_00PM/Injury-Report_2026-05-17_05_00PM.pdf",
+        "source_sha256": "3ca60fd9a3a02e6353da437d749c699489524e7b61985a17fe882fa767fba6fb",
+        "report_published_at": "2026-05-17T21:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "082b56ee398ba991e02aa03c73f0acc94c4c4b7f66e045cd9e5bfa5e508fcb5d"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "debbe43da1c5b73f578c5e752c4a54c59b6f3cee1505b9f2145f755f23b00220",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_15PM/Injury-Report_2026-05-17_05_15PM.pdf",
+        "source_sha256": "c9cf60afd31d58ac2cda937b34fac0154f7f42f93c114e5e744c562df3c36d89",
+        "report_published_at": "2026-05-17T21:15:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "fe13f0104dbab540ea2abfb1772d5d21d8a1393c143c123b4b0ed1db570609d3"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "76a2af2972ba292ccaf1d60511e3c6f7ee9714b1d3e73215fc21385ed5035da6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_30PM/Injury-Report_2026-05-17_05_30PM.pdf",
+        "source_sha256": "5164a8145ceafb5578c1cd5a4f154e0fd98a8ed9b518f6c947c7f6ee3135cacf",
+        "report_published_at": "2026-05-17T21:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e3a85e0c9cfa41ca405a3bc6f082f407421c095e4d6ec5300c368888584a90df"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "3508479b119750bf61bd9ff6ee28e397e3ebb77bbef31c34d23dd6ef83cf3f01",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_45PM/Injury-Report_2026-05-17_05_45PM.pdf",
+        "source_sha256": "ba68b27dfe3277d81821f3600c70708f3a466f32df798f65da521df8eb67487f",
+        "report_published_at": "2026-05-17T21:45:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c4bf57e64c859f16444fd4f508517b1e4e2e41024f0dd8e1682ce903680bad3f"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "7c110a2b7a9b0403ebd8403d4b038cfc4efd729937d47c2fc302a78fc687766e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=06_00PM/Injury-Report_2026-05-17_06_00PM.pdf",
+        "source_sha256": "8f8056856128ee8ad011a542493d13ac3ef96a7db716fbc0f2415d028bf1a3f5",
+        "report_published_at": "2026-05-17T22:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "becb375532ec0eb81dc9f709acc47a0e3c115914fbb5edb800852ce3c0ff85e4"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "48903e96b3f5c66c056cc3f42d631d222a9ed697f1b7a0835e3c7af5a4fa34b1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=06_30PM/Injury-Report_2026-05-17_06_30PM.pdf",
+        "source_sha256": "adb1feb6deb4540c2252558d078357cf49481199bf75f0bfaff24c9e9d04bc17",
+        "report_published_at": "2026-05-17T22:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "15b762a1b08a3f36e5282bf8131a744f55cd9fdbfb9bcced953a9595de2d47d3"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "70f45026ba021cf93eb787c619fa204f14751e615a61ccd3f5d55c9cbb1a618c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=07_00PM/Injury-Report_2026-05-17_07_00PM.pdf",
+        "source_sha256": "4ed1bbaf81b0a929e1d045646f67ba21ed1922a873c2808c3cefaabea35ffc0d",
+        "report_published_at": "2026-05-17T23:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e05ee46fb7cf2703464fe62108e6c3a35488567a74b4474006b2153e6b152a49"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "387a00afda61bdcd9aeab414370146ec94189ac3564fa344b0f2211236a60a4b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=07_30PM/Injury-Report_2026-05-17_07_30PM.pdf",
+        "source_sha256": "e0808ac1f8ffa0fcc64baa7dd5db8255085a2504669ea93c487b076582cfdd9d",
+        "report_published_at": "2026-05-17T23:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c351fb3dc1d243f80d055a7968722ae77c881678ff5841424a2a5bc103647ab8"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "8d51dd41f52d269cb2dbc19fcf7541fc39fa02e2b980d0e154a96e92fada8ae8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_00PM/Injury-Report_2026-05-17_08_00PM.pdf",
+        "source_sha256": "bd57b930577a6d4970da27c4f85f6d232cab1550cfe17a0d19bc05bbc2af2534",
+        "report_published_at": "2026-05-18T00:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "fbb4ecce23e14bdb49c2d42b70b6a1ee5195e1d94853c0f009690e5f5c909a18"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "5794ecd55644b42fab2fe07de5b3b4666a7faf6263d009f859703a7ea6734cd4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_30PM/Injury-Report_2026-05-17_08_30PM.pdf",
+        "source_sha256": "c148ccae29ee10ae88dec53275df55358dd9ddd8b92cc259c5c9dabafa36c2a4",
+        "report_published_at": "2026-05-18T00:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "06d528d06d16c7ebca40c40a81a8db6a43bea7eab650ef25f52c6c58abcc3325"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "849a46ea77e3a9ae58686fcddd1c9bc2b1927825c9186f606fc75094f35126fb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_00PM/Injury-Report_2026-05-17_09_00PM.pdf",
+        "source_sha256": "fbe5389df657d11ae67870dcdc3c59abae1ede2972cdcc660814cd694b462cde",
+        "report_published_at": "2026-05-18T01:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0ed5974b5dbc37f350fe8f38e64bda89889eaafee1842f68af81dfe69ce1f9ca"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "f37536a612edf37639326aeded70c8f8ef447365a1ee30fab0f4f8ac8a003da0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_30PM/Injury-Report_2026-05-17_09_30PM.pdf",
+        "source_sha256": "0ccf28428b96b79b14a8eb85127e1e884ff229081fc7fe931d5390705e82e69d",
+        "report_published_at": "2026-05-18T01:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6048e42ed89b86dd9e0f1a0f2b2e1e98c28fb345e2964f3a7d98eadfc205ec82"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "758e7b8c2d0add0a039410f963ea85d0d030d1da199036003e87874d6afc2c10",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_00PM/Injury-Report_2026-05-17_10_00PM.pdf",
+        "source_sha256": "829dc8c582d0452f3170d561a4849d128132d4b7bf5999362ed6adb438e0ff86",
+        "report_published_at": "2026-05-18T02:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c67d1f0df8c18b67ba74a22eeacd38d1447834700dc0cabf0dfbc14429156d93"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "2980b9b2c878eae9595981e04a7e57319245be1c4eb09ca17526d74a37ba0a6f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_30PM/Injury-Report_2026-05-17_10_30PM.pdf",
+        "source_sha256": "056436cf8cea073993cc88d09a6bbfbcf5b318baf3ea884207bc9a0a44f3e660",
+        "report_published_at": "2026-05-18T02:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "fefc516a30bb244dd3ba9c13e9d420eb5cd4a27cca42918efa1329eec94cc1ed"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "ae893fa2f6b1753579c7b6b888edff0d0c81bc2bf18d692fea90ac7e5f07dddc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_00PM/Injury-Report_2026-05-17_11_00PM.pdf",
+        "source_sha256": "fc1564e020a9f5acbdcc2a8104e38d24324fed163b2be67feee4e80be626a4ae",
+        "report_published_at": "2026-05-18T03:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7f540a2f5b775c7d3a575a86ba10dc08ecba8b91a911a28d738675a7f12856c3"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "394dc3f4a2ef61df7ee1372f72ab8b559c8660d9bee1c788025a4d07c8a908e0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_30PM/Injury-Report_2026-05-17_11_30PM.pdf",
+        "source_sha256": "2855752c520577aa3d51dda545c598b9cc06d8163c69065587a7ec65f99c2cca",
+        "report_published_at": "2026-05-18T03:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "471db8308ee6605a1b8f429c3513c4890f9fd064268c72b018ca36ff79678c9c"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "05253c2dec52be5f10fe5691abb9b0e6c4c0c51eb80fb27b6364f1371d3abec5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_00AM/Injury-Report_2026-05-18_08_00AM.pdf",
+        "source_sha256": "5cc9e793a440154f2dba0c6c97f394843e20300a9895d36c914eefb976bf67e5",
+        "report_published_at": "2026-05-18T12:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3f655939a1e46b0fe18abb56e5bab6e979b3256264edc43d8644cb06f3d92669"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "c08403d8b1e1ce96c01e554cc8f32d893d5b0012374c79b82889c7282630f607",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_30AM/Injury-Report_2026-05-18_08_30AM.pdf",
+        "source_sha256": "c938508c83c714bc6b3c437a37f5c70b3ce1b21113b6807c002b532d3d2ac512",
+        "report_published_at": "2026-05-18T12:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "78e7bc83cd3da86f231427f78b8383d6c5f0a735f06c9bff96d407b49a99f57a"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "3e151aa7227c6e222057dafc3933d7d896f64d887ba830be79dcfedc3bac0654",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_00AM/Injury-Report_2026-05-18_09_00AM.pdf",
+        "source_sha256": "c69a7a54db27140b55e6338c6c36c1cbf68f1b72fd1ba9d38ec558337ac79b00",
+        "report_published_at": "2026-05-18T13:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2d763b40119a28b47f2c235d9e59169ea0bedc781c11d10a2cc333609ffa106a"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "61e6f58705bb4c1701fa5e64e59a439b41ba9e79f68e3eb9e5a9d2b1f49b411e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_30AM/Injury-Report_2026-05-18_09_30AM.pdf",
+        "source_sha256": "830b56f514e4727c47da265d89d307485f09b0a02da48cfd65c31d1233998a02",
+        "report_published_at": "2026-05-18T13:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0ababde0c677b026bc7434f262e47a368c7d3df0a49ab307791fff0dd02d7246"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "70f19e0ef074063a10fcc0fe96d2b173f90bdb7ec1f444df13806c1d98c82e43",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_00AM/Injury-Report_2026-05-18_10_00AM.pdf",
+        "source_sha256": "4eefb8df786df29f4dcd003dad643388af55b2c51c37d9601c0afc214cdc5bef",
+        "report_published_at": "2026-05-18T14:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5ef734930d1a782852aed6815c5ba5d02f6c0d29365f81a9f09b420f4dece7fe"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "f3300c2fd1e4450d937755283ad54857c1bd8bd24f4cec4647e4f0815c359eeb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_30AM/Injury-Report_2026-05-18_10_30AM.pdf",
+        "source_sha256": "6ca97e551d406aa06d3786692a09a1c47b8fd6f8fa90c64ef37468a0a5213674",
+        "report_published_at": "2026-05-18T14:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "428a5ddd68eb7e3d5ba58588a5492654a6aa60e83c396a0dfa7726a4f27266b2"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "c9b3fcf516d7fbbc0843ef3afc10b8c2428917da460af61d0a3e5f09ab85d25b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_00AM/Injury-Report_2026-05-18_11_00AM.pdf",
+        "source_sha256": "80855b3b5179f244f470da78f6065508801b973cd6bc3f1e7daeef357754e77e",
+        "report_published_at": "2026-05-18T15:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9da5954bfbe675a675a820183908c91939568aff5b697b2a189fb5a6cc455e85"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "81d08ae95eb6b0bc178e39a8f4a39b0a73c534b742ea81d475a797265f240e68",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_30AM/Injury-Report_2026-05-18_11_30AM.pdf",
+        "source_sha256": "6c9a340eb28546e56b091c632e2a52db4bf6fa358aeaa54c970965e04335d888",
+        "report_published_at": "2026-05-18T15:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "82b726508f6a82e470643a89cd325c69e0476b75c566256988e469069010ef63"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "79799008a48db31a3351e310fd6fe256436d828c8b2b65691c29b5738f73923e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=12_00PM/Injury-Report_2026-05-18_12_00PM.pdf",
+        "source_sha256": "e52c0dc3d36977d13b5f3cd4eb16ca871fab6004c91b7dbe28e5234917680dbd",
+        "report_published_at": "2026-05-18T16:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8abb8cd087906d63e6e748f69e69326e97e8dc78ecfa834227494cb00427525d"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "6a0902a7a7ee35b904b297de55e8b9ea19a60003d1420365112da33d5b23cf5d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=12_30PM/Injury-Report_2026-05-18_12_30PM.pdf",
+        "source_sha256": "a7fbc115cd72035023b876a2819ca51b4e389c771baf95a41ef3a2824f092ced",
+        "report_published_at": "2026-05-18T16:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9d2510cfac87662bd2f12a8014ff4cb2da407bdbffd5261261f887402d5e65ea"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "9266593fafa60294cd1cf1ae07f529afcf2cd32f0ee78869036c43047a14494b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=01_00PM/Injury-Report_2026-05-18_01_00PM.pdf",
+        "source_sha256": "d57305467a10b5542890e4d2cd4284e27c050868fca69362c30b32321adb7677",
+        "report_published_at": "2026-05-18T17:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f2e360703195b34c653d8d6f7ccf31e996727b37ec2f3d29953dd04766ebaacf"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "0de78ec29d32c1c8dbd3db80c8b2fb0db415b288bf720327f3a437dcdcef76a6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=01_30PM/Injury-Report_2026-05-18_01_30PM.pdf",
+        "source_sha256": "1266b1aa56d46b7aca9ea2ca67c431f497db9404067571dfc83d81d032f957c1",
+        "report_published_at": "2026-05-18T17:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a5045bc7c451e3292a2ebc6bea148c9abf96513c6bdc13043559bea9b2d83428"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "93d6a867dd7c647c445516427b2b8341899c4031269bf4887f65ee0e1cb18fdc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=02_00PM/Injury-Report_2026-05-18_02_00PM.pdf",
+        "source_sha256": "149e3a4e661917cc997c5c1dcd35ca8c0463f475c0b16b42bd81acb678bf9331",
+        "report_published_at": "2026-05-18T18:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "678da916a892ad82e01d07b824b26bf55079bdc1f375c231db4ba26dd4f92164"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "34d85f30039d1fbd6b74de89016dc315a4afb3e75ff3c18f2f87bfcb655fa308",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=02_30PM/Injury-Report_2026-05-18_02_30PM.pdf",
+        "source_sha256": "cd43367d8d7308bbd745fbebb1148239f2f279f255064eed874652bd9b3e4854",
+        "report_published_at": "2026-05-18T18:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "dcb51841f3898a1718a43ad3f16bb4c481a5d259593a7e2cbac919fbe6bf08e3"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "3d2db77dbd90e85317577bf64662b311940a74a6e4147ac4dc89334245c060fb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=03_00PM/Injury-Report_2026-05-18_03_00PM.pdf",
+        "source_sha256": "0e22d2301206f4d54b128a7aa8f4045dc5dfd68bcd7f85f5bbada5167cb6d138",
+        "report_published_at": "2026-05-18T19:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "87b48d068f5bcbd2cbbaf12e517a54e08ecf00ba03fdc5155f4edfad85c7fc03"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "ce7fec5e24dc68ea449315dda50d120353a07ad0507506dddc66a3dfc6b621c5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=03_30PM/Injury-Report_2026-05-18_03_30PM.pdf",
+        "source_sha256": "0f885463c934fae7ecb9da3955db85da83f6ced76794f43e7810a4e566abd5ef",
+        "report_published_at": "2026-05-18T19:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "db41e539b35b0669146f7328bff36b418a37999567b5d45343d763642a097025"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "1d19abe22ba7fab9ddb02e4df24e0f1ed90955ede75f49e30f1068d92f6f133f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=04_00PM/Injury-Report_2026-05-18_04_00PM.pdf",
+        "source_sha256": "8bd011997786bdc2017b3461158cc9f506d18612a6adff02c16162f9fee0fe93",
+        "report_published_at": "2026-05-18T20:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6d80bfde1ba8ce2f01880f7718d06a8966306ab92ea1d515a0bf4fd49729b4f4"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "d5780663374a0815043e1a40312e692f3e64448d635ee6492af1864eafe2eaf4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=04_30PM/Injury-Report_2026-05-18_04_30PM.pdf",
+        "source_sha256": "3c48a9fe48f9ce57dc4fc498787de8a72a1cbec8bd571e9dc9321abdb94fe900",
+        "report_published_at": "2026-05-18T20:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1921a3bf9226acaeb4ddbc1765c98a9e661d3c9ed18bdb5ae539271a90178788"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "606332a1d1d4309d3d3cbfcc4df9ed61e657fc8ed6abc5998134c0fb90c8083e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_00PM/Injury-Report_2026-05-18_05_00PM.pdf",
+        "source_sha256": "1063fecb90334e82fb476d3fc5ae0c8edce8c7487db1df64b5c2d8744ee5220b",
+        "report_published_at": "2026-05-18T21:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "65c45c54479c7083a5e8e4f8bcf5944520c1f16cdf67da31e1e5fdaaf89da81f"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "8679191a01eefa63fefdd169b343895272e0138b3f8cc1938025d8fb6cc576fa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_15PM/Injury-Report_2026-05-18_05_15PM.pdf",
+        "source_sha256": "e7ad131315c3f597d1e367d084a1de88129958c706dbdb95db904c831ecf6db4",
+        "report_published_at": "2026-05-18T21:15:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e2e26c7701f25b325798987ee934f1f288ff629bd98d21f9cfdf170625c85833"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "db9bc33391d35aa969348f5a00d6feee6cc0a4cc992e5be9191d7878ba924ca9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_30PM/Injury-Report_2026-05-18_05_30PM.pdf",
+        "source_sha256": "aead9dd5c9b86ba2045cffcc6a903e48b7dfc5ab2813e47d125d29c59504d7b0",
+        "report_published_at": "2026-05-18T21:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "40aa8c50dce2dfca5bb3c1211d1cabf913955feec51096dbbc962b26d7113047"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "01650e4739d880c49209b1cab627e0f114e3626e6ccbbfd14bc86070f1a7d737",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=05_45PM/Injury-Report_2026-05-18_05_45PM.pdf",
+        "source_sha256": "13f999cbab465fbbbfa37261fd179e1f358a1b2b44cf5a2ccf42a499db72f613",
+        "report_published_at": "2026-05-18T21:45:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8ec32e47ee86cffa1aa276990ae191763f6a9d751e975dfa1e42382f2c001c7e"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "c79881374dd9c20edc18063cb7ae69c2bd629b3204f60711f6e49ee1658a8d80",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=06_00PM/Injury-Report_2026-05-18_06_00PM.pdf",
+        "source_sha256": "c847b2fc9316917d9f567e8208883eabff7f0d11ad2b320653837c4962785682",
+        "report_published_at": "2026-05-18T22:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ea621bbb4a82d721160a9c517ed1dc79e99d78d6069a8dead0f63f099bd92462"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "20a61509b74420119b950dfe0236904827215ea6498ba7e4350379859a7d4c01",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=06_30PM/Injury-Report_2026-05-18_06_30PM.pdf",
+        "source_sha256": "2eb3e9ce423b139bcd11c2344021fc97cbfcfa7cb3dbfff392e342f22134b2a7",
+        "report_published_at": "2026-05-18T22:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "970cc22ffcb9c6c209d3137cd1e0177908d310f063a962300b63c7b683853db7"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "9f6b6241b2558762855a7e76872ecb67fd8a7b546129bc82a1780e7a25cf3a2e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=07_00PM/Injury-Report_2026-05-18_07_00PM.pdf",
+        "source_sha256": "71f8739cfda0401bd732e1fa1b18e12b94141f84f04dc854e50989938e8f60b1",
+        "report_published_at": "2026-05-18T23:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0c1f040af7ba300dbe24a780ef669ca1a786e1b0db50e41cc68d85f6dc80454c"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "ab53f388f26aaeb7923f738e52c87931faa76f15af7b0b6cbfa7ebccda50081a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=07_30PM/Injury-Report_2026-05-18_07_30PM.pdf",
+        "source_sha256": "e1b2b1950b80a1bca4f14bbe290ce55791f51f44c8b590d966cdd19931fa5982",
+        "report_published_at": "2026-05-18T23:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Foot; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b2907414679896005f310de3b2103d3cd1829dad7c83160b1385f66e9e669b79"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "fc548d034f07727e4810b30372dbf78ae40bb3c075b344f026c8cf1eceb9de62",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_00PM/Injury-Report_2026-05-18_08_00PM.pdf",
+        "source_sha256": "d4ce3ccb29aff8d3958d6d0ad5e3dc680935be6fda618e393d03772c1dd16ebc",
+        "report_published_at": "2026-05-19T00:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9dd756cc96994bb4cc9405321ca4050a41acd9452cd558aca44def228b5d4749"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "eacdf5d11c8079646b368195c68e88af50594d811cf279b0d422127ac6d0803a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=08_30PM/Injury-Report_2026-05-18_08_30PM.pdf",
+        "source_sha256": "92e6638a2d53630ebf4d86ec951b0b256bc54d5db97c99b549c5c6c9365d6781",
+        "report_published_at": "2026-05-19T00:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "530508bdb9f9ce2468d3b94ae34b09f222ca06d456c37d071ef45897e9e3b439"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "335783570489222bcde8a77db0fdbaef42700dc09da1e25d6ca2f00703aaa060",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_00PM/Injury-Report_2026-05-18_09_00PM.pdf",
+        "source_sha256": "775b5459dac8558979fc0d8456a93442b5606ad800e5f34a3b303ef057032ea1",
+        "report_published_at": "2026-05-19T01:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "636e0c7caba80c3dbae521db52f52f8664783a117da929753e2ef30bbd8a7542"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "46c6c7c606759f4d32447bdeb72bfb37b87df93696267f8559b66665373c0127",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=09_30PM/Injury-Report_2026-05-18_09_30PM.pdf",
+        "source_sha256": "60f96c331a80ed4220819460251703e59beb5f9cc0d5421d9a97f01432bb9a6b",
+        "report_published_at": "2026-05-19T01:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a848bd29f162e4aceb2575ba6e4831ee9f5ac29d959497ccbb710d0779e3ca48"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "55449841ed80f4934addff5d34b122fd68c3a8a041a58734e21aecbe89c50b1b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_00PM/Injury-Report_2026-05-18_10_00PM.pdf",
+        "source_sha256": "e942db1d5638fe0483e62faea1c074707e96a17ee9fb4b8e53b982687dc07e2c",
+        "report_published_at": "2026-05-19T02:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0a31c9853550ae2ca4a19217c4eb00a71874c472e9a73ebfe115fb50c3167734"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "3c0e0f41b6dd86f2e86b32133cf0aaea294aca1883bd185ff6074a016826f919",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=10_30PM/Injury-Report_2026-05-18_10_30PM.pdf",
+        "source_sha256": "12faf71cadec82c5cc49228f6033e3fa3c744fe1a3eb943017093b25629698db",
+        "report_published_at": "2026-05-19T02:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "35196c313a4ad69b7fc50ba6978a4d384e8f4b77badcb3c6520a6a457a2d80ad"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "ac5eaecf38e4d22a7fd46228a4b5c2c381f94559a04ef6cb22ba5cdea443047f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_00PM/Injury-Report_2026-05-18_11_00PM.pdf",
+        "source_sha256": "4e308d0b6156cc42d23060fdf6b065581d46b1586dd07744686411a23952afbf",
+        "report_published_at": "2026-05-19T03:00:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a2c576e89f3586079f70c7166e8886d43035f1c7ed0746b029669dea4fe5d5b6"
+      },
+      {
+        "game_id": "21713528",
+        "source_game_block_id": "25b504d361aecd93cf9a8fcfc4e5542ca82ad5d889b96d0005fc1885de2cde08",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-18/report_time=11_30PM/Injury-Report_2026-05-18_11_30PM.pdf",
+        "source_sha256": "185dbe1044e939d75e45076dbd06d576960718330ffd554dca44106881c84018",
+        "report_published_at": "2026-05-19T03:30:00.000Z",
+        "game_date": "2026-05-18",
+        "matchup": "SAS@OKC",
+        "away_abbr": "SAS",
+        "home_abbr": "OKC",
+        "away_team_id": "27",
+        "home_team_id": "21",
+        "teams": {
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "27": {
+            "team_id": "27",
+            "abbr": "SAS",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Fox, De'Aaron",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Ankle; Soreness",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Kornet, Luke",
+                "status_raw": "Available",
+                "reason_raw": "-",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c46ae73661d4a35fd78d9b4ea92ca0d21f3841759537208bafbdae4bee98264a"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-18T23:00:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 2,
+    "home_player_count": 1,
+    "selected_source_game_block_id": "9f6b6241b2558762855a7e76872ecb67fd8a7b546129bc82a1780e7a25cf3a2e"
+  }
+}

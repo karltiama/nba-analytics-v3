@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-ineligible-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "ineligible_to_play",
+  "source_player_state_id": "1038413|1|Forrest, Trent|Out|Ineligible To Play",
+  "input": {
+    "game_id": "1038413",
+    "team_id": "1",
+    "season": "2023",
+    "player_name_raw": "Forrest, Trent",
+    "player_entity_id": "3f67084a-a931-51b7-9c66-e67b13cd5c1f",
+    "status_raw": "Out",
+    "reason_raw": "Ineligible To Play",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INELIGIBLE_TO_PLAY",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "EXACT_INELIGIBLE_TO_PLAY",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

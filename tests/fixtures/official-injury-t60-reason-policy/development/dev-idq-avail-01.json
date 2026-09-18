@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-idq-avail-01",
+  "kind": "real",
+  "split": "development",
+  "category": "identity_quarantined_health_available",
+  "source_player_state_id": "1037608|14|Reddish, Cam|Available|Injury/Illness - Right Foot; Soreness",
+  "input": {
+    "game_id": "1037608",
+    "team_id": "14",
+    "season": "2023",
+    "player_name_raw": "Reddish, Cam",
+    "player_entity_id": null,
+    "status_raw": "Available",
+    "reason_raw": "Injury/Illness - Right Foot; Soreness",
+    "identity_bucket": "IDENTITY_QUARANTINED"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "WITH_CANDIDATE",
+    "identity_status": "IDENTITY_QUARANTINED",
+    "canonical_identity_resolved": false,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "INELIGIBLE_IDENTITY"
+  }
+}

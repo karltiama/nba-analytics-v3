@@ -1,0 +1,610 @@
+{
+  "fixture_id": "dev-nys-01",
+  "kind": "real",
+  "split": "development",
+  "category": "nys_at_cutoff",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21713897",
+    "season": "2025",
+    "start_time": "2026-05-22T00:00:00Z",
+    "cutoff_at": "2026-05-21T23:00:00Z",
+    "away_team_id": "6",
+    "home_team_id": "20",
+    "away_abbr": "CLE",
+    "home_abbr": "NYK",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "c9bf12e3369be41d1c86381b588e450be7ae3c47b57eeaf5aad227bd15b78080",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=08_00AM/Injury-Report_2026-05-20_08_00AM.pdf",
+        "source_sha256": "2ce1c6cea8e263f4bbf86c3a5891cef8b96a6b2655aa262140e9540a08f883f1",
+        "report_published_at": "2026-05-20T12:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f919773d6051afacd1670a73e6bcb88ef46b9d062a86223d827c280e3e9a1cc0"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "5c010054dd479536298942a19803bb3eb602c5ee4a3388ad6494bee27de79e99",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=08_30AM/Injury-Report_2026-05-20_08_30AM.pdf",
+        "source_sha256": "398ed33230589e728d0375adf5303c40e6ff3f0fb2f41ef714e1ff307eda1083",
+        "report_published_at": "2026-05-20T12:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "92a47a90bc2848d981acee390fee2b3e107446ac74dbcdc915ff43d9a446b9ab"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "709c8351e130429c2738c4f3c386d245b9d88a22e1bc2d57f53a12f8638e1f77",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=09_00AM/Injury-Report_2026-05-20_09_00AM.pdf",
+        "source_sha256": "1f856f9a0c3962225edd9a67c889406ebad880f553ebe837553ae8d1a6a3d283",
+        "report_published_at": "2026-05-20T13:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "76bcc9cb7e778e70e3f797d536d2ba3e80c76a625c97008d6a3a6fb45738f92d"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "2d09be98bbf663a7ce26893becb9e4b0fa2362915afcb5ade9baceb55d73251b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=09_30AM/Injury-Report_2026-05-20_09_30AM.pdf",
+        "source_sha256": "9fae31c0124a566a15e09c094affc87f5ff12d6c2b7bc3f02d574ef51df1785a",
+        "report_published_at": "2026-05-20T13:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "16a1d79bc5bbd6b6defbe9686c5f20ad56ee784a816f595eb6d02be094f7a2bb"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "7631acbb61d46871bb718556450808751cbe5419fb4f1d8bc8aec8836f913208",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=10_00AM/Injury-Report_2026-05-20_10_00AM.pdf",
+        "source_sha256": "3cc83c746a877986cbe2b68389b46ae77a602ceeb8d2b8c755297674c3b6a444",
+        "report_published_at": "2026-05-20T14:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "08ca40fdc8f5f0f2aa9fbf1527259f1d23b77410b8c80bf5a74e6f6d7e0b3411"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "8318dff2e5b5b421ae139dc402dbcff6715464703321c498130644bd5f8fd102",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=10_30AM/Injury-Report_2026-05-20_10_30AM.pdf",
+        "source_sha256": "286af8cf51fd151f2bb9f644edd239a638a949d41403e761193021db9424effb",
+        "report_published_at": "2026-05-20T14:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d187ddae4c047adcb61f4cb4ed22aa5e453f7367dec275ff09c020b692467766"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "21e3cdafbe48ae4c5dfa6ca56ee4a3bf3ad4e3c1440db2107b80d6003e980865",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=11_00AM/Injury-Report_2026-05-20_11_00AM.pdf",
+        "source_sha256": "1823b223b02ed2ff27b6d7d7d5f0371b235a0d8de2e3325193cf4621ae02fa10",
+        "report_published_at": "2026-05-20T15:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f3bd30f296595f037d61bf6de1f0bceb47b96f68f506a336553764917d3b423a"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "ef4011bf8b8504b205e987a37e2ba3aba30748647d076f5d583165f60c0667d1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=11_30AM/Injury-Report_2026-05-20_11_30AM.pdf",
+        "source_sha256": "b401a68a777999cc5e637be447bfb7f17409d4bee64a83830a7276129baeefb7",
+        "report_published_at": "2026-05-20T15:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "12e59d1099c5ce46a261792a956b7a8067fe26c245923c107bc5b0473a40b5c1"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "850a2fdfee413d25c3ab8d9adf272c7126999af672dd9844407ea85b6645da5e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=12_00PM/Injury-Report_2026-05-20_12_00PM.pdf",
+        "source_sha256": "eaa312ac158f4b3dde1aee09a46bdaf4bb3dd3e8fa0d6dccde15756c31d18c95",
+        "report_published_at": "2026-05-20T16:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "43cb977fb0e6cdf9ab8eb3017811f85d5769e36aec8905309271d24048c92a83"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "8bc516212dbd4c99542ffab2b8fdd28c511444611fb54c8581e2fa0519ecba21",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=12_30PM/Injury-Report_2026-05-20_12_30PM.pdf",
+        "source_sha256": "ee6f8e0b81179b26735d97496119b2d67e4d677e31678f6796232515073b14b5",
+        "report_published_at": "2026-05-20T16:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "fc7d66a5abb3cb10be83b49158804553c0ce4e1e4af7d09c39657faeaafbeeec"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "e5ef764abfe6a9ec8079557e4c339302375ef7328a541b221706faed9b273ec3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=01_00PM/Injury-Report_2026-05-20_01_00PM.pdf",
+        "source_sha256": "ea4e2047cb5c4780ac00fc3d9de64aa979768f09b46544f7c04edb3f6bd41757",
+        "report_published_at": "2026-05-20T17:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e9b4462d1daa4370e93fbbd1d336c62e8c087853b759e5da7d785e44a605e209"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "1a921b7bf8356dcba26a6a4d26f7b88aadc69ca9d4f0a387993728ed22e6d4ee",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=01_30PM/Injury-Report_2026-05-20_01_30PM.pdf",
+        "source_sha256": "a19e8cea48a517f89040c0d341cdc4b7e22eb744268f72c520ee7bcc5d662caa",
+        "report_published_at": "2026-05-20T17:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "aedcbcca02eb2b34826d55fd14d2895f626e7a8016b8251f19e170bb8dc87a73"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "7c7e0f35b4efdd856ae22e2291b77965c0331c81930996614765a4efc422f9a3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=02_00PM/Injury-Report_2026-05-20_02_00PM.pdf",
+        "source_sha256": "751fa19860314b24a110985ea5b44354adcc88899bf24d2654791a599faad302",
+        "report_published_at": "2026-05-20T18:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "653fe55f1e5de149ba0d69512f2836227131aa5e8fd254900770d4eecb50aace"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "2bd577a0ce02f0758d4996303141468898e0055548089cc5446a430161ec9172",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=02_30PM/Injury-Report_2026-05-20_02_30PM.pdf",
+        "source_sha256": "73987756d744272396778907d320672b532b77a96ce9213ae58eb918dd4b05cc",
+        "report_published_at": "2026-05-20T18:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "67fa61ce2a0283d62f1b38fe49479ec922731e952b9fd1686a655f83241abd51"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "b433f5726565555602e4269118c187eee62b5b56527932300f71941cc9abb3ac",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=03_00PM/Injury-Report_2026-05-20_03_00PM.pdf",
+        "source_sha256": "1452fa20f7efcfa35df39108b18461f0d2c37a77d6bf0d4d122660c0458daa38",
+        "report_published_at": "2026-05-20T19:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "75312af53602a93aeb3a52615be9d98c237f5a2ed47e261f38e8ede4d3d58cae"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "2e9ec068040acc4e87825fc902fb6ee437e05c7a925771ea0a6b2b4a5b90d353",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=03_30PM/Injury-Report_2026-05-20_03_30PM.pdf",
+        "source_sha256": "ac038e6df490fdd6fe938ade6f1819f78a7f1cbbeaf3ab50daa301c0473b983c",
+        "report_published_at": "2026-05-20T19:30:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9957f9412fce93ea67abc246d368fd587fba3d365a2b1ed0734c9ac6babcf1e2"
+      },
+      {
+        "game_id": "21713897",
+        "source_game_block_id": "c14abc96f7bc1fba2e73ea2bd87913df032f6e258283cac5f6f553d3427ae177",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-20/report_time=04_00PM/Injury-Report_2026-05-20_04_00PM.pdf",
+        "source_sha256": "a2c3af0ca41c9c4f54f88848b892a97331f06727ff3b72cc32758b37611aea08",
+        "report_published_at": "2026-05-20T20:00:00.000Z",
+        "game_date": "2026-05-21",
+        "matchup": "CLE@NYK",
+        "away_abbr": "CLE",
+        "home_abbr": "NYK",
+        "away_team_id": "6",
+        "home_team_id": "20",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d4f16f6cf5213f5941a8755b180439506770064bbe666fab162e711a77d297ea"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-20T20:00:00.000Z",
+    "snapshot_age_minutes": 1620,
+    "age_bucket": "AGE_1441_2880_MIN",
+    "exact_cutoff_count": 0,
+    "away_team_state": "NOT_YET_SUBMITTED",
+    "home_team_state": "NOT_YET_SUBMITTED",
+    "away_player_count": 0,
+    "home_player_count": 0,
+    "selected_source_game_block_id": "c14abc96f7bc1fba2e73ea2bd87913df032f6e258283cac5f6f553d3427ae177"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-p-health-01",
+  "kind": "real",
+  "split": "development",
+  "category": "probable_health",
+  "source_player_state_id": "1037593|8|Porter Jr., Michael|Probable|Injury/Illness - Left Ankle; Sprain",
+  "input": {
+    "game_id": "1037593",
+    "team_id": "8",
+    "season": "2023",
+    "player_name_raw": "Porter Jr., Michael",
+    "player_entity_id": "1d2e3a5f-efc4-5846-b587-249f71c8ba3c",
+    "status_raw": "Probable",
+    "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "NON_BINARY_EXPLICIT",
+    "reason_side_eligibility": "NON_BINARY_UNKNOWN",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_BINARY_UNKNOWN"
+  }
+}

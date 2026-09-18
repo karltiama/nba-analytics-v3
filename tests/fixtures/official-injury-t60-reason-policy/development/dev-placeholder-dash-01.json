@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-placeholder-dash-01",
+  "kind": "real",
+  "split": "development",
+  "category": "placeholder_dash_available",
+  "source_player_state_id": "1037604|26|Duarte, Chris|Available|-",
+  "input": {
+    "game_id": "1037604",
+    "team_id": "26",
+    "season": "2023",
+    "player_name_raw": "Duarte, Chris",
+    "player_entity_id": "912a053b-07f9-5737-87df-28631ff1276e",
+    "status_raw": "Available",
+    "reason_raw": "-",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "PLACEHOLDER_REASON",
+    "health_relation": "UNCLASSIFIED",
+    "classification_rule": "PLACEHOLDER",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "UNCLASSIFIED_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "UNCLASSIFIED_EXCLUDED"
+  }
+}

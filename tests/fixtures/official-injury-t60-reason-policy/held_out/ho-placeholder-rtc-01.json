@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-placeholder-rtc-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "placeholder_return_to_competition",
+  "source_player_state_id": "15907685|23|Quinones, Lester|Available|-Return to Competition",
+  "input": {
+    "game_id": "15907685",
+    "team_id": "23",
+    "season": "2024",
+    "player_name_raw": "Quinones, Lester",
+    "player_entity_id": "e57a5001-f62f-57c4-9132-5947d48e0e29",
+    "status_raw": "Available",
+    "reason_raw": "-Return to Competition",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "PLACEHOLDER_REASON",
+    "health_relation": "UNCLASSIFIED",
+    "classification_rule": "PLACEHOLDER",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "UNCLASSIFIED_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "UNCLASSIFIED_EXCLUDED"
+  }
+}

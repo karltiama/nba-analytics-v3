@@ -1,0 +1,61 @@
+{
+  "fixture_id": "ir-2026-06-08-05_30pm",
+  "split": "development",
+  "labeling_scope": "targeted_pages",
+  "source": {
+    "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-06-08/report_time=05_30PM/Injury-Report_2026-06-08_05_30PM.pdf",
+    "sha256": "c6a9dacd0891ef54a594a1b225537a9aca71b576f7120908bc57f58f686903dd",
+    "filename": "Injury-Report_2026-06-08_05_30PM.pdf",
+    "filename_family": "minute",
+    "report_date": "2026-06-08",
+    "requested_token": "05_30PM",
+    "season": "2025"
+  },
+  "report": {
+    "title_raw": "Injury Report: 06/08/26 05:30 PM",
+    "report_published_at": "2026-06-08T21:30:00.000Z",
+    "timezone": "America/New_York",
+    "page_count": 1,
+    "inferred_report_published_at": "2026-06-08T21:30:00.000Z",
+    "inference_method": "minute_family_clock_as_written",
+    "inferred_vs_title_delta_minutes": 0
+  },
+  "labeling_scope_pages": [
+    1
+  ],
+  "pages": [
+    {
+      "page_number": 1,
+      "rows": [
+        {
+          "page_number": 1,
+          "visual_row_index": 1,
+          "row_kind": "player",
+          "game_date": "2026-06-08",
+          "game_time_et": "20:30",
+          "matchup": "SAS@NYK",
+          "team_name": "New York Knicks",
+          "player_name_raw": "Robinson, Mitchell",
+          "status_raw": "Available",
+          "reason_raw": "Injury/Illness - Right Hand; Fractured Right 5th Metacarpal",
+          "game_date_printed_on_row": true,
+          "game_time_printed_on_row": true,
+          "matchup_printed_on_row": true,
+          "team_printed_on_row": true
+        }
+      ]
+    }
+  ],
+  "adversarial_categories": [
+    "finals",
+    "minute",
+    "available"
+  ],
+  "verification": {
+    "visually_verified": true,
+    "verified_at": "2026-09-17T06:15:00.000Z",
+    "notes": [
+      "Finals minute; single page."
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "fixture_id": "ho-u2-played-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "u2_played_unique",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "1037599|6|Garland, Darius",
+  "input": {
+    "game_id": "1037599",
+    "team_id": "6",
+    "team_abbreviation": "CLE",
+    "game_date_et": "2023-10-25",
+    "season": "2023",
+    "player_name_raw": "Garland, Darius",
+    "name_key": "darius garland",
+    "ever_out": false
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "unique",
+      "playerId": "666581",
+      "playerEntityId": "9afce394-f0b3-5aef-9299-aa2e596e2c51",
+      "minutes": "32"
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "9afce394-f0b3-5aef-9299-aa2e596e2c51",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_CANONICAL_ENTITY",
+    "player_entity_id": "9afce394-f0b3-5aef-9299-aa2e596e2c51",
+    "serving_player_id": "666581",
+    "confidence_class": "B",
+    "provenance_category": "U2_SAME_GAME",
+    "independent_source_count": 1,
+    "quarantine_reason": null
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_UNIQUE_PLAYED",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "UNIQUE_CANDIDATE",
+    "serving_projection": true
+  }
+}

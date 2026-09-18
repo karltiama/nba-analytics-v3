@@ -1,0 +1,46 @@
+{
+  "fixture_id": "syn-entity-only-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "entity_only",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "SYN|entity_only|ClassC, Player",
+  "input": {
+    "game_id": "SYN_GAME_4",
+    "team_id": "4",
+    "team_abbreviation": "BOS",
+    "game_date_et": "2025-11-01",
+    "season": "2025",
+    "player_name_raw": "ClassC, Player",
+    "name_key": "player classc",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "none",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "unique",
+      "playerEntityId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "inferred_pgl"
+    },
+    "servingPlayerId": null
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER",
+    "player_entity_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "serving_player_id": null,
+    "confidence_class": "C",
+    "provenance_category": "U4_NBA_STINT",
+    "independent_source_count": 1,
+    "quarantine_reason": null
+  }
+}

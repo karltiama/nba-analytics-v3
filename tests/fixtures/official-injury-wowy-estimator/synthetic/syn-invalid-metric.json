@@ -1,0 +1,11 @@
+{
+  "expected": {
+    "fail_closed": true
+  },
+  "fixture_id": "syn-invalid-metric",
+  "input": {
+    "metric": "fg_pct"
+  },
+  "kind": "invalid_metric",
+  "split": "synthetic"
+}

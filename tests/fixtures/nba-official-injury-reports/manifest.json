@@ -1,0 +1,630 @@
+{
+  "generated_at": "2026-09-17T06:15:00.000Z",
+  "fixture_count": 20,
+  "fixtures": [
+    {
+      "fixture_id": "ir-2023-10-24-05pm",
+      "split": "development",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2023/entity=injury_report_pdf/report_date=2023-10-24/report_time=05PM/Injury-Report_2023-10-24_05PM.pdf",
+      "sha256": "126bd5162d1dc4d568a536029fc4fc4a5557ef23ac25652dd706b3d79c8a0e2f",
+      "report_date": "2023-10-24",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 10/24/23 05:30 PM",
+      "report_published_at": "2023-10-24T21:30:00.000Z",
+      "page_count": 4,
+      "selected_pages": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "page_boundary",
+        "nys",
+        "suffix",
+        "wrapped_reason",
+        "g_league",
+        "suspension",
+        "hyphen_name",
+        "apostrophe",
+        "hourly",
+        "late_tip",
+        "out",
+        "questionable",
+        "doubtful",
+        "probable",
+        "next_game",
+        "next_team"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Visual page order top-to-bottom. Game times 12h afternoon/evening stored as 24h ET (07:30\u219219:30)."
+    },
+    {
+      "fixture_id": "ir-2024-10-22-05pm",
+      "split": "development",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2024-10-22/report_time=05PM/Injury-Report_2024-10-22_05PM.pdf",
+      "sha256": "9a2b6d1a55f100a03c519e3bb725fdf941c204b070197952d734479c8e18a42c",
+      "report_date": "2024-10-22",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 10/22/24 05:30 PM",
+      "report_published_at": "2024-10-22T21:30:00.000Z",
+      "page_count": 4,
+      "selected_pages": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "page_boundary",
+        "available",
+        "suffix",
+        "g_league",
+        "hourly",
+        "out",
+        "questionable",
+        "probable",
+        "apostrophe"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "2024 opening night hourly control."
+    },
+    {
+      "fixture_id": "ir-2025-12-06-11am",
+      "split": "development",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-06/report_time=11AM/Injury-Report_2025-12-06_11AM.pdf",
+      "sha256": "7e494b0b917ac0cae9b699c5af7407a9854397b14e09b03c5b4bc66b5181a7ce",
+      "report_date": "2025-12-06",
+      "requested_token": "11AM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 12/06/25 11:30 AM",
+      "report_published_at": "2025-12-06T16:30:00.000Z",
+      "page_count": 4,
+      "selected_pages": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "page_boundary",
+        "nys",
+        "suffix",
+        "wrapped_reason",
+        "g_league",
+        "hourly",
+        "out",
+        "questionable",
+        "probable",
+        "butler_iii"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "REQUIRED Missi Questionable / Clowney Probable control. Heavy NYS morning slate."
+    },
+    {
+      "fixture_id": "ir-2025-12-06-05pm",
+      "split": "development",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-06/report_time=05PM/Injury-Report_2025-12-06_05PM.pdf",
+      "sha256": "0ce4e6a2a42d133a01b79313929a2f0cef1aa1142c35feb7ae507a696c644e97",
+      "report_date": "2025-12-06",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 12/06/25 05:30 PM",
+      "report_published_at": "2025-12-06T22:30:00.000Z",
+      "page_count": 9,
+      "selected_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "page_boundary",
+        "nys",
+        "available",
+        "suffix",
+        "wrapped_reason",
+        "g_league",
+        "rest",
+        "concussion",
+        "hourly",
+        "out",
+        "questionable",
+        "doubtful",
+        "probable"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "REQUIRED Missi Available / Clowney Available control. 9 pages."
+    },
+    {
+      "fixture_id": "ir-2026-03-18-05_30pm",
+      "split": "development",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-03-18/report_time=05_30PM/Injury-Report_2026-03-18_05_30PM.pdf",
+      "sha256": "8f0d9913ffdeaad3f7db1a4d8bd3adb3a46643d1b6110d1b0a8a0806f6a51dc7",
+      "report_date": "2026-03-18",
+      "requested_token": "05_30PM",
+      "filename_family": "minute",
+      "title_raw": "Injury Report: 03/18/26 05:30 PM",
+      "report_published_at": "2026-03-18T21:30:00.000Z",
+      "page_count": 10,
+      "selected_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "page_boundary",
+        "available",
+        "suffix",
+        "wrapped_reason",
+        "butler_iii",
+        "minute",
+        "rest",
+        "g_league",
+        "concussion",
+        "out",
+        "questionable",
+        "doubtful",
+        "probable"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Minute-family control. Butler III, Jimmy preserved exactly (not III, Jimmy)."
+    },
+    {
+      "fixture_id": "ir-2024-04-16-05pm",
+      "split": "development",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2023/entity=injury_report_pdf/report_date=2024-04-16/report_time=05PM/Injury-Report_2024-04-16_05PM.pdf",
+      "sha256": "74243df9f738c81f790b41b6384d02032569f7c5df1c8919cdae129dbea469eb",
+      "report_date": "2024-04-16",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 04/16/24 05:30 PM",
+      "report_published_at": "2024-04-16T21:30:00.000Z",
+      "page_count": 2,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "available",
+        "postseason",
+        "hourly",
+        "out",
+        "questionable",
+        "probable",
+        "hyphen_name",
+        "apostrophe"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Postseason / play-in start."
+    },
+    {
+      "fixture_id": "ir-2026-04-14-05_30pm",
+      "split": "held_out",
+      "labeling_scope": "full_pdf",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-14/report_time=05_30PM/Injury-Report_2026-04-14_05_30PM.pdf",
+      "sha256": "97fe4e4d62b7c3f5d82600d415f46660149f01ba79e6fdee4e98b9395f0da253",
+      "report_date": "2026-04-14",
+      "requested_token": "05_30PM",
+      "filename_family": "minute",
+      "title_raw": "Injury Report: 04/14/26 05:30 PM",
+      "report_published_at": "2026-04-14T21:30:00.000Z",
+      "page_count": 2,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "forward_fill",
+        "available",
+        "postseason",
+        "minute",
+        "out",
+        "questionable",
+        "probable",
+        "apostrophe"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Postseason minute-family held-out."
+    },
+    {
+      "fixture_id": "ir-2023-10-24-11pm",
+      "split": "held_out",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2023/entity=injury_report_pdf/report_date=2023-10-24/report_time=11PM/Injury-Report_2023-10-24_11PM.pdf",
+      "sha256": "d2a4d90aa5f9216b2cb29d91b7e8f72e2a35b8213fa023354e7beba8313232d7",
+      "report_date": "2023-10-24",
+      "requested_token": "11PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 10/24/23 11:30 PM",
+      "report_published_at": "2023-10-25T03:30:00.000Z",
+      "page_count": 4,
+      "selected_pages": [
+        1,
+        3,
+        4
+      ],
+      "adversarial_categories": [
+        "available",
+        "suffix",
+        "hourly",
+        "out",
+        "questionable",
+        "doubtful",
+        "suspension",
+        "page_boundary"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Targeted pages with Available + name suffixes."
+    },
+    {
+      "fixture_id": "ir-2024-01-15-05pm",
+      "split": "held_out",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2023/entity=injury_report_pdf/report_date=2024-01-15/report_time=05PM/Injury-Report_2024-01-15_05PM.pdf",
+      "sha256": "2fe5185e065b83123dca8410a5b621a26aaf1fabe48ae262eafd7fab66d857bc",
+      "report_date": "2024-01-15",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 01/15/24 05:30 PM",
+      "report_published_at": "2024-01-15T22:30:00.000Z",
+      "page_count": 9,
+      "selected_pages": [
+        1,
+        2,
+        3
+      ],
+      "adversarial_categories": [
+        "available",
+        "iv",
+        "trade",
+        "suffix",
+        "g_league",
+        "hourly",
+        "page_boundary",
+        "wrapped_reason"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Pages covering Council IV, Trade Pending, Available, page-boundary reason wrap (Ingram)."
+    },
+    {
+      "fixture_id": "ir-2024-06-06-05pm",
+      "split": "held_out",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2023/entity=injury_report_pdf/report_date=2024-06-06/report_time=05PM/Injury-Report_2024-06-06_05PM.pdf",
+      "sha256": "3db29a756bc0dc3033818fe21762215fbdd5573e5696c53052c2764e3b5a229d",
+      "report_date": "2024-06-06",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 06/06/24 05:30 PM",
+      "report_published_at": "2024-06-06T21:30:00.000Z",
+      "page_count": 1,
+      "selected_pages": [
+        1
+      ],
+      "adversarial_categories": [
+        "finals",
+        "hourly",
+        "probable",
+        "questionable",
+        "hyphen_name"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Finals hourly; single page labeled in full."
+    },
+    {
+      "fixture_id": "ir-2024-10-22-11am",
+      "split": "held_out",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2024-10-22/report_time=11AM/Injury-Report_2024-10-22_11AM.pdf",
+      "sha256": "1f90684bc074f5ce97868c27a4b8506eac9591c02dbb36b0ce095941a9b49ab6",
+      "report_date": "2024-10-22",
+      "requested_token": "11AM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 10/22/24 11:30 AM",
+      "report_published_at": "2024-10-22T15:30:00.000Z",
+      "page_count": 2,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "nys",
+        "forward_fill",
+        "hourly",
+        "out",
+        "g_league"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "NYS-heavy morning; all pages."
+    },
+    {
+      "fixture_id": "ir-2025-04-15-05pm",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-04-15/report_time=05PM/Injury-Report_2025-04-15_05PM.pdf",
+      "sha256": "1a85cb1d752c6091f350859e409ef914e7cff72ae0c73ab05591b49660998b88",
+      "report_date": "2025-04-15",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 04/15/25 05:30 PM",
+      "report_published_at": "2025-04-15T21:30:00.000Z",
+      "page_count": 3,
+      "selected_pages": [
+        1,
+        2,
+        3
+      ],
+      "adversarial_categories": [
+        "postseason",
+        "available",
+        "concussion",
+        "g_league",
+        "hourly",
+        "out",
+        "questionable",
+        "doubtful",
+        "probable"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Postseason development; all pages (short PDF)."
+    },
+    {
+      "fixture_id": "ir-2025-10-21-05pm",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=05PM/Injury-Report_2025-10-21_05PM.pdf",
+      "sha256": "8485d77f7a327f862c7af8501a0e8ab650d5603bb9e904016a02ebb8db336ec6",
+      "report_date": "2025-10-21",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 10/21/25 05:30 PM",
+      "report_published_at": "2025-10-21T21:30:00.000Z",
+      "page_count": 4,
+      "selected_pages": [
+        1,
+        2,
+        3
+      ],
+      "adversarial_categories": [
+        "available",
+        "suffix",
+        "butler_iii",
+        "hourly",
+        "out",
+        "questionable",
+        "doubtful",
+        "probable",
+        "page_boundary"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "2025 opening hourly; pages with Available + Butler III + LeBron Sciatica literal trailing dash."
+    },
+    {
+      "fixture_id": "ir-2025-12-21-05pm",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-21/report_time=05PM/Injury-Report_2025-12-21_05PM.pdf",
+      "sha256": "fb459cf08d5d87eb9e6c26df8f83a150fb46c41fa3c35f26eedeb436dac8084e",
+      "report_date": "2025-12-21",
+      "requested_token": "05PM",
+      "filename_family": "hourly",
+      "title_raw": "Injury Report: 12/21/25 05:45 PM",
+      "report_published_at": "2025-12-21T22:45:00.000Z",
+      "page_count": 7,
+      "selected_pages": [
+        1,
+        6,
+        7
+      ],
+      "adversarial_categories": [
+        "nys",
+        "available",
+        "title_delta",
+        "hourly",
+        "out",
+        "questionable",
+        "doubtful",
+        "probable"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Title is 05:45 PM (not 05:30). Pages with NYS + Available with literal reason \"-\"."
+    },
+    {
+      "fixture_id": "ir-2025-12-23-08_00am",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-23/report_time=08_00AM/Injury-Report_2025-12-23_08_00AM.pdf",
+      "sha256": "3331280f324de629d0c0a9d29d9fb28e00ea891adfb32d4b9f2425615951def6",
+      "report_date": "2025-12-23",
+      "requested_token": "08_00AM",
+      "filename_family": "minute",
+      "title_raw": "Injury Report: 12/23/25 08:00 AM",
+      "report_published_at": "2025-12-23T13:00:00.000Z",
+      "page_count": 5,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "minute",
+        "nys",
+        "available",
+        "forward_fill"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Minute :00 early; title matches token (delta 0)."
+    },
+    {
+      "fixture_id": "ir-2025-12-23-08_15am",
+      "split": "held_out",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-23/report_time=08_15AM/Injury-Report_2025-12-23_08_15AM.pdf",
+      "sha256": "cb4b8404e72676b640b8c8d4d20fc8a120c16ca2698bbb882d5b0cbe41ebcb10",
+      "report_date": "2025-12-23",
+      "requested_token": "08_15AM",
+      "filename_family": "quarter",
+      "title_raw": "Injury Report: 12/23/25 08:15 AM",
+      "report_published_at": "2025-12-23T13:15:00.000Z",
+      "page_count": 5,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "minute",
+        "quarter",
+        "nys",
+        "available"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Minute :15 held-out; title 08:15 AM."
+    },
+    {
+      "fixture_id": "ir-2025-12-23-08_30am",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-23/report_time=08_30AM/Injury-Report_2025-12-23_08_30AM.pdf",
+      "sha256": "1ce0bef69f2847047af6b3e5503ed74e1487b19c42133d719697243ef28bc5eb",
+      "report_date": "2025-12-23",
+      "requested_token": "08_30AM",
+      "filename_family": "minute",
+      "title_raw": "Injury Report: 12/23/25 08:30 AM",
+      "report_published_at": "2025-12-23T13:30:00.000Z",
+      "page_count": 5,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "minute",
+        "nys",
+        "available"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Minute :30; title matches."
+    },
+    {
+      "fixture_id": "ir-2025-12-23-08_45am",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-12-23/report_time=08_45AM/Injury-Report_2025-12-23_08_45AM.pdf",
+      "sha256": "91a676bd0b3b27e109aeea1071be6a3508c26280301a5be4ebc63f30aa0629b2",
+      "report_date": "2025-12-23",
+      "requested_token": "08_45AM",
+      "filename_family": "quarter",
+      "title_raw": "Injury Report: 12/23/25 08:45 AM",
+      "report_published_at": "2025-12-23T13:45:00.000Z",
+      "page_count": 5,
+      "selected_pages": [
+        1,
+        2
+      ],
+      "adversarial_categories": [
+        "minute",
+        "quarter",
+        "nys",
+        "available"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Minute :45; title matches."
+    },
+    {
+      "fixture_id": "ir-2026-01-15-08_00am",
+      "split": "held_out",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-01-15/report_time=08_00AM/Injury-Report_2026-01-15_08_00AM.pdf",
+      "sha256": "c9b5b06e6f4f0cacc64a4b95602c16c28f8d6930c87b30a704dbfb9c6f11709f",
+      "report_date": "2026-01-15",
+      "requested_token": "08_00AM",
+      "filename_family": "minute",
+      "title_raw": "Injury Report: 01/15/26 08:00 AM",
+      "report_published_at": "2026-01-15T13:00:00.000Z",
+      "page_count": 6,
+      "selected_pages": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "adversarial_categories": [
+        "minute",
+        "nys",
+        "available",
+        "concussion",
+        "morning"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Morning NYS held-out pages."
+    },
+    {
+      "fixture_id": "ir-2026-06-08-05_30pm",
+      "split": "development",
+      "labeling_scope": "targeted_pages",
+      "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-06-08/report_time=05_30PM/Injury-Report_2026-06-08_05_30PM.pdf",
+      "sha256": "c6a9dacd0891ef54a594a1b225537a9aca71b576f7120908bc57f58f686903dd",
+      "report_date": "2026-06-08",
+      "requested_token": "05_30PM",
+      "filename_family": "minute",
+      "title_raw": "Injury Report: 06/08/26 05:30 PM",
+      "report_published_at": "2026-06-08T21:30:00.000Z",
+      "page_count": 1,
+      "selected_pages": [
+        1
+      ],
+      "adversarial_categories": [
+        "finals",
+        "minute",
+        "available"
+      ],
+      "labeling_completed": true,
+      "verification_completed": true,
+      "notes": "Finals minute; single page."
+    }
+  ]
+}

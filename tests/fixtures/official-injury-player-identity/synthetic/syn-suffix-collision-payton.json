@@ -1,0 +1,52 @@
+{
+  "fixture_id": "syn-suffix-collision-payton",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "suffix_collision",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "SYN|suffix|Payton II, Gary",
+  "input": {
+    "game_id": "SYN_GAME_5",
+    "team_id": "5",
+    "team_abbreviation": "GSW",
+    "game_date_et": "2025-02-01",
+    "season": "2024",
+    "player_name_raw": "Payton II, Gary",
+    "name_key": "gary payton ii",
+    "ever_out": false
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "unique",
+      "playerId": "200",
+      "playerEntityId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "minutes": "18"
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "inferred_pgl"
+    },
+    "suffix_collision_peer": {
+      "player_name_raw": "Payton, Gary",
+      "name_key": "gary payton",
+      "note": "Must remain distinct from gary payton ii; stripping would collide"
+    }
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_CANONICAL_ENTITY",
+    "player_entity_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "serving_player_id": "200",
+    "confidence_class": "B",
+    "provenance_category": "U2_SAME_GAME",
+    "independent_source_count": 1,
+    "quarantine_reason": null,
+    "name_key_must_equal": "gary payton ii",
+    "name_key_must_not_equal_peer": "gary payton"
+  }
+}

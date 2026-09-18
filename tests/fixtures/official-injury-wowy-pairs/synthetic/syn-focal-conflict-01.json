@@ -1,0 +1,26 @@
+{
+  "fixture_id": "syn-focal-conflict-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "focal_state_conflict",
+  "input": {
+    "mode": "validate_focals",
+    "focals": [
+      {
+        "game_id": "SYN7",
+        "team_id": "1",
+        "player_entity_id": "f1",
+        "injury_wowy_eligibility": "WITH_CANDIDATE"
+      },
+      {
+        "game_id": "SYN7",
+        "team_id": "1",
+        "player_entity_id": "f1",
+        "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+      }
+    ]
+  },
+  "expected": {
+    "hard_failure": "FOCAL_STATE_CONFLICT"
+  }
+}

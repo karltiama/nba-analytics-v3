@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-illness-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "illness",
+  "source_player_state_id": "1037639|17|Beauchamp, MarJon|Out|Injury/Illness - N/a; Illness",
+  "input": {
+    "game_id": "1037639",
+    "team_id": "17",
+    "season": "2023",
+    "player_name_raw": "Beauchamp, MarJon",
+    "player_entity_id": "c22fb362-9ada-56c1-aed6-d16ec5bec2a6",
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - N/a; Illness",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}

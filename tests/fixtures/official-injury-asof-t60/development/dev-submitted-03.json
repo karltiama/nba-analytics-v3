@@ -1,0 +1,3770 @@
+{
+  "fixture_id": "dev-submitted-03",
+  "kind": "real",
+  "split": "development",
+  "category": "ordinary_submitted",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21681996",
+    "season": "2025",
+    "start_time": "2026-05-02T01:30:00Z",
+    "cutoff_at": "2026-05-02T00:30:00Z",
+    "away_team_id": "14",
+    "home_team_id": "11",
+    "away_abbr": "LAL",
+    "home_abbr": "HOU",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "ee39a5f0ddfbeeb683681497b84cc5c2e25c41d91a9aec7c083086dc48225684",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_00AM/Injury-Report_2026-04-30_08_00AM.pdf",
+        "source_sha256": "495c4aca0b61a2a6bb2c0c86a3a6293eddfab23d89b58eb5ca821505cb54a1d6",
+        "report_published_at": "2026-04-30T12:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "2fdfd65a4e6bdb9381d153a0c6dee3dbd24fa2ccd782aea0c348d4ae90897b08"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "1e0bf9dfb3b1ca0b63381df30eec8bc7d20828c97bc7c65792de8b0853df4936",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_30AM/Injury-Report_2026-04-30_08_30AM.pdf",
+        "source_sha256": "aec451d848f73c62341d03662f3d0cd0414fa2ff67c42f8dbe27933db354e194",
+        "report_published_at": "2026-04-30T12:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c7c60d599e921f11fd2d181c2a5e0021c82d3fc3ceff6e64bf9fae3fda508cb2"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "36a8b129714c8d7738f6e62662b8a3d93bfab2d2640a9f56c769e99976cc4a12",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_00AM/Injury-Report_2026-04-30_09_00AM.pdf",
+        "source_sha256": "3224be0244c7dbd31e80d330c6496accdb9eb34c13164fc4243338d21d876692",
+        "report_published_at": "2026-04-30T13:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "8dc5eb39fbf09f4c171983656abaff4f067b2b60b681459e04f2159eb00d19fa"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "b9738203fb032b103c6a8edac1c1d6e00107be13a1d724b620874fe6be1acb62",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_30AM/Injury-Report_2026-04-30_09_30AM.pdf",
+        "source_sha256": "8a54cfdf44c684775be6a1d7d51c3afd6831df1e42f0c4536681182ca9f0cdb0",
+        "report_published_at": "2026-04-30T13:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1a921e4a4eeb2d4625192f3c34dd43a9c10495aeb1cd09783793fafe5014eaaa"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "158a20464cec0987d07b534a657232cfbc7919b6b76b641212c010e3842f0003",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_00AM/Injury-Report_2026-04-30_10_00AM.pdf",
+        "source_sha256": "a329d89cde31ad491209bc55ab8b0e396fdd428df2b5060c40e965d74a3dbe37",
+        "report_published_at": "2026-04-30T14:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a814ce2432b03d560f9dbed0ca91548fbd4276a93c26653ebbc62da7eea27b52"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "d44566d48034e2102c2c1e612f7020260ec53ecef632784f35a04eb2c1abc055",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_30AM/Injury-Report_2026-04-30_10_30AM.pdf",
+        "source_sha256": "6cf6f9e5496c5d4fad5c7c6d555d6a4ec13b66104628109087bac10cb68e9a4a",
+        "report_published_at": "2026-04-30T14:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "5d65d2e80ca55823a7ba54dd67ac8a08acfd050c9825be9ce0876fc31f0fad83"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "ebaaee813eb07944f48ecc1e8b4c5c9cb9c924e505b73a86e7e0de5411ece87b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_00AM/Injury-Report_2026-04-30_11_00AM.pdf",
+        "source_sha256": "7040c07b124333c77d5ee125c46930f22d3106847a61beb880be5b871ed8027d",
+        "report_published_at": "2026-04-30T15:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "0206a5745003a089355641fd380b8d443524ab90b2b0bbdf23a18777c6f657f5"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "1e9773d2c8d6470b2bb7f9e4c8d9ca325959f62c1c1fb23007db94618753d2f6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_30AM/Injury-Report_2026-04-30_11_30AM.pdf",
+        "source_sha256": "e91d2ef511ce57c8ae1f1d06ae06afec082dac3b9ff308795a3563e184766357",
+        "report_published_at": "2026-04-30T15:31:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d4811d7e68bef47ae0fd5503f62e7a6ddf9f2164512033a88f5399b1b307a1ca"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "78d9ea6ee6da31781b1db5606000ed8f1faa989e705f5d6173e673c518120dc8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=12_00PM/Injury-Report_2026-04-30_12_00PM.pdf",
+        "source_sha256": "d12c1180bdbef9346342a06990720a1c90a94259231b6a26f912ca0911e540c9",
+        "report_published_at": "2026-04-30T16:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "adad3f6a4e82b2459e915b10279bd1a40f0cd594c77ab675c2c521d1062aff0d"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "1bab96c65a82fb0d10455d790693ba080e8d6970011bfec71aa0597dd1b23371",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=12_30PM/Injury-Report_2026-04-30_12_30PM.pdf",
+        "source_sha256": "5beea267f09e29c950ff50e1a110f61c400757f71e4fb7ee1d84d6a50b5f4e92",
+        "report_published_at": "2026-04-30T16:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1875151dd1ef33744cbdb3838459bf609dece14d6e1d544063126a058d53ffee"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "5dcae17a6bf41e85877573a1c90ebea6c703eda3e14fbae4758b7ff8fd7b6257",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=01_30PM/Injury-Report_2026-04-30_01_30PM.pdf",
+        "source_sha256": "ccdedb39c5ec04ddc33a5f27b1c219212a518143cf49d28dc81515be5bd3e23d",
+        "report_published_at": "2026-04-30T17:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "29d056beab621be2a594ef1c0ac004e0b5844c0aadbf67ffab9427f360eab493"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "afd836b4f84f85dbaf4199073380cdf511c94293ed7c766e682f7824fdde4760",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=02_00PM/Injury-Report_2026-04-30_02_00PM.pdf",
+        "source_sha256": "89782e55429050c09da0db702124000141456a75815ffc6b976969e4d4e4fbe6",
+        "report_published_at": "2026-04-30T18:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9beefe80c876c6ed2ca9e965c5f28d8ec7e981ea53832d3f0dcd3c588ecb2729"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "7a34326aa4efb3c1bebc9dc64cf00472b7a680d91507b6840d6bd0a1094e61ec",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=02_30PM/Injury-Report_2026-04-30_02_30PM.pdf",
+        "source_sha256": "54dd275d2a56b7dc6d3b752812e28adeedee02c513823abcf2844b6aafbd66fd",
+        "report_published_at": "2026-04-30T18:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1401b31cf0c75ec3a9dc757b533ea088be8382fba0ec50d0f566b169b81c3330"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "438d5403b13e9cf0d8f02f5327a5a55174c926f144f6cd5115d34071cad04ed6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=03_00PM/Injury-Report_2026-04-30_03_00PM.pdf",
+        "source_sha256": "eedead605c1065779fefa78f0460d52520f64ea12913c029fc66803aa575e70c",
+        "report_published_at": "2026-04-30T19:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "b292e5aa2c4bf11f526964e3850b17b0a56bd8e9e13004c81bc431fd9c525816"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "80c8eee06d383c3b89f4b3159a4813ef1dccac1e9c67f0eb9588cadd78798b60",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=03_30PM/Injury-Report_2026-04-30_03_30PM.pdf",
+        "source_sha256": "9d950d598695dbb98cf0810e595a783e89d0d35b1570d11a3bd68c57a2caba31",
+        "report_published_at": "2026-04-30T19:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a9f8a2fdde2bf989551336a2a94d9f101b6608f12bef794ad7d7cca0f08b5440"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "e2718a10951904184a86093d2f84f402c80004101de5377c15bf889250580a32",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=04_00PM/Injury-Report_2026-04-30_04_00PM.pdf",
+        "source_sha256": "af6937b44c8881ae25d03e2a259387b14da71450142b5686c53f81c45b223c94",
+        "report_published_at": "2026-04-30T20:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "80c3418bbec7e67b5a88601f4a97b75b6db5ddb9e79042bd09f60b6963349627"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "1b50aac28f21d687bffd89eaba541a0c2acdf3228dd6a095428e04f8b7b6a37d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=04_30PM/Injury-Report_2026-04-30_04_30PM.pdf",
+        "source_sha256": "56f7f8252c05f2b76b1b6c755b92d4b961749f6c11ad4883bb302ac0f62166be",
+        "report_published_at": "2026-04-30T20:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "cc9abb7c3094bd2905c4672fbcce6ed43a2b074a810d3a0e1af7a2400dc2fa04"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "4f08b96b711f1b05bcecf0465055228d9325776a5556346829e7e2ad3ba7b178",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_00PM/Injury-Report_2026-04-30_05_00PM.pdf",
+        "source_sha256": "97128ea9840199f254a13b4c2400e88fb8dfc5b36bf1bec3c329c49c6692a8c5",
+        "report_published_at": "2026-04-30T21:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9e890b9f15d8c96ededce909590fadc8de19e956308b1fc623dcd7692f788855"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "07bf184d7d47a226d29ef8a95fa4d66c1dd952e57c62a0297459ba39bfe4f19c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_15PM/Injury-Report_2026-04-30_05_15PM.pdf",
+        "source_sha256": "7937e0b9f44c83a3cd53fecfc1e1f5320e52b1bd16a89dd505f5bcbb301c180b",
+        "report_published_at": "2026-04-30T21:15:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "6c5d35ca75ae80310381299240c2bb0434e51a740a4913e8e6984ab476109459"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "9889bfb8cab01907bca6f068bf1fceec19585ae36675f5cbadc55919d72a8e4f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_30PM/Injury-Report_2026-04-30_05_30PM.pdf",
+        "source_sha256": "3027d9ca85bb53f1fa7156e3282d7d2d31c75ab1195def38d0ae9808d6f06ec5",
+        "report_published_at": "2026-04-30T21:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9061b3911c6092789c63858f5dcd6b0ca12d7e9b8f56813a800c891e7fc8a629"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "16210bf1e3510ce39117bcab1e74b977b035f1dd2427042652e622de98d2eb2b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_45PM/Injury-Report_2026-04-30_05_45PM.pdf",
+        "source_sha256": "0c9a8b0a083ecebf4136700f834aed8032fed03edd5e7bcd2a65a38d2c632206",
+        "report_published_at": "2026-04-30T21:45:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e62de1363a994b893fe8b64b7773e3b9c0b12e1e8001a1978cb97a4418f8be63"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "19e9b4e0659ce09b3fc0a9b040e3153dae23b4dae14ec10489f1ec4364b130b0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=06_00PM/Injury-Report_2026-04-30_06_00PM.pdf",
+        "source_sha256": "f508c7eaadb1c712ce9f5cad04725028dbe6dfa46ed3e0cc6b7ac91d6c4f779d",
+        "report_published_at": "2026-04-30T22:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c40c5f29d39df8fbde388c446e3b241212dfa70867e7293b0b8120e2a3289f2a"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "65dec9c7a483c726ad0d76afd0b5cda1a24f55d453f1aa2ca1e176c47023e4a9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=06_30PM/Injury-Report_2026-04-30_06_30PM.pdf",
+        "source_sha256": "8c1d49af8b361aa0ff89a9a48c7eb56c55b85476c2add75929b941bcd01c50af",
+        "report_published_at": "2026-04-30T22:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ff315856b9dc02275744eeaa429401bcaf048f96531cda28fdfe24d90c4737f7"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "bd063762eeff94ab12ef4ecd74b61dcf0b7a16ebf359b246ff86e6fe71115b98",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=07_00PM/Injury-Report_2026-04-30_07_00PM.pdf",
+        "source_sha256": "85fc69ab23a30179dd8f86a18a91148d101696a947a4164c1bd48e3288fd7f54",
+        "report_published_at": "2026-04-30T23:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b9e39cae42f53b3ebc0b04342bc63d2bc4c1e9f772095f9b5d5ee7c75c27d19f"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "20eaef749318e59692ffc5a40b83956569dba295b23117a3ee4a99370d22af38",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=07_30PM/Injury-Report_2026-04-30_07_30PM.pdf",
+        "source_sha256": "e44f79c242eece5e42cf7d8f4bfac8c997ff0831a223d919f809243b2a33779a",
+        "report_published_at": "2026-04-30T23:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "24e0878b860a68b5a03b101fd22988f565adc870394b795d280109bf75665651"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "5459fcbea9ec5cfd34fcc6faa5e05d5a557af52f5dccfcfff3f456eac8830aca",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_00PM/Injury-Report_2026-04-30_08_00PM.pdf",
+        "source_sha256": "4d732d9f4ec1ddce4167f56f406f6442d14639b0c4c1dea14daf8600771a7e5a",
+        "report_published_at": "2026-05-01T00:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "03e0724be3a5d57d69281ceae8f562a8cfd2b09db96e31752fc83e7574c168e1"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "6112a5aaf21788b17385ab5066691e7419c82edd758d38b67ad3a008e596bc79",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_30PM/Injury-Report_2026-04-30_08_30PM.pdf",
+        "source_sha256": "b64f8f55f07edf0705552f47a40bd2dfb7849a32d0223bdfb3c1e89e13460f0f",
+        "report_published_at": "2026-05-01T00:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "95d29315efa93d3c0550e2ae63bff1e8e39f96185b6e340c3d2f99743b445343"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "1fbd5861bd5943202a97da6b72cbca654009e0b9b429128a6cc2af802ef4d69b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_00PM/Injury-Report_2026-04-30_09_00PM.pdf",
+        "source_sha256": "12677beda27266a09096f8ab4b9580e5c953607d4029e255061fc190a1c06c8d",
+        "report_published_at": "2026-05-01T01:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ecff9d9f46253154228bd0c36763fe0d39825705b15ac3ec63d1dd05b3a2eae0"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "c55f026f844b6abe8af8357e32c706cc8e05d855d392508e4f2b774d0f02e58e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_30PM/Injury-Report_2026-04-30_09_30PM.pdf",
+        "source_sha256": "b265d594c121e106c66cb36600ec8e51b9a3529f83ba0751e41c6e81a1e4d8e4",
+        "report_published_at": "2026-05-01T01:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d80199224696985af3b8465f201070d9d8d9dbee8a9f3cb4cf8ef1869e4ec7f9"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "53a2dbd5297cb47cb53ec2e2ec12c40c21549cf9a37438e4b2a52d5057734169",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_00PM/Injury-Report_2026-04-30_10_00PM.pdf",
+        "source_sha256": "55d3c0c6c6392eabe16c8fe716ceda1b87d948a6c9752a3ddaa84f02244f6ad1",
+        "report_published_at": "2026-05-01T02:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5e31fbda84cf5203a533a40520e34904d3e238d0ea154c4d0ae3d2f4ecba73a7"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "a7f6d089b93197263074304477ad96304b0fa0208cbd1a3fd2664a1fd0bedf10",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_30PM/Injury-Report_2026-04-30_10_30PM.pdf",
+        "source_sha256": "3b12aa927b1e0d0081c55382dbc54b50251d9b53ad7fffb37b81fee820967ce0",
+        "report_published_at": "2026-05-01T02:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "10a3739924e5bf6470ab516c44a675a5574cf0eb36a3221dbf4fea00f4fc198b"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "73c4d4092565710e6b1d4ccdd9a19655a0dafa1669ccd9d1c09d791c158b3d9f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_00PM/Injury-Report_2026-04-30_11_00PM.pdf",
+        "source_sha256": "67aa76f5263659f3ff8b4942ebb28e25a00f543314ddc17e01d263934dc1f122",
+        "report_published_at": "2026-05-01T03:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d35ab0112aa17144918b71d0c629de208ab136317833830df2da36c7fbd00037"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "5a1a669343d1c6ba73b21cee26b933f3f7ce523e5f92445fbe6570d0d86f931a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_30PM/Injury-Report_2026-04-30_11_30PM.pdf",
+        "source_sha256": "c8b887c802c77a3f5b196be70675373c6eceb6bfd8a3eb2f0fc47cd850b82563",
+        "report_published_at": "2026-05-01T03:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 2,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 2,
+                "visual_row_index": 6
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 2,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e7f303f4828f75fd20e87b95fb7292ac692bb8ea192b0e676c73412290105187"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "f86023f96a0e7c183ceb722504767c73abc79a9d510198501facbf23e4048cc5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_00AM/Injury-Report_2026-05-01_08_00AM.pdf",
+        "source_sha256": "31fd4e926c94b673b92ff2819cdcd22ce65bca73578d7c7e315dcc4cb726de0a",
+        "report_published_at": "2026-05-01T12:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0e7bc6a24ff140e34a24723d1260e80541c424a6197f00d4bb74dc87970f2508"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "bb8e33866643dc00da925def6e6cb180ea7b5c00bd074c24f7e83f464ce43861",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_30AM/Injury-Report_2026-05-01_08_30AM.pdf",
+        "source_sha256": "ceeff70365b8fa9afb5003e2dd752c4b38057a76f45461bd9e9d2287691f94aa",
+        "report_published_at": "2026-05-01T12:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "89d1a260817822dcd6c6ded32a8a527c9db7e0594a5d0013bea355988228e0d3"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "bcd6f9d76e57d3c47ee72e39344c7f7ba77dd89fc910ad0cc86d46139c6b8d97",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_00AM/Injury-Report_2026-05-01_09_00AM.pdf",
+        "source_sha256": "a692eba4e16457fa806f51a22c2bd10cba8457cfd06cce9a58eb4bbbf9233b1c",
+        "report_published_at": "2026-05-01T13:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9798ca42bff78cf0968360903bf5301e5f956189e547a5e72f5675f516f51bbd"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "9c57c37b49e2e27e4ca38bcb0e669aef9037da672b06897045abf6d1e2c2c70d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_30AM/Injury-Report_2026-05-01_09_30AM.pdf",
+        "source_sha256": "512243ffbb319557bd3e9fd65bafe1ea4b18a59fe9e64603543a701657ef2094",
+        "report_published_at": "2026-05-01T13:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b89cd8c1b8c64258f5b66e7941e631fffd6ef14c69b9e94b104ee587048943f8"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "78e8ea182a395ec5f5f3b854ba2b7c2772d80a29301c5db32bb9c547a3d5c9fa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_00AM/Injury-Report_2026-05-01_10_00AM.pdf",
+        "source_sha256": "fd11a86dfd542863d9a5c74f5784e4b9ca0766938525750b2a07ebb52f89f5c7",
+        "report_published_at": "2026-05-01T14:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a48ae5b19bcf6e8b5d76c6d9c86ea7859536b00ce79a77c34e04500aefa8c642"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "2b9f8b3d9f5f5ebc2e1bbb146210332ab0e30d450879e72a6081d90ae1cbf385",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_30AM/Injury-Report_2026-05-01_10_30AM.pdf",
+        "source_sha256": "3b887443f3ee37b392d93ac9c0c3a964ff83bad634680502716b5c39c370392a",
+        "report_published_at": "2026-05-01T14:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7ec169470a73873e39dc0bab23837b603f0adc3dd1da718be72dba922a824722"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "197972b18d52f0d080aa8d70e6fcda8705476782c27d029a35caa5f06e571802",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_00AM/Injury-Report_2026-05-01_11_00AM.pdf",
+        "source_sha256": "2e1b91078b3bb16d5d0b5b9bf0eaa7b73b387ddd6eeb5b44da437e68cbdb1307",
+        "report_published_at": "2026-05-01T15:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e7fd12c5184a949bd489cc437541337a1f71952b8c4834272fbab0789dc05caa"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "dac98b9cfaeae8a72c4d06ede84dea198f63c78d032c8c46067454f2ffd5f65a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_30AM/Injury-Report_2026-05-01_11_30AM.pdf",
+        "source_sha256": "3ad9f7628d66b54d69bf14f0a09b531402bfd6be319e82acf31fc0e80405c9ec",
+        "report_published_at": "2026-05-01T15:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d2c4803c5fe06f4cf739acdaf682cbb46df1e8bc48b35cd235c0d439f3434107"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "d634a3802cf9e9fee8fc098aa2b2bd33be85eb258e2acaf05ed985b7b130002f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=12_00PM/Injury-Report_2026-05-01_12_00PM.pdf",
+        "source_sha256": "020c21e5cb3bf3c9a7c784be3af8e6c00f138c85206e8fbe5d2c4657287724c3",
+        "report_published_at": "2026-05-01T16:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "30fa37eaa17693d441b354d7ec43cff859996bdcaacf66bb7a12c10282ec701d"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "1149d5c95e185d3b445ce9ae14f069455f23fba7f980a605985dc0c5e691b412",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=12_30PM/Injury-Report_2026-05-01_12_30PM.pdf",
+        "source_sha256": "185077e5a54ffc201d0ca49b89420bd9b8137ec7723325c6c6b93346b1c81689",
+        "report_published_at": "2026-05-01T16:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "53d0615fde0c45e59d2f11d307a8fba1398311b370b76d31573565ecb13b389f"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "0cc9ff81af35060863afc161e461486234fb4d1eed74a850c8a55aed5cb56c3d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=01_00PM/Injury-Report_2026-05-01_01_00PM.pdf",
+        "source_sha256": "634f294cc278d0b8b2e0ca204a0eb8088d11c426de0221ca82f9a0f68d80ffc9",
+        "report_published_at": "2026-05-01T17:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c53413ea2c3c37a0da4d5cd79e0b0815d8522edd494fe0cf663b7ed27c8af3aa"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "8d05d814a4accceaf503fcb5252f3b2f1a5a5321a0ecf2a867e9ba89e6a60ba4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=01_30PM/Injury-Report_2026-05-01_01_30PM.pdf",
+        "source_sha256": "47ff6333fcfdeb5eee412d23988add82a5a6eb66e8d8fc8a47754b4875154f15",
+        "report_published_at": "2026-05-01T17:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f9f66cc99cffc44a3dad48710ccceee356e21fb381ceb2335ba3f55770d9dffd"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "5ecf4414474b178c03fc8c04e9187ffa3e42eecafc02c2f13379179908204d38",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=02_00PM/Injury-Report_2026-05-01_02_00PM.pdf",
+        "source_sha256": "b435c372f352e2804531507fffb69245cf223a4000b14132bec7cf60ca974812",
+        "report_published_at": "2026-05-01T18:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "14bcc78a4123aef6297114dd2a5c8df8470d40658e15707f9bd1088fdbf79389"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "72a08b17985afba5d1a900c7456149d8bd9f306d2912f0b1ebe423bb99665c4a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=02_30PM/Injury-Report_2026-05-01_02_30PM.pdf",
+        "source_sha256": "a5b6a5ab30b918b5dca54e70a2a780603ef54c9e095a29a62d240cfd4571320e",
+        "report_published_at": "2026-05-01T18:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f2fedc210f6bb9d3805f75f18d77b7bf88ff4088ba91ad8a0f851ca02b647f09"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "78af389b911fc5173cc573f8ddaf2894df9f758bd09ab2f6b9c2598b1fe20424",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=03_00PM/Injury-Report_2026-05-01_03_00PM.pdf",
+        "source_sha256": "4be7f3e4e27986dc84e9d5b46df93b36af47c75d6f603f44164c7ee29a85a295",
+        "report_published_at": "2026-05-01T19:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cca8a7fd76b47e23254fd41a90e62493b74bbc77c858e19bd54eab54f36d330f"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "0864c92bed2aaec502b94a5251309a5359c64bb5f1f7f5721adc9a02ff124213",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=03_30PM/Injury-Report_2026-05-01_03_30PM.pdf",
+        "source_sha256": "a0b9736ea72a1420a83d07fac0fd6a47ad4d901d62aa921b07569d58acb4f9db",
+        "report_published_at": "2026-05-01T19:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b8322a748d800e2a6c7f7f672d39d61e5bbd7d718401e87a693f755c6e6421e0"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "bf6cefc15b9c149a5ebce102cd2f380c6715f7d9c883244cb66754c261886223",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=04_00PM/Injury-Report_2026-05-01_04_00PM.pdf",
+        "source_sha256": "b5ffb328b68049eaa0d4fcd89f88e49ba36045ba7d70595ad9735f8f10568aad",
+        "report_published_at": "2026-05-01T20:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "aa924b5bcb4ab6f76e1460ba55d776e82a2335e5d344855120f8483dec8354bd"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "7e192a722bc998fb8a01ad96e52c12de64b56a0fe18bf6851741ff017a189c77",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=04_30PM/Injury-Report_2026-05-01_04_30PM.pdf",
+        "source_sha256": "0296f51c91d2e5d410429a15f26432dd579472c8ad0e9bdb2fc7b05ae1031ddc",
+        "report_published_at": "2026-05-01T20:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f0f015eaedaa51755bd832de0347dddde8215690e1e52697bcbcbea4f86e709b"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "272cc6f2f1c07204feb5104fb10fe297e231960757a962a17ad18d5503a79c6d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_00PM/Injury-Report_2026-05-01_05_00PM.pdf",
+        "source_sha256": "a631e3040929023d2ba687d9f8ce7d0b9a71634c1e62c18d9164cbcdc87f40ea",
+        "report_published_at": "2026-05-01T21:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "17d157e1ad91055862e1d08bacda5325a7222bd58f1c070c3467916fc4eeaa6e"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "bee28cd382ba82d33d8e5b780e1b72563cf5bc488a0bd5a3d3b3fc3a05599b59",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_15PM/Injury-Report_2026-05-01_05_15PM.pdf",
+        "source_sha256": "30f572a2697a687d2373f6332c4382ce67ebe466ec570034e00c90bde3254a87",
+        "report_published_at": "2026-05-01T21:15:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1003e4a7a1b13328e2bade2c43acb193c813b913246d09b25cf63e5bda3e4d9c"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "f6d7a1c6575a7f1c3dbeb1b40f88dde8cdf7b9c7a84ed8c7a14f3239b31d6251",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_30PM/Injury-Report_2026-05-01_05_30PM.pdf",
+        "source_sha256": "07404b35432eb63b2ddc2bd67e4f8d91ee16c0b36a62860463dda61f2bb4bf80",
+        "report_published_at": "2026-05-01T21:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3134b85b079a3e2095c7f86604f66ac9d3c58ae392f46f5475775b5b94170271"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "424a4fc8f7d6fd6c96ec4430a04eccb95eca1fa99285d754a4bc27beca32811a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_45PM/Injury-Report_2026-05-01_05_45PM.pdf",
+        "source_sha256": "f38135b2239c02e49c42be72f4d41df76ae5f3775e4cf04666b8d72d3344bcc9",
+        "report_published_at": "2026-05-01T21:45:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "225c14defa478e7db3d5c407bec9fcd888695f0c7311d22a22e751421c483548"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "f73aa008f605bd8edd3557b1ed3115d9a5c55f1c44b7ce0c6cc8f14d97979c4c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=06_00PM/Injury-Report_2026-05-01_06_00PM.pdf",
+        "source_sha256": "1dee8d18b6e142bfefc1a65e5621734edd36f2a109c9a03493c3972e4b9414f4",
+        "report_published_at": "2026-05-01T22:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f7d872006e8a625fe7847b1a1b517f0391fe7b08e9a3637fe96e9ea5669107b7"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "13a60bf8a724eaf50500a99f49b56abcfafac2024f83ed93a89910e03275a792",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=06_30PM/Injury-Report_2026-05-01_06_30PM.pdf",
+        "source_sha256": "07bb6d12e9eef8d05119c2cc133840a5b53c845478eb7087e0d3cd2df62546c9",
+        "report_published_at": "2026-05-01T22:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7ddd8c324024a85cfd3484ef4b62b16cebdb9412eb6b968c0ff19ca11b11ad30"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "e663958d9abea75efe1e7b1bef4654cf16240bf11c555a4be0c3cf3f30d8d96e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=07_00PM/Injury-Report_2026-05-01_07_00PM.pdf",
+        "source_sha256": "03b0a9d9cb0e78b9a8eaa6fad01239f47e22e8fda0a404b1c2b65c57f9284424",
+        "report_published_at": "2026-05-01T23:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "113fd7426f57bfb40db5f052c21326a447413e831a20a2560b03e67345921a13"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "173b467117318394ea147f8f442712cedb066d875bbbb5bf07334a0901fe71e1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=07_30PM/Injury-Report_2026-05-01_07_30PM.pdf",
+        "source_sha256": "0f99036b048be542eae19815bb37dd935d6dee29705c78698cd44a36615cd2e7",
+        "report_published_at": "2026-05-01T23:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "34f0313d62c92e104709e4879086351102eec20d95577bc26eaf9f3d3d7e062c"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "82034a955fe9c396809fb4b08e8e9d4826262ffca3e229e1cdc50f09f4dd864f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_00PM/Injury-Report_2026-05-01_08_00PM.pdf",
+        "source_sha256": "90b4155dc5b6aba2348a2499a4e1937a4b943f4269251afd0230074675014b89",
+        "report_published_at": "2026-05-02T00:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b478a53cb7678c3ff45be1b2f0f5558de5b63a55f72add0092ff41f76ddbebee"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "2799776f481900de19dce454fc63cd82c830236b20b355baf1000558aa11ba67",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_30PM/Injury-Report_2026-05-01_08_30PM.pdf",
+        "source_sha256": "a7626e505401085b5b2f1947e6a7d1ec1bd4b44658f94c55e9957d38eb18a16d",
+        "report_published_at": "2026-05-02T00:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "765797f729fddc5d6cd1a9dd64f91d9601eafaba41cec9e71a5bed27364db901"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "8df4ff426114a22720f01db457c751539dfe501a48d57e30643a9098530935cf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_00PM/Injury-Report_2026-05-01_09_00PM.pdf",
+        "source_sha256": "1515a66539097b1ce9b9cc3be2e5279812aec62ba8c840ce3762c1f12930c9cf",
+        "report_published_at": "2026-05-02T01:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "deadead441876cc8eb87bc30319dfef91c54e14a533676c45dee1186bcfe8468"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "78059f97754a8b75b202c3e1bf8884cd22e217185f0f83a96a717e096cd172b7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_30PM/Injury-Report_2026-05-01_09_30PM.pdf",
+        "source_sha256": "b2a573d96e46b18be067f2b1414eaf951043d0654a0db1120ab0a9bdcfc41b2d",
+        "report_published_at": "2026-05-02T01:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "62f58fd22092ef241ed0539646bb2bd95b7ddcc4d2d3da14ec0a2951f2c3c8da"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "07def92bdfdcc15732ed2d0263ae9afd42ee9eda5eafa0a184165e2d5869f834",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_00PM/Injury-Report_2026-05-01_10_00PM.pdf",
+        "source_sha256": "f50f10522b10c47537e6915edee0819ff0ab5b2a6e5c2b19e57eeaebb0be5cba",
+        "report_published_at": "2026-05-02T02:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "25239db0ff28c6f377029360abbc9e46b8a6dda547453b270833f1e8631e7299"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "060c26ded9d2d23ead6f46a83367fd15a972843f7ac43e9d29bc5eb30fb79c44",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_30PM/Injury-Report_2026-05-01_10_30PM.pdf",
+        "source_sha256": "47edadaf15f9da65a3242a57e96ccba01afc9371d779fd8eca479bc00aa5107b",
+        "report_published_at": "2026-05-02T02:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d0a04c9835d7cfaaf6082a27e8ebc96483453a6ae6e839ad5d1ed3e7c5329e70"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "088b3240282ddfb8673db68a874535c31eb5f9c8a704b3079ea966d0f6c6eb3a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_00PM/Injury-Report_2026-05-01_11_00PM.pdf",
+        "source_sha256": "7051fb21e1a175d845be06aaea1cbcee52e7bdc41ea76d9993085ef73472f11a",
+        "report_published_at": "2026-05-02T03:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b932f4f22a352975d14b16239c07cb4ac3e0aacabc7be6748cbd6ce293b01c36"
+      },
+      {
+        "game_id": "21681996",
+        "source_game_block_id": "16c5757fd47fcb37e759232eac88439ee5246bae169fc8b83404ae9fa99d2ecb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_30PM/Injury-Report_2026-05-01_11_30PM.pdf",
+        "source_sha256": "377f5f11b13fb87ebaef8df86d145d36d455c1ecc8e12a6d193a60a42ed26b61",
+        "report_published_at": "2026-05-02T03:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "LAL@HOU",
+        "away_abbr": "LAL",
+        "home_abbr": "HOU",
+        "away_team_id": "14",
+        "home_team_id": "11",
+        "teams": {
+          "11": {
+            "team_id": "11",
+            "abbr": "HOU",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Adams, Steven",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Surgery",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Durant, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 9
+              },
+              {
+                "player_name_raw": "VanVleet, Fred",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; ACL Repair",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "680a747dd7e073cbb4ea945d5472d286fab5c7ac5dd8b34abde9e7ac820b3cf2"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-02T00:00:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 1,
+    "home_player_count": 3,
+    "selected_source_game_block_id": "82034a955fe9c396809fb4b08e8e9d4826262ffca3e229e1cdc50f09f4dd864f"
+  }
+}

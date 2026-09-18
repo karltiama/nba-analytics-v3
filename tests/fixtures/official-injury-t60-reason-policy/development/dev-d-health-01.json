@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-d-health-01",
+  "kind": "real",
+  "split": "development",
+  "category": "doubtful_health",
+  "source_player_state_id": "1037625|18|McDaniels, Jaden|Doubtful|Injury/Illness - Left Calf; Strain",
+  "input": {
+    "game_id": "1037625",
+    "team_id": "18",
+    "season": "2023",
+    "player_name_raw": "McDaniels, Jaden",
+    "player_entity_id": "bdd72567-40bb-5c89-8cff-50861b65538b",
+    "status_raw": "Doubtful",
+    "reason_raw": "Injury/Illness - Left Calf; Strain",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "NON_BINARY_EXPLICIT",
+    "reason_side_eligibility": "NON_BINARY_UNKNOWN",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_BINARY_UNKNOWN"
+  }
+}

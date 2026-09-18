@@ -1,0 +1,18 @@
+{
+  "expected": {
+    "outputs_identical_after_mutation": true
+  },
+  "fixture_id": "syn-future-mutation",
+  "input": {
+    "as_of": "2024-06-01T00:00:00.000Z",
+    "base_obs_starts": [
+      "2024-01-01T00:00:00.000Z",
+      "2024-02-01T00:00:00.000Z"
+    ],
+    "future_obs_starts": [
+      "2024-07-01T00:00:00.000Z"
+    ]
+  },
+  "kind": "future_mutation",
+  "split": "synthetic"
+}

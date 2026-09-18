@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-nwt-rtc-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "not_with_team_return_to_competition",
+  "source_player_state_id": "15907863|13|Tucker, P.J.|Out|Not With Team Return to Competition",
+  "input": {
+    "game_id": "15907863",
+    "team_id": "13",
+    "season": "2024",
+    "player_name_raw": "Tucker, P.J.",
+    "player_entity_id": null,
+    "status_raw": "Out",
+    "reason_raw": "Not With Team Return to Competition",
+    "identity_bucket": "IDENTITY_QUARANTINED"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "NOT_WITH_TEAM",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_OR_EXACT_NOT_WITH_TEAM",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "IDENTITY_QUARANTINED",
+    "canonical_identity_resolved": false,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

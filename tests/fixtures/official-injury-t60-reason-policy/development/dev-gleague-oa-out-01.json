@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-gleague-oa-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "g_league_on_assignment_out",
+  "source_player_state_id": "1037626|29|Hendricks, Taylor|Out|G League - On Assignment",
+  "input": {
+    "game_id": "1037626",
+    "team_id": "29",
+    "season": "2023",
+    "player_name_raw": "Hendricks, Taylor",
+    "player_entity_id": "db109034-f86b-50bd-91bd-337d3fd367bc",
+    "status_raw": "Out",
+    "reason_raw": "G League - On Assignment",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "G_LEAGUE_ON_ASSIGNMENT",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_G_LEAGUE",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

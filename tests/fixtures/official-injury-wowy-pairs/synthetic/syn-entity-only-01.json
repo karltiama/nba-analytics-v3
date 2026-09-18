@@ -1,0 +1,45 @@
+{
+  "fixture_id": "syn-entity-only-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "entity_only_focal",
+  "input": {
+    "mode": "compute_counters",
+    "game_id": "SYN6",
+    "team_id": "1",
+    "season": "2025",
+    "focal_player_entity_id": "focal-eo",
+    "focal_serving_player_id": null,
+    "focal_eligibility": "WITHOUT_CANDIDATE",
+    "focal_state": "PRE_GAME_OUT",
+    "subject_player_entity_id": "subj-1",
+    "subject_serving_player_id": "10",
+    "teammates": [
+      {
+        "player_entity_id": "focal-eo",
+        "status_raw": "Out",
+        "health_relation": "HEALTH_RELATED",
+        "injury_wowy_eligibility": "WITHOUT_CANDIDATE",
+        "canonical_model_eligible": true
+      }
+    ],
+    "subject_metrics": {
+      "minutes": 20,
+      "pts": 10,
+      "reb": 2,
+      "ast": 3,
+      "tpm": 1,
+      "fga": 8,
+      "tpa": 3,
+      "fta": 2
+    },
+    "focal_realized_participation": "NO_PGL_ROW"
+  },
+  "expected": {
+    "emitted": true,
+    "focal_serving_player_id": null,
+    "cohort_p1": true,
+    "cohort_p2": true,
+    "cohort_p3": true
+  }
+}

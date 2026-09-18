@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-gleague-rtc-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "g_league_return_to_competition",
+  "source_player_state_id": "1037660|28|Nowell, Markquis|Out|G League - Two-Way Return to Competition",
+  "input": {
+    "game_id": "1037660",
+    "team_id": "28",
+    "season": "2023",
+    "player_name_raw": "Nowell, Markquis",
+    "player_entity_id": "3ede77e1-5fc5-50df-8388-379ea929d34c",
+    "status_raw": "Out",
+    "reason_raw": "G League - Two-Way Return to Competition",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "G_LEAGUE_TWO_WAY",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_G_LEAGUE",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

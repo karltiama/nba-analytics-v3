@@ -1,0 +1,20 @@
+{
+  "expected": {
+    "data_weight": 0.5,
+    "estimated_delta": 0.5,
+    "estimation_status": "PAIR_ESTIMATE_AVAILABLE",
+    "quality_tier": "Q3",
+    "ui_display_eligible": true
+  },
+  "fixture_id": "syn-ui-3-3",
+  "input": {
+    "mu0": 0.0,
+    "raw_delta": 1.0,
+    "sampling_variance": 1.0,
+    "tau2": 1.0,
+    "with_n": 3,
+    "without_n": 3
+  },
+  "kind": "posterior_only",
+  "split": "synthetic"
+}

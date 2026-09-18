@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-inj-mgmt-avail-01",
+  "kind": "real",
+  "split": "development",
+  "category": "injury_management_available",
+  "source_player_state_id": "1037785|11|Eason, Tari|Available|Injury/Illness - Left Lower Leg; Injury Management",
+  "input": {
+    "game_id": "1037785",
+    "team_id": "11",
+    "season": "2023",
+    "player_name_raw": "Eason, Tari",
+    "player_entity_id": "1b9cb026-138f-5871-b89e-f875df6fdfd9",
+    "status_raw": "Available",
+    "reason_raw": "Injury/Illness - Left Lower Leg; Injury Management",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_MANAGEMENT",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "WITH_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITH_CANDIDATE"
+  }
+}

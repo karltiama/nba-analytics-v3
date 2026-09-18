@@ -18,6 +18,20 @@ export {
   resolvePlayerIdentity,
 } from './player-identity-resolve';
 export {
+  injuryIdentityNameKey,
+  isInjuryIdentityNameKeySafe,
+  OFFICIAL_INJURY_PLAYER_IDENTITY_RESOLVER_VERSION,
+  reorderLastCommaFirst,
+} from './injury-identity-name-key';
+export {
+  OFFICIAL_INJURY_PLAYER_IDENTITY_VERSION,
+  resolveOfficialInjuryPlayerIdentity,
+  type OfficialInjuryCandidateEvidence,
+  type OfficialInjuryPlayerIdentityInput,
+  type OfficialInjuryPlayerIdentityResult,
+  type OfficialInjuryResolutionStatus,
+} from './official-injury-player-identity';
+export {
   applyQuarantineObservation,
   applyQuarantineResolution,
   quarantineNaturalKey,

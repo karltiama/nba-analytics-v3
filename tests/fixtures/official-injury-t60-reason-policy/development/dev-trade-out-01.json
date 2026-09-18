@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-trade-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "trade_out",
+  "source_player_state_id": "1038150|30|Bagley III, Marvin|Out|Trade Pending",
+  "input": {
+    "game_id": "1038150",
+    "team_id": "30",
+    "season": "2023",
+    "player_name_raw": "Bagley III, Marvin",
+    "player_entity_id": "256846df-561d-5c7e-8944-4479ffe446c5",
+    "status_raw": "Out",
+    "reason_raw": "Trade Pending",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "TRADE_RELATED",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "KEYWORD_TRADE",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

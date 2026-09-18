@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-illness-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "illness_out",
+  "source_player_state_id": "1037599|6|Wade, Dean|Out|Injury/Illness - Illness; Illness",
+  "input": {
+    "game_id": "1037599",
+    "team_id": "6",
+    "season": "2023",
+    "player_name_raw": "Wade, Dean",
+    "player_entity_id": "c660854c-bb29-583f-bdea-bb8c927aebe0",
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - Illness; Illness",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}

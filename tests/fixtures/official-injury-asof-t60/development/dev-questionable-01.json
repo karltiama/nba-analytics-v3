@@ -1,0 +1,3144 @@
+{
+  "fixture_id": "dev-questionable-01",
+  "kind": "real",
+  "split": "development",
+  "category": "questionable_at_cutoff",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21709227",
+    "season": "2025",
+    "start_time": "2026-05-09T19:00:00Z",
+    "cutoff_at": "2026-05-09T18:00:00Z",
+    "away_team_id": "9",
+    "home_team_id": "6",
+    "away_abbr": "DET",
+    "home_abbr": "CLE",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "731b867041a7a5cd1cebaa66b807db0974305382a7c07f79aadade9961e410c1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=08_00AM/Injury-Report_2026-05-08_08_00AM.pdf",
+        "source_sha256": "503bdcc56e1b63f1fd10a9baeef4d669787f0221603348cf1a555240c083d230",
+        "report_published_at": "2026-05-08T12:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "91d5e66c2ab54c5a9a0af24a8aee1d6d7e20006d1a01f419519640ae4d45043f"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "af1b06a5763926a9dbe96cc6eb0b9f80ecf37d449414296b3923c10fdecb0af4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=08_30AM/Injury-Report_2026-05-08_08_30AM.pdf",
+        "source_sha256": "2f05623b30d1f96e3f3af090ea18a82fe5640c851e3f45199b33b6d7272c16b3",
+        "report_published_at": "2026-05-08T12:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "5fed88d0420318b936984e6a16197eb4c2ccde35b70a913027e0e8ec7b22b954"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "8448fce6807f806ea59fdd0ee64684db260aaff9937789eaf01fa86338c683a0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=09_00AM/Injury-Report_2026-05-08_09_00AM.pdf",
+        "source_sha256": "21f300a795bee90a0c2eeb5d231e0ace32074708b4f040aab5a9139ed066a2d0",
+        "report_published_at": "2026-05-08T13:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e0ec0eea72a724e32b7275a7fb367f5be677ac88981a9eede76bd6228464887c"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "3d9290661d9728e39ce51540674e87528eee6bc5116e4029bcf2c179d3e0fa79",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=09_30AM/Injury-Report_2026-05-08_09_30AM.pdf",
+        "source_sha256": "a1f21812637b19af8c710084ae0f0169cdb5a8006826eac13de89232dd889664",
+        "report_published_at": "2026-05-08T13:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "2c3ceee9e651333a3163f5f923eb123806c1cecba8e82bba4408b4848c185b41"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "071b4bc52f2d5a6118b0ef2ca0b70c1423d52f8bb91830cb3e2b93cbbf02e4b8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=10_00AM/Injury-Report_2026-05-08_10_00AM.pdf",
+        "source_sha256": "55a48f8ec8f3b3b706efa8b10111c59ccc4270251d72bb94127125cf137cc444",
+        "report_published_at": "2026-05-08T14:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "64823bffa55f593cf14a144f0c687486b271404e37393e52a864d4f75a26d7be"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "5b9758207859c2184c1baa3d22ff77f135b6a67460a4a937b42a52777211e2c0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=10_30AM/Injury-Report_2026-05-08_10_30AM.pdf",
+        "source_sha256": "a15b9da8964ffd1f7eeb8044cee01e64de7699194770861669af25517db415ec",
+        "report_published_at": "2026-05-08T14:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ff7175510b8c3605cd5ee0169cb0734e82736a7db7b169549ed8564c30d63417"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "26aa68ac01b4399f3d1fdc7fd5ae16d35cb4eaef7ca869f88eb243c76134cb0d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=11_00AM/Injury-Report_2026-05-08_11_00AM.pdf",
+        "source_sha256": "19708dc64ec2576e85a37343ec99cceef8e535d061e819b39a25930358983005",
+        "report_published_at": "2026-05-08T15:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ad722188fced9ab7e7213534c0017088887340ce6922a0f2f96c6b0ab6b5650f"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "ca13af2974203db3d43fbd075320c5cae2824670f63fbf0648ffff7ac1ad4c0f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=11_30AM/Injury-Report_2026-05-08_11_30AM.pdf",
+        "source_sha256": "67e51ced148fb7842cc998b17be3bcbf762a70e44ef0d17efe09bd51030d299d",
+        "report_published_at": "2026-05-08T15:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7aabf10195090c8b723b1654220e8cf85ab73e7781d308a365d2e0e63fde082d"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "aa75de4299f41002ca9424a7ce70178b2f2ad12fec43cb2d9cf4572ded80ce26",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=12_00PM/Injury-Report_2026-05-08_12_00PM.pdf",
+        "source_sha256": "e693ae32dd9bdf3e4bf39474c8acbdd02c9debce9cd01c9278eef44893a8010f",
+        "report_published_at": "2026-05-08T16:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a5dc43ee047e6ba39c9c09a0b79ff8e530da1ae1260642fe1aa2d1cdc63a7c6c"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "eaca303cda27296f3af9568fc6bd5365576371e3263f72aa5336441675ad4ab8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=12_30PM/Injury-Report_2026-05-08_12_30PM.pdf",
+        "source_sha256": "44614c1d5b61b2bc80c2f2e81c6ad5200d687129a5a97792fe218e015f09569a",
+        "report_published_at": "2026-05-08T16:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "107f2ea3e47bccc4e5ab178cb2221fc9e78eec402f313af68edabc5ca522dc81"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "10aa6b6430290afad321c298f0f4e97768731d685ca8fb1ad45f9e6da79e5319",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=01_00PM/Injury-Report_2026-05-08_01_00PM.pdf",
+        "source_sha256": "2bdd4c684bb9059051026a5d4ec9c5e3be309246c874778d5df8326b218af871",
+        "report_published_at": "2026-05-08T17:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "b29acd156237640b5c6213947a41793d03bf2ff0aedea16fed11b6ad099c3cf4"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "a64fe9c4cb67f46bb6f9bb9cb400b4b26ed0acf1c0d547d55123c2462a62d0a4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=01_30PM/Injury-Report_2026-05-08_01_30PM.pdf",
+        "source_sha256": "bb285ecd8f0614b8bec033f783558e35d24fa97bd989006d6a29aad490ebb034",
+        "report_published_at": "2026-05-08T17:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "152db733dbbab73c20f57f5d01c3e9c62f446da250ee4d4e1d3821169dcb4712"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "5f144a01a6069008cd10a4f926395d21a6b2fac43107972a5483304b1c50956c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=02_00PM/Injury-Report_2026-05-08_02_00PM.pdf",
+        "source_sha256": "5c0190f5bda6cbcdd009e91024cdbefd9ea974e47034e71bd26115119374a59d",
+        "report_published_at": "2026-05-08T18:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "636106a71f9b7156319cdd14868fd26f15cb600e8cf148a6a6d7f251ea711883"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "c0a4f7da960dd7c220106c7138e7b9dbc6335f5355f7c42b24d3a9475306470d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=02_30PM/Injury-Report_2026-05-08_02_30PM.pdf",
+        "source_sha256": "b45a1771b07d0df7aa1ab2a74d598122c0d1c1971c2336bc706d9a558de74e1c",
+        "report_published_at": "2026-05-08T18:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "8c346bba699bd09d8dd2de2056c50beada9048bd99979c62078b28dcdf4f2b5b"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "a4eb4d9dd9fa6ee3057079bf4f0b3d27e57025a98393700c03559214d161b49b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=03_00PM/Injury-Report_2026-05-08_03_00PM.pdf",
+        "source_sha256": "302fa9d817b68a7a7cd60449ee769e39eced462765fa477941b45c2cd014746b",
+        "report_published_at": "2026-05-08T19:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9fd0e7f2b4a2d2cbb9f2c8fc6ac12e4d564f553f3f8aed095f9d26f3456618a6"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "8fd6fda8dd3a41ad115a2e7d37519949c16451225d38710c730935f5a4628816",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=03_30PM/Injury-Report_2026-05-08_03_30PM.pdf",
+        "source_sha256": "8f2d5595612b98839457a9c40a8555fa394facd21621229b81e4a902e8af7390",
+        "report_published_at": "2026-05-08T19:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f6d1da1afb1eb3ab6e9e55d470ded8b8f6de500ce03a7a25ca9a25b1583e7cc4"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "f92e5ecf4d71b572375be6223a65737c7842f39efaa66ea31aff49410bb7130c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=04_00PM/Injury-Report_2026-05-08_04_00PM.pdf",
+        "source_sha256": "b9edcf0d962fb50fc1688f19407ad936216c1a7a97c640779bed451579066c53",
+        "report_published_at": "2026-05-08T20:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "46a84889be61a74f2f337f70606bfc588ecc453142b21a420eb5b06eab434265"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "3efc77ef6566097c3c241847ecadeed4ff93f10369d5d467d66ead27d411607b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=04_30PM/Injury-Report_2026-05-08_04_30PM.pdf",
+        "source_sha256": "93767bf453c136916cf680e5f60a37af728b43523eb9b9c57c01b5955cc2123c",
+        "report_published_at": "2026-05-08T20:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "8d6329718617f9fbad3df3dbd33c7f2b33afd7c1e1174297388f1d53d8a75cf8"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "c02e975e93c74074d3f2d18b13493b98173643bef0fc37d059b00907577fed97",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=05_00PM/Injury-Report_2026-05-08_05_00PM.pdf",
+        "source_sha256": "e6628cc61e5ef355d1aeeacab6afa844be1f816bdd9029fbdf3422992db7c0d2",
+        "report_published_at": "2026-05-08T21:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5f9231432371cfa97f5fd6ca8f242536dba641dabeebe2dee28cb448fb987eb5"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "2f4e72680420796d1e88e1b687bd42b0839a51f9c890f5b5fafafe22cf9e2555",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=05_15PM/Injury-Report_2026-05-08_05_15PM.pdf",
+        "source_sha256": "15212d2133e484f558d642532c0d868b270284fb645675c227f6c4ef434689f4",
+        "report_published_at": "2026-05-08T21:15:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "abc230df958aa43f2f3c6333a80aa32d66732c930a2064ff72b7f745fc4235e3"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "8d83cb14e69423fca0f86760fef3b0d0ecf0fba200678c7a7c6dfb3b896676eb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=05_30PM/Injury-Report_2026-05-08_05_30PM.pdf",
+        "source_sha256": "9adb0ac926f3a10efce71c48c5374123eaa1f0e6ce8a73464461fe750d20d068",
+        "report_published_at": "2026-05-08T21:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d632dd20af3f1c5a47806d3599bb488bc8b792dc6cc796810b05a96571d9a943"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "295e9d283de77bbed55fb3561a2d9804a65fafa4c1826b24deceeaa08310b319",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=05_45PM/Injury-Report_2026-05-08_05_45PM.pdf",
+        "source_sha256": "8512f7a14c5a7b56be5c37131ed187b398b5ea635527998b9aabb20eba35d5cf",
+        "report_published_at": "2026-05-08T21:45:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6d6df264498c7c93bd6cdc63b644906891f3ba80b661597079e11a5b315b4882"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "ecab0b24c09c28f6e01de3a64a92e847f72abc3d9f8d69d026c6f27735c35019",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=06_00PM/Injury-Report_2026-05-08_06_00PM.pdf",
+        "source_sha256": "86ded2f0ef940e91afd7dd391ea0b978b7c9f61af89faf7a5cef4d9dfd383a02",
+        "report_published_at": "2026-05-08T22:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "bf2ae2f2eb1cda7ad06c9e23848791186ade956528a26c9e1689f5d97627e039"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "1321679b2dd5cb6c6ca324e227bc91a40e17d4c5e7820152591569d618a76880",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=06_30PM/Injury-Report_2026-05-08_06_30PM.pdf",
+        "source_sha256": "d874376725306935b860ad024cbaf7661ca1f5353885576949eb582f683d148d",
+        "report_published_at": "2026-05-08T22:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e3ff15e874d25937cc50b922a4086b05680e8963369ca81c25cfe402e3753c0a"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "d3aac52bddc433f68fb6e0cd8f79cf3fca713f4a5e98b9b3840875a2c46a5763",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=07_00PM/Injury-Report_2026-05-08_07_00PM.pdf",
+        "source_sha256": "1fe9040d58c4dc477f8f3195c1eeffd873c414923c0348d02ad5882410794039",
+        "report_published_at": "2026-05-08T23:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6bde52f4b2baf4bb8b9ed329461aaccd9b2a385d5ee30d04a71994a27fe31ea7"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "5341fd621e68a00f932ce4039156be2eb8f0eed1cfd50129e009b2db039036b9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=07_30PM/Injury-Report_2026-05-08_07_30PM.pdf",
+        "source_sha256": "90399f384df28739d35e147e69bb7a58031a52c70f03e293be070a0152e26988",
+        "report_published_at": "2026-05-08T23:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e2fcd8648a7ba46f726df7df6399f743bf4cfdd56f3b7aa28732bd794d99779d"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "bc0df2c9c4f53a5d527246939280873f766899cfb2d9d051e9565b0c2ff920e5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=08_00PM/Injury-Report_2026-05-08_08_00PM.pdf",
+        "source_sha256": "32b876a04790b91d64a02de4d39f7e0e0b8219b6cd35f1485e324e5d98541479",
+        "report_published_at": "2026-05-09T00:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6df8aee6ff7d8e2a2ba37cf7fb00a7ad9b56a5d8fc23273aea36e1dae125fbba"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "97928256c43d85a9c3bcedcd6a050157d3f97fde9edd78518c255ee3acca8584",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=08_30PM/Injury-Report_2026-05-08_08_30PM.pdf",
+        "source_sha256": "cc157cb4e83fbc2a1c8ef9b8a22c51a66ebdeac6b07ea7515657f3b8acdab444",
+        "report_published_at": "2026-05-09T00:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "183f2906bd0771b974f76d30c8336b840c83db6f1d21033e207a4b428abc79d5"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "14fff7a382de10a4ccde5493ffef8ea7c84a1b4553b5d633ce3915fce04b8091",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=09_00PM/Injury-Report_2026-05-08_09_00PM.pdf",
+        "source_sha256": "d65d1ae82766460e3f41e51feefbd435f4236964ea1f302c0a0768430f126978",
+        "report_published_at": "2026-05-09T01:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "73e2d911b48b2c37f51d61577c0418b8d80506fc11d488021d08e6ed6613a515"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "9895747e9593f11315df301897da3063b5800f225b8924dfc9ef77880999a1fb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=09_30PM/Injury-Report_2026-05-08_09_30PM.pdf",
+        "source_sha256": "312e19ea13a911ab4eca63ba30c8d0cdfa43cd5c63236b15c677201e632c6499",
+        "report_published_at": "2026-05-09T01:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b2fbb84b923f6841c98ffb2bab08f588070ef41cb7d908d8f6b7fb5990d12a8b"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "d11e2398e775639c2c2dafcb7542690a91458ca58a0b52c4b259cb100227efe2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=10_00PM/Injury-Report_2026-05-08_10_00PM.pdf",
+        "source_sha256": "34f4de859013fa1f3867a2826ad71cdc0ffc08cb9c5289803393b054c77075b4",
+        "report_published_at": "2026-05-09T02:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e4b11bcadfc3dd1807bb37367402b8f70e81fe4a3a07ab6d9e1a3b0cfd5eb80e"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "f8134a1ea7e89180e9e4a337581a2df5e6f57be90f89d3eeb8920217e837e659",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=10_30PM/Injury-Report_2026-05-08_10_30PM.pdf",
+        "source_sha256": "4eb7b115c1f0374a049c7b4b0043a07152d01857f5765de497330f3e2799d415",
+        "report_published_at": "2026-05-09T02:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "62c518817e2d5d51ce0c8096b399c66b8c94528eea80e31b3a3d57c6d61d52b2"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "0648ee13cb601f7540f51babcd5735db52baea42a3cd4e57e43b6252ab099962",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=11_00PM/Injury-Report_2026-05-08_11_00PM.pdf",
+        "source_sha256": "1bbb1e47167aecdbc0936a55db897caea820d0741266bf34d0fe1e1f46dde8a7",
+        "report_published_at": "2026-05-09T03:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e6fc601cd743a5378d39336aace59f09507b7f4ce0eff880151369e6ac6d3bee"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "0b293573bc66266ba7e0fd52cde1b6a0543a9440de562ef8c14e4bf78f5ae028",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-08/report_time=11_30PM/Injury-Report_2026-05-08_11_30PM.pdf",
+        "source_sha256": "49a66998e5629b49c03db06617d4a748a32cf7fc6baad0775a0aeab82191a8bf",
+        "report_published_at": "2026-05-09T03:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 10
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ef982f47ac102dbc6e6df7b63dcf21e1aa5a3cd259b7fa0eb8b3be16ce8c15d4"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "6cb7a45b80d5ec7092a31d3eda85f6d497609b55dad8ff06f1bc84288f8cf407",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_00AM/Injury-Report_2026-05-09_08_00AM.pdf",
+        "source_sha256": "1f5bd3f9707450ec9d58d988aebf8923f583bfcef031a2184412126892ee7dea",
+        "report_published_at": "2026-05-09T12:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1f3ebfa7c77c0421ddddc18a3ddbaf7eca360737488c37967c120117b62715df"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "731a6f1d3f0ab7b930d37ecb0a46db430a79d5dea07f37aead93cdf7da43fcd7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_30AM/Injury-Report_2026-05-09_08_30AM.pdf",
+        "source_sha256": "cba797265f905ce069ac4c352a5afade5525db61ecd86c82c7836aba47c0e1fa",
+        "report_published_at": "2026-05-09T12:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3b9028ed2c1dd1a4ab6e9e07d745d555c862e2605427d7c25d228a61b8068520"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "4d6416404c9a6731a8e5d4a15aaf9bb62d600e291707dcc3a65f122952bc81b8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_00AM/Injury-Report_2026-05-09_09_00AM.pdf",
+        "source_sha256": "4cd878e190f6698fec4b284da686f2a6063b12f1513e7afd558b720efbad18a0",
+        "report_published_at": "2026-05-09T13:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7231b07d877a5b941f268d89c41afd207eaa0b919ef2ed8131aee26cf3998088"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "caa967534056738aa562205312d078c1770351d45dda093606398d77024b4aac",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_30AM/Injury-Report_2026-05-09_09_30AM.pdf",
+        "source_sha256": "0c4c9e08f4b70203e160c651699f7fd64a544ad4661d457469debc308c48f676",
+        "report_published_at": "2026-05-09T13:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "11f3b7109972f53537b4159c8a3db44ba675f9fcd03ef0066d51179c24e0368a"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "522da548c20eff14fdd41d9ce2a7d25c9f6abee62694f53d1914a9a07d646168",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_00AM/Injury-Report_2026-05-09_10_00AM.pdf",
+        "source_sha256": "be385c4ad1c3046df399c3f52b29913601961087ba370086731fbf8b801f1e11",
+        "report_published_at": "2026-05-09T14:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "580790be0b385cb169ef04b7fca42258bc2c39f6f66aa3736c7b31a5a7def42b"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "7a09a91806f1721206803bcda40a5ea271f749181f35d8763a13acb30315a3bf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_30AM/Injury-Report_2026-05-09_10_30AM.pdf",
+        "source_sha256": "416fb1db44d8b9d0e69fd99696f4a53518772dd481dabc46a1d4b83177f0fa0c",
+        "report_published_at": "2026-05-09T14:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "57eabd4570d5e8ea476bebdc2f8360c433d48ebef2f6f5bbf7cb544f2668cdcf"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "bb3dbfd1bc68409be8d289e517152854f13101d3d0e152f2eac1d6e0f4e170a6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_00AM/Injury-Report_2026-05-09_11_00AM.pdf",
+        "source_sha256": "c09bfd0a9c98cb61d3b7cdc2f05d4dc2ffbdcb969bdb16481d39442b83c93610",
+        "report_published_at": "2026-05-09T15:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a69f045bcfc93f070704a011cda4ac010bd50d056d557105ac077fe32d67942d"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "9639a15b5045d79f7e505897cf97a46dc381d1a33956f2abf71338f0533c3259",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_30AM/Injury-Report_2026-05-09_11_30AM.pdf",
+        "source_sha256": "6762273e1d45225f2a916f1030e10e59ad7d65c0138d5e7eb04c36d2d04af27d",
+        "report_published_at": "2026-05-09T15:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d5878088b2789779c17fe316fa6f8b63b6fdc8523752c22eaf40e6a3d298dad0"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "129609ece8e405372584e9ca38f6b669699a77484e978afc494e0b6c37ddde87",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=12_00PM/Injury-Report_2026-05-09_12_00PM.pdf",
+        "source_sha256": "3f956959d8bb1fa29116f8106f66dc9d8e8b79e2375328ee0065c24ffe28c498",
+        "report_published_at": "2026-05-09T16:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3dcd007a6212d7ea2ede0fadc0fd8d86d37f3046706b10b14b80ea95c41d8454"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "4e1cc86d291079e3130a2b8d0db2741258dd3d7bde26b1db948fb00d1dea5cfa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=12_30PM/Injury-Report_2026-05-09_12_30PM.pdf",
+        "source_sha256": "a0a3afb65de950b2b9476b29402cabad378fc5d65ff3666722d30fa6a4452d5a",
+        "report_published_at": "2026-05-09T16:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "acb0271e2f0b0731accc0d4cbefaa15799ae11bc2012efeaf659e2be03fae9db"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "a8650b6b2c75b67649c93f99e0e39e1566946ec1e54e69f6a4079d9eecb9d9d7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=01_00PM/Injury-Report_2026-05-09_01_00PM.pdf",
+        "source_sha256": "db7767f87d33c61194ac2e1e5b2502a8017d0dc89ee583b0c890a3fbdda9a98d",
+        "report_published_at": "2026-05-09T17:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c0777611c2c358a397bc5fa35c92b5b604f69c6acf5eaa1c1334ad44e870ba61"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "0cb941334e3936e9a9324f6cae4df805e57760a2e6573e6250722dcfd53100ae",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=01_30PM/Injury-Report_2026-05-09_01_30PM.pdf",
+        "source_sha256": "4b80d1ff7553b282e7ae8ea9b939ff2911677e2938882804570af0de8bbc14a1",
+        "report_published_at": "2026-05-09T17:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e33be35bc1fa65098b9ef97a06319e8a967ef70fc0d50d3e91cb80f80c17935a"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "728e9353eca85874cc02e6a8cc1a381cc76f77621ea42f55a0b443f26a8870da",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=02_00PM/Injury-Report_2026-05-09_02_00PM.pdf",
+        "source_sha256": "3e4f4e084be90bfe003c81d484f154d41d8fc4dac43011dddbf0d5f4680dbd18",
+        "report_published_at": "2026-05-09T18:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c663328b64921525e8767ecacb82d183a836dbd5724ba0d0911d8acdc61fbf05"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "33eefd78cf7f90235237de0ff1d1dea7211d163672b4864ea100e8a07321184a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=02_30PM/Injury-Report_2026-05-09_02_30PM.pdf",
+        "source_sha256": "2191e5cc4bec1627e3d2a617e388828943977dee64134affba9503ed6da14954",
+        "report_published_at": "2026-05-09T18:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "37faaab0b3e9240f438be575447d2e8f3043608be709280e95553593478fa388"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "65536095adbcf01757f9bacc9384d3a13dd3b0d744e24291185c6a374f3871ae",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=03_00PM/Injury-Report_2026-05-09_03_00PM.pdf",
+        "source_sha256": "d5cc7b83c64748b5de54543003a2fdd3e35a8c36842409f6f22add8c15f27ad9",
+        "report_published_at": "2026-05-09T19:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "fae3216c575f5ad9135845435a04809365f2acae40317773d3572f1abf72ff41"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "cbf28218a90aa6320b683dc8388ba5e53463fc4e4a7f6b52851dffcd03811919",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=03_30PM/Injury-Report_2026-05-09_03_30PM.pdf",
+        "source_sha256": "1f83c1729bbbb1c816ffd4f37f4638cec0a05256a333ba23a159c3ff1c5badf9",
+        "report_published_at": "2026-05-09T19:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c575b06069adadfb7d1ac5406af732539270f2809012f61f0a08edc9bd906673"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "9c45c65245f4c1cbecfeeabf537ac0a5345b06f876d949e7347a6a24923074e1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=04_00PM/Injury-Report_2026-05-09_04_00PM.pdf",
+        "source_sha256": "39ed07d44f22831e4cf4f9c5666e8ca0d9b9e1a9eb188ae8bbb9c9613c816c90",
+        "report_published_at": "2026-05-09T20:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d118ca1e6022c6a71715e5e01bd8429838b699ccc5970742d8360d984341abe8"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "e6b1091b41b11c0cb16635c8ead0db59a34c05614f7eff7ee6ab4da3f9105844",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=04_30PM/Injury-Report_2026-05-09_04_30PM.pdf",
+        "source_sha256": "ef62d39ca30918d810356ebd3a71a1d84d627e4eff124d66aa94cdff90a8847b",
+        "report_published_at": "2026-05-09T20:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "103d395dcba9ae50e0ef00dc3f085024a90a15b9bb227548cb618835d8831d2b"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "fc19a0168a028840c453248b97874f157a4bee1bfa003b028f3de417b0bd9d99",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_00PM/Injury-Report_2026-05-09_05_00PM.pdf",
+        "source_sha256": "3b7423c4c472eb94b160b0aeecedc8f70ba435d36a760ca5fa802f4323e5d076",
+        "report_published_at": "2026-05-09T21:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0e2cc70e21efe274df73717ae457e675b45529045ffd32d220c4bc03b3676496"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "fa2a2399e0e57a4f2527bf5df713ad2f8266e2913856a2caa16c977df473ee70",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_15PM/Injury-Report_2026-05-09_05_15PM.pdf",
+        "source_sha256": "618dab39fd753d1b087c108a3062b77379288a357d4d64a9124ddd0f0435c390",
+        "report_published_at": "2026-05-09T21:15:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7b251be06e3d1ce638da1728490fa0eeb5d2eae3d64990b3039a93b64c967835"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "8af1f7aa289565b59a2c5e41f956ac1d0403b8c490ef8a3b42705a2255d6c0b7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_30PM/Injury-Report_2026-05-09_05_30PM.pdf",
+        "source_sha256": "5096ef79341c5b435d6125689d3398cbff4b39a137aad780350ad341fc8587c1",
+        "report_published_at": "2026-05-09T21:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4a8a7a4b67f40233b8c069e0eeb11173cac395e57d37d5005f384df22c0ecb98"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "60b5bb9d459631225283b515d08a9396a1cf4b6cfda369309c8cc1db86147aed",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_45PM/Injury-Report_2026-05-09_05_45PM.pdf",
+        "source_sha256": "2aff22e99eee9c12368d2c47fa0c3f38c08f87d7980817cdf5d4b7fe31eeff36",
+        "report_published_at": "2026-05-09T21:45:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "eaf7efc9338b505c2ac3f8c505968b1507d98b1edb7aacab044942d7d188f20a"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "2368e2d2298d5929add3a99f3c5d869fc3f7294057af2af68ed18bbf8525ca69",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=06_00PM/Injury-Report_2026-05-09_06_00PM.pdf",
+        "source_sha256": "0ee7b06b465282854a83d75fec8c3c0f63df7209c1e1340b378d9ea05e4eab33",
+        "report_published_at": "2026-05-09T22:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d2bbd852162549b8de4c80f69d879947c5912ffb031a2ba1b2c86b19102fff43"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "fe0b1487de5fa61aa2ed8781e8ab4d13face2e29f3a6cfa39586a5c897be591d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=06_30PM/Injury-Report_2026-05-09_06_30PM.pdf",
+        "source_sha256": "d65e4b143f49327400ee011904adf26f36009690805c780053cc35ee16c7de96",
+        "report_published_at": "2026-05-09T22:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "98b671406e8333052568f4b11104a6c6e6fc8862df1be477e9b262eb57a16f56"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "d660415f191f8acb5f6db52fb43779b272194994463d2afda4d1b64641d6ed6e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=07_00PM/Injury-Report_2026-05-09_07_00PM.pdf",
+        "source_sha256": "2fd026a59d2865ad8b1bdb7c00f9d4404c3d23fa670a310f4bf6d9bec2a91f46",
+        "report_published_at": "2026-05-09T23:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "60f8817a7466fc603762a38ab774599ca04131d05e652b0c5f05e2b4ba6b54a3"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "5ce2113a107c040ed72d382c495e7ba96a230a1e30625289e77f103913df9097",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=07_30PM/Injury-Report_2026-05-09_07_30PM.pdf",
+        "source_sha256": "b3a9f90eb5a781dc5f070ad0a17762a3c76544494799d44d3f2d91f2f859d937",
+        "report_published_at": "2026-05-09T23:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "539bb7f7d306aae86312f04e8afa7ea9c23f5c266e86c471edf08264f8a26b1b"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "af06677cdb8a66bc444136515dfeebba4c06de1c5a0b5759fd9bddf1fb515869",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_00PM/Injury-Report_2026-05-09_08_00PM.pdf",
+        "source_sha256": "a673e0b533fea860467fb931b5f933f77ef0cf1905fe32effb8948d4710d2f51",
+        "report_published_at": "2026-05-10T00:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e7da91ab391e2600ab5ef85167e21155b3a89384230dc44eb957ec326c6774ab"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "cefa4c9c3be75b2eeb4e50353c6496825989d146cb03f95d528088fa91c48475",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_30PM/Injury-Report_2026-05-09_08_30PM.pdf",
+        "source_sha256": "7e78637b631fff54052801125edb72c0e26f14126014b92beccc76e42505a0c2",
+        "report_published_at": "2026-05-10T00:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0dbb74b6a92c5973fb493c64cb65cc122ce238f4df655d1b828d3bc857fe642d"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "26b35d0ca7d023ce6947d3e5149a963081976316a0a6c871e1e9e8940944f3b7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_00PM/Injury-Report_2026-05-09_09_00PM.pdf",
+        "source_sha256": "c870844b846549ed999e1c10607336445e7c940da62e3a5c68566378ffff3e78",
+        "report_published_at": "2026-05-10T01:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6989c5ca57998de88f33dbff36e7974a292ab9f99763bbbdd272398785bf4c55"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "2e1f4caef976d0a140f58ac8ab3588477adae8a5505eb68a32248fa62ace2902",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_30PM/Injury-Report_2026-05-09_09_30PM.pdf",
+        "source_sha256": "cfc5311153784fe225a72a449ef1245a0aca76e3fe1a735206d3dcadc7798145",
+        "report_published_at": "2026-05-10T01:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "15a896d8c087ca5da8efe4975b19e7de54423608703cbfe927247453adc34c97"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "5ca0a83a9084818054a93c9e3e73c9d1be84853f704a6a2990e433b0e8c6514c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_00PM/Injury-Report_2026-05-09_10_00PM.pdf",
+        "source_sha256": "17174ddd8e73da25117718ec2d3a399558e20a0ef21b75f4e483eeb0ceec3261",
+        "report_published_at": "2026-05-10T02:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0013b4faf32518ceeba1a89a861f7a0cd25d62ae0a14ff19aba7d3f630ad4efe"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "c2a2d9fcf173762e40346a0a1192aa0db9d16f6b1fb353a28ae0b397e3198c3d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_30PM/Injury-Report_2026-05-09_10_30PM.pdf",
+        "source_sha256": "55ff2aab2baaef095baa5a2d2947c83a889f8f2270afa7205c5cf81e1b2f45cb",
+        "report_published_at": "2026-05-10T02:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2f477c845a0d630ab0f13bb34a32945396325da826c07f7d17372bbed72a2a10"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "85a086d1f2fc1cde40f7da1d5001aa72471cd88a3a1ffcb607eb35153fae3696",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_00PM/Injury-Report_2026-05-09_11_00PM.pdf",
+        "source_sha256": "36388810844a8ac589502a0292c6b2941f7b578c2f1e1584711f803d6bc820a2",
+        "report_published_at": "2026-05-10T03:00:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a58772105e9ca98298e5881cd8ccf1a0904da05957b748e98d1043efba04b448"
+      },
+      {
+        "game_id": "21709227",
+        "source_game_block_id": "9f4c3421f262e8d86aa588278f3a836107f7aecfa6511d20cb3a9493998ac100",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_30PM/Injury-Report_2026-05-09_11_30PM.pdf",
+        "source_sha256": "bbb17c6db43a4ca2149c1ff127f7b132b708d896dbd958fca6e1a68ea2122cce",
+        "report_published_at": "2026-05-10T03:30:00.000Z",
+        "game_date": "2026-05-09",
+        "matchup": "DET@CLE",
+        "away_abbr": "DET",
+        "home_abbr": "CLE",
+        "away_team_id": "9",
+        "home_team_id": "6",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Merrill, Sam",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5587d14285fe202ce0ab99a2f03a9218b549582994fe12473a46a0dc1fc92434"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-09T17:30:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 1,
+    "home_player_count": 1,
+    "selected_source_game_block_id": "0cb941334e3936e9a9324f6cae4df805e57760a2e6573e6250722dcfd53100ae"
+  }
+}

@@ -1,0 +1,3502 @@
+{
+  "fixture_id": "dev-available-01",
+  "kind": "real",
+  "split": "development",
+  "category": "available_at_cutoff",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21708680",
+    "season": "2025",
+    "start_time": "2026-05-10T19:30:00Z",
+    "cutoff_at": "2026-05-10T18:30:00Z",
+    "away_team_id": "20",
+    "home_team_id": "23",
+    "away_abbr": "NYK",
+    "home_abbr": "PHI",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "aa46412202a19f42f8bf0d5c9c997fadaa9b2c1804b75c07b3a7358fe0996f86",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_00AM/Injury-Report_2026-05-09_08_00AM.pdf",
+        "source_sha256": "1f5bd3f9707450ec9d58d988aebf8923f583bfcef031a2184412126892ee7dea",
+        "report_published_at": "2026-05-09T12:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "3e80134c4b207935542c1c262be979dbaab27d587e86b7664cd31667b005df2e"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "915532e67c96b94dd0497c10318fc385487577994fa40b622999cef048777068",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_30AM/Injury-Report_2026-05-09_08_30AM.pdf",
+        "source_sha256": "cba797265f905ce069ac4c352a5afade5525db61ecd86c82c7836aba47c0e1fa",
+        "report_published_at": "2026-05-09T12:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c316a125351a302e50c2df0ecd9aa6ffd8a65bb21ff60c6b518ec7d35c1389f3"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "9efd8d6bd86a73128f9a41a926ecf1159255352ec3de478e424e6c4b57f8d2d4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_00AM/Injury-Report_2026-05-09_09_00AM.pdf",
+        "source_sha256": "4cd878e190f6698fec4b284da686f2a6063b12f1513e7afd558b720efbad18a0",
+        "report_published_at": "2026-05-09T13:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d2f84673fc85434a7e39d07b5db6362fe6fd98ab315fd51132abbec6c276b167"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "ba70deca0a0aa2d330aa8ab487756dabe7f4df32cc89e3cab8ae0fcfbf038cc7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_30AM/Injury-Report_2026-05-09_09_30AM.pdf",
+        "source_sha256": "0c4c9e08f4b70203e160c651699f7fd64a544ad4661d457469debc308c48f676",
+        "report_published_at": "2026-05-09T13:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7374cd96d0f0e4e46e8003fcbdcebda58b440fa6f4b2a0fe04fec43ee1036d9a"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "cc13be557a5e5be602a6d0d52dba91c48b42895f5ced27d626b0219902481b37",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_00AM/Injury-Report_2026-05-09_10_00AM.pdf",
+        "source_sha256": "be385c4ad1c3046df399c3f52b29913601961087ba370086731fbf8b801f1e11",
+        "report_published_at": "2026-05-09T14:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e91fdc9cb1ad3bd6778892e1c14ecab9a0eed1011ebaa0742914ec73b932db32"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "ef2eda030eeb522c4887d9c8e8fe524a72abe996be5443de017d262ff1092239",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_30AM/Injury-Report_2026-05-09_10_30AM.pdf",
+        "source_sha256": "416fb1db44d8b9d0e69fd99696f4a53518772dd481dabc46a1d4b83177f0fa0c",
+        "report_published_at": "2026-05-09T14:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "13b93d4a549916ff24bbf2e45a611a085dd0fd9e0fb9e50965573f8a364bfc6b"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "8f29ca0df9abf20ca64b3a18e7910cd5e1789ec88cd50fb9d4dfffc406043945",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_00AM/Injury-Report_2026-05-09_11_00AM.pdf",
+        "source_sha256": "c09bfd0a9c98cb61d3b7cdc2f05d4dc2ffbdcb969bdb16481d39442b83c93610",
+        "report_published_at": "2026-05-09T15:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "62b14bf4dd20502f8a86d1fee0fc55d474718dfe9e2cc0fb3f58b420e5429ca3"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "51fa6197e1b4ac888f55e5752e35769789ff65569dc0d8ec0d4173567528363c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_30AM/Injury-Report_2026-05-09_11_30AM.pdf",
+        "source_sha256": "6762273e1d45225f2a916f1030e10e59ad7d65c0138d5e7eb04c36d2d04af27d",
+        "report_published_at": "2026-05-09T15:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ea9861bd0d5c100e9c154b8042796427bd132e6c1827b4e98d9307de39a20373"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "486c5aed62ed98530a0d8c271c8954ccb2c37688e537082e7b1296d8aed06897",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=12_00PM/Injury-Report_2026-05-09_12_00PM.pdf",
+        "source_sha256": "3f956959d8bb1fa29116f8106f66dc9d8e8b79e2375328ee0065c24ffe28c498",
+        "report_published_at": "2026-05-09T16:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "8782532d7ee69323ded6435a8837fd9fe528f9c0cbccaced227c4f80f1df4cda"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "f644590537211361cd9747b12733036d1f64c915ea288c4eeb97f2cb6f287924",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=12_30PM/Injury-Report_2026-05-09_12_30PM.pdf",
+        "source_sha256": "a0a3afb65de950b2b9476b29402cabad378fc5d65ff3666722d30fa6a4452d5a",
+        "report_published_at": "2026-05-09T16:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7d19202c95e1244d101e8aaf9b4c8f64db5f1da4217d2df32dde17265288416b"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "d0e36313ed16fd845872e141406e5a8e1608688989b54d938d834572935ec37c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=01_00PM/Injury-Report_2026-05-09_01_00PM.pdf",
+        "source_sha256": "db7767f87d33c61194ac2e1e5b2502a8017d0dc89ee583b0c890a3fbdda9a98d",
+        "report_published_at": "2026-05-09T17:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a5b10d5ede58c2419eb890159d01ce22b42b9ed97a7e1d696e906fd5bbf9d32c"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "819d564196f38e8aa7f16c8007e1aa119b2d7b913450f590ed45f32daa582a6d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=01_30PM/Injury-Report_2026-05-09_01_30PM.pdf",
+        "source_sha256": "4b80d1ff7553b282e7ae8ea9b939ff2911677e2938882804570af0de8bbc14a1",
+        "report_published_at": "2026-05-09T17:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a99c4f2458c279ff0a4836c77c90ec0647e466ff97533c3ac472080dc332c964"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "9992b8d3cd7df433146b266a3149b9fbfab3c4c25a3f2d31aca46565cee7cfc6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=02_00PM/Injury-Report_2026-05-09_02_00PM.pdf",
+        "source_sha256": "3e4f4e084be90bfe003c81d484f154d41d8fc4dac43011dddbf0d5f4680dbd18",
+        "report_published_at": "2026-05-09T18:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "62fcda08d94a09344aee0e1b723c943e830e87864800bbd57e5bdb204cfcb816"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "b879a5088b1cd375ffacc65993f6bb08bbf90ac20bf2743e7a16fa01947e06bd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=02_30PM/Injury-Report_2026-05-09_02_30PM.pdf",
+        "source_sha256": "2191e5cc4bec1627e3d2a617e388828943977dee64134affba9503ed6da14954",
+        "report_published_at": "2026-05-09T18:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9cc90b670bdaa594f45653c93375c7d0000fe9f8cc106a864d717cb9132e4486"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "c5da44bee9acc26c4bf5ee45030a96b5ae3027cd850aa8d6065b8d577e3b8918",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=03_00PM/Injury-Report_2026-05-09_03_00PM.pdf",
+        "source_sha256": "d5cc7b83c64748b5de54543003a2fdd3e35a8c36842409f6f22add8c15f27ad9",
+        "report_published_at": "2026-05-09T19:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1f00d1bce1a4f90bd43e9d1a6cd37ac8896974dafbb4b69e0a54a08550d7eca2"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "0ed64880fdd6a765d79b7f72ae3e92b93064882d0646847bc3fa10aca3403a03",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=03_30PM/Injury-Report_2026-05-09_03_30PM.pdf",
+        "source_sha256": "1f83c1729bbbb1c816ffd4f37f4638cec0a05256a333ba23a159c3ff1c5badf9",
+        "report_published_at": "2026-05-09T19:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "62a112e01e86f337b7a2b0ff59a699bd895e9634b92992ddd584c20f94b35bfd"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "786a025978905ec9281eafd0d0420aaab726b43c0b3a020c1860c372c0d9bd7b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=04_00PM/Injury-Report_2026-05-09_04_00PM.pdf",
+        "source_sha256": "39ed07d44f22831e4cf4f9c5666e8ca0d9b9e1a9eb188ae8bbb9c9613c816c90",
+        "report_published_at": "2026-05-09T20:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4156a24ee4a8baffc94cd3feaa06074b25ef17f553792ae37d0a8a118c880391"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "bea656e437ff73a8f3a20fd2422539c8c42fd545344f083523be16f651c03600",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=04_30PM/Injury-Report_2026-05-09_04_30PM.pdf",
+        "source_sha256": "ef62d39ca30918d810356ebd3a71a1d84d627e4eff124d66aa94cdff90a8847b",
+        "report_published_at": "2026-05-09T20:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "38c5bca449e6f9349fcb34c5d3ad7543433d4991e1eb7072cf9fad83d4b1399f"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "29085fc348d6da130429eeeaebf259129070c1a86fc4d031e3223ec8995a421a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_00PM/Injury-Report_2026-05-09_05_00PM.pdf",
+        "source_sha256": "3b7423c4c472eb94b160b0aeecedc8f70ba435d36a760ca5fa802f4323e5d076",
+        "report_published_at": "2026-05-09T21:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7b02632bbf603e3df7665d4f096839474c76fa199c67b772581a7a088d9f1b9e"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "e5dddac9c070a58d12b28d8b3bf7273afddad7eeaa203aca93e8a5dc97e953e6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_15PM/Injury-Report_2026-05-09_05_15PM.pdf",
+        "source_sha256": "618dab39fd753d1b087c108a3062b77379288a357d4d64a9124ddd0f0435c390",
+        "report_published_at": "2026-05-09T21:15:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "56b69891937098712bd075c40952bb30c1b9a260694b654a5340f3372d95e55c"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "7457585ad7fc2a38656c2adc41f20da13c3a2b295145d2b3ed02d83190367ff1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_30PM/Injury-Report_2026-05-09_05_30PM.pdf",
+        "source_sha256": "5096ef79341c5b435d6125689d3398cbff4b39a137aad780350ad341fc8587c1",
+        "report_published_at": "2026-05-09T21:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cd6cfdc9b162148d8ef230eaadfb9946121ec1d04589ebf7b6f9eeb4abd1de91"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "53e0d70c48e02ad3110f29c88397ac79ecde593e91310d6d6fda7acc6fe23dab",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=05_45PM/Injury-Report_2026-05-09_05_45PM.pdf",
+        "source_sha256": "2aff22e99eee9c12368d2c47fa0c3f38c08f87d7980817cdf5d4b7fe31eeff36",
+        "report_published_at": "2026-05-09T21:45:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "da34151df6bd01f5d5d63b9d701ee6bb9590570613978f83c518cb44b668d737"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "e04ab22784e7ccfa07d52766bad0fbc5a581673401095e765d8d4002369e5072",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=06_00PM/Injury-Report_2026-05-09_06_00PM.pdf",
+        "source_sha256": "0ee7b06b465282854a83d75fec8c3c0f63df7209c1e1340b378d9ea05e4eab33",
+        "report_published_at": "2026-05-09T22:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "03c903113e1f75ac320b7f0e895e94b72cb9783536f8c701c0961ad776132778"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "9f4b2f517f4f345ca1858e3c9997f10ee3ef122ec674c8af6905d1041fed57fc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=06_30PM/Injury-Report_2026-05-09_06_30PM.pdf",
+        "source_sha256": "d65e4b143f49327400ee011904adf26f36009690805c780053cc35ee16c7de96",
+        "report_published_at": "2026-05-09T22:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "605d189599e1cb5b2d593a860d2f7075b4a613c325f36417f2235c6626874257"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "2446fa39bf50bd98635da288b26d8d2144af2e5daafae43d159a13230ab5e2ef",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=07_00PM/Injury-Report_2026-05-09_07_00PM.pdf",
+        "source_sha256": "2fd026a59d2865ad8b1bdb7c00f9d4404c3d23fa670a310f4bf6d9bec2a91f46",
+        "report_published_at": "2026-05-09T23:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f70b7649a47587b4d2e9e89e43167833ba18e83a146e95c961b47f35523639a9"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "c872189dda8a729e790ec30f6ce4c7363b773060c5305bb465becd737f689417",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=07_30PM/Injury-Report_2026-05-09_07_30PM.pdf",
+        "source_sha256": "b3a9f90eb5a781dc5f070ad0a17762a3c76544494799d44d3f2d91f2f859d937",
+        "report_published_at": "2026-05-09T23:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f00d00294c6e186df3b2ec4eae1b5dd31682df85c8dcb39d3954725a914a4848"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "7504928a0f3748b3226fe6a268c5be0fa9234d9eade099ca6f383783a3a90650",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_00PM/Injury-Report_2026-05-09_08_00PM.pdf",
+        "source_sha256": "a673e0b533fea860467fb931b5f933f77ef0cf1905fe32effb8948d4710d2f51",
+        "report_published_at": "2026-05-10T00:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "daeeaf7a3dea67081cd10a4098a41e5cb892531b6a9bc5ef168f250c53776a63"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "0d998531998abf30d905171632a9ca67fd1997e1f1f28eeb54583dd07f3d96c7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=08_30PM/Injury-Report_2026-05-09_08_30PM.pdf",
+        "source_sha256": "7e78637b631fff54052801125edb72c0e26f14126014b92beccc76e42505a0c2",
+        "report_published_at": "2026-05-10T00:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6b4901e91ea2ac2d94517d14d68e715a837907ef3ab5e68e8cdcd81070cb5bce"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "036a01d9d95615af4ccd1e946c892615940af21860ea51c328139315123b750a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_00PM/Injury-Report_2026-05-09_09_00PM.pdf",
+        "source_sha256": "c870844b846549ed999e1c10607336445e7c940da62e3a5c68566378ffff3e78",
+        "report_published_at": "2026-05-10T01:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "146cc443866465a5a0239deaa59b1b4fb330fa6e86701d37be7e91847a26855c"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "f86a4288214b59ed786bac830a563e021a18fba572bc5e38268d964747291f51",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=09_30PM/Injury-Report_2026-05-09_09_30PM.pdf",
+        "source_sha256": "cfc5311153784fe225a72a449ef1245a0aca76e3fe1a735206d3dcadc7798145",
+        "report_published_at": "2026-05-10T01:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cae5fb543932148e3ba4dac66ed700c7114c1592dfcbb991975be932f70e22cf"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "e4f4288dca0ccbe342f385fa24746d3611ec23272c0d72833b3c17fdc77c7980",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_00PM/Injury-Report_2026-05-09_10_00PM.pdf",
+        "source_sha256": "17174ddd8e73da25117718ec2d3a399558e20a0ef21b75f4e483eeb0ceec3261",
+        "report_published_at": "2026-05-10T02:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "31a728cb1baed3e99d7efb2b50a5ccd4a3d20472b4f40dbce2412eb5151c6acf"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "b2e3ead656e89a46261b1371ffb4162e1eda41674f9c553b79e241ddcb8dbc86",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=10_30PM/Injury-Report_2026-05-09_10_30PM.pdf",
+        "source_sha256": "55ff2aab2baaef095baa5a2d2947c83a889f8f2270afa7205c5cf81e1b2f45cb",
+        "report_published_at": "2026-05-10T02:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c0550deb6e0bcea3fee9618e48f0b5d7d4a010b855d95f733263701753e80335"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "04b3f273feb6cdbd8587398128faaa478d3671dd94851bd3cb7c1b4316815435",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_00PM/Injury-Report_2026-05-09_11_00PM.pdf",
+        "source_sha256": "36388810844a8ac589502a0292c6b2941f7b578c2f1e1584711f803d6bc820a2",
+        "report_published_at": "2026-05-10T03:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d0632e16e6bc94927b0825fe79a0da2f3bafe0760fbaa887ffffcbd99eb628de"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "999b196af55de9d6a7d7c7687d9a498b01fe98613c42c6e4b196b6548452e83c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-09/report_time=11_30PM/Injury-Report_2026-05-09_11_30PM.pdf",
+        "source_sha256": "bbb17c6db43a4ca2149c1ff127f7b132b708d896dbd958fca6e1a68ea2122cce",
+        "report_published_at": "2026-05-10T03:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 7
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 8
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b672dbb4bd9bd634902036a927ec4a1b46dece6fc442884d8eeb9b8f9720940e"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "cd165f393047edfc3006f78f032031ee33997f9301b4df478b31a5f948489217",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_00AM/Injury-Report_2026-05-10_08_00AM.pdf",
+        "source_sha256": "c64f0b8b098328f7f9d74ac07d596c98dcd4796134c8db3114883299c07aaef7",
+        "report_published_at": "2026-05-10T12:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "901dfdc1093c9aa0798b50d462cf2dde60f84d558a89e1c32a68ab5fa1c209a3"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "90f18c9869b99f936b32461c326d6ed9c425513b4fc17de4e11a97ff2f3d1a84",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_30AM/Injury-Report_2026-05-10_08_30AM.pdf",
+        "source_sha256": "47669e700bc046d31916751c4caae4a57d877904534060e852d03c96c061ea74",
+        "report_published_at": "2026-05-10T12:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9cbc6740e6b14c7c3e009bb65b0b76e40b1dd17a4dd14db16c2cab6921684654"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "8e315eb026910d6a1627a08344df04dc6dba77ced555da03795b113ea347b23d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_00AM/Injury-Report_2026-05-10_09_00AM.pdf",
+        "source_sha256": "9c6c86e33dad1fa835727dbde41661df9ef14dd9ea444a44c179e55e4e9f6974",
+        "report_published_at": "2026-05-10T13:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "79aa1eefd806cfd4ee098776cb8af39a3a53c21e237300aef3d623df84a00fa5"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "cfb96f5692d2b78129ee2fadbdce4af960d154a697c519cc8b5e781a6cbb8f1f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_30AM/Injury-Report_2026-05-10_09_30AM.pdf",
+        "source_sha256": "064037e94c4fef721c6b58ec5f51e3666ae5c6fe69b0b445510ac3b641a7119a",
+        "report_published_at": "2026-05-10T13:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "bb32e766d14e66dbafac0a956d67746e0e0958be4fa206c87d0612e956eecb4d"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "38a709c3ea5ee51ae228287c730861df6bb8cac97a11af1ec6709b84d3c8690b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_00AM/Injury-Report_2026-05-10_10_00AM.pdf",
+        "source_sha256": "c77e44315553a69d86753dc9a2b5e7872ff3a38723f63a423adaba81f94cf48d",
+        "report_published_at": "2026-05-10T14:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "51c668497a66f9d1cfdae38f284c8437cd3fa22695f01a5b29f7ee62ffbfee52"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "1fa712554f8387a2566bb008f6ae4cabe1cc2149de1b9e187ec2a5c4ab16ac28",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_30AM/Injury-Report_2026-05-10_10_30AM.pdf",
+        "source_sha256": "56f8576737b1754f0063cf72f2f534c3a67921ffbfe542e7e6adc4ddc7eecfc4",
+        "report_published_at": "2026-05-10T14:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3d2bcdc82412693ee159d817be0f4bb4495ee42d7f29ebd92ceea59da3dd6569"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "98a11f0df927bef6b974ac357ab260a7aa5b55c019262dc999981c0750cae856",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_00AM/Injury-Report_2026-05-10_11_00AM.pdf",
+        "source_sha256": "65034c2cab2e37ee39ac54ff63e5fe7202a8c21efa5643031d10d25f16139a4d",
+        "report_published_at": "2026-05-10T15:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4b553ba47f0cde521411d00782c91deae2e5be27e7dce72eae6ea1047fbe79f4"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "32bbcff24f62f18205deffc3f399b7eed9955c7dcaabafb1426b71ba7f15210d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_30AM/Injury-Report_2026-05-10_11_30AM.pdf",
+        "source_sha256": "da3680cba899511cc5d02c9966b286a3336adc3b34a637ff8abc4af865107b42",
+        "report_published_at": "2026-05-10T15:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "93068f6433279f1bbc346367b5edb6c86f438f2f987bd7ef95c5020016c7708a"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "44662d9618b06ae105a498987139e9746ee1690332c0f7e4751c9de234420170",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=12_00PM/Injury-Report_2026-05-10_12_00PM.pdf",
+        "source_sha256": "506e868751dfdbeeaebf4dbcd91fbf80268f6874703887b3ee52f8fadb19b1f9",
+        "report_published_at": "2026-05-10T16:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f5034660f1de0f9a93c0cf60a92111b04f944ed12de8d1f1c73c095ebda558de"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "e2a1aa66902dfece54789cb83a8fbad4cde44ec910fec0cebd301608ae9c347a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=12_30PM/Injury-Report_2026-05-10_12_30PM.pdf",
+        "source_sha256": "d963054973fe5f1517efb60d2c3b78082d9045f122468ddf0eb7fefe941d0781",
+        "report_published_at": "2026-05-10T16:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8ae3e4ecf4f7ba7685b8793a6ff2c1c96c7f2418bc802b9dc00985a796b0d7aa"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "eaf98acc4b5c699604b7a2b089ec2a4f5dd67853c3cd2224d7b34ccd52e77640",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=01_00PM/Injury-Report_2026-05-10_01_00PM.pdf",
+        "source_sha256": "73fa59eacaf1a6daabb04ee12a80e63827d709b71dc361a13fa077742e90d606",
+        "report_published_at": "2026-05-10T17:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3a959721b9885880e045e8e063c6ef28e74a79670454bacbf5b55572363ccc24"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "0d3f208e0e91031941aee5e61f1950016ee25328727c5260c6b8217c8f854863",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=01_30PM/Injury-Report_2026-05-10_01_30PM.pdf",
+        "source_sha256": "28495e46cb73445569714445f6a8da6a1ff518b47dca5d518ff1ed5b6fcf80f9",
+        "report_published_at": "2026-05-10T17:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0ab5795b7022c4fa0cbfc430629f6cab1839f228ca12362025e751ef05749c71"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "e31fd60a04a6f481431e73cc71cb33438694ebf3ba7afb9582fe2d11fcf350d7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=02_00PM/Injury-Report_2026-05-10_02_00PM.pdf",
+        "source_sha256": "7d90782c9dad57d5c4d61f7409a874d973edb6b19dbc566638a7ed2babf05aed",
+        "report_published_at": "2026-05-10T18:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c51b1e9e1020ac90b50add856c17443a4d39d203af782fb070c012e4763edd6c"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "0911af0447dc6de9d6886444c4f3c3ef6c233d9d6da2dfeeb3b95e5450277721",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=02_30PM/Injury-Report_2026-05-10_02_30PM.pdf",
+        "source_sha256": "4cd1511b431e9e897f716b2a4db415a4a9b239c376a884820a3623c63e72ee6c",
+        "report_published_at": "2026-05-10T18:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c079e1df8ef04f7624d89ccdebfdfa5379acc761c7e93a8d554fb2ae35e5f46d"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "cbe6f8e5b33f215eb61f0c5accbdf241b5fe9dc15ebba2a415809031ced446c4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=03_00PM/Injury-Report_2026-05-10_03_00PM.pdf",
+        "source_sha256": "8797412bd761e9f09c1da72c0b143d893c76f8e232c50e35f1280936b8fda062",
+        "report_published_at": "2026-05-10T19:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "bfc223963a094d56946d2df1fdbfaeb16ee6ec18869492cc2a087118b9024c30"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "110184ef37a850a81afcfc06aa25f274e68193d52b8cc6969d6b2f2caa1bce89",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=03_30PM/Injury-Report_2026-05-10_03_30PM.pdf",
+        "source_sha256": "a9e2d5756b6b0ec974ac1b2f8f8bc3fc49f1ed81a6a8a19b3f602fdb79f45353",
+        "report_published_at": "2026-05-10T19:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d5ea570ee1c295eb4f58cb99de7cc2c44e05b6ac60867e77d17b02bdc0e23114"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "13b60e6dc9575bc657f0b684a66840050e2df5d6de644cd7469becfd46e6d696",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=04_00PM/Injury-Report_2026-05-10_04_00PM.pdf",
+        "source_sha256": "71dca0a99249884aba4e841be00dd40ca3aeed1ff791c4ce10fb72afbc8c5d3f",
+        "report_published_at": "2026-05-10T20:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "adbf2911b8f550ba63954ee45ec15ba91837ea7fb4443128beecc5352fae9c5f"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "3a0071c151e22c3308567f0411c0c5b75b4997bd40093eed8fbdcb1cf7afa3f6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=04_30PM/Injury-Report_2026-05-10_04_30PM.pdf",
+        "source_sha256": "255cf5c83e10745e3dd50cf17b4ff2e7aae2aa6ba66449a0f6c30ab38e18123e",
+        "report_published_at": "2026-05-10T20:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d3297d3dd484e3e208d16f65b613c96846e2fd5e4e5d38cd20027c030a2831e7"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "5831cea1569d44bf986df3cadf09d0d9c1d67f2d1b9af0da40945ff3af6a9723",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_00PM/Injury-Report_2026-05-10_05_00PM.pdf",
+        "source_sha256": "7b38aa9196fa83f2f8bacd035c5392acea4bfa609fd353454b98a21d32c60931",
+        "report_published_at": "2026-05-10T21:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "aed037d718efe264b25e2c94008b1705d64a59540c72c1f7c58515b7462eae6d"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "ab22788db76748051e143fb3c23e579dcda0bf233dd600c73fec4dffbc8adb17",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_15PM/Injury-Report_2026-05-10_05_15PM.pdf",
+        "source_sha256": "7efcb1c5f7241f0e398aa061f2ea04b6141ea5bebf394cd82f103cb90e501d50",
+        "report_published_at": "2026-05-10T21:15:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "666989c5cd2bca6f11b56d4468519d174e3e96d512b47f8a02ae48a9087b8d10"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "aadf6d9db853c6d3df552f906ae680fc5bd5b06c0bd72e05fc8679ed4f0d3a7e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_30PM/Injury-Report_2026-05-10_05_30PM.pdf",
+        "source_sha256": "50d630d655efdf488b35a8f6608282e38b56a8d781d3dea74d1669a9ee7fefe9",
+        "report_published_at": "2026-05-10T21:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b2e4e86c5a410dffaf500e4d58612d1ebdcca6cc8600441ffb3b242125936fd1"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "f05e6b7868285503d52a3ba2c7945e78b61a983dfe7dffd1fffdf6f06fcfad5d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_45PM/Injury-Report_2026-05-10_05_45PM.pdf",
+        "source_sha256": "8144ba863131363c2f66ebaff36010b009502b3367d283d3ecdf9cf27ccbe1af",
+        "report_published_at": "2026-05-10T21:45:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d1152b61b276f80d63acb2a0ef09dcf680bac2c95e240f4af9008478ba3cc152"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "f42296ff847ef1c2a8915b8d3c318bcedf2ceb2e665cc2c1c6fa7721c8f0750a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=06_00PM/Injury-Report_2026-05-10_06_00PM.pdf",
+        "source_sha256": "8f8c8c054b1f27f4cfb361ec90bd8d7c1e9d78f48877083e2cdd3c6db1f12d0d",
+        "report_published_at": "2026-05-10T22:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b43cd5075659531610b20f7e086c8d0e2ff1a63b9037e8fd01aba52d830b5e5b"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "0f109c9eea7bf86a1fbdef185d0e6a6dd78675819cbec2e1bc060be8182d1a5b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=06_30PM/Injury-Report_2026-05-10_06_30PM.pdf",
+        "source_sha256": "40d3c67b2292e93ac37fcefcb381da16a86627173c7fb3f6885c91973349ae64",
+        "report_published_at": "2026-05-10T22:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "37c124d2814d46b317cdcde54e00ded02a87ebc4eb23ba177ac3feb40b6088ea"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "c494cb12f2a4bc0b71dc47b86004a2cf2d5d85530366111a7b5fd10b5e219d59",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=07_00PM/Injury-Report_2026-05-10_07_00PM.pdf",
+        "source_sha256": "88137de3c68ee6d8a4f84753181da28b48662025cfb606a35250ba7a0eba69fe",
+        "report_published_at": "2026-05-10T23:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "724fb22f543a158bca4b47760082886cd5f5ed5a7f637b20838de84ca979817b"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "8a7a8e5af20106b3366007aad3467075299f2f5177b2969a2a7a62fcdc79b401",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=07_30PM/Injury-Report_2026-05-10_07_30PM.pdf",
+        "source_sha256": "0615804a8942d4b408dee91704d70a288f17f9456617580d7c588ffe49bf552b",
+        "report_published_at": "2026-05-10T23:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "09b92447f4576607a15830d0ae524cce611363ad623773f9a47292ddb28fe3c1"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "85567055fb2455d5b60c97e1240eb7e9a1f450fb21d539fb5e950c926b8649f0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_00PM/Injury-Report_2026-05-10_08_00PM.pdf",
+        "source_sha256": "50685fecb4ab26e34009b2e89e5cb45e6efed4d81042851c2189452ad6562659",
+        "report_published_at": "2026-05-11T00:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a7ba42dfd86f8fd582991e03631c7d2e51c9dfa55da9d066a141855237848d30"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "328904d85cace667b69e989661e287f9c70e611116b119fdbeb83da511218b89",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_30PM/Injury-Report_2026-05-10_08_30PM.pdf",
+        "source_sha256": "742b83c5926998d57618f528987199d33d7501c221a17efc3b248d25eac4a871",
+        "report_published_at": "2026-05-11T00:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b0554f89c0c78e79ae19789d63cf7e8d2f3c0a5f71ec05a74c551b7a90475995"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "b401f85dc509f696c028254daa5333216163b2d70b2e7e63107f5863aa6a4a45",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_00PM/Injury-Report_2026-05-10_09_00PM.pdf",
+        "source_sha256": "439bf6b522d15a19b34c06c4fbd8780bc0d76273b4b0e9078846dc61a9be1682",
+        "report_published_at": "2026-05-11T01:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "12969c313dcfe320cf12b7f0c20edf0c9cb21a3839e8d8f4c5d8a06aa91110f6"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "050840da6be791ba59570f5b5b29446a1164785b6f20532a5657a0295b9727a6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_30PM/Injury-Report_2026-05-10_09_30PM.pdf",
+        "source_sha256": "1c1139fce26bf18dc8b70055046c7b574dfbb7a4fd0ecff8d23f4712b13077e9",
+        "report_published_at": "2026-05-11T01:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3b34b3f25cf4ccad3b96a249563e5ce6e0a29c257a1fb734e0c40bd899464f60"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "e48fc9775c46692e7224142dfa9d827c7fb3bc03513cecb2545910d087420466",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_00PM/Injury-Report_2026-05-10_10_00PM.pdf",
+        "source_sha256": "0e8ed34d963a8f3c78da730885bb051c8929ad1d888143d5bedb1c9161a6fe78",
+        "report_published_at": "2026-05-11T02:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1cead7ac8254349303999aada77d57816e84ddc39bc1f24f5cd95e8635f7472d"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "c7dffbf8b96fef798ac1c2f30e095b59a29ed580ca7658e9e0541736f5f43d14",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_30PM/Injury-Report_2026-05-10_10_30PM.pdf",
+        "source_sha256": "b9011babe33d6ad4fdead465d757704ac108a224614b33e61fce335d56fe4398",
+        "report_published_at": "2026-05-11T02:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e2a52af4756c9eec576ce01ebf89464a304955f17da98635c5dcd101493c8b32"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "5040394004ff5c92ff23524a03ad79ca74e1cc33f02b913e90e7c40210935ec5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_00PM/Injury-Report_2026-05-10_11_00PM.pdf",
+        "source_sha256": "caa0a2f207e14fa964dd16afbefb779d8822cca426319f6884f62d4f0e6248f1",
+        "report_published_at": "2026-05-11T03:00:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7d55d697af36ec7a4e5a591c9f3ea0bcff43a5b824bc115c8a9fb2fbfeca7e2b"
+      },
+      {
+        "game_id": "21708680",
+        "source_game_block_id": "b28d7fb3c6c104ca7fdbba794a6df88dd53e1cbefb519bccbd3afeb5c113005f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_30PM/Injury-Report_2026-05-10_11_30PM.pdf",
+        "source_sha256": "f401507a90f7f0045674d6cb60869fdb319e29c2a63fb00dba69eb927c96e076",
+        "report_published_at": "2026-05-11T03:30:00.000Z",
+        "game_date": "2026-05-10",
+        "matchup": "NYK@PHI",
+        "away_abbr": "NYK",
+        "home_abbr": "PHI",
+        "away_team_id": "20",
+        "home_team_id": "23",
+        "teams": {
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Anunoby, OG",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "23": {
+            "team_id": "23",
+            "abbr": "PHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Embiid, Joel",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Hip; Soreness",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Maxey, Tyrese",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Finger; Tendon Strain - Splint",
+                "page_number": 1,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9edc617c1a174c3372f00d45753422480ca9cfeee2519bb73cfa51e68784b60d"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-10T18:00:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 1,
+    "home_player_count": 2,
+    "selected_source_game_block_id": "e31fd60a04a6f481431e73cc71cb33438694ebf3ba7afb9582fe2d11fcf350d7"
+  }
+}

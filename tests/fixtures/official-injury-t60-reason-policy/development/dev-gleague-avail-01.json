@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-gleague-avail-01",
+  "kind": "real",
+  "split": "development",
+  "category": "g_league_available",
+  "source_player_state_id": "1037643|14|Castleton, Colin|Available|G League - Two-Way",
+  "input": {
+    "game_id": "1037643",
+    "team_id": "14",
+    "season": "2023",
+    "player_name_raw": "Castleton, Colin",
+    "player_entity_id": "fec4ff53-b093-57a4-b8c3-464e3c40daeb",
+    "status_raw": "Available",
+    "reason_raw": "G League - Two-Way",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "G_LEAGUE_TWO_WAY",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_G_LEAGUE",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

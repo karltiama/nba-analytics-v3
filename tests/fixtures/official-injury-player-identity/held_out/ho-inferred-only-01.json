@@ -1,0 +1,51 @@
+{
+  "fixture_id": "ho-inferred-only-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "inferred_only",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "15907834|20|Ryan, Matt",
+  "input": {
+    "game_id": "15907834",
+    "team_id": "20",
+    "team_abbreviation": "NYK",
+    "game_date_et": "2024-12-23",
+    "season": "2024",
+    "player_name_raw": "Ryan, Matt",
+    "name_key": "matt ryan",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "none",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "7ba1e59d-8c73-5f64-a12f-8c2bcd8983f3",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "QUARANTINED_INFERRED_ONLY",
+    "player_entity_id": null,
+    "serving_player_id": null,
+    "confidence_class": null,
+    "provenance_category": null,
+    "independent_source_count": 0,
+    "quarantine_reason": "INFERRED_ONLY_NOT_ACCEPTED"
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_NO_MATCH",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "UNIQUE_CANDIDATE",
+    "serving_projection": false
+  }
+}

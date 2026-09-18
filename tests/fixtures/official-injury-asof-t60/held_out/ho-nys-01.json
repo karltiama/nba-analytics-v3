@@ -1,0 +1,304 @@
+{
+  "fixture_id": "ho-nys-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "nys_at_cutoff",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "18435668",
+    "season": "2024",
+    "start_time": "2025-05-05T23:00:00Z",
+    "cutoff_at": "2025-05-05T22:00:00Z",
+    "away_team_id": "20",
+    "home_team_id": "2",
+    "away_abbr": "NYK",
+    "home_abbr": "BOS",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "db38da405a20f98cc28deaa6da6399af4b24e13034fd22ac9fda32abd9625311",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=08AM/Injury-Report_2025-05-04_08AM.pdf",
+        "source_sha256": "4c5edf15b4d9779dfc6ddd7c0c0e7a98b4e025050aa6962e4f95bec10b66adec",
+        "report_published_at": "2025-05-04T12:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9a4db4e21a736ea055a0b24eda9e35fa0e669f8da7b04eca889d3096cd20ee49"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "6040265b4f04432788b4435ede3d906800e44b6fd9f5f518843c13e3e2a63456",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=09AM/Injury-Report_2025-05-04_09AM.pdf",
+        "source_sha256": "d0ed7c80a14549c698dd0e836c899bc0917a2c4b7566c0789b4f99151ffbe9bd",
+        "report_published_at": "2025-05-04T13:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e308313dfb6d8b1b108021e3fc6bd28fe0014e9f5090284f3b108792baf43d14"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "25957a8da683ae7b7667ba7cd17e7cedc1809893e5a7c1e38551147214a32b7b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=10AM/Injury-Report_2025-05-04_10AM.pdf",
+        "source_sha256": "7ee5fd5c24910d067fdf867c96fcb1433a554b0497c8f901f1e1ee4997379001",
+        "report_published_at": "2025-05-04T14:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a73f22215697bfaead4bd9b0b1aa16891f6cf806e858089d5341962ca2bbc9c5"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "3c532b9617748657480a918014fc92f74df5e2d51f4578a454ad67cb67894e02",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=11AM/Injury-Report_2025-05-04_11AM.pdf",
+        "source_sha256": "cb6b4743c5a6ad37f60e76a66d49d21ec9f667cb1a40e173510cfb84a8a45e52",
+        "report_published_at": "2025-05-04T15:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d7b4133331c90b66a597bef4f8e7182df1430f9c73728c1158aeb6a973f188c4"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "893869f7dfea853259ec80b68cfa6b99a6ff752310b60a0c1bcd9614e2de5697",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=12PM/Injury-Report_2025-05-04_12PM.pdf",
+        "source_sha256": "bf80df3a5e511db9b8bcc2de5bd1eb48a20d160cdf79b2b8dc2564700533f03b",
+        "report_published_at": "2025-05-04T16:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ecc4c76c486d21cf7cd354d23cc84e8fb67294c14ad0b9ecd5e61b9e14351fa6"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "809664559cad44ddb60075da74843a553b2c888f73021a1bb2ca2c26eb8f3e1e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=01PM/Injury-Report_2025-05-04_01PM.pdf",
+        "source_sha256": "b222bb932ae81282b8e6d2945c5ab61289030a3910ccc859a0313640b56fee71",
+        "report_published_at": "2025-05-04T17:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "839260ec00be6b16a343987ffb392ec203d99564954bf0bf65642083cd0a302b"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "85375bc2818255fbe8bd9ed35b56d0bc1a8264b96d3df6210886abb69ac41ce3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=02PM/Injury-Report_2025-05-04_02PM.pdf",
+        "source_sha256": "cee9c3f15258aafd7e0cdb2579bb8ff0c37893404029f10fd1a0447d2f6e3063",
+        "report_published_at": "2025-05-04T18:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "15550499a9461d1dcdf297d813b5dadf19db8ccacf0875c5fb261607e226f750"
+      },
+      {
+        "game_id": "18435668",
+        "source_game_block_id": "212a3d4559294204269a2653b3f2027217ec15e269ce349972454e2e0c79bc2b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2024/entity=injury_report_pdf/report_date=2025-05-04/report_time=03PM/Injury-Report_2025-05-04_03PM.pdf",
+        "source_sha256": "381e6e6622221641c2aa7c1ebce0021c3465e27841ddf2650447ded187a79489",
+        "report_published_at": "2025-05-04T19:30:00.000Z",
+        "game_date": "2025-05-05",
+        "matchup": "NYK@BOS",
+        "away_abbr": "NYK",
+        "home_abbr": "BOS",
+        "away_team_id": "20",
+        "home_team_id": "2",
+        "teams": {
+          "2": {
+            "team_id": "2",
+            "abbr": "BOS",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "20": {
+            "team_id": "20",
+            "abbr": "NYK",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ddb491078f9be167823ae42cb2de51c06c2f683f064d4d07193ee540244fbd9b"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2025-05-04T19:30:00.000Z",
+    "snapshot_age_minutes": 1590,
+    "age_bucket": "AGE_1441_2880_MIN",
+    "exact_cutoff_count": 0,
+    "away_team_state": "NOT_YET_SUBMITTED",
+    "home_team_state": "NOT_YET_SUBMITTED",
+    "away_player_count": 0,
+    "home_player_count": 0,
+    "selected_source_game_block_id": "212a3d4559294204269a2653b3f2027217ec15e269ce349972454e2e0c79bc2b"
+  }
+}

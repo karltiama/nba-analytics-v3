@@ -1,0 +1,3287 @@
+{
+  "fixture_id": "dev-exact-cutoff-01",
+  "kind": "real",
+  "split": "development",
+  "category": "exact_cutoff_exists",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21708305",
+    "season": "2025",
+    "start_time": "2026-05-12T02:30:00Z",
+    "cutoff_at": "2026-05-12T01:30:00Z",
+    "away_team_id": "21",
+    "home_team_id": "14",
+    "away_abbr": "OKC",
+    "home_abbr": "LAL",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "4ad833829499840c405d2b62554fde13767c145f240043559d56682a9e4430bd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_00AM/Injury-Report_2026-05-10_08_00AM.pdf",
+        "source_sha256": "c64f0b8b098328f7f9d74ac07d596c98dcd4796134c8db3114883299c07aaef7",
+        "report_published_at": "2026-05-10T12:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a97e6b46ebe92ccca636003facc04e9639f694dceb779b5c37d522130e59d44d"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "6e089fb7584f5506e0cbf6a7f28c2dc65c10bafe3b82e300da4898f024759930",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_30AM/Injury-Report_2026-05-10_08_30AM.pdf",
+        "source_sha256": "47669e700bc046d31916751c4caae4a57d877904534060e852d03c96c061ea74",
+        "report_published_at": "2026-05-10T12:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a9dc0946d32f77747dc9405ef7ad13fd8b0e7dacf7e20ea73948fda0288ec1ec"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "fe31fc28c48f501dbdf09cf7653a252be24a649e4d5c74383a2741d538cd050b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_00AM/Injury-Report_2026-05-10_09_00AM.pdf",
+        "source_sha256": "9c6c86e33dad1fa835727dbde41661df9ef14dd9ea444a44c179e55e4e9f6974",
+        "report_published_at": "2026-05-10T13:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "18a7c003c98cfe1dfdee094e3872e41aec3c39bf9eda69078ed36d7fbcaa1f06"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "40ee4c875d12945987c9b8e16a086eb9002fd0bdfb4dce9a174541f4c4b3b46a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_30AM/Injury-Report_2026-05-10_09_30AM.pdf",
+        "source_sha256": "064037e94c4fef721c6b58ec5f51e3666ae5c6fe69b0b445510ac3b641a7119a",
+        "report_published_at": "2026-05-10T13:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "277ec224119fd64c9e75d0a099f29e175155667099ceabbf06453dc084573e03"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "6f16f2fb70cba21575a32ad6153aa2d72a667c6fbf0b4f6829fc1630e9bc9cd2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_00AM/Injury-Report_2026-05-10_10_00AM.pdf",
+        "source_sha256": "c77e44315553a69d86753dc9a2b5e7872ff3a38723f63a423adaba81f94cf48d",
+        "report_published_at": "2026-05-10T14:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "749dff3bce2fa6e9e4a9a9cf2ae8d20eb461fbd35a8764a80933123b88fc3ff2"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "fabf5f5b52e7bbda7137e3aa6daee6bf275e24f6e13a8f4cb5a9eaf9a32c36a7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_30AM/Injury-Report_2026-05-10_10_30AM.pdf",
+        "source_sha256": "56f8576737b1754f0063cf72f2f534c3a67921ffbfe542e7e6adc4ddc7eecfc4",
+        "report_published_at": "2026-05-10T14:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "0994f5d191f70bd9a1110ea2410dc5a2eb925debe30b3f2881444a95c753d02b"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "e046d041e062cf75bf47b33b2bf01b2815fdd6f69614529ad3e1f2442b8fd40a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_00AM/Injury-Report_2026-05-10_11_00AM.pdf",
+        "source_sha256": "65034c2cab2e37ee39ac54ff63e5fe7202a8c21efa5643031d10d25f16139a4d",
+        "report_published_at": "2026-05-10T15:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "da61b229e61133fc7ad9e6f6a4453b6f627e86a89d3beee2bb95c2941f13231f"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "b63f057e828f50b10685b2feaaa0159625d2c5078d724c065b789d68d2d275be",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_30AM/Injury-Report_2026-05-10_11_30AM.pdf",
+        "source_sha256": "da3680cba899511cc5d02c9966b286a3336adc3b34a637ff8abc4af865107b42",
+        "report_published_at": "2026-05-10T15:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "afeff8cd1b2de9387bc93f18bb0f63a64de28aa8eaeac52599ac84a768efdaf4"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "1fef7e830235aed80c84cba2d338afe2d86a50b3b45e0c1353aeb2a803422b8a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=12_00PM/Injury-Report_2026-05-10_12_00PM.pdf",
+        "source_sha256": "506e868751dfdbeeaebf4dbcd91fbf80268f6874703887b3ee52f8fadb19b1f9",
+        "report_published_at": "2026-05-10T16:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "156011626de73470a5ee3ab8d11e702d2e1503306ef67c25ecb70fb08fcf525c"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d6a1fd9bca803f3cc67aa3c196f76ee9b53efa44c5559a8a36f6d5cdb216d804",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=12_30PM/Injury-Report_2026-05-10_12_30PM.pdf",
+        "source_sha256": "d963054973fe5f1517efb60d2c3b78082d9045f122468ddf0eb7fefe941d0781",
+        "report_published_at": "2026-05-10T16:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "fde4fea4b0aa29ce5722e5da858852993e19e8042679d567c4546d73885e24f0"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "61652271fbc77fafd71dfecda5ed983401443ed8bb35f6225b7da0bba600eec1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=01_00PM/Injury-Report_2026-05-10_01_00PM.pdf",
+        "source_sha256": "73fa59eacaf1a6daabb04ee12a80e63827d709b71dc361a13fa077742e90d606",
+        "report_published_at": "2026-05-10T17:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "600514c3508ba906a826a55849478c81461fb21eeafedf0d5fbe77be4318451c"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "3f4dd1ade2d6c84abf1fad82d23fc94a945a09cc304e9f3911f5b9661d2406a0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=01_30PM/Injury-Report_2026-05-10_01_30PM.pdf",
+        "source_sha256": "28495e46cb73445569714445f6a8da6a1ff518b47dca5d518ff1ed5b6fcf80f9",
+        "report_published_at": "2026-05-10T17:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "bc2a26f2b7589a2ba0dfb987601c2b7cb5bcb09da84107870e17db6f5c0c9cb1"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "06f9632f2c3d1511c44ff5bc625f52a29875e3206b29713c5a053f4cf5769d5a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=02_00PM/Injury-Report_2026-05-10_02_00PM.pdf",
+        "source_sha256": "7d90782c9dad57d5c4d61f7409a874d973edb6b19dbc566638a7ed2babf05aed",
+        "report_published_at": "2026-05-10T18:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a5355ab0a2a52eed3503f9a4f1f8a6885990ac87421a9bdb3d938875a3e1327e"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "3af2a16a69549bdd5bd50233246baefc89e43cdd0e17620147d9b658ed06e149",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=02_30PM/Injury-Report_2026-05-10_02_30PM.pdf",
+        "source_sha256": "4cd1511b431e9e897f716b2a4db415a4a9b239c376a884820a3623c63e72ee6c",
+        "report_published_at": "2026-05-10T18:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c0745472038203d47b6db6cd3c5d0d05c2f8ded87cc408074aa89ce8c5c47b0c"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "b89c3849d83e39cd3e622bf5e814009300b232041805b4c98a348d656633645a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=03_00PM/Injury-Report_2026-05-10_03_00PM.pdf",
+        "source_sha256": "8797412bd761e9f09c1da72c0b143d893c76f8e232c50e35f1280936b8fda062",
+        "report_published_at": "2026-05-10T19:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9660e5d78e28d4d936cbf54b4984a24196ef27d10d4d89c3a059d121ebcf626b"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "1bc485b6c7c8bae3fe80754be36a93fa27659fc5c7397b7015fa6444d8c1bdc9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=03_30PM/Injury-Report_2026-05-10_03_30PM.pdf",
+        "source_sha256": "a9e2d5756b6b0ec974ac1b2f8f8bc3fc49f1ed81a6a8a19b3f602fdb79f45353",
+        "report_published_at": "2026-05-10T19:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "027bec88500a3a3743992fe4f533ee6f506fbc46cbcc9338adffc9249f4e858b"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d7e9139a4e5d089d68788e4a4a8ea60515ad634bb858aaebf5f35ce4ac705d67",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=04_00PM/Injury-Report_2026-05-10_04_00PM.pdf",
+        "source_sha256": "71dca0a99249884aba4e841be00dd40ca3aeed1ff791c4ce10fb72afbc8c5d3f",
+        "report_published_at": "2026-05-10T20:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "5bc4da80fd4d4eb24060a8d7f8704e833803d39468ba8ecda18c16b6855f3f26"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "f33d63e5d7302ad5ac580b4661ef7903cceb40bab7ce4837fbabd950fb9bb3d7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=04_30PM/Injury-Report_2026-05-10_04_30PM.pdf",
+        "source_sha256": "255cf5c83e10745e3dd50cf17b4ff2e7aae2aa6ba66449a0f6c30ab38e18123e",
+        "report_published_at": "2026-05-10T20:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "50647757e8ac056a6418d9676c17f08c15e267ffc20cea2caccc5b2394cada81"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "2b6e72704be324cf093f6685c3c779725694e1809086fefa752393e99f7ee52d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_00PM/Injury-Report_2026-05-10_05_00PM.pdf",
+        "source_sha256": "7b38aa9196fa83f2f8bacd035c5392acea4bfa609fd353454b98a21d32c60931",
+        "report_published_at": "2026-05-10T21:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c953a75aae74acfa92f037edd9706f945d573bda707806eac31193e58cc1e142"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "a70cea2aac0e6fec2926763d8f7aaa79b334f0bd18c9b90fc848d3cb029661e8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_15PM/Injury-Report_2026-05-10_05_15PM.pdf",
+        "source_sha256": "7efcb1c5f7241f0e398aa061f2ea04b6141ea5bebf394cd82f103cb90e501d50",
+        "report_published_at": "2026-05-10T21:15:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "36fae4d21afccf73daafe9418d1f9ecc038d8caf0850447199ed3188f135f229"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "ec181a5d75e30d962c084bab9baf13b8a3be7f2bf5574709ffe0a517eb3b2272",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_30PM/Injury-Report_2026-05-10_05_30PM.pdf",
+        "source_sha256": "50d630d655efdf488b35a8f6608282e38b56a8d781d3dea74d1669a9ee7fefe9",
+        "report_published_at": "2026-05-10T21:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d2c0533bdd58b71055c190b74c5c51c9fd264e165c998ddf2706398c9ffb0b43"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d5eb32425083b7b5b09374f6ac4df15ae118af612c347e81ec78acf5d468ba23",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=05_45PM/Injury-Report_2026-05-10_05_45PM.pdf",
+        "source_sha256": "8144ba863131363c2f66ebaff36010b009502b3367d283d3ecdf9cf27ccbe1af",
+        "report_published_at": "2026-05-10T21:45:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "cd2ed15def7d41d8baeb7095ad11336b0edae574be134ce057f747400f69d83d"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "2d1e70d8e9ed1402fbcc31421f6932d2726ab05755491c9202ef9eb5d3be2abd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=06_00PM/Injury-Report_2026-05-10_06_00PM.pdf",
+        "source_sha256": "8f8c8c054b1f27f4cfb361ec90bd8d7c1e9d78f48877083e2cdd3c6db1f12d0d",
+        "report_published_at": "2026-05-10T22:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "372589da694aebb05346a8685f9bbe8e28a5face2b3fd2749c452c5ef580733e"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "054ec1f051b83b43121c6e33e59c92b7f033f3ce40ba94496deb8238f11507ad",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=06_30PM/Injury-Report_2026-05-10_06_30PM.pdf",
+        "source_sha256": "40d3c67b2292e93ac37fcefcb381da16a86627173c7fb3f6885c91973349ae64",
+        "report_published_at": "2026-05-10T22:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7b366a798355fac11c5aae0c2ed089155643724649b57d801f822cbf4503874f"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "97b0772481f828ec7a0129c365461eb04a4da597ca8b6679281d0cfd156db432",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=07_00PM/Injury-Report_2026-05-10_07_00PM.pdf",
+        "source_sha256": "88137de3c68ee6d8a4f84753181da28b48662025cfb606a35250ba7a0eba69fe",
+        "report_published_at": "2026-05-10T23:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "19e63f3d77bbba20a283c8ce95234aa59b3057edf714ba86bbd97e5ad1331722"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "51430dd765bc1f5833596743e8311bedbc7626692cd93545bd6539e2a5b2922e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=07_30PM/Injury-Report_2026-05-10_07_30PM.pdf",
+        "source_sha256": "0615804a8942d4b408dee91704d70a288f17f9456617580d7c588ffe49bf552b",
+        "report_published_at": "2026-05-10T23:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "de9e3d5fd536f974695bfcce4694f9aa8e660c3196f27c3ee890afc1d8e46b65"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "119b2036dd355d843d2bff869405d3fef4be9a189dc82f93dd5c85e9e258acd7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_00PM/Injury-Report_2026-05-10_08_00PM.pdf",
+        "source_sha256": "50685fecb4ab26e34009b2e89e5cb45e6efed4d81042851c2189452ad6562659",
+        "report_published_at": "2026-05-11T00:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7f7fe7344849c9eeafe0da1a128fb842dfffdbcc22ab528339e4f4dd97eb8a1d"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "48dfb456c0c902d29451a9c1f2c225b781e6be9eff5e14a809fd2eca21c939ec",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=08_30PM/Injury-Report_2026-05-10_08_30PM.pdf",
+        "source_sha256": "742b83c5926998d57618f528987199d33d7501c221a17efc3b248d25eac4a871",
+        "report_published_at": "2026-05-11T00:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3e823d43b548ce3286c1092e38ec4c81d3fc601af759ab2047ab27ff7b76c35c"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "e5ff17355b6633b9f2460b68e8115c5085e14b7a59897df58e25c968361ca798",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_00PM/Injury-Report_2026-05-10_09_00PM.pdf",
+        "source_sha256": "439bf6b522d15a19b34c06c4fbd8780bc0d76273b4b0e9078846dc61a9be1682",
+        "report_published_at": "2026-05-11T01:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7e26fcacbdf83d23378c28b6c6ad57729d85d6e07d8a88858a9d6825dcb4fce9"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "785f47c6240b12445bfc148f00115a2819ce2f870164fe4e56b3b0382ec78a45",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=09_30PM/Injury-Report_2026-05-10_09_30PM.pdf",
+        "source_sha256": "1c1139fce26bf18dc8b70055046c7b574dfbb7a4fd0ecff8d23f4712b13077e9",
+        "report_published_at": "2026-05-11T01:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2f035ab61a1d422910427497d661de99e7371b9d303103eecc6440aa74876f3b"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "04ae55549e4437a3dbefc8a833ad3e785ac22ed7fd4932328c2e55d04e0157db",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_00PM/Injury-Report_2026-05-10_10_00PM.pdf",
+        "source_sha256": "0e8ed34d963a8f3c78da730885bb051c8929ad1d888143d5bedb1c9161a6fe78",
+        "report_published_at": "2026-05-11T02:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "89bf566a072cc2d680631a187ec89387e413917dc905a0e448b7d2dac978b261"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d3354c323cc541ded59dad8ae71df6361a1bb20b7d7dd1376da54d4ca3081cdb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=10_30PM/Injury-Report_2026-05-10_10_30PM.pdf",
+        "source_sha256": "b9011babe33d6ad4fdead465d757704ac108a224614b33e61fce335d56fe4398",
+        "report_published_at": "2026-05-11T02:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e48cc1a127046c602c72826c37ba8a06d6334ae3e5dcc65febb3ec5c935f45e6"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "28eb654da93a0195204224e79de8598252125189e517813a2c67db4ef5cdc992",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_00PM/Injury-Report_2026-05-10_11_00PM.pdf",
+        "source_sha256": "caa0a2f207e14fa964dd16afbefb779d8822cca426319f6884f62d4f0e6248f1",
+        "report_published_at": "2026-05-11T03:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "446d0dedb7b1b4bac79d6a429bc2a52560b9fed4fdfd0527af32091beee97bf6"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "c27ee13638dc38db2a35dfe84e4fc01867aa9ddba9cc270a385e431d40c9dad1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-10/report_time=11_30PM/Injury-Report_2026-05-10_11_30PM.pdf",
+        "source_sha256": "f401507a90f7f0045674d6cb60869fdb319e29c2a63fb00dba69eb927c96e076",
+        "report_published_at": "2026-05-11T03:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 9
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 7
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 8
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "189032fe82401a98116b40a760aa34b99d116ce0a1a6f7a2b43c7acafdcde592"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "3e29cf09ae5cfc4672b9a469798d65a7d411a81a77dd68c8625dffa5e78eb9f6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=08_00AM/Injury-Report_2026-05-11_08_00AM.pdf",
+        "source_sha256": "548749ed0928f8d888026811024bb07426c68c2a46b3165ab9590851bb95c243",
+        "report_published_at": "2026-05-11T12:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "28f5c315aef6e8d7de96eea9eef1c6461370ba30ed958f13e398d4a6c420f107"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "2c57df40c67d1c4f636d42fbb74e7095a51039685b4631cace1e2bb5c6ab39ff",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=08_30AM/Injury-Report_2026-05-11_08_30AM.pdf",
+        "source_sha256": "41acb8f50f390fff4d1bb01aabc2ccd4c47eebebb008050845fbd4e0fde1ecca",
+        "report_published_at": "2026-05-11T12:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ef2de08a6fa192143a5a923a73bf8be3950112b5a531d4ad40b1f29a5f54648b"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "a7c688a195e5ee0928bfee4569be5e9bda15571f4de36605184a18bdd935ab9b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=09_00AM/Injury-Report_2026-05-11_09_00AM.pdf",
+        "source_sha256": "1db48d442f5b9c29710d838a4d669c04a26cb522e32f46c6b9f430191375aa79",
+        "report_published_at": "2026-05-11T13:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "23181c0ebf9ba87539d9c6087d77e09981762e4aaae2ed7e2639346086e11850"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d48817907fe23dcd8302cb28e6439d17eded112c63843b16771da0e9776b101e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=09_30AM/Injury-Report_2026-05-11_09_30AM.pdf",
+        "source_sha256": "5eeb74787960da907e849d88ea5db9b34587de599561691e87fd783ee1c48e9e",
+        "report_published_at": "2026-05-11T13:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "33a5eb03612e740d9228e8fd023d7b5b071472bb61c2b2f072a60772e7899066"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "f68a4211e22a983b93d57da3312f3fcf2cf4517517636cb6a2f76623c6978338",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=10_00AM/Injury-Report_2026-05-11_10_00AM.pdf",
+        "source_sha256": "7c80d58a058a9783b9870a6a1c47b27bdc279279e1846596ba57a17b1ee7812b",
+        "report_published_at": "2026-05-11T14:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3066ae9c9f740b45f17760e298f7cc4272b8e068e3cbbfb29a0da584dfccbaed"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "3e8f3cd28a835a034bb91f4a61937897e0179c0ad3e3f2e7d587ce3578f47042",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=10_30AM/Injury-Report_2026-05-11_10_30AM.pdf",
+        "source_sha256": "0f3de3314a9464db9aea077f9c80dfbfad4c4c797663bf3bcdcd0136ccaf8e40",
+        "report_published_at": "2026-05-11T14:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d92cf15ad70d77e43bec371a4b276ea97ae1e4d14704ad7f81a011d37b2668a2"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "cb6566527f92480b4814f0211f366413b5e70846863da96c4469e60be8e5d673",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=11_00AM/Injury-Report_2026-05-11_11_00AM.pdf",
+        "source_sha256": "6c95cb1876bf85416862cf8b8131d085718c2b9530231a29740c508f7a01b4e5",
+        "report_published_at": "2026-05-11T15:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3af89999a81ad299a9ddf915af2441eafcebe62200ee6189a22f4bde229acf96"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "988d1211e6aea6e4b56561117e16f0ddbe2fa51a00d1d717370132fca8d48262",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=11_30AM/Injury-Report_2026-05-11_11_30AM.pdf",
+        "source_sha256": "ffdbf610cef5e6c0f0d13c6fa1cc5526a2c4d7eee900b5683c603c0d947f5c44",
+        "report_published_at": "2026-05-11T15:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "19c0ae6cd6db9df7b231998dff623a8959a11a1faeaa5b81ab630caae4452fe4"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "ae04fd93be3ac956ea5ec067addb9ec889aec1d528d5c7695a53812aff9696e7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=12_00PM/Injury-Report_2026-05-11_12_00PM.pdf",
+        "source_sha256": "cd0aaedbe5fc474a712bff5074909258ed7f324c8cc92e5b2348cfd087308f7a",
+        "report_published_at": "2026-05-11T16:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "03bc8c1651bc1a56521c755f7e6e70e306bc09abc9388d610801e15864694253"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "c254524a1031b72a203624a136e7c5b5c83a621dc055e253a877977f055832ad",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=12_30PM/Injury-Report_2026-05-11_12_30PM.pdf",
+        "source_sha256": "f866a96850f457cf55544cdbffe23428139213e7a590ff628d9752e79b8a3eb6",
+        "report_published_at": "2026-05-11T16:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6e302d4fc338274181f511e011f0670f114ae279a67c4e8d697cc5f4acc28520"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "9bff6bccffed433c5244742fddecfd7fd9eb9008813d7b6b9bf93ecfffad4109",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=01_00PM/Injury-Report_2026-05-11_01_00PM.pdf",
+        "source_sha256": "fa5f4313848db81d7c5049bcdb4f712cf80a55224c1a757141e16748545a747f",
+        "report_published_at": "2026-05-11T17:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0c6fc7a9a3d720d7e12bd5b533c187fc67c40ab391d9f1676b5a5e3d7960d319"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "c6ba1da26a01b20893956999bb4b6347a60fda5701a378c122e2dd8ccf0cb1ce",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=01_30PM/Injury-Report_2026-05-11_01_30PM.pdf",
+        "source_sha256": "2c048500f5fe46817e8cea49be74c6555c1563a3c334d8ab4c12163de6d186e9",
+        "report_published_at": "2026-05-11T17:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4a620b72e91e08a81b6ab9db3ec3f550c8f1e219ff4893f67c21f10531cd41cc"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "5a8464cfcaf5804a585e05c336e26615b93f0fcdac691d600c81ccce3adfad33",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=02_00PM/Injury-Report_2026-05-11_02_00PM.pdf",
+        "source_sha256": "181ddedc8393ef43c6b46903b1e8f86b1c8f151f98756d64ee23baca56407e78",
+        "report_published_at": "2026-05-11T18:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "eedab62ac963b7808ae1537de69a561db9a74d0c6f47162f50cfa213e53200e1"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "a610bfdb2479b9b1b9f6fba8fb10a7d4addcdbb3e1f87da38af87682b4b46117",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=02_30PM/Injury-Report_2026-05-11_02_30PM.pdf",
+        "source_sha256": "4d3fdfa366a63db499b8a79f38c9d1fde4b95755044e96fa46b75e9e5b63a3f5",
+        "report_published_at": "2026-05-11T18:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e5d95c79b31bd17cdb93719449fc0e61ab7cbef148ff253474d0f328ec2a72c6"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "adbf5f11541725abfc4b6449641c06ec45231c413792f4730789de12a9141b80",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=03_00PM/Injury-Report_2026-05-11_03_00PM.pdf",
+        "source_sha256": "d65e96e57c3052d0fbb19643c5f49f78a46ab79c59899f6cbad411fdc92e9493",
+        "report_published_at": "2026-05-11T19:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a3c30177448b60ed3ee09a51d96363054e282a14980591b3996c07c71137f77c"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d04c09dd0d3e238ad25149c842a818124cf487305f5b1f7bb00a4ce530551b2b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=03_30PM/Injury-Report_2026-05-11_03_30PM.pdf",
+        "source_sha256": "d0257e8e998c290d4b42786984e56f6e286b0fb5a6d5a7a156fa5d354f54dd0e",
+        "report_published_at": "2026-05-11T19:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b92247e085b0c3ca5a63d8e7fcb438e3cbd76d3fa0f8937d5d3a3ebf7609bb84"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "543d53c9a24f4b4a938c45cbfe565e21f3196623b0e9ffbb8486f614600e81a9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=04_00PM/Injury-Report_2026-05-11_04_00PM.pdf",
+        "source_sha256": "982286e6c5a3c152b65f91dcba7a25a9feb326d9e933f09f2b5c2869619c8086",
+        "report_published_at": "2026-05-11T20:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1060544089b8fc97f50c4583bd710c2c6aab52203d881d7f754eee3754ee9e1c"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "5b4d57bdeb29cedc973b890fe6e35ac043c952f0cfe1c664bd4f33695ccb23ef",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=04_30PM/Injury-Report_2026-05-11_04_30PM.pdf",
+        "source_sha256": "9143c00cad1a4d15d04346cb6384a06a038d61b7d4057283b732347b658339e7",
+        "report_published_at": "2026-05-11T20:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "438d02b30c46e519cb7aeca4de4e5bb2ea3814df5fc76a99272c62355c1fb58d"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "8425161b99a89fcc8b437dfaf28fe86ff523a8baf92ef796592d55769fab427c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=05_00PM/Injury-Report_2026-05-11_05_00PM.pdf",
+        "source_sha256": "f6ca84c1e94b41e14558ab4160ae7b202e2e570ced0a3f131131ba68328e179f",
+        "report_published_at": "2026-05-11T21:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "76a5f84f0c3bfb4e35bb8168e37e4cbd79587d5c7e7858b4f29eb88b2e29b3e1"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "e819b8850dd99f81575854568ff5fbe41967495ccfd8dec3d3e473126c9c95ee",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=05_15PM/Injury-Report_2026-05-11_05_15PM.pdf",
+        "source_sha256": "8499e86b01482e9c50d6925beae1171dee5d103c034886b9ccca2daf696b080f",
+        "report_published_at": "2026-05-11T21:15:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "96503465dfef5fb8c4a2616a3265d534215a99bf48e27f205cdbedad6923e576"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "d74c12c06774f07e5d2efafabda811da2ad093a2d89ea39cd6e8312000e94a6a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=05_30PM/Injury-Report_2026-05-11_05_30PM.pdf",
+        "source_sha256": "38c3696909be956adf0136986024ac594cb20c9508a56148134abe0ba6678495",
+        "report_published_at": "2026-05-11T21:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "332aec5cf6d83fabd141dbafd8b387024fd9ac4a1923d4a8bea064766cc9b9c8"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "db9631d985407a39cc6e987e8c044382f627197837c94a7f6251cad62a7d5422",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=05_45PM/Injury-Report_2026-05-11_05_45PM.pdf",
+        "source_sha256": "1d3e9311ebb560251c10a5e5acb4bd380fe3d710a73f2aec173b33fe021e3279",
+        "report_published_at": "2026-05-11T21:45:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ebf31ad30bf97c9a6aaa59ade4fa1d7be7cd1a22df80b1baa273b6d00c89d9a3"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "48e3d4b12b26ea75b7e7fd99bb9b33d7d6f298a556cfb15115b4eb681c47b570",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=06_00PM/Injury-Report_2026-05-11_06_00PM.pdf",
+        "source_sha256": "b594d297e45b45545a3a34f88b7557fe95b359d9cbd363f5db028276b050ac18",
+        "report_published_at": "2026-05-11T22:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "62042186636760c9ba8dcc201825f0a65e089494ba6bf16dd50184fd9bc2e118"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "4e7fb815086c585e4fc9948199f17d2b39f78d578e0d21185dcafcfbcb9a1c75",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=06_30PM/Injury-Report_2026-05-11_06_30PM.pdf",
+        "source_sha256": "3af326ad75417a5d63b25ce301200bd0f312545e54e11bb558fc96a24e3e6497",
+        "report_published_at": "2026-05-11T22:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9d6bbb05467cec8b4c0d3f4d9e0bff02c432a6e76499237108c3c9e7b372c5d1"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "4667bf9ec280272f4505bf4b915e6d58eed27e03f4a642b0e794e7f8089cf14d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=07_00PM/Injury-Report_2026-05-11_07_00PM.pdf",
+        "source_sha256": "6348ab39fcafdaaa6c570b3513566bceb437a4f558c856d02023c340e946e2e1",
+        "report_published_at": "2026-05-11T23:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3911c2454babd8c4e10feb98f753f4a0d20e489583e796df7327d839cf5b45d1"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "e6f5625c00ba0f988e6d4c1c5a8d9050d3af59152cada895a6a76083aa94ddc5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=07_30PM/Injury-Report_2026-05-11_07_30PM.pdf",
+        "source_sha256": "f2d563b4a669bd0f2232ca07657f6fd74670b6825fdf2e20a29653890ee21978",
+        "report_published_at": "2026-05-11T23:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "fb9f913a784d2c4894a994739526920f1ef5dc7573dd7331c2cd76ced7fbcec5"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "90f21a4389e523f4a7df7a53be11a920b6c7dddc8931c10238430d1f0a27b442",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=08_00PM/Injury-Report_2026-05-11_08_00PM.pdf",
+        "source_sha256": "088e23dd4549515adf75425891c854021690230cb56382fc1278ce5254376457",
+        "report_published_at": "2026-05-12T00:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7a9aa355034316191631ceac82b5a6bfa5e49f6116a72eebc175ca0756da72b9"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "0af73404e10aa77efbe41154785b375d0f094dbe86b8b6fbd73af02f1f0ad99a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=08_30PM/Injury-Report_2026-05-11_08_30PM.pdf",
+        "source_sha256": "b372a3607702af0d9b0cf6a6a9230318decfd4515af1d2217655a20140f72102",
+        "report_published_at": "2026-05-12T00:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8a6f49e5d70896526898ae3f583920ce7e9cc8da7877965eb6d656364e52a678"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "b68f2e0a46ee9273e60202dee1b2b74c19d61538378e28378ec48cbf4ad3b7cc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=09_00PM/Injury-Report_2026-05-11_09_00PM.pdf",
+        "source_sha256": "2d79183788dc542696a40f493ad59aef2e039b38d4800dd28da37afef05fbc65",
+        "report_published_at": "2026-05-12T01:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "63fc32a5b876b3386f06891ad6bb776c5a946c02ddc52f87f78b30eccc529e1d"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "5a95aa0194b356ea189c0ed7cd5f2c3e8c80011b2375ab50ad5cfd8fcef749b5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=09_30PM/Injury-Report_2026-05-11_09_30PM.pdf",
+        "source_sha256": "fb3ad560b5252fc5994ab632d726c0652a3c45e464ba051909889f592503308c",
+        "report_published_at": "2026-05-12T01:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0c1ffbfbe7a0d48a908367dcdb4e74c7b832496aa29f02a94d212aa8ba1f2b99"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "21307976b5e75440d0c2c1e0bf29f150c6af3f431dfae626960fe7f0e168f05f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=10_00PM/Injury-Report_2026-05-11_10_00PM.pdf",
+        "source_sha256": "e20c34bb8bf025896d1f2bfc629d7f8ef6414691346d48369bd724c13cc682d0",
+        "report_published_at": "2026-05-12T02:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e5dbfa39423517fb5fe57448dce9ad3af2232250d29ede8c61c1c4299a2c3f1d"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "5684cdd790b041cb10b369efec208f90cf066adbc3af0a7690bf1aae33fad25a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=10_30PM/Injury-Report_2026-05-11_10_30PM.pdf",
+        "source_sha256": "e3f602a1f5e49c70cb6cbf633f5782b849a1a21073cbdb878503ceb372b4731e",
+        "report_published_at": "2026-05-12T02:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "338559f626e4bc5a5194539e2a842a5c652449e0f5ba0ca6b1c226515397280f"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "90ed6a6486d7e7e7a2cb7990e57782c5f53414e8e1e5027343c68c4e214c560a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=11_00PM/Injury-Report_2026-05-11_11_00PM.pdf",
+        "source_sha256": "46f429d6d4ee68cc5de251457f3c855d9d047556753f7e2d83989ec06355be0c",
+        "report_published_at": "2026-05-12T03:00:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "50e660ecd653a9f43980529e8d4947ba7ebbf34e9fe421450db92cd9ff361b4a"
+      },
+      {
+        "game_id": "21708305",
+        "source_game_block_id": "99c3cf669698783558d9d67452003e6a272d43cf5c7849c234b0dbc5594e1099",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-11/report_time=11_30PM/Injury-Report_2026-05-11_11_30PM.pdf",
+        "source_sha256": "1ca01777c2096a21ba68dac74d885f0fce40ac98c451cccc99dc1934e136c968",
+        "report_published_at": "2026-05-12T03:30:00.000Z",
+        "game_date": "2026-05-11",
+        "matchup": "OKC@LAL",
+        "away_abbr": "OKC",
+        "home_abbr": "LAL",
+        "away_team_id": "21",
+        "home_team_id": "14",
+        "teams": {
+          "14": {
+            "team_id": "14",
+            "abbr": "LAL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Doncic, Luka",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "21": {
+            "team_id": "21",
+            "abbr": "OKC",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Sorber, Thomas",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right ACL; Surgical Recovery",
+                "page_number": 1,
+                "visual_row_index": 4
+              },
+              {
+                "player_name_raw": "Williams, Jalen",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 5
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "972c90f16a96bae0b4da7a32e9d9b6064ec0450493dfd03a546cd4e34760f775"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-12T01:00:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 2,
+    "home_player_count": 1,
+    "selected_source_game_block_id": "b68f2e0a46ee9273e60202dee1b2b74c19d61538378e28378ec48cbf4ad3b7cc"
+  }
+}

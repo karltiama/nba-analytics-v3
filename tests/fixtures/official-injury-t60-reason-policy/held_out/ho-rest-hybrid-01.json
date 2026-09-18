@@ -1,0 +1,30 @@
+{
+  "fixture_id": "ho-rest-hybrid-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "rest_hybrid",
+  "source_player_state_id": "18446861|6|Ball, Lonzo|Out|Rest - Left Knee - Injury Management",
+  "input": {
+    "game_id": "18446861",
+    "team_id": "6",
+    "season": "2025",
+    "player_name_raw": "Ball, Lonzo",
+    "player_entity_id": "71caaa4e-a834-5e69-8fa8-2386be854cbc",
+    "status_raw": "Out",
+    "reason_raw": "Rest - Left Knee - Injury Management",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "REST",
+    "health_relation": "NON_HEALTH_RELATED",
+    "classification_rule": "PREFIX_OR_EXACT_REST",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "NON_HEALTH_EXCLUDED",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_HEALTH_EXCLUDED"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-recond-rtc-01",
+  "kind": "real",
+  "split": "development",
+  "category": "return_to_competition_reconditioning",
+  "source_player_state_id": "15907511|9|Thompson, Ausar|Out|Return to Competition Reconditioning",
+  "input": {
+    "game_id": "15907511",
+    "team_id": "9",
+    "season": "2024",
+    "player_name_raw": "Thompson, Ausar",
+    "player_entity_id": "18a690fd-1768-57c1-ad9b-0fc203fbf85f",
+    "status_raw": "Out",
+    "reason_raw": "Return to Competition Reconditioning",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "RECONDITIONING",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "EXACT_RECONDITIONING",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}

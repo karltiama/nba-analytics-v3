@@ -1,0 +1,33 @@
+{
+  "fixture_id": "syn-self-pair-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "self_pair",
+  "input": {
+    "game_id": "SYN1",
+    "team_id": "1",
+    "season": "2025",
+    "subject_player_entity_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "subject_serving_player_id": "1",
+    "focal_player_entity_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "focal_serving_player_id": "1",
+    "focal_eligibility": "WITHOUT_CANDIDATE",
+    "focal_state": "PRE_GAME_OUT",
+    "team_states": [],
+    "subject_metrics": {
+      "minutes": 20,
+      "pts": 10,
+      "reb": 2,
+      "ast": 3,
+      "tpm": 1,
+      "fga": 8,
+      "tpa": 3,
+      "fta": 2
+    },
+    "focal_realized_participation": "DNP_00"
+  },
+  "expected": {
+    "emitted": false,
+    "reason": "SELF_PAIR_REMOVED"
+  }
+}

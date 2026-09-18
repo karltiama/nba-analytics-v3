@@ -1,0 +1,51 @@
+{
+  "fixture_id": "dev-u2-only-02",
+  "kind": "real",
+  "split": "development",
+  "category": "u2_only",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "18446868|7|Williams, Brandon",
+  "input": {
+    "game_id": "18446868",
+    "team_id": "7",
+    "team_abbreviation": "DAL",
+    "game_date_et": "2025-10-27",
+    "season": "2025",
+    "player_name_raw": "Williams, Brandon",
+    "name_key": "brandon williams",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "unique",
+      "playerId": "24489167",
+      "playerEntityId": "11860ff7-f610-5901-b7a2-efce6263d0a4",
+      "minutes": "00"
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_CANONICAL_ENTITY",
+    "player_entity_id": "11860ff7-f610-5901-b7a2-efce6263d0a4",
+    "serving_player_id": "24489167",
+    "confidence_class": "B",
+    "provenance_category": "U2_SAME_GAME",
+    "independent_source_count": 1,
+    "quarantine_reason": null
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_UNIQUE_DNP_00",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "NO_CANDIDATE",
+    "serving_projection": true
+  }
+}

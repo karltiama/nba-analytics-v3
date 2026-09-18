@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-injury-avail-01",
+  "kind": "real",
+  "split": "development",
+  "category": "injury_illness_available",
+  "source_player_state_id": "1037625|16|Jaquez Jr., Jaime|Available|Injury/Illness - Left Groin; Strain",
+  "input": {
+    "game_id": "1037625",
+    "team_id": "16",
+    "season": "2023",
+    "player_name_raw": "Jaquez Jr., Jaime",
+    "player_entity_id": "6ae7e393-1734-5f88-9a14-b38274e58df9",
+    "status_raw": "Available",
+    "reason_raw": "Injury/Illness - Left Groin; Strain",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_AVAILABLE",
+    "reason_side_eligibility": "WITH_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITH_CANDIDATE"
+  }
+}

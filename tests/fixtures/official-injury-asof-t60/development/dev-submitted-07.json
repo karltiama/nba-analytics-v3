@@ -1,0 +1,3844 @@
+{
+  "fixture_id": "dev-submitted-07",
+  "kind": "real",
+  "split": "development",
+  "category": "ordinary_submitted",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21709241",
+    "season": "2025",
+    "start_time": "2026-05-18T00:00:00Z",
+    "cutoff_at": "2026-05-17T23:00:00Z",
+    "away_team_id": "6",
+    "home_team_id": "9",
+    "away_abbr": "CLE",
+    "home_abbr": "DET",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "d4407e51eda59f2aa2c001cc6cc403244a9cdc21248c087376356aa0b3f655cb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=08_00AM/Injury-Report_2026-05-16_08_00AM.pdf",
+        "source_sha256": "191b65f7d6833d1a4fe745a9c29b040c7d93c85a8b25594e7e13551a4fb86b19",
+        "report_published_at": "2026-05-16T12:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "fa456c81947b02b8c1b1825f413109a6779828c69f7fc39c64e543806400afa5"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "99da6e66af922d4441e9eee99d660311a0b7a5b686151991a5e4c6fc2f97b3e1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=08_30AM/Injury-Report_2026-05-16_08_30AM.pdf",
+        "source_sha256": "98e351ef18e9a51890c4f7aeefc56ed8db44f02ffec6d6f2ee151389e334d396",
+        "report_published_at": "2026-05-16T12:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c5a139f7edee4e3cf1612ae9db491d5fe343fa73fa7bbb164b1a39c4cd841bbf"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "ac772ee57df58a84c8b25348d4cb959b6ff851cedc12607a36a79d86c5364f88",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=09_00AM/Injury-Report_2026-05-16_09_00AM.pdf",
+        "source_sha256": "3f8d295c0b0285f7eadf36cd641c0ca3f93460563078c7793faeb0171f74d640",
+        "report_published_at": "2026-05-16T13:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f89c446e714f23111ac583fc7a76a4a333d444959c2d4e90ce02dd6017454127"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "4e2712ee66f4f33faebeeeb4111a60e3756a0dfe8f0aa22385dae1161ee32fe0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=09_30AM/Injury-Report_2026-05-16_09_30AM.pdf",
+        "source_sha256": "137b2a6442135b092f992e8561e97837d737d66bf857ab9b496301f67080c246",
+        "report_published_at": "2026-05-16T13:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "de0e513ba03d11492cd117716bf136099fed7e6900efee673d6bf47e043c4f30"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "af6b824761da6d1f92a5c59df0c18c45c4f266afd1e03543150ee3e425fd90e7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=10_00AM/Injury-Report_2026-05-16_10_00AM.pdf",
+        "source_sha256": "43b7ce6303d6acf741d539f930bb56b959e0a7554aa8cb82d0679a3d18079db2",
+        "report_published_at": "2026-05-16T14:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "9f36b671dd20ef74431ad5e0d3cfef89b0364b5eb877bf555e1f8aa6742ff93b"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "f4b34f467dfdfea4e398c7ddd930293ed09bc51b6709e312566dd84fd5a30128",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=10_30AM/Injury-Report_2026-05-16_10_30AM.pdf",
+        "source_sha256": "ae49eae64b7b26ef03b9390bdb2d23940b4d44ae9a3769478a2f307e2c857698",
+        "report_published_at": "2026-05-16T14:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "6959810b83df61103983672bbf3bfe5c684d4bf295bcf9d343ac61b21935daa0"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "790027af09ec86f0b6665ff809e2ef06618f3265883e4d33caedb599f71fa9d9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=11_00AM/Injury-Report_2026-05-16_11_00AM.pdf",
+        "source_sha256": "dfb314721dc0c0fb267801eefc12aca19b6b1bc734c9cbb8634a22f54331fee4",
+        "report_published_at": "2026-05-16T15:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a2730a051ba840b30c60d921872bd35dca6d94ec32d88ce6f0b87f569a10d651"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "dba05c82effd673233bfac4707833cf44cf46de675c759e47482fee66aa49178",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=11_30AM/Injury-Report_2026-05-16_11_30AM.pdf",
+        "source_sha256": "e4268c6759e88d7596913ca7229dee066fd9b1d31d990a75d1ef9b4c4afcbd0f",
+        "report_published_at": "2026-05-16T15:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c3f4de9f2fa32c49b96cf683dc88bef28ec5a4b9a6d1eb99b3fc39a0f05ee9f2"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "d88bc3a156d201ca52e3cf7f0ce0f3161af809c5386caa0e28ab66abed674f68",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=12_00PM/Injury-Report_2026-05-16_12_00PM.pdf",
+        "source_sha256": "9e9d146f9457a0659c8360932dd78d554cd800200c2e1c4dc66b11bdc00c925e",
+        "report_published_at": "2026-05-16T16:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7d6b2cb67c73a1f7bdf2fdb23422071b6e73be6918efd436b1a3100533ee0c79"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "24a167957e79e733b081c63b1bcc9ed9fffe56d9a92faa4b5bc2455c609e73ae",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=12_30PM/Injury-Report_2026-05-16_12_30PM.pdf",
+        "source_sha256": "d9729558f83f86704d9f3175e3889362b88c6ebd4825b79f5bb767d42a5110bb",
+        "report_published_at": "2026-05-16T16:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c1b8420291ddea2974e61ef9d4a6652013b566e207b178c1a4fe421195571582"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "175c6d56d7d51d3ba05f7275f432d49507324bc4f29c68478ac65b5c049d4d7e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=01_00PM/Injury-Report_2026-05-16_01_00PM.pdf",
+        "source_sha256": "78642843bf69e89b7cf2e32db86b5d2d225cf2e62cff12e3ddbafe9e5b5968ea",
+        "report_published_at": "2026-05-16T17:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "cdd92eb9916fed167d431ca05c6ed01006648402e5763fba02097044a9930981"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "a50a046676838d07a9c00acc6f054fcb0ba655ab4936376230529c488e4d05d2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=01_30PM/Injury-Report_2026-05-16_01_30PM.pdf",
+        "source_sha256": "8df9185b670a37ddfebc17e7bec771d227cac566ba5c56bd95583a48e2c0ffd2",
+        "report_published_at": "2026-05-16T17:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c3a84e9d043e66c4bf19f8851e9e8ed2782fa970fdaee013cb277b3b9127af76"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "768ef08dec9b5c5e4349c6fd0f0f9e36389d396d2f2094e0da94e069d4723d9c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=02_00PM/Injury-Report_2026-05-16_02_00PM.pdf",
+        "source_sha256": "727a41c5910e9b61dee205f566ef87aed54c7709ad47f77c2da523be4ee1752f",
+        "report_published_at": "2026-05-16T18:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "576ee05af3b3699be0ee1e0657eec2a2f955d7cd815d54893adf1076e2b19cc2"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "504d6926439751198479602baa02ef1fea3da0618d9bd45807f83d974b339eb3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=02_30PM/Injury-Report_2026-05-16_02_30PM.pdf",
+        "source_sha256": "34b66ab83c2256200d497c134bfe9b8c2a2d282f29939ad7beb75773cd71fb17",
+        "report_published_at": "2026-05-16T18:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ecc53c5f3821424d794078753b509d05aba3aa809d397af713246437985f32ac"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "1256484565b65f2e2d524fa126cb4fad4307a29d6388167e87248afd86de114d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=03_00PM/Injury-Report_2026-05-16_03_00PM.pdf",
+        "source_sha256": "a294ad9122bcfc8afaf2fca42aea52db0ab1e7c91fbfca29943d740b5d29c52e",
+        "report_published_at": "2026-05-16T19:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "1121cf5f971488d4f62475a84032c48e732e1aa108f43706b7959bbbb8c12821"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "ba530bfb9228e06782dac9ca4af4689c89221931ebb88ef3977bf08639ecfb54",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=03_30PM/Injury-Report_2026-05-16_03_30PM.pdf",
+        "source_sha256": "3ae85d025d57116150f891034a7cc367a39e692401749430525fa793895b3c63",
+        "report_published_at": "2026-05-16T19:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "87c060a268ac0a3a600ea1720be91f9e20f6db2993f36c5d9302e5b92b541ffd"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "9d93f9774fce6f9131d49c97ad052b8ca1d43201ba09ff35854241c0cbef5802",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=04_00PM/Injury-Report_2026-05-16_04_00PM.pdf",
+        "source_sha256": "a85130c2d9d601d4c2538f39d6d5fd14add784e1128fed982a5cedec36d398bf",
+        "report_published_at": "2026-05-16T20:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "fe4da9bd2a46dbaa37151543c30c95fe1c01e49f1f0c783931ddbeb416a09bad"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "3b5d57f04ea724214edae4a525d33f16a5200bcc747997ffff4471d1fb87dc54",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=04_30PM/Injury-Report_2026-05-16_04_30PM.pdf",
+        "source_sha256": "79ac376e7b2bcf38831e251161170215fc120467fc2ccb39a8b748a82e09849b",
+        "report_published_at": "2026-05-16T20:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f446a06bc65c54c49fce72092adeb825c2362dac4fdd03fc00645538f1d47b0f"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "c947fe14bb9a394b2f61318adc3b23be6537e104069eb4930d7f0010b0a7e6bd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=05_00PM/Injury-Report_2026-05-16_05_00PM.pdf",
+        "source_sha256": "9f1cd41297caae542fbbf4d185cdc1436e398885ffa6d7b64c9d3f8f6dcfbebd",
+        "report_published_at": "2026-05-16T21:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9affe58e178c58523be8b512919a165d54d4c889184261ac81256684725eee4a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "33d233fe47f9fedabe6c9cc25ec57786d6fe0705b766533635636cc54f9f5607",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=05_15PM/Injury-Report_2026-05-16_05_15PM.pdf",
+        "source_sha256": "e9ad204b6e9106a1dfab787f3e937b29e9580267bf507db3d4669666030307ef",
+        "report_published_at": "2026-05-16T21:15:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f434dc317be5ad3208f848a093f89b14ac5d28262a816a2f33da5c4085237917"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "a400e8506e3da7e61dd84a7f1e385102390260a0c47b9dda1bbdbfe867a62da2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=05_30PM/Injury-Report_2026-05-16_05_30PM.pdf",
+        "source_sha256": "93e1bf76c31d471395c07d53e94e559eefc7d6824c1c018a5e57a5a9c4780f0d",
+        "report_published_at": "2026-05-16T21:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "bdd12f0ae46dda0d4a135e6354710bc5b6d40647c4479bcf7f588e5da28801f4"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "7ed68108967da79b924cbd2cbb60190c022a5dae7defb5052c454a253c83440e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=05_45PM/Injury-Report_2026-05-16_05_45PM.pdf",
+        "source_sha256": "f6d64f89675f8316e258f73ea1cdadec4a129a9d0450d71b77bd64cc2af33cea",
+        "report_published_at": "2026-05-16T21:45:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7383d9cc0d48f4b76cc7d524f82e1462a259c083034a71efc90077eeb0bd5963"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "af7c8566464e20e712903c3a176c3c4d8f22ed5980b6aceb29af49d1192c6680",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=06_00PM/Injury-Report_2026-05-16_06_00PM.pdf",
+        "source_sha256": "4971537d408e5e2350d0986bc8a33b4a5cd2ef4e5ba200ecd5e9db1af746d012",
+        "report_published_at": "2026-05-16T22:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7796d0ea03eb609ce271fdd9acdf421ce5a8689de0f9974e3b220d5f67a70e9e"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "9d0fbfffc106b3f1ae77c01b409da9a7101d173e62e449945c1793cd1f718d37",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=06_30PM/Injury-Report_2026-05-16_06_30PM.pdf",
+        "source_sha256": "9a5f490952301a04668f284b926a1fb81685e3825d280ad6027b9599a74694bc",
+        "report_published_at": "2026-05-16T22:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ae68a436e8a4829cae1b2f0ba54a93fb3c19c15a743165f86d4552576d73219a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "3acd130a3e35013807d3e29749cae35f02d661066f530d6200c4e90031aa9b19",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=07_00PM/Injury-Report_2026-05-16_07_00PM.pdf",
+        "source_sha256": "76afebd4ec7ca12f4e06f63fbcd5351594f47400ff0f3e24e8282a1ad220a0cb",
+        "report_published_at": "2026-05-16T23:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "dfa46d7beadcb7f8573677cdd6884f6d102ef3f3868cb5bdff8987ac4e115d4a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "0dfdbd1772d0e0d9733d32b49369e7a17f5aa0a120894440264a605642de4111",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=07_30PM/Injury-Report_2026-05-16_07_30PM.pdf",
+        "source_sha256": "1d79c585b60f59717fef6851e3f248b116d97e21954ff6170be638caec815675",
+        "report_published_at": "2026-05-16T23:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b80090c1a1987a84ed536d133a99a9e13cf555097f7152843d0f0a9202dcbb47"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "f2fd8be5d0447ab9c8c990a96e0d4ace789f216839289c2c3348ee0dd12812be",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=08_00PM/Injury-Report_2026-05-16_08_00PM.pdf",
+        "source_sha256": "67d776b65fa8a2cd7835139faf5006d8130037787829e57d789278cc8c43460c",
+        "report_published_at": "2026-05-17T00:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ffd9d2d427e55dc464e1f1b4b92da79ec253d45e5cab6a534ea6231174d176fb"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "516f121de2e7248e4965895c9ae4a094a88c9c8ae7230d3c66b728cb1cde0112",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=08_30PM/Injury-Report_2026-05-16_08_30PM.pdf",
+        "source_sha256": "c441ab01b67f23f355b5f22bcf09530a04116d3f470675d166cb954ae2b0e636",
+        "report_published_at": "2026-05-17T00:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "05612e7e7b6e3c474e18971b74a560625226aa6a2626978a4f04501f0f99028f"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "7a7358f0cbce675869241672984a8ff71066c6cbe183f6f1a0577bf0fb3ee9ac",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=09_00PM/Injury-Report_2026-05-16_09_00PM.pdf",
+        "source_sha256": "57aeb90904ccfc3f756071147cc8126da01faa65d35ed6c43ce100cf9f857cd2",
+        "report_published_at": "2026-05-17T01:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0ddfbca906ce2e2ff7a1cc55f1f4a90129bb147388d9351aa804e5e02bd0e2fe"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "0d4dea6fb53e95e70566b1c355f715ec7d9848f08cc0c834cc846ad97de4d5a7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=09_30PM/Injury-Report_2026-05-16_09_30PM.pdf",
+        "source_sha256": "0be128381310804479c800b90fa721317c7472c99d9187c4846d548d13e8f07d",
+        "report_published_at": "2026-05-17T01:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "aeda1e46ff92badd1fe9e7fa9776f0d1ad5ceb54ee522efbd040968673452601"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "ecf8e9c6f1c331aeb2d1a59d7fb5c6a54c4084e93d35bcddfc98636632532b0a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=10_00PM/Injury-Report_2026-05-16_10_00PM.pdf",
+        "source_sha256": "9266a5b7f563ec9b1a8158a503fbe03f213cb7d533794072e08e376be453b464",
+        "report_published_at": "2026-05-17T02:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "993b265d59351c9fe898a582790e779c83c374f93c3aa3a8e37e99a998505666"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "c3c0afb061f6d526e40b84e7f839e0b2f7201ecfe50afde26fed3382e3fecd58",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=10_30PM/Injury-Report_2026-05-16_10_30PM.pdf",
+        "source_sha256": "37083581ef56c6dcc887daa82548e985caf4e7eedf3629bd0e7f9e74dbd24489",
+        "report_published_at": "2026-05-17T02:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ffb659db95e9e5ff20f10a71fec057a0f03bab5812199e33896ab267727a5e7a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "17bfd5b3ae352df90adfdd5c407732b3bf2e7eb6b71375c219ea9c5e0563d857",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=11_00PM/Injury-Report_2026-05-16_11_00PM.pdf",
+        "source_sha256": "49a6817bf4378e3adc06017675c4ceb8cf125220e71fa3fa7f5728b7d602fbb7",
+        "report_published_at": "2026-05-17T03:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a7e08ccc70edc9192e0c0fcd9ef094c9bbede693c3a37739ce9c83a4602ad559"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "50814ae9f9190a6c1ce69c8698421a5803b5371299973bc6264e04345ebac54f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-16/report_time=11_30PM/Injury-Report_2026-05-16_11_30PM.pdf",
+        "source_sha256": "f6a834549e27f2e5531250767089f18b67eadf819f5b8dd2575bf4d5efc114b1",
+        "report_published_at": "2026-05-17T03:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "383289aad9d55cb45e611f8b7e4076d6549d5ea771409fce649ae6b0c7e70a66"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "cd278a7cc3487a10c83fa289e935b4d5b767a9d2b441923b2ef1e341e182e19b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_00AM/Injury-Report_2026-05-17_08_00AM.pdf",
+        "source_sha256": "5711b4e5d007e640ef9b8d8326b8db3836897b90d8b1ec87896d98ae0b6ec170",
+        "report_published_at": "2026-05-17T12:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5dcb0f2dc380138db8624490e7dee9d4335e4b3666c44a7490a3289284989e1c"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "a2860059ea9c2e7409826284e2ef2665e9b2f3c9bf0a6dad01858886f26f9b3e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_30AM/Injury-Report_2026-05-17_08_30AM.pdf",
+        "source_sha256": "d6abee7d7acae71d5b8382fd9f3c1392430e390bafc4b69f1eda90bd097e17ea",
+        "report_published_at": "2026-05-17T12:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e00727687dfc2c67e1beff831ec3deb4d35f0f53d970542f2e18c5533d0b2c44"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "8d42382c490feb125aa9cbaf1dc034d1def83a99c51108adcc04000fe417d99b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_00AM/Injury-Report_2026-05-17_09_00AM.pdf",
+        "source_sha256": "9e2be1c1e0b2febe38ac610eb2096221f0b23b798b5134c81b2d3297683c30ab",
+        "report_published_at": "2026-05-17T13:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5b97cf43ab39a88be10910f33319f4b44a54afed052842d3b8123c65eeb15c47"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "b0886580e039100f45322b4a3023dbd812a24fbe5e80c7f2a5edd1707b26d4be",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_30AM/Injury-Report_2026-05-17_09_30AM.pdf",
+        "source_sha256": "69990225388a2dc55126e5a20ed4feb7e45303619001251d00caac1bd46ed901",
+        "report_published_at": "2026-05-17T13:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5ea4cec71b18583616f5be4ad58c0eac8e41ff9d013279e057a02f3f1bd70e09"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "f580a7c5e97edf2448c8e9970bbc9daf07e1c9c88677807431078db7b2f2867b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_00AM/Injury-Report_2026-05-17_10_00AM.pdf",
+        "source_sha256": "cb9449dcc8857208c0a1fc51d55444a3b7f9b9acd98b0c25052b8ab679be2b29",
+        "report_published_at": "2026-05-17T14:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1b49d8ec9275aedf6c4987cfc0c9b52ee2a126ea27844201b97aa6bf0764eb71"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "bdaa401a4f0670b2bbd45ed1f21e7afe11239a9cfd965578fdae1c69e3ba0351",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_30AM/Injury-Report_2026-05-17_10_30AM.pdf",
+        "source_sha256": "000e89e2a7d7d9400421cbe3761369b052d31f8f681f891f09a42ec0fd33918b",
+        "report_published_at": "2026-05-17T14:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2979a2d44b417ad57bc1fd054c0e0d03388a7e481975b32b25f571a40f2bc1ff"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "365b9de7c01633e0f24df7859f63ecdd438077099cc8010945be3a3d8c5dde10",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_00AM/Injury-Report_2026-05-17_11_00AM.pdf",
+        "source_sha256": "dcabac0d2522417740cf1d4ddc8c2df1bbb3d37c27c2913fe1f214c02fb4db69",
+        "report_published_at": "2026-05-17T15:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9cc90f63215579dc48e41fd9353fdff86dde4dd6c813d5c52b08d1bc78cbf820"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "2540863ad55be60a965bde87391651784492f20dea8d7d8b0a74275d790364f1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_30AM/Injury-Report_2026-05-17_11_30AM.pdf",
+        "source_sha256": "75f51e7a620686a219529ca78705465e27683e77c4633be92e52ff6ad4ae107a",
+        "report_published_at": "2026-05-17T15:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7e96c9eb91a69ad467c30d7f328c11f4c7f61eeaaf3a7ba87f882a406ba97210"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "400d6a0b0db2ad13002fd179f99d1e05ef4ec5f4d57d7402dc1e93db65f8d7c4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=12_00PM/Injury-Report_2026-05-17_12_00PM.pdf",
+        "source_sha256": "dd383f910509b07b53c27d38c8fd3983f88282190ed269d50b66968eb249e179",
+        "report_published_at": "2026-05-17T16:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "94d052b6ae8f80a0e7b25b231ba98d8aa758ee223768b5a2de2c4c28861abecf"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "8359e81343a301df6976017ba6f20e740e6c9635b2d796bdb7a3ba17ad8749fc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=12_30PM/Injury-Report_2026-05-17_12_30PM.pdf",
+        "source_sha256": "173b99feb03a756dbe1f282ac62886afb52dbbe46c959fb1a8443486fb73eef8",
+        "report_published_at": "2026-05-17T16:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "9eeb00576c63281a42f0e6a59f4cbfa87d4de27031296e12aa130b2a141a2b89"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "d7c5803f91cb770430be9c6a03e48b20f3fa009b2c57257fb03e4c8786f10d8a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=01_00PM/Injury-Report_2026-05-17_01_00PM.pdf",
+        "source_sha256": "bb445fbd97e2aff901dfb877134905687745714e646ddf478245e5b75d78902b",
+        "report_published_at": "2026-05-17T17:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4d977e4fc2c4e5aa98e6596c23a1e04298a996ce9f201c474fd60e709f19fd79"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "1ec6be0be04f0f81c5211aa70cfb785b23a8342d2170419480347a1258810650",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=01_30PM/Injury-Report_2026-05-17_01_30PM.pdf",
+        "source_sha256": "49343b9c840d59131e96e05dbb7092da38964ef00af3f0092b3d1759c2a4060a",
+        "report_published_at": "2026-05-17T17:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "840fac9f993ce0e5606ce718c83d2081aabcd2aecb383e169788adb3b4a7b832"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "f82063102b2619569383deea37e44fdceddd2f2d7f15b4adc9c2404d4a34096e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=02_00PM/Injury-Report_2026-05-17_02_00PM.pdf",
+        "source_sha256": "603986990f5c0c391d8268d8b34b714233240eba3508b5c584b9b5a59c5883f6",
+        "report_published_at": "2026-05-17T18:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "60b7b58425545100cec2568d3988b919ce1aa126cb793f1ef882295647a8c71a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "a2dfeaa49dadfba8f45b243147acace9a3fb021b5e6fcb4cc8a7daf965a0ec2c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=02_30PM/Injury-Report_2026-05-17_02_30PM.pdf",
+        "source_sha256": "0b5cd5953f1c93cf17fca7a60ad340f51f606e14a9954ad21434cb75ab00db72",
+        "report_published_at": "2026-05-17T18:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0f6a7a1eba95ed7fde76dce8912a93b6dbf7b98737dc4e1b202292c7f57de8e2"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "dab7a333f933c8e254cb35ceaefc7204db4594383c48e46c0199e5d7d0bc3c5f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=03_00PM/Injury-Report_2026-05-17_03_00PM.pdf",
+        "source_sha256": "476a1a8bbc4e0da29052d14701c94cc6b20d35ea6231c1b773cd2cfabb7f3c8b",
+        "report_published_at": "2026-05-17T19:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "99fdd963c1189242b77ef19fb9234cb7858e8d9befea52004bbf28d1ce6b9e7a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "c046ac4a0d475d4693dd2abdcb7944a6f625c0b5714aefdee0ea1d4b18abf000",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=03_30PM/Injury-Report_2026-05-17_03_30PM.pdf",
+        "source_sha256": "b843ea48e8eb33458561d3319d6aed3e34f5de51993cc8014c9ef04f33a2369c",
+        "report_published_at": "2026-05-17T19:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "85b878ba2dc3a0c5169e015d070980d9818c9f3456c1ea25cd7842d97db4a0ac"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "3ec08b7728a471de333c9b778846f22c003f2b65fd16b3b4751ab785b42dfe83",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=04_00PM/Injury-Report_2026-05-17_04_00PM.pdf",
+        "source_sha256": "d21cb6b82ee2dcebbb74bfad719b3a162093547427df336fab0a64546b7bb022",
+        "report_published_at": "2026-05-17T20:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "298e0b7da05de89aa10713ac63692eceb033519289a7aa081f12f4734d0b8f0e"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "e657f04b6f78164c0b74de08d55cbdbecfb79ba44bcc25bd157a215c156fe635",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=04_30PM/Injury-Report_2026-05-17_04_30PM.pdf",
+        "source_sha256": "5c4b69f583d3228ff29c6749f9d5b65f211071127182961400cf452118d06927",
+        "report_published_at": "2026-05-17T20:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d5d3971b11b4a8cc159a46c9690785822e927e7a8b6b5fa1a0d4d757395db69a"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "dd440197fce439b9d4c091ffa847868427b7bb7092449801afcb33e9f2bd836a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_00PM/Injury-Report_2026-05-17_05_00PM.pdf",
+        "source_sha256": "3ca60fd9a3a02e6353da437d749c699489524e7b61985a17fe882fa767fba6fb",
+        "report_published_at": "2026-05-17T21:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "43527a23bea342712e5e55a2707f8bed01cdffb062b5f8ccbad1d708ab4cb0b0"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "8671f95068ec9f8924174a7206a4cb1de22c0188bcff620a05cb88cf71c43af9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_15PM/Injury-Report_2026-05-17_05_15PM.pdf",
+        "source_sha256": "c9cf60afd31d58ac2cda937b34fac0154f7f42f93c114e5e744c562df3c36d89",
+        "report_published_at": "2026-05-17T21:15:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8bf7de5525a5dcf46dadb7b585a1668b56b0ccb969851a5489678e06638d141c"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "d961d921cd4c28b0ac55eb051df26903e8d1db927a2ca1c85d2018369538f83d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_30PM/Injury-Report_2026-05-17_05_30PM.pdf",
+        "source_sha256": "5164a8145ceafb5578c1cd5a4f154e0fd98a8ed9b518f6c947c7f6ee3135cacf",
+        "report_published_at": "2026-05-17T21:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8e8262bd89096abc8aeedf4fd206785db7c451e3b12da7152adf8c410436339e"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "ff48b1f9df7c75fa338113b871b69358765a4b0e2ec143414ad4d5129c9bd134",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=05_45PM/Injury-Report_2026-05-17_05_45PM.pdf",
+        "source_sha256": "ba68b27dfe3277d81821f3600c70708f3a466f32df798f65da521df8eb67487f",
+        "report_published_at": "2026-05-17T21:45:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8877b7ac6443be74623297366e59d591f3e876f8c090f9cd0ec962fea97911ad"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "cbe1209887f67f94cafc040e032235c766d20f4c52924f55a4f36ef35783de41",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=06_00PM/Injury-Report_2026-05-17_06_00PM.pdf",
+        "source_sha256": "8f8056856128ee8ad011a542493d13ac3ef96a7db716fbc0f2415d028bf1a3f5",
+        "report_published_at": "2026-05-17T22:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5ccaab07099ad19b6e1b8e04ab61168af96bdf5d89909fc9d33cd602b4758de4"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "8f8736b655c932287b4f640a37878aa098b69b89e33c621ce84dc8a58be1118d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=06_30PM/Injury-Report_2026-05-17_06_30PM.pdf",
+        "source_sha256": "adb1feb6deb4540c2252558d078357cf49481199bf75f0bfaff24c9e9d04bc17",
+        "report_published_at": "2026-05-17T22:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b7a9c2a543b409feae009eec608befffbd09c3e59a294437c7382b8c4ac47d52"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "820a321aaedfb48966cb051ebbcb51080efb720ee422c1589ce7284d37b3b7ba",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=07_00PM/Injury-Report_2026-05-17_07_00PM.pdf",
+        "source_sha256": "4ed1bbaf81b0a929e1d045646f67ba21ed1922a873c2808c3cefaabea35ffc0d",
+        "report_published_at": "2026-05-17T23:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3c9dac934ab1ac41caa872e22715d30d8c05ca5c70844b6a47ca6a416d4176db"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "ffa7e3729599b2eee16639ad5773b32e9c7aafc6347270e5e27540ae32bd7ae2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=07_30PM/Injury-Report_2026-05-17_07_30PM.pdf",
+        "source_sha256": "e0808ac1f8ffa0fcc64baa7dd5db8255085a2504669ea93c487b076582cfdd9d",
+        "report_published_at": "2026-05-17T23:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "550ae561f2566bc722a15edc9f797821f54ce3016230dbe4edc69802f04332f6"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "cde1f43fc7cda9dbcba98db123977b48725fe1fa7350cdb6b5dd1e6c91c325d3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_00PM/Injury-Report_2026-05-17_08_00PM.pdf",
+        "source_sha256": "bd57b930577a6d4970da27c4f85f6d232cab1550cfe17a0d19bc05bbc2af2534",
+        "report_published_at": "2026-05-18T00:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ddd58aa069611e8bf34840f6158d3c97b47e7177f88dd311d02047f5ab0d3881"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "0e2a286d725cbdc87ba900f5e9864e4cbe2625e8391dd28f278035997482a68c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=08_30PM/Injury-Report_2026-05-17_08_30PM.pdf",
+        "source_sha256": "c148ccae29ee10ae88dec53275df55358dd9ddd8b92cc259c5c9dabafa36c2a4",
+        "report_published_at": "2026-05-18T00:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f44c379afb43258fc5cee44c5de55366d8980e17b4b669fadf5774c3bd1c99b5"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "0e0d507b864840c57ab8e54b489b318a6b8f1e4c361eada84a3bb2c41240f9e7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_00PM/Injury-Report_2026-05-17_09_00PM.pdf",
+        "source_sha256": "fbe5389df657d11ae67870dcdc3c59abae1ede2972cdcc660814cd694b462cde",
+        "report_published_at": "2026-05-18T01:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "548cb71550d5019bfef54b771f17cf819a1623c662dfe4a4aa4e297511ff7da1"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "d92e9aaf5d09f981d03bfe6db9d05ecdbe9149e3f401bce21f8f3c87db261efd",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=09_30PM/Injury-Report_2026-05-17_09_30PM.pdf",
+        "source_sha256": "0ccf28428b96b79b14a8eb85127e1e884ff229081fc7fe931d5390705e82e69d",
+        "report_published_at": "2026-05-18T01:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "995f2646bc7472b091944db8a865e4f6d4e550c623349c16a84d544885ef6b99"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "0ea629b82722590c8e0072b605e73866d5f05453bdc4a69a585861d109824c99",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_00PM/Injury-Report_2026-05-17_10_00PM.pdf",
+        "source_sha256": "829dc8c582d0452f3170d561a4849d128132d4b7bf5999362ed6adb438e0ff86",
+        "report_published_at": "2026-05-18T02:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "97e8b0db986d4abf719f6292df7ef49f5d4bfa170d49f3b3515b432c2a22e6dc"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "3f758ca133c56a954fdd6d6fcb2b6858991a9d47611f45c1b18f5fe72f4aac32",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=10_30PM/Injury-Report_2026-05-17_10_30PM.pdf",
+        "source_sha256": "056436cf8cea073993cc88d09a6bbfbcf5b318baf3ea884207bc9a0a44f3e660",
+        "report_published_at": "2026-05-18T02:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "711cdf92c063e85fd679f5f5068714a9fef5b1873974a186560142b29a1579ab"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "0b176902321c1d223d376a56e93848c81b5abea88330e8574afc7703509123e5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_00PM/Injury-Report_2026-05-17_11_00PM.pdf",
+        "source_sha256": "fc1564e020a9f5acbdcc2a8104e38d24324fed163b2be67feee4e80be626a4ae",
+        "report_published_at": "2026-05-18T03:00:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5d9f93236e63d9bae6ef0d5dd2817c378008a94b71b58e4c6d2a3a246ef12c34"
+      },
+      {
+        "game_id": "21709241",
+        "source_game_block_id": "7dcbe71412e492b45941f4cf372ee8e3d33d311dcf86ff0c620df75a4babbb0a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-17/report_time=11_30PM/Injury-Report_2026-05-17_11_30PM.pdf",
+        "source_sha256": "2855752c520577aa3d51dda545c598b9cc06d8163c69065587a7ec65f99c2cca",
+        "report_published_at": "2026-05-18T03:30:00.000Z",
+        "game_date": "2026-05-17",
+        "matchup": "CLE@DET",
+        "away_abbr": "CLE",
+        "home_abbr": "DET",
+        "away_team_id": "6",
+        "home_team_id": "9",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Nance Jr., Larry",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Illness; Illness",
+                "page_number": 1,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Heel; Contusion",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Robinson, Duncan",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Low Back; Soreness",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3e3ba5bfbceac82797b1f2003c96f03c49f5dbca46da604e581c4d5866395e94"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-17T22:30:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 1,
+    "home_player_count": 3,
+    "selected_source_game_block_id": "8f8736b655c932287b4f640a37878aa098b69b89e33c621ce84dc8a58be1118d"
+  }
+}

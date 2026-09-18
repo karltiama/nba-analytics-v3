@@ -1,0 +1,45 @@
+{
+  "fixture_id": "syn-name-unsafe-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "name_unsafe",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "SYN|unsafe|",
+  "input": {
+    "game_id": "SYN_GAME_6",
+    "team_id": "6",
+    "team_abbreviation": "CHI",
+    "game_date_et": "2025-03-01",
+    "season": "2024",
+    "player_name_raw": "   ",
+    "name_key": "",
+    "ever_out": false
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "none",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "QUARANTINED_NAME_UNSAFE",
+    "player_entity_id": null,
+    "serving_player_id": null,
+    "confidence_class": null,
+    "provenance_category": null,
+    "independent_source_count": 0,
+    "quarantine_reason": "NAME_KEY_UNSAFE"
+  }
+}

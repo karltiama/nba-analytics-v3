@@ -1,0 +1,35 @@
+{
+  "category": "asof_vs_research",
+  "expected": {
+    "asof": {
+      "as_of": "2024-01-31T00:30:00Z",
+      "estimation_status": "SPARSE_BOTH_STATES",
+      "max_training_game_start": "2024-01-30T02:00:00Z",
+      "with_n": 1,
+      "without_n": 1
+    },
+    "asof_max_lt_asof": true,
+    "counts_differ": true,
+    "research": {
+      "estimation_status": "SPARSE_BOTH_STATES",
+      "with_n": 2,
+      "without_n": 2
+    }
+  },
+  "fixture_id": "dev-asof-vs-research-2_2",
+  "input": {
+    "as_of": "2024-01-31T00:30:00Z",
+    "cohort": "P1",
+    "corpus": "tmp/official-injury-wowy-pairs/p1.ndjson.gz",
+    "game_start_manifest": "tmp/official-injury-wowy-estimator/game-start-manifest.ndjson",
+    "metric": "pts",
+    "pair_key": {
+      "focal_player_entity_id": "0825c793-7944-5a6f-833b-1023ba00c6fe",
+      "season": "2023",
+      "subject_player_entity_id": "27cec302-8ab9-514d-973c-8f55412c809f",
+      "team_id": "2"
+    }
+  },
+  "kind": "asof_vs_research",
+  "split": "development"
+}

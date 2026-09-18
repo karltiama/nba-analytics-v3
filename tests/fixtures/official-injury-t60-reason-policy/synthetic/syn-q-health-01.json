@@ -1,0 +1,30 @@
+{
+  "fixture_id": "syn-q-health-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "non_binary_health",
+  "source_player_state_id": null,
+  "input": {
+    "game_id": "SYNTH",
+    "team_id": "0",
+    "season": "2025",
+    "player_name_raw": "Synthetic, Player",
+    "player_entity_id": "00000000-0000-0000-0000-000000000001",
+    "status_raw": "Questionable",
+    "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "INJURY_OR_ILLNESS",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "NON_BINARY_EXPLICIT",
+    "reason_side_eligibility": "NON_BINARY_UNKNOWN",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": false,
+    "injury_wowy_eligibility": "NON_BINARY_UNKNOWN"
+  }
+}

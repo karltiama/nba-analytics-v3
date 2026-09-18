@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "estimated_delta": null,
+    "estimation_status": "ONE_SIDED_HISTORY",
+    "raw_delta": null,
+    "ui_display_eligible": false
+  },
+  "fixture_id": "syn-with-only",
+  "input": {
+    "with_n": 2,
+    "without_n": 0
+  },
+  "kind": "status_counts",
+  "split": "synthetic"
+}

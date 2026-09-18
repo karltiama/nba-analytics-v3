@@ -1,0 +1,3060 @@
+{
+  "fixture_id": "ho-fresh-01",
+  "kind": "real",
+  "split": "held_out",
+  "category": "near_cutoff",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21681995",
+    "season": "2025",
+    "start_time": "2026-05-01T23:30:00Z",
+    "cutoff_at": "2026-05-01T22:30:00Z",
+    "away_team_id": "6",
+    "home_team_id": "28",
+    "away_abbr": "CLE",
+    "home_abbr": "TOR",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "c757a4e85f4ae579b1ed7302b02de626c1caed7c05cbe337c326af27ca40c4ce",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_00AM/Injury-Report_2026-04-30_08_00AM.pdf",
+        "source_sha256": "495c4aca0b61a2a6bb2c0c86a3a6293eddfab23d89b58eb5ca821505cb54a1d6",
+        "report_published_at": "2026-04-30T12:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d6cdb74ba54d574452e980ea7960afe24d66a77990bc03687f863488afbde8a6"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "41cdb4c612f508be95ecb3d333b26e8d35f4cc7cbcda5e153c116869dfd5eda3",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_30AM/Injury-Report_2026-04-30_08_30AM.pdf",
+        "source_sha256": "aec451d848f73c62341d03662f3d0cd0414fa2ff67c42f8dbe27933db354e194",
+        "report_published_at": "2026-04-30T12:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "dbb84137c96b9e6643c7423c55311470e409a0cdd85109f46809c61d5ca99d39"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "8a838eb2470eac51568d7bab79d37eae0502db50743bce4b23b53e0642a64d43",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_00AM/Injury-Report_2026-04-30_09_00AM.pdf",
+        "source_sha256": "3224be0244c7dbd31e80d330c6496accdb9eb34c13164fc4243338d21d876692",
+        "report_published_at": "2026-04-30T13:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7335f9f444210ff3afcf44fd9d0dd4fd1eec934c9311f2bcde8af92f5442a6d2"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "17aecef4e62aa9a52487d8a3d39280f935f354026bb440f201f9433c0416be58",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_30AM/Injury-Report_2026-04-30_09_30AM.pdf",
+        "source_sha256": "8a54cfdf44c684775be6a1d7d51c3afd6831df1e42f0c4536681182ca9f0cdb0",
+        "report_published_at": "2026-04-30T13:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d9cb95d4fedf27e93e939e671ca9a0719613ab6ff7c02d083135a8812ceea4ba"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "be5163ebd43deedb67e93f9bcf96347ff891ddd77e6890038989e595c218398e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_00AM/Injury-Report_2026-04-30_10_00AM.pdf",
+        "source_sha256": "a329d89cde31ad491209bc55ab8b0e396fdd428df2b5060c40e965d74a3dbe37",
+        "report_published_at": "2026-04-30T14:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "3d1025369732e2139aa33578534d2397428d1784397fabc4892750a551951c4f"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "f9e3c8c18369aff1e9c1878ee0b33445f8c8489ff24bcf4d3610f39b3ea8c51b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_30AM/Injury-Report_2026-04-30_10_30AM.pdf",
+        "source_sha256": "6cf6f9e5496c5d4fad5c7c6d555d6a4ec13b66104628109087bac10cb68e9a4a",
+        "report_published_at": "2026-04-30T14:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "eb51a18b1415e75ae20837c7ccb084c40f0d7ff916c056e5357013371974cbd0"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "76da54384d80b35f697fc7146a3a7bf6e020cc4b28b2d3fa3ef34e253610c338",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_00AM/Injury-Report_2026-04-30_11_00AM.pdf",
+        "source_sha256": "7040c07b124333c77d5ee125c46930f22d3106847a61beb880be5b871ed8027d",
+        "report_published_at": "2026-04-30T15:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "90e99cb173bb9ff4618b9b01caf35304f60aae392089c4abe522bcc08ffdf905"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "470fd1945286e8ac1e477f8dd4edf60306bf32d22c2b19c4b495dd9a60a10397",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_30AM/Injury-Report_2026-04-30_11_30AM.pdf",
+        "source_sha256": "e91d2ef511ce57c8ae1f1d06ae06afec082dac3b9ff308795a3563e184766357",
+        "report_published_at": "2026-04-30T15:31:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "be5656017c71c923ce6fd6d415cd7b5fc58c7dde1a75919235a4ac38ad30089b"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "32ae2c0460584782f5f8eb66d020584e6f841235262dcc34ae31a0978af59992",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=12_00PM/Injury-Report_2026-04-30_12_00PM.pdf",
+        "source_sha256": "d12c1180bdbef9346342a06990720a1c90a94259231b6a26f912ca0911e540c9",
+        "report_published_at": "2026-04-30T16:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "5499e035c6a1e0a6f7070fc6f75c04aa3c5e0e24c54d44c196eab4d84e22b063"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "b211f4bc922205d0888c04d8a3eb40088477741f3c12189d208a1548fec70475",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=12_30PM/Injury-Report_2026-04-30_12_30PM.pdf",
+        "source_sha256": "5beea267f09e29c950ff50e1a110f61c400757f71e4fb7ee1d84d6a50b5f4e92",
+        "report_published_at": "2026-04-30T16:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "733c8d5f8f0c641929a5a3bef06a9b80dce5fafd71328f0797f7fa00449bfef7"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "8083191481617ac37f979eeb10696aeb7c28910d598436a09a170fe13decb4ea",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=01_30PM/Injury-Report_2026-04-30_01_30PM.pdf",
+        "source_sha256": "ccdedb39c5ec04ddc33a5f27b1c219212a518143cf49d28dc81515be5bd3e23d",
+        "report_published_at": "2026-04-30T17:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4c5b3541d0a91791602343e7e808ee47d5dcd6b9f97e288f5d93a0482d74c2b3"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "7a34c9235b35b268a96c6e1f7509307ff5b381369355341e0b2850518540dea6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=02_00PM/Injury-Report_2026-04-30_02_00PM.pdf",
+        "source_sha256": "89782e55429050c09da0db702124000141456a75815ffc6b976969e4d4e4fbe6",
+        "report_published_at": "2026-04-30T18:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "87d425b35b4a53b3f34dbbc81eb3e6d8ff7985874893700413beaab926c46513"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "91c25476dafb182c566e9a799b2936a701e13534dfb2864f68018b4f1f4998ba",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=02_30PM/Injury-Report_2026-04-30_02_30PM.pdf",
+        "source_sha256": "54dd275d2a56b7dc6d3b752812e28adeedee02c513823abcf2844b6aafbd66fd",
+        "report_published_at": "2026-04-30T18:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d39c2805122e72bafb44e989a7800cdf992dd0f863cf030b54655503a50dc982"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "ead016f87df5588b63c9d974da0bcef63ed7026f0b0629c2fe971b2587856c72",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=03_00PM/Injury-Report_2026-04-30_03_00PM.pdf",
+        "source_sha256": "eedead605c1065779fefa78f0460d52520f64ea12913c029fc66803aa575e70c",
+        "report_published_at": "2026-04-30T19:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "109a35c2235aa41aff2f4445f5241954fd1e6f62716209cf489a564e98cc6086"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "c62ddd37d6c029ceb5cb6d90394efc105899cebec359b970a6a438d447ce9319",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=03_30PM/Injury-Report_2026-04-30_03_30PM.pdf",
+        "source_sha256": "9d950d598695dbb98cf0810e595a783e89d0d35b1570d11a3bd68c57a2caba31",
+        "report_published_at": "2026-04-30T19:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "ef82efd26709e7cfe8bb6433d94019e1d2da9270e3cc965ec093f777963c4809"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "d187de6ee20132e3f75ab8dc4bd981b38232acc9ebb518aaff1549d6267840b4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=04_00PM/Injury-Report_2026-04-30_04_00PM.pdf",
+        "source_sha256": "af6937b44c8881ae25d03e2a259387b14da71450142b5686c53f81c45b223c94",
+        "report_published_at": "2026-04-30T20:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7c9f1286a876f57f6e7ed82001c63b463acb5ad94d6b421ebe84900fc64efa31"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "373984a7cb99bd88ed04031b156c355366573ab9cbcdc454b9c11cf1ae1d8a6e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=04_30PM/Injury-Report_2026-04-30_04_30PM.pdf",
+        "source_sha256": "56f7f8252c05f2b76b1b6c755b92d4b961749f6c11ad4883bb302ac0f62166be",
+        "report_published_at": "2026-04-30T20:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "88501c6a8ee005b050ab5ddf083333c3e97fef85d9e4e41a3d28b6db20ef106d"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "60de3f03d17111832eca8f91937dff3f4a49bc16018515060cec2d113f517411",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_00PM/Injury-Report_2026-04-30_05_00PM.pdf",
+        "source_sha256": "97128ea9840199f254a13b4c2400e88fb8dfc5b36bf1bec3c329c49c6692a8c5",
+        "report_published_at": "2026-04-30T21:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "eeb9f7da79d42bf76288e38b621db17ddd14b9e29a3019d547403672559d920b"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "8b6e0ed194cd3b6d6ed2a9bd2cee52b2e4f4ee7c818f8b6cb811b0066cda9560",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_15PM/Injury-Report_2026-04-30_05_15PM.pdf",
+        "source_sha256": "7937e0b9f44c83a3cd53fecfc1e1f5320e52b1bd16a89dd505f5bcbb301c180b",
+        "report_published_at": "2026-04-30T21:15:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "beea5297ded27eb7115b5461df7afbd8f7ca7ddc157991a98b92dcf1dec6572a"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "91b359e00de6e6290fbcb2618d8f724446f89bec294632ef1a309e731cf9241e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_30PM/Injury-Report_2026-04-30_05_30PM.pdf",
+        "source_sha256": "3027d9ca85bb53f1fa7156e3282d7d2d31c75ab1195def38d0ae9808d6f06ec5",
+        "report_published_at": "2026-04-30T21:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2fcf20a711e840f9a3248e3ea54e975f5cbb5539c59eaffcf01a2b0997f2e48f"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "a28a3a0372cb45b363da13bd84b1bf8a6a50190c8772fca553ffd989329d7cb0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_45PM/Injury-Report_2026-04-30_05_45PM.pdf",
+        "source_sha256": "0c9a8b0a083ecebf4136700f834aed8032fed03edd5e7bcd2a65a38d2c632206",
+        "report_published_at": "2026-04-30T21:45:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ea1b0d7acd65f04457f09b3107cdf20373b2f65b032c19f825044b68012981f4"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "5dfde329e88fe1f996cf7d536f40e582cb5edda98d977629337a0aae25f7b2c6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=06_00PM/Injury-Report_2026-04-30_06_00PM.pdf",
+        "source_sha256": "f508c7eaadb1c712ce9f5cad04725028dbe6dfa46ed3e0cc6b7ac91d6c4f779d",
+        "report_published_at": "2026-04-30T22:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f8a290e10a7a72b9f79156b263485cd234c5a2a0b5ee372dc6e598dd8c372fea"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "d49582aaffb547d27e3c0789b34d5b236b6085f2624bd0f49d1100cf931b6541",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=06_30PM/Injury-Report_2026-04-30_06_30PM.pdf",
+        "source_sha256": "8c1d49af8b361aa0ff89a9a48c7eb56c55b85476c2add75929b941bcd01c50af",
+        "report_published_at": "2026-04-30T22:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cd51abb718414c8f85b027f5e324a618bf58e54354b48db9f2f5bbe708d9d0d8"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "4af2f273adab55b4ca171b899376cf0488365287b909ed39b1044366972e3ce6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=07_00PM/Injury-Report_2026-04-30_07_00PM.pdf",
+        "source_sha256": "85fc69ab23a30179dd8f86a18a91148d101696a947a4164c1bd48e3288fd7f54",
+        "report_published_at": "2026-04-30T23:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f7f65141d1952e1366b48f6dbbd01f66c6c55c79a187f605eb73e8dd6a720727"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "f5aac89c87cc4f0f658669beea3bb44d8abe395b4296c79bd29a1af1fa2240c9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=07_30PM/Injury-Report_2026-04-30_07_30PM.pdf",
+        "source_sha256": "e44f79c242eece5e42cf7d8f4bfac8c997ff0831a223d919f809243b2a33779a",
+        "report_published_at": "2026-04-30T23:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b8e8c77befbb853dc3f879b4061a277d68c3df7ab4ed65fbc2e1e3a7976f06a0"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "36e298c393e5e35015c86ed5ca03a9a3b364cfb39873260a6d36628257d37645",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_00PM/Injury-Report_2026-04-30_08_00PM.pdf",
+        "source_sha256": "4d732d9f4ec1ddce4167f56f406f6442d14639b0c4c1dea14daf8600771a7e5a",
+        "report_published_at": "2026-05-01T00:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0ea54c67197a2cf625877b70926f79ae81eaa94dab3464f0ecc43fac7f738426"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "e13f7a164bee58b22e5bb3818f86410559ea953500ec18c2ce707c1db8ca093e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_30PM/Injury-Report_2026-04-30_08_30PM.pdf",
+        "source_sha256": "b64f8f55f07edf0705552f47a40bd2dfb7849a32d0223bdfb3c1e89e13460f0f",
+        "report_published_at": "2026-05-01T00:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "54327116e85e5b86e64cc6af6b65d200d831d07b2f95d37d82f0f8e40bea59f9"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "d4e07cf811df225a9553883199822b195aa30e1bbbcb635fa70dcd7012c9e411",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_00PM/Injury-Report_2026-04-30_09_00PM.pdf",
+        "source_sha256": "12677beda27266a09096f8ab4b9580e5c953607d4029e255061fc190a1c06c8d",
+        "report_published_at": "2026-05-01T01:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "fc429183704c515646ac012506a5d0a5da57c7d4339ee3679b1c7aa576dcd4ec"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "e8ebbaf80735500fcf76634c9d03a86d79f8260523917ece34e3f88dcd5c772b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_30PM/Injury-Report_2026-04-30_09_30PM.pdf",
+        "source_sha256": "b265d594c121e106c66cb36600ec8e51b9a3529f83ba0751e41c6e81a1e4d8e4",
+        "report_published_at": "2026-05-01T01:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ec180f3b1a230613b18e3a78075576fb65d30e03cb15a57edc6e11e2b899e8d4"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "2a1b24a3724a563851b199d6c3f09ad731cdfa16fe9b72e655a8087ba6a9981d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_00PM/Injury-Report_2026-04-30_10_00PM.pdf",
+        "source_sha256": "55d3c0c6c6392eabe16c8fe716ceda1b87d948a6c9752a3ddaa84f02244f6ad1",
+        "report_published_at": "2026-05-01T02:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c47cd99c692f0ecbdd87feddddd6d41cd5ca0181a5bd8bd8cdc209860f9c1a0e"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "1da8e5154d1b8c90203be4724c4f6235dc644cbda71f38f8a283c317f6a24ef7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_30PM/Injury-Report_2026-04-30_10_30PM.pdf",
+        "source_sha256": "3b12aa927b1e0d0081c55382dbc54b50251d9b53ad7fffb37b81fee820967ce0",
+        "report_published_at": "2026-05-01T02:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "90c3f8628b2cc1afefd44878090c2ff5379de05e634ab40c5031ac87412ad0f4"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "dcd333d0ea7ac6733d0663102af7740341e6309ba5c02175b8696fcb58cf369b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_00PM/Injury-Report_2026-04-30_11_00PM.pdf",
+        "source_sha256": "67aa76f5263659f3ff8b4942ebb28e25a00f543314ddc17e01d263934dc1f122",
+        "report_published_at": "2026-05-01T03:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6b9db1d30c694ff681ad44fd1534e4072145c0d97f1da7867e28077c39db843d"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "813ca9351a1d4f0bc27ada56200e90a491839b3760d0f4cb23ef4ba433db6190",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_30PM/Injury-Report_2026-04-30_11_30PM.pdf",
+        "source_sha256": "c8b887c802c77a3f5b196be70675373c6eceb6bfd8a3eb2f0fc47cd850b82563",
+        "report_published_at": "2026-05-01T03:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 2,
+                "visual_row_index": 2
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 2,
+                "visual_row_index": 3
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "34a5b8b73556af2b3a821f6296935de239696d7ae256a515bd0b9f338d049089"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "ac4c24944f13389b6360939649d3d3fda7dae23188ebaa3d0661e6564f046074",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_00AM/Injury-Report_2026-05-01_08_00AM.pdf",
+        "source_sha256": "31fd4e926c94b673b92ff2819cdcd22ce65bca73578d7c7e315dcc4cb726de0a",
+        "report_published_at": "2026-05-01T12:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b81e81f2e9c5607b6a24c23b62e2ad62dcbd88ed64df4dcaa25ca26895b05d3a"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "8b67731a0ff4c90d755dc4cfebf23895191d035b15577f948418e38ca3aba3d2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_30AM/Injury-Report_2026-05-01_08_30AM.pdf",
+        "source_sha256": "ceeff70365b8fa9afb5003e2dd752c4b38057a76f45461bd9e9d2287691f94aa",
+        "report_published_at": "2026-05-01T12:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "6a48f41dc370f720ef692ad00317bebdecf4546b3890618ff64d514366b0a906"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "385abb5bd743282f84524fa2284894c1f5fea53d0ad0b589e60fce2c6889aa7b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_00AM/Injury-Report_2026-05-01_09_00AM.pdf",
+        "source_sha256": "a692eba4e16457fa806f51a22c2bd10cba8457cfd06cce9a58eb4bbbf9233b1c",
+        "report_published_at": "2026-05-01T13:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "edd32d39eea74847b9cac69065eb38d6d11fcac137319d9e130876e80dafa62e"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "5dee51bc601001b39d848b3212263f2131a95dda7e65a354aafc8644c8a36300",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_30AM/Injury-Report_2026-05-01_09_30AM.pdf",
+        "source_sha256": "512243ffbb319557bd3e9fd65bafe1ea4b18a59fe9e64603543a701657ef2094",
+        "report_published_at": "2026-05-01T13:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7910ec897d4d25c5923002b3ab0d4e5d79f63db9828402c784d1d3a451829302"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "55a942d1f3e50031df407a572240b97efc2fa1cb7149cb17ecc3bb877b63ab22",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_00AM/Injury-Report_2026-05-01_10_00AM.pdf",
+        "source_sha256": "fd11a86dfd542863d9a5c74f5784e4b9ca0766938525750b2a07ebb52f89f5c7",
+        "report_published_at": "2026-05-01T14:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "cb9a9bb2101f7f4556c6f398b199d580eda71927a0549a6aec9f909aa380decb"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "b3b9dc8f17182a5ea35a4cf2add9aa7ecf98bc8025752dad513be8ca12fb85da",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_30AM/Injury-Report_2026-05-01_10_30AM.pdf",
+        "source_sha256": "3b887443f3ee37b392d93ac9c0c3a964ff83bad634680502716b5c39c370392a",
+        "report_published_at": "2026-05-01T14:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "769bcae5f6971c571f038274a8eb11f0adf00523c25a243d6a056d4e759d246b"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "e0d51dcc890bb86f1dc8ec7d81fb55523c1f8f3c1f5b1bdc89c8782a6c3eb9ee",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_00AM/Injury-Report_2026-05-01_11_00AM.pdf",
+        "source_sha256": "2e1b91078b3bb16d5d0b5b9bf0eaa7b73b387ddd6eeb5b44da437e68cbdb1307",
+        "report_published_at": "2026-05-01T15:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "816d50cb97975e31a1b5c2cf287443721a9451daf3d5982bf759c02a066946f7"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "33f2247fabc239add55f7fb500704bbb056b1431a254dbd71d6cf47f450d9c93",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_30AM/Injury-Report_2026-05-01_11_30AM.pdf",
+        "source_sha256": "3ad9f7628d66b54d69bf14f0a09b531402bfd6be319e82acf31fc0e80405c9ec",
+        "report_published_at": "2026-05-01T15:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "13bb1c2758eceb09366de9f78fa737399972e92225c7bfcb39161091a46fa630"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "d946078a012c255bffb6b28f3495e301a95bcde8288287c96e00d9daefca105c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=12_00PM/Injury-Report_2026-05-01_12_00PM.pdf",
+        "source_sha256": "020c21e5cb3bf3c9a7c784be3af8e6c00f138c85206e8fbe5d2c4657287724c3",
+        "report_published_at": "2026-05-01T16:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a19924432607fe504d399993d77e582679ae3e5ba3161a9f0c38019380c550e2"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "0f03161e6f62a2fe5996f972234c105b6b0a8b9c86a0a4540a30363aed5c2f99",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=12_30PM/Injury-Report_2026-05-01_12_30PM.pdf",
+        "source_sha256": "185077e5a54ffc201d0ca49b89420bd9b8137ec7723325c6c6b93346b1c81689",
+        "report_published_at": "2026-05-01T16:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7ce664e2a766e90ab995295252b984b18acd3f5d534f9239b2142c6c22761f04"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "042096e42f42d16bc165329fd6e90271083b12062b4acec2bb0d8655ba4c2c06",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=01_00PM/Injury-Report_2026-05-01_01_00PM.pdf",
+        "source_sha256": "634f294cc278d0b8b2e0ca204a0eb8088d11c426de0221ca82f9a0f68d80ffc9",
+        "report_published_at": "2026-05-01T17:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3d073944ad0bae51a1642c24e16cfb9e3fd8060d741932aea2844a3fe04740b2"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "44f408645e7ccbfbf0ca41adf3ebf2233d6797801eff624f1c3767ead18c80de",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=01_30PM/Injury-Report_2026-05-01_01_30PM.pdf",
+        "source_sha256": "47ff6333fcfdeb5eee412d23988add82a5a6eb66e8d8fc8a47754b4875154f15",
+        "report_published_at": "2026-05-01T17:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4a34fe5a7d277f7fe0b168c4d1f11f8fec3300911d7a38ea9cd6dd1694539d0b"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "761fa3da10afee17efbfcc17ed7b47d85ffb225e3104c28ec73d620146a53410",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=02_00PM/Injury-Report_2026-05-01_02_00PM.pdf",
+        "source_sha256": "b435c372f352e2804531507fffb69245cf223a4000b14132bec7cf60ca974812",
+        "report_published_at": "2026-05-01T18:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c24a27645013cd68713c6d691ceb307d43be9294faa969f6c8cbc8463cf26ac3"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "b06ffe9e3251c700957b359400e37d63d81137997c2f079b1973df19c02ab7de",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=02_30PM/Injury-Report_2026-05-01_02_30PM.pdf",
+        "source_sha256": "a5b6a5ab30b918b5dca54e70a2a780603ef54c9e095a29a62d240cfd4571320e",
+        "report_published_at": "2026-05-01T18:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0d38e4eb54fff204a659832905fbc3f421b37a3eedcf4509e75eef96bc9b01e7"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "9cb051fe5a5abd00375a4c1350b5f8e3a271a5cbb0e7b9b7624003c71bd92351",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=03_00PM/Injury-Report_2026-05-01_03_00PM.pdf",
+        "source_sha256": "4be7f3e4e27986dc84e9d5b46df93b36af47c75d6f603f44164c7ee29a85a295",
+        "report_published_at": "2026-05-01T19:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "389213056721012a4332d372d4c348c59db21b3c8618cfc5fe8f22617ac6c3b6"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "4a9bd862c6c04eae36da7410d5f339d721e5f4889f6ce0352e9c7831e1c0a75f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=03_30PM/Injury-Report_2026-05-01_03_30PM.pdf",
+        "source_sha256": "a0b9736ea72a1420a83d07fac0fd6a47ad4d901d62aa921b07569d58acb4f9db",
+        "report_published_at": "2026-05-01T19:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "346e1980d66c8f387cc0f8ab582c80ed3393dc8d671b1f34aab63688df41dbe1"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "ba75aea0ac57914be556cf6b43fcd6d96172291d7a99f5475fc2ec5cb44c3918",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=04_00PM/Injury-Report_2026-05-01_04_00PM.pdf",
+        "source_sha256": "b5ffb328b68049eaa0d4fcd89f88e49ba36045ba7d70595ad9735f8f10568aad",
+        "report_published_at": "2026-05-01T20:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4f84d8cf7184feff2af3aaad878e7a0ba58c003bd5c8f9dc7e5c08f41ac26349"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "53d878fadb6757176c4a0cf542e5879a2d95c3507bc2610171e23dcc32abfddf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=04_30PM/Injury-Report_2026-05-01_04_30PM.pdf",
+        "source_sha256": "0296f51c91d2e5d410429a15f26432dd579472c8ad0e9bdb2fc7b05ae1031ddc",
+        "report_published_at": "2026-05-01T20:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "245ed457f845051383b39876781920a96bb4f500d0df2076ee438b820c924a60"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "2d44eca62d43fd5c0fc337df1b53cd16bef6aaa80663a06d57696e2b0b104e2b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_00PM/Injury-Report_2026-05-01_05_00PM.pdf",
+        "source_sha256": "a631e3040929023d2ba687d9f8ce7d0b9a71634c1e62c18d9164cbcdc87f40ea",
+        "report_published_at": "2026-05-01T21:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b80d8b915b8f755f1afc2882a38534522de8e33c42d84cf7dd38d861098de220"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "e22ff96b76bea2d76fd840b384527cddc6275ec9c6efed5153238e45aeb35a53",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_15PM/Injury-Report_2026-05-01_05_15PM.pdf",
+        "source_sha256": "30f572a2697a687d2373f6332c4382ce67ebe466ec570034e00c90bde3254a87",
+        "report_published_at": "2026-05-01T21:15:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "22691b702fbd7f0738b4b7572936eddb281e18b0423d05bab8425cdb54fbb075"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "6c3bf87e79d4a43ccf82d7711449aa7abbbe74f09f41f1b652591d36e237dd98",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_30PM/Injury-Report_2026-05-01_05_30PM.pdf",
+        "source_sha256": "07404b35432eb63b2ddc2bd67e4f8d91ee16c0b36a62860463dda61f2bb4bf80",
+        "report_published_at": "2026-05-01T21:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1853f3f54ffc2f3c27bcd685d43a2499d9ac083c17d74d6b27234332a1e70838"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "fb5cf806c481fb6f2d6bd563d468543673700ae2d54694ae3e431c0e0506b06e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_45PM/Injury-Report_2026-05-01_05_45PM.pdf",
+        "source_sha256": "f38135b2239c02e49c42be72f4d41df76ae5f3775e4cf04666b8d72d3344bcc9",
+        "report_published_at": "2026-05-01T21:45:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f8b68df1d4d98a10d7b12f24a8b5cc1b54da0e04066f0d7e899af4e2236b2bcf"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "d47215cc08de61f3f47ebe1ebadc798d1e025faa5c77eca9da294d865c947150",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=06_00PM/Injury-Report_2026-05-01_06_00PM.pdf",
+        "source_sha256": "1dee8d18b6e142bfefc1a65e5621734edd36f2a109c9a03493c3972e4b9414f4",
+        "report_published_at": "2026-05-01T22:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "caae80fd8eee5358f6f1b065f765eba0c0c50fc00c8b67944b72ca26a7484f31"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "e8086bd0fa01af42857c6f7599b56e7e46c562cfe0299c0c69a4cc452e464315",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=06_30PM/Injury-Report_2026-05-01_06_30PM.pdf",
+        "source_sha256": "07bb6d12e9eef8d05119c2cc133840a5b53c845478eb7087e0d3cd2df62546c9",
+        "report_published_at": "2026-05-01T22:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b2ee1654b016bdf306cfa152833c7de1554aab7ea20e7961ba3da0f3d27028d9"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "fc0a8d71e484d99cf3435a437e1a3cae728b42ee77ec5f390bf4fe71134603e5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=07_00PM/Injury-Report_2026-05-01_07_00PM.pdf",
+        "source_sha256": "03b0a9d9cb0e78b9a8eaa6fad01239f47e22e8fda0a404b1c2b65c57f9284424",
+        "report_published_at": "2026-05-01T23:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d21e9c3f8bf2e7c496c428d20b61626cc5736c7f26c7bc6b14873b8d8ba149f4"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "ae9f5380b670ce9c2e65d03789e7ff950c7afbdf4d206a82a4cf07fb8b88ed20",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=07_30PM/Injury-Report_2026-05-01_07_30PM.pdf",
+        "source_sha256": "0f99036b048be542eae19815bb37dd935d6dee29705c78698cd44a36615cd2e7",
+        "report_published_at": "2026-05-01T23:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "636b949ce0c2aa71aae915bb56b4aee6993a52c41008258d5a8fe47d33c979f0"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "03d477f987825a5dfaaede58c5a75044013da8c749f5a994eaaeb53c599d515d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_00PM/Injury-Report_2026-05-01_08_00PM.pdf",
+        "source_sha256": "90b4155dc5b6aba2348a2499a4e1937a4b943f4269251afd0230074675014b89",
+        "report_published_at": "2026-05-02T00:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0845fb761d7c57f00d39a1feced2528174d5c05cc0aa480e7ede30b6d19c8635"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "b1098ef6341bfbee34442cd1f3b749cef75921f8a3c0fb3bf8aa569819a1ebab",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_30PM/Injury-Report_2026-05-01_08_30PM.pdf",
+        "source_sha256": "a7626e505401085b5b2f1947e6a7d1ec1bd4b44658f94c55e9957d38eb18a16d",
+        "report_published_at": "2026-05-02T00:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b4144d8cb6cdf0fdd6dda0364eb26960515cbd8d02f25d6cd67d784ced7ffe04"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "367d8bdd080ed802de98263b83c4347a71a6eee84becc139847b78ecb03b48dc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_00PM/Injury-Report_2026-05-01_09_00PM.pdf",
+        "source_sha256": "1515a66539097b1ce9b9cc3be2e5279812aec62ba8c840ce3762c1f12930c9cf",
+        "report_published_at": "2026-05-02T01:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4ed0c8ee5eac07e5c29c946b615b0ee84cd015a4e8c28d5ad7ccdd813e4ba1e8"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "0bfd10f9a5d1f5013be38aaa1d8f0a0be69a82d224dc1b5083e687ac72c47874",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_30PM/Injury-Report_2026-05-01_09_30PM.pdf",
+        "source_sha256": "b2a573d96e46b18be067f2b1414eaf951043d0654a0db1120ab0a9bdcfc41b2d",
+        "report_published_at": "2026-05-02T01:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d936af4560a28b313aba7221481eadc4d0822617ae2e917ec6eae7b66dc94ad4"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "7066063cf185eb30e718711c5e7a93e9342e6e452a0ce9e4897d51b9815c800f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_00PM/Injury-Report_2026-05-01_10_00PM.pdf",
+        "source_sha256": "f50f10522b10c47537e6915edee0819ff0ab5b2a6e5c2b19e57eeaebb0be5cba",
+        "report_published_at": "2026-05-02T02:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c80067bc35e2bcdcae9f01466a43cf5773087ae6327b5c9f4ed9b047b7f12cdd"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "338ee3f72ae65ec582f6a82e745932ac2cf20b381765a67380b2abda0da12f2b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_30PM/Injury-Report_2026-05-01_10_30PM.pdf",
+        "source_sha256": "47edadaf15f9da65a3242a57e96ccba01afc9371d779fd8eca479bc00aa5107b",
+        "report_published_at": "2026-05-02T02:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b4e35aacbe42ce410109173ca87e1fa6d1a89ed7d48ec8c5ae5ff77ddee1d740"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "867003015d9b17145cff92021b8046247030a1e541cc7bd3bbdfa1816c82d7ed",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_00PM/Injury-Report_2026-05-01_11_00PM.pdf",
+        "source_sha256": "7051fb21e1a175d845be06aaea1cbcee52e7bdc41ea76d9993085ef73472f11a",
+        "report_published_at": "2026-05-02T03:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8b141278dbc4e3402cf301348dc8adf564461a95d4efd73709c9a51d7775eb7a"
+      },
+      {
+        "game_id": "21681995",
+        "source_game_block_id": "64905f4b6463dcbf22cbe431200bcbec87afc740fa47f1b99bc8fc1cd882dac7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_30PM/Injury-Report_2026-05-01_11_30PM.pdf",
+        "source_sha256": "377f5f11b13fb87ebaef8df86d145d36d455c1ecc8e12a6d193a60a42ed26b61",
+        "report_published_at": "2026-05-02T03:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "CLE@TOR",
+        "away_abbr": "CLE",
+        "home_abbr": "TOR",
+        "away_team_id": "6",
+        "home_team_id": "28",
+        "teams": {
+          "6": {
+            "team_id": "6",
+            "abbr": "CLE",
+            "side": "away",
+            "nys": false,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "TEAM_BLOCK_MISSING"
+          },
+          "28": {
+            "team_id": "28",
+            "abbr": "TOR",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ingram, Brandon",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Heel; Inflammation",
+                "page_number": 1,
+                "visual_row_index": 5
+              },
+              {
+                "player_name_raw": "Quickley, Immanuel",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hamstring; Strain",
+                "page_number": 1,
+                "visual_row_index": 6
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e5fa0e2a79d85908f31e946738029b2131a6558386901481f0a4f75b02d69e32"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-01T22:00:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "TEAM_BLOCK_MISSING",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 0,
+    "home_player_count": 2,
+    "selected_source_game_block_id": "d47215cc08de61f3f47ebe1ebadc798d1e025faa5c77eca9da294d865c947150"
+  }
+}

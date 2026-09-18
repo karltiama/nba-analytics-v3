@@ -1,0 +1,45 @@
+{
+  "fixture_id": "syn-inferred-only-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "inferred_only",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "SYN|inferred|Ghost, Player",
+  "input": {
+    "game_id": "SYN_GAME_3",
+    "team_id": "3",
+    "team_abbreviation": "LAL",
+    "game_date_et": "2024-01-03",
+    "season": "2023",
+    "player_name_raw": "Ghost, Player",
+    "name_key": "player ghost",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "none",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "QUARANTINED_INFERRED_ONLY",
+    "player_entity_id": null,
+    "serving_player_id": null,
+    "confidence_class": null,
+    "provenance_category": null,
+    "independent_source_count": 0,
+    "quarantine_reason": "INFERRED_ONLY_NOT_ACCEPTED"
+  }
+}

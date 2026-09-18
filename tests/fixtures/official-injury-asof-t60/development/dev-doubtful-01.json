@@ -1,0 +1,1971 @@
+{
+  "fixture_id": "dev-doubtful-01",
+  "kind": "real",
+  "split": "development",
+  "category": "doubtful_or_probable",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "18446827",
+    "season": "2025",
+    "start_time": "2025-10-23T00:00:00Z",
+    "cutoff_at": "2025-10-22T23:00:00Z",
+    "away_team_id": "9",
+    "home_team_id": "5",
+    "away_abbr": "DET",
+    "home_abbr": "CHI",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "e92ff35794c04fe1891b1cfa7ac4bf64b601249bdbaf54d66b6104b609f12072",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=08AM/Injury-Report_2025-10-21_08AM.pdf",
+        "source_sha256": "21d2497d1c3f21989ea28d4f4aa4feef379ee51dcafb5f4e591ee9452bfcda7e",
+        "report_published_at": "2025-10-21T12:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "60082df53a0f5bdac453eae2d4b878a4cb5aceea82b12691d4686129ce397196"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "e4a7b6b34f9e878d20d8245fafc297fb603a369f6c86cbb00b750df4ddba05cb",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=09AM/Injury-Report_2025-10-21_09AM.pdf",
+        "source_sha256": "f148b3a2bcdb58f071925643a34a4c6d3495f95f60e01d835176bc632847a095",
+        "report_published_at": "2025-10-21T13:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "495f42163d60c017a5dc82b1860154d191df31324fb068b06af910db8593383b"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "2d21fd2dfc3392f00ab46007847b14153e241f572e012b0bdb779aa77de65d0f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=10AM/Injury-Report_2025-10-21_10AM.pdf",
+        "source_sha256": "b2b44c75f18dbf0a76ea51d093bb200305573a830726312f60d4b9b4fc722735",
+        "report_published_at": "2025-10-21T14:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7e52dbd373fddfa37cf1149d58aa134685a9dd4125b49ea32f61a9865f34fac9"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "db2703778ded6293adec76a62caebd291df7306faa6054e5f819fd4b792e8209",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=11AM/Injury-Report_2025-10-21_11AM.pdf",
+        "source_sha256": "ec96c733d36caca41a6d426ecba76148051973bb34e904777b2a864864d65fcd",
+        "report_published_at": "2025-10-21T15:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a5e5f222770fa45a47f28181984283e42d581207376eed315dc2a1d4e49cfd5a"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "35c5a36801254f4405c9494aeb4e8815db9a1736fa6441a7c9b97e166f4948a9",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=12PM/Injury-Report_2025-10-21_12PM.pdf",
+        "source_sha256": "4dafb0e52017670fa5b8d9d608ebfef33e93f4f9f59d82c91575c0848e07c17d",
+        "report_published_at": "2025-10-21T16:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a68cf4b30aa85dd98df643391258e5423d46bf85db8a95fd25e361dcaa6bb55e"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "15ff1224ea6c0f190db2f71de6f13c5c0b055277eae1d8184e7e0b735e2e34b4",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=01PM/Injury-Report_2025-10-21_01PM.pdf",
+        "source_sha256": "5be6f259e3634c8986743ee13a1c6b61a0a6d134490b4b59b8a4d6e0c4b58194",
+        "report_published_at": "2025-10-21T17:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "dea19dbf895ec16418140f21bf23c4d5c3c30e9479bbf58277254293dfe85d97"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "43851dc2846cad4bff7270c5d3c575b7223a572106761e23453b40d16798555f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=02PM/Injury-Report_2025-10-21_02PM.pdf",
+        "source_sha256": "4f3cb4fb49cfe8985e1f9135f6a1fec0f82d6d146dd1bb930314f8f7009d5f43",
+        "report_published_at": "2025-10-21T18:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "eb14b6f59047811dde1228de3307ad7eb3ed1a5bf485c76b917f1582d79cb1ac"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "cc2f8b8c2348b24fd316bd91990394419dceead26ee110647dd552da60b9f3f6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=03PM/Injury-Report_2025-10-21_03PM.pdf",
+        "source_sha256": "58679f5299bafe303a9988bf51ca49d3a42d575ef6619507bf9e7f79188862f2",
+        "report_published_at": "2025-10-21T19:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "0853e99326c51977bf2f833be4fd75f9c818b724fd1e25e3c0b1f83c7eca7d91"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "6620385bf4f3be1184059e555d067cb76fdd058b38180f72f37f328c5d279e36",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=04PM/Injury-Report_2025-10-21_04PM.pdf",
+        "source_sha256": "bac296e797a343b3508569355ccd106385db25f7c37950dcdb94bdf84aeb118d",
+        "report_published_at": "2025-10-21T20:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a7f4dba8d1486f923a1c8145f30072f5c6de7a25cc052c97c0b22a5917259e8a"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "6920ed4ba4dcb23a5a12cdb47717903704dc47b7127d5a196d01bfa68bed1633",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=05PM/Injury-Report_2025-10-21_05PM.pdf",
+        "source_sha256": "8485d77f7a327f862c7af8501a0e8ab650d5603bb9e904016a02ebb8db336ec6",
+        "report_published_at": "2025-10-21T21:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f8feb6f26ed207eb10637dd4f2ff293449b2ec5890c8610c3e2967331aec7073"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "b8daedb620ff17d1e6577c4e515a8e6be9c4919b8bfd413f011ed4685881364d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=06PM/Injury-Report_2025-10-21_06PM.pdf",
+        "source_sha256": "8a7893637086d2eb7e1d547beb518d6a0d6e431cb1a7e8b057cb6dca7ac993cf",
+        "report_published_at": "2025-10-21T22:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "044758c189ef4669c803856511a44972087f36340980a06aa303ded5703def46"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "866fdf71dd95013926926a73545f80dcb65c6c7dba992c529529e569dd0415cf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=07PM/Injury-Report_2025-10-21_07PM.pdf",
+        "source_sha256": "9618ecfff933e6c8b70db936746abafceee2175ae5003e7fe3b9c89b4a7c720c",
+        "report_published_at": "2025-10-21T23:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "813c2d7ea3570ff7faa518128613c170007d0e8c5c3bd36cc82ddce2bec3c6d1"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "fe70f3d01b033cbd98c0c7a479f99f7483bb97299e621faeaf9c8903cc6d1cc6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=08PM/Injury-Report_2025-10-21_08PM.pdf",
+        "source_sha256": "e9cab97cdc1a55f6f87ca3c2270578be7a8dbde9408a3a1ecea98cd5dcddea00",
+        "report_published_at": "2025-10-22T00:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7e47954835a778930f9e6d0e27dcdee63a270158083f3ac7a97963f37d05008f"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "4e4c4e44acf0f60b4b24ea8bd368a10b1ff63094a171c4eee908174c646cf3e6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=09PM/Injury-Report_2025-10-21_09PM.pdf",
+        "source_sha256": "1e5dd3a478b04615e8924622458a482c0940386a14d79b62de0b2eab8cd82fe7",
+        "report_published_at": "2025-10-22T01:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f5651598e78620bb124d2888e8b2891ec2887fd0360f031b7d347d32c31a8f83"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "a73ecf9ab43fdfce6843a29756685f8e0f62faf33937d2243d256798c648add8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=10PM/Injury-Report_2025-10-21_10PM.pdf",
+        "source_sha256": "74f976baa5f1e26d9342557d9c14df3dbcef6e98ca0f5144761452837178ac79",
+        "report_published_at": "2025-10-22T02:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d87a77dc8b323e94dbaf4ea149e7f1a38bf8965804fc44655506f53ef6d14049"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "a46450f327e0ad872674fc04c7a029755210b37a7f8fac8a115fd8fec45e43e5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-21/report_time=11PM/Injury-Report_2025-10-21_11PM.pdf",
+        "source_sha256": "dad083fb499c644d8158032b66d3e81d4f56c529b5f18b858d5cc8b6bde85731",
+        "report_published_at": "2025-10-22T03:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 4,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 4,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 3,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c7a542f15e3bd5f1bbaf06cadf3213222ad4176fab370947527e2d42bc2ea959"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "05b8a46b4fdc657b076c75f63ccdf0439d6454403056cec834f91bb2f00a6e17",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=08AM/Injury-Report_2025-10-22_08AM.pdf",
+        "source_sha256": "c48b08f93179287f3065ac480a78f727745a65983a0dd77f7bb6a04ad62f6ebf",
+        "report_published_at": "2025-10-22T12:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 2,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3112d0f10a5085a97bf1ae137bd11641432774ba17c2bebee844e024c47bf314"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "fc087d72df3f94faea86e7407fbe2509a5fd0d54e2f969f5f6060c123472f323",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=09AM/Injury-Report_2025-10-22_09AM.pdf",
+        "source_sha256": "9131dde7bd1eb876d5ee228f8c234d85d42f4c57269409ef4bbabcbf0730a1ab",
+        "report_published_at": "2025-10-22T13:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 2,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2a13fa724adce501bc930a4f13040a7813d10088ba78b42db06dbfa3af1072f3"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "fb1c579c723aa3508283d647f8d7ebf2f2e9df3eba7e096e97722410cf0ca626",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=10AM/Injury-Report_2025-10-22_10AM.pdf",
+        "source_sha256": "c0d93dda3a9fc6337f93db78043e991e6c6a0e281361b447d66495cda2795aa6",
+        "report_published_at": "2025-10-22T14:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 2,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "40aa8c5d43112543f542f8c9beb55c5901b973a72c048cba0972643e08684704"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "a8b67f80d249baec104e94609fec621ccd2121c93e9cd3bcb771e0056c3aea95",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=11AM/Injury-Report_2025-10-22_11AM.pdf",
+        "source_sha256": "67621a279a9f50fbdbf5707d9600898626602ed4942f378d306473810f53c281",
+        "report_published_at": "2025-10-22T15:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 2,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7082ee75a81b47707530172ddd09a097148fc71785922278b4210e3d1693eb5d"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "f19581b6df10b093c78ba0bec35705811d662638d3c38a1b8c4c1e0827abcfa7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=12PM/Injury-Report_2025-10-22_12PM.pdf",
+        "source_sha256": "edbadcfdcf732804f9d2d7150cad1bde4c6a6c377af91e44ca6b515aaf522b73",
+        "report_published_at": "2025-10-22T16:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 2,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "93897ad10d1effce6eb8567028179e786cbef2103fc74960fa610a2536839464"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "4f68fe798f0c322b5eec12f8e08ab0d4ed55383678579dca1518715a5c01c9df",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=01PM/Injury-Report_2025-10-22_01PM.pdf",
+        "source_sha256": "b698300e55cd8a1d34a182d1c41c76faa52fa6e52fb950969c71d8476172a33b",
+        "report_published_at": "2025-10-22T17:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 2,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d6afb00c9ee104cdc4f2da51f3ce22c69e2dd46717e595a46d7484396b01c2ff"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "de0fc9b55fed9e1361dc540c2ec069f2d1b5bbc162f09e2f3fd7356fcb48ee6a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=02PM/Injury-Report_2025-10-22_02PM.pdf",
+        "source_sha256": "833aa5635ee1aed7e16bacb6112777fc4725f028a7cd4328e0e5226676413d65",
+        "report_published_at": "2025-10-22T18:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "390521bd9aa7a94a2f16655d377a4695f5cb2b8d7270d231170fc8eacaea60d6"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "ac7e1777f6035203d7725ecfb3fec2a1db656eaca2403c87e44b1d435fe22c34",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=03PM/Injury-Report_2025-10-22_03PM.pdf",
+        "source_sha256": "0c5104a7bad87b88775caa5f5e2bf25690b56cbf599dcdf3c724fa1aa3f3eb4b",
+        "report_published_at": "2025-10-22T19:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3290ce82d99d22e28f40999d2c5ecb3afb66b17f251145ac2a3d0267f639f858"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "a4bc3ebc1b7fcbc300b8065dae9fee4a1a90dcd68c0030247113e6916f9d2420",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=04PM/Injury-Report_2025-10-22_04PM.pdf",
+        "source_sha256": "e3d9984c378e457fb07b2c8de0242abc1b1f53a0ddadbdccf4e6d56da8c21344",
+        "report_published_at": "2025-10-22T20:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "67811ab3b2f897414ce4222cea517db089ce6e95610753b8dd87286ae3bbf976"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "222a3a9818ff4756420667f9d08cebe11cf51cb15933f15c6e20265674b30150",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=05PM/Injury-Report_2025-10-22_05PM.pdf",
+        "source_sha256": "03864a0abb77643f0d3a5d7e050fff206e60aa38fc78af1953006ee0d06d2259",
+        "report_published_at": "2025-10-22T21:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 2,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 2,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1468c2156fce425821ddb1b5a454f5e67bd4fba9a49efb3f1def63edfc483739"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "7d267f3d21ad1cb3aa96e0ccde4a3eaca3ba2d8898c4826872985346a176ff08",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=06PM/Injury-Report_2025-10-22_06PM.pdf",
+        "source_sha256": "cabb5878ecf5622bee9be9082b835cc53c0e461af8d9173c22e3c6a305c41a54",
+        "report_published_at": "2025-10-22T22:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 15
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Probable",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f6c0cb9719e1ad9fdaf08fa0f55adce07f648bc227d8540e7b761789922c255a"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "57cd9cd748458e7a3d50ba941cbd4438b0496315ce52b94bea42f394cb2796ce",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=07PM/Injury-Report_2025-10-22_07PM.pdf",
+        "source_sha256": "a99d0bdad3f2730ba824de9b9d8e6cb03c680b18973498a4209e9de5b91257b9",
+        "report_published_at": "2025-10-22T23:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 15
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "90b7d96c315f89b532ee21a3ccb171527c98ac57006d0a794c48c34f99296aba"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "360f35633d5a691bb016f87e867b4e7fd9d4126a92286cb60992766bdf59266f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=08PM/Injury-Report_2025-10-22_08PM.pdf",
+        "source_sha256": "9466f19ec6f7b37bb04cb30892a5fe57f0187950a39bb509521610203959324c",
+        "report_published_at": "2025-10-23T00:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 15
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1fdd3f7d9d586e83a83e8414ed6b8d0551843705d01b361a25f54cb2583c9406"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "086d55fcd3b18e1bc778a6c7b6807b5b9759b476a70a2ae2532d4a48b13e294b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=09PM/Injury-Report_2025-10-22_09PM.pdf",
+        "source_sha256": "4f55f3d22535815aca3564b1151ae7fdccfa769ae0588ae2bb4b6b034e827748",
+        "report_published_at": "2025-10-23T01:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 15
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8a0e6ef113b0187c85a1e40e44703aa8ce53de5a3954dc2cdbb85fd35f2fe769"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "ef27c604dcf253129ab441e7aef6fa1dc8e25a40b3ac3ab068826dfd52e0d522",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=10PM/Injury-Report_2025-10-22_10PM.pdf",
+        "source_sha256": "0347a9a506a8849b2adbcb110047fdd2cc97645e0cc285e7cad753aff1a54ca4",
+        "report_published_at": "2025-10-23T02:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 15
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c7915d5018036581fc12ba176384dc5eeea3d3351e9fcdda089dddf488ea9157"
+      },
+      {
+        "game_id": "18446827",
+        "source_game_block_id": "929f9f0eb3a9adcd0e83eb9d77eff5963144a9f0f19b34bc0e13b35bc3c840e2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2025-10-22/report_time=11PM/Injury-Report_2025-10-22_11PM.pdf",
+        "source_sha256": "0e8c59c24f07eeba397a986067f6193a6acc672b93c2d610b85d7346b432739f",
+        "report_published_at": "2025-10-23T03:30:00.000Z",
+        "game_date": "2025-10-22",
+        "matchup": "DET@CHI",
+        "away_abbr": "DET",
+        "home_abbr": "CHI",
+        "away_team_id": "9",
+        "home_team_id": "5",
+        "teams": {
+          "5": {
+            "team_id": "5",
+            "abbr": "CHI",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Collins, Zach",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Scaphoid; Fracture",
+                "page_number": 3,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "White, Coby",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 3,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Ivey, Jaden",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Knee; Arthroscopy",
+                "page_number": 2,
+                "visual_row_index": 15
+              },
+              {
+                "player_name_raw": "LeVert, Caris",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Right Knee; Soreness",
+                "page_number": 3,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Sasser, Marcus",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Hip; Impingement",
+                "page_number": 3,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "f2d6f010c9dbbe71abbaed8f209ef32f49472a5b79ee8faca2dffa45019b4c58"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2025-10-22T22:30:00.000Z",
+    "snapshot_age_minutes": 30,
+    "age_bucket": "AGE_16_30_MIN",
+    "exact_cutoff_count": 0,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 3,
+    "home_player_count": 2,
+    "selected_source_game_block_id": "7d267f3d21ad1cb3aa96e0ccde4a3eaca3ba2d8898c4826872985346a176ff08"
+  }
+}

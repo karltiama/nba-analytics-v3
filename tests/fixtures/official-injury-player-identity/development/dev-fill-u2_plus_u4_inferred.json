@@ -1,0 +1,51 @@
+{
+  "fixture_id": "dev-fill-u2_plus_u4_inferred",
+  "kind": "real",
+  "split": "development",
+  "category": "u2_plus_u4_inferred",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "1037593|14|Hood-Schifino, Jalen",
+  "input": {
+    "game_id": "1037593",
+    "team_id": "14",
+    "team_abbreviation": "LAL",
+    "game_date_et": "2023-10-24",
+    "season": "2023",
+    "player_name_raw": "Hood-Schifino, Jalen",
+    "name_key": "jalen hood schifino",
+    "ever_out": true
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "unique",
+      "playerId": "56677835",
+      "playerEntityId": "0e6d8cbd-b2d2-5d1b-a523-ff51ae92b7c1",
+      "minutes": "00"
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "0e6d8cbd-b2d2-5d1b-a523-ff51ae92b7c1",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_CANONICAL_ENTITY",
+    "player_entity_id": "0e6d8cbd-b2d2-5d1b-a523-ff51ae92b7c1",
+    "serving_player_id": "56677835",
+    "confidence_class": "B",
+    "provenance_category": "U2_SAME_GAME",
+    "independent_source_count": 1,
+    "quarantine_reason": null
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_UNIQUE_DNP_00",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "UNIQUE_CANDIDATE",
+    "serving_projection": true
+  }
+}

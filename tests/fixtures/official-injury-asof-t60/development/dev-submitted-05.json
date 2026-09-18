@@ -1,0 +1,3855 @@
+{
+  "fixture_id": "dev-submitted-05",
+  "kind": "real",
+  "split": "development",
+  "category": "ordinary_submitted",
+  "reconstruction_version": "official-injury-asof-t60-v1",
+  "input": {
+    "game_id": "21684812",
+    "season": "2025",
+    "start_time": "2026-05-01T23:00:00Z",
+    "cutoff_at": "2026-05-01T22:00:00Z",
+    "away_team_id": "9",
+    "home_team_id": "22",
+    "away_abbr": "DET",
+    "home_abbr": "ORL",
+    "source_content_absent": false,
+    "snapshots": [
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "9457d30de0b4e2963ab70ecd2e4d33c86c580a91c72de1dec1d81c7695a5e878",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_00AM/Injury-Report_2026-04-30_08_00AM.pdf",
+        "source_sha256": "495c4aca0b61a2a6bb2c0c86a3a6293eddfab23d89b58eb5ca821505cb54a1d6",
+        "report_published_at": "2026-04-30T12:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "fd7465b95ce38d073954c17a8063e300e5321eda06442e07cf8477bf6c9742e7"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "db6244cf56502fed325323a87d5183ac45dba7c0e66718fe4acd0e0ab8749b2a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_30AM/Injury-Report_2026-04-30_08_30AM.pdf",
+        "source_sha256": "aec451d848f73c62341d03662f3d0cd0414fa2ff67c42f8dbe27933db354e194",
+        "report_published_at": "2026-04-30T12:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "187f16cf66314e2d95f66fb8633bc02389cc92b1ae8068e532f79117070594b2"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "bdd2320cf752eb6fd41a0c9dd898ff7e300a1b79509e243afdc84c38c052e64b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_00AM/Injury-Report_2026-04-30_09_00AM.pdf",
+        "source_sha256": "3224be0244c7dbd31e80d330c6496accdb9eb34c13164fc4243338d21d876692",
+        "report_published_at": "2026-04-30T13:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "0a9d7202b2c0aefecfd4ba33831b31eae4503a95aa7110dfa9b644f4bba9d1a0"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "d6ac5df5e01311dacbd8bc90c47da0f5714dc3b7144c4ab5ef80165d93291ae7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_30AM/Injury-Report_2026-04-30_09_30AM.pdf",
+        "source_sha256": "8a54cfdf44c684775be6a1d7d51c3afd6831df1e42f0c4536681182ca9f0cdb0",
+        "report_published_at": "2026-04-30T13:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "b2ffe3a1f20102dd880b4fc937b3395aea3b8f0c00354df88320dc8fb57cdf77"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "d68751b775cc6d80bdcf933fbaf49a6a4b182a0a96796657f45fb4fca148b657",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_00AM/Injury-Report_2026-04-30_10_00AM.pdf",
+        "source_sha256": "a329d89cde31ad491209bc55ab8b0e396fdd428df2b5060c40e965d74a3dbe37",
+        "report_published_at": "2026-04-30T14:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d8c0bdb1839468a66070d631004cc671c6658197e5ffe2c310552e6234ae2fde"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "c7d38cf97cba35e3ea3124f84f67d6a19ddb721f1d8052a1a82e530c346811cc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_30AM/Injury-Report_2026-04-30_10_30AM.pdf",
+        "source_sha256": "6cf6f9e5496c5d4fad5c7c6d555d6a4ec13b66104628109087bac10cb68e9a4a",
+        "report_published_at": "2026-04-30T14:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "4f7fb3de3fbd06f450cd06cb8191b480a8423a1ddea9ff61ebae0005eb2caa39"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "e04f8960c6f3bd94c5bbb002b20462909b943906b7f421e4878fc9623740ed08",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_00AM/Injury-Report_2026-04-30_11_00AM.pdf",
+        "source_sha256": "7040c07b124333c77d5ee125c46930f22d3106847a61beb880be5b871ed8027d",
+        "report_published_at": "2026-04-30T15:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "278db611c736079ba3eca4475519e6bd099f6b7ec98a6ec99bd28096f0c9e42f"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "0681f72e30e1052ab343085ac082f35d3537dfec7f553a4d3b128b20436d6a02",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_30AM/Injury-Report_2026-04-30_11_30AM.pdf",
+        "source_sha256": "e91d2ef511ce57c8ae1f1d06ae06afec082dac3b9ff308795a3563e184766357",
+        "report_published_at": "2026-04-30T15:31:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "d7a8dd6305248cc204abda32994c1faeeae7ec4a182ace4a14c019aa5d59a99e"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "270270b371124b144a756085fc84da294be5f2495c947cc47c60e8f1f105f34b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=12_00PM/Injury-Report_2026-04-30_12_00PM.pdf",
+        "source_sha256": "d12c1180bdbef9346342a06990720a1c90a94259231b6a26f912ca0911e540c9",
+        "report_published_at": "2026-04-30T16:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "546ad9dce89d070ad67ae9cae7ed2ce6d7c4686be8f094199d16f35b493d2044"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "7a5766f975af223a99446fe0d610546462274201344a5a7c36f57016ce4fd975",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=12_30PM/Injury-Report_2026-04-30_12_30PM.pdf",
+        "source_sha256": "5beea267f09e29c950ff50e1a110f61c400757f71e4fb7ee1d84d6a50b5f4e92",
+        "report_published_at": "2026-04-30T16:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "01a85967659cabb056522f353b008db93e9e0e116d734f8d5e8c85dee5dc2798"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "97bab4d8030b171eb61d7a06577bce58a7698a45dc858655b7873eb49e95a51c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=01_30PM/Injury-Report_2026-04-30_01_30PM.pdf",
+        "source_sha256": "ccdedb39c5ec04ddc33a5f27b1c219212a518143cf49d28dc81515be5bd3e23d",
+        "report_published_at": "2026-04-30T17:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "a17559df879de45b779a51b3849694cb83792f4ef9397de15ddae979b7066ae6"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "105d7765b6ef65eb5ab861380675618ebb3983c6586a7c2c61db551b107e6834",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=02_00PM/Injury-Report_2026-04-30_02_00PM.pdf",
+        "source_sha256": "89782e55429050c09da0db702124000141456a75815ffc6b976969e4d4e4fbe6",
+        "report_published_at": "2026-04-30T18:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "e335c69b1543eca4bc5d40e69a469f871d0e8cfc80cb9722c199cad2ae055bfd"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "b544910a6d49a86e17c89df9c79a178d52e624572f97f75bade7eb9045bd8cb0",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=02_30PM/Injury-Report_2026-04-30_02_30PM.pdf",
+        "source_sha256": "54dd275d2a56b7dc6d3b752812e28adeedee02c513823abcf2844b6aafbd66fd",
+        "report_published_at": "2026-04-30T18:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "f7a44700d4565d552a33a9a9528c0975077935971ea499f892a74b7e66d4f746"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "2fbdd21b421930d2b1f58e5dccb1af39efb06784cb28c2650e05a65633b03ff1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=03_00PM/Injury-Report_2026-04-30_03_00PM.pdf",
+        "source_sha256": "eedead605c1065779fefa78f0460d52520f64ea12913c029fc66803aa575e70c",
+        "report_published_at": "2026-04-30T19:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "c258c05a93aba3262c7f319a47c95ebcdc48224ec8bf94ef2988ae7846457cfc"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "5e79770d25bdd4d6e0f33d775ca034c0311d0bd862ee277b9c7c7e4a9d382dc1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=03_30PM/Injury-Report_2026-04-30_03_30PM.pdf",
+        "source_sha256": "9d950d598695dbb98cf0810e595a783e89d0d35b1570d11a3bd68c57a2caba31",
+        "report_published_at": "2026-04-30T19:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "7dce2d424edf526b9d2e606a90164c43c3a73d04a7216c3728011f6513bf8d1d"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "b0f4e661ce0e11e96dd6b91f657d235181605060a6477e2f3be7374e83b24f7b",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=04_00PM/Injury-Report_2026-04-30_04_00PM.pdf",
+        "source_sha256": "af6937b44c8881ae25d03e2a259387b14da71450142b5686c53f81c45b223c94",
+        "report_published_at": "2026-04-30T20:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": true,
+            "players": [],
+            "structural_conflict": false,
+            "state_hint": "NOT_YET_SUBMITTED"
+          }
+        },
+        "semantic_hash": "b8e31e78e6d1eeb25bed3cc2df0d81a249a5035c6b8d9b9240f43af6d9cbbaac"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "5c0daf765a6a6b761037c6628a30f87a26617da5606326c6a93e97ebdecf1623",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=04_30PM/Injury-Report_2026-04-30_04_30PM.pdf",
+        "source_sha256": "56f7f8252c05f2b76b1b6c755b92d4b961749f6c11ad4883bb302ac0f62166be",
+        "report_published_at": "2026-04-30T20:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2d1c71df1ea6d9e5a120777aa781b15648dcdf53e83cee17e1147bb8fb209cb7"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "84aba36711f279ebc07d76e4f2760c74b8c1c3a217a7f0a20b594e4f362f0b51",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_00PM/Injury-Report_2026-04-30_05_00PM.pdf",
+        "source_sha256": "97128ea9840199f254a13b4c2400e88fb8dfc5b36bf1bec3c329c49c6692a8c5",
+        "report_published_at": "2026-04-30T21:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "85f12c37121b1e1929ccc72566b184be47a0287621cd2582ed73951cce77f551"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "6b2760543c4239e3256b318208e51466ffd877ce6046f091df550f44985d2911",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_15PM/Injury-Report_2026-04-30_05_15PM.pdf",
+        "source_sha256": "7937e0b9f44c83a3cd53fecfc1e1f5320e52b1bd16a89dd505f5bcbb301c180b",
+        "report_published_at": "2026-04-30T21:15:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d3a7ea8026e25a6173d5d338bf6ded149a8bd671d10e035cc010d0ed81b8e8ba"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "9e2b407cb754fdde98b36428e3c8b6a2b386d79ec447e5849c76f3435421d219",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_30PM/Injury-Report_2026-04-30_05_30PM.pdf",
+        "source_sha256": "3027d9ca85bb53f1fa7156e3282d7d2d31c75ab1195def38d0ae9808d6f06ec5",
+        "report_published_at": "2026-04-30T21:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "257cb9c528d1d03f2a70956add5f26c6884e63ad4150e6ac7792967f58a4193a"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "2d95dae5e32e8a51b7075d170c61683e7a75700129f21d926f182e68b7950a11",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=05_45PM/Injury-Report_2026-04-30_05_45PM.pdf",
+        "source_sha256": "0c9a8b0a083ecebf4136700f834aed8032fed03edd5e7bcd2a65a38d2c632206",
+        "report_published_at": "2026-04-30T21:45:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "fc663d7b6d4c864b7678325b480df2e7f4b94ddffc489294675f1c03b8b409b8"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "389cd1b5c747c0df095a3c769134232eaf3c25e50c47d8466f91394c269cc912",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=06_00PM/Injury-Report_2026-04-30_06_00PM.pdf",
+        "source_sha256": "f508c7eaadb1c712ce9f5cad04725028dbe6dfa46ed3e0cc6b7ac91d6c4f779d",
+        "report_published_at": "2026-04-30T22:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 11
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 12
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 13
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 14
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8817053c5f2a776ccefc6ca0ac47d96c31696ec2a134acbb31a85b1203006d98"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "210768c3d1e4055f746eb374f4cfdbc6ba7b5eb73b2b0bd309e099ac20fdcd4d",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=06_30PM/Injury-Report_2026-04-30_06_30PM.pdf",
+        "source_sha256": "8c1d49af8b361aa0ff89a9a48c7eb56c55b85476c2add75929b941bcd01c50af",
+        "report_published_at": "2026-04-30T22:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d026d79dd8cf10b69541be98bc432baf15bd292474d611583f91b94fdbde9ea2"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "ec4077cdef627f45d819ea541b5637dd7d0360c5465ad190aa396b4dc57a8fbf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=07_00PM/Injury-Report_2026-04-30_07_00PM.pdf",
+        "source_sha256": "85fc69ab23a30179dd8f86a18a91148d101696a947a4164c1bd48e3288fd7f54",
+        "report_published_at": "2026-04-30T23:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "b25d8f801d721b2cbef76d05b302c8dc4d8ac555354049365937f9c96141a835"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "c79aee53e57573a42a6e9b6efa7ed090f79d2d38987504a6acff6f40e0e9edb2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=07_30PM/Injury-Report_2026-04-30_07_30PM.pdf",
+        "source_sha256": "e44f79c242eece5e42cf7d8f4bfac8c997ff0831a223d919f809243b2a33779a",
+        "report_published_at": "2026-04-30T23:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7da0342cccbc683be090fe1530c74a7d4954591b9ee4e135c8bdbe4c19de8157"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "be19238c25ada91811f73e6090cf5ed6f5253a88d66d4848e553349582f738bf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_00PM/Injury-Report_2026-04-30_08_00PM.pdf",
+        "source_sha256": "4d732d9f4ec1ddce4167f56f406f6442d14639b0c4c1dea14daf8600771a7e5a",
+        "report_published_at": "2026-05-01T00:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5e3f69126f0ed431d23a4fbba85cb17bbfe86cc6d9d7ac652049555a4feb1149"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "97cf18b0c4e2948cd72bd4f60d0546dfb90027428b9af7900618d57ca9406333",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=08_30PM/Injury-Report_2026-04-30_08_30PM.pdf",
+        "source_sha256": "b64f8f55f07edf0705552f47a40bd2dfb7849a32d0223bdfb3c1e89e13460f0f",
+        "report_published_at": "2026-05-01T00:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8bc0e27d1dea801c11857291d2845fbfdda9bbbd7abb51b8f729166940b6e52b"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "b3287929242be73ad696c150e628f542872ff9389f5270ec1bc0a833c3823c84",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_00PM/Injury-Report_2026-04-30_09_00PM.pdf",
+        "source_sha256": "12677beda27266a09096f8ab4b9580e5c953607d4029e255061fc190a1c06c8d",
+        "report_published_at": "2026-05-01T01:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "01515f75add45302b5370774fee2ed9a1a47a2ede20f8e4a56310568ca6c217a"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "3ecde16f8dfdd813ba56e1d501a59fe5e31e03944b46bcc19814ce4220d0dde1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=09_30PM/Injury-Report_2026-04-30_09_30PM.pdf",
+        "source_sha256": "b265d594c121e106c66cb36600ec8e51b9a3529f83ba0751e41c6e81a1e4d8e4",
+        "report_published_at": "2026-05-01T01:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "79a1d2ca434237d213b3049bf6118d513a1118b806877dcf9e30ef8b6e74ecd3"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "be66ae31ee02115a3b8553f8cb21c09d78e7de1ba3aabc48e7dbc32f0e916a48",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_00PM/Injury-Report_2026-04-30_10_00PM.pdf",
+        "source_sha256": "55d3c0c6c6392eabe16c8fe716ceda1b87d948a6c9752a3ddaa84f02244f6ad1",
+        "report_published_at": "2026-05-01T02:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "af29bfafddb3b51f351fda3ff00dcabea5aa2d63695f5a3465e0f19aff53556b"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "9f0f32678f3bc62f261b5ea360537576b99b5de7be7872ce1e78d71536ffa8dc",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=10_30PM/Injury-Report_2026-04-30_10_30PM.pdf",
+        "source_sha256": "3b12aa927b1e0d0081c55382dbc54b50251d9b53ad7fffb37b81fee820967ce0",
+        "report_published_at": "2026-05-01T02:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d570b5ad6e97cca058ed674261de4e6db012219295f39fa67ece677e01af2537"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "d1357a6f9d8b0e0964dcbb778cc3e9f219f93a6f03fc04afb5f936b86c9ac447",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_00PM/Injury-Report_2026-04-30_11_00PM.pdf",
+        "source_sha256": "67aa76f5263659f3ff8b4942ebb28e25a00f543314ddc17e01d263934dc1f122",
+        "report_published_at": "2026-05-01T03:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a76f192e6f38ff0451d1480debe11602f27315f96f068b462b9bb102abfda063"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "cd1d7cc84e6dd7ae63cabb94f0792d2bbbac595180584ceb2900c6b3748d694f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-04-30/report_time=11_30PM/Injury-Report_2026-04-30_11_30PM.pdf",
+        "source_sha256": "c8b887c802c77a3f5b196be70675373c6eceb6bfd8a3eb2f0fc47cd850b82563",
+        "report_published_at": "2026-05-01T03:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 12
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 13
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 14
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 2,
+                "visual_row_index": 1
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3e0acb2e6ebd488b4ffee03f63a2832da2ee2e2fdc6316bcdbaf07b399eaab5e"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "a85379ed30c1baf0f54dbb57880d7b0b124ec0d18209d5b42c63956c2e9ae17f",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_00AM/Injury-Report_2026-05-01_08_00AM.pdf",
+        "source_sha256": "31fd4e926c94b673b92ff2819cdcd22ce65bca73578d7c7e315dcc4cb726de0a",
+        "report_published_at": "2026-05-01T12:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "acaa5cb0a6795a49061a84bc7df81f5502afaac4ba192050382898e9450d3ba3"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "0ffe1054584bc55d1b75a59d543865b133128e3168d05dd62f32fa35b4f36def",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_30AM/Injury-Report_2026-05-01_08_30AM.pdf",
+        "source_sha256": "ceeff70365b8fa9afb5003e2dd752c4b38057a76f45461bd9e9d2287691f94aa",
+        "report_published_at": "2026-05-01T12:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c7ca08b362cfe63ae75efb15f19946792c2bf55511c1d43ed27690faf7e72c64"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "40a9067eafe0e66cbd54a1a31543e9cc3118b06dcd207763c71f57110a7fc38e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_00AM/Injury-Report_2026-05-01_09_00AM.pdf",
+        "source_sha256": "a692eba4e16457fa806f51a22c2bd10cba8457cfd06cce9a58eb4bbbf9233b1c",
+        "report_published_at": "2026-05-01T13:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "ffa787e4b41bdf782a40e72f2e54a67c94021055b94a911d7688940e781588d4"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "305314666bd89df4b58df8a4e58f8fbae338534fabff382785ce0a421183c525",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_30AM/Injury-Report_2026-05-01_09_30AM.pdf",
+        "source_sha256": "512243ffbb319557bd3e9fd65bafe1ea4b18a59fe9e64603543a701657ef2094",
+        "report_published_at": "2026-05-01T13:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3bcdda0a06f24b8962b292bc769873cac475d75fdf8dd512aa992d441f7ace54"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "30f4acbbb01df4a46730fb4fba2ee0cfa0a972cdf5f781ec700eb5f8bad59cd1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_00AM/Injury-Report_2026-05-01_10_00AM.pdf",
+        "source_sha256": "fd11a86dfd542863d9a5c74f5784e4b9ca0766938525750b2a07ebb52f89f5c7",
+        "report_published_at": "2026-05-01T14:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "15d5a309d096ee444fcc25e7b724b621359f062fafecefee54d5787973f92cb6"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "7356ecc6d28d8e5d38256e9de5d0e2fd5b483385c24e2e21cfe0b89f39780231",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_30AM/Injury-Report_2026-05-01_10_30AM.pdf",
+        "source_sha256": "3b887443f3ee37b392d93ac9c0c3a964ff83bad634680502716b5c39c370392a",
+        "report_published_at": "2026-05-01T14:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "22ff58f20846fbd95f7d2d2e913282481c65587b7efda8b0c6acdd725cb4b79a"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "7d18c00a88f61cbfd7252cca1a7635960bc5eca120bfa954990d179f0bc185ef",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_00AM/Injury-Report_2026-05-01_11_00AM.pdf",
+        "source_sha256": "2e1b91078b3bb16d5d0b5b9bf0eaa7b73b387ddd6eeb5b44da437e68cbdb1307",
+        "report_published_at": "2026-05-01T15:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d19b5c23e4c387957398b6bf600732dc68edca87c3a2a195179b6d5d06595d98"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "58772a33d7d7dae56b0881656903d7cd9e3f5db66a66c34dd6399a9b3e7bddd6",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_30AM/Injury-Report_2026-05-01_11_30AM.pdf",
+        "source_sha256": "3ad9f7628d66b54d69bf14f0a09b531402bfd6be319e82acf31fc0e80405c9ec",
+        "report_published_at": "2026-05-01T15:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "407fbec79dadb8f91da2ea8418317281139a77dd22a1fc6287231922bb2263eb"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "30b2d17f41e5d170d966b42da85ef75b8aace770893a3c9ddbaac9d085bafeb5",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=12_00PM/Injury-Report_2026-05-01_12_00PM.pdf",
+        "source_sha256": "020c21e5cb3bf3c9a7c784be3af8e6c00f138c85206e8fbe5d2c4657287724c3",
+        "report_published_at": "2026-05-01T16:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "95d6fbbd37950475bd4e131b8fab96a7711fbee8f76a943f611e754a215147d2"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "5070670f9be7d3d64fc2eea782883239c14e991b8a2a7c1cbab1af7abc6e8f36",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=12_30PM/Injury-Report_2026-05-01_12_30PM.pdf",
+        "source_sha256": "185077e5a54ffc201d0ca49b89420bd9b8137ec7723325c6c6b93346b1c81689",
+        "report_published_at": "2026-05-01T16:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d562ef8a3fccdb31ca96c9c2a9ad6ed1ab617d08ce64208e1a6e5b890cd02dd4"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "212dad9067bb166752ee3e764915bc25418edebe9dd6a138889b84904084d3aa",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=01_00PM/Injury-Report_2026-05-01_01_00PM.pdf",
+        "source_sha256": "634f294cc278d0b8b2e0ca204a0eb8088d11c426de0221ca82f9a0f68d80ffc9",
+        "report_published_at": "2026-05-01T17:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5c6317e4b9ccbde20e3f488ebf97608eba19c440c12f95675637f8f3d4d1d84f"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "f886d157c8387c5a8dbca7a7c0bd1e2418526aeead7dbb06c3f3e231dc522a38",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=01_30PM/Injury-Report_2026-05-01_01_30PM.pdf",
+        "source_sha256": "47ff6333fcfdeb5eee412d23988add82a5a6eb66e8d8fc8a47754b4875154f15",
+        "report_published_at": "2026-05-01T17:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "bc28b541f51caa736a41091b7475135d20ff222021f95d0cac1f1d9ee8df197d"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "0256e2d0262cfdd0da1b36ba51b3d18d07e4ae0ac6c6df2a47be51b0d15ac3d8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=02_00PM/Injury-Report_2026-05-01_02_00PM.pdf",
+        "source_sha256": "b435c372f352e2804531507fffb69245cf223a4000b14132bec7cf60ca974812",
+        "report_published_at": "2026-05-01T18:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2621681381da1e5ee0d79d025694793c3f150d494c054e84efae53c484e417d7"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "eb10fa438655100f8e59fe2101ffb7e157de85922a5b3f7b5ffee774ce1e3a20",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=02_30PM/Injury-Report_2026-05-01_02_30PM.pdf",
+        "source_sha256": "a5b6a5ab30b918b5dca54e70a2a780603ef54c9e095a29a62d240cfd4571320e",
+        "report_published_at": "2026-05-01T18:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7803f2893ce5887c170828eb91f6224c457ca290f001dcee98becad20779d73c"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "4e235b820c1a6eff1606f12ad7726fb14b0f782bbf6eeccc2a278dd5a3db8c97",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=03_00PM/Injury-Report_2026-05-01_03_00PM.pdf",
+        "source_sha256": "4be7f3e4e27986dc84e9d5b46df93b36af47c75d6f603f44164c7ee29a85a295",
+        "report_published_at": "2026-05-01T19:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "5c0c2e1648982b475600833c1f32e61186c29816f974da38a0ec582ca614e70e"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "fd9fc0b0e25bebceef81f5a4d7b2c95ef52fa244c4a07de2415d382f4c775036",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=03_30PM/Injury-Report_2026-05-01_03_30PM.pdf",
+        "source_sha256": "a0b9736ea72a1420a83d07fac0fd6a47ad4d901d62aa921b07569d58acb4f9db",
+        "report_published_at": "2026-05-01T19:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7f3ec74d9ceffc35e02f4c7f0cf828b0bc7dfbf798eb24efeebd4c59f61389dd"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "66c4857536af2b853059d4c51471d9ed690655299a54ed8c386709b759f8be15",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=04_00PM/Injury-Report_2026-05-01_04_00PM.pdf",
+        "source_sha256": "b5ffb328b68049eaa0d4fcd89f88e49ba36045ba7d70595ad9735f8f10568aad",
+        "report_published_at": "2026-05-01T20:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "7c457672827c175bd4f9024b23377d1dddca82a8985d9d64090309a266da3d33"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "0db726c0b871813e248a0084fce68d6b69eee285358cde0c6931c8c60358e3a1",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=04_30PM/Injury-Report_2026-05-01_04_30PM.pdf",
+        "source_sha256": "0296f51c91d2e5d410429a15f26432dd579472c8ad0e9bdb2fc7b05ae1031ddc",
+        "report_published_at": "2026-05-01T20:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Doubtful",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "2671741df10a6e1b635182869f8ea40c310f00ba9189baa050dff1b6c3d6db71"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "f1e517ce31ba9b368aad6c6984b516f38a9e199f551172999fa4c8a52d247f88",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_00PM/Injury-Report_2026-05-01_05_00PM.pdf",
+        "source_sha256": "a631e3040929023d2ba687d9f8ce7d0b9a71634c1e62c18d9164cbcdc87f40ea",
+        "report_published_at": "2026-05-01T21:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "1bd8c480f8774c737149d47256639a36fea2343465f2a2bf0a9b6c073f8e376b"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "e8ebf2777167098fd622b91333bed265d5d58eff34e9e1bcf6f9eb56ad890b95",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_15PM/Injury-Report_2026-05-01_05_15PM.pdf",
+        "source_sha256": "30f572a2697a687d2373f6332c4382ce67ebe466ec570034e00c90bde3254a87",
+        "report_published_at": "2026-05-01T21:15:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8e40dea60e15d90844be84e7de583c04890fe8d5ca62906c7d1ed061d5d1e930"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "bf390c07cbf73eebee15269d9d671766facaa9273cbd193d2444b986371a0420",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_30PM/Injury-Report_2026-05-01_05_30PM.pdf",
+        "source_sha256": "07404b35432eb63b2ddc2bd67e4f8d91ee16c0b36a62860463dda61f2bb4bf80",
+        "report_published_at": "2026-05-01T21:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d9e9b6c68ff5e1baa53a3df437cb7f5f86b649ffc429e2debc6c3375116ac418"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "39f8f8e60857cb8ee1c7f6bdd2a146463b347ff6c79d85fd0afec93c3e8bb45e",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=05_45PM/Injury-Report_2026-05-01_05_45PM.pdf",
+        "source_sha256": "f38135b2239c02e49c42be72f4d41df76ae5f3775e4cf04666b8d72d3344bcc9",
+        "report_published_at": "2026-05-01T21:45:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Questionable",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "4085dd7dc7b2fe1985404ee6e58e916cdf468463bd8140a0fde25448b3fc03e2"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "12eb6451d71817499bddf0ec4dc40959f184def97270410a7303bad6b76d88ab",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=06_00PM/Injury-Report_2026-05-01_06_00PM.pdf",
+        "source_sha256": "1dee8d18b6e142bfefc1a65e5621734edd36f2a109c9a03493c3972e4b9414f4",
+        "report_published_at": "2026-05-01T22:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d29c988be6738b6945e2357a5fb605daf52a2693354401af7097dd30f2e4f30c"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "2b7313e5027e703f95cc9a4e6ca6e0b5fc6b3e92ce5a7f4700bef4a4f6dc78ad",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=06_30PM/Injury-Report_2026-05-01_06_30PM.pdf",
+        "source_sha256": "07bb6d12e9eef8d05119c2cc133840a5b53c845478eb7087e0d3cd2df62546c9",
+        "report_published_at": "2026-05-01T22:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "e2bcff565ee27419f006af63730aba0d4124efa83aef2f6d0956c46d9761dd2b"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "87d7fb2e86814aa0120dc392d37f5abdce49b86c777f4fb0890c38aa69f113bf",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=07_00PM/Injury-Report_2026-05-01_07_00PM.pdf",
+        "source_sha256": "03b0a9d9cb0e78b9a8eaa6fad01239f47e22e8fda0a404b1c2b65c57f9284424",
+        "report_published_at": "2026-05-01T23:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "8882145feac8f9ad61317b1bd915924a8888e15db8a97a90737f6a00495635b0"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "80dde7df8d2d1e9f8ec203a63a1b69cf82b0e0f202fe3f73f47436d40ee1d82a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=07_30PM/Injury-Report_2026-05-01_07_30PM.pdf",
+        "source_sha256": "0f99036b048be542eae19815bb37dd935d6dee29705c78698cd44a36615cd2e7",
+        "report_published_at": "2026-05-01T23:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "a707c906cff26203d12e0f76556344248793fb64fc344584158b44cb388c7b38"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "602906eb4277554c424c760cd0f54681b55551835f1b7dd9a5a5d91b1d12e730",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_00PM/Injury-Report_2026-05-01_08_00PM.pdf",
+        "source_sha256": "90b4155dc5b6aba2348a2499a4e1937a4b943f4269251afd0230074675014b89",
+        "report_published_at": "2026-05-02T00:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "c61a1018cd43a4003a81269edc7308d13614e02a3fdf89d7080820b346ed0036"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "12fa70c8d07487ec2b42a2ceae3407c2c1e1868fda15e2fd57216219ad66f4c2",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=08_30PM/Injury-Report_2026-05-01_08_30PM.pdf",
+        "source_sha256": "a7626e505401085b5b2f1947e6a7d1ec1bd4b44658f94c55e9957d38eb18a16d",
+        "report_published_at": "2026-05-02T00:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "d4a08380058f9720c8764077b7645024200207dbbb69adec8733331ee11b4529"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "c26c09e9b48899d155e21a802f378ab95dce2e98352f57274fa70153d7857e43",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_00PM/Injury-Report_2026-05-01_09_00PM.pdf",
+        "source_sha256": "1515a66539097b1ce9b9cc3be2e5279812aec62ba8c840ce3762c1f12930c9cf",
+        "report_published_at": "2026-05-02T01:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "0dadfae72deacfdd587d733059e3a244be21618ceb8e6ad6acd0743c81291071"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "84d15083d152af51316e8e7444fcfc796565d4daadeb2c5749de350920ecb7b8",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=09_30PM/Injury-Report_2026-05-01_09_30PM.pdf",
+        "source_sha256": "b2a573d96e46b18be067f2b1414eaf951043d0654a0db1120ab0a9bdcfc41b2d",
+        "report_published_at": "2026-05-02T01:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "439523aed38779a23df872b6b471fe99881cf26d36b666cceac83352a27d3b52"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "6afebc1850cdbca0b8557d6e35f89bdd438405f9297720c811997f7c24b8ee46",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_00PM/Injury-Report_2026-05-01_10_00PM.pdf",
+        "source_sha256": "f50f10522b10c47537e6915edee0819ff0ab5b2a6e5c2b19e57eeaebb0be5cba",
+        "report_published_at": "2026-05-02T02:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3de776aa286e519662d8ab0af05647e4c0e19bd0a9e0ee15a574c1d44bfa9d14"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "ea40152d8ea04c8437543a8c0f303086ae742aede286757a7cf3697a223f421c",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=10_30PM/Injury-Report_2026-05-01_10_30PM.pdf",
+        "source_sha256": "47edadaf15f9da65a3242a57e96ccba01afc9371d779fd8eca479bc00aa5107b",
+        "report_published_at": "2026-05-02T02:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "84797cf037791da1a2313a71de7580a228fffae5e7e1c1ebe11a11109711de2f"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "ccce6c4f9352e010681ba177f56c07c885d02d999c32a5cb803660c34fa6c95a",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_00PM/Injury-Report_2026-05-01_11_00PM.pdf",
+        "source_sha256": "7051fb21e1a175d845be06aaea1cbcee52e7bdc41ea76d9993085ef73472f11a",
+        "report_published_at": "2026-05-02T03:00:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "3a7447b0f2eedcd17f48551550dcd39628af4306468d74368ea5fa008be9c8a2"
+      },
+      {
+        "game_id": "21684812",
+        "source_game_block_id": "54e53b6ec77fd086812c9bf6d47139a1773cd8b55ee1996699236bbe006724f7",
+        "s3_key": "raw/source=nba_official/league=nba/season=2025/entity=injury_report_pdf/report_date=2026-05-01/report_time=11_30PM/Injury-Report_2026-05-01_11_30PM.pdf",
+        "source_sha256": "377f5f11b13fb87ebaef8df86d145d36d455c1ecc8e12a6d193a60a42ed26b61",
+        "report_published_at": "2026-05-02T03:30:00.000Z",
+        "game_date": "2026-05-01",
+        "matchup": "DET@ORL",
+        "away_abbr": "DET",
+        "home_abbr": "ORL",
+        "away_team_id": "9",
+        "home_team_id": "22",
+        "teams": {
+          "9": {
+            "team_id": "9",
+            "abbr": "DET",
+            "side": "away",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Harris, Tobias",
+                "status_raw": "Available",
+                "reason_raw": "Injury/Illness - Left Ankle; Sprain",
+                "page_number": 1,
+                "visual_row_index": 1
+              },
+              {
+                "player_name_raw": "Huerter, Kevin",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Adductor; Strain",
+                "page_number": 1,
+                "visual_row_index": 2
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          },
+          "22": {
+            "team_id": "22",
+            "abbr": "ORL",
+            "side": "home",
+            "nys": false,
+            "players": [
+              {
+                "player_name_raw": "Isaac, Jonathan",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Left Knee; Sprain",
+                "page_number": 1,
+                "visual_row_index": 3
+              },
+              {
+                "player_name_raw": "Wagner, Franz",
+                "status_raw": "Out",
+                "reason_raw": "Injury/Illness - Right Calf; Strain",
+                "page_number": 1,
+                "visual_row_index": 4
+              }
+            ],
+            "structural_conflict": false,
+            "state_hint": "SUBMITTED_WITH_PLAYER_ROWS"
+          }
+        },
+        "semantic_hash": "09195e279e526014a411a53a65740ff9a71a658e9b19caa133083b3ece8070ee"
+      }
+    ]
+  },
+  "expected": {
+    "game_level_status": "VALID_PRE_T60_SNAPSHOT",
+    "selected_published_at": "2026-05-01T21:45:00.000Z",
+    "snapshot_age_minutes": 15,
+    "age_bucket": "AGE_0_15_MIN",
+    "exact_cutoff_count": 1,
+    "away_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "home_team_state": "SUBMITTED_WITH_PLAYER_ROWS",
+    "away_player_count": 2,
+    "home_player_count": 2,
+    "selected_source_game_block_id": "39f8f8e60857cb8ee1c7f6bdd2a146463b347ff6c79d85fd0afec93c3e8bb45e"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "variance_source": "POOLED_SINGLETON_FALLBACK",
+    "variance_used": 25.0
+  },
+  "fixture_id": "syn-singleton-fallback",
+  "input": {
+    "sigma2_pool": 25.0,
+    "values": [
+      7.0
+    ]
+  },
+  "kind": "state_variance_rule",
+  "split": "synthetic"
+}

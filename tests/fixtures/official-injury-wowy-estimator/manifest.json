@@ -1,0 +1,234 @@
+{
+  "estimator_version": "injury-wowy-estimator-v1",
+  "note": "Real expected outputs locked via Python reference BEFORE TS implementation.",
+  "real_entries": [
+    {
+      "category": "exact_1_1",
+      "fixture_id": "ho-exact_1_1-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "1_2",
+      "fixture_id": "ho-1_2-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "2_1",
+      "fixture_id": "ho-2_1-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "2_2",
+      "fixture_id": "dev-2_2-pts",
+      "split": "development"
+    },
+    {
+      "category": "3_3",
+      "fixture_id": "dev-3_3-pts",
+      "split": "development"
+    },
+    {
+      "category": "ge_5_5",
+      "fixture_id": "ho-ge_5_5-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "imbalance",
+      "fixture_id": "ho-imbalance-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "with_only",
+      "fixture_id": "ho-with_only-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "without_only",
+      "fixture_id": "ho-without_only-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_0",
+      "fixture_id": "ho-both_extra_0-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_1",
+      "fixture_id": "ho-both_extra_1-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_2",
+      "fixture_id": "ho-both_extra_2-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_3",
+      "fixture_id": "ho-both_extra_3-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_4",
+      "fixture_id": "ho-both_extra_4-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_5",
+      "fixture_id": "ho-both_extra_5-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_6",
+      "fixture_id": "ho-both_extra_6-pts",
+      "split": "held_out"
+    },
+    {
+      "category": "both_extra_7",
+      "fixture_id": "dev-both_extra_7-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_8",
+      "fixture_id": "dev-both_extra_8-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_9",
+      "fixture_id": "dev-both_extra_9-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_10",
+      "fixture_id": "dev-both_extra_10-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_11",
+      "fixture_id": "dev-both_extra_11-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_12",
+      "fixture_id": "dev-both_extra_12-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_13",
+      "fixture_id": "dev-both_extra_13-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_14",
+      "fixture_id": "dev-both_extra_14-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_15",
+      "fixture_id": "dev-both_extra_15-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_16",
+      "fixture_id": "dev-both_extra_16-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_17",
+      "fixture_id": "dev-both_extra_17-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_18",
+      "fixture_id": "dev-both_extra_18-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_19",
+      "fixture_id": "dev-both_extra_19-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_20",
+      "fixture_id": "dev-both_extra_20-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_21",
+      "fixture_id": "dev-both_extra_21-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_22",
+      "fixture_id": "dev-both_extra_22-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_23",
+      "fixture_id": "dev-both_extra_23-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_24",
+      "fixture_id": "dev-both_extra_24-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_25",
+      "fixture_id": "dev-both_extra_25-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_26",
+      "fixture_id": "dev-both_extra_26-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_27",
+      "fixture_id": "dev-both_extra_27-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_28",
+      "fixture_id": "dev-both_extra_28-pts",
+      "split": "development"
+    },
+    {
+      "category": "both_extra_29",
+      "fixture_id": "dev-both_extra_29-pts",
+      "split": "development"
+    },
+    {
+      "category": "3_3_minutes",
+      "fixture_id": "dev-3_3-minutes",
+      "split": "development"
+    },
+    {
+      "category": "3_3_reb",
+      "fixture_id": "dev-3_3-reb",
+      "split": "development"
+    },
+    {
+      "category": "3_3_ast",
+      "fixture_id": "dev-3_3-ast",
+      "split": "development"
+    },
+    {
+      "category": "asof_vs_research",
+      "fixture_id": "dev-asof-vs-research-2_2",
+      "split": "development"
+    }
+  ],
+  "research_pts_prior_lock": {
+    "estimable": true,
+    "mu0": 0.8685102697459224,
+    "pooled_residual_df": 15719,
+    "prior_pair_count": 626,
+    "sigma2_pool": 31.562546950955554,
+    "tau2": 8.786340594343587
+  },
+  "synthetic_count": 17,
+  "tolerance": {
+    "abs": 1e-10,
+    "rel": 1e-10
+  }
+}

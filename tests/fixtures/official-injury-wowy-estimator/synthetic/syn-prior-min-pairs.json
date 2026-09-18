@@ -1,0 +1,14 @@
+{
+  "expected": {
+    "estimation_status": "PRIOR_NOT_ESTIMABLE",
+    "prior_estimable": false
+  },
+  "fixture_id": "syn-prior-min-pairs",
+  "input": {
+    "pooled_residual_df": 100,
+    "prior_pair_count": 19,
+    "tau2": 1.0
+  },
+  "kind": "prior_gate",
+  "split": "synthetic"
+}

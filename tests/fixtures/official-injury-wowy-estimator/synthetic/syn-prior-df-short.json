@@ -1,0 +1,14 @@
+{
+  "expected": {
+    "estimation_status": "PRIOR_NOT_ESTIMABLE",
+    "prior_estimable": false
+  },
+  "fixture_id": "syn-prior-df-short",
+  "input": {
+    "pooled_residual_df": 19,
+    "prior_pair_count": 50,
+    "tau2": 1.0
+  },
+  "kind": "prior_gate",
+  "split": "synthetic"
+}

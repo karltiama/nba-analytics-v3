@@ -1,0 +1,337 @@
+{
+  "locked_at": "2026-09-17T15:00:00.000Z",
+  "phase": "4D.0",
+  "resolver_version": "official-injury-player-identity-v1",
+  "candidate_records_sha256": "05854997a74e085cc978103f7d8ddb97988f47446a3b99621895495e1fcdf5c2",
+  "candidate_records_count": 42193,
+  "policy": "Phase 4C conservative D2; expectations derived from evidence without resolver code",
+  "counts": {
+    "development": 21,
+    "held_out": 13,
+    "synthetic": 6,
+    "total": 40
+  },
+  "fixtures": [
+    {
+      "fixture_id": "dev-u2-played-01",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_played_unique",
+      "official_player_game_id": "1037593|8|Porter Jr., Michael",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-u2-00-01",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_00_unique",
+      "official_player_game_id": "1037593|14|Castleton, Colin",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-tier-a-01",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_plus_u4_nba",
+      "official_player_game_id": "18446820|10|Melton, De'Anthony",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-u2-only-01",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_only",
+      "official_player_game_id": "18446858|7|Williams, Brandon",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-tier-c-01",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_absent_u4_nba",
+      "official_player_game_id": "18447545|18|Conley, Mike",
+      "expected_resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+    },
+    {
+      "fixture_id": "dev-no-safe-01",
+      "kind": "real",
+      "split": "development",
+      "category": "no_safe",
+      "official_player_game_id": "1037595|4|Sumner, Edmond",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "dev-inferred-only-01",
+      "kind": "real",
+      "split": "development",
+      "category": "inferred_only",
+      "official_player_game_id": "3277531|20|Washington Jr., Duane",
+      "expected_resolution_status": "QUARANTINED_INFERRED_ONLY"
+    },
+    {
+      "fixture_id": "dev-u2-played-02",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_played_unique",
+      "official_player_game_id": "1037594|24|Booker, Devin",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-u2-00-02",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_00_unique",
+      "official_player_game_id": "1037593|14|Fudge, Alex",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-tier-a-02",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_plus_u4_nba",
+      "official_player_game_id": "18446820|10|Moody, Moses",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-u2-only-02",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_only",
+      "official_player_game_id": "18446868|7|Williams, Brandon",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-tier-c-02",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_absent_u4_nba",
+      "official_player_game_id": "18447551|9|Jones, Isaac",
+      "expected_resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+    },
+    {
+      "fixture_id": "dev-no-safe-02",
+      "kind": "real",
+      "split": "development",
+      "category": "no_safe",
+      "official_player_game_id": "1037598|11|Hudgins, Trevor",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "dev-inferred-only-02",
+      "kind": "real",
+      "split": "development",
+      "category": "inferred_only",
+      "official_player_game_id": "1038441|4|Bolden, Marques",
+      "expected_resolution_status": "QUARANTINED_INFERRED_ONLY"
+    },
+    {
+      "fixture_id": "dev-suffix-02",
+      "kind": "real",
+      "split": "development",
+      "category": "suffix_bearing_resolved",
+      "official_player_game_id": "1037603|19|Murphy III, Trey",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-u2-00-03",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_00_unique",
+      "official_player_game_id": "1037593|14|Hodge, D'Moi",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-tier-a-03",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_plus_u4_nba",
+      "official_player_game_id": "18446819|11|Crawford, Isaiah",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-no-safe-03",
+      "kind": "real",
+      "split": "development",
+      "category": "no_safe",
+      "official_player_game_id": "1037606|13|Hyland, Bones",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "ho-u2-played-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "u2_played_unique",
+      "official_player_game_id": "1037599|6|Garland, Darius",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "ho-u2-00-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "u2_00_unique",
+      "official_player_game_id": "1037593|14|Vanderbilt, Jarred",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "ho-tier-a-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "u2_plus_u4_nba",
+      "official_player_game_id": "18446819|11|Tate, Jae'Sean",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "ho-tier-c-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "u2_absent_u4_nba",
+      "official_player_game_id": "21681589|1|Dennis, RayJ",
+      "expected_resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+    },
+    {
+      "fixture_id": "ho-entity-only-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "entity_only",
+      "official_player_game_id": "18447644|25|Lillard, Damian",
+      "expected_resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+    },
+    {
+      "fixture_id": "ho-inferred-only-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "inferred_only",
+      "official_player_game_id": "15907834|20|Ryan, Matt",
+      "expected_resolution_status": "QUARANTINED_INFERRED_ONLY"
+    },
+    {
+      "fixture_id": "ho-no-safe-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "no_safe",
+      "official_player_game_id": "1037608|14|Reddish, Cam",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "ho-ever-out-no-safe-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "ever_out_no_safe",
+      "official_player_game_id": "1037616|7|Lawson, A.J.",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "ho-suffix-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "suffix_bearing_resolved",
+      "official_player_game_id": "1037625|16|Jaquez Jr., Jaime",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "ho-u2-only-01",
+      "kind": "real",
+      "split": "held_out",
+      "category": "u2_only",
+      "official_player_game_id": "18446882|7|Williams, Brandon",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "ho-inferred-only-02",
+      "kind": "real",
+      "split": "held_out",
+      "category": "inferred_only",
+      "official_player_game_id": "15907946|21|Carlson, Branden",
+      "expected_resolution_status": "QUARANTINED_INFERRED_ONLY"
+    },
+    {
+      "fixture_id": "ho-no-safe-02",
+      "kind": "real",
+      "split": "held_out",
+      "category": "no_safe",
+      "official_player_game_id": "1037617|13|Hyland, Bones",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "dev-fill-u2_plus_u4_inferred",
+      "kind": "real",
+      "split": "development",
+      "category": "u2_plus_u4_inferred",
+      "official_player_game_id": "1037593|14|Hood-Schifino, Jalen",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "dev-fill-entity_only",
+      "kind": "real",
+      "split": "development",
+      "category": "entity_only",
+      "official_player_game_id": "21681589|1|Gilbert, Keshon",
+      "expected_resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+    },
+    {
+      "fixture_id": "dev-fill-ever_out_no_safe",
+      "kind": "real",
+      "split": "development",
+      "category": "ever_out_no_safe",
+      "official_player_game_id": "1037607|23|Tubelis, Azuolas",
+      "expected_resolution_status": "QUARANTINED_NO_SAFE_CANDIDATE"
+    },
+    {
+      "fixture_id": "ho-fill-u2_plus_u4_inferred",
+      "kind": "real",
+      "split": "held_out",
+      "category": "u2_plus_u4_inferred",
+      "official_player_game_id": "1037593|8|Cancar, Vlatko",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "syn-source-conflict-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "source_conflict",
+      "official_player_game_id": "SYN|conflict|Payton, Gary",
+      "expected_resolution_status": "QUARANTINED_SOURCE_CONFLICT"
+    },
+    {
+      "fixture_id": "syn-multiple-u2-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "multiple_candidates",
+      "official_player_game_id": "SYN|multi|Doe, John",
+      "expected_resolution_status": "QUARANTINED_MULTIPLE_CANDIDATES"
+    },
+    {
+      "fixture_id": "syn-inferred-only-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "inferred_only",
+      "official_player_game_id": "SYN|inferred|Ghost, Player",
+      "expected_resolution_status": "QUARANTINED_INFERRED_ONLY"
+    },
+    {
+      "fixture_id": "syn-entity-only-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "entity_only",
+      "official_player_game_id": "SYN|entity_only|ClassC, Player",
+      "expected_resolution_status": "RESOLVED_ENTITY_NO_SERVING_PLAYER"
+    },
+    {
+      "fixture_id": "syn-suffix-collision-payton",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "suffix_collision",
+      "official_player_game_id": "SYN|suffix|Payton II, Gary",
+      "expected_resolution_status": "RESOLVED_CANONICAL_ENTITY"
+    },
+    {
+      "fixture_id": "syn-name-unsafe-01",
+      "kind": "synthetic",
+      "split": "synthetic",
+      "category": "name_unsafe",
+      "official_player_game_id": "SYN|unsafe|",
+      "expected_resolution_status": "QUARANTINED_NAME_UNSAFE"
+    }
+  ],
+  "note": "Held-out expectations must not change to make implementation pass."
+}

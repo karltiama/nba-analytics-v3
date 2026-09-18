@@ -1,0 +1,51 @@
+{
+  "fixture_id": "dev-u2-played-02",
+  "kind": "real",
+  "split": "development",
+  "category": "u2_played_unique",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "1037594|24|Booker, Devin",
+  "input": {
+    "game_id": "1037594",
+    "team_id": "24",
+    "team_abbreviation": "PHX",
+    "game_date_et": "2023-10-24",
+    "season": "2023",
+    "player_name_raw": "Booker, Devin",
+    "name_key": "devin booker",
+    "ever_out": false
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "unique",
+      "playerId": "57",
+      "playerEntityId": "b4c6ff44-1c8d-586c-b20f-fc771a5852ab",
+      "minutes": "37"
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "unique",
+      "playerEntityId": "b4c6ff44-1c8d-586c-b20f-fc771a5852ab",
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "RESOLVED_CANONICAL_ENTITY",
+    "player_entity_id": "b4c6ff44-1c8d-586c-b20f-fc771a5852ab",
+    "serving_player_id": "57",
+    "confidence_class": "B",
+    "provenance_category": "U2_SAME_GAME",
+    "independent_source_count": 1,
+    "quarantine_reason": null
+  },
+  "phase4b_snapshot": {
+    "u2_class": "U2_UNIQUE_PLAYED",
+    "u4_nba_class": "NO_CANDIDATE",
+    "u4_inferred_class": "UNIQUE_CANDIDATE",
+    "serving_projection": true
+  }
+}

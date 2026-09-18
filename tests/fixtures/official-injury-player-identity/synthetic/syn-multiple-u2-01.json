@@ -1,0 +1,45 @@
+{
+  "fixture_id": "syn-multiple-u2-01",
+  "kind": "synthetic",
+  "split": "synthetic",
+  "category": "multiple_candidates",
+  "resolver_version": "official-injury-player-identity-v1",
+  "official_player_game_id": "SYN|multi|Doe, John",
+  "input": {
+    "game_id": "SYN_GAME_2",
+    "team_id": "2",
+    "team_abbreviation": "NYK",
+    "game_date_et": "2025-01-02",
+    "season": "2024",
+    "player_name_raw": "Doe, John",
+    "name_key": "john doe",
+    "ever_out": false
+  },
+  "evidence": {
+    "u2": {
+      "cardinality": "multiple",
+      "playerId": null,
+      "playerEntityId": null,
+      "minutes": null
+    },
+    "u4Nba": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "nba_stats"
+    },
+    "u4Inferred": {
+      "cardinality": "none",
+      "playerEntityId": null,
+      "source": "inferred_pgl"
+    }
+  },
+  "expected": {
+    "resolution_status": "QUARANTINED_MULTIPLE_CANDIDATES",
+    "player_entity_id": null,
+    "serving_player_id": null,
+    "confidence_class": null,
+    "provenance_category": null,
+    "independent_source_count": 0,
+    "quarantine_reason": "MULTIPLE_CANDIDATES"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "fixture_id": "dev-concussion-out-01",
+  "kind": "real",
+  "split": "development",
+  "category": "concussion_out",
+  "source_player_state_id": "1037610|15|Kennard, Luke|Out|Injury/Illness - Concussion;",
+  "input": {
+    "game_id": "1037610",
+    "team_id": "15",
+    "season": "2023",
+    "player_name_raw": "Kennard, Luke",
+    "player_entity_id": "fc082a90-28f3-5f27-80c7-2564a7acb931",
+    "status_raw": "Out",
+    "reason_raw": "Injury/Illness - Concussion;",
+    "identity_bucket": "RESOLVED_CANONICAL_ENTITY"
+  },
+  "expected": {
+    "reason_policy_version": "official-injury-reason-policy-v1",
+    "eligibility_policy_version": "injury-wowy-eligibility-v1",
+    "reason_category": "CONCUSSION",
+    "health_relation": "HEALTH_RELATED",
+    "classification_rule": "PREFIX_INJURY_ILLNESS",
+    "availability_fact": "ALL_CAUSE_EXPLICIT_OUT",
+    "reason_side_eligibility": "WITHOUT_CANDIDATE",
+    "identity_status": "RESOLVED_CANONICAL_ENTITY",
+    "canonical_identity_resolved": true,
+    "canonical_model_eligible": true,
+    "injury_wowy_eligibility": "WITHOUT_CANDIDATE"
+  }
+}
