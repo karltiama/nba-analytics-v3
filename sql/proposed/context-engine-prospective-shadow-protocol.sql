@@ -1,8 +1,10 @@
--- PROPOSED schema for STEP 14M.C1 prospective shadow prediction records.
--- Do NOT apply in this step. Operator/DBA applies only after provider canaries
--- and before frozen shadow activation.
+-- PROPOSED schema for STEP 14M.C1 CatBoost prospective shadow (PTS/REB C).
+-- Do NOT apply this file for Phase 16B PTS production-context shadow.
 --
--- Why required:
+-- Phase 16B applied migration (dedicated DNP-inclusive production-context store):
+--   db/schemas/MIGRATION_pts_production_context_prospective_shadow.sql
+--
+-- Why this proposed table remains separate:
 -- Existing analytics.prediction_snapshots (MIGRATION_context_collection_snapshots.sql)
 -- is reusable for immutability of research Track A/B/C, but it cannot satisfy the
 -- C1 contract without overloading jsonb:

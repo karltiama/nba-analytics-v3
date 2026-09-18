@@ -1,0 +1,75 @@
+{
+  "context_integration_version": "context-projection-integration-v1",
+  "primary": {
+    "model_version": "aux-min-context-role-avail-joint-v1",
+    "branch": "ROLE_AVAIL_JOINT",
+    "feature_names": [
+      "role.minutes_delta",
+      "injury.expected_missing_minutes",
+      "injury.rotation_players_out_count"
+    ],
+    "intercept": -1.0994914985548485,
+    "feature_betas": [
+      0.6877885325995479,
+      0.03032936225928271,
+      -0.02358975921091416
+    ],
+    "coefficients": [
+      -1.0994914985548485,
+      0.6877885325995479,
+      0.03032936225928271,
+      -0.02358975921091416
+    ],
+    "alpha": 1.0,
+    "training_rows": 48767
+  },
+  "role_only": {
+    "model_version": "aux-min-context-role-only-v1",
+    "branch": "ROLE_ONLY",
+    "feature_names": [
+      "role.minutes_delta"
+    ],
+    "intercept": 0.2646110992152463,
+    "feature_betas": [
+      0.7757903502460534
+    ],
+    "coefficients": [
+      0.2646110992152463,
+      0.7757903502460534
+    ],
+    "alpha": 1.0,
+    "training_rows": 48767
+  },
+  "avail_only": {
+    "model_version": "aux-min-context-avail-only-v1",
+    "branch": "AVAIL_ONLY",
+    "feature_names": [
+      "injury.expected_missing_minutes",
+      "injury.rotation_players_out_count"
+    ],
+    "intercept": -1.2799427412766364,
+    "feature_betas": [
+      0.0393902468797256,
+      -0.05694247451687915
+    ],
+    "coefficients": [
+      -1.2799427412766364,
+      0.0393902468797256,
+      -0.05694247451687915
+    ],
+    "alpha": 1.0,
+    "training_rows": 48767
+  },
+  "feature_manifest_sha": "f572935248cd9c43b56aa847171caa17c20fcd8121eecb01a90caca5dcd95414",
+  "training_manifest_sha": "237f372d61a71d1921e8737fd913869c684307902a40258a07eee35d4a2a6d69",
+  "ridge_config_sha": "1c624e860034fed62cc8216bf636533fad1eb06befb5f3bc3c55bd6da5c8720e",
+  "spine": "B0_PLAYER_HISTORY",
+  "freeze_ts": "2026-09-18T08:16:38Z",
+  "training_cutoff": "2026-06-14T00:30:00Z",
+  "AUX_MIN_MODEL_FIT_DETERMINISM": "PASS",
+  "B0_MIN_BACKWARD_PARITY": "PASS",
+  "AUX_MIN_SHADOW_STORAGE": "NEW_DESIGN_REQUIRED",
+  "AUX_MIN_PROSPECTIVE_WINDOW": "NOT_YET_DESIGNED",
+  "note": "Coefficients are predictive parameters, not causal effects. No MIN\u2192PTS.",
+  "model_artifact_sha": "7354e0a8f9a8a15ade3c5f77e95b45b009661f49abfdcfea2c1e9edc3a4b1904"
+}

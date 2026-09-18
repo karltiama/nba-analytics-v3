@@ -1,0 +1,19 @@
+{
+  "features": [
+    "role.fga_delta",
+    "form.points_delta"
+  ],
+  "transforms": {
+    "role.fga_delta": "role.recent_fga - role.season_fga",
+    "form.points_delta": "form.recent_points - form.season_points"
+  },
+  "unauthorized": [
+    "schedule.*",
+    "opponent.*",
+    "injury.*",
+    "matchup.*",
+    "interpretation.*",
+    "H5_AVAIL_PTS"
+  ],
+  "standardization": "NONE"
+}

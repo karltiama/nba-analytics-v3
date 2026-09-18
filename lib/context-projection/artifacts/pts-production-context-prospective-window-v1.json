@@ -1,0 +1,37 @@
+{
+  "prospective_window_id": "prod-pts-context-v1-first500",
+  "target": "PTS",
+  "PRIMARY_PROSPECTIVE_PTS_CANDIDATE": "PROD_PTS_ROLE_FORM_JOINT",
+  "PROSPECTIVE_REQUIRED_N": 500,
+  "PROSPECTIVE_CURRENT_N": 0,
+  "eligibility": "PRIMARY_ELIGIBLE requires ROLE_FORM_JOINT + valid pregame T-60 snapshot + frozen versions",
+  "baseline_version_policy": "FIXED_DURING_CERTIFICATION_WINDOW",
+  "production_baseline_id": "production_70_30",
+  "production_baseline_version": "court-context-model-lifecycle-c1.0",
+  "context_model_version": "prod-pts-context-role-form-joint-v1",
+  "context_integration_version": "context-projection-integration-v1",
+  "model_artifact_sha": "36f68abdab110ea13e78ac03d573aa3718b9ae7bb8b9bbd8a0d5983d83df478a",
+  "feature_manifest_sha": "121ec06d2b1601d9b3dd52c4ca57474f8a91ed23999f841f83809287466c88f2",
+  "training_manifest_sha": "0dc961a777c51147347e47205a4e66c0f1e02cf35c9cafae1727d12e63cddebe",
+  "ridge_config_sha": "ec0770ea210c7ef4d2d691da54bd2bddf3529df08a7017b6f9017703872c1238",
+  "training_cutoff": "2026-06-14T00:30:00Z",
+  "canonical_snapshot_policy": "LATEST_ELIGIBLE_AT_OR_BEFORE_T_MINUS_60",
+  "metric": "MAE",
+  "delta_sign": "MAE_PRODUCTION_BASELINE - MAE_CONTEXT_SHADOW",
+  "bootstrap": {
+    "method": "SUBJECT_GAME_BLOCK",
+    "draws": 2000,
+    "base_seed": 20260918
+  },
+  "status_policy": {
+    "PRODUCTION_SUPPORTED": "CI entirely > 0",
+    "PRODUCTION_HARMFUL": "CI entirely < 0",
+    "PRODUCTION_INCONCLUSIVE": "CI overlaps 0"
+  },
+  "no_refit": true,
+  "HISTORICAL_ROWS_IN_PROSPECTIVE_WINDOW": 0,
+  "RETROSPECTIVE_BLOCKS_PROSPECTIVE": false,
+  "PROSPECTIVE_STATUS": "READY_FOR_PROSPECTIVE_COLLECTION",
+  "SHADOW_PERSISTENCE_DESTINATION": "analytics.prospective_shadow_predictions",
+  "frozen_at": "2026-09-18T07:52:57Z"
+}

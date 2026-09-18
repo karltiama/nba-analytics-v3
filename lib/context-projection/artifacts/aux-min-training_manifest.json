@@ -1,0 +1,15 @@
+{
+  "seasons": [
+    "2023",
+    "2024",
+    "2025"
+  ],
+  "population": "PLAYED",
+  "spine": "B0_PLAYER_HISTORY",
+  "training_cutoff": "2026-06-14T00:30:00Z",
+  "freeze_ts": "2026-09-18T08:16:38Z",
+  "training_rows": 48767,
+  "2025_USED_FOR_TRAINING": "YES",
+  "2025_INDEPENDENT_CERTIFICATION_AUTHORITY": "NO",
+  "availability_source": "team-injury-context-v2 COMPLETE snapshots"
+}

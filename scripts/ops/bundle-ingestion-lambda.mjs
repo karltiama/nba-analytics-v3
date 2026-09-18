@@ -50,6 +50,10 @@ export const INGESTION_LAMBDA_BUNDLES = {
     dir: 'lambda/shadow-projection',
     entries: { 'dist/index.js': 'index.ts' },
   },
+  'context-prospective-shadow': {
+    dir: 'lambda/context-prospective-shadow',
+    entries: { 'dist/index.js': 'index.ts' },
+  },
 };
 
 async function resolveEsbuild() {

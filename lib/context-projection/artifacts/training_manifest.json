@@ -1,0 +1,19 @@
+{
+  "seasons": [
+    "2023",
+    "2024",
+    "2025"
+  ],
+  "population": "Final DNP-inclusive",
+  "training_cutoff": "2026-06-14T00:30:00Z",
+  "freeze_ts": "2026-09-18T07:52:57Z",
+  "training_rows": 127702,
+  "n_played": 83284,
+  "n_dnp": 44231,
+  "baseline": "production_70_30",
+  "baseline_version": "court-context-model-lifecycle-c1.0",
+  "residual_target": "actual_pts - track_b1_pts",
+  "2025_USED_FOR_FUTURE_FACING_TRAINING": "YES",
+  "2025_USED_AS_INDEPENDENT_PRODUCTION_CERTIFICATION": "NO",
+  "B0_RESIDUAL_COEFFICIENTS_IMPORTED": 0
+}

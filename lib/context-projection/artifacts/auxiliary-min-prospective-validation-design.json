@@ -1,0 +1,213 @@
+{
+  "phase": "18A",
+  "phase_scope": "DESIGN_ONLY",
+  "generated_at": "2026-09-18T15:55:00Z",
+  "AUXILIARY_MIN_PROSPECTIVE_VALIDATION_DESIGN": "APPROVED",
+  "PRIMARY_PROSPECTIVE_MIN_CANDIDATE": "AUX_MIN_ROLE_AVAIL_JOINT",
+  "MODEL_ID": "aux-min-context-role-avail-joint-v1",
+  "MODEL_ARTIFACT_SHA": "7354e0a8f9a8a15ade3c5f77e95b45b009661f49abfdcfea2c1e9edc3a4b1904",
+  "FEATURE_MANIFEST_SHA": "f572935248cd9c43b56aa847171caa17c20fcd8121eecb01a90caca5dcd95414",
+  "TRAINING_MANIFEST_SHA": "237f372d61a71d1921e8737fd913869c684307902a40258a07eee35d4a2a6d69",
+  "TRAINING_ROWS": 48767,
+  "TRAINING_CUTOFF": "2026-06-14T00:30:00Z",
+  "HISTORICAL_AUTHORITY": {
+    "H3_ROLE_MIN": "SUPPORTED against B0",
+    "H5_AVAIL_MIN": "SUPPORTED against B0",
+    "AUX_MIN_ROLE_AVAIL_JOINT": "NOT_PROSPECTIVELY_VALIDATED",
+    "RETROSPECTIVE_STATUS": "POST_SELECTION_DIAGNOSTIC_ONLY",
+    "RETROSPECTIVE_DELTA_MAE_APPROX": 0.36,
+    "RETROSPECTIVE_IS_CERTIFICATION": false
+  },
+  "PROSPECTIVE_MIN_WINDOW_ID": "aux-min-role-avail-joint-v1-first750",
+  "PROSPECTIVE_MANIFEST_ID": "auxiliary-min-prospective-window-v1",
+  "PROSPECTIVE_MIN_PREGAME_POPULATION": "JOINT_ELIGIBLE_PREGAME_PLAYER_GAMES",
+  "PROSPECTIVE_MIN_PRIMARY_SCORING_POPULATION": "PLAYED",
+  "PROSPECTIVE_MIN_REQUIRED_N": 750,
+  "N_DEFINITION": "resolved PLAYED primary observations (first 750 in prediction_created_at order among ROLE_AVAIL_JOINT pregame-eligible rows)",
+  "MIN_CANONICAL_SNAPSHOT_POLICY": "LATEST_ELIGIBLE_AT_OR_BEFORE_T_MINUS_60",
+  "AUX_MIN_SHADOW_STORAGE": "analytics.prospective_min_shadow_predictions",
+  "AUX_MIN_SHADOW_OUTCOMES_STORAGE": "analytics.prospective_min_shadow_outcomes",
+  "STORAGE_CHOICE": "A",
+  "STORAGE_RATIONALE": "PTS table analytics.prospective_shadow_predictions is PTS-specific (role_fga_delta, form_points_delta, ROLE_FORM_JOINT, actual_pts). Overloading it risks semantic confusion and PTS counter coupling. Dedicated MIN tables preserve append-only immutability and PTS isolation.",
+  "PRIMARY_METRIC": "MAE",
+  "DELTA_SIGN_CONVENTION": "MAE_B0_MIN - MAE_AUX_MIN",
+  "DELTA_SIGN_MEANING": {
+    "positive": "auxiliary context model better",
+    "negative": "auxiliary context model worse"
+  },
+  "BOOTSTRAP_POLICY": {
+    "method": "SUBJECT_GAME_BLOCK",
+    "block_identity": ["player_entity_id", "game_id"],
+    "draws": 2000,
+    "base_seed": 20260918,
+    "confidence_level": 0.95,
+    "ci": "percentile_2.5_97.5"
+  },
+  "PROSPECTIVE_STATUS_POLICY": {
+    "PROSPECTIVE_MIN_SUPPORTED": "CI for ΔMAE entirely > 0",
+    "PROSPECTIVE_MIN_HARMFUL": "CI for ΔMAE entirely < 0",
+    "PROSPECTIVE_MIN_INCONCLUSIVE": "CI overlaps 0",
+    "vocabulary_map_from_PTS": {
+      "PRODUCTION_SUPPORTED": "PROSPECTIVE_MIN_SUPPORTED",
+      "PRODUCTION_HARMFUL": "PROSPECTIVE_MIN_HARMFUL",
+      "PRODUCTION_INCONCLUSIVE": "PROSPECTIVE_MIN_INCONCLUSIVE"
+    },
+    "practical_significance_threshold": null,
+    "note": "No previously approved minimum meaningful MAE improvement; do not invent one. Report effect magnitude separately from status."
+  },
+  "PLAYED_AUDIT": {
+    "canonical_function": "classifyWowyAppearance",
+    "source": "lib/wowy/appearance.ts",
+    "semantics": {
+      "minutes_token_00": "dnp",
+      "minutes_gt_0": "played",
+      "minutes_token_0_or_0.0": "played (zero-minute appearance)",
+      "zero_minutes_with_box": "played",
+      "zero_minutes_no_box_non_00": "dnp"
+    },
+    "DNP_EQUALS_ZERO_PRIMARY_TARGET": false,
+    "PLAYED_STATUS_USED_AS_MODEL_FEATURE": "NO",
+    "PLAYED_STATUS_USED_FOR_TARGET_POPULATION_RESOLUTION": "YES",
+    "target_leakage_statement": "Postgame PLAYED filtering is target-population resolution for minutes|participation, not feature leakage, provided PLAYED is never used as a pregame model input."
+  },
+  "MIN_PREGAME_ELIGIBILITY": [
+    "valid B0_MIN (expanding same-season same-team prior PLAYED mean; history_n >= 1)",
+    "valid role.minutes_delta (role.recent_minutes - role.season_minutes; ROLE_CONTEXT_VERSION=player-role-context-v1)",
+    "Availability completeness == COMPLETE (COMPLETE_ONLY_PRIMARY)",
+    "valid injury.expected_missing_minutes",
+    "valid injury.rotation_players_out_count",
+    "AVAIL_CONTEXT_VERSION=team-injury-context-v2",
+    "frozen model artifact SHA 7354e0a8… loaded",
+    "feature_manifest_sha + training_manifest_sha match freeze",
+    "canonical pregame snapshot under MIN_CANONICAL_SNAPSHOT_POLICY",
+    "prediction_created_at < game_start",
+    "prediction_created_at <= intended_cutoff_at (T-60)",
+    "branch == ROLE_AVAIL_JOINT for primary cohort",
+    "prospective_window_id == aux-min-role-avail-joint-v1-first750",
+    "HISTORICAL_ROWS_IN_MIN_PROSPECTIVE_COHORT gate: prediction_created_at >= window_opened_at"
+  ],
+  "PREGAME_VS_SCORING": {
+    "PREGAME_PREDICTION_ELIGIBILITY": "Store immutable joint prediction when MIN_PREGAME_ELIGIBILITY holds; PLAYED unknown at prediction time",
+    "PRIMARY_SCORING_ELIGIBILITY": "Postgame classifyWowyAppearance.class == played",
+    "DNP_PROSPECTIVE_POLICY": "STORE_AS_DIAGNOSTIC_NOT_PRIMARY_SCORE",
+    "NO_PGL_POLICY": "QUARANTINE_UNRESOLVED_NOT_PRIMARY (outcome_class unresolved/quarantine; does not consume primary N)",
+    "PRIMARY_MIN_CERTIFICATION_AUTHORITY_FOR_DNP": "NO"
+  },
+  "FIRST_N_PLAYED_COHORT_RULE": {
+    "order": "All ROLE_AVAIL_JOINT PRIMARY_PREGAME_ELIGIBLE rows ordered by (prediction_created_at ASC, shadow_prediction_id ASC)",
+    "after_resolution": "Retain first PROSPECTIVE_MIN_REQUIRED_N rows whose resolved_appearance_class == played",
+    "dnp_rows": "Remain immutable stored observations; do not consume primary N",
+    "determinism": "Tie-break by shadow_prediction_id; exactly one canonical row per (window, player, game, model) via unique index; no snapshot shopping"
+  },
+  "FALLBACK_BRANCHES": {
+    "store_prospectively": true,
+    "branches": ["ROLE_ONLY", "AVAIL_ONLY", "BASELINE"],
+    "label": "SECONDARY / DIAGNOSTIC",
+    "enter_primary_certification_cohort": false,
+    "cannot_replace_failed_joint": true
+  },
+  "SAMPLE_UNIT": "one PLAYER_GAME = one player in one NBA game with one canonical pregame MIN prediction",
+  "NO_OPTIONAL_STOPPING": true,
+  "AUX_MIN_PRIMARY_WINDOW_REFIT_COUNT": 0,
+  "NO_RUNNING_MAE_EXPERIMENT_CHANGES": true,
+  "COLLECTION_STATES": [
+    "NOT_ARMED",
+    "READY_FOR_PROSPECTIVE_COLLECTION",
+    "COLLECTING",
+    "READY_FOR_READOUT",
+    "COMPLETE"
+  ],
+  "READY_FOR_READOUT_REQUIRES": [
+    "primary PLAYED N == PROSPECTIVE_MIN_REQUIRED_N (750)",
+    "all primary cohort outcomes resolved"
+  ],
+  "CERTIFICATION": {
+    "automatic_on_ready": false,
+    "NEXT_WHEN_READY": "CERTIFY_AUXILIARY_MIN_PROSPECTIVE_VALIDATION"
+  },
+  "MIN_PRODUCTION_PATH": "DEFER_PROPS_EXPLORER",
+  "MIN_TO_PTS_CHAIN": "NONE",
+  "PRODUCTION_INTEGRATION_AUTHORITY": "NO",
+  "PROSPECTIVE_VALIDATION_REQUIRED": "YES",
+  "AUXILIARY_MIN_SHADOW_STATUS": "READY_FOR_PROSPECTIVE_IMPLEMENTATION",
+  "NEXT": "IMPLEMENT_AUXILIARY_MIN_PROSPECTIVE_COLLECTION",
+  "PTS_ISOLATION": {
+    "PTS_MODEL_SHA": "36f68abdab110ea13e78ac03d573aa3718b9ae7bb8b9bbd8a0d5983d83df478a",
+    "PTS_REQUIRED_N": 500,
+    "PTS_WINDOW_ID": "prod-pts-context-v1-first500",
+    "PTS_MODEL_CHANGED": "NO",
+    "PTS_WINDOW_CHANGED": "NO",
+    "PTS_STORAGE_MODIFIED": "NO",
+    "PTS_PRODUCTION_CONTEXT_SHADOW_STATUS": "UNCHANGED",
+    "PTS_NEXT": "CONTINUE_PROSPECTIVE_PTS_SHADOW_COLLECTION",
+    "PRODUCTION_PTS_CONTEXT_INTEGRATION_AUTHORITY": "NO"
+  },
+  "FEASIBILITY": {
+    "artifact": "tmp/auxiliary-min-prospective-validation-design/sample_size_feasibility.json",
+    "pregame_joint_complete_candidates_hist": 75847,
+    "eventual_played_rate": 0.6429654435903859,
+    "COMPLETE_Availability_required_for_joint": true,
+    "avg_joint_candidates_per_game": 23.95672773215414,
+    "est_played_primary_per_game": 15.404,
+    "est_pregame_predictions_for_N750": 1166.47,
+    "est_nba_games_spanned": 48.69,
+    "est_slate_nights_at_12_games": 4.06,
+    "selected_n_rationale": "Smallest grid N in {250,500,750,1000} with chronological first-N 95% CI half-width <= 0.12 AND mean half-width across contiguous windows <= 0.12 under subject-game block bootstrap. Independent of PTS N=500; not tuned to pass retrospective +0.36.",
+    "pts_n_500_copied": false
+  },
+  "IMMUTABLE_RECORD_SCHEMA_MIN_FIELDS": [
+    "shadow_prediction_id",
+    "prospective_window_id",
+    "game_id",
+    "player_entity_id",
+    "team_id",
+    "game_start",
+    "prediction_created_at",
+    "target",
+    "b0_min",
+    "shadow_min",
+    "context_adjustment",
+    "branch",
+    "role_minutes_delta",
+    "injury_expected_missing_minutes",
+    "injury_rotation_players_out_count",
+    "role_context_version",
+    "availability_context_version",
+    "model_id",
+    "model_artifact_sha",
+    "feature_manifest_sha",
+    "training_manifest_sha",
+    "availability_completeness",
+    "pregame_eligibility",
+    "canonical_snapshot_identity",
+    "intended_cutoff_at",
+    "late",
+    "provenance"
+  ],
+  "OUTCOME_APPEND_FIELDS": [
+    "resolved_appearance_class",
+    "realized_minutes",
+    "outcome_resolved_at",
+    "primary_scoring_eligible"
+  ],
+  "SAFETY_CHECKLIST": {
+    "MIN_model_refit": "NO",
+    "MIN_features_changed": "NO",
+    "Schedule_MIN_added": "NO",
+    "PARTIAL_Availability_allowed": "NO",
+    "DNP_treated_as_0_minute_primary_target": "NO",
+    "actual_PLAYED_status_used_as_pregame_feature": "NO",
+    "PTS_model_modified": "NO",
+    "PTS_prospective_N_modified": "NO",
+    "PTS_storage_modified": "NO",
+    "MIN_row_able_to_increment_PTS_counter": "NO",
+    "historical_row_counted_prospectively": "NO",
+    "retrospective_plus_0_36_treated_as_certification": "NO",
+    "PTS_N_500_copied_without_MIN_specific_justification": "NO",
+    "optional_stopping_designed": "NO",
+    "running_MAE_used_for_experiment_changes": "NO",
+    "Props_Explorer_modified": "NO",
+    "MIN_to_PTS_chain_created": "NO",
+    "production_integration_authority_granted": "NO"
+  }
+}

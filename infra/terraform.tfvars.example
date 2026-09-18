@@ -17,6 +17,7 @@ boxscore_execution_enabled = false
 game_status_sync_execution_enabled = false
 postgame_execution_enabled = false
 shadow_execution_enabled = false
+context_prospective_execution_enabled = false
 
 # CODE_ONLY family creation. Independent of live_ingestion_enabled.
 # Frozen baseline: keep false. Authorized status-sync deploy: game_status_sync_create = true
@@ -25,6 +26,8 @@ game_status_sync_create = false
 postgame_create = false
 shadow_create = false
 shadow_enable_schedule = false
+context_prospective_create = false
+context_prospective_enable_schedule = false
 
 aws_region          = "us-east-1"
 lambda_function_name = "nightly-bdl-updater"

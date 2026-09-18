@@ -1,0 +1,7 @@
+{
+  "alpha": 1.0,
+  "intercept_regularized": false,
+  "feature_standardization": "NONE",
+  "weights": "uniform",
+  "inherited_from": "selective-predictive-validation-v1"
+}

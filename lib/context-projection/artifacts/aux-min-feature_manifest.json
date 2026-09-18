@@ -1,0 +1,29 @@
+{
+  "H3_ROLE_MIN_FEATURES": [
+    "role.minutes_delta"
+  ],
+  "H5_AVAIL_MIN_FEATURES": [
+    "injury.expected_missing_minutes",
+    "injury.rotation_players_out_count"
+  ],
+  "AUX_MIN_JOINT_FEATURES": [
+    "role.minutes_delta",
+    "injury.expected_missing_minutes",
+    "injury.rotation_players_out_count"
+  ],
+  "transforms": {
+    "role.minutes_delta": "role.recent_minutes - role.season_minutes",
+    "injury.*": "raw"
+  },
+  "AVAIL_MIN_VALIDATED_COMPLETENESS_POLICY": "COMPLETE_ONLY_PRIMARY",
+  "AUX_MIN_TARGET_POPULATION": "PLAYED",
+  "standardization": "NONE",
+  "unauthorized": [
+    "schedule.*",
+    "opponent.*",
+    "form.*",
+    "matchup.*",
+    "interpretation.*",
+    "PTS"
+  ]
+}

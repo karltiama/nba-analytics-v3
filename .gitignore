@@ -34,6 +34,18 @@
 # Ops design/certification reports (regenerable; local audit trail only)
 /reports/
 
+# Regenerable context-projection ops status / cert dumps
+# (frozen model/window manifests stay tracked)
+lib/context-projection/artifacts/*-arm-status.json
+lib/context-projection/artifacts/*-implementation-certification.*
+lib/context-projection/artifacts/*-sample-size-feasibility.json
+lib/context-projection/artifacts/*-activation-readiness.*
+lib/context-projection/artifacts/context-projection-prospective-operations.json
+
+# Lambda / Terraform build outputs
+lambda/**/.package/
+infra/*.zip
+
 # debug
 npm-debug.log*
 yarn-debug.log*

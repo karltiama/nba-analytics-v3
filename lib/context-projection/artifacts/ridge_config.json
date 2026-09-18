@@ -1,0 +1,6 @@
+{
+  "alpha": 1.0,
+  "intercept_regularized": false,
+  "feature_standardization": "NONE",
+  "weights": "uniform"
+}
