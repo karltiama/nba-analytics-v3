@@ -115,7 +115,7 @@ export async function resolveMinOutcomeAndRecompute(
 /** Recompute primary_sequence_number from prediction_created_at order (not arrival order). */
 export async function recomputeMinPrimarySequences(
   client: SqlQueryable,
-  windowId = AUX_MIN_PROSPECTIVE_WINDOW
+  windowId: string = AUX_MIN_PROSPECTIVE_WINDOW
 ): Promise<ReturnType<typeof assignPrimarySequences>['counters']> {
   const dbRows = await loadMinWindowRowsForAccounting(client, windowId);
   const { assignments, counters } = assignPrimarySequences(mapDbRows(dbRows));

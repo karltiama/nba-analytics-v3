@@ -1,6 +1,6 @@
 import type { CanonicalPropType } from '@/lib/betting/market-movement';
 import { formatMarketLabel } from './display';
-import type { XRayLegInterpretation } from './types';
+import type { FormLineRead, MarketPositionKind, XRayLegInterpretation } from './types';
 import type {
   ParlayContextCoverage,
   ParlayDataQuality,
