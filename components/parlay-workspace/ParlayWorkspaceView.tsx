@@ -11,6 +11,7 @@ import {
   type SelectedParlayLeg,
 } from '@/lib/parlay/selection';
 import type { WorkspaceAnalysisEligibility } from '@/lib/parlay/workspace-analysis';
+import type { WorkspaceAnalysisRecord } from '@/lib/parlay/selection-store';
 import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
 
 function formatOdds(odds: number | null): string {
