@@ -61,9 +61,9 @@ export function TeamLogo({
     warnInvalidTeam(team);
     const fallbackLabel = team.trim().slice(0, 3) || '?';
     return (
-      <div className={`flex shrink-0 items-center justify-center ${SIZE_BOX[size]} ${className}`.trim()}>
+      <span className={`inline-flex shrink-0 items-center justify-center ${SIZE_BOX[size]} ${className}`.trim()}>
         <FallbackMark label={fallbackLabel} size={size} />
-      </div>
+      </span>
     );
   }
 
@@ -72,8 +72,8 @@ export function TeamLogo({
   const resolvedAlt = decorative ? '' : (alt ?? `${teamName} logo`);
 
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center ${SIZE_BOX[size]} ${className}`.trim()}
+    <span
+      className={`inline-flex shrink-0 items-center justify-center ${SIZE_BOX[size]} ${className}`.trim()}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -84,6 +84,6 @@ export function TeamLogo({
         style={scale !== 1 ? { transform: `scale(${scale})` } : undefined}
         draggable={false}
       />
-    </div>
+    </span>
   );
 }
