@@ -43,7 +43,7 @@ export function LandingSectionHeader({
       <div className="relative mb-4 md:mb-6 lg:mb-8">
         <h2
           id={id}
-          className="font-extrabold tracking-tight text-2xl leading-tight text-[#053F46] md:pointer-events-none md:select-none md:tracking-tighter md:leading-[0.82] md:text-[clamp(2.75rem,11vw,7.25rem)]"
+          className="font-display font-extrabold tracking-tight text-2xl leading-tight uppercase text-[#053F46] md:pointer-events-none md:select-none md:leading-[0.82] md:text-[clamp(2.75rem,11vw,7.25rem)]"
         >
           {title}
         </h2>

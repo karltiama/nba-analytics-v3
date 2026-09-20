@@ -44,7 +44,7 @@ export function LandingHero() {
               <p className="text-[11px] sm:text-[13px] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#8aa0a3]">
                 More than the trend.
               </p>
-              <h1 className="w-full text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] text-[#063f46]">
+              <h1 className="w-full font-display text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[0.95] uppercase text-[#063f46]">
                 See the game
                 <span className="block">
                   in <span className="text-[#55ddb1]">context</span>
