@@ -64,12 +64,6 @@ export function LandingHero() {
                 Explore Court Context
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
-              <Link
-                href="/login"
-                className="inline-flex h-12 w-auto items-center justify-center rounded-lg border border-[#d7e2de] bg-white px-5 sm:px-6 text-[#063f46] font-semibold transition-colors hover:border-[#b7c9c4]"
-              >
-                Sign In
-              </Link>
             </div>
           </div>
 

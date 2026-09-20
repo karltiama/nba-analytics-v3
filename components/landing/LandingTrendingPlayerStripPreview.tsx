@@ -122,8 +122,8 @@ export function LandingTrendingPlayerStripPreview() {
         variant="watermark"
         title="Trending Players"
         description="Sample L5 vs season illustration — not a live ranking."
-        href="/betting"
-        linkLabel="Open dashboard"
+        href="/betting/props-explorer"
+        linkLabel="Research players"
       />
 
       <div className="flex items-center gap-1 mb-3 flex-wrap" aria-hidden>
@@ -150,7 +150,7 @@ export function LandingTrendingPlayerStripPreview() {
           {DEMO_PLAYERS.map((player, idx) => (
             <Link
               key={player.name}
-              href="/betting"
+              href="/betting/props-explorer"
               className={`${CARD_SHELL} hover:border-[#075B5C]/30 transition-colors cursor-pointer group snap-start`}
             >
               <div className="flex gap-2.5">

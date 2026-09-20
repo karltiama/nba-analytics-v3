@@ -212,12 +212,18 @@ export function TrendingPlayerStrip() {
   const fetchData = useCallback(async (s: TrendingStat) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/betting/players/trending-strip?stat=${s}&limit=15`);
-      if (!res.ok) throw new Error('fetch failed');
+      const res = await fetch(`/api/betting/players/trending-strip?stat=${s}&limit=15`, {
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      // 401 is expected when the session is missing; parent page shows UnauthorizedPanel.
+      if (!res.ok) {
+        setPlayers([]);
+        return;
+      }
       const data = await res.json();
       setPlayers(data.players ?? []);
-    } catch (err) {
-      console.error('Trending strip fetch error:', err);
+    } catch {
       setPlayers([]);
     } finally {
       setLoading(false);
