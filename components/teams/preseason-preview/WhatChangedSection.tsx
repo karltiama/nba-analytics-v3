@@ -45,7 +45,7 @@ function ChangeColumn({
             <PlayerHeadshot
               nbaPlayerId={p.nbaPlayerId}
               name={p.name}
-              className="relative w-10 h-12 rounded-lg overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
+              className="relative w-12 h-14 rounded-lg overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
             />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-[#063f46] truncate">

@@ -2,301 +2,190 @@ import type { TeamPreseasonPreviewContent } from '../types';
 
 /**
  * Charlotte Hornets — 2026–27 Team Preseason Preview (curated editorial).
- * Promoted from content/preseason/2026/CHA.preview.draft.json
  * Structured lists + prose only. Snapshot metrics come from live prior-season data when available.
  */
 export const charlottePreseasonPreview: TeamPreseasonPreviewContent = {
-  "season": "2026",
-  "slug": "CHA",
-  "teamId": "4",
-  "headline": "Charlotte Hornets",
-  "dek": "[EDIT] One-line dek for Charlotte Hornets (2026–27). Prior RS: 44–38 regular-season (82 GP).",
-  "bigPicture": [
-    "[EDIT] Charlotte Hornets — opening framing. Prior season public snapshot: 44–38 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
-    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Tosan Evbuomwan.",
-    "[EDIT] High-impact moves flagged for human review: LaMelo Ball [DEPARTED]→MIN; Miles Bridges [DEPARTED]→PHX; Naz Reid [ADDED]→MIN; Royce O'Neale [ADDED]→PHX. Verify against open-roster sources before publishing."
+  season: '2026',
+  slug: 'CHA',
+  teamId: '4',
+
+  headline: 'Charlotte Hornets',
+  dek: '[EDIT] One-line dek for Charlotte Hornets (2026–27). Prior RS: 44–38 regular-season (82 GP).',
+
+  bigPicture: [
+    'Charlotte enters 2026–27 in an interesting transition after a 44-win season showed that this young roster is capable of being competitive. The Hornets still have plenty of shooting and depth, but their offensive identity will look different as Kon Knueppel, Brandon Miller and Coby White take on greater responsibility within a more balanced attack. The biggest question is whether Charlotte can maintain its offensive efficiency without relying on one elite creator, while continued development from Knueppel, Miller and the rest of its young core will ultimately shape what this new version of the Hornets becomes.',
   ],
-  "keyQuestions": [
+
+  keyQuestions: [
     {
-      "headline": "Who absorbs minutes previously associated with Miles Bridges, LaMelo Ball?",
-      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.ac65bcc8-98bc-5201-8e1e-f7c087819443 · contextSignals.VACATED_MINUTES.c125e726-caaa-5e28-b972-cda5e1baa1b3."
+      headline: 'Who absorbs the minutes previously associated with Miles Bridges and LaMelo Ball?',
+      detail:
+        'Charlotte has a significant amount of playing time and offensive responsibility to redistribute this season. The key question is not simply who replaces Bridges and Ball in the starting lineup, but which players earn those available minutes and how that reshapes the rotation. Brandon Miller, Kon Knueppel, Coby White and several offseason additions could all see their responsibilities expand, making Charlotte’s early-season rotation one of the most important things to monitor.'
+    },
+    
+  ],
+
+  additions: [
+    {
+      name: 'Dennis Schroder',
+      nbaPlayerId: '203471',
+      position: 'Guard',
+      context: 'Ball handler / secondary creator',
     },
     {
-      "headline": "Does Coby White's usage profile change without Miles Bridges?",
-      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.672e0c46-99ac-58cf-b7b6-e436f641f171 · roster.departures.ac65bcc8-98bc-5201-8e1e-f7c087819443."
+      name: 'Dorian Finney-Smith',
+      nbaPlayerId: '1627827',
+      position: 'Forward',
+      context: 'Strong defensive presence / floor spacing',
     },
     {
-      "headline": "Which confirmed addition most changes spacing or rotation packing among Christian Anderson, Dennis Schroder, Dorian Finney-Smith, Grayson Allen?",
-      "detail": "[EDIT] Expand using evidence: roster.additions.fa100c12-f418-5958-a757-e7e59646fc6b · roster.additions.0462bed0-42a2-5dce-914c-bbebcfe3a833 · roster.additions.42972e0f-05f9-59ab-b1c9-45a8e53f7fa7 · roster.additions.f6f18caf-1a72-5d3f-b701-a855bce7e19f."
+      name: 'Grayson Allen',
+      nbaPlayerId: '1628960',
+      position: 'Guard',
+      context: 'Sharpshooting / floor spacing',
     },
     {
-      "headline": "Which recent-competitive minutes increases among Brandon Miller, Grayson Allen, Coby White hold once the regular season compresses roles?",
-      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.fc21667e-80c0-511d-812d-3c8cf2c4cf7f · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.f6f18caf-1a72-5d3f-b701-a855bce7e19f · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.672e0c46-99ac-58cf-b7b6-e436f641f171."
+      name: 'Naz Reid',
+      nbaPlayerId: '1629675',
+      position: 'Center-Forward',
+      context: 'Versatile big man / shooting',
     },
     {
-      "headline": "What is the true roster status of unresolved names (Tosan Evbuomwan)?",
-      "detail": "[EDIT] Expand using evidence: roster.unresolved.7b51c68e-1cf9-5472-85c4-ea83ad9b306c."
+      name: "Royce O'Neale",
+      nbaPlayerId: '1626220',
+      position: 'Forward',
+      context: 'Dependable defender / 3 and D wing',
+    },
+  ],
+
+  departures: [
+    {
+      name: 'Josh Green',
+      nbaPlayerId: '1630182',
+      position: 'Guard',
+      context: '↔ UTA · [EDIT] add role/impact context',
+    },
+    {
+      name: 'LaMelo Ball',
+      nbaPlayerId: '1630163',
+      position: 'Guard',
+      context:
+        '↔ MIN · review: TOP_MINUTES_CONFIRMED_DEPARTURE, HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context',
+    },
+    {
+      name: 'Miles Bridges',
+      nbaPlayerId: '1628970',
+      position: 'Forward',
+      context:
+        '↔ PHX · review: HIGH_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context',
+    },
+    {
+      name: 'Tre Mann',
+      nbaPlayerId: '1630544',
+      position: 'Guard',
+      context: '↔ WAS · [EDIT] add role/impact context',
+    },
+  ],
+
+  draftPicks: [
+    {
+      name: 'Hannes Steinbach',
+      nbaPlayerId: '1643419',
+      position: 'Forward',
+      context: '[EDIT] add role/impact context',
+    },
+    {
+      name: 'Christian Anderson',
+      nbaPlayerId: '1643515',
+      position: 'Guard',
+      context: '[EDIT] add role/impact context',
+    },
+  ],
+
+  projectedRotation: {
+    starters: {
+      PG: { name: 'Coby White', nbaPlayerId: '1629632' },
+      SG: { name: 'Brandon Miller', nbaPlayerId: '1641706' },
+      SF: { name: 'Kon Knueppel', nbaPlayerId: '1642851' },
+      PF: { name: 'Naz Reid', nbaPlayerId: '1629675' },
+      C: { name: 'Hannes Stinbach', nbaPlayerId: '1631217' },
+    },
+    keyBench: [
+      { name: 'Dennis Schroder', nbaPlayerId: '203471', position: 'G' },
+      { name: 'Grayson Allen', nbaPlayerId: '1628960', position: 'G' },
+      { name: 'Ryan Kalkbrenner', nbaPlayerId: '1641750', position: 'F' },
+      { name: 'Sion James', nbaPlayerId: '1642883', position: 'G' },
+      { name: 'Christian Anderson', nbaPlayerId: '1643515', position: 'G' },
+    ],
+  },
+
+  playersToWatch: [
+    {
+      name: 'Coby White',
+      nbaPlayerId: '1629632',
+      jerseyNumber: '3',
+      position: 'PG',
+      meta: "PG · 6'4\" · Age 26",
+      watching:
+        'With LaMelo Ball departing, Coby White becomes the Hornets\' primary ball handler and primary creator. He will need to continue to improve his decision-making and playmaking to be successful in this role.',
+    },
+    {
+      name: 'Brandon Miller',
+      nbaPlayerId: '1641706',
+      position: 'PF',
+      meta: "SF · 6'7\" · Age 23",
+      watching:
+        'The Hornets will need Brandon Miller to continue to improve his game, with LaMelo and Bridges departing, he will need to step up and be a primary scorer and playmaker for the team.',
+    },
+    {
+      name: 'Kon Knueppel',
+      nbaPlayerId: '1642851',
+      position: 'SG',
+      meta: 'Prior ~31.1 MPG · 18.0 PPG',
+      watching:
+        'Kon Knueppel enters year two with a larger offensive burden, particularly as a ball handler and secondary creator. The key will be whether he can maintain his elite shooting while improving as a passer, rim attacker, and self-creator.',
+    },
+    
+  ],
+
+  roleWatch: [
+    {
+      player: { name: 'Naz Reid', nbaPlayerId: '1629675' },
+      previousRole: 'Starting center',
+      watch: 'Development ↑',
+    },
+    {
+      player: { name: 'Coby White', nbaPlayerId: '1629632' },
+      previousRole:
+        'Coby White is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.',
+      watch: 'Stable',
+    },
+    {
+      player: { name: 'Brandon Miller', nbaPlayerId: '1641706' },
+      previousRole:
+        'Brandon Miller is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.',
+      watch: 'Stable',
+    },
+    
+  ],
+
+  wowyContext: [
+    {
+      title: 'Who fills in the usage previously associated with LaMelo Ball and Miles Bridges?',
+      detail:
+        'Which players will need to step up and fill in the usage? This will be a key factor in the Hornets\' success this season.',
+    },
+    {
+      title: 'How will Naz Reid perform in his new team?',
+      detail:
+        'Naz Reid enters year two with a larger offensive burden, particularly as a rim attacker and self-creator. The key will be whether he can maintain his elite shooting while improving as a passer, rim attacker, and self-creator.',
     }
   ],
-  "additions": [
-    {
-      "name": "Christian Anderson",
-      "nbaPlayerId": "1643515",
-      "position": "G",
-      "context": "[EDIT] add role/impact context"
-    },
-    {
-      "name": "Dennis Schroder",
-      "nbaPlayerId": "203471",
-      "position": "G",
-      "context": "↔ CLE · [EDIT] add role/impact context"
-    },
-    {
-      "name": "Dorian Finney-Smith",
-      "nbaPlayerId": "1627827",
-      "position": "F",
-      "context": "↔ HOU · [EDIT] add role/impact context"
-    },
-    {
-      "name": "Grayson Allen",
-      "nbaPlayerId": "1628960",
-      "position": "G",
-      "context": "↔ PHX · [EDIT] add role/impact context"
-    },
-    {
-      "name": "Hannes Steinbach",
-      "nbaPlayerId": "1643419",
-      "position": "F",
-      "context": "[EDIT] add role/impact context"
-    },
-    {
-      "name": "Jarkel Joiner",
-      "nbaPlayerId": "1641935",
-      "position": "G",
-      "context": "[EDIT] add role/impact context"
-    },
-    {
-      "name": "Kylan Boswell",
-      "nbaPlayerId": "1643573",
-      "position": "G",
-      "context": "[EDIT] add role/impact context"
-    },
-    {
-      "name": "Michael Ajayi",
-      "nbaPlayerId": "1642369",
-      "position": "G",
-      "context": "[EDIT] add role/impact context"
-    },
-    {
-      "name": "Naz Reid",
-      "nbaPlayerId": "1629675",
-      "position": "C-F",
-      "context": "↔ MIN · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
-    },
-    {
-      "name": "Royce O'Neale",
-      "nbaPlayerId": "1626220",
-      "position": "F",
-      "context": "↔ PHX · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
-    }
-  ],
-  "departures": [
-    {
-      "name": "Josh Green",
-      "nbaPlayerId": "1630182",
-      "position": "G",
-      "context": "↔ UTA · [EDIT] add role/impact context"
-    },
-    {
-      "name": "LaMelo Ball",
-      "nbaPlayerId": "1630163",
-      "position": "G",
-      "context": "↔ MIN · review: TOP_MINUTES_CONFIRMED_DEPARTURE, HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
-    },
-    {
-      "name": "Miles Bridges",
-      "nbaPlayerId": "1628970",
-      "position": "F",
-      "context": "↔ PHX · review: HIGH_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
-    },
-    {
-      "name": "Tre Mann",
-      "nbaPlayerId": "1630544",
-      "position": "G",
-      "context": "↔ WAS · [EDIT] add role/impact context"
-    }
-  ],
-  "draftPicks": [],
-  "projectedRotation": null,
-  "playersToWatch": [
-    {
-      "name": "Coby White",
-      "nbaPlayerId": "1629632",
-      "position": null,
-      "meta": "Prior ~15.3 MPG · 10.6 PPG",
-      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Brandon Miller",
-      "nbaPlayerId": "1641706",
-      "position": null,
-      "meta": "Prior ~24.2 MPG · 16.0 PPG",
-      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Kon Knueppel",
-      "nbaPlayerId": "1642851",
-      "position": null,
-      "meta": "Prior ~31.1 MPG · 18.0 PPG",
-      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Grayson Allen",
-      "nbaPlayerId": "1628960",
-      "position": null,
-      "meta": "Prior ~17.1 MPG · 9.8 PPG",
-      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Moussa Diabate",
-      "nbaPlayerId": "1631217",
-      "position": null,
-      "meta": "Prior ~23.3 MPG · 7.0 PPG",
-      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Ryan Kalkbrenner",
-      "nbaPlayerId": "1641750",
-      "position": null,
-      "meta": "Prior ~18.0 MPG · 6.3 PPG",
-      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Sion James",
-      "nbaPlayerId": "1642883",
-      "position": null,
-      "meta": "Prior ~22.3 MPG · 5.3 PPG",
-      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    },
-    {
-      "name": "Christian Anderson",
-      "nbaPlayerId": "1643515",
-      "position": null,
-      "meta": null,
-      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
-    }
-  ],
-  "roleWatch": [
-    {
-      "player": {
-        "name": "Coby White",
-        "nbaPlayerId": "1629632",
-        "position": null
-      },
-      "previousRole": "Coby White is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
-      "watch": "Stable"
-    },
-    {
-      "player": {
-        "name": "Brandon Miller",
-        "nbaPlayerId": "1641706",
-        "position": null
-      },
-      "previousRole": "Brandon Miller is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
-      "watch": "Stable"
-    },
-    {
-      "player": {
-        "name": "Brandon Miller",
-        "nbaPlayerId": "1641706",
-        "position": null
-      },
-      "previousRole": "Brandon Miller is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
-      "watch": "Minutes ↑"
-    },
-    {
-      "player": {
-        "name": "Grayson Allen",
-        "nbaPlayerId": "1628960",
-        "position": null
-      },
-      "previousRole": "Grayson Allen is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
-      "watch": "Minutes ↑"
-    },
-    {
-      "player": {
-        "name": "Coby White",
-        "nbaPlayerId": "1629632",
-        "position": null
-      },
-      "previousRole": "Coby White is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
-      "watch": "Minutes ↑"
-    },
-    {
-      "player": {
-        "name": "Kon Knueppel",
-        "nbaPlayerId": "1642851",
-        "position": null
-      },
-      "previousRole": "Kon Knueppel is a returning high-minute player (prior MPG >= 28).",
-      "watch": "Stable"
-    },
-    {
-      "player": {
-        "name": "Miles Bridges",
-        "nbaPlayerId": "1628970",
-        "position": null
-      },
-      "previousRole": "Miles Bridges is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
-      "watch": "Opportunity ↑"
-    },
-    {
-      "player": {
-        "name": "LaMelo Ball",
-        "nbaPlayerId": "1630163",
-        "position": null
-      },
-      "previousRole": "LaMelo Ball is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
-      "watch": "Opportunity ↑"
-    },
-    {
-      "player": {
-        "name": "Kon Knueppel",
-        "nbaPlayerId": "1642851",
-        "position": null
-      },
-      "previousRole": "Kon Knueppel ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
-      "watch": "Stable"
-    }
-  ],
-  "wowyContext": [
-    {
-      "title": "Coby White with/without Miles Bridges",
-      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
-    },
-    {
-      "title": "Coby White with/without LaMelo Ball",
-      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
-    },
-    {
-      "title": "Brandon Miller with/without Miles Bridges",
-      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
-    },
-    {
-      "title": "Brandon Miller with/without LaMelo Ball",
-      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
-    },
-    {
-      "title": "Kon Knueppel with/without Miles Bridges",
-      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
-    },
-    {
-      "title": "Kon Knueppel with/without LaMelo Ball",
-      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
-    }
-  ],
-  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 44–38 (82 GP); Previous regular-season ORTG: 116.7; Previous regular-season DRTG: 111.7; Returning minutes leader — Kon Knueppel: 31.1 MPG). Rewrite as qualitative outlook — not a prediction.",
-  "snapshotNotes": {
-    "playoffResult": null
-  }
+
+  outlook:
+    'The Hornets showed they can generate efficient offense while remaining competitive defensively, and much of their next step will come down to how their young core handles greater responsibility. Kon Knueppel, who led Charlotte’s returning players at 31.1 minutes per game, is central to that development as the team looks to build on last season’s progress without losing the offensive identity that made them successful.',
+
+  snapshotNotes: {
+    playoffResult: null,
+  },
 };

@@ -71,7 +71,7 @@ function PlayerHeadshot({ nbaId, name }: { nbaId: string | null; name: string })
       <img
         src={nbaHeadshotUrl(nbaId)}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover object-[center_18%] origin-[center_18%] scale-[1.4]"
+        className="absolute inset-0 h-full w-full object-cover object-[center_22%]"
         onError={() => setFailed(true)}
       />
     </div>

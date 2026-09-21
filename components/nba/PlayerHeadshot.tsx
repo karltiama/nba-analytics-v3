@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { nbaCdnHeadshotUrl } from '@/lib/nba/headshots';
 
 function playerInitials(name: string) {
@@ -15,7 +16,7 @@ function playerInitials(name: string) {
 export function PlayerHeadshot({
   nbaPlayerId,
   name,
-  className = 'relative w-[72px] h-[88px] rounded-2xl overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0',
+  className = 'relative w-16 h-20 rounded-2xl overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0',
 }: {
   nbaPlayerId?: string | null;
   name: string;
@@ -34,11 +35,13 @@ export function PlayerHeadshot({
 
   return (
     <div className={className}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={nbaCdnHeadshotUrl(nbaPlayerId)}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover object-[center_18%] origin-[center_18%] scale-[1.4]"
+        fill
+        sizes="128px"
+        quality={95}
+        className="object-cover object-[center_22%]"
         onError={() => setFailed(true)}
       />
     </div>

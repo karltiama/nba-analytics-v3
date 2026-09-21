@@ -143,10 +143,9 @@ async function main() {
   const displayName = draft.headline || draft.slug;
   const moduleSrc = renderCuratedPreviewModule({
     exportName,
-    contentJson: JSON.stringify(draft, null, 2),
+    content: draft,
     displayName,
     season: draft.season,
-    slug: draft.slug,
   });
   await fs.mkdir(path.dirname(modulePath), { recursive: true });
   await fs.writeFile(modulePath, moduleSrc, 'utf8');

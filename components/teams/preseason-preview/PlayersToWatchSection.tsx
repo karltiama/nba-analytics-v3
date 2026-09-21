@@ -34,7 +34,7 @@ export function PlayersToWatchSection({
                 <PlayerHeadshot
                   nbaPlayerId={p.nbaPlayerId}
                   name={p.name}
-                  className="relative w-14 h-[4.25rem] rounded-xl overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
+                  className="relative w-16 h-20 rounded-xl overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
                 />
                 <div className="min-w-0">
                   {p.jerseyNumber ? (
