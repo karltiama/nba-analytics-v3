@@ -1,0 +1,252 @@
+{
+  "season": "2026",
+  "slug": "POR",
+  "teamId": "25",
+  "headline": "Portland Trail Blazers",
+  "dek": "[EDIT] One-line dek for Portland Trail Blazers (2026–27). Prior RS: 42–40 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Portland Trail Blazers — opening framing. Prior season public snapshot: 42–40 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Optional second paragraph: continuity vs change, vacated minutes, or usage questions from the research packet.",
+    "[EDIT] High-impact moves flagged for human review: Jerami Grant [DEPARTED]→MEM; Ja Morant [ADDED]→MEM. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Jerami Grant, Kris Murray?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.594eb071-e982-5862-b872-e1bc5cae5af4 · contextSignals.VACATED_MINUTES.85922964-70ba-5e08-9d85-8ed01823a4ba."
+    },
+    {
+      "headline": "Does Deni Avdija's usage profile change without Jerami Grant?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.1b8c3bdd-305a-50d3-9d5d-8a5de28a1e3a · roster.departures.594eb071-e982-5862-b872-e1bc5cae5af4."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Branden Carlson, Hansen Yang, Ja Morant, Jeremy Sochan?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.b20e3040-dc28-53f2-be98-1c00b7a5eda9 · roster.additions.a96cd58c-46a3-58c1-a6c1-f3dcfe77c537 · roster.additions.751a030c-1940-525c-bd69-1ae5adc733fc · roster.additions.fe4655d1-0777-5f27-a148-369072895c3e."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Jrue Holiday, Deni Avdija hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.53963c59-5d37-5841-9705-ca7aa922de9f · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.1b8c3bdd-305a-50d3-9d5d-8a5de28a1e3a."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Branden Carlson",
+      "nbaPlayerId": "1028218679",
+      "position": "C",
+      "context": "↔ OKC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Hansen Yang",
+      "nbaPlayerId": "1057275769",
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Ja Morant",
+      "nbaPlayerId": "666786",
+      "position": "G",
+      "context": "↔ MEM · review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jeremy Sochan",
+      "nbaPlayerId": "38017699",
+      "position": "F",
+      "context": "↔ NYK · [EDIT] add role/impact context"
+    },
+    {
+      "name": "John Tonje",
+      "nbaPlayerId": "1057396603",
+      "position": "G",
+      "context": "↔ BOS · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Caleb Love",
+      "nbaPlayerId": "1057847330",
+      "position": "G",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jerami Grant",
+      "nbaPlayerId": "182",
+      "position": "F",
+      "context": "↔ MEM · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kris Murray",
+      "nbaPlayerId": "56677791",
+      "position": "F",
+      "context": "↔ MEM · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Matisse Thybulle",
+      "nbaPlayerId": "666923",
+      "position": "G-F",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Deni Avdija",
+      "nbaPlayerId": "3547242",
+      "position": null,
+      "meta": "Prior ~27.4 MPG · 19.9 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Shaedon Sharpe",
+      "nbaPlayerId": "38017690",
+      "position": null,
+      "meta": "Prior ~17.7 MPG · 12.4 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Scoot Henderson",
+      "nbaPlayerId": "56677747",
+      "position": null,
+      "meta": "Prior ~10.3 MPG · 5.8 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jrue Holiday",
+      "nbaPlayerId": "214",
+      "position": null,
+      "meta": "Prior ~20.3 MPG · 11.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Toumani Camara",
+      "nbaPlayerId": "56677850",
+      "position": null,
+      "meta": "Prior ~33.3 MPG · 13.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Donovan Clingan",
+      "nbaPlayerId": "1028025344",
+      "position": null,
+      "meta": "Prior ~25.3 MPG · 11.0 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Sidy Cissoko",
+      "nbaPlayerId": "56677817",
+      "position": null,
+      "meta": "Prior ~16.6 MPG · 4.5 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Vit Krejci",
+      "nbaPlayerId": "4197387",
+      "position": null,
+      "meta": "Prior ~15.6 MPG · 6.1 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Deni Avdija",
+        "nbaPlayerId": "3547242",
+        "position": null
+      },
+      "previousRole": "Deni Avdija is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Shaedon Sharpe",
+        "nbaPlayerId": "38017690",
+        "position": null
+      },
+      "previousRole": "Shaedon Sharpe is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Scoot Henderson",
+        "nbaPlayerId": "56677747",
+        "position": null
+      },
+      "previousRole": "Scoot Henderson is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jrue Holiday",
+        "nbaPlayerId": "214",
+        "position": null
+      },
+      "previousRole": "Jrue Holiday is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Deni Avdija",
+        "nbaPlayerId": "3547242",
+        "position": null
+      },
+      "previousRole": "Deni Avdija is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Toumani Camara",
+        "nbaPlayerId": "56677850",
+        "position": null
+      },
+      "previousRole": "Toumani Camara is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jerami Grant",
+        "nbaPlayerId": "182",
+        "position": null
+      },
+      "previousRole": "Jerami Grant is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Kris Murray",
+        "nbaPlayerId": "56677791",
+        "position": null
+      },
+      "previousRole": "Kris Murray is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Deni Avdija with/without Jerami Grant",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Deni Avdija with/without Kris Murray",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Shaedon Sharpe with/without Jerami Grant",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Shaedon Sharpe with/without Kris Murray",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Scoot Henderson with/without Jerami Grant",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Scoot Henderson with/without Kris Murray",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 42–40 (82 GP); Previous regular-season ORTG: 111.8; Previous regular-season DRTG: 112.0; Returning minutes leader — Toumani Camara: 33.3 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "season": "2026",
+  "slug": "CHI",
+  "teamId": "5",
+  "headline": "Chicago Bulls",
+  "dek": "[EDIT] One-line dek for Chicago Bulls (2026–27). Prior RS: 31–51 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Chicago Bulls — opening framing. Prior season public snapshot: 31–51 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Guerschon Yabusele, Lachlan Olbrich, Mac McClung, Mouhamadou Gueye.",
+    "[EDIT] High-impact moves flagged for human review: Collin Sexton [DEPARTED]→LAL; Nicolas Claxton [ADDED]; Norman Powell [ADDED]→MIA. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Collin Sexton, Anfernee Simons?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.d3da95f8-a2c8-50b5-986d-2b2d221bd98d · contextSignals.VACATED_MINUTES.323ecd91-76b9-52a4-9d8b-0fc2a6e8d5fb."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Caleb Wilson, Dailyn Swain, Jaylin Sellers, Nicolas Claxton?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.cd264f7f-afba-5739-be38-dae61023467d · roster.additions.e6140c58-3f0f-59be-82df-c317d830c213 · roster.additions.21f7e9a2-f636-5a44-99e0-393ee9160862 · roster.additions.4afdd7ce-33ae-5a4f-983c-950783fc2b80."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Josh Giddey, Patrick Williams, Isaac Okoro hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.527850db-157f-51b5-85b2-13b07e8e791f · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.0be72e7a-cddb-58b2-a297-efe2a4999ac9 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.40977739-f34e-563e-9d5c-f92db9d3bb39 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.741166f5-fcad-5c25-9c31-aa4bdd08cbb6 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.cb8bb4bd-a906-5af3-81c7-079a9ca56e52."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Guerschon Yabusele, Lachlan Olbrich, Mac McClung)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.11ca047d-0449-5a21-83f3-5fbf9115c34c · roster.unresolved.28066be0-b71a-5785-a2eb-61c45549ce73 · roster.unresolved.8905af68-d373-58da-8610-547869448cd2 · roster.unresolved.ad272eb3-5813-523c-9295-d1cf90c9dcf8."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Caleb Wilson",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Dailyn Swain",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaylin Sellers",
+      "nbaPlayerId": null,
+      "position": null,
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Nicolas Claxton",
+      "nbaPlayerId": "666508",
+      "position": "C",
+      "context": "review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Norman Powell",
+      "nbaPlayerId": "380",
+      "position": "G",
+      "context": "↔ MIA · review: TOP_MINUTES_CONFIRMED_ADDITION, HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Tobe Awaka",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Anfernee Simons",
+      "nbaPlayerId": "419",
+      "position": "G",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Collin Sexton",
+      "nbaPlayerId": "413",
+      "position": "G",
+      "context": "↔ LAL · review: HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Nick Richards",
+      "nbaPlayerId": "3547282",
+      "position": "C",
+      "context": "↔ MIA · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Yuki Kawamura",
+      "nbaPlayerId": "1028265377",
+      "position": "G",
+      "context": "↔ LAC · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Josh Giddey",
+      "nbaPlayerId": "17896065",
+      "position": null,
+      "meta": "Prior ~21.1 MPG · 11.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Patrick Williams",
+      "nbaPlayerId": "3547248",
+      "position": null,
+      "meta": "Prior ~18.0 MPG · 6.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Isaac Okoro",
+      "nbaPlayerId": "3547247",
+      "position": null,
+      "meta": "Prior ~20.7 MPG · 7.1 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Tre Jones",
+      "nbaPlayerId": "3547274",
+      "position": null,
+      "meta": "Prior ~21.4 MPG · 11.1 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Norman Powell",
+      "nbaPlayerId": "380",
+      "position": null,
+      "meta": "Prior ~20.9 MPG · 15.3 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Matas Buzelis",
+      "nbaPlayerId": "1028025177",
+      "position": null,
+      "meta": "Prior ~27.4 MPG · 15.3 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Caleb Wilson",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Dailyn Swain",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Josh Giddey",
+        "nbaPlayerId": "17896065",
+        "position": null
+      },
+      "previousRole": "Josh Giddey is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Patrick Williams",
+        "nbaPlayerId": "3547248",
+        "position": null
+      },
+      "previousRole": "Patrick Williams is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Isaac Okoro",
+        "nbaPlayerId": "3547247",
+        "position": null
+      },
+      "previousRole": "Isaac Okoro is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Norman Powell",
+        "nbaPlayerId": "380",
+        "position": null
+      },
+      "previousRole": "Norman Powell is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Tre Jones",
+        "nbaPlayerId": "3547274",
+        "position": null
+      },
+      "previousRole": "Tre Jones is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Collin Sexton",
+        "nbaPlayerId": "413",
+        "position": null
+      },
+      "previousRole": "Collin Sexton is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Anfernee Simons",
+        "nbaPlayerId": "419",
+        "position": null
+      },
+      "previousRole": "Anfernee Simons is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Josh Giddey",
+        "nbaPlayerId": "17896065",
+        "position": null
+      },
+      "previousRole": "Josh Giddey ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Matas Buzelis",
+        "nbaPlayerId": "1028025177",
+        "position": null
+      },
+      "previousRole": "Matas Buzelis ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Rob Dillingham",
+        "nbaPlayerId": "1028025639",
+        "position": null
+      },
+      "previousRole": "Rob Dillingham ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Isaac Okoro + Jalen Smith",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 31–51 (82 GP); Previous regular-season ORTG: 111.0; Previous regular-season DRTG: 116.1; Returning minutes leader — Matas Buzelis: 27.4 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

@@ -91,7 +91,18 @@
     "plan:owls-prop-backfill": "tsx scripts/owls-insight/plan-owls-prop-backfill.ts",
     "backfill:owls-props": "tsx scripts/owls-insight/backfill-owls-props.ts",
     "reconcile:owls-prop-backfill": "tsx scripts/owls-insight/reconcile-owls-prop-backfill.ts",
-    "normalize:owls-props": "tsx scripts/owls-insight/normalize-owls-props.ts"
+    "normalize:owls-props": "tsx scripts/owls-insight/normalize-owls-props.ts",
+    "preseason:packet": "tsx scripts/preseason/run-packet.ts",
+    "preseason:generate": "tsx scripts/preseason/run-generate.ts",
+    "preseason:generate:all": "tsx scripts/preseason/run-generate-all.ts",
+    "preseason:canary": "tsx scripts/preseason/run-canary-batch.ts",
+    "preseason:detroit-trust": "tsx scripts/preseason/detroit-roster-trust.ts",
+    "preseason:detroit-editorial": "tsx scripts/preseason/run-detroit-editorial.ts",
+    "preseason:research": "tsx scripts/preseason/run-research-canary.ts",
+    "preseason:research:canary": "tsx scripts/preseason/run-research-canary.ts",
+    "preseason:research:all": "tsx scripts/preseason/run-research-all.ts",
+    "preseason:draft-preview": "tsx scripts/preseason/draft-preview-from-research.ts",
+    "preseason:promote": "tsx scripts/preseason/promote-preview-draft.ts"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.1130.0",

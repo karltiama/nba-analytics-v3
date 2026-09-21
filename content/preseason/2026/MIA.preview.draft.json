@@ -1,0 +1,294 @@
+{
+  "season": "2026",
+  "slug": "MIA",
+  "teamId": "16",
+  "headline": "Miami Heat",
+  "dek": "[EDIT] One-line dek for Miami Heat (2026–27). Prior RS: 43–39 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Miami Heat — opening framing. Prior season public snapshot: 43–39 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Optional second paragraph: continuity vs change, vacated minutes, or usage questions from the research packet.",
+    "[EDIT] High-impact moves flagged for human review: Jaime Jaquez Jr. [DEPARTED]→MIL; Norman Powell [DEPARTED]→CHI; Tyler Herro [DEPARTED]→MIL; Giannis Antetokounmpo [ADDED]→MIL; Tim Hardaway Jr. [ADDED]→DEN. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Jaime Jaquez Jr., Kel'el Ware, Norman Powell?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.6ae7e393-1734-5f88-9a14-b38274e58df9 · contextSignals.VACATED_MINUTES.a1471d6d-f111-54d7-9935-2fbf7cbb7795 · contextSignals.VACATED_MINUTES.741166f5-fcad-5c25-9c31-aa4bdd08cbb6."
+    },
+    {
+      "headline": "Does Bam Adebayo's usage profile change without Jaime Jaquez Jr.?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.effb4905-0042-5fd9-a822-d5ec580364f9 · roster.departures.6ae7e393-1734-5f88-9a14-b38274e58df9."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Bobby Portis, Giannis Antetokounmpo, J'Vonne Hadley, Klay Thompson?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.4685f10a-d52c-549a-8c78-e6f8bd8f1d70 · roster.additions.134eb3b2-3bb3-5deb-9ce5-f8fa59f206e4 · roster.additions.e60e5adf-2fb3-5dd5-8750-66fd780cd9f6 · roster.additions.dbf85ec5-351d-530a-8cc8-504fb1a0821f."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Pelle Larsson, Davion Mitchell, Bobby Portis hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.3ceff087-d5c9-516d-8dbb-3d5821ef6837 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.1dc23762-f8eb-527e-a0af-c78c25c57462 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.4685f10a-d52c-549a-8c78-e6f8bd8f1d70 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.333a3190-2bba-5820-82e7-b745d99d6822."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Bobby Portis",
+      "nbaPlayerId": "377",
+      "position": "F",
+      "context": "↔ MIL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Giannis Antetokounmpo",
+      "nbaPlayerId": "15",
+      "position": "F",
+      "context": "↔ MIL · review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "J'Vonne Hadley",
+      "nbaPlayerId": null,
+      "position": null,
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Klay Thompson",
+      "nbaPlayerId": "443",
+      "position": "G",
+      "context": "↔ DAL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Nick Richards",
+      "nbaPlayerId": "3547282",
+      "position": "C",
+      "context": "↔ CHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Ryan Conwell",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Tim Hardaway Jr.",
+      "nbaPlayerId": "191",
+      "position": "G-F",
+      "context": "↔ DEN · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Tre Donaldson",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Jaime Jaquez Jr.",
+      "nbaPlayerId": "56677785",
+      "position": "G",
+      "context": "↔ MIL · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kasparas Jakučionis",
+      "nbaPlayerId": "1057272939",
+      "position": "G",
+      "context": "↔ MIL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kel'el Ware",
+      "nbaPlayerId": "1028029127",
+      "position": "C",
+      "context": "↔ MIL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Norman Powell",
+      "nbaPlayerId": "380",
+      "position": "G",
+      "context": "↔ CHI · review: HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Tyler Herro",
+      "nbaPlayerId": "666633",
+      "position": "G",
+      "context": "↔ MIL · review: HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Bam Adebayo",
+      "nbaPlayerId": "4",
+      "position": null,
+      "meta": "Prior ~28.6 MPG · 17.8 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Pelle Larsson",
+      "nbaPlayerId": "1028036986",
+      "position": null,
+      "meta": "Prior ~22.5 MPG · 9.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Davion Mitchell",
+      "nbaPlayerId": "17553994",
+      "position": null,
+      "meta": "Prior ~24.7 MPG · 8.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Andrew Wiggins",
+      "nbaPlayerId": "475",
+      "position": null,
+      "meta": "Prior ~25.4 MPG · 12.9 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bobby Portis",
+      "nbaPlayerId": "377",
+      "position": null,
+      "meta": "Prior ~19.7 MPG · 11.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "J'Vonne Hadley",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Ryan Conwell",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Tre Donaldson",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Bam Adebayo",
+        "nbaPlayerId": "4",
+        "position": null
+      },
+      "previousRole": "Bam Adebayo is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Pelle Larsson",
+        "nbaPlayerId": "1028036986",
+        "position": null
+      },
+      "previousRole": "Pelle Larsson is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Davion Mitchell",
+        "nbaPlayerId": "17553994",
+        "position": null
+      },
+      "previousRole": "Davion Mitchell is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Bobby Portis",
+        "nbaPlayerId": "377",
+        "position": null
+      },
+      "previousRole": "Bobby Portis is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Andrew Wiggins",
+        "nbaPlayerId": "475",
+        "position": null
+      },
+      "previousRole": "Andrew Wiggins is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Bam Adebayo",
+        "nbaPlayerId": "4",
+        "position": null
+      },
+      "previousRole": "Bam Adebayo is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jaime Jaquez Jr.",
+        "nbaPlayerId": "56677785",
+        "position": null
+      },
+      "previousRole": "Jaime Jaquez Jr. is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Kel'el Ware",
+        "nbaPlayerId": "1028029127",
+        "position": null
+      },
+      "previousRole": "Kel'el Ware is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Norman Powell",
+        "nbaPlayerId": "380",
+        "position": null
+      },
+      "previousRole": "Norman Powell is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Nikola Jovic",
+        "nbaPlayerId": "38017696",
+        "position": null
+      },
+      "previousRole": "Nikola Jovic ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Bam Adebayo with/without Jaime Jaquez Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Bam Adebayo with/without Kel'el Ware",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Bam Adebayo with/without Norman Powell",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Bam Adebayo with/without Jaime Jaquez Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Bam Adebayo with/without Kel'el Ware",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Bam Adebayo with/without Norman Powell",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 43–39 (82 GP); Previous regular-season ORTG: 114.5; Previous regular-season DRTG: 112.4; Returning minutes leader — Bam Adebayo: 28.6 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

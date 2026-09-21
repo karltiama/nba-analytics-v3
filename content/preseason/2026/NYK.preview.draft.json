@@ -1,0 +1,217 @@
+{
+  "season": "2026",
+  "slug": "NYK",
+  "teamId": "20",
+  "headline": "New York Knicks",
+  "dek": "[EDIT] One-line dek for New York Knicks (2026–27). Prior RS: 53–29 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] New York Knicks — opening framing. Prior season public snapshot: 53–29 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Optional second paragraph: continuity vs change, vacated minutes, or usage questions from the research packet."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Andre Drummond, Jack Kayil, Tyler Nickel?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.67204fb6-50ae-504a-89ec-e7ad59fcd46d · roster.additions.71d66d6e-445b-5f02-ab73-9a9ea5743e15 · roster.additions.a02325dc-c579-537b-94f8-4657ec4add55."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among OG Anunoby, Josh Hart, Jalen Brunson hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.c884a0c5-b12b-540d-95fe-5bcc96b874dc · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.2bce3c0b-f5fd-58e0-90c0-af6657ecd968 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.55bff9dc-a612-5ed6-93b9-901e885fab6b."
+    },
+    {
+      "headline": "How does prior regular-season offensive/defensive profile constrain preseason expectations?",
+      "detail": "[EDIT] Expand using evidence: snapshot.regularSeason.offensiveRating · snapshot.regularSeason.defensiveRating."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Andre Drummond",
+      "nbaPlayerId": "137",
+      "position": "C",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jack Kayil",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Tyler Nickel",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Ariel Hukporti",
+      "nbaPlayerId": "1028046422",
+      "position": "C",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jeremy Sochan",
+      "nbaPlayerId": "38017699",
+      "position": "F",
+      "context": "↔ POR · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Mitchell Robinson",
+      "nbaPlayerId": "399",
+      "position": "C-F",
+      "context": "↔ BOS · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Trey Jemison",
+      "nbaPlayerId": "64269023",
+      "position": "C",
+      "context": "↔ TOR · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Jalen Brunson",
+      "nbaPlayerId": "73",
+      "position": null,
+      "meta": "Prior ~32.7 MPG · 24.4 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Karl-Anthony Towns",
+      "nbaPlayerId": "447",
+      "position": null,
+      "meta": "Prior ~28.7 MPG · 17.9 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RETURNING_HIGH_MINUTE_PLAYER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "OG Anunoby",
+      "nbaPlayerId": "18",
+      "position": null,
+      "meta": "Prior ~28.0 MPG · 14.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Josh Hart",
+      "nbaPlayerId": "202",
+      "position": null,
+      "meta": "Prior ~25.8 MPG · 9.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Mikal Bridges",
+      "nbaPlayerId": "61",
+      "position": null,
+      "meta": "Prior ~32.7 MPG · 14.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jack Kayil",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Tyler Nickel",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Jalen Brunson",
+        "nbaPlayerId": "73",
+        "position": null
+      },
+      "previousRole": "Jalen Brunson is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Karl-Anthony Towns",
+        "nbaPlayerId": "447",
+        "position": null
+      },
+      "previousRole": "Karl-Anthony Towns is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "OG Anunoby",
+        "nbaPlayerId": "18",
+        "position": null
+      },
+      "previousRole": "OG Anunoby is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Josh Hart",
+        "nbaPlayerId": "202",
+        "position": null
+      },
+      "previousRole": "Josh Hart is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jalen Brunson",
+        "nbaPlayerId": "73",
+        "position": null
+      },
+      "previousRole": "Jalen Brunson is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Mikal Bridges",
+        "nbaPlayerId": "61",
+        "position": null
+      },
+      "previousRole": "Mikal Bridges is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jalen Brunson",
+        "nbaPlayerId": "73",
+        "position": null
+      },
+      "previousRole": "Jalen Brunson is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Karl-Anthony Towns",
+        "nbaPlayerId": "447",
+        "position": null
+      },
+      "previousRole": "Karl-Anthony Towns is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jordan Clarkson",
+        "nbaPlayerId": "100",
+        "position": null
+      },
+      "previousRole": "Jordan Clarkson ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Dillon Jones + Jalen Brunson",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 53–29 (82 GP); Previous regular-season ORTG: 117.4; Previous regular-season DRTG: 111.1; Returning minutes leader — Mikal Bridges: 32.7 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

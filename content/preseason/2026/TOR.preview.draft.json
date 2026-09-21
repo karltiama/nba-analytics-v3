@@ -1,0 +1,271 @@
+{
+  "season": "2026",
+  "slug": "TOR",
+  "teamId": "28",
+  "headline": "Toronto Raptors",
+  "dek": "[EDIT] One-line dek for Toronto Raptors (2026–27). Prior RS: 46–36 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Toronto Raptors — opening framing. Prior season public snapshot: 46–36 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Garrett Temple."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Sandro Mamukelashvili?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.9d1ce88e-7310-55e7-a895-5745313f89e1."
+    },
+    {
+      "headline": "Does Brandon Ingram's usage profile change without Sandro Mamukelashvili?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.708a2dd4-d053-5e79-8b4f-064738b1afe1 · roster.departures.9d1ce88e-7310-55e7-a895-5745313f89e1."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among AJ Lawson, Allen Graves, Andre Jackson Jr., Jaden Bradley?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.98a64e7e-998d-5276-ad77-5188faff55bb · roster.additions.9ae31c7f-283e-599c-986c-ab187737a63c · roster.additions.d2549523-352b-5ccc-9d5e-6a307f9fac63 · roster.additions.a83b865a-c0f2-59c7-b068-590147241f9b."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among RJ Barrett, Ja'Kobe Walter, Collin Murray-Boyles hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.c19d36c4-990b-5a2a-9c74-5c65050c8821 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.f35e5d65-616e-57b3-a194-65ac66903e51 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.f4ae0855-73c9-55b3-a14b-06f46e158f37 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.89ac71da-0ca6-5ece-80b4-f538eafab172."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Garrett Temple)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.5256ed0a-871f-5353-af3d-d1a4ac01b214."
+    }
+  ],
+  "additions": [
+    {
+      "name": "AJ Lawson",
+      "nbaPlayerId": "17554004",
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Allen Graves",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Andre Jackson Jr.",
+      "nbaPlayerId": "56677852",
+      "position": "G",
+      "context": "↔ MIL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaden Bradley",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Kyle Anderson",
+      "nbaPlayerId": "12",
+      "position": "F-G",
+      "context": "↔ MIN · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Malachi Smith",
+      "nbaPlayerId": "1059753274",
+      "position": "G",
+      "context": "↔ BKN · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Nate Bittle",
+      "nbaPlayerId": null,
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Trey Jemison",
+      "nbaPlayerId": "64269023",
+      "position": "C",
+      "context": "↔ NYK · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Jonathan Mogbo",
+      "nbaPlayerId": "1028037494",
+      "position": "F",
+      "context": "↔ SAC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Sandro Mamukelashvili",
+      "nbaPlayerId": "17896059",
+      "position": "F-C",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Brandon Ingram",
+      "nbaPlayerId": "227",
+      "position": null,
+      "meta": "Prior ~30.9 MPG · 19.3 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "RJ Barrett",
+      "nbaPlayerId": "666423",
+      "position": null,
+      "meta": "Prior ~22.4 MPG · 14.2 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Ja'Kobe Walter",
+      "nbaPlayerId": "1028029111",
+      "position": null,
+      "meta": "Prior ~19.0 MPG · 7.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Collin Murray-Boyles",
+      "nbaPlayerId": "1057268940",
+      "position": null,
+      "meta": "Prior ~16.1 MPG · 6.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jamal Shead",
+      "nbaPlayerId": "1028038426",
+      "position": null,
+      "meta": "Prior ~23.2 MPG · 6.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Scottie Barnes",
+      "nbaPlayerId": "17896055",
+      "position": null,
+      "meta": "Prior ~33.2 MPG · 18.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Immanuel Quickley",
+      "nbaPlayerId": "3547269",
+      "position": null,
+      "meta": "Prior ~25.1 MPG · 12.9 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "AJ Lawson",
+      "nbaPlayerId": "17554004",
+      "position": null,
+      "meta": "Prior ~3.1 MPG · 1.3 PPG",
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Brandon Ingram",
+        "nbaPlayerId": "227",
+        "position": null
+      },
+      "previousRole": "Brandon Ingram is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "RJ Barrett",
+        "nbaPlayerId": "666423",
+        "position": null
+      },
+      "previousRole": "RJ Barrett is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "RJ Barrett",
+        "nbaPlayerId": "666423",
+        "position": null
+      },
+      "previousRole": "RJ Barrett is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Ja'Kobe Walter",
+        "nbaPlayerId": "1028029111",
+        "position": null
+      },
+      "previousRole": "Ja'Kobe Walter is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Collin Murray-Boyles",
+        "nbaPlayerId": "1057268940",
+        "position": null
+      },
+      "previousRole": "Collin Murray-Boyles is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jamal Shead",
+        "nbaPlayerId": "1028038426",
+        "position": null
+      },
+      "previousRole": "Jamal Shead is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Scottie Barnes",
+        "nbaPlayerId": "17896055",
+        "position": null
+      },
+      "previousRole": "Scottie Barnes is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Brandon Ingram",
+        "nbaPlayerId": "227",
+        "position": null
+      },
+      "previousRole": "Brandon Ingram is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Sandro Mamukelashvili",
+        "nbaPlayerId": "17896059",
+        "position": null
+      },
+      "previousRole": "Sandro Mamukelashvili is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Scottie Barnes",
+        "nbaPlayerId": "17896055",
+        "position": null
+      },
+      "previousRole": "Scottie Barnes ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Brandon Ingram with/without Sandro Mamukelashvili",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "RJ Barrett with/without Sandro Mamukelashvili",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Scottie Barnes with/without Sandro Mamukelashvili",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Returning core: Alijah Martin + Brandon Ingram",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 46–36 (82 GP); Previous regular-season ORTG: 113.8; Previous regular-season DRTG: 111.3; Returning minutes leader — Scottie Barnes: 33.2 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "season": "2026",
+  "slug": "PHI",
+  "teamId": "23",
+  "headline": "Philadelphia 76ers",
+  "dek": "[EDIT] One-line dek for Philadelphia 76ers (2026–27). Prior RS: 45–37 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Philadelphia 76ers — opening framing. Prior season public snapshot: 45–37 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Optional second paragraph: continuity vs change, vacated minutes, or usage questions from the research packet.",
+    "[EDIT] High-impact moves flagged for human review: Kelly Oubre Jr. [DEPARTED]→IND; Quentin Grimes [DEPARTED]→LAL; Jaylen Brown [ADDED]→BOS; LeBron James [ADDED]→LAL. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Quentin Grimes, Kelly Oubre Jr., Paul George?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.077efd09-7cff-596c-98a4-62bdcad9e808 · contextSignals.VACATED_MINUTES.9a727b66-c7bd-5cc4-8f4b-69717d639b54 · contextSignals.VACATED_MINUTES.9a30b964-4f91-54ae-803c-965e90eb69c0."
+    },
+    {
+      "headline": "Does Joel Embiid's usage profile change without Quentin Grimes?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.9d4ebbb1-272a-5b2b-b006-d46e076ad276 · roster.departures.077efd09-7cff-596c-98a4-62bdcad9e808."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Anfernee Simons, Ariel Hukporti, Caleb Love, Dean Wade?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.323ecd91-76b9-52a4-9d8b-0fc2a6e8d5fb · roster.additions.c380f383-74ca-5e91-8900-f55b379aafb4 · roster.additions.b8ba0172-0003-540a-a922-430889b82759 · roster.additions.c660854c-bb29-583f-bdea-bb8c927aebe0."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Joel Embiid, Anfernee Simons, LeBron James hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.9d4ebbb1-272a-5b2b-b006-d46e076ad276 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.323ecd91-76b9-52a4-9d8b-0fc2a6e8d5fb · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.5e69748c-3c84-583d-a898-64e378f659c3 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.c660854c-bb29-583f-bdea-bb8c927aebe0 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.1534dbd4-8403-56a5-84cb-48d54fb93e67 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.3c40d25e-4f50-5a31-8170-36f1d02bbb29."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Anfernee Simons",
+      "nbaPlayerId": "419",
+      "position": "G",
+      "context": "↔ CHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Ariel Hukporti",
+      "nbaPlayerId": "1028046422",
+      "position": "C",
+      "context": "↔ NYK · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Caleb Love",
+      "nbaPlayerId": "1057847330",
+      "position": "G",
+      "context": "↔ POR · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Dean Wade",
+      "nbaPlayerId": "666940",
+      "position": "F-C",
+      "context": "↔ CLE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Duke Miles",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaylen Brown",
+      "nbaPlayerId": "70",
+      "position": "G-F",
+      "context": "↔ BOS · review: HIGH_MINUTES_CONFIRMED_ADDITION, HIGH_USAGE_CONFIRMED_ADDITION, HIGH_SCORING_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kentavious Caldwell-Pope",
+      "nbaPlayerId": "81",
+      "position": "G",
+      "context": "↔ MEM · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Labaron Philon",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "LeBron James",
+      "nbaPlayerId": "237",
+      "position": "F",
+      "context": "↔ LAL · review: TOP_MINUTES_CONFIRMED_ADDITION, HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Rayan Rupert",
+      "nbaPlayerId": "56677829",
+      "position": "G-F",
+      "context": "↔ MEM · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Saint Thomas",
+      "nbaPlayerId": "1057849072",
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Tacko Fall",
+      "nbaPlayerId": "666560",
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Andre Drummond",
+      "nbaPlayerId": "137",
+      "position": "C",
+      "context": "↔ NYK · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Dalen Terry",
+      "nbaPlayerId": "38017719",
+      "position": "F",
+      "context": "↔ GSW · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Johni Broome",
+      "nbaPlayerId": "1057382509",
+      "position": "F",
+      "context": "↔ LAC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kelly Oubre Jr.",
+      "nbaPlayerId": "360",
+      "position": "F-G",
+      "context": "↔ IND · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Paul George",
+      "nbaPlayerId": "172",
+      "position": "F",
+      "context": "↔ BOS · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Quentin Grimes",
+      "nbaPlayerId": "17895858",
+      "position": "G",
+      "context": "↔ LAL · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Trendon Watford",
+      "nbaPlayerId": "17896058",
+      "position": "G-F",
+      "context": "↔ NOP · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Tyrese Maxey",
+      "nbaPlayerId": "3547254",
+      "position": null,
+      "meta": "Prior ~33.4 MPG · 24.2 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Joel Embiid",
+      "nbaPlayerId": "145",
+      "position": null,
+      "meta": "Prior ~15.2 MPG · 12.6 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jaylen Brown",
+      "nbaPlayerId": "70",
+      "position": null,
+      "meta": "Prior ~30.2 MPG · 24.9 PPG",
+      "watching": "[EDIT] Candidate reasons: NEW_HIGH_MINUTE_ADDITION, RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "VJ Edgecombe",
+      "nbaPlayerId": "1057261935",
+      "position": null,
+      "meta": "Prior ~32.7 MPG · 14.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Anfernee Simons",
+      "nbaPlayerId": "419",
+      "position": null,
+      "meta": "Prior ~16.7 MPG · 9.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "LeBron James",
+      "nbaPlayerId": "237",
+      "position": null,
+      "meta": "Prior ~25.8 MPG · 16.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Dean Wade",
+      "nbaPlayerId": "666940",
+      "position": null,
+      "meta": "Prior ~17.2 MPG · 4.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Dominick Barlow",
+      "nbaPlayerId": "38017730",
+      "position": null,
+      "meta": "Prior ~19.0 MPG · 6.1 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Joel Embiid",
+        "nbaPlayerId": "145",
+        "position": null
+      },
+      "previousRole": "Joel Embiid is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Tyrese Maxey",
+        "nbaPlayerId": "3547254",
+        "position": null
+      },
+      "previousRole": "Tyrese Maxey is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jaylen Brown",
+        "nbaPlayerId": "70",
+        "position": null
+      },
+      "previousRole": "Jaylen Brown is a confirmed addition with prior-season high minutes elsewhere — a candidate who could absorb rotation minutes.",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Joel Embiid",
+        "nbaPlayerId": "145",
+        "position": null
+      },
+      "previousRole": "Joel Embiid is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Anfernee Simons",
+        "nbaPlayerId": "419",
+        "position": null
+      },
+      "previousRole": "Anfernee Simons is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "LeBron James",
+        "nbaPlayerId": "237",
+        "position": null
+      },
+      "previousRole": "LeBron James is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Dean Wade",
+        "nbaPlayerId": "666940",
+        "position": null
+      },
+      "previousRole": "Dean Wade is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Tyrese Maxey",
+        "nbaPlayerId": "3547254",
+        "position": null
+      },
+      "previousRole": "Tyrese Maxey is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jaylen Brown",
+        "nbaPlayerId": "70",
+        "position": null
+      },
+      "previousRole": "Jaylen Brown is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Tyrese Maxey",
+        "nbaPlayerId": "3547254",
+        "position": null
+      },
+      "previousRole": "Tyrese Maxey is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "VJ Edgecombe",
+        "nbaPlayerId": "1057261935",
+        "position": null
+      },
+      "previousRole": "VJ Edgecombe is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Quentin Grimes",
+        "nbaPlayerId": "17895858",
+        "position": null
+      },
+      "previousRole": "Quentin Grimes is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Joel Embiid with/without Quentin Grimes",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Joel Embiid with/without Kelly Oubre Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Joel Embiid with/without Paul George",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Tyrese Maxey with/without Quentin Grimes",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Tyrese Maxey with/without Kelly Oubre Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Tyrese Maxey with/without Paul George",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 45–37 (82 GP); Previous regular-season ORTG: 112.9; Previous regular-season DRTG: 113.0; Returning minutes leader — Tyrese Maxey: 33.4 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

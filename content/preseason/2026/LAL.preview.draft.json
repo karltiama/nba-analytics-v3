@@ -1,0 +1,331 @@
+{
+  "season": "2026",
+  "slug": "LAL",
+  "teamId": "14",
+  "headline": "Los Angeles Lakers",
+  "dek": "[EDIT] One-line dek for Los Angeles Lakers (2026–27). Prior RS: 53–29 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Los Angeles Lakers — opening framing. Prior season public snapshot: 53–29 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Drew Timme, Maxi Kleber, Nick Smith Jr..",
+    "[EDIT] High-impact moves flagged for human review: Deandre Ayton [DEPARTED]→WAS; LeBron James [DEPARTED]→PHI; Rui Hachimura [DEPARTED]→LAC; Collin Sexton [ADDED]→CHI; Quentin Grimes [ADDED]→PHI; Sandro Mamukelashvili [ADDED]→TOR. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with LeBron James, Rui Hachimura, Deandre Ayton, Marcus Smart, Luke Kennard?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.5e69748c-3c84-583d-a898-64e378f659c3 · contextSignals.VACATED_MINUTES.e704416e-cddc-540d-8a59-777822a97b96 · contextSignals.VACATED_MINUTES.6a062179-f043-5916-8985-58bc42a9a27a · contextSignals.VACATED_MINUTES.901beee7-9866-56de-810a-7c862a83d79f · contextSignals.VACATED_MINUTES.fc082a90-28f3-5f27-80c7-2564a7acb931."
+    },
+    {
+      "headline": "Does Luka Doncic's usage profile change without LeBron James?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.a4f5815c-dcbb-5b5a-9c4e-9decda7f1de4 · roster.departures.5e69748c-3c84-583d-a898-64e378f659c3."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among AK Okereke, Arthur Kaluma, Cameron Carr, Collin Sexton?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.c3caf148-4cc4-5a33-bca9-f0cd3a305ba6 · roster.additions.952a94c2-82d1-5560-964d-550fbe5611c3 · roster.additions.dbb0b927-a858-5750-9434-eb98d607c783 · roster.additions.d3da95f8-a2c8-50b5-986d-2b2d221bd98d."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Austin Reaves, Luka Doncic, Collin Sexton hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.240d63f2-4e8e-5af3-b103-59bafe26bb40 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.a4f5815c-dcbb-5b5a-9c4e-9decda7f1de4 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.d3da95f8-a2c8-50b5-986d-2b2d221bd98d · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.84ca9cab-ea37-58af-97ba-7e0213fec8e2."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Drew Timme, Maxi Kleber, Nick Smith Jr.)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.932dcb5b-7336-5f97-8d79-20cd0e6fdfd4 · roster.unresolved.5adcbb0e-eb91-5568-babe-8feea267de21 · roster.unresolved.09308cbc-45aa-50df-b4b8-7920084831ca."
+    }
+  ],
+  "additions": [
+    {
+      "name": "AK Okereke",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Arthur Kaluma",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Cameron Carr",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Collin Sexton",
+      "nbaPlayerId": "413",
+      "position": "G",
+      "context": "↔ CHI · review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaden Hardy",
+      "nbaPlayerId": "38017679",
+      "position": "G",
+      "context": "↔ WAS · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kevon Looney",
+      "nbaPlayerId": "282",
+      "position": "F",
+      "context": "↔ NOP · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Matisse Thybulle",
+      "nbaPlayerId": "666923",
+      "position": "G-F",
+      "context": "↔ POR · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Quentin Grimes",
+      "nbaPlayerId": "17895858",
+      "position": "G",
+      "context": "↔ PHI · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Sandro Mamukelashvili",
+      "nbaPlayerId": "17896059",
+      "position": "F-C",
+      "context": "↔ TOR · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Walker Kessler",
+      "nbaPlayerId": "38017705",
+      "position": "C",
+      "context": "↔ UTA · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Ziaire Williams",
+      "nbaPlayerId": "17896027",
+      "position": "F",
+      "context": "↔ BKN · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Deandre Ayton",
+      "nbaPlayerId": "22",
+      "position": "C",
+      "context": "↔ WAS · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaxson Hayes",
+      "nbaPlayerId": "666626",
+      "position": "C-F",
+      "context": "↔ UTA · [EDIT] add role/impact context"
+    },
+    {
+      "name": "LeBron James",
+      "nbaPlayerId": "237",
+      "position": "F",
+      "context": "↔ PHI · review: TOP_MINUTES_CONFIRMED_DEPARTURE, HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Luke Kennard",
+      "nbaPlayerId": "254",
+      "position": "G",
+      "context": "↔ PHX · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Marcus Smart",
+      "nbaPlayerId": "420",
+      "position": "G",
+      "context": "↔ HOU · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Rui Hachimura",
+      "nbaPlayerId": "666609",
+      "position": "F",
+      "context": "↔ LAC · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Luka Doncic",
+      "nbaPlayerId": "132",
+      "position": null,
+      "meta": "Prior ~24.9 MPG · 23.3 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Austin Reaves",
+      "nbaPlayerId": "17553995",
+      "position": null,
+      "meta": "Prior ~21.5 MPG · 14.2 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Collin Sexton",
+      "nbaPlayerId": "413",
+      "position": null,
+      "meta": "Prior ~19.7 MPG · 12.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Ziaire Williams",
+      "nbaPlayerId": "17896027",
+      "position": null,
+      "meta": "Prior ~15.6 MPG · 7.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jake LaRavia",
+      "nbaPlayerId": "38017728",
+      "position": null,
+      "meta": "Prior ~23.7 MPG · 7.6 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "AK Okereke",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Arthur Kaluma",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Cameron Carr",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Luka Doncic",
+        "nbaPlayerId": "132",
+        "position": null
+      },
+      "previousRole": "Luka Doncic is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Austin Reaves",
+        "nbaPlayerId": "17553995",
+        "position": null
+      },
+      "previousRole": "Austin Reaves is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Austin Reaves",
+        "nbaPlayerId": "17553995",
+        "position": null
+      },
+      "previousRole": "Austin Reaves is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Luka Doncic",
+        "nbaPlayerId": "132",
+        "position": null
+      },
+      "previousRole": "Luka Doncic is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Collin Sexton",
+        "nbaPlayerId": "413",
+        "position": null
+      },
+      "previousRole": "Collin Sexton is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Ziaire Williams",
+        "nbaPlayerId": "17896027",
+        "position": null
+      },
+      "previousRole": "Ziaire Williams is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "LeBron James",
+        "nbaPlayerId": "237",
+        "position": null
+      },
+      "previousRole": "LeBron James is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Rui Hachimura",
+        "nbaPlayerId": "666609",
+        "position": null
+      },
+      "previousRole": "Rui Hachimura is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Deandre Ayton",
+        "nbaPlayerId": "22",
+        "position": null
+      },
+      "previousRole": "Deandre Ayton is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Marcus Smart",
+        "nbaPlayerId": "420",
+        "position": null
+      },
+      "previousRole": "Marcus Smart is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Luke Kennard",
+        "nbaPlayerId": "254",
+        "position": null
+      },
+      "previousRole": "Luke Kennard is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Luka Doncic with/without LeBron James",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Luka Doncic with/without Rui Hachimura",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Luka Doncic with/without Deandre Ayton",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Austin Reaves with/without LeBron James",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Austin Reaves with/without Rui Hachimura",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Austin Reaves with/without Deandre Ayton",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 53–29 (82 GP); Previous regular-season ORTG: 116.1; Previous regular-season DRTG: 114.4; Returning minutes leader — Luka Doncic: 24.9 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

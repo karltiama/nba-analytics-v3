@@ -9,6 +9,22 @@ export const WOWY_POSTSEASON_START_ET: Record<string, string> = {
   '2025': '2026-04-14',
 };
 
+/**
+ * NBA Cup Championship tip dates (America/New_York calendar).
+ *
+ * Group / knockout Cup games count toward the official 82-game RS slate.
+ * The Championship is ingested into team_game_stats with postseason=false and
+ * a tip before the play-in floor, but it is **not** one of the 82 official
+ * regular-season games (BBR / public standings). Including it creates
+ * impossible 83-game RS totals for finalists (SAS/NYK in 2025).
+ *
+ * Public REGULAR_SEASON snapshots must exclude these dates.
+ * Internal all-games aggregates are unaffected (they do not use this list).
+ */
+export const NBA_CUP_CHAMPIONSHIP_ET: Record<string, readonly string[]> = {
+  '2025': ['2025-12-16'],
+};
+
 const ET_CALENDAR_DATE = new Intl.DateTimeFormat('en-CA', {
   timeZone: 'America/New_York',
   year: 'numeric',

@@ -1,0 +1,308 @@
+{
+  "season": "2026",
+  "slug": "UTA",
+  "teamId": "29",
+  "headline": "Utah Jazz",
+  "dek": "[EDIT] One-line dek for Utah Jazz (2026–27). Prior RS: 22–60 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Utah Jazz — opening framing. Prior season public snapshot: 22–60 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): John Konchar.",
+    "[EDIT] High-impact moves flagged for human review: Airious Bailey [ADDED]. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Cody Williams?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.ed05ffa4-4f1e-548a-a822-0ab167970963."
+    },
+    {
+      "headline": "Does Keyonte George's usage profile change without Cody Williams?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.6c0c5d1e-343e-517c-a520-7774e4822957 · roster.departures.ed05ffa4-4f1e-548a-a822-0ab167970963."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Airious Bailey, Darryn Peterson, Harrison Ingram, Jaxson Hayes?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.cebc2ca2-c66d-51ee-889b-e57fe857c7f1 · roster.additions.ac8e874d-fec9-503c-9f47-67f5958c6695 · roster.additions.28d87000-9e18-5fa2-9587-140a7ac83672 · roster.additions.104056cc-8322-5615-9ffc-19c7a408fb2c."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Lauri Markkanen, Jaren Jackson Jr., Isaiah Collier hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.58a91c63-9287-53ad-91a5-064b1157a17c · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.2f61d36b-2b89-518e-b735-f7d7729602d4 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.4e4c14df-eaec-5533-8a5a-9878f0b60b21 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.d0be7456-cc9a-5614-8f01-53a6909a0750 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.cebc2ca2-c66d-51ee-889b-e57fe857c7f1 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.6c0c5d1e-343e-517c-a520-7774e4822957 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.c7304416-ca47-5ec1-9676-4a46a66af82d."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (John Konchar)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.e2c9f5c2-5697-5b09-80c7-8f157632633e."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Airious Bailey",
+      "nbaPlayerId": "1057260888",
+      "position": "F",
+      "context": "review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Darryn Peterson",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Harrison Ingram",
+      "nbaPlayerId": "1028046464",
+      "position": "F",
+      "context": "↔ SAS · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaxson Hayes",
+      "nbaPlayerId": "666626",
+      "position": "C-F",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Josh Green",
+      "nbaPlayerId": "3547258",
+      "position": "G",
+      "context": "↔ CHA · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Josh Okogie",
+      "nbaPlayerId": "356",
+      "position": "G",
+      "context": "↔ HOU · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Mo Bamba",
+      "nbaPlayerId": "28",
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Tamar Bates",
+      "nbaPlayerId": "1057844839",
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Trey Alexander",
+      "nbaPlayerId": "1028203085",
+      "position": "G",
+      "context": "↔ NOP · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Cody Williams",
+      "nbaPlayerId": "1028029291",
+      "position": "F",
+      "context": "↔ MIN · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Elijah Harkless",
+      "nbaPlayerId": "1028264794",
+      "position": "G",
+      "context": "↔ DET · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Oscar Tshiebwe",
+      "nbaPlayerId": "56677778",
+      "position": "F-C",
+      "context": "↔ HOU · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Walker Kessler",
+      "nbaPlayerId": "38017705",
+      "position": "C",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Keyonte George",
+      "nbaPlayerId": "56677834",
+      "position": null,
+      "meta": "Prior ~21.8 MPG · 15.5 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Lauri Markkanen",
+      "nbaPlayerId": "297",
+      "position": null,
+      "meta": "Prior ~17.6 MPG · 13.7 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jaren Jackson Jr.",
+      "nbaPlayerId": "231",
+      "position": null,
+      "meta": "Prior ~18.4 MPG · 11.8 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Brice Sensabaugh",
+      "nbaPlayerId": "56677842",
+      "position": null,
+      "meta": "Prior ~21.5 MPG · 13.6 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Isaiah Collier",
+      "nbaPlayerId": "1028025362",
+      "position": null,
+      "meta": "Prior ~18.5 MPG · 8.4 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Kyle Filipowski",
+      "nbaPlayerId": "1028035794",
+      "position": null,
+      "meta": "Prior ~22.0 MPG · 10.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Airious Bailey",
+      "nbaPlayerId": "1057260888",
+      "position": null,
+      "meta": "Prior ~24.2 MPG · 12.1 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bez Mbeng",
+      "nbaPlayerId": "1059992972",
+      "position": null,
+      "meta": "Prior ~30.8 MPG · 7.6 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Keyonte George",
+        "nbaPlayerId": "56677834",
+        "position": null
+      },
+      "previousRole": "Keyonte George is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Lauri Markkanen",
+        "nbaPlayerId": "297",
+        "position": null
+      },
+      "previousRole": "Lauri Markkanen is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jaren Jackson Jr.",
+        "nbaPlayerId": "231",
+        "position": null
+      },
+      "previousRole": "Jaren Jackson Jr. is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Brice Sensabaugh",
+        "nbaPlayerId": "56677842",
+        "position": null
+      },
+      "previousRole": "Brice Sensabaugh is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Lauri Markkanen",
+        "nbaPlayerId": "297",
+        "position": null
+      },
+      "previousRole": "Lauri Markkanen is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jaren Jackson Jr.",
+        "nbaPlayerId": "231",
+        "position": null
+      },
+      "previousRole": "Jaren Jackson Jr. is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Isaiah Collier",
+        "nbaPlayerId": "1028025362",
+        "position": null
+      },
+      "previousRole": "Isaiah Collier is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Brice Sensabaugh",
+        "nbaPlayerId": "56677842",
+        "position": null
+      },
+      "previousRole": "Brice Sensabaugh is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Airious Bailey",
+        "nbaPlayerId": "1057260888",
+        "position": null
+      },
+      "previousRole": "Airious Bailey is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Keyonte George",
+        "nbaPlayerId": "56677834",
+        "position": null
+      },
+      "previousRole": "Keyonte George is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Kyle Filipowski",
+        "nbaPlayerId": "1028035794",
+        "position": null
+      },
+      "previousRole": "Kyle Filipowski is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Cody Williams",
+        "nbaPlayerId": "1028029291",
+        "position": null
+      },
+      "previousRole": "Cody Williams is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Keyonte George with/without Cody Williams",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Lauri Markkanen with/without Cody Williams",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jaren Jackson Jr. with/without Cody Williams",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Returning core: Bez Mbeng + Blake Hinson",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 22–60 (82 GP); Previous regular-season ORTG: 111.9; Previous regular-season DRTG: 119.9; Returning minutes leader — Bez Mbeng: 30.8 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

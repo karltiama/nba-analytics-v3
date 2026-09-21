@@ -1,0 +1,200 @@
+{
+  "season": "2026",
+  "slug": "SAC",
+  "teamId": "26",
+  "headline": "Sacramento Kings",
+  "dek": "[EDIT] One-line dek for Sacramento Kings (2026–27). Prior RS: 22–60 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Sacramento Kings — opening framing. Prior season public snapshot: 22–60 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): DeMar DeRozan, Doug McDermott, Drew Eubanks, Isaiah Stevens, Killian Hayes, Patrick Baldwin Jr., Russell Westbrook."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Adam Flagler, Alex Karaban, Darius Acuff Jr., Emanuel Sharp?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.8f7d6751-b11b-5384-b7a9-cca8d4071c6a · roster.additions.923efc35-2525-5950-a4d0-302fc00c5b40 · roster.additions.567817e5-8d4a-5fa2-a01b-199a5ba9c884 · roster.additions.336070c4-9341-5b9c-b4e3-3a7c35e29f1d."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Nique Clifford, Maxime Raynaud, Malik Monk hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.8fc1afcc-bde2-5501-83ef-967620a3ad00 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.8c26c588-5830-5b76-806d-b4600813f5be · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.ed74cc11-282d-5f79-a853-01cd980de3d4 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.e6f16910-5598-54d5-9fc3-f013f522841a."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (DeMar DeRozan, Doug McDermott, Drew Eubanks)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.044acd8b-ee90-5fe3-a954-ce176b908048 · roster.unresolved.58044b56-c353-52dc-9ace-7fefef5cfe48 · roster.unresolved.815ec96c-cc8a-549c-8f91-c2c9017577f9 · roster.unresolved.f902e5f2-61cf-5f39-9bfd-c4de55c9c43b · roster.unresolved.ea56093d-8e6d-53a6-8f3d-93ef77dd79df · roster.unresolved.06a401cc-b5ec-5452-ba67-7603e8f0ac77 · roster.unresolved.e8147254-d6a6-5349-b92f-88f0377db3a1."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Adam Flagler",
+      "nbaPlayerId": "436846673",
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Alex Karaban",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Darius Acuff Jr.",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Emanuel Sharp",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Jonathan Mogbo",
+      "nbaPlayerId": "1028037494",
+      "position": "F",
+      "context": "↔ TOR · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Devin Carter",
+      "nbaPlayerId": "1028025242",
+      "position": "G",
+      "context": "↔ ATL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Nique Clifford",
+      "nbaPlayerId": "1057276634",
+      "position": null,
+      "meta": "Prior ~22.9 MPG · 7.9 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Maxime Raynaud",
+      "nbaPlayerId": "1057390745",
+      "position": null,
+      "meta": "Prior ~24.0 MPG · 11.2 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Malik Monk",
+      "nbaPlayerId": "324",
+      "position": null,
+      "meta": "Prior ~16.6 MPG · 9.4 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Precious Achiuwa",
+      "nbaPlayerId": "3547249",
+      "position": null,
+      "meta": "Prior ~23.3 MPG · 9.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Adam Flagler",
+      "nbaPlayerId": "436846673",
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Alex Karaban",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Darius Acuff Jr.",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Emanuel Sharp",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Nique Clifford",
+        "nbaPlayerId": "1057276634",
+        "position": null
+      },
+      "previousRole": "Nique Clifford is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Maxime Raynaud",
+        "nbaPlayerId": "1057390745",
+        "position": null
+      },
+      "previousRole": "Maxime Raynaud is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Malik Monk",
+        "nbaPlayerId": "324",
+        "position": null
+      },
+      "previousRole": "Malik Monk is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Precious Achiuwa",
+        "nbaPlayerId": "3547249",
+        "position": null
+      },
+      "previousRole": "Precious Achiuwa is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Malik Monk",
+        "nbaPlayerId": "324",
+        "position": null
+      },
+      "previousRole": "Malik Monk ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Zach LaVine",
+        "nbaPlayerId": "268",
+        "position": null
+      },
+      "previousRole": "Zach LaVine ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Domantas Sabonis",
+        "nbaPlayerId": "406",
+        "position": null
+      },
+      "previousRole": "Domantas Sabonis ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Daeqwon Plowden + De'Andre Hunter",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 22–60 (82 GP); Previous regular-season ORTG: 109.3; Previous regular-season DRTG: 119.2; Returning minutes leader — Maxime Raynaud: 24.0 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

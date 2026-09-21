@@ -1,0 +1,258 @@
+{
+  "season": "2026",
+  "slug": "BKN",
+  "teamId": "3",
+  "headline": "Brooklyn Nets",
+  "dek": "[EDIT] One-line dek for Brooklyn Nets (2026–27). Prior RS: 20–62 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Brooklyn Nets — opening framing. Prior season public snapshot: 20–62 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): E.J. Liddell, Ochai Agbaji, Tyson Etienne.",
+    "[EDIT] High-impact moves flagged for human review: Malachi Smith [DEPARTED]→TOR; Julius Randle [ADDED]→MIN; Moritz Wagner [ADDED]→ORL. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Ziaire Williams?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.84ca9cab-ea37-58af-97ba-7e0213fec8e2."
+    },
+    {
+      "headline": "Does Michael Porter Jr.'s usage profile change without Ziaire Williams?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.1d2e3a5f-efc4-5846-b587-249f71c8ba3c · roster.departures.84ca9cab-ea37-58af-97ba-7e0213fec8e2."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Joshua Jefferson, Julius Randle, Keon Ellis, Mikel Brown Jr.?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.3befbd6e-0c06-5e75-9c77-b8f0b0f972fe · roster.additions.97194796-197a-5275-a24c-92b993c0b108 · roster.additions.baf5e7d3-eb96-51bc-8081-04f60a4247b8 · roster.additions.ce3922b4-fc02-5d5d-8235-8b62271b0482."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Drake Powell, Egor Demin, Michael Porter Jr. hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.d97ece42-c24a-54ac-b4c2-4bfdb6af9db5 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.825cf7bf-78a4-5e83-8a66-8302be6d392b · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.1d2e3a5f-efc4-5846-b587-249f71c8ba3c · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.166475fe-eb97-5be4-8409-a85f1d23aeaa · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.22abb435-3540-5d4e-88cc-4171c894449f."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (E.J. Liddell, Ochai Agbaji, Tyson Etienne)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.8ca4acb0-a0c2-5c68-b8a8-612846460d64 · roster.unresolved.60c58420-0a8f-5441-9cfa-f6af567b21ec · roster.unresolved.7d74e77b-b942-544e-ab75-6f616bd4bcd2."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Joshua Jefferson",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Julius Randle",
+      "nbaPlayerId": "387",
+      "position": "F-C",
+      "context": "↔ MIN · review: HIGH_MINUTES_CONFIRMED_ADDITION, HIGH_USAGE_CONFIRMED_ADDITION, HIGH_SCORING_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Keon Ellis",
+      "nbaPlayerId": "38017714",
+      "position": "G",
+      "context": "↔ CLE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Mikel Brown Jr.",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Moritz Wagner",
+      "nbaPlayerId": "462",
+      "position": "F-C",
+      "context": "↔ ORL · review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Tyler Bilodeau",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Jalen Wilson",
+      "nbaPlayerId": "56677722",
+      "position": "F",
+      "context": "↔ ATL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Malachi Smith",
+      "nbaPlayerId": "1059753274",
+      "position": "G",
+      "context": "↔ TOR · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Ziaire Williams",
+      "nbaPlayerId": "17896027",
+      "position": "F",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Michael Porter Jr.",
+      "nbaPlayerId": "375",
+      "position": null,
+      "meta": "Prior ~20.6 MPG · 15.4 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Drake Powell",
+      "nbaPlayerId": "1057279425",
+      "position": null,
+      "meta": "Prior ~16.1 MPG · 5.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Egor Demin",
+      "nbaPlayerId": "1057266813",
+      "position": null,
+      "meta": "Prior ~15.9 MPG · 6.5 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Nolan Traoré",
+      "nbaPlayerId": "1057275262",
+      "position": null,
+      "meta": "Prior ~15.2 MPG · 6.1 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Terance Mann",
+      "nbaPlayerId": "666743",
+      "position": null,
+      "meta": "Prior ~18.6 MPG · 5.5 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Julius Randle",
+      "nbaPlayerId": "387",
+      "position": null,
+      "meta": "Prior ~32.0 MPG · 19.8 PPG",
+      "watching": "[EDIT] Candidate reasons: NEW_HIGH_MINUTE_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Noah Clowney",
+      "nbaPlayerId": "56677843",
+      "position": null,
+      "meta": "Prior ~21.7 MPG · 9.9 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Joshua Jefferson",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Michael Porter Jr.",
+        "nbaPlayerId": "375",
+        "position": null
+      },
+      "previousRole": "Michael Porter Jr. is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Julius Randle",
+        "nbaPlayerId": "387",
+        "position": null
+      },
+      "previousRole": "Julius Randle is a confirmed addition with prior-season high minutes elsewhere — a candidate who could absorb rotation minutes.",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Drake Powell",
+        "nbaPlayerId": "1057279425",
+        "position": null
+      },
+      "previousRole": "Drake Powell is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Egor Demin",
+        "nbaPlayerId": "1057266813",
+        "position": null
+      },
+      "previousRole": "Egor Demin is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Michael Porter Jr.",
+        "nbaPlayerId": "375",
+        "position": null
+      },
+      "previousRole": "Michael Porter Jr. is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Nolan Traoré",
+        "nbaPlayerId": "1057275262",
+        "position": null
+      },
+      "previousRole": "Nolan Traoré is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Terance Mann",
+        "nbaPlayerId": "666743",
+        "position": null
+      },
+      "previousRole": "Terance Mann is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Ziaire Williams",
+        "nbaPlayerId": "17896027",
+        "position": null
+      },
+      "previousRole": "Ziaire Williams is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Nolan Traoré",
+        "nbaPlayerId": "1057275262",
+        "position": null
+      },
+      "previousRole": "Nolan Traoré ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Noah Clowney",
+        "nbaPlayerId": "56677843",
+        "position": null
+      },
+      "previousRole": "Noah Clowney ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Michael Porter Jr. with/without Ziaire Williams",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Returning core: Ben Saraf + Chaney Johnson",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 20–62 (82 GP); Previous regular-season ORTG: 106.9; Previous regular-season DRTG: 117.1; Returning minutes leader — Noah Clowney: 21.7 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

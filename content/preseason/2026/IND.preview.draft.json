@@ -1,0 +1,222 @@
+{
+  "season": "2026",
+  "slug": "IND",
+  "teamId": "12",
+  "headline": "Indiana Pacers",
+  "dek": "[EDIT] One-line dek for Indiana Pacers (2026–27). Prior RS: 19–63 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Indiana Pacers — opening framing. Prior season public snapshot: 19–63 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Ethan Thompson, Micah Potter.",
+    "[EDIT] High-impact moves flagged for human review: Kelly Oubre Jr. [ADDED]→PHI. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Braden Smith, Kelly Oubre Jr., Larry Nance Jr.?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.7ba8e2f1-cf1e-53d3-9824-3af3a4b827b4 · roster.additions.9a727b66-c7bd-5cc4-8f4b-69717d639b54 · roster.additions.e7e178c8-62f7-5ab7-885e-db86ad163c1e."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Aaron Nesmith, Kelly Oubre Jr., Ivica Zubac hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.6c7c5c74-9758-504a-8197-403ca68e5c22 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.9a727b66-c7bd-5cc4-8f4b-69717d639b54 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.7336f73d-9246-554b-a610-bdf8390444d2 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.8ae2e79b-334a-5508-9b4c-7738e389d2e3 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.71280a8a-a68c-56a4-b589-1b37110aecad · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.bbfe783a-117e-5da2-a73c-a4688158eb83 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.98f2af06-9128-5539-abe9-fd45048cd7f5."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Ethan Thompson, Micah Potter)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.229d0099-a208-5172-87e1-1202bebfadc1 · roster.unresolved.3f862dde-d720-5dd3-b28f-ad3b62b6de70."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Braden Smith",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Kelly Oubre Jr.",
+      "nbaPlayerId": "360",
+      "position": "F-G",
+      "context": "↔ PHI · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Larry Nance Jr.",
+      "nbaPlayerId": "340",
+      "position": "F-C",
+      "context": "↔ CLE · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Kam Jones",
+      "nbaPlayerId": "1057389374",
+      "position": "G",
+      "context": "↔ MIL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Taelon Peter",
+      "nbaPlayerId": "1057395638",
+      "position": "G",
+      "context": "↔ SAS · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Pascal Siakam",
+      "nbaPlayerId": "416",
+      "position": null,
+      "meta": "Prior ~25.1 MPG · 18.1 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Aaron Nesmith",
+      "nbaPlayerId": "3547250",
+      "position": null,
+      "meta": "Prior ~16.3 MPG · 7.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Kelly Oubre Jr.",
+      "nbaPlayerId": "360",
+      "position": null,
+      "meta": "Prior ~21.1 MPG · 9.1 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Ivica Zubac",
+      "nbaPlayerId": "493",
+      "position": null,
+      "meta": "Prior ~17.9 MPG · 8.4 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Andrew Nembhard",
+      "nbaPlayerId": "38017507",
+      "position": null,
+      "meta": "Prior ~21.8 MPG · 11.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Ben Sheppard",
+      "nbaPlayerId": "56677861",
+      "position": null,
+      "meta": "Prior ~17.0 MPG · 5.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jarace Walker",
+      "nbaPlayerId": "56677832",
+      "position": null,
+      "meta": "Prior ~23.8 MPG · 10.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Braden Smith",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Pascal Siakam",
+        "nbaPlayerId": "416",
+        "position": null
+      },
+      "previousRole": "Pascal Siakam is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Aaron Nesmith",
+        "nbaPlayerId": "3547250",
+        "position": null
+      },
+      "previousRole": "Aaron Nesmith is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Kelly Oubre Jr.",
+        "nbaPlayerId": "360",
+        "position": null
+      },
+      "previousRole": "Kelly Oubre Jr. is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Ivica Zubac",
+        "nbaPlayerId": "493",
+        "position": null
+      },
+      "previousRole": "Ivica Zubac is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Andrew Nembhard",
+        "nbaPlayerId": "38017507",
+        "position": null
+      },
+      "previousRole": "Andrew Nembhard is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Pascal Siakam",
+        "nbaPlayerId": "416",
+        "position": null
+      },
+      "previousRole": "Pascal Siakam is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Ben Sheppard",
+        "nbaPlayerId": "56677861",
+        "position": null
+      },
+      "previousRole": "Ben Sheppard is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jarace Walker",
+        "nbaPlayerId": "56677832",
+        "position": null
+      },
+      "previousRole": "Jarace Walker is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Andrew Nembhard",
+        "nbaPlayerId": "38017507",
+        "position": null
+      },
+      "previousRole": "Andrew Nembhard ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Obi Toppin",
+        "nbaPlayerId": "3547243",
+        "position": null
+      },
+      "previousRole": "Obi Toppin ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Aaron Nesmith + Andrew Nembhard",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 19–63 (82 GP); Previous regular-season ORTG: 109.1; Previous regular-season DRTG: 116.8; Returning minutes leader — Pascal Siakam: 25.1 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

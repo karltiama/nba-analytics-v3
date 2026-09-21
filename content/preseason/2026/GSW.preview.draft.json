@@ -1,0 +1,209 @@
+{
+  "season": "2026",
+  "slug": "GSW",
+  "teamId": "10",
+  "headline": "Golden State Warriors",
+  "dek": "[EDIT] One-line dek for Golden State Warriors (2026–27). Prior RS: 37–45 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Golden State Warriors — opening framing. Prior season public snapshot: 37–45 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Optional second paragraph: continuity vs change, vacated minutes, or usage questions from the research packet."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Dalen Terry, Georges Niang, Lajae Jones, Yaxel Lendeborg?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.b5178c58-ce0a-52b3-8821-be883357ef37 · roster.additions.5fe059ef-aeea-5256-a1dd-0dbc8b474dff · roster.additions.4443a410-361c-527f-b704-08603a80f8a7 · roster.additions.247a5e7a-6a45-51c8-b264-cc6fd4483cc1."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Stephen Curry, Gui Santos, Moses Moody hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.4c8e971c-da67-5ce3-a3fa-6ba1e62c2832 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.38eb3408-3b99-56f1-8ae7-db7f0dc06560 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.6d7e0173-6e07-598c-9315-a2ef8405cb27 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.06b0798b-9925-5780-b52d-9ffced065207."
+    },
+    {
+      "headline": "How does prior regular-season offensive/defensive profile constrain preseason expectations?",
+      "detail": "[EDIT] Expand using evidence: snapshot.regularSeason.offensiveRating · snapshot.regularSeason.defensiveRating."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Dalen Terry",
+      "nbaPlayerId": "38017719",
+      "position": "F",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Georges Niang",
+      "nbaPlayerId": "344",
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Lajae Jones",
+      "nbaPlayerId": null,
+      "position": "G-F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Yaxel Lendeborg",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Pat Spencer",
+      "nbaPlayerId": "795959473",
+      "position": "G",
+      "context": "↔ PHX · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Quinten Post",
+      "nbaPlayerId": "1028047928",
+      "position": "C",
+      "context": "↔ MEM · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Stephen Curry",
+      "nbaPlayerId": "115",
+      "position": null,
+      "meta": "Prior ~16.7 MPG · 14.2 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Kristaps Porzingis",
+      "nbaPlayerId": "378",
+      "position": null,
+      "meta": "Prior ~9.5 MPG · 6.6 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "De'Anthony Melton",
+      "nbaPlayerId": "313",
+      "position": null,
+      "meta": "Prior ~14.0 MPG · 7.4 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Gui Santos",
+      "nbaPlayerId": "57875092",
+      "position": null,
+      "meta": "Prior ~17.3 MPG · 7.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Moses Moody",
+      "nbaPlayerId": "17553992",
+      "position": null,
+      "meta": "Prior ~18.3 MPG · 8.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Draymond Green",
+      "nbaPlayerId": "185",
+      "position": null,
+      "meta": "Prior ~23.1 MPG · 6.9 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Brandin Podziemski",
+      "nbaPlayerId": "56677858",
+      "position": null,
+      "meta": "Prior ~28.7 MPG · 14.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Georges Niang",
+      "nbaPlayerId": "344",
+      "position": null,
+      "meta": "Prior ~0.0 MPG · 0.0 PPG",
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Stephen Curry",
+        "nbaPlayerId": "115",
+        "position": null
+      },
+      "previousRole": "Stephen Curry is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Kristaps Porzingis",
+        "nbaPlayerId": "378",
+        "position": null
+      },
+      "previousRole": "Kristaps Porzingis is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "De'Anthony Melton",
+        "nbaPlayerId": "313",
+        "position": null
+      },
+      "previousRole": "De'Anthony Melton is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Stephen Curry",
+        "nbaPlayerId": "115",
+        "position": null
+      },
+      "previousRole": "Stephen Curry is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Gui Santos",
+        "nbaPlayerId": "57875092",
+        "position": null
+      },
+      "previousRole": "Gui Santos is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Moses Moody",
+        "nbaPlayerId": "17553992",
+        "position": null
+      },
+      "previousRole": "Moses Moody is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Draymond Green",
+        "nbaPlayerId": "185",
+        "position": null
+      },
+      "previousRole": "Draymond Green is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Brandin Podziemski",
+        "nbaPlayerId": "56677858",
+        "position": null
+      },
+      "previousRole": "Brandin Podziemski is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Al Horford + Brandin Podziemski",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 37–45 (82 GP); Previous regular-season ORTG: 112.7; Previous regular-season DRTG: 113.3; Returning minutes leader — Brandin Podziemski: 28.7 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

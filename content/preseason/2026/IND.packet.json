@@ -1,0 +1,1098 @@
+{
+  "version": "preseason-team-packet-v1.1",
+  "generatedAt": "2026-09-21T15:57:43.391Z",
+  "season": "2026",
+  "previousSeason": "2025",
+  "team": {
+    "teamId": "12",
+    "slug": "IND",
+    "name": "Indiana Pacers",
+    "abbreviation": "IND",
+    "conference": "East"
+  },
+  "previousSeasonRegular": {
+    "season": "2025",
+    "available": true,
+    "unavailableReason": null,
+    "metricsScope": "regular_season",
+    "postseasonStartEt": "2026-04-14",
+    "gamesPlayed": 82,
+    "wins": 19,
+    "losses": 63,
+    "record": "19–63",
+    "offensiveRating": 109.05672024397,
+    "defensiveRating": 116.846681082242,
+    "pace": 103.169024390244,
+    "provenance": {
+      "method": "regular_season_team_snapshot_v1.2.1",
+      "tables": [
+        "analytics.team_game_stats",
+        "analytics.games"
+      ],
+      "season": "2025",
+      "note": "ET tipoff date < 2026-04-14 (WOWY_POSTSEASON_START_ET); exclude Cup Championship ET [2025-12-16]"
+    }
+  },
+  "previousSeasonAllGames": {
+    "season": "2025",
+    "available": true,
+    "unavailableReason": null,
+    "wins": 19,
+    "losses": 63,
+    "record": "19–63",
+    "offensiveRating": 109.05672024397023,
+    "defensiveRating": 116.84668108224217,
+    "pace": 103.1690243902439,
+    "gamesPlayed": 82,
+    "includesPostseason": false,
+    "metricsScope": "all_games",
+    "scopeNote": null,
+    "provenance": {
+      "method": "previous_season_baseline_v1",
+      "tables": [
+        "analytics.team_season_averages"
+      ],
+      "season": "2025",
+      "note": "INTERNAL all-games aggregate — do not label as regular-season Record"
+    }
+  },
+  "currentRoster": [
+    {
+      "playerEntityId": "6c7c5c74-9758-504a-8197-403ca68e5c22",
+      "displayName": "Aaron Nesmith",
+      "playerId": "3547250",
+      "position": "G-F"
+    },
+    {
+      "playerEntityId": "8ae2e79b-334a-5508-9b4c-7738e389d2e3",
+      "displayName": "Andrew Nembhard",
+      "playerId": "38017507",
+      "position": "G-F"
+    },
+    {
+      "playerEntityId": "bbfe783a-117e-5da2-a73c-a4688158eb83",
+      "displayName": "Ben Sheppard",
+      "playerId": "56677861",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "7ba8e2f1-cf1e-53d3-9824-3af3a4b827b4",
+      "displayName": "Braden Smith",
+      "playerId": null,
+      "position": "G"
+    },
+    {
+      "playerEntityId": "7336f73d-9246-554b-a610-bdf8390444d2",
+      "displayName": "Ivica Zubac",
+      "playerId": "493",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "46957705-a8ee-58af-a9a7-9b94dcef5c28",
+      "displayName": "Jalen Slawson",
+      "playerId": "56677862",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "98f2af06-9128-5539-abe9-fd45048cd7f5",
+      "displayName": "Jarace Walker",
+      "playerId": "56677832",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "b5696f49-1a2f-5bf5-bdd8-13f080344baf",
+      "displayName": "Jay Huff",
+      "playerId": "17896103",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "10b7cd28-1ebc-5447-8d07-8becf2dc5da1",
+      "displayName": "Johnny Furphy",
+      "playerId": "1028035897",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "9a727b66-c7bd-5cc4-8f4b-69717d639b54",
+      "displayName": "Kelly Oubre Jr.",
+      "playerId": "360",
+      "position": "F-G"
+    },
+    {
+      "playerEntityId": "933f906b-97f3-5024-b909-cda505b97998",
+      "displayName": "Kobe Brown",
+      "playerId": "56677849",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "e7e178c8-62f7-5ab7-885e-db86ad163c1e",
+      "displayName": "Larry Nance Jr.",
+      "playerId": "340",
+      "position": "F-C"
+    },
+    {
+      "playerEntityId": "96e6056c-9af4-5299-b756-de6a33593604",
+      "displayName": "Obi Toppin",
+      "playerId": "3547243",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "71280a8a-a68c-56a4-b589-1b37110aecad",
+      "displayName": "Pascal Siakam",
+      "playerId": "416",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "09aeb034-91b7-5841-be69-87262bb6a7ad",
+      "displayName": "Quenton Jackson",
+      "playerId": "44477085",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "8a2a4f30-935e-508d-9537-1dbaec024ee5",
+      "displayName": "T.J. McConnell",
+      "playerId": "304",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "2b794c7c-1b84-5fac-aa09-89fdf62566b3",
+      "displayName": "Tyrese Haliburton",
+      "playerId": "3547245",
+      "position": "G"
+    }
+  ],
+  "previousRoster": [
+    {
+      "playerEntityId": "6c7c5c74-9758-504a-8197-403ca68e5c22",
+      "displayName": "Aaron Nesmith",
+      "playerId": "3547250",
+      "position": "G-F"
+    },
+    {
+      "playerEntityId": "8ae2e79b-334a-5508-9b4c-7738e389d2e3",
+      "displayName": "Andrew Nembhard",
+      "playerId": "38017507",
+      "position": "G-F"
+    },
+    {
+      "playerEntityId": "bbfe783a-117e-5da2-a73c-a4688158eb83",
+      "displayName": "Ben Sheppard",
+      "playerId": "56677861",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "229d0099-a208-5172-87e1-1202bebfadc1",
+      "displayName": "Ethan Thompson",
+      "playerId": "17896117",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "7336f73d-9246-554b-a610-bdf8390444d2",
+      "displayName": "Ivica Zubac",
+      "playerId": "493",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "46957705-a8ee-58af-a9a7-9b94dcef5c28",
+      "displayName": "Jalen Slawson",
+      "playerId": "56677862",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "98f2af06-9128-5539-abe9-fd45048cd7f5",
+      "displayName": "Jarace Walker",
+      "playerId": "56677832",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "b5696f49-1a2f-5bf5-bdd8-13f080344baf",
+      "displayName": "Jay Huff",
+      "playerId": "17896103",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "10b7cd28-1ebc-5447-8d07-8becf2dc5da1",
+      "displayName": "Johnny Furphy",
+      "playerId": "1028035897",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "587cd71d-84bd-51bb-a459-7ef5793deb39",
+      "displayName": "Kam Jones",
+      "playerId": "1057389374",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "933f906b-97f3-5024-b909-cda505b97998",
+      "displayName": "Kobe Brown",
+      "playerId": "56677849",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "3f862dde-d720-5dd3-b28f-ad3b62b6de70",
+      "displayName": "Micah Potter",
+      "playerId": "19465584",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "96e6056c-9af4-5299-b756-de6a33593604",
+      "displayName": "Obi Toppin",
+      "playerId": "3547243",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "71280a8a-a68c-56a4-b589-1b37110aecad",
+      "displayName": "Pascal Siakam",
+      "playerId": "416",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "09aeb034-91b7-5841-be69-87262bb6a7ad",
+      "displayName": "Quenton Jackson",
+      "playerId": "44477085",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "8a2a4f30-935e-508d-9537-1dbaec024ee5",
+      "displayName": "T.J. McConnell",
+      "playerId": "304",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "40158df5-db5b-5277-a1c0-0171d6bb1bca",
+      "displayName": "Taelon Peter",
+      "playerId": "1057395638",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "2b794c7c-1b84-5fac-aa09-89fdf62566b3",
+      "displayName": "Tyrese Haliburton",
+      "playerId": "3547245",
+      "position": "G"
+    }
+  ],
+  "additions": [
+    {
+      "playerEntityId": "7ba8e2f1-cf1e-53d3-9824-3af3a4b827b4",
+      "displayName": "Braden Smith",
+      "playerId": null,
+      "position": "G"
+    },
+    {
+      "playerEntityId": "9a727b66-c7bd-5cc4-8f4b-69717d639b54",
+      "displayName": "Kelly Oubre Jr.",
+      "playerId": "360",
+      "position": "F-G"
+    },
+    {
+      "playerEntityId": "e7e178c8-62f7-5ab7-885e-db86ad163c1e",
+      "displayName": "Larry Nance Jr.",
+      "playerId": "340",
+      "position": "F-C"
+    }
+  ],
+  "departures": [
+    {
+      "playerEntityId": "229d0099-a208-5172-87e1-1202bebfadc1",
+      "displayName": "Ethan Thompson",
+      "playerId": "17896117",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "587cd71d-84bd-51bb-a459-7ef5793deb39",
+      "displayName": "Kam Jones",
+      "playerId": "1057389374",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "3f862dde-d720-5dd3-b28f-ad3b62b6de70",
+      "displayName": "Micah Potter",
+      "playerId": "19465584",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "40158df5-db5b-5277-a1c0-0171d6bb1bca",
+      "displayName": "Taelon Peter",
+      "playerId": "1057395638",
+      "position": "G"
+    }
+  ],
+  "returningPlayers": [
+    {
+      "playerEntityId": "6c7c5c74-9758-504a-8197-403ca68e5c22",
+      "displayName": "Aaron Nesmith",
+      "playerId": "3547250",
+      "position": "G-F"
+    },
+    {
+      "playerEntityId": "8ae2e79b-334a-5508-9b4c-7738e389d2e3",
+      "displayName": "Andrew Nembhard",
+      "playerId": "38017507",
+      "position": "G-F"
+    },
+    {
+      "playerEntityId": "bbfe783a-117e-5da2-a73c-a4688158eb83",
+      "displayName": "Ben Sheppard",
+      "playerId": "56677861",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "7336f73d-9246-554b-a610-bdf8390444d2",
+      "displayName": "Ivica Zubac",
+      "playerId": "493",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "46957705-a8ee-58af-a9a7-9b94dcef5c28",
+      "displayName": "Jalen Slawson",
+      "playerId": "56677862",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "98f2af06-9128-5539-abe9-fd45048cd7f5",
+      "displayName": "Jarace Walker",
+      "playerId": "56677832",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "b5696f49-1a2f-5bf5-bdd8-13f080344baf",
+      "displayName": "Jay Huff",
+      "playerId": "17896103",
+      "position": "C"
+    },
+    {
+      "playerEntityId": "10b7cd28-1ebc-5447-8d07-8becf2dc5da1",
+      "displayName": "Johnny Furphy",
+      "playerId": "1028035897",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "933f906b-97f3-5024-b909-cda505b97998",
+      "displayName": "Kobe Brown",
+      "playerId": "56677849",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "96e6056c-9af4-5299-b756-de6a33593604",
+      "displayName": "Obi Toppin",
+      "playerId": "3547243",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "71280a8a-a68c-56a4-b589-1b37110aecad",
+      "displayName": "Pascal Siakam",
+      "playerId": "416",
+      "position": "F"
+    },
+    {
+      "playerEntityId": "09aeb034-91b7-5841-be69-87262bb6a7ad",
+      "displayName": "Quenton Jackson",
+      "playerId": "44477085",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "8a2a4f30-935e-508d-9537-1dbaec024ee5",
+      "displayName": "T.J. McConnell",
+      "playerId": "304",
+      "position": "G"
+    },
+    {
+      "playerEntityId": "2b794c7c-1b84-5fac-aa09-89fdf62566b3",
+      "displayName": "Tyrese Haliburton",
+      "playerId": "3547245",
+      "position": "G"
+    }
+  ],
+  "playerSeasonStats": [
+    {
+      "playerEntityId": "6c7c5c74-9758-504a-8197-403ca68e5c22",
+      "playerId": "3547250",
+      "displayName": "Aaron Nesmith",
+      "gamesPlayed": 82,
+      "mpg": 16.26829268292683,
+      "ppg": 7.573170731707317,
+      "usageAvg": 0.1868,
+      "usageGames": 45,
+      "usageTotalMinutes": 1334,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-08",
+        "dateRangeEnd": "2026-03-27",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 16.26829268292683,
+        "recentMpg": 30,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "8ae2e79b-334a-5508-9b4c-7738e389d2e3",
+      "playerId": "38017507",
+      "displayName": "Andrew Nembhard",
+      "gamesPlayed": 82,
+      "mpg": 21.78048780487805,
+      "ppg": 11.78048780487805,
+      "usageAvg": 0.234280701754386,
+      "usageGames": 57,
+      "usageTotalMinutes": 1786,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-04",
+        "dateRangeEnd": "2026-03-29",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 21.78048780487805,
+        "recentMpg": 29.7,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "bbfe783a-117e-5da2-a73c-a4688158eb83",
+      "playerId": "56677861",
+      "displayName": "Ben Sheppard",
+      "gamesPlayed": 82,
+      "mpg": 16.963414634146343,
+      "ppg": 5.597560975609756,
+      "usageAvg": 0.129938461538462,
+      "usageGames": 65,
+      "usageTotalMinutes": 1391,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-13",
+        "dateRangeEnd": "2026-04-03",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 16.963414634146343,
+        "recentMpg": 20.2,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "229d0099-a208-5172-87e1-1202bebfadc1",
+      "playerId": "17896117",
+      "displayName": "Ethan Thompson",
+      "gamesPlayed": 62,
+      "mpg": 10.548387096774194,
+      "ppg": 3.596774193548387,
+      "usageAvg": 0.15228,
+      "usageGames": 25,
+      "usageTotalMinutes": 636,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-02-19",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 10.548387096774194,
+        "recentMpg": 30.2,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "7336f73d-9246-554b-a610-bdf8390444d2",
+      "playerId": "493",
+      "displayName": "Ivica Zubac",
+      "gamesPlayed": 81,
+      "mpg": 17.901234567901234,
+      "ppg": 8.358024691358025,
+      "usageAvg": 0.187416666666667,
+      "usageGames": 48,
+      "usageTotalMinutes": 1450,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-01-25",
+        "dateRangeEnd": "2026-03-18",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 17.901234567901234,
+        "recentMpg": 26,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "46957705-a8ee-58af-a9a7-9b94dcef5c28",
+      "playerId": "56677862",
+      "displayName": "Jalen Slawson",
+      "gamesPlayed": 22,
+      "mpg": 14.136363636363637,
+      "ppg": 4.318181818181818,
+      "usageAvg": 0.135833333333333,
+      "usageGames": 12,
+      "usageTotalMinutes": 307,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-17",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 14.136363636363637,
+        "recentMpg": 24.1,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "98f2af06-9128-5539-abe9-fd45048cd7f5",
+      "playerId": "56677832",
+      "displayName": "Jarace Walker",
+      "gamesPlayed": 82,
+      "mpg": 23.829268292682926,
+      "ppg": 10.78048780487805,
+      "usageAvg": 0.19748,
+      "usageGames": 75,
+      "usageTotalMinutes": 1950,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-15",
+        "dateRangeEnd": "2026-04-10",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 23.829268292682926,
+        "recentMpg": 28.3,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "b5696f49-1a2f-5bf5-bdd8-13f080344baf",
+      "playerId": "17896103",
+      "displayName": "Jay Huff",
+      "gamesPlayed": 82,
+      "mpg": 21.01219512195122,
+      "ppg": 9.548780487804878,
+      "usageAvg": 0.179139240506329,
+      "usageGames": 79,
+      "usageTotalMinutes": 1713,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-25",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 21.01219512195122,
+        "recentMpg": 22.6,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "10b7cd28-1ebc-5447-8d07-8becf2dc5da1",
+      "playerId": "1028035897",
+      "displayName": "Johnny Furphy",
+      "gamesPlayed": 82,
+      "mpg": 7.817073170731708,
+      "ppg": 2.1951219512195124,
+      "usageAvg": 0.12371875,
+      "usageGames": 32,
+      "usageTotalMinutes": 633,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-01-19",
+        "dateRangeEnd": "2026-02-08",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 7.817073170731708,
+        "recentMpg": 21.3,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "587cd71d-84bd-51bb-a459-7ef5793deb39",
+      "playerId": "1057389374",
+      "displayName": "Kam Jones",
+      "gamesPlayed": 82,
+      "mpg": 7.487804878048781,
+      "ppg": 1.975609756097561,
+      "usageAvg": 0.131642857142857,
+      "usageGames": 28,
+      "usageTotalMinutes": 591,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-15",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 7.487804878048781,
+        "recentMpg": 18,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "9a727b66-c7bd-5cc4-8f4b-69717d639b54",
+      "playerId": "360",
+      "displayName": "Kelly Oubre Jr.",
+      "gamesPlayed": 94,
+      "mpg": 21.06382978723404,
+      "ppg": 9.074468085106384,
+      "usageAvg": 0.1725,
+      "usageGames": 62,
+      "usageTotalMinutes": 1980,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-04-21",
+        "dateRangeEnd": "2026-05-10",
+        "regularSeasonGameCount": 0,
+        "postseasonGameCount": 10,
+        "baselineMpg": 21.06382978723404,
+        "recentMpg": 33.4,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "933f906b-97f3-5024-b909-cda505b97998",
+      "playerId": "56677849",
+      "displayName": "Kobe Brown",
+      "gamesPlayed": 81,
+      "mpg": 11.901234567901234,
+      "ppg": 4.3580246913580245,
+      "usageAvg": 0.162744680851064,
+      "usageGames": 47,
+      "usageTotalMinutes": 922,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-21",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 11.901234567901234,
+        "recentMpg": 25.7,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "e7e178c8-62f7-5ab7-885e-db86ad163c1e",
+      "playerId": "340",
+      "displayName": "Larry Nance Jr.",
+      "gamesPlayed": 100,
+      "mpg": 4.54,
+      "ppg": 1.31,
+      "usageAvg": 0.130633333333333,
+      "usageGames": 30,
+      "usageTotalMinutes": 426,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-09",
+        "dateRangeEnd": "2026-04-23",
+        "regularSeasonGameCount": 8,
+        "postseasonGameCount": 2,
+        "baselineMpg": 4.54,
+        "recentMpg": 11.2,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "3f862dde-d720-5dd3-b28f-ad3b62b6de70",
+      "playerId": "19465584",
+      "displayName": "Micah Potter",
+      "gamesPlayed": 52,
+      "mpg": 17.442307692307693,
+      "ppg": 8.807692307692308,
+      "usageAvg": 0.173431818181818,
+      "usageGames": 44,
+      "usageTotalMinutes": 897,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-25",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 17.442307692307693,
+        "recentMpg": 21.6,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "96e6056c-9af4-5299-b756-de6a33593604",
+      "playerId": "3547243",
+      "displayName": "Obi Toppin",
+      "gamesPlayed": 82,
+      "mpg": 5.170731707317073,
+      "ppg": 3.402439024390244,
+      "usageAvg": 0.234083333333333,
+      "usageGames": 24,
+      "usageTotalMinutes": 424,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-25",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 5.170731707317073,
+        "recentMpg": 18.9,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "71280a8a-a68c-56a4-b589-1b37110aecad",
+      "playerId": "416",
+      "displayName": "Pascal Siakam",
+      "gamesPlayed": 82,
+      "mpg": 25.097560975609756,
+      "ppg": 18.109756097560975,
+      "usageAvg": 0.292451612903226,
+      "usageGames": 62,
+      "usageTotalMinutes": 2058,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-04",
+        "dateRangeEnd": "2026-04-03",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 25.097560975609756,
+        "recentMpg": 30.3,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "09aeb034-91b7-5841-be69-87262bb6a7ad",
+      "playerId": "44477085",
+      "displayName": "Quenton Jackson",
+      "gamesPlayed": 82,
+      "mpg": 10.939024390243903,
+      "ppg": 5.463414634146342,
+      "usageAvg": 0.198717391304348,
+      "usageGames": 46,
+      "usageTotalMinutes": 891,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-25",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 10.939024390243903,
+        "recentMpg": 21.9,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "8a2a4f30-935e-508d-9537-1dbaec024ee5",
+      "playerId": "304",
+      "displayName": "T.J. McConnell",
+      "gamesPlayed": 82,
+      "mpg": 11.74390243902439,
+      "ppg": 6.402439024390244,
+      "usageAvg": 0.226267857142857,
+      "usageGames": 56,
+      "usageTotalMinutes": 963,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-08",
+        "dateRangeEnd": "2026-03-29",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 11.74390243902439,
+        "recentMpg": 18.8,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "40158df5-db5b-5277-a1c0-0171d6bb1bca",
+      "playerId": "1057395638",
+      "displayName": "Taelon Peter",
+      "gamesPlayed": 82,
+      "mpg": 6,
+      "ppg": 2.0853658536585367,
+      "usageAvg": 0.16552,
+      "usageGames": 25,
+      "usageTotalMinutes": 458,
+      "recentCompetitive": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-03-12",
+        "dateRangeEnd": "2026-04-12",
+        "regularSeasonGameCount": 10,
+        "postseasonGameCount": 0,
+        "baselineMpg": 6,
+        "recentMpg": 19.3,
+        "includesPostseasonByPolicy": true
+      },
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    },
+    {
+      "playerEntityId": "2b794c7c-1b84-5fac-aa09-89fdf62566b3",
+      "playerId": "3547245",
+      "displayName": "Tyrese Haliburton",
+      "gamesPlayed": 82,
+      "mpg": 0,
+      "ppg": 0,
+      "usageAvg": null,
+      "usageGames": null,
+      "usageTotalMinutes": null,
+      "recentCompetitive": null,
+      "provenance": {
+        "method": "prior_season_role_stats_v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.player_season_averages",
+          "analytics.player_game_advanced",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "MPG/PPG all-teams competitive; usage=mean_usage_pct_played_games_v1; recent window last 10 played games (may include postseason)"
+      }
+    }
+  ],
+  "schedule": {
+    "games": [],
+    "unavailableReason": "Preseason schedule not available in analytics.games for this season.",
+    "provenance": {
+      "method": "preseason_schedule_unavailable_v1",
+      "tables": [
+        "analytics.games"
+      ],
+      "season": "2026",
+      "note": "No preseason tipoffs in analytics.games for this product season"
+    }
+  },
+  "availableWowySummaries": [],
+  "warnings": [
+    "Skipping role stats for Braden Smith (7ba8e2f1-cf1e-53d3-9824-3af3a4b827b4): missing player_id"
+  ],
+  "provenanceSummary": [
+    {
+      "method": "roster_entity_set_diff_v1",
+      "tables": [
+        "analytics.team_roster_current"
+      ],
+      "season": "2026",
+      "note": "Identity = player_entity_id only; membership add/depart/return"
+    },
+    {
+      "method": "previous_season_baseline_v1",
+      "tables": [
+        "analytics.team_season_averages"
+      ],
+      "season": "2025",
+      "note": "INTERNAL all-games aggregate — do not label as regular-season Record"
+    },
+    {
+      "method": "regular_season_team_snapshot_v1.2.1",
+      "tables": [
+        "analytics.team_game_stats",
+        "analytics.games"
+      ],
+      "season": "2025",
+      "note": "ET tipoff date < 2026-04-14 (WOWY_POSTSEASON_START_ET); exclude Cup Championship ET [2025-12-16]"
+    },
+    {
+      "method": "preseason_schedule_unavailable_v1",
+      "tables": [
+        "analytics.games"
+      ],
+      "season": "2026",
+      "note": "No preseason tipoffs in analytics.games for this product season"
+    },
+    {
+      "method": "prior_season_role_stats_v1.1",
+      "tables": [
+        "analytics.player_game_logs",
+        "analytics.player_season_averages",
+        "analytics.player_game_advanced"
+      ],
+      "season": "2025"
+    }
+  ]
+}

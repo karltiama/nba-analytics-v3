@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { cn } from '@/lib/utils';
 import type { TeamInfo, TeamGameStats, TeamSeasonAverages, TeamTrendPoint } from '@/lib/teams/types';
@@ -175,6 +176,13 @@ export function TeamPageClient({
                   <span className="mx-1.5 text-[#DCE9EA]">·</span>
                   {seasonLabel}
                 </p>
+                <Link
+                  href={`/teams/${routeTeamId}/preview`}
+                  className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#075B5C] hover:text-[#063f46] transition-colors"
+                >
+                  Preseason Preview
+                  <span aria-hidden>→</span>
+                </Link>
               </div>
             </div>
 

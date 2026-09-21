@@ -1,0 +1,296 @@
+{
+  "season": "2026",
+  "slug": "HOU",
+  "teamId": "11",
+  "headline": "Houston Rockets",
+  "dek": "[EDIT] One-line dek for Houston Rockets (2026–27). Prior RS: 52–30 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Houston Rockets — opening framing. Prior season public snapshot: 52–30 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Tristen Newton.",
+    "[EDIT] High-impact moves flagged for human review: Sean Pedulla [ADDED]→LAC. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Josh Okogie?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.c733d5d7-4e15-544e-88a1-4ae3d1206cea."
+    },
+    {
+      "headline": "Does Kevin Durant's usage profile change without Josh Okogie?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.33436afd-5178-5595-99e3-4df4e24ce9f7 · roster.departures.c733d5d7-4e15-544e-88a1-4ae3d1206cea."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Bogdan Bogdanovic, Bruce Thornton, Julian Phillips, Marcus Smart?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.686cce1d-c795-5d69-aa6f-0e58df4b2d81 · roster.additions.cad5f070-7db5-5c08-a91e-37beb6ff52a9 · roster.additions.769a3ca6-8700-5a70-b98d-17b051247021 · roster.additions.901beee7-9866-56de-810a-7c862a83d79f."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Tari Eason, Marcus Smart, Alperen Sengun hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.1b9cb026-138f-5871-b89e-f875df6fdfd9 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.901beee7-9866-56de-810a-7c862a83d79f · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.200b338e-83d2-52b3-bf9e-2eac03eea91a · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.d320f803-4b9c-5a67-8f07-05097413f10d · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.9e50db35-6d71-5387-9520-098dfa28bfc7."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Tristen Newton)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.dd68ad0c-8fa8-5a49-9825-d6d7810b104c."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Bogdan Bogdanovic",
+      "nbaPlayerId": "53",
+      "position": "G",
+      "context": "↔ LAC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Bruce Thornton",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Julian Phillips",
+      "nbaPlayerId": "56677857",
+      "position": "F",
+      "context": "↔ MIN · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Marcus Smart",
+      "nbaPlayerId": "420",
+      "position": "G",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Oscar Tshiebwe",
+      "nbaPlayerId": "56677778",
+      "position": "F-C",
+      "context": "↔ UTA · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Quadir Copeland",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Rafael Castro",
+      "nbaPlayerId": null,
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Sean Pedulla",
+      "nbaPlayerId": "1058921044",
+      "position": "G",
+      "context": "↔ LAC · review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Dorian Finney-Smith",
+      "nbaPlayerId": "158",
+      "position": "F",
+      "context": "↔ CHA · [EDIT] add role/impact context"
+    },
+    {
+      "name": "JD Davison",
+      "nbaPlayerId": "38017707",
+      "position": "G",
+      "context": "↔ ORL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Josh Okogie",
+      "nbaPlayerId": "356",
+      "position": "G",
+      "context": "↔ UTA · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Alperen Sengun",
+      "nbaPlayerId": "17896062",
+      "position": null,
+      "meta": "Prior ~29.9 MPG · 18.0 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Kevin Durant",
+      "nbaPlayerId": "140",
+      "position": null,
+      "meta": "Prior ~32.8 MPG · 23.3 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jabari Smith Jr.",
+      "nbaPlayerId": "38017684",
+      "position": null,
+      "meta": "Prior ~33.6 MPG · 15.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Amen Thompson",
+      "nbaPlayerId": "56677825",
+      "position": null,
+      "meta": "Prior ~36.6 MPG · 17.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Tari Eason",
+      "nbaPlayerId": "38017695",
+      "position": null,
+      "meta": "Prior ~19.9 MPG · 8.1 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Marcus Smart",
+      "nbaPlayerId": "420",
+      "position": null,
+      "meta": "Prior ~23.0 MPG · 7.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Reed Sheppard",
+      "nbaPlayerId": "1028028519",
+      "position": null,
+      "meta": "Prior ~26.6 MPG · 13.4 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bruce Thornton",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Kevin Durant",
+        "nbaPlayerId": "140",
+        "position": null
+      },
+      "previousRole": "Kevin Durant is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Alperen Sengun",
+        "nbaPlayerId": "17896062",
+        "position": null
+      },
+      "previousRole": "Alperen Sengun is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Tari Eason",
+        "nbaPlayerId": "38017695",
+        "position": null
+      },
+      "previousRole": "Tari Eason is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Marcus Smart",
+        "nbaPlayerId": "420",
+        "position": null
+      },
+      "previousRole": "Marcus Smart is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Alperen Sengun",
+        "nbaPlayerId": "17896062",
+        "position": null
+      },
+      "previousRole": "Alperen Sengun is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jabari Smith Jr.",
+        "nbaPlayerId": "38017684",
+        "position": null
+      },
+      "previousRole": "Jabari Smith Jr. is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Amen Thompson",
+        "nbaPlayerId": "56677825",
+        "position": null
+      },
+      "previousRole": "Amen Thompson is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Amen Thompson",
+        "nbaPlayerId": "56677825",
+        "position": null
+      },
+      "previousRole": "Amen Thompson is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jabari Smith Jr.",
+        "nbaPlayerId": "38017684",
+        "position": null
+      },
+      "previousRole": "Jabari Smith Jr. is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Kevin Durant",
+        "nbaPlayerId": "140",
+        "position": null
+      },
+      "previousRole": "Kevin Durant is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Alperen Sengun",
+        "nbaPlayerId": "17896062",
+        "position": null
+      },
+      "previousRole": "Alperen Sengun is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Josh Okogie",
+        "nbaPlayerId": "356",
+        "position": null
+      },
+      "previousRole": "Josh Okogie is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Kevin Durant with/without Josh Okogie",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Alperen Sengun with/without Josh Okogie",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Amen Thompson with/without Josh Okogie",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Returning core: Aaron Holiday + Alperen Sengun",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 52–30 (82 GP); Previous regular-season ORTG: 116.1; Previous regular-season DRTG: 110.9; Returning minutes leader — Amen Thompson: 36.6 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

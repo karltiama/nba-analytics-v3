@@ -1,0 +1,277 @@
+{
+  "season": "2026",
+  "slug": "OKC",
+  "teamId": "21",
+  "headline": "Oklahoma City Thunder",
+  "dek": "[EDIT] One-line dek for Oklahoma City Thunder (2026–27). Prior RS: 64–18 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Oklahoma City Thunder — opening framing. Prior season public snapshot: 64–18 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Payton Sandfort.",
+    "[EDIT] High-impact moves flagged for human review: Luguentz Dort [DEPARTED]→ATL. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Luguentz Dort, Isaiah Joe, Aaron Wiggins?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.83d2eb6d-1ebb-5040-9f0c-18c011843579 · contextSignals.VACATED_MINUTES.4ef0f50f-746c-56d7-8b68-919dee2e922c · contextSignals.VACATED_MINUTES.66c48bb6-9e07-58f9-b926-6f5ff001119e."
+    },
+    {
+      "headline": "Does Shai Gilgeous-Alexander's usage profile change without Luguentz Dort?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.eea46a0e-84b8-5e36-8059-c3f72a92c789 · roster.departures.83d2eb6d-1ebb-5040-9f0c-18c011843579."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Aday Mara, Bennett Stirtz, Josh Dix, Otega Oweh?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.15f53a99-6ca3-54a2-a0be-d79377f20ec5 · roster.additions.f8cbba0f-46f5-52f0-85aa-f63ede3e1fef · roster.additions.4c315d8e-35e9-5872-91b1-7e406746aa8a · roster.additions.4e2ffbbc-cb5b-5243-93dc-b34030c06a08."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Ajay Mitchell, Isaiah Hartenstein, Shai Gilgeous-Alexander hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.25655aff-09a0-5744-9ca8-3e60a52e3871 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.451ca24b-1ac8-576f-9afd-59489b256470 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.eea46a0e-84b8-5e36-8059-c3f72a92c789 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.c8b85c60-436e-5264-b828-1fbaeda31b95."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Payton Sandfort)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.17949afc-8917-5767-9611-86dd46aa54dc."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Aday Mara",
+      "nbaPlayerId": null,
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Bennett Stirtz",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Josh Dix",
+      "nbaPlayerId": null,
+      "position": null,
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Otega Oweh",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Aaron Wiggins",
+      "nbaPlayerId": "17896078",
+      "position": "G",
+      "context": "↔ ATL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Branden Carlson",
+      "nbaPlayerId": "1028218679",
+      "position": "C",
+      "context": "↔ POR · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Isaiah Joe",
+      "nbaPlayerId": "3547272",
+      "position": "G",
+      "context": "↔ DET · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Luguentz Dort",
+      "nbaPlayerId": "666541",
+      "position": "G",
+      "context": "↔ ATL · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Shai Gilgeous-Alexander",
+      "nbaPlayerId": "175",
+      "position": null,
+      "meta": "Prior ~28.9 MPG · 26.1 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jalen Williams",
+      "nbaPlayerId": "38017703",
+      "position": null,
+      "meta": "Prior ~10.8 MPG · 6.5 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Ajay Mitchell",
+      "nbaPlayerId": "1028037477",
+      "position": null,
+      "meta": "Prior ~18.4 MPG · 9.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Isaiah Hartenstein",
+      "nbaPlayerId": "201",
+      "position": null,
+      "meta": "Prior ~15.4 MPG · 5.9 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Chet Holmgren",
+      "nbaPlayerId": "38017685",
+      "position": null,
+      "meta": "Prior ~25.3 MPG · 14.5 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Cason Wallace",
+      "nbaPlayerId": "56677833",
+      "position": null,
+      "meta": "Prior ~24.9 MPG · 8.1 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Aday Mara",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bennett Stirtz",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Shai Gilgeous-Alexander",
+        "nbaPlayerId": "175",
+        "position": null
+      },
+      "previousRole": "Shai Gilgeous-Alexander is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jalen Williams",
+        "nbaPlayerId": "38017703",
+        "position": null
+      },
+      "previousRole": "Jalen Williams is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Ajay Mitchell",
+        "nbaPlayerId": "1028037477",
+        "position": null
+      },
+      "previousRole": "Ajay Mitchell is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Isaiah Hartenstein",
+        "nbaPlayerId": "201",
+        "position": null
+      },
+      "previousRole": "Isaiah Hartenstein is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Shai Gilgeous-Alexander",
+        "nbaPlayerId": "175",
+        "position": null
+      },
+      "previousRole": "Shai Gilgeous-Alexander is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Chet Holmgren",
+        "nbaPlayerId": "38017685",
+        "position": null
+      },
+      "previousRole": "Chet Holmgren is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Shai Gilgeous-Alexander",
+        "nbaPlayerId": "175",
+        "position": null
+      },
+      "previousRole": "Shai Gilgeous-Alexander is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Luguentz Dort",
+        "nbaPlayerId": "666541",
+        "position": null
+      },
+      "previousRole": "Luguentz Dort is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Isaiah Joe",
+        "nbaPlayerId": "3547272",
+        "position": null
+      },
+      "previousRole": "Isaiah Joe is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Aaron Wiggins",
+        "nbaPlayerId": "17896078",
+        "position": null
+      },
+      "previousRole": "Aaron Wiggins is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Ajay Mitchell",
+        "nbaPlayerId": "1028037477",
+        "position": null
+      },
+      "previousRole": "Ajay Mitchell ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Shai Gilgeous-Alexander with/without Luguentz Dort",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Shai Gilgeous-Alexander with/without Isaiah Joe",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Shai Gilgeous-Alexander with/without Aaron Wiggins",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jalen Williams with/without Luguentz Dort",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jalen Williams with/without Isaiah Joe",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jalen Williams with/without Aaron Wiggins",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 64–18 (82 GP); Previous regular-season ORTG: 116.8; Previous regular-season DRTG: 105.9; Returning minutes leader — Shai Gilgeous-Alexander: 28.9 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

@@ -6,7 +6,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* TEMP preview: site-wide Barlow Condensed. Revert to var(--font-geist-sans) for headings-only. */
   --font-sans: var(--font-barlow-condensed), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-barlow-condensed), ui-sans-serif, system-ui, sans-serif;

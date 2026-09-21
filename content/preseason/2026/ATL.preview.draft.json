@@ -1,0 +1,260 @@
+{
+  "season": "2026",
+  "slug": "ATL",
+  "teamId": "1",
+  "headline": "Atlanta Hawks",
+  "dek": "[EDIT] One-line dek for Atlanta Hawks (2026–27). Prior RS: 46–36 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Atlanta Hawks — opening framing. Prior season public snapshot: 46–36 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Optional second paragraph: continuity vs change, vacated minutes, or usage questions from the research packet."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Zaccharie Risacher?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.f362551f-0d91-5d81-b591-f17532ab2115."
+    },
+    {
+      "headline": "Does Jalen Johnson's usage profile change without Zaccharie Risacher?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.5d0af87e-5fe8-534d-ba2f-19499c16f388 · roster.departures.f362551f-0d91-5d81-b591-f17532ab2115."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Aaron Wiggins, Devin Carter, Henri Veesaar, Jalen Wilson?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.66c48bb6-9e07-58f9-b926-6f5ff001119e · roster.additions.eb866094-7b37-5c64-9fcf-171abe257dbe · roster.additions.e66b4d88-0a4e-51a4-af62-daa1a248b7a4 · roster.additions.d791287d-44fd-5c33-84ab-968a29205e12."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Aaron Wiggins",
+      "nbaPlayerId": "17896078",
+      "position": "G",
+      "context": "↔ OKC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Devin Carter",
+      "nbaPlayerId": "1028025242",
+      "position": "G",
+      "context": "↔ SAC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Henri Veesaar",
+      "nbaPlayerId": null,
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Jalen Wilson",
+      "nbaPlayerId": "56677722",
+      "position": "F",
+      "context": "↔ BKN · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kingston Flemings",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Luguentz Dort",
+      "nbaPlayerId": "666541",
+      "position": "G",
+      "context": "↔ OKC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Ryan Nembhard",
+      "nbaPlayerId": "1057847894",
+      "position": "G",
+      "context": "↔ DAL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Zuby Ejiofor",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Christian Koloko",
+      "nbaPlayerId": "38017710",
+      "position": "C",
+      "context": "↔ NOP · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jonathan Kuminga",
+      "nbaPlayerId": "17553979",
+      "position": "F",
+      "context": "↔ MIN · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Zaccharie Risacher",
+      "nbaPlayerId": "1028028244",
+      "position": "F",
+      "context": "↔ DAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Jalen Johnson",
+      "nbaPlayerId": "17896040",
+      "position": null,
+      "meta": "Prior ~31.3 MPG · 19.8 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "CJ McCollum",
+      "nbaPlayerId": "303",
+      "position": null,
+      "meta": "Prior ~28.9 MPG · 18.1 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Nickeil Alexander-Walker",
+      "nbaPlayerId": "666400",
+      "position": null,
+      "meta": "Prior ~32.0 MPG · 19.4 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Dyson Daniels",
+      "nbaPlayerId": "38017677",
+      "position": null,
+      "meta": "Prior ~30.6 MPG · 10.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Onyeka Okongwu",
+      "nbaPlayerId": "3547244",
+      "position": null,
+      "meta": "Prior ~28.4 MPG · 13.6 PPG",
+      "watching": "[EDIT] Candidate reasons: RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jock Landale",
+      "nbaPlayerId": "19465326",
+      "position": null,
+      "meta": "Prior ~17.9 MPG · 8.5 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Henri Veesaar",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Kingston Flemings",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Jalen Johnson",
+        "nbaPlayerId": "17896040",
+        "position": null
+      },
+      "previousRole": "Jalen Johnson is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "CJ McCollum",
+        "nbaPlayerId": "303",
+        "position": null
+      },
+      "previousRole": "CJ McCollum is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Nickeil Alexander-Walker",
+        "nbaPlayerId": "666400",
+        "position": null
+      },
+      "previousRole": "Nickeil Alexander-Walker is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jalen Johnson",
+        "nbaPlayerId": "17896040",
+        "position": null
+      },
+      "previousRole": "Jalen Johnson is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Dyson Daniels",
+        "nbaPlayerId": "38017677",
+        "position": null
+      },
+      "previousRole": "Dyson Daniels is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "CJ McCollum",
+        "nbaPlayerId": "303",
+        "position": null
+      },
+      "previousRole": "CJ McCollum is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Onyeka Okongwu",
+        "nbaPlayerId": "3547244",
+        "position": null
+      },
+      "previousRole": "Onyeka Okongwu is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Zaccharie Risacher",
+        "nbaPlayerId": "1028028244",
+        "position": null
+      },
+      "previousRole": "Zaccharie Risacher is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Nickeil Alexander-Walker",
+        "nbaPlayerId": "666400",
+        "position": null
+      },
+      "previousRole": "Nickeil Alexander-Walker ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Jalen Johnson with/without Zaccharie Risacher",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "CJ McCollum with/without Zaccharie Risacher",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Nickeil Alexander-Walker with/without Zaccharie Risacher",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Returning core: Asa Newell + Buddy Hield",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 46–36 (82 GP); Previous regular-season ORTG: 114.2; Previous regular-season DRTG: 111.8; Returning minutes leader — Nickeil Alexander-Walker: 32.0 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

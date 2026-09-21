@@ -1,0 +1,246 @@
+{
+  "season": "2026",
+  "slug": "WAS",
+  "teamId": "30",
+  "headline": "Washington Wizards",
+  "dek": "[EDIT] One-line dek for Washington Wizards (2026–27). Prior RS: 17–65 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Washington Wizards — opening framing. Prior season public snapshot: 17–65 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Cam Whitmore, Julian Reese, Leaky Black.",
+    "[EDIT] High-impact moves flagged for human review: D'Angelo Russell [DEPARTED]→MEM; Alexandre Sarr [ADDED]; Carlton Carrington [ADDED]; Deandre Ayton [ADDED]→LAL; Khris Middleton [ADDED]→DAL. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among AJ Dybantsa, Alexandre Sarr, Carlton Carrington, Deandre Ayton?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.67fb5279-e1f6-5965-81ee-d8e92a43a55b · roster.additions.776155fd-e89c-5b62-9202-c3e1a7f17f10 · roster.additions.3224ab9a-bdf6-5443-8bcd-bf7b47c56bf6 · roster.additions.6a062179-f043-5916-8985-58bc42a9a27a."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Will Riley, Justin Champagnie, Bilal Coulibaly hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.91ffa908-1172-56ac-9899-d4f1002e7500 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.f574af6b-ecc4-5b56-907e-ce908e8da113 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.efb894e4-1889-564b-adfb-fa703a76c811 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.776155fd-e89c-5b62-9202-c3e1a7f17f10 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.82dcd2d1-203b-5139-9693-babc406d3080 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.7f867845-88e4-50de-b887-c55bc0c8a298 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.6a062179-f043-5916-8985-58bc42a9a27a."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Cam Whitmore, Julian Reese, Leaky Black)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.1d385fce-4a6a-5ce2-9183-f33487e4b7f2 · roster.unresolved.73514b0b-8208-5627-ba9e-06dd2b602021 · roster.unresolved.ea7728fa-8f4b-543b-8aa8-9ed382b3e849."
+    }
+  ],
+  "additions": [
+    {
+      "name": "AJ Dybantsa",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Alexandre Sarr",
+      "nbaPlayerId": "1028028405",
+      "position": "C",
+      "context": "review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Carlton Carrington",
+      "nbaPlayerId": "1028025235",
+      "position": "G",
+      "context": "review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Deandre Ayton",
+      "nbaPlayerId": "22",
+      "position": "C",
+      "context": "↔ LAL · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Felix Okpara",
+      "nbaPlayerId": null,
+      "position": "C",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Khris Middleton",
+      "nbaPlayerId": "315",
+      "position": "F",
+      "context": "↔ DAL · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Tre Mann",
+      "nbaPlayerId": "17896036",
+      "position": "G",
+      "context": "↔ CHA · [EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "D'Angelo Russell",
+      "nbaPlayerId": "405",
+      "position": "G",
+      "context": "↔ MEM · review: HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jaden Hardy",
+      "nbaPlayerId": "38017679",
+      "position": "G",
+      "context": "↔ LAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Anthony Davis",
+      "nbaPlayerId": "117",
+      "position": null,
+      "meta": "Prior ~7.5 MPG · 4.9 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Tristan Vukcevic",
+      "nbaPlayerId": "1016384149",
+      "position": null,
+      "meta": "Prior ~8.2 MPG · 5.4 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Will Riley",
+      "nbaPlayerId": "1057279594",
+      "position": null,
+      "meta": "Prior ~19.9 MPG · 9.3 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Justin Champagnie",
+      "nbaPlayerId": "17896039",
+      "position": null,
+      "meta": "Prior ~16.8 MPG · 7.3 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bilal Coulibaly",
+      "nbaPlayerId": "56677844",
+      "position": null,
+      "meta": "Prior ~17.9 MPG · 8.0 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Alexandre Sarr",
+      "nbaPlayerId": "1028028405",
+      "position": null,
+      "meta": "Prior ~15.9 MPG · 9.5 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Tre Johnson",
+      "nbaPlayerId": "1057262985",
+      "position": null,
+      "meta": "Prior ~17.5 MPG · 8.9 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "KyShawn George",
+      "nbaPlayerId": "1028026060",
+      "position": null,
+      "meta": "Prior ~17.0 MPG · 8.7 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Anthony Davis",
+        "nbaPlayerId": "117",
+        "position": null
+      },
+      "previousRole": "Anthony Davis is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Tristan Vukcevic",
+        "nbaPlayerId": "1016384149",
+        "position": null
+      },
+      "previousRole": "Tristan Vukcevic is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Will Riley",
+        "nbaPlayerId": "1057279594",
+        "position": null
+      },
+      "previousRole": "Will Riley is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Justin Champagnie",
+        "nbaPlayerId": "17896039",
+        "position": null
+      },
+      "previousRole": "Justin Champagnie is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Bilal Coulibaly",
+        "nbaPlayerId": "56677844",
+        "position": null
+      },
+      "previousRole": "Bilal Coulibaly is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Alexandre Sarr",
+        "nbaPlayerId": "1028028405",
+        "position": null
+      },
+      "previousRole": "Alexandre Sarr is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Tre Johnson",
+        "nbaPlayerId": "1057262985",
+        "position": null
+      },
+      "previousRole": "Tre Johnson is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "KyShawn George",
+        "nbaPlayerId": "1028026060",
+        "position": null
+      },
+      "previousRole": "KyShawn George is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Deandre Ayton",
+        "nbaPlayerId": "22",
+        "position": null
+      },
+      "previousRole": "Deandre Ayton is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Trae Young",
+        "nbaPlayerId": "490",
+        "position": null
+      },
+      "previousRole": "Trae Young ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Anthony Davis + Anthony Gill",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 17–65 (82 GP); Previous regular-season ORTG: 108.8; Previous regular-season DRTG: 120.4; Returning minutes leader — Will Riley: 19.9 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

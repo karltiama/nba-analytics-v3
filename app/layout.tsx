@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, Geist, Geist_Mono } from "next/font/google";
+import { Barlow_Condensed, Geist_Mono } from "next/font/google";
 import { UmamiScript } from "@/components/product-analytics/UmamiScript";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -32,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${barlowCondensed.variable} font-sans antialiased`}
+        className={`${geistMono.variable} ${barlowCondensed.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         {children}

@@ -1,0 +1,286 @@
+{
+  "season": "2026",
+  "slug": "DEN",
+  "teamId": "8",
+  "headline": "Denver Nuggets",
+  "dek": "[EDIT] One-line dek for Denver Nuggets (2026–27). Prior RS: 54–28 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Denver Nuggets — opening framing. Prior season public snapshot: 54–28 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Jonas Valanciunas.",
+    "[EDIT] High-impact moves flagged for human review: Tim Hardaway Jr. [DEPARTED]→MIA. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Who absorbs minutes previously associated with Tim Hardaway Jr., Peyton Watson?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.VACATED_MINUTES.74b0a209-f0ea-5bec-af30-5a13b59393ff · contextSignals.VACATED_MINUTES.53bb8df1-17ed-5df8-bafa-bc4e4f9df782."
+    },
+    {
+      "headline": "Does Nikola Jokic's usage profile change without Tim Hardaway Jr.?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.HIGH_USAGE_RETURNER.75b76079-fb0b-5f3c-b755-49d7770b94e5 · roster.departures.74b0a209-f0ea-5bec-af30-5a13b59393ff."
+    },
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among Alpha Diallo, Bryce Hopkins, K.J. Simpson, Marvin Bagley III?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.1b734eee-dade-5a8e-8777-83d5205238cf · roster.additions.eecccc35-7929-5038-8a8a-724a7b7cfec7 · roster.additions.1a0eac35-ee18-54b7-aff0-0e6f1408b339 · roster.additions.256846df-561d-5c7e-8944-4479ffe446c5."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Christian Braun, Cameron Johnson, Nikola Jokic hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.b399825d-87b1-58fd-8417-240f77a7667e · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.0365c812-356e-5d4f-a81a-7a011d2fe809 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.75b76079-fb0b-5f3c-b755-49d7770b94e5 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.50d1a72f-1b8e-5d97-ac62-49a8e86bf7f2 · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.65da1a8a-7cf8-5bdd-9e2e-d2f52ddc3372."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Jonas Valanciunas)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.d10f4072-5905-5925-895e-c72af693b218."
+    }
+  ],
+  "additions": [
+    {
+      "name": "Alpha Diallo",
+      "nbaPlayerId": "17895740",
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Bryce Hopkins",
+      "nbaPlayerId": null,
+      "position": null,
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "K.J. Simpson",
+      "nbaPlayerId": "1028038474",
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Marvin Bagley III",
+      "nbaPlayerId": "24",
+      "position": "F",
+      "context": "↔ DAL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Trevon Brazile",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Jalen Pickett",
+      "nbaPlayerId": "56677582",
+      "position": "G",
+      "context": "↔ LAC · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Peyton Watson",
+      "nbaPlayerId": "38017721",
+      "position": "G",
+      "context": "↔ CLE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Tim Hardaway Jr.",
+      "nbaPlayerId": "191",
+      "position": "G-F",
+      "context": "↔ MIA · review: TOP_MINUTES_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Nikola Jokic",
+      "nbaPlayerId": "246",
+      "position": null,
+      "meta": "Prior ~28.4 MPG · 22.2 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jamal Murray",
+      "nbaPlayerId": "335",
+      "position": null,
+      "meta": "Prior ~32.9 MPG · 23.3 PPG",
+      "watching": "[EDIT] Candidate reasons: HIGH_USAGE_RETURNER, RECENT_COMPETITIVE_MINUTES_INCREASE, RETURNING_HIGH_MINUTE_PLAYER, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Christian Braun",
+      "nbaPlayerId": "38017709",
+      "position": null,
+      "meta": "Prior ~18.0 MPG · 6.5 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Cameron Johnson",
+      "nbaPlayerId": "666679",
+      "position": null,
+      "meta": "Prior ~20.9 MPG · 8.5 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Spencer Jones",
+      "nbaPlayerId": "1028255289",
+      "position": null,
+      "meta": "Prior ~17.8 MPG · 4.4 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE, VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bruce Brown",
+      "nbaPlayerId": "69",
+      "position": null,
+      "meta": "Prior ~24.0 MPG · 7.8 PPG",
+      "watching": "[EDIT] Candidate reasons: VACATED_TEAMMATE_MINUTES. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Alpha Diallo",
+      "nbaPlayerId": "17895740",
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Bryce Hopkins",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Nikola Jokic",
+        "nbaPlayerId": "246",
+        "position": null
+      },
+      "previousRole": "Nikola Jokic is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Jamal Murray",
+        "nbaPlayerId": "335",
+        "position": null
+      },
+      "previousRole": "Jamal Murray is a returning player with prior-season high usage under mean_usage_pct_played_games_v1 — a candidate for continued high-usage monitoring.",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Christian Braun",
+        "nbaPlayerId": "38017709",
+        "position": null
+      },
+      "previousRole": "Christian Braun is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Cameron Johnson",
+        "nbaPlayerId": "666679",
+        "position": null
+      },
+      "previousRole": "Cameron Johnson is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Nikola Jokic",
+        "nbaPlayerId": "246",
+        "position": null
+      },
+      "previousRole": "Nikola Jokic is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jamal Murray",
+        "nbaPlayerId": "335",
+        "position": null
+      },
+      "previousRole": "Jamal Murray is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Spencer Jones",
+        "nbaPlayerId": "1028255289",
+        "position": null
+      },
+      "previousRole": "Spencer Jones is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jamal Murray",
+        "nbaPlayerId": "335",
+        "position": null
+      },
+      "previousRole": "Jamal Murray is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Nikola Jokic",
+        "nbaPlayerId": "246",
+        "position": null
+      },
+      "previousRole": "Nikola Jokic is a returning high-minute player (prior MPG >= 28).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Tim Hardaway Jr.",
+        "nbaPlayerId": "191",
+        "position": null
+      },
+      "previousRole": "Tim Hardaway Jr. is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Peyton Watson",
+        "nbaPlayerId": "38017721",
+        "position": null
+      },
+      "previousRole": "Peyton Watson is a confirmed departure who averaged meaningful prior minutes — a candidate source of vacated minutes (not a projection of who absorbs them).",
+      "watch": "Opportunity ↑"
+    },
+    {
+      "player": {
+        "name": "Aaron Gordon",
+        "nbaPlayerId": "177",
+        "position": null
+      },
+      "previousRole": "Aaron Gordon ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Nikola Jokic with/without Tim Hardaway Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Nikola Jokic with/without Peyton Watson",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jamal Murray with/without Tim Hardaway Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jamal Murray with/without Peyton Watson",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jamal Murray with/without Tim Hardaway Jr.",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    },
+    {
+      "title": "Jamal Murray with/without Peyton Watson",
+      "detail": "[EDIT] Candidate for review only — Returning high-usage/minute player paired with a confirmed departed high-minute teammate — worth inspecting historically; no WOWY result computed here.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 54–28 (82 GP); Previous regular-season ORTG: 120.3; Previous regular-season DRTG: 115.2; Returning minutes leader — Jamal Murray: 32.9 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "season": "2026",
+  "slug": "MEM",
+  "teamId": "15",
+  "headline": "Memphis Grizzlies",
+  "dek": "[EDIT] One-line dek for Memphis Grizzlies (2026–27). Prior RS: 25–57 regular-season (82 GP).",
+  "bigPicture": [
+    "[EDIT] Memphis Grizzlies — opening framing. Prior season public snapshot: 25–57 regular-season (82 GP). Replace this paragraph with your big-picture thesis.",
+    "[EDIT] Unresolved roster statuses (do not treat as confirmed departures): Brandon Clarke.",
+    "[EDIT] High-impact moves flagged for human review: Ja Morant [DEPARTED]→POR; D'Angelo Russell [ADDED]→WAS; Jerami Grant [ADDED]→POR. Verify against open-roster sources before publishing."
+  ],
+  "keyQuestions": [
+    {
+      "headline": "Which confirmed addition most changes spacing or rotation packing among AJ Johnson, Cameron Boozer, D'Angelo Russell, Isaiah Stewart?",
+      "detail": "[EDIT] Expand using evidence: roster.additions.d44311c4-2577-5add-b71d-fcb790e6d96d · roster.additions.f24463b2-a4b8-5e30-ae0e-d4159ac21533 · roster.additions.dedb67b6-c189-5862-91fc-bc81b62d3c5c · roster.additions.c2870c65-3b8f-5845-aae5-2bf2870c877d."
+    },
+    {
+      "headline": "Which recent-competitive minutes increases among Walter Clayton Jr., Cedric Coward, Jerami Grant hold once the regular season compresses roles?",
+      "detail": "[EDIT] Expand using evidence: contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.cb0a509c-5ed6-5b4e-b50d-d368a602ca9a · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.0385bc50-643e-57a0-b30e-ed35b72b6d7d · contextSignals.RECENT_COMPETITIVE_MINUTES_INCREASE.594eb071-e982-5862-b872-e1bc5cae5af4."
+    },
+    {
+      "headline": "What is the true roster status of unresolved names (Brandon Clarke)?",
+      "detail": "[EDIT] Expand using evidence: roster.unresolved.b9e486ff-caee-5468-ab9b-474aba81a7d4."
+    }
+  ],
+  "additions": [
+    {
+      "name": "AJ Johnson",
+      "nbaPlayerId": "1028026717",
+      "position": "G",
+      "context": "↔ DAL · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Cameron Boozer",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "D'Angelo Russell",
+      "nbaPlayerId": "405",
+      "position": "G",
+      "context": "↔ WAS · review: HIGH_USAGE_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Isaiah Stewart",
+      "nbaPlayerId": "3547267",
+      "position": "F-C",
+      "context": "↔ DET · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Jerami Grant",
+      "nbaPlayerId": "182",
+      "position": "F",
+      "context": "↔ POR · review: TOP_MINUTES_CONFIRMED_ADDITION · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Karim Lopez",
+      "nbaPlayerId": null,
+      "position": "F",
+      "context": "[EDIT] add role/impact context"
+    },
+    {
+      "name": "Kris Murray",
+      "nbaPlayerId": "56677791",
+      "position": "F",
+      "context": "↔ POR · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Quinten Post",
+      "nbaPlayerId": "1028047928",
+      "position": "C",
+      "context": "↔ GSW · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Richie Saunders",
+      "nbaPlayerId": null,
+      "position": "G",
+      "context": "[EDIT] add role/impact context"
+    }
+  ],
+  "departures": [
+    {
+      "name": "Ja Morant",
+      "nbaPlayerId": "666786",
+      "position": "G",
+      "context": "↔ POR · review: HIGH_USAGE_CONFIRMED_DEPARTURE · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Kentavious Caldwell-Pope",
+      "nbaPlayerId": "81",
+      "position": "G",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Rayan Rupert",
+      "nbaPlayerId": "56677829",
+      "position": "G-F",
+      "context": "↔ PHI · [EDIT] add role/impact context"
+    },
+    {
+      "name": "Santi Aldama",
+      "nbaPlayerId": "17896067",
+      "position": "F-C",
+      "context": "↔ DAL · [EDIT] add role/impact context"
+    }
+  ],
+  "draftPicks": [],
+  "projectedRotation": null,
+  "playersToWatch": [
+    {
+      "name": "Walter Clayton Jr.",
+      "nbaPlayerId": "1057271583",
+      "position": null,
+      "meta": "Prior ~16.6 MPG · 6.3 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Cedric Coward",
+      "nbaPlayerId": "1057266649",
+      "position": null,
+      "meta": "Prior ~19.5 MPG · 10.3 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Jerami Grant",
+      "nbaPlayerId": "182",
+      "position": null,
+      "meta": "Prior ~20.8 MPG · 12.8 PPG",
+      "watching": "[EDIT] Candidate reasons: RECENT_COMPETITIVE_MINUTES_INCREASE. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Cameron Boozer",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Karim Lopez",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    },
+    {
+      "name": "Richie Saunders",
+      "nbaPlayerId": null,
+      "position": null,
+      "meta": null,
+      "watching": "[EDIT] Candidate reasons: NEW_ROSTER_ADDITION. Rewrite as 2–3 sentences of what Court Context is watching — not a projection."
+    }
+  ],
+  "roleWatch": [
+    {
+      "player": {
+        "name": "Walter Clayton Jr.",
+        "nbaPlayerId": "1057271583",
+        "position": null
+      },
+      "previousRole": "Walter Clayton Jr. is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Cedric Coward",
+        "nbaPlayerId": "1057266649",
+        "position": null
+      },
+      "previousRole": "Cedric Coward is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Jerami Grant",
+        "nbaPlayerId": "182",
+        "position": null
+      },
+      "previousRole": "Jerami Grant is a candidate whose recent competitive minutes exceeded prior baseline (window may include postseason).",
+      "watch": "Minutes ↑"
+    },
+    {
+      "player": {
+        "name": "Ty Jerome",
+        "nbaPlayerId": "666676",
+        "position": null
+      },
+      "previousRole": "Ty Jerome ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "Scotty Pippen Jr.",
+        "nbaPlayerId": "38017656",
+        "position": null
+      },
+      "previousRole": "Scotty Pippen Jr. ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    },
+    {
+      "player": {
+        "name": "GG Jackson",
+        "nbaPlayerId": "56677830",
+        "position": null
+      },
+      "previousRole": "GG Jackson ranks among returning prior-season usage leaders on this roster (descriptive ranking, not a role projection).",
+      "watch": "Stable"
+    }
+  ],
+  "wowyContext": [
+    {
+      "title": "Returning core: Cam Spencer + Cedric Coward",
+      "detail": "[EDIT] Candidate for review only — Two returning open-roster players — candidate pairing for descriptive WOWY review.. Do not invent possession splits."
+    }
+  ],
+  "outlook": "[EDIT] Outlook draft seed from notable stats (Previous regular-season record: 25–57 (82 GP); Previous regular-season ORTG: 110.5; Previous regular-season DRTG: 116.3; Returning minutes leader — Jaylen Wells: 22.2 MPG). Rewrite as qualitative outlook — not a prediction.",
+  "snapshotNotes": {
+    "playoffResult": null
+  }
+}

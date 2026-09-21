@@ -1,0 +1,553 @@
+{
+  "version": "team-preseason-preview-draft-v1.1",
+  "season": "2026",
+  "generatedAt": "2026-09-21T02:08:20.407Z",
+  "team": {
+    "teamId": "9",
+    "slug": "DET",
+    "name": "Detroit Pistons",
+    "abbreviation": "DET",
+    "conference": "East"
+  },
+  "headline": "Detroit Pistons Preseason Preview",
+  "dek": "Analyzing the Pistons' offseason changes and key players as they prepare for the upcoming season.",
+  "bigPicture": [
+    "The Detroit Pistons finished the previous regular season with a strong record, showcasing a balanced offensive and defensive performance.",
+    "With several key departures and new additions, the team is looking to build on last season's success while integrating new talent."
+  ],
+  "snapshot": {
+    "regularSeasonRecord": "60–22",
+    "regularSeasonOffensiveRating": 115.578393688006,
+    "regularSeasonDefensiveRating": 107.492105852296,
+    "regularSeasonPace": 101.998048780488,
+    "regularSeasonGamesPlayed": 82,
+    "playoffResult": null,
+    "offensiveRatingRank": null,
+    "defensiveRatingRank": null,
+    "paceRank": null,
+    "allGamesMetricsExcludedFromPublicSnapshot": true
+  },
+  "rosterChanges": {
+    "additions": [
+      {
+        "playerEntityId": "82344223-30c9-598f-a724-e7557faa2a20",
+        "playerId": null,
+        "name": "Ebuka Okorie",
+        "context": null
+      },
+      {
+        "playerEntityId": "4bb9dfb0-9e9b-552d-b643-2e185d738bc2",
+        "playerId": "1028264794",
+        "name": "Elijah Harkless",
+        "context": null
+      },
+      {
+        "playerEntityId": "6e576531-4387-5f61-bd3d-dae0ba2a2744",
+        "playerId": "196",
+        "name": "Gary Harris",
+        "context": null
+      },
+      {
+        "playerEntityId": "4ef0f50f-746c-56d7-8b68-919dee2e922c",
+        "playerId": "3547272",
+        "name": "Isaiah Joe",
+        "context": null
+      },
+      {
+        "playerEntityId": "18652736-739c-5901-8f58-7e6d71e04fcc",
+        "playerId": "101",
+        "name": "John Collins",
+        "context": null
+      },
+      {
+        "playerEntityId": "9764262f-1a5f-5889-9073-79ccc1465cde",
+        "playerId": "383",
+        "name": "Taurean Prince",
+        "context": null
+      },
+      {
+        "playerEntityId": "fa25d7cf-04bf-55a7-96a7-68e6a4ad8717",
+        "playerId": null,
+        "name": "Ugonna Onyenso",
+        "context": null
+      }
+    ],
+    "departures": [
+      {
+        "playerEntityId": "da848f98-0e87-541f-8983-1c14f3c41f1e",
+        "playerId": "277",
+        "name": "Caris LeVert",
+        "context": null
+      },
+      {
+        "playerEntityId": "c2870c65-3b8f-5845-aae5-2bf2870c877d",
+        "playerId": "3547267",
+        "name": "Isaiah Stewart",
+        "context": null
+      },
+      {
+        "playerEntityId": "854d215f-64cd-5519-8779-4889a3b2c557",
+        "playerId": "56677792",
+        "name": "Marcus Sasser",
+        "context": null
+      },
+      {
+        "playerEntityId": "0481e6d0-339d-559e-aeb0-17a35a8d4afc",
+        "playerId": "200",
+        "name": "Tobias Harris",
+        "context": null
+      }
+    ],
+    "returning": [
+      {
+        "playerEntityId": "18a690fd-1768-57c1-ad9b-0fc203fbf85f",
+        "playerId": "56677826",
+        "name": "Ausar Thompson",
+        "context": null
+      },
+      {
+        "playerEntityId": "962289ad-d2b2-56b5-bf97-3ed7756f17a3",
+        "playerId": "17896075",
+        "name": "Cade Cunningham",
+        "context": null
+      },
+      {
+        "playerEntityId": "f92edbfb-a0fe-5b4e-8665-1b65cd993162",
+        "playerId": "1057389625",
+        "name": "Chaz Lanier",
+        "context": null
+      },
+      {
+        "playerEntityId": "7c187829-c82f-50e2-bd48-ce721df85018",
+        "playerId": "1028240128",
+        "name": "Daniss Jenkins",
+        "context": null
+      },
+      {
+        "playerEntityId": "7cfacaa1-14be-531b-ba65-310790d06102",
+        "playerId": "397",
+        "name": "Duncan Robinson",
+        "context": null
+      },
+      {
+        "playerEntityId": "d85a13e0-d59a-552d-97a6-1666902ee319",
+        "playerId": "1028205331",
+        "name": "Isaac Jones",
+        "context": null
+      },
+      {
+        "playerEntityId": "86d65795-918c-50ba-b365-71e1cd725c76",
+        "playerId": "38017694",
+        "name": "Jalen Duren",
+        "context": null
+      },
+      {
+        "playerEntityId": "ed480431-ec6d-5544-9490-9ee154e0c1e3",
+        "playerId": "666604",
+        "name": "Javonte Green",
+        "context": null
+      },
+      {
+        "playerEntityId": "5f2ea98f-5074-5d63-a64a-4109d6739c48",
+        "playerId": "221",
+        "name": "Kevin Huerter",
+        "context": null
+      },
+      {
+        "playerEntityId": "0b593a85-9e7e-52b5-a3b4-f17b78c023d8",
+        "playerId": "3547270",
+        "name": "Paul Reed",
+        "context": null
+      },
+      {
+        "playerEntityId": "8c6e3d9a-9ab3-5765-b7eb-f5785b508800",
+        "playerId": "1028026508",
+        "name": "Ronald Holland II",
+        "context": null
+      },
+      {
+        "playerEntityId": "a33a7b85-5a32-5908-9600-699ae84f7460",
+        "playerId": "1028267166",
+        "name": "Tolu Smith",
+        "context": null
+      },
+      {
+        "playerEntityId": "c49f550c-4e4e-5c33-aa61-24170b4efafb",
+        "playerId": "38017700",
+        "name": "Wendell Moore Jr.",
+        "context": null
+      }
+    ]
+  },
+  "playersToWatch": [
+    {
+      "playerEntityId": "962289ad-d2b2-56b5-bf97-3ed7756f17a3",
+      "playerId": "17896075",
+      "name": "Cade Cunningham",
+      "reasons": [
+        "HIGH_USAGE_RETURNER",
+        "RECENT_COMPETITIVE_MINUTES_INCREASE",
+        "RETURNING_HIGH_MINUTE_PLAYER",
+        "VACATED_TEAMMATE_MINUTES"
+      ],
+      "watching": null
+    },
+    {
+      "playerEntityId": "18a690fd-1768-57c1-ad9b-0fc203fbf85f",
+      "playerId": "56677826",
+      "name": "Ausar Thompson",
+      "reasons": [
+        "RECENT_COMPETITIVE_MINUTES_INCREASE"
+      ],
+      "watching": null
+    },
+    {
+      "playerEntityId": "7c187829-c82f-50e2-bd48-ce721df85018",
+      "playerId": "1028240128",
+      "name": "Daniss Jenkins",
+      "reasons": [
+        "RECENT_COMPETITIVE_MINUTES_INCREASE"
+      ],
+      "watching": null
+    },
+    {
+      "playerEntityId": "86d65795-918c-50ba-b365-71e1cd725c76",
+      "playerId": "38017694",
+      "name": "Jalen Duren",
+      "reasons": [
+        "RECENT_COMPETITIVE_MINUTES_INCREASE"
+      ],
+      "watching": null
+    }
+  ],
+  "roleWatch": [
+    {
+      "playerEntityId": "18a690fd-1768-57c1-ad9b-0fc203fbf85f",
+      "playerId": "56677826",
+      "name": "Ausar Thompson",
+      "label": "MINUTES_UP",
+      "evidence": [
+        "RECENT_COMPETITIVE_MINUTES_INCREASE"
+      ],
+      "explanation": null
+    },
+    {
+      "playerEntityId": "962289ad-d2b2-56b5-bf97-3ed7756f17a3",
+      "playerId": "17896075",
+      "name": "Cade Cunningham",
+      "label": "MINUTES_UP",
+      "evidence": [
+        "HIGH_USAGE_RETURNER",
+        "RECENT_COMPETITIVE_MINUTES_INCREASE",
+        "RETURNING_HIGH_MINUTE_PLAYER"
+      ],
+      "explanation": null
+    },
+    {
+      "playerEntityId": "7c187829-c82f-50e2-bd48-ce721df85018",
+      "playerId": "1028240128",
+      "name": "Daniss Jenkins",
+      "label": "MINUTES_UP",
+      "evidence": [
+        "RECENT_COMPETITIVE_MINUTES_INCREASE"
+      ],
+      "explanation": null
+    },
+    {
+      "playerEntityId": "86d65795-918c-50ba-b365-71e1cd725c76",
+      "playerId": "38017694",
+      "name": "Jalen Duren",
+      "label": "MINUTES_UP",
+      "evidence": [
+        "RECENT_COMPETITIVE_MINUTES_INCREASE"
+      ],
+      "explanation": null
+    }
+  ],
+  "projectedRotation": {
+    "status": "UNAVAILABLE",
+    "starters": [],
+    "bench": []
+  },
+  "keyQuestions": [
+    {
+      "headline": "How will the new additions integrate into the team?",
+      "detail": "The Pistons have brought in several new players who will need to find their place within the existing framework."
+    },
+    {
+      "headline": "Can returning players maintain their performance levels?",
+      "detail": "Key returning players will need to sustain or improve upon their previous contributions to ensure the team's competitiveness."
+    }
+  ],
+  "wowyContext": [],
+  "preseasonSchedule": [],
+  "outlook": "The Pistons are poised for a promising season, but their success will depend on how well they adapt to changes and leverage their returning talent.",
+  "contextSignals": [
+    {
+      "type": "HIGH_USAGE_RETURNER",
+      "playerEntityId": "962289ad-d2b2-56b5-bf97-3ed7756f17a3",
+      "playerId": "17896075",
+      "displayName": "Cade Cunningham",
+      "magnitude": 0.296961038961039,
+      "evidence": {
+        "previousSeasonUsageAvg": 0.297,
+        "usageGames": 77,
+        "usageTotalMinutes": 2738,
+        "aggregationMethod": "mean_usage_pct_played_games_v1",
+        "gamesPlayed": 96
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.player_game_advanced",
+          "analytics.player_game_logs"
+        ],
+        "season": "2025",
+        "note": "mean_usage_pct_played_games_v1; floor 0.24; minGames 20; minTotalMin 400"
+      }
+    },
+    {
+      "type": "RECENT_COMPETITIVE_MINUTES_INCREASE",
+      "playerEntityId": "962289ad-d2b2-56b5-bf97-3ed7756f17a3",
+      "playerId": "17896075",
+      "displayName": "Cade Cunningham",
+      "magnitude": 1.4489245351804592,
+      "evidence": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-04-29",
+        "dateRangeEnd": "2026-05-17",
+        "regularSeasonGameCount": 0,
+        "postseasonGameCount": 10,
+        "baselineMpg": 28.6,
+        "recentMpg": 41.4,
+        "ratio": 1.449,
+        "includesPostseasonByPolicy": true,
+        "scopeLabel": "recent_competitive_not_regular_season_only"
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "recentMpg >= baselineMpg * 1.15; window may include postseason"
+      }
+    },
+    {
+      "type": "RECENT_COMPETITIVE_MINUTES_INCREASE",
+      "playerEntityId": "7c187829-c82f-50e2-bd48-ce721df85018",
+      "playerId": "1028240128",
+      "displayName": "Daniss Jenkins",
+      "magnitude": 1.4334841628959274,
+      "evidence": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-04-29",
+        "dateRangeEnd": "2026-05-17",
+        "regularSeasonGameCount": 0,
+        "postseasonGameCount": 10,
+        "baselineMpg": 18.4,
+        "recentMpg": 26.4,
+        "ratio": 1.433,
+        "includesPostseasonByPolicy": true,
+        "scopeLabel": "recent_competitive_not_regular_season_only"
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "recentMpg >= baselineMpg * 1.15; window may include postseason"
+      }
+    },
+    {
+      "type": "RECENT_COMPETITIVE_MINUTES_INCREASE",
+      "playerEntityId": "18a690fd-1768-57c1-ad9b-0fc203fbf85f",
+      "playerId": "56677826",
+      "displayName": "Ausar Thompson",
+      "magnitude": 1.2593548387096773,
+      "evidence": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-04-29",
+        "dateRangeEnd": "2026-05-17",
+        "regularSeasonGameCount": 0,
+        "postseasonGameCount": 10,
+        "baselineMpg": 24.2,
+        "recentMpg": 30.5,
+        "ratio": 1.259,
+        "includesPostseasonByPolicy": true,
+        "scopeLabel": "recent_competitive_not_regular_season_only"
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "recentMpg >= baselineMpg * 1.15; window may include postseason"
+      }
+    },
+    {
+      "type": "RECENT_COMPETITIVE_MINUTES_INCREASE",
+      "playerEntityId": "86d65795-918c-50ba-b365-71e1cd725c76",
+      "playerId": "38017694",
+      "displayName": "Jalen Duren",
+      "magnitude": 1.196997497914929,
+      "evidence": {
+        "gamesIncluded": 10,
+        "dateRangeStart": "2026-04-29",
+        "dateRangeEnd": "2026-05-17",
+        "regularSeasonGameCount": 0,
+        "postseasonGameCount": 10,
+        "baselineMpg": 25,
+        "recentMpg": 29.9,
+        "ratio": 1.197,
+        "includesPostseasonByPolicy": true,
+        "scopeLabel": "recent_competitive_not_regular_season_only"
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.player_game_logs",
+          "analytics.games"
+        ],
+        "season": "2025",
+        "note": "recentMpg >= baselineMpg * 1.15; window may include postseason"
+      }
+    },
+    {
+      "type": "RETURNING_HIGH_MINUTE_PLAYER",
+      "playerEntityId": "962289ad-d2b2-56b5-bf97-3ed7756f17a3",
+      "playerId": "17896075",
+      "displayName": "Cade Cunningham",
+      "magnitude": 28.572916666666668,
+      "evidence": {
+        "previousSeasonMinutesPerGame": 28.6,
+        "gamesPlayed": 96
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.team_roster_current",
+          "analytics.player_game_logs"
+        ],
+        "season": "2025",
+        "note": "High-minute when prior MPG >= 28"
+      }
+    },
+    {
+      "type": "VACATED_MINUTES",
+      "playerEntityId": "0481e6d0-339d-559e-aeb0-17a35a8d4afc",
+      "playerId": "200",
+      "displayName": "Tobias Harris",
+      "magnitude": 23.28125,
+      "evidence": {
+        "previousSeasonMinutesPerGame": 23.3,
+        "gamesPlayed": 96
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.team_roster_current",
+          "analytics.player_game_logs",
+          "analytics.player_season_averages"
+        ],
+        "season": "2025",
+        "note": "Vacated when prior MPG >= 15 and GP >= 20"
+      }
+    },
+    {
+      "type": "VACATED_MINUTES",
+      "playerEntityId": "c2870c65-3b8f-5845-aae5-2bf2870c877d",
+      "playerId": "3547267",
+      "displayName": "Isaiah Stewart",
+      "magnitude": 15.395833333333334,
+      "evidence": {
+        "previousSeasonMinutesPerGame": 15.4,
+        "gamesPlayed": 96
+      },
+      "provenance": {
+        "method": "preseason-context-signals-v1.1",
+        "tables": [
+          "analytics.team_roster_current",
+          "analytics.player_game_logs",
+          "analytics.player_season_averages"
+        ],
+        "season": "2025",
+        "note": "Vacated when prior MPG >= 15 and GP >= 20"
+      }
+    }
+  ],
+  "editorialTrace": [
+    {
+      "section": "bigPicture",
+      "claimSummary": "Pistons had a strong previous season and are integrating new talent.",
+      "supportingFactPaths": [],
+      "supportingSignalTypes": []
+    },
+    {
+      "section": "playersToWatchCopy",
+      "claimSummary": "Increased competitive minutes indicate potential for key players.",
+      "supportingFactPaths": [],
+      "supportingSignalTypes": []
+    },
+    {
+      "section": "roleWatchCopy",
+      "claimSummary": "Departures create opportunities for players to step up.",
+      "supportingFactPaths": [],
+      "supportingSignalTypes": []
+    },
+    {
+      "section": "keyQuestions",
+      "claimSummary": "Integration of new players and maintaining performance levels are key concerns.",
+      "supportingFactPaths": [],
+      "supportingSignalTypes": []
+    },
+    {
+      "section": "outlook",
+      "claimSummary": "Pistons have potential but must adapt to changes.",
+      "supportingFactPaths": [],
+      "supportingSignalTypes": []
+    }
+  ],
+  "sourceSummary": {
+    "factualFields": [
+      "team",
+      "snapshot.regularSeasonRecord",
+      "snapshot.regularSeasonOffensiveRating",
+      "snapshot.regularSeasonDefensiveRating",
+      "snapshot.regularSeasonPace",
+      "rosterChanges.additions",
+      "rosterChanges.departures",
+      "rosterChanges.returning"
+    ],
+    "derivedFields": [
+      "contextSignals",
+      "playersToWatch.reasons",
+      "roleWatch.label",
+      "roleWatch.evidence"
+    ],
+    "curatedFields": [],
+    "unavailableFields": [
+      "snapshot.playoffResult",
+      "snapshot.offensiveRatingRank",
+      "snapshot.defensiveRatingRank",
+      "snapshot.paceRank",
+      "projectedRotation",
+      "preseasonSchedule",
+      "wowyContext",
+      "draftPicks",
+      "previousSeasonAllGames (internal only — not public snapshot)"
+    ]
+  },
+  "review": {
+    "status": "NEEDS_REVIEW",
+    "warnings": [
+      "Skipping role stats for Ebuka Okorie (82344223-30c9-598f-a724-e7557faa2a20): missing player_id",
+      "Skipping role stats for Ugonna Onyenso (fa25d7cf-04bf-55a7-96a7-68e6a4ad8717): missing player_id"
+    ]
+  }
+}
