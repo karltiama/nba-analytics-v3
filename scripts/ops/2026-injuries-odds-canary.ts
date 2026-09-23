@@ -158,6 +158,9 @@ function summarizeThrottle(logs: Record<string, unknown>[]) {
 }
 
 async function main() {
+  throw new Error(
+    'RETIRED combined injuries/odds canary. Use scripts/ops/bdl-injuries-entitlement-probe.ts and scripts/ops/2026-odds-canary.ts.'
+  );
   if (PINNED_ANALYTICS_SEASON !== '2025') {
     throw new Error(`Refusing canary: PINNED_ANALYTICS_SEASON=${PINNED_ANALYTICS_SEASON}`);
   }
@@ -515,7 +518,21 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error(err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+console.log(
+  JSON.stringify(
+    {
+      CANARY: 'injuries-odds-combined',
+      EXECUTED: false,
+      REQUEST_COUNT: 0,
+      HTTP_STATUS: null,
+      ACCESS: 'NOT_EXECUTED',
+      SCHEMA_VALID: false,
+      WRITE_COUNT: 0,
+      RATE_LIMITER: 'none',
+      STOP_REASON:
+        'RETIRED_USE_scripts/ops/bdl-injuries-entitlement-probe.ts and scripts/ops/2026-odds-canary.ts',
+    },
+    null,
+    2
+  )
+);

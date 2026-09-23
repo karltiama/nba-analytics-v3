@@ -1,12 +1,11 @@
 /**
- * Games entitlement canary. Default is dry-run / no network.
+ * Game-odds entitlement canary. Default is dry-run / no network.
  *
- *   npx tsx scripts/ops/2026-schedule-status-canary.ts --date 2026-10-22
- *   npx tsx scripts/ops/2026-schedule-status-canary.ts --execute --date 2026-10-22
+ *   npx tsx scripts/ops/2026-odds-canary.ts --date 2026-10-22
+ *   npx tsx scripts/ops/2026-odds-canary.ts --execute --date 2026-10-22
  *
- * One ET date, season 2026, at most 3 requests through fetchBdlLive.
- * No database writes, no Lambda invoke, no manual status-sync write token.
- * Local .env key only.
+ * One date, at most 2 requests, fetchBdlLive, in-memory shape check only.
+ * No analytics upsert and no schedule change. Local .env key only.
  */
 import { config as loadEnv } from 'dotenv';
 import path from 'node:path';
@@ -14,7 +13,7 @@ import {
   assertNoSecret,
   canaryLimiterEnv,
   localKeyFromEnv,
-  runGamesEntitlementCanary,
+  runOddsEntitlementCanary,
   singleFlag,
   wantsExecute,
 } from '../../lib/balldontlie/entitlement-canaries';
@@ -26,12 +25,12 @@ async function main(): Promise<void> {
   const dateFlag = singleFlag(process.argv, '--date');
   const date = dateFlag.ok ? dateFlag.value : null;
   const key = execute ? localKeyFromEnv(process.env) : null;
-  const result = await runGamesEntitlementCanary({
+  const result = await runOddsEntitlementCanary({
     execute: execute && dateFlag.ok,
     date,
     key,
     env: {
-      ...canaryLimiterEnv('games-entitlement-canary'),
+      ...canaryLimiterEnv('odds-entitlement-canary'),
       BDL_RATE_LIMIT_TABLE: process.env.BDL_RATE_LIMIT_TABLE || 'nba-bdl-rate-limit',
     },
   });
@@ -42,11 +41,11 @@ async function main(): Promise<void> {
   const serialized = JSON.stringify(printed, null, 2);
   assertNoSecret(serialized, key);
   console.log(serialized);
-  if (printed.STOP_REASON === 'missing_key') process.exitCode = 1;
+  if (printed.STOP_REASON === 'missing_key' || printed.upserts !== 0) process.exitCode = 1;
 }
 
 main().catch((err) => {
-  const message = err instanceof Error ? err.message : 'games canary failed';
+  const message = err instanceof Error ? err.message : 'odds canary failed';
   console.error(message);
   process.exit(1);
 });

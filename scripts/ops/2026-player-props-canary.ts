@@ -1,12 +1,12 @@
 /**
- * Box-score entitlement canary. Default is dry-run / no network.
+ * Player-props entitlement canary. Default is dry-run / no network.
  *
- *   npx tsx scripts/ops/2026-postgame-box-stats-canary.ts --game-id 18447937
- *   npx tsx scripts/ops/2026-postgame-box-stats-canary.ts --execute --game-id 18447937
+ *   npx tsx scripts/ops/2026-player-props-canary.ts --game-id 18447937
+ *   npx tsx scripts/ops/2026-player-props-canary.ts --execute --game-id 18447937
  *
- * One explicit game id. /v1/stats only. At most 3 pages. Does not call the starters endpoint.
- * No database write. Local .env key only. Identity summary is payload-level;
- * the serving bridge is not queried.
+ * Exactly one game id, exactly one fetchBdlLive request, no pagination.
+ * Local process env only. Does not read Lambda, call the AWS CLI, write a database,
+ * enqueue SQS, or print the response body.
  */
 import { config as loadEnv } from 'dotenv';
 import path from 'node:path';
@@ -14,7 +14,7 @@ import {
   assertNoSecret,
   canaryLimiterEnv,
   localKeyFromEnv,
-  runStatsEntitlementCanary,
+  runPropsEntitlementCanary,
   singleFlag,
   wantsExecute,
 } from '../../lib/balldontlie/entitlement-canaries';
@@ -26,18 +26,24 @@ async function main(): Promise<void> {
   const gameFlag = singleFlag(process.argv, '--game-id');
   const gameId = gameFlag.ok ? gameFlag.value : null;
   const key = execute ? localKeyFromEnv(process.env) : null;
-  const result = await runStatsEntitlementCanary({
+  const result = await runPropsEntitlementCanary({
     execute: execute && gameFlag.ok,
     gameId,
     key,
     env: {
-      ...canaryLimiterEnv('stats-entitlement-canary'),
+      ...canaryLimiterEnv('props-entitlement-canary'),
       BDL_RATE_LIMIT_TABLE: process.env.BDL_RATE_LIMIT_TABLE || 'nba-bdl-rate-limit',
     },
   });
   const printed =
     !gameFlag.ok && execute
-      ? { ...result, EXECUTED: false, STOP_REASON: gameFlag.reason, ACCESS: 'NOT_EXECUTED' as const, gameId: null }
+      ? {
+          ...result,
+          EXECUTED: false,
+          STOP_REASON: gameFlag.reason,
+          ACCESS: 'NOT_EXECUTED' as const,
+          gameId: null,
+        }
       : result;
   const serialized = JSON.stringify(printed, null, 2);
   assertNoSecret(serialized, key);
@@ -46,7 +52,7 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  const message = err instanceof Error ? err.message : 'stats canary failed';
+  const message = err instanceof Error ? err.message : 'props canary failed';
   console.error(message);
   process.exit(1);
 });
