@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
@@ -18,6 +18,22 @@ import type {
   WowyTeamStintOption,
   WowyTeammateOption,
 } from '@/lib/wowy/types';
+import {
+  PLAYER_SEARCH_RESULT_OPENED,
+  PLAYER_SEARCH_USED,
+  playerSearchResultOpenedProperties,
+  playerSearchUsedProperties,
+} from '@/lib/product-analytics/discovery-events';
+import { trackEvent } from '@/lib/product-analytics/track-event';
+import {
+  WOWY_FILTER_CHANGED,
+  wowyResultSplitFilterProperties,
+  wowySeasonFilterProperties,
+  wowySeasonTypeFilterProperties,
+  wowyStatViewFilterProperties,
+  wowyTeamStintFilterProperties,
+  wowyTeammateFilterProperties,
+} from '@/lib/product-analytics/wowy-events';
 import { WowyResults } from './WowyResults';
 
 const SEASONS = ['2025', '2024', '2023'] as const;
@@ -62,6 +78,8 @@ export function WowyExplorer({
   const [error, setError] = useState<string | null>(null);
   const [drill, setDrill] = useState<'with' | 'without'>('with');
   const [view, setView] = useState<'perGame' | 'perMinute'>('perGame');
+  const latestPlayerQuery = useRef('');
+  const lastPlayerSearchTracked = useRef<string | null>(null);
 
   const contextLoaded =
     !!subject &&
@@ -80,15 +98,21 @@ export function WowyExplorer({
 
   useEffect(() => {
     const q = playerQuery.trim();
+    latestPlayerQuery.current = q;
     if (q.length < 2) {
       setPlayerHits([]);
+      lastPlayerSearchTracked.current = null;
       return;
     }
     const handle = window.setTimeout(() => {
       void fetch(`/api/wowy/players?q=${encodeURIComponent(q)}`)
         .then(async (res) => {
           const data = await res.json();
-          setPlayerHits(data.players ?? []);
+          const hits = data.players ?? [];
+          setPlayerHits(hits);
+          if (latestPlayerQuery.current !== q || lastPlayerSearchTracked.current === q) return;
+          lastPlayerSearchTracked.current = q;
+          trackEvent(PLAYER_SEARCH_USED, playerSearchUsedProperties('wowy', hits.length));
         })
         .catch(() => setPlayerHits([]));
     }, 200);
@@ -197,10 +221,16 @@ export function WowyExplorer({
       }
       setSummary(next);
       setState(next.with.gameCount + next.without.gameCount === 0 ? 'empty' : 'ready');
-      const nextUrl = `${pathname}?subject=${encodeURIComponent(subject.playerId)}&season=${encodeURIComponent(season)}&teamId=${encodeURIComponent(teamId)}&seasonType=${encodeURIComponent(seasonType)}${
-        selection.teammateIdForPair ? `&teammate=${encodeURIComponent(selection.teammateIdForPair)}` : ''
-      }`;
-      window.history.replaceState(null, '', nextUrl);
+      const nextUrl = new URLSearchParams({
+        subject: subject.playerId,
+        season,
+        teamId,
+        seasonType,
+      });
+      if (selection.teammateIdForPair) nextUrl.set('teammate', selection.teammateIdForPair);
+      const preview = new URLSearchParams(window.location.search).get('preview');
+      if (preview) nextUrl.set('preview', preview);
+      window.history.replaceState(null, '', `${pathname}?${nextUrl.toString()}`);
     } catch (e) {
       setSummary(null);
       setError(e instanceof Error ? e.message : 'Failed to load comparison');
@@ -289,6 +319,10 @@ export function WowyExplorer({
                       type="button"
                       className="w-full text-left px-3 py-2 text-sm hover:bg-[#f7f9f7]"
                       onClick={() => {
+                        trackEvent(
+                          PLAYER_SEARCH_RESULT_OPENED,
+                          playerSearchResultOpenedProperties('wowy')
+                        );
                         setSubject(hit);
                         setPlayerQuery('');
                         setPlayerHits([]);
@@ -315,6 +349,8 @@ export function WowyExplorer({
                 setRequestedTeammateId(null);
                 setTeamId('');
                 setTeammatesLoadedFor('');
+                const seasonEvent = wowySeasonFilterProperties(next);
+                if (seasonEvent) trackEvent(WOWY_FILTER_CHANGED, seasonEvent);
                 if (subject) void loadContext(subject.playerId, next, '', seasonType);
               }}
               className="w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46]"
@@ -335,6 +371,7 @@ export function WowyExplorer({
                 setTeamId(e.target.value);
                 setRequestedTeammateId(null);
                 setTeammatesLoadedFor('');
+                trackEvent(WOWY_FILTER_CHANGED, wowyTeamStintFilterProperties());
               }}
               disabled={!subject || teams.length === 0}
               className="w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46] disabled:bg-[#f7f9f7]"
@@ -359,8 +396,11 @@ export function WowyExplorer({
             <select
               value={seasonType}
               onChange={(e) => {
-                setSeasonType(e.target.value as WowySeasonType | 'all');
+                const next = e.target.value;
+                setSeasonType(next as WowySeasonType | 'all');
                 setTeammatesLoadedFor('');
+                const seasonTypeEvent = wowySeasonTypeFilterProperties(next);
+                if (seasonTypeEvent) trackEvent(WOWY_FILTER_CHANGED, seasonTypeEvent);
               }}
               className="w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46]"
             >
@@ -379,6 +419,7 @@ export function WowyExplorer({
                 const nextId = e.target.value || null;
                 setRequestedTeammateId(nextId);
                 if (!nextId) setView('perGame');
+                trackEvent(WOWY_FILTER_CHANGED, wowyTeammateFilterProperties(Boolean(nextId)));
               }}
               disabled={!subject || !teamId || !contextLoaded}
               className="w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46] disabled:bg-[#f7f9f7]"
@@ -399,7 +440,11 @@ export function WowyExplorer({
             <div className="flex rounded-lg border border-[#DCE9EA] overflow-hidden">
               <button
                 type="button"
-                onClick={() => setView('perGame')}
+                onClick={() => {
+                  if (view === 'perGame') return;
+                  setView('perGame');
+                  trackEvent(WOWY_FILTER_CHANGED, wowyStatViewFilterProperties('perGame'));
+                }}
                 className={`flex-1 px-3 py-2 text-sm font-semibold ${
                   view === 'perGame' || !selection.visibleTeammateId ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'
                 }`}
@@ -408,7 +453,11 @@ export function WowyExplorer({
               </button>
               <button
                 type="button"
-                onClick={() => setView('perMinute')}
+                onClick={() => {
+                  if (view === 'perMinute') return;
+                  setView('perMinute');
+                  trackEvent(WOWY_FILTER_CHANGED, wowyStatViewFilterProperties('perMinute'));
+                }}
                 disabled={!selection.visibleTeammateId}
                 className={`flex-1 px-3 py-2 text-sm font-semibold disabled:opacity-40 ${
                   view === 'perMinute' && selection.visibleTeammateId ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'
@@ -455,14 +504,22 @@ export function WowyExplorer({
         <WowyResults
           summary={summary}
           drill={drill}
-          onDrill={setDrill}
+          onDrill={(next) => {
+            if (next === drill) return;
+            setDrill(next);
+            trackEvent(WOWY_FILTER_CHANGED, wowyResultSplitFilterProperties(next));
+          }}
           drillGames={drillGames}
           subjectNbaId={subject?.nbaPlayerId}
           teammateNbaId={
             teammates.find((t) => t.playerId === selection.visibleTeammateId)?.nbaPlayerId ?? null
           }
           view={view}
-          onView={setView}
+          onView={(next) => {
+            if (next === view) return;
+            setView(next);
+            trackEvent(WOWY_FILTER_CHANGED, wowyStatViewFilterProperties(next));
+          }}
         />
       )}
 

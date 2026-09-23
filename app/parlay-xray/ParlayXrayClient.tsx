@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ParlayXrayView } from '@/components/parlay-xray/ParlayXrayView';
 import { handoffConfirmedXrayParlay } from '@/lib/parlay/adapt-xray-confirmed';
 import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
+import { parsePreviewScenario } from '@/lib/preview/scenario';
+import { loadCourtContextXrayPreview } from '@/lib/preview/xray-preview';
 import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
 import { importConfirmedXrayLegsToStore } from '@/lib/parlay/selection-store';
 import { isXrayDesignPreviewEnabled } from '@/lib/parlay-xray/copy';
@@ -23,6 +25,7 @@ import {
   PARLAY_XRAY_UPLOAD_SELECTED,
   PARLAY_XRAY_UPLOAD_STARTED,
   PARLAY_XRAY_VIEWED,
+  closedXrayResultCategory,
   parlayXraySurfaceProperties,
 } from '@/lib/product-analytics/parlay-xray-events';
 import { trackEvent } from '@/lib/product-analytics/track-event';
@@ -65,6 +68,26 @@ export function ParlayXrayClient() {
 
   useEffect(() => {
     const previewFlag = new URLSearchParams(window.location.search).get('preview');
+    const scenario = parsePreviewScenario(previewFlag);
+    if (scenario) {
+      const loaded = loadCourtContextXrayPreview(scenario);
+      if (loaded.kind === 'error') {
+        dispatch({
+          type: 'SET_EXTRACTION',
+          status: 'failed',
+          legs: [],
+          notice: 'Preview extract failed. No screenshot was sent to a provider.',
+        });
+        return;
+      }
+      dispatch({
+        type: 'LOAD_PREVIEW',
+        parlay: loaded.parlay,
+        analysis: loaded.analysis,
+        confirmed: loaded.confirmed,
+      });
+      return;
+    }
     if (!isXrayDesignPreviewEnabled(previewFlag)) return;
     if (process.env.NODE_ENV === 'production' && previewFlag !== 'replay') return;
     let cancelled = false;
@@ -311,7 +334,7 @@ export function ParlayXrayClient() {
         const ok = SUCCESS_RESULTS.has(result);
         trackEvent(ok ? PARLAY_XRAY_EXTRACT_COMPLETED : PARLAY_XRAY_EXTRACT_FAILED, {
           surface: 'parlay_xray',
-          result_category: result,
+          result_category: closedXrayResultCategory(result),
         });
         dispatch({
           type: 'SET_EXTRACTION',
@@ -322,7 +345,7 @@ export function ParlayXrayClient() {
       } catch {
         trackEvent(PARLAY_XRAY_EXTRACT_FAILED, {
           surface: 'parlay_xray',
-          result_category: 'INTERNAL_ERROR',
+          result_category: closedXrayResultCategory('INTERNAL_ERROR'),
         });
         dispatch({
           type: 'SET_EXTRACTION',

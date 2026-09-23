@@ -12,7 +12,7 @@ import type { StructuralDependency, XRayAnalysis, XRayParlay } from '@/lib/parla
 
 export type LandingParlayXrayDemo = {
   parlay: XRayParlay;
-  analysis: XRayAnalysis;
+  analysis: XRayAnalysis | null;
   combinedOdds: number | null;
   structural: StructuralDependency[];
   extractionStatusLabel: string;

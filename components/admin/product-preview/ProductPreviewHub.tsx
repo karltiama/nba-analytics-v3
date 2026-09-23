@@ -6,6 +6,8 @@ import {
   WORKSPACE_HISTORICAL_PREVIEW_HREF,
   XRAY_REPLAY_PREVIEW_HREF,
 } from '@/lib/parlay/preview-fixture';
+import { PREVIEW_GAMES } from '@/lib/preview/catalog';
+import { PREVIEW_SCENARIOS, previewHref, previewScenarioLabel } from '@/lib/preview/scenario';
 
 const CARDS = [
   {
@@ -84,6 +86,45 @@ export function ProductPreviewHub() {
             </li>
           ))}
         </ul>
+
+        <section className="rounded-2xl border border-[#DCE9EA] bg-white p-5">
+          <h2 className="text-base font-semibold">UI preview scenarios</h2>
+          <p className="text-sm text-[#4a6366] mt-1">
+            Same production screens, deterministic fixtures. Add <span className="font-mono">?preview=</span>{' '}
+            to a route. These links do not write production data.
+          </p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {PREVIEW_SCENARIOS.map((scenario) => (
+              <li key={scenario} className="flex flex-wrap gap-x-3 gap-y-1">
+                <span className="font-semibold w-28">{previewScenarioLabel(scenario)}</span>
+                <Link className="text-[#075B5C] underline" href={previewHref('/', scenario)}>
+                  Landing
+                </Link>
+                <Link
+                  className="text-[#075B5C] underline"
+                  href={previewHref(`/betting/props-explorer?date=2026-04-02&game_id=${PREVIEW_GAMES[0].gameId}`, scenario)}
+                >
+                  Props
+                </Link>
+                <Link className="text-[#075B5C] underline" href={previewHref('/wowy', scenario)}>
+                  WOWY
+                </Link>
+                <Link
+                  className="text-[#075B5C] underline"
+                  href={previewHref(`/betting/games/${PREVIEW_GAMES[0].gameId}`, scenario)}
+                >
+                  Game
+                </Link>
+                <Link className="text-[#075B5C] underline" href={previewHref('/parlay-xray', scenario)}>
+                  X-Ray
+                </Link>
+                <Link className="text-[#075B5C] underline" href={previewHref('/parlay-workspace', scenario)}>
+                  Workspace
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <p className="text-sm text-[#4a6366]">
           Full Props → Workspace flow:{' '}

@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { ArrowRight, BarChart3, Trophy, Users, type LucideIcon } from 'lucide-react';
+import { LandingTrackedLink } from '@/components/landing/LandingTrackedLink';
 import { LandingHeroPlayerCard } from '@/components/landing/LandingHeroPlayerCard';
 
 const HERO_PLAYER_SRC = '/landing/hero-tatum.png';
@@ -57,13 +57,15 @@ export function LandingHero() {
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1 sm:justify-start sm:pt-2">
-              <Link
+              <LandingTrackedLink
                 href="/betting?onboard=1"
+                location="hero"
+                action="explore_court_context"
                 className="group inline-flex h-12 w-auto items-center justify-center gap-2 rounded-lg bg-[#063f46] px-5 sm:px-6 text-white font-semibold transition-colors hover:bg-[#0a525c]"
               >
                 Explore Court Context
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              </LandingTrackedLink>
             </div>
           </div>
 

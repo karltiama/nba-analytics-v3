@@ -10,6 +10,10 @@ This index is optimized for quick portfolio review and onboarding.
 - [API comparison: odds vs BallDontLie](./api-comparison-odds-vs-balldontlie.md)
 - [Infra guide](../infra/README.md)
 
+## Product UI
+
+- [Typography roles](./typography.md)
+
 ## Feature And Data Design
 
 - [Odds data flow example](./odds-data-flow-example.md)

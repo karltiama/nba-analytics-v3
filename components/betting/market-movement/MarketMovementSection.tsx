@@ -18,6 +18,7 @@ import {
   marketMovementViewKey,
   marketMovementViewedIfChanged,
 } from '@/lib/product-analytics/market-movement-events';
+import { explorerBookDisplayName } from '@/lib/betting/props-explorer-filters';
 import { trackEvent } from '@/lib/product-analytics/track-event';
 
 function SnapshotColumn({
@@ -52,7 +53,9 @@ function SportsbookMovementRow({
   return (
     <li className="rounded-md bg-[#F8FBFA] px-2 py-2 space-y-1">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium text-[#063f46] truncate">{book.vendorLabel}</span>
+        <span className="text-xs font-medium text-[#063f46] truncate">
+          {explorerBookDisplayName(book.vendorLabel)}
+        </span>
         <span className="text-[11px] text-[#4a6366] shrink-0">
           {book.classLabel}
           <span className="sr-only"> — {book.classExplanation}</span>

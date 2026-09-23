@@ -39,7 +39,8 @@ describe('Parlay XRay page contract', () => {
     const matchup = readFileSync(join(ROOT, 'components/parlay-xray/MatchupLine.tsx'), 'utf8');
     expect(matchup).toMatch(/TeamLogo/);
     expect(matchup).toMatch(/matchupDisplayFromLeg/);
-    expect(client).toMatch(/result_category: result/);
+    expect(client).toMatch(/closedXrayResultCategory\(result\)/);
+    expect(client).not.toMatch(/result_category: result/);
     expect(client).not.toMatch(/player_evidence|wager_evidence|odds_evidence/);
     const view = readFileSync(join(ROOT, 'components/parlay-xray/ParlayXrayView.tsx'), 'utf8');
     expect(view).toMatch(/Extract screenshot/);

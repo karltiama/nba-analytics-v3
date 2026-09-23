@@ -18,6 +18,8 @@ import { PlayerResearchReturnBar, playerReturnContextFromSearch } from './compon
 import type { GameLog, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 import type { OpponentContext } from '@/lib/analytics/matchup-queries';
 import type { PlayerRecentForm, PlayerVsOpponentHistory } from '@/lib/players/types';
+import { buildPreviewPlayerPage } from '@/lib/preview/player-page';
+import { parsePreviewScenario } from '@/lib/preview/scenario';
 
 async function loadPlayerAnalysis(playerId: string, season: string | null) {
   const analyticsPlayerId = await resolveAnalyticsPlayerId(playerId);
@@ -79,14 +81,19 @@ export default async function BettingPlayerPage({
     side?: string;
     sportsbook?: string;
     line?: string;
+    preview?: string | string[];
   }>;
 }) {
   const { playerId } = await params;
   const sp = await searchParams;
   const { season } = sp;
   const returnCtx = playerReturnContextFromSearch(sp);
+  const previewFlag = Array.isArray(sp.preview) ? sp.preview[0] : sp.preview;
+  const scenario = parsePreviewScenario(previewFlag);
   const { analyticsPlayerId, player, seasonAverages, games, nextGame, opponentContext, recentForm, vsOpponentHistory, activeSeason } =
-    await loadPlayerAnalysis(playerId, season || null);
+    scenario
+      ? buildPreviewPlayerPage(playerId, scenario)
+      : await loadPlayerAnalysis(playerId, season || null);
 
   if (!player) {
     return (

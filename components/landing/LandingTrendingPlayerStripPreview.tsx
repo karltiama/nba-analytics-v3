@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { LandingTrackedLink } from '@/components/landing/LandingTrackedLink';
 import { Flame, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TeamLogo } from '@/components/nba/TeamLogo';
@@ -108,7 +108,11 @@ function TrendingCardSkeleton() {
 /**
  * Marketing preview: same shell as TrendingPlayerStrip; demo cards + skeleton tail (right).
  */
-export function LandingTrendingPlayerStripPreview() {
+export function LandingTrendingPlayerStripPreview({
+  players = DEMO_PLAYERS,
+}: {
+  players?: DemoPlayer[];
+} = {}) {
   return (
     <LandingSection
       className="slide-up"
@@ -124,6 +128,7 @@ export function LandingTrendingPlayerStripPreview() {
         description="Sample L5 vs season illustration — not a live ranking."
         href="/betting/props-explorer"
         linkLabel="Research players"
+        action="explore_props"
       />
 
       <div className="flex items-center gap-1 mb-3 flex-wrap" aria-hidden>
@@ -147,10 +152,12 @@ export function LandingTrendingPlayerStripPreview() {
           aria-hidden
         />
         <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-1">
-          {DEMO_PLAYERS.map((player, idx) => (
-            <Link
+          {players.map((player, idx) => (
+            <LandingTrackedLink
               key={player.name}
               href="/betting/props-explorer"
+              location="feature_section"
+              action="explore_props"
               className={`${CARD_SHELL} hover:border-[#075B5C]/30 transition-colors cursor-pointer group snap-start`}
             >
               <div className="flex gap-2.5">
@@ -201,7 +208,7 @@ export function LandingTrendingPlayerStripPreview() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </LandingTrackedLink>
           ))}
           {Array.from({ length: SKELETON_TAIL_CARDS }, (_, i) => (
             <TrendingCardSkeleton key={i} />

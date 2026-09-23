@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { FOUNDING_PRO_UPGRADE_HREF } from '@/components/betting/betting-shell-paths';
+import { UPGRADE_CLICKED, upgradeClickedProperties } from '@/lib/product-analytics/conversion-events';
+import { trackEvent, type UpgradeClickedSurface } from '@/lib/product-analytics/track-event';
 
 export { FOUNDING_PRO_UPGRADE_HREF };
 
@@ -9,10 +11,13 @@ export function FoundingProUpgradeLink({
   className,
   children,
   onClick,
+  analyticsSurface,
 }: {
   className?: string;
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  /** Omit on Market Movement, which keeps its own historical event. */
+  analyticsSurface?: UpgradeClickedSurface;
 }) {
   return (
     <Link
@@ -23,6 +28,9 @@ export function FoundingProUpgradeLink({
       )}
       onClick={(event) => {
         try {
+          if (analyticsSurface) {
+            trackEvent(UPGRADE_CLICKED, upgradeClickedProperties(analyticsSurface));
+          }
           onClick?.(event);
         } catch {
           // Tracking must never block navigation to /billing.

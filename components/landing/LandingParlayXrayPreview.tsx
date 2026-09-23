@@ -10,14 +10,19 @@ import { XrayAnalysisPanel } from '@/components/parlay-xray/XrayAnalysisPanel';
 import {
   getLandingParlayXrayDemo,
   LANDING_XRAY_STAGE_STEPS,
+  type LandingParlayXrayDemo,
 } from '@/lib/landing/parlay-xray-demo';
 
 /**
  * Marketing preview: same shell as /parlay-xray design preview (upload + legs + analysis).
  * Static fixture only — no extract/API calls.
  */
-export function LandingParlayXrayPreview() {
-  const demo = useMemo(() => getLandingParlayXrayDemo(), []);
+export function LandingParlayXrayPreview({
+  demo: demoOverride,
+}: {
+  demo?: LandingParlayXrayDemo;
+} = {}) {
+  const demo = useMemo(() => demoOverride ?? getLandingParlayXrayDemo(), [demoOverride]);
   const [editing, setEditing] = useState(false);
 
   return (
@@ -35,6 +40,7 @@ export function LandingParlayXrayPreview() {
         description="Sample slip layout — illustration only, not a live screenshot read."
         href="/parlay-xray"
         linkLabel="Open Parlay XRay"
+        action="open_parlay_xray"
       />
 
       <p

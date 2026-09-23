@@ -10,8 +10,18 @@ import {
   selectionFingerprint,
 } from '@/lib/parlay/workspace-analysis';
 import { completeChecklistItem } from '@/lib/onboarding/progress';
+import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
 import { PARLAY_WORKSPACE_ANALYSIS_STARTED } from '@/lib/product-analytics/parlay-xray-events';
 import { trackEvent } from '@/lib/product-analytics/track-event';
+
+function previewFlagFromWindow(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return new URLSearchParams(window.location.search).get('preview');
+  } catch {
+    return null;
+  }
+}
 
 export function ParlayWorkspaceClient() {
   const { legs, analysis, explorerReturnHref, removeLeg, clear, setAnalysis, editedAfterXrayImport } =
@@ -27,11 +37,13 @@ export function ParlayWorkspaceClient() {
     setBusy(true);
     setError(null);
     try {
-      trackEvent(PARLAY_WORKSPACE_ANALYSIS_STARTED, {
-        surface: 'parlay_workspace',
-        source: selectionSourceContext(legs),
-        action: 'analysis_started',
-      });
+      if (!shouldSuppressProductPreviewAnalytics(previewFlagFromWindow())) {
+        trackEvent(PARLAY_WORKSPACE_ANALYSIS_STARTED, {
+          surface: 'parlay_workspace',
+          source: selectionSourceContext(legs),
+          action: 'analysis_started',
+        });
+      }
       const { buildX3fReplayContext, buildX3fReplayDeps } = await import('@/lib/parlay-xray/e2e/fixture');
       const result = runWorkspaceHistoricalAnalysis(legs, buildX3fReplayContext(), buildX3fReplayDeps());
       setAnalysis({ fingerprint: selectionFingerprint(legs), result });

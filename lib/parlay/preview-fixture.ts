@@ -8,6 +8,7 @@ import { propsExplorerHref } from '@/lib/betting/research-journey';
 import { adaptPropsExplorerOffer, type PropsExplorerOfferInput } from './adapt-props-explorer-offer';
 import type { SelectedParlayLeg } from './selection';
 import { PARLAY_WORKSPACE_HREF } from './selection';
+import { parsePreviewScenario } from '@/lib/preview/scenario';
 import {
   X3F_CUTOFF_AT,
   X3F_DATE_LABEL,
@@ -82,7 +83,8 @@ export function shouldSuppressProductPreviewAnalytics(
     isWorkspaceHistoricalPreview(flag) ||
     flag === '1' ||
     flag === 'partial' ||
-    flag === 'analysis'
+    flag === 'analysis' ||
+    parsePreviewScenario(flag) != null
   );
 }
 

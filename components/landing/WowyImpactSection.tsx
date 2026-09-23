@@ -7,7 +7,6 @@ import { LandingSectionHeader } from '@/components/landing/LandingSectionHeader'
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { WowyResults } from '@/app/wowy/WowyResults';
 import {
-  findLandingWowyScenario,
   LANDING_WOWY_DEMO_SCENARIOS,
 } from '@/lib/landing/wowy-demo';
 
@@ -18,16 +17,37 @@ const selectClass =
  * Landing marketing preview of game-level WOWY.
  * Reuses WowyResults (same as /wowy) with a classify→summarize fixture — no live pair API.
  */
-export function WowyImpactSection() {
-  const [scenarioId, setScenarioId] = useState(LANDING_WOWY_DEMO_SCENARIOS[0].id);
+export function WowyImpactSection({
+  scenarios = LANDING_WOWY_DEMO_SCENARIOS,
+}: {
+  scenarios?: typeof LANDING_WOWY_DEMO_SCENARIOS;
+} = {}) {
+  const [scenarioId, setScenarioId] = useState(scenarios[0]?.id ?? '');
   const [drill, setDrill] = useState<'with' | 'without'>('with');
   const [view, setView] = useState<'perGame' | 'perMinute'>('perGame');
 
-  const scenario = findLandingWowyScenario(scenarioId);
+  const scenario = scenarios.find((item) => item.id === scenarioId) ?? scenarios[0];
   const drillGames = useMemo(
-    () => scenario.summary.classifiedGames.filter((g) => g.bucket === drill),
-    [drill, scenario.summary.classifiedGames]
+    () => (scenario ? scenario.summary.classifiedGames.filter((g) => g.bucket === drill) : []),
+    [drill, scenario]
   );
+  if (!scenario) {
+    return (
+      <LandingSection aria-labelledby="landing-wowy-impact-heading">
+        <LandingSectionHeader
+          id="landing-wowy-impact-heading"
+          icon={Users}
+          accent="cyan"
+          variant="watermark"
+          title="WOWY Impact"
+          description="No sample split is available for this preview."
+          href="/wowy"
+          linkLabel="Open WOWY"
+          action="open_wowy"
+        />
+      </LandingSection>
+    );
+  }
 
   return (
     <LandingSection
@@ -44,6 +64,7 @@ export function WowyImpactSection() {
         description="Sample game-level split — illustration only, not a live pair load."
         href="/wowy"
         linkLabel="Open WOWY"
+        action="open_wowy"
       />
 
       <p
@@ -96,7 +117,7 @@ export function WowyImpactSection() {
                 }}
                 aria-label="Select sample WOWY player pair"
               >
-                {LANDING_WOWY_DEMO_SCENARIOS.map((s) => (
+                {scenarios.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.subjectName}
                   </option>

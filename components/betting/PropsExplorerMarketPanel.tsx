@@ -7,6 +7,10 @@ import { UPGRADE_COPY } from '@/lib/entitlements/types';
 import { formatMarketRangePreview } from '@/lib/entitlements/market-preview';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
 import { MarketMovementSection } from '@/components/betting/market-movement/MarketMovementSection';
+import {
+  explorerBookDisplayName,
+  explorerPropContextLabel,
+} from '@/lib/betting/props-explorer-filters';
 
 export type PropsExplorerMarketSelection = {
   gameId: string | number;
@@ -44,11 +48,7 @@ function formatOdds(odds: number | null | undefined): string {
 }
 
 function formatBook(name: string | null | undefined): string {
-  if (!name) return '—';
-  return name
-    .split(/[\s_]+/)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+  return explorerBookDisplayName(name);
 }
 
 function formatLine(value: number | null | undefined): string {
@@ -60,10 +60,12 @@ function MarketBody({
   data,
   loading,
   error,
+  readable = false,
 }: {
   data: MarketPayload | null;
   loading: boolean;
   error: string | null;
+  readable?: boolean;
 }) {
   if (loading) {
     // Do not mount MarketMovementSection here — viewed events fire only after a resolved payload.
@@ -183,8 +185,10 @@ function MarketBody({
                         key={`${book.sportsbook}-${book.side}-${book.lineValue}-${book.oddsAmerican}`}
                         className="text-xs text-[#063f46] flex justify-between gap-2"
                       >
-                        <span className="truncate">{formatBook(book.sportsbook)}</span>
-                        <span className="shrink-0 text-[#4a6366]">
+                        <span className={readable ? 'type-secondary min-w-0 truncate' : 'truncate'}>
+                          {formatBook(book.sportsbook)}
+                        </span>
+                        <span className={readable ? 'type-card-data shrink-0 whitespace-nowrap text-[#063f46]' : 'shrink-0 text-[#4a6366]'}>
                           {book.side} {formatLine(book.lineValue)} {formatOdds(book.oddsAmerican)}
                         </span>
                       </li>
@@ -197,11 +201,11 @@ function MarketBody({
             <section
               data-market-section="upgrade"
               data-premium-candidate="line-shopping"
-              className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-2"
+              className="rounded-lg border border-dashed border-[#075B5C] bg-white p-2.5 space-y-2"
             >
               <h3 className="text-[11px] font-medium text-[#063f46]">{UPGRADE_COPY.line_shopping_detail.title}</h3>
               <p className="text-xs text-[#4a6366]">{UPGRADE_COPY.line_shopping_detail.detail}</p>
-              <FoundingProUpgradeLink />
+              <FoundingProUpgradeLink analyticsSurface="props_explorer_line_shopping" />
             </section>
           )}
         </>
@@ -257,28 +261,49 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
     };
   }, [selection, dateEt]);
 
+  const drawer = variant === 'drawer';
   const inner = (
-    <div className="flex flex-col h-full min-h-0 bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
-      <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
+    <div
+      className={
+        drawer
+          ? 'flex h-full min-h-0 flex-col bg-white'
+          : 'flex flex-col h-full min-h-0 bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden'
+      }
+    >
+      <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-[#063f46] truncate" data-coachmark="props-compare">
+          <h2
+            className={drawer ? 'type-card-data truncate text-[#063f46]' : 'text-sm font-semibold text-[#063f46] truncate'}
+            data-coachmark="props-compare"
+          >
             {selection.playerName ?? `Player ${selection.playerId}`}
           </h2>
-          <p className="text-[11px] text-[#4a6366] mt-0.5">
-            {(selection.propType ?? 'prop').replace(/_/g, ' ')} · Compare books
+          <p className={drawer ? 'type-secondary mt-0.5 capitalize' : 'text-[11px] text-[#4a6366] mt-0.5 capitalize'}>
+            {explorerPropContextLabel(selection.propType, selection.side, selection.lineValue)}
           </p>
+          <p className={drawer ? 'type-metadata mt-0.5' : 'text-[11px] text-[#4a6366] mt-0.5'}>Compare books</p>
         </div>
         <button
           type="button"
-          className="p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7] shrink-0"
+          className={
+            drawer
+              ? 'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#063f46]'
+              : 'p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7] shrink-0'
+          }
           aria-label="Close market comparison"
           onClick={onClose}
         >
           <X className="w-4 h-4" />
         </button>
       </div>
-      <div className="p-2.5 sm:p-3 overflow-y-auto flex-1 min-h-0">
-        <MarketBody data={data} loading={loading} error={error} />
+      <div
+        className={
+          drawer
+            ? 'min-h-0 flex-1 overflow-y-auto p-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]'
+            : 'p-2.5 sm:p-3 overflow-y-auto flex-1 min-h-0'
+        }
+      >
+        <MarketBody data={data} loading={loading} error={error} readable={drawer} />
       </div>
     </div>
   );
@@ -292,7 +317,7 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
           aria-label="Dismiss"
           onClick={onClose}
         />
-        <div className="absolute inset-y-0 right-0 w-full max-w-md flex flex-col p-2 sm:p-3 border-l border-[#DCE9EA] bg-white shadow-2xl">
+        <div className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-[#DCE9EA] bg-white pt-[env(safe-area-inset-top)] shadow-2xl">
           <div className="flex-1 min-h-0 flex flex-col">{inner}</div>
         </div>
       </div>

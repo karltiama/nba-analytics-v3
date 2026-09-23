@@ -7,6 +7,8 @@ import {
   PROPS_HISTORICAL_PREVIEW_HREF,
 } from '@/lib/parlay/preview-fixture';
 import { removeSelectedLeg, type SelectedParlayLeg } from '@/lib/parlay/selection';
+import type { PreviewScenario } from '@/lib/preview/scenario';
+import { workspaceLegsForScenario, workspacePreviewExplorerHref } from '@/lib/preview/workspace-legs';
 import {
   evaluateWorkspaceAnalysisEligibility,
   runWorkspaceHistoricalAnalysis,
@@ -14,16 +16,27 @@ import {
 } from '@/lib/parlay/workspace-analysis';
 import type { WorkspaceAnalysisRecord } from '@/lib/parlay/selection-store';
 
-export function ParlayWorkspacePreviewClient() {
-  const [legs, setLegs] = useState<SelectedParlayLeg[]>(() => buildWorkspaceHistoricalPreviewLegs());
+export function ParlayWorkspacePreviewClient({ scenario }: { scenario?: PreviewScenario } = {}) {
+  const [legs, setLegs] = useState<SelectedParlayLeg[]>(() =>
+    scenario ? workspaceLegsForScenario(scenario) : buildWorkspaceHistoricalPreviewLegs()
+  );
   const [analysis, setAnalysis] = useState<WorkspaceAnalysisRecord | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    scenario === 'error' ? 'Preview analysis could not run for this selection.' : null
+  );
   const [showingResults, setShowingResults] = useState(false);
   const eligibility = useMemo(() => evaluateWorkspaceAnalysisEligibility(legs), [legs]);
   const analysisCurrent = Boolean(analysis && analysis.fingerprint === selectionFingerprint(legs));
 
   async function onAnalyze() {
+    if (scenario === 'error') {
+      setBusy(true);
+      setError('Preview analysis could not run for this selection.');
+      setShowingResults(false);
+      setBusy(false);
+      return;
+    }
     if (eligibility.status !== 'READY') return;
     setBusy(true);
     setError(null);
@@ -43,7 +56,7 @@ export function ParlayWorkspacePreviewClient() {
   return (
     <ParlayWorkspaceView
       legs={legs}
-      explorerHref={PROPS_HISTORICAL_PREVIEW_HREF}
+      explorerHref={scenario ? workspacePreviewExplorerHref(scenario) : PROPS_HISTORICAL_PREVIEW_HREF}
       onRemove={(id) => setLegs((current) => removeSelectedLeg(current, id))}
       onClear={() => {
         setLegs([]);
@@ -57,7 +70,7 @@ export function ParlayWorkspacePreviewClient() {
       showingResults={showingResults && analysisCurrent}
       onAnalyze={onAnalyze}
       onShowReview={() => setShowingResults(false)}
-      previewLabel="Historical Preview"
+      previewLabel={scenario ? null : 'Historical Preview'}
     />
   );
 }

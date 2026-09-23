@@ -140,7 +140,10 @@ export function AIInsightPanel({
               <p className="text-xs text-[#4a6366]">
                 Founding Pro adds a synthesized slate briefing from the research context you already see.
               </p>
-              <FoundingProUpgradeLink className="bg-[#063f46] from-[#063f46] to-[#063f46] hover:bg-[#0a525c]" />
+              <FoundingProUpgradeLink
+                analyticsSurface="slate_briefing"
+                className="bg-[#063f46] from-[#063f46] to-[#063f46] hover:bg-[#0a525c]"
+              />
             </div>
           ) : (
             <p className="text-xs text-[#8aa0a3] py-1">

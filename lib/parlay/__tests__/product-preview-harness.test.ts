@@ -198,7 +198,7 @@ describe('product preview page contract', () => {
     expect(entry).toMatch(/ParlayWorkspacePreviewClient/);
     expect(previewClient).toMatch(/buildWorkspaceHistoricalPreviewLegs/);
     expect(previewClient).toMatch(/runWorkspaceHistoricalAnalysis/);
-    expect(previewClient).toMatch(/previewLabel="Historical Preview"/);
+    expect(previewClient).toMatch(/Historical Preview/);
     expect(previewClient).not.toMatch(/replaceParlaySelectionLegs|importConfirmedXrayLegsToStore/);
     expect(previewClient).not.toMatch(/localStorage|sessionStorage/);
     expect(previewClient).not.toMatch(/trackEvent/);

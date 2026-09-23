@@ -8,6 +8,12 @@ import { ContinueWithGoogleButton } from '@/components/auth/ContinueWithGoogleBu
 import { AuthInsightCard, AuthSplitLayout } from '@/components/auth/AuthSplitLayout';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { safeInternalPath } from '@/lib/auth/safe-next';
+import {
+  SIGNUP_COMPLETED,
+  SIGNUP_STARTED,
+  signupSurfaceProperties,
+} from '@/lib/product-analytics/conversion-events';
+import { trackEvent } from '@/lib/product-analytics/track-event';
 
 const fieldClass =
   'w-full rounded-xl border border-[#DCE9EA] bg-white py-3 text-sm text-[#063f46] placeholder:text-[#8aa0a3] focus:outline-none focus:ring-2 focus:ring-[#55ddb1]/40 focus:border-[#55ddb1]';
@@ -32,6 +38,7 @@ export function SignupClient() {
     setError(null);
     setInfo(null);
     setLoading(true);
+    trackEvent(SIGNUP_STARTED, signupSurfaceProperties());
     try {
       const supabase = createSupabaseBrowserClient();
       const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
@@ -45,6 +52,7 @@ export function SignupClient() {
         return;
       }
       if (data.session) {
+        trackEvent(SIGNUP_COMPLETED, signupSurfaceProperties());
         router.refresh();
         router.push(nextPath);
         return;
@@ -76,7 +84,11 @@ export function SignupClient() {
       </p>
 
       <div className="mt-8">
-        <ContinueWithGoogleButton nextPath={nextPath} disabled={loading} />
+        <ContinueWithGoogleButton
+          nextPath={nextPath}
+          disabled={loading}
+          onStart={() => trackEvent(SIGNUP_STARTED, signupSurfaceProperties())}
+        />
       </div>
 
       <div className="flex items-center gap-3 my-6">

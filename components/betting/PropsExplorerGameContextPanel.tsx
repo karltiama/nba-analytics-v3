@@ -405,7 +405,7 @@ export function PropsExplorerGameContextPanel({ gameId }: { gameId: string | nul
           <div className="space-y-2">
             <p className="text-[11px] font-medium text-[#063f46]">{UPGRADE_COPY.ai_briefing.title}</p>
             <p className="text-[10px] text-[#4a6366]">{UPGRADE_COPY.ai_briefing.detail}</p>
-            <FoundingProUpgradeLink />
+            <FoundingProUpgradeLink analyticsSurface="props_explorer_game_context" />
           </div>
         )}
         {aiSummaryStatus === 'unavailable' && (

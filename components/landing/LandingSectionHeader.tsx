@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import { ArrowRight, type LucideIcon } from 'lucide-react';
+import { LandingTrackedLink } from '@/components/landing/LandingTrackedLink';
+import type { LandingCtaAction } from '@/lib/product-analytics/track-event';
 import { cn } from '@/lib/utils';
 
 const ACCENT_BOX: Record<'lime' | 'cyan' | 'orange', string> = {
@@ -22,6 +23,7 @@ type LandingSectionHeaderProps = {
   description: string;
   href: string;
   linkLabel: string;
+  action: LandingCtaAction;
   icon: LucideIcon;
   accent: LandingSectionAccent;
   /** Giant faded title that sits in the section background. */
@@ -34,6 +36,7 @@ export function LandingSectionHeader({
   description,
   href,
   linkLabel,
+  action,
   icon: Icon,
   accent,
   variant = 'default',
@@ -49,13 +52,15 @@ export function LandingSectionHeader({
         </h2>
         <div className="relative z-10 mt-2 md:mt-1 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <p className="text-sm text-[#4a6366] max-w-md">{description}</p>
-          <Link
+          <LandingTrackedLink
             href={href}
+            location="feature_section"
+            action={action}
             className="group flex items-center gap-2 text-sm font-semibold text-[#053F46] hover:text-[#053F46]/80 transition-colors shrink-0"
           >
             {linkLabel}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          </LandingTrackedLink>
         </div>
       </div>
     );
@@ -79,13 +84,15 @@ export function LandingSectionHeader({
           <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
         </div>
       </div>
-      <Link
+      <LandingTrackedLink
         href={href}
+        location="feature_section"
+        action={action}
         className="group flex items-center gap-2 text-sm font-semibold text-[#00d4ff] hover:text-[#00e5ff] transition-colors shrink-0 self-start sm:self-center"
       >
         {linkLabel}
         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-      </Link>
+      </LandingTrackedLink>
     </div>
   );
 }

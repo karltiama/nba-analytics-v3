@@ -3,6 +3,10 @@
  * Safe no-op in SSR, local/dev without the script, and when trackers are blocked.
  */
 
+import type { XrayExtractResult } from '@/lib/parlay-xray/extraction/result-codes';
+import type { CanonicalPropType } from '@/lib/betting/market-movement';
+import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
+
 export const PRODUCT_EVENTS = {
   MARKET_MOVEMENT_VIEWED: 'market_movement_viewed',
   MARKET_MOVEMENT_UPGRADE_CLICKED: 'market_movement_upgrade_clicked',
@@ -23,6 +27,18 @@ export const PRODUCT_EVENTS = {
   COACHMARK_SEEN: 'coachmark_seen',
   CHECKLIST_ITEM_COMPLETED: 'checklist_item_completed',
   TOUR_REPLAYED: 'tour_replayed',
+  LANDING_CTA_CLICKED: 'landing_cta_clicked',
+  PLAYER_SEARCH_USED: 'player_search_used',
+  PLAYER_SEARCH_RESULT_OPENED: 'player_search_result_opened',
+  PROP_OPENED: 'prop_opened',
+  PROP_ADDED_TO_PARLAY: 'prop_added_to_parlay',
+  PROP_CONTEXT_OPENED: 'prop_context_opened',
+  WOWY_FILTER_CHANGED: 'wowy_filter_changed',
+  CONTEXT_CHECK_OPENED: 'context_check_opened',
+  UPGRADE_CLICKED: 'upgrade_clicked',
+  CHECKOUT_STARTED: 'checkout_started',
+  SIGNUP_STARTED: 'signup_started',
+  SIGNUP_COMPLETED: 'signup_completed',
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
@@ -63,9 +79,84 @@ export type ParlayXraySurfaceProperties = {
   surface: 'parlay_xray';
 };
 
+export type ClosedPropMarket = CanonicalPropType | 'other';
+
 export type ParlayXrayExtractProperties = {
   surface: 'parlay_xray';
-  result_category: string;
+  result_category: XrayExtractResult | 'UNKNOWN';
+};
+
+export type LandingCtaLocation = 'hero' | 'header' | 'feature_section';
+
+export type LandingCtaAction =
+  | 'explore_court_context'
+  | 'open_dashboard'
+  | 'explore_props'
+  | 'open_wowy'
+  | 'open_parlay_xray'
+  | 'sign_in'
+  | 'sign_up';
+
+export type LandingCtaClickedProperties = {
+  surface: 'landing';
+  location: LandingCtaLocation;
+  action: LandingCtaAction;
+};
+
+export type PlayerSearchSurface = 'props_explorer' | 'wowy';
+
+export type SearchResultCountBucket = '0' | '1_5' | '6_plus';
+
+export type PlayerSearchUsedProperties = {
+  surface: PlayerSearchSurface;
+  result_count_bucket: SearchResultCountBucket;
+};
+
+export type PlayerSearchResultOpenedProperties = {
+  surface: PlayerSearchSurface;
+};
+
+export type PropExplorerEventProperties = {
+  surface: 'props_explorer';
+  market: ClosedPropMarket;
+};
+
+export type PropContextOpenedProperties = {
+  surface: 'props_explorer';
+  context_type: 'player_panel';
+  market: ClosedPropMarket;
+};
+
+export type WowyFilterChangedProperties =
+  | { surface: 'wowy'; filter: 'season'; value: '2023' | '2024' | '2025' }
+  | { surface: 'wowy'; filter: 'team_stint' }
+  | { surface: 'wowy'; filter: 'season_type'; value: 'regular' | 'playoffs' }
+  | { surface: 'wowy'; filter: 'teammate'; value: 'selected' | 'cleared' }
+  | { surface: 'wowy'; filter: 'stat_view'; value: 'per_game' | 'per_minute' }
+  | { surface: 'wowy'; filter: 'result_split'; value: 'with' | 'without' };
+
+export type ContextCheckOpenedProperties = {
+  surface: 'historical_game';
+};
+
+export type UpgradeClickedSurface =
+  | 'game_briefing'
+  | 'slate_briefing'
+  | 'props_explorer_game_context'
+  | 'props_explorer_line_shopping';
+
+export type UpgradeClickedProperties = {
+  surface: UpgradeClickedSurface;
+  plan: 'founding_pro';
+};
+
+export type CheckoutStartedProperties = {
+  surface: 'billing';
+  plan: 'founding_pro';
+};
+
+export type SignupSurfaceProperties = {
+  surface: 'signup';
 };
 
 export type ParlayXrayOpenWorkspaceProperties = {
@@ -120,6 +211,18 @@ export type ProductEventProperties = {
   [PRODUCT_EVENTS.COACHMARK_SEEN]: CoachmarkSeenProperties;
   [PRODUCT_EVENTS.CHECKLIST_ITEM_COMPLETED]: ChecklistItemCompletedProperties;
   [PRODUCT_EVENTS.TOUR_REPLAYED]: TourReplayedProperties;
+  [PRODUCT_EVENTS.LANDING_CTA_CLICKED]: LandingCtaClickedProperties;
+  [PRODUCT_EVENTS.PLAYER_SEARCH_USED]: PlayerSearchUsedProperties;
+  [PRODUCT_EVENTS.PLAYER_SEARCH_RESULT_OPENED]: PlayerSearchResultOpenedProperties;
+  [PRODUCT_EVENTS.PROP_OPENED]: PropExplorerEventProperties;
+  [PRODUCT_EVENTS.PROP_ADDED_TO_PARLAY]: PropExplorerEventProperties;
+  [PRODUCT_EVENTS.PROP_CONTEXT_OPENED]: PropContextOpenedProperties;
+  [PRODUCT_EVENTS.WOWY_FILTER_CHANGED]: WowyFilterChangedProperties;
+  [PRODUCT_EVENTS.CONTEXT_CHECK_OPENED]: ContextCheckOpenedProperties;
+  [PRODUCT_EVENTS.UPGRADE_CLICKED]: UpgradeClickedProperties;
+  [PRODUCT_EVENTS.CHECKOUT_STARTED]: CheckoutStartedProperties;
+  [PRODUCT_EVENTS.SIGNUP_STARTED]: SignupSurfaceProperties;
+  [PRODUCT_EVENTS.SIGNUP_COMPLETED]: SignupSurfaceProperties;
 };
 
 export type AnalyticsPrimitive = string | number | boolean;
@@ -153,11 +256,21 @@ export function sanitizeEventProperties(
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+function previewFlagFromLocation(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return new URLSearchParams(window.location.search).get('preview');
+  } catch {
+    return null;
+  }
+}
+
 export function trackEvent<Name extends ProductEventName>(
   name: Name,
   properties?: ProductEventProperties[Name]
 ): void {
   try {
+    if (shouldSuppressProductPreviewAnalytics(previewFlagFromLocation())) return;
     const umami = readUmami();
     if (!umami) return;
     umami.track(name, sanitizeEventProperties(properties as Record<string, unknown> | undefined));

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Barlow_Condensed, Geist_Mono } from "next/font/google";
+import { PreviewModeBridge } from "@/components/preview/PreviewModeBridge";
 import { UmamiScript } from "@/components/product-analytics/UmamiScript";
 import "./globals.css";
 
@@ -31,6 +33,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Suspense fallback={null}>
+          <PreviewModeBridge />
+        </Suspense>
         <UmamiScript />
       </body>
     </html>

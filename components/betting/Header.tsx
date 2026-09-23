@@ -63,14 +63,17 @@ function NavLink({
 
 function ContextualParlayNav({
   variant,
+  hideBelowLg = false,
 }: {
   variant: 'desktop' | 'mobile-badge' | 'mobile-menu';
+  hideBelowLg?: boolean;
 }) {
   const { legs } = useParlaySelection();
   const label = contextualWorkspaceNavLabel(legs.length);
   if (!label) return null;
   const aria = contextualWorkspaceNavAriaLabel(legs.length);
   if (variant === 'mobile-badge') {
+    if (hideBelowLg) return null;
     return (
       <Link
         href={PARLAY_WORKSPACE_HREF}
@@ -102,7 +105,11 @@ function ContextualParlayNav({
       href={PARLAY_WORKSPACE_HREF}
       aria-label={aria}
       aria-live="polite"
-      className="hidden md:inline-flex items-center text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors"
+      className={
+        hideBelowLg
+          ? 'hidden lg:inline-flex items-center text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors'
+          : 'hidden md:inline-flex items-center text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors'
+      }
     >
       {label}
     </Link>
@@ -177,6 +184,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
     router.refresh();
   }, [router, supabase]);
 
+  const explorerOwnsWorkspaceEntry = pathname.startsWith('/betting/props-explorer');
   const displayLabel =
     profile?.displayName?.trim() ||
     profile?.username?.trim() ||
@@ -233,8 +241,8 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
           <div className="flex items-center gap-3">
             {!teamName && (
               <>
-                <ContextualParlayNav variant="desktop" />
-                <ContextualParlayNav variant="mobile-badge" />
+                <ContextualParlayNav variant="desktop" hideBelowLg={explorerOwnsWorkspaceEntry} />
+                <ContextualParlayNav variant="mobile-badge" hideBelowLg={explorerOwnsWorkspaceEntry} />
                 <DropdownMenu.Root modal={false}>
                   <DropdownMenu.Trigger asChild>
                     <button

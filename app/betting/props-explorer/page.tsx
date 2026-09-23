@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Search, CalendarDays, ListFilter, ExternalLink } from 'lucide-react';
@@ -17,9 +17,22 @@ import {
 } from '@/components/betting/PropsExplorerMarketPanel';
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
 import { PropsExplorerParlayTray } from '@/components/betting/PropsExplorerParlayTray';
+import { PropsExplorerMobileControls } from '@/components/betting/PropsExplorerMobileControls';
+import { PropsExplorerPropCard } from '@/components/betting/PropsExplorerPropCard';
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
+import {
+  EXPLORER_BOOKS,
+  EXPLORER_SORT_OPTIONS,
+  playerSearchUpdates,
+  PLAYER_SEARCH_COMMIT_MS,
+} from '@/lib/betting/props-explorer-filters';
+import {
+  explorerTableValueCopy,
+  explorerValueToneClass,
+  formatExplorerOdds,
+} from '@/lib/betting/props-explorer-row-display';
 import {
   explorerGamesApiHref,
   gameDetailHref,
@@ -33,6 +46,21 @@ import {
 } from '@/lib/parlay/selection';
 import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
 import { completeChecklistItem } from '@/lib/onboarding/progress';
+import {
+  PLAYER_SEARCH_RESULT_OPENED,
+  PLAYER_SEARCH_USED,
+  playerSearchResultOpenedProperties,
+  playerSearchUsedProperties,
+} from '@/lib/product-analytics/discovery-events';
+import {
+  PROP_ADDED_TO_PARLAY,
+  PROP_CONTEXT_OPENED,
+  PROP_OPENED,
+  propAddedToParlayProperties,
+  propContextOpenedProperties,
+  propOpenedProperties,
+} from '@/lib/product-analytics/props-explorer-events';
+import { trackEvent } from '@/lib/product-analytics/track-event';
 
 type ExplorerRow = {
   gameId: number;
@@ -95,35 +123,6 @@ function formatPct(x: number | null | undefined, digits = 1): string {
   return `${(x * 100).toFixed(digits)}%`;
 }
 
-type ValueGrade = 'good' | 'fair' | 'bad' | 'unknown';
-
-function getValueGrade(ev: number | null | undefined): ValueGrade {
-  if (ev == null || !Number.isFinite(ev)) return 'unknown';
-  if (ev > 0.03) return 'good';
-  if (ev < -0.02) return 'bad';
-  return 'fair';
-}
-
-function getValueCopy(
-  ev: number | null | undefined,
-  marketContext?: 'live' | 'historical'
-): string {
-  if (marketContext === 'historical') return 'Unavailable';
-  const grade = getValueGrade(ev);
-  if (grade === 'good') return 'Good Value';
-  if (grade === 'bad') return 'Bad Value';
-  if (grade === 'fair') return 'Fair Value';
-  return 'No Signal';
-}
-
-function getValueToneClass(ev: number | null | undefined): string {
-  const grade = getValueGrade(ev);
-  if (grade === 'good') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-  if (grade === 'bad') return 'bg-rose-50 text-rose-800 border-rose-200';
-  if (grade === 'fair') return 'bg-amber-50 text-amber-800 border-amber-200';
-  return 'bg-[#F8FBFA] text-[#4a6366] border-[#DCE9EA]';
-}
-
 function formatConfidenceSimple(confidence: ExplorerRow['confidenceTier']): string {
   if (confidence === 'high') return 'High';
   if (confidence === 'medium') return 'Medium';
@@ -132,8 +131,7 @@ function formatConfidenceSimple(confidence: ExplorerRow['confidenceTier']): stri
 }
 
 function formatOdds(odds: number | null): string {
-  if (odds == null) return '—';
-  return odds > 0 ? `+${odds}` : String(odds);
+  return formatExplorerOdds(odds);
 }
 
 function formatPlayerLabel(playerName: string | null, playerId: number): string {
@@ -162,22 +160,6 @@ function rowToParlayOfferInput(r: ExplorerRow): PropsExplorerOfferInput {
     sourceTable: r.sourceTable,
   };
 }
-
-const SORT_OPTIONS = [
-  { value: 'snapshot_at', label: 'Snapshot time' },
-  { value: 'ev', label: 'EV' },
-  { value: 'confidence', label: 'Confidence tier' },
-  { value: 'odds_american', label: 'American odds' },
-] as const;
-
-const AVAILABLE_BOOKS = [
-  { id: 'draftkings', label: 'DraftKings' },
-  { id: 'fanduel', label: 'FanDuel' },
-  { id: 'betmgm', label: 'BetMGM' },
-  { id: 'caesars', label: 'Caesars' },
-  { id: 'betrivers', label: 'BetRivers' },
-  { id: 'fanatics', label: 'Fanatics' },
-];
 
 export default function PropsExplorerPage(props: PageProps) {
   if (props.params) use(props.params);
@@ -221,6 +203,9 @@ export default function PropsExplorerPage(props: PageProps) {
   const [isXlViewport, setIsXlViewport] = useState(false);
   const [showAdvancedMetrics, setShowAdvancedMetrics] = useState(false);
   const [parlayNotice, setParlayNotice] = useState<string | null>(null);
+  const lastPlayerSearchTracked = useRef<string | null>(null);
+  const playerNameRef = useRef(playerName);
+  playerNameRef.current = playerName;
   const {
     legs: selectedParlayLegs,
     addExplorerOffer,
@@ -287,6 +272,40 @@ export default function PropsExplorerPage(props: PageProps) {
     },
     [router, searchParams]
   );
+
+  const updateParamsRef = useRef(updateParams);
+  updateParamsRef.current = updateParams;
+  const [searchDraft, setSearchDraft] = useState(playerName);
+  const searchTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (searchTimer.current !== null) return;
+    setSearchDraft(playerName);
+  }, [playerName]);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimer.current !== null) window.clearTimeout(searchTimer.current);
+    };
+  }, []);
+
+  const schedulePlayerSearch = useCallback((value: string) => {
+    setSearchDraft(value);
+    if (searchTimer.current !== null) window.clearTimeout(searchTimer.current);
+    searchTimer.current = window.setTimeout(() => {
+      searchTimer.current = null;
+      updateParamsRef.current(playerSearchUpdates(value));
+    }, PLAYER_SEARCH_COMMIT_MS);
+  }, []);
+
+  const clearPlayerSearch = useCallback(() => {
+    if (searchTimer.current !== null) {
+      window.clearTimeout(searchTimer.current);
+      searchTimer.current = null;
+    }
+    setSearchDraft('');
+    updateParamsRef.current(playerSearchUpdates(''));
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -391,8 +410,24 @@ export default function PropsExplorerPage(props: PageProps) {
             updateParams({ date: addDaysET(date, -1), offset: '0' });
             return;
           }
-          setRows(data.rows ?? []);
+          const nextRows = data.rows ?? [];
+          setRows(nextRows);
           setMeta(data.meta ?? null);
+          const searchedName = playerName.trim();
+          if (searchedName.length < 2) {
+            lastPlayerSearchTracked.current = null;
+          } else {
+            const resultCount = nextRows.length;
+            window.setTimeout(() => {
+              if (playerNameRef.current.trim() !== searchedName) return;
+              if (lastPlayerSearchTracked.current === searchedName) return;
+              lastPlayerSearchTracked.current = searchedName;
+              trackEvent(
+                PLAYER_SEARCH_USED,
+                playerSearchUsedProperties('props_explorer', resultCount)
+              );
+            }, 500);
+          }
         }
       } catch (e) {
         if (!cancelled) {
@@ -526,6 +561,9 @@ export default function PropsExplorerPage(props: PageProps) {
     const result = addExplorerOffer(rowToParlayOfferInput(r), { gameLabel });
     setParlayNotice(addResultNotice(result));
     completeChecklistItem('parlay_leg_added');
+    if (result.status === 'added') {
+      trackEvent(PROP_ADDED_TO_PARLAY, propAddedToParlayProperties(r.propType));
+    }
   }, [addExplorerOffer, games]);
 
   const clearParlay = useCallback(() => {
@@ -536,18 +574,20 @@ export default function PropsExplorerPage(props: PageProps) {
   return (
     <main
       className={`max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 ${
-        selectedParlayLegs.length > 0 ? 'pb-28' : 'pb-12'
+        selectedParlayLegs.length > 0
+          ? 'pb-[calc(8.5rem+env(safe-area-inset-bottom))] lg:pb-28'
+          : 'pb-[calc(2.5rem+env(safe-area-inset-bottom))] lg:pb-12'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-semibold text-[#063f46]">Props Explorer</h1>
-          <p className="text-xs text-[#4a6366] mt-1">
+          <p className="hidden lg:block text-xs text-[#4a6366] mt-1">
             {marketContext === 'historical'
               ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Estimated EV is not computed for historical dates.'
               : 'Simple mode grades Good/Fair/Bad from estimated EV (market-anchored). That is not the same as the projection gap.'}
           </p>
-          <p className="mt-1.5 inline-flex items-center rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#063f46]">
+          <p className="mt-1.5 hidden lg:inline-flex items-center rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#063f46]">
             {lineLabel}
           </p>
         </div>
@@ -558,7 +598,27 @@ export default function PropsExplorerPage(props: PageProps) {
         ) : null}
       </div>
 
-      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm w-full mb-6 overflow-hidden">
+      <PropsExplorerMobileControls
+        searchDraft={searchDraft}
+        onSearchChange={schedulePlayerSearch}
+        onSearchClear={clearPlayerSearch}
+        date={date}
+        gameId={gameId}
+        games={games}
+        propType={propType}
+        side={side}
+        minEv={minEv}
+        sportsbook={sportsbook}
+        sort={sort}
+        dir={dir}
+        marketContext={marketContext}
+        lineLabel={lineLabel}
+        showAdvancedMetrics={showAdvancedMetrics}
+        onToggleAdvanced={() => setShowAdvancedMetrics((prev) => !prev)}
+        onUpdate={updateParams}
+      />
+
+      <div className="hidden lg:block bg-white border border-[#DCE9EA] rounded-2xl shadow-sm w-full mb-6 overflow-hidden">
         {/* Context Row */}
         <div className="bg-[#F8FBFA] p-3 sm:px-4 border-b border-[#DCE9EA] flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-1 shrink-0 bg-white p-1 rounded-lg border border-[#DCE9EA]">
@@ -622,8 +682,8 @@ export default function PropsExplorerPage(props: PageProps) {
               <input
                 className={`${inputClass} pl-8`}
                 placeholder="Player Name"
-                value={playerName}
-                onChange={(e) => updateParams({ player_name: e.target.value || null, offset: '0' })}
+                value={searchDraft}
+                onChange={(e) => schedulePlayerSearch(e.target.value)}
                 aria-label="Player Name"
               />
             </div>
@@ -685,7 +745,7 @@ export default function PropsExplorerPage(props: PageProps) {
                 onChange={(e) => updateParams({ sort: e.target.value, offset: '0' })}
                 aria-label="Sort by"
               >
-                {SORT_OPTIONS.filter((o) =>
+                {EXPLORER_SORT_OPTIONS.filter((o) =>
                   marketContext === 'historical'
                     ? o.value === 'snapshot_at' || o.value === 'odds_american'
                     : true
@@ -715,7 +775,7 @@ export default function PropsExplorerPage(props: PageProps) {
               <span>Sportsbooks:</span>
             </div>
             <div className="flex flex-wrap items-center gap-1.5" aria-label="Sportsbooks">
-              {AVAILABLE_BOOKS.map((book) => {
+              {EXPLORER_BOOKS.map((book) => {
                 const active = selectedBooks.has(book.id);
                 return (
                   <button
@@ -805,7 +865,7 @@ export default function PropsExplorerPage(props: PageProps) {
           <button
             type="button"
             onClick={() => setShowAdvancedMetrics((prev) => !prev)}
-            className="px-2.5 py-1 text-[11px] font-medium rounded-lg border border-[#DCE9EA] bg-white text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]"
+            className="hidden lg:inline-flex px-2.5 py-1 text-[11px] font-medium rounded-lg border border-[#DCE9EA] bg-white text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]"
             aria-pressed={showAdvancedMetrics}
           >
             {showAdvancedMetrics ? 'Hide advanced metrics' : 'Show advanced metrics'}
@@ -832,7 +892,90 @@ export default function PropsExplorerPage(props: PageProps) {
       {loading && rows.length === 0 ? (
         <PropsExplorerTableSkeleton />
       ) : (
-      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
+      <>
+      <div className="lg:hidden min-w-0 space-y-3">
+        {rows.length === 0 ? (
+          <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm py-8 text-center">
+            {(() => {
+              const copy = propsExplorerEmptyCopy({
+                frozen: Boolean(meta?.ingestionFrozen),
+                dateLabel: getDateLabel(date),
+                marketContext,
+              });
+              return (
+                <div className="space-y-2 px-4">
+                  <p className="type-body text-[#063f46]">{copy.title}</p>
+                  <p className="type-metadata">{copy.detail}</p>
+                  {gameId.trim() ? (
+                    <p>
+                      <Link href={gameDetailHref(gameId.trim())} className="type-interactive text-[#075B5C]">
+                        Back to game
+                      </Link>
+                    </p>
+                  ) : null}
+                </div>
+              );
+            })()}
+          </div>
+        ) : (
+          rows.map((r, idx) => {
+            const paperKey = `${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}`;
+            const saveKey = buildSavedPropKey(r);
+            const isSaved = Boolean(savedPropIdByKey[saveKey]);
+            const isOnParlay = isOfferSelected(selectedParlayLegs, rowToParlayOfferInput(r));
+            return (
+              <PropsExplorerPropCard
+                key={`card-${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
+                row={r}
+                date={date}
+                isSaved={isSaved}
+                isSaving={savingPropKey === saveKey}
+                saveBusy={savingPropKey !== null}
+                isOnParlay={isOnParlay}
+                isAddingPaper={addingPaperKey === paperKey}
+                paperBusy={addingPaperKey !== null}
+                showAdvanced={showAdvancedMetrics}
+                onOpenContext={() => {
+                  if (playerName.trim().length >= 2) {
+                    trackEvent(
+                      PLAYER_SEARCH_RESULT_OPENED,
+                      playerSearchResultOpenedProperties('props_explorer')
+                    );
+                  }
+                  trackEvent(PROP_CONTEXT_OPENED, propContextOpenedProperties(r.propType));
+                  setSelectedPlayer({
+                    playerId: r.playerId,
+                    playerName: r.playerName,
+                    propType: r.propType,
+                    side: r.side,
+                    lineValue: r.lineValue,
+                    gameId: r.gameId,
+                  });
+                }}
+                onSave={() => toggleSavedProp(r)}
+                onCompare={() => {
+                  completeChecklistItem('compare_opened');
+                  trackEvent(PROP_OPENED, propOpenedProperties(r.propType));
+                  setSelectedMarket({
+                    gameId: r.gameId,
+                    playerId: r.playerId,
+                    playerName: r.playerName,
+                    propType: r.propType,
+                    side: r.side,
+                    lineValue: r.lineValue,
+                    sportsbook: r.sportsbook,
+                    oddsAmerican: r.oddsAmerican,
+                    snapshotAt: r.snapshotAt,
+                  });
+                }}
+                onPaper={() => addToPaper(r)}
+                onParlay={() => addToParlay(r)}
+              />
+            );
+          })
+        )}
+      </div>
+      <div className="hidden lg:block bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto max-h-[calc(100vh-16rem)] overflow-y-auto">
           <table className="w-full text-left text-xs">
             <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
@@ -921,15 +1064,23 @@ export default function PropsExplorerPage(props: PageProps) {
                       <div className="flex items-center gap-1 min-w-0 max-w-[160px]">
                         <button
                           type="button"
-                          onClick={() =>
+                          onClick={() => {
+                            if (playerName.trim().length >= 2) {
+                              trackEvent(
+                                PLAYER_SEARCH_RESULT_OPENED,
+                                playerSearchResultOpenedProperties('props_explorer')
+                              );
+                            }
+                            trackEvent(PROP_CONTEXT_OPENED, propContextOpenedProperties(r.propType));
                             setSelectedPlayer({
                               playerId: r.playerId,
                               playerName: r.playerName,
                               propType: r.propType,
+                              side: r.side,
                               lineValue: r.lineValue,
                               gameId: r.gameId,
-                            })
-                          }
+                            });
+                          }}
                           className="text-left text-[#075B5C] hover:underline truncate min-w-0 flex-1 text-xs"
                         >
                           {formatPlayerLabel(r.playerName, r.playerId)}
@@ -967,7 +1118,7 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="py-1.5 px-2">
                       <span
-                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${getValueToneClass(r.marketContext === 'historical' ? null : r.ev)}`}
+                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${explorerValueToneClass(r.marketContext === 'historical' ? null : r.ev)}`}
                         title={
                           r.marketContext === 'historical'
                             ? 'Historical closing line — estimated EV is not computed'
@@ -976,7 +1127,7 @@ export default function PropsExplorerPage(props: PageProps) {
                               : 'No estimated EV available'
                         }
                       >
-                        {getValueCopy(r.ev, r.marketContext)}
+                        {explorerTableValueCopy(r.ev, r.marketContext)}
                       </span>
                     </td>
                     <td
@@ -1032,6 +1183,7 @@ export default function PropsExplorerPage(props: PageProps) {
                         type="button"
                         onClick={() => {
                           completeChecklistItem('compare_opened');
+                          trackEvent(PROP_OPENED, propOpenedProperties(r.propType));
                           setSelectedMarket({
                             gameId: r.gameId,
                             playerId: r.playerId,
@@ -1093,6 +1245,7 @@ export default function PropsExplorerPage(props: PageProps) {
           </table>
         </div>
       </div>
+      </>
       )}
         </div>
 

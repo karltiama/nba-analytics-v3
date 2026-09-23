@@ -146,7 +146,11 @@ function SkeletonRow() {
 /**
  * Marketing preview: same shell as Props Explorer table, demo rows + skeleton tail.
  */
-export function LandingPropsTablePreview() {
+export function LandingPropsTablePreview({
+  rows = DEMO_ROWS,
+}: {
+  rows?: DemoRow[];
+} = {}) {
   return (
     <LandingSection
       className="slide-up"
@@ -162,6 +166,7 @@ export function LandingPropsTablePreview() {
         description="Sample rows from the Props Explorer grid — not live offers."
         href="/betting/props-explorer"
         linkLabel="Open props board"
+        action="explore_props"
       />
 
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
@@ -190,7 +195,7 @@ export function LandingPropsTablePreview() {
               </tr>
             </thead>
             <tbody>
-              {DEMO_ROWS.map((r, idx) => (
+              {rows.map((r, idx) => (
                 <tr
                   key={`${r.player}-${r.prop}-${idx}`}
                   className="border-b border-[#DCE9EA] hover:bg-[#F8FBFA]"

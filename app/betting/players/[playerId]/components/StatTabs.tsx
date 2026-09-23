@@ -11,15 +11,23 @@ interface StatTabsProps {
   onMetricChange: (key: MetricKey) => void;
 }
 
-export function StatTabs({ activeMetric, onMetricChange }: StatTabsProps) {
+export function StatTabs({
+  activeMetric,
+  onMetricChange,
+  scrollable = false,
+}: StatTabsProps & { scrollable?: boolean }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={scrollable ? 'flex gap-2 overflow-x-auto' : 'flex flex-wrap gap-2'}>
       {TABS.map((key) => (
         <button
           key={key}
+          type="button"
           onClick={() => onMetricChange(key)}
           className={cn(
-            'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+            'rounded-lg transition-all',
+            scrollable
+              ? 'type-interactive min-h-11 shrink-0 whitespace-nowrap px-3'
+              : 'px-4 py-2 text-sm font-medium',
             activeMetric === key
               ? 'bg-[#55ddb1] text-[#063f46] font-semibold'
               : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'

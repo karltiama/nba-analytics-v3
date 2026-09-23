@@ -9,13 +9,25 @@ type ContinueWithGoogleButtonProps = {
   /** Disable while email/password form is submitting */
   disabled?: boolean;
   className?: string;
+  /** Fires when the user chooses Google. Does not mean the account was created. */
+  onStart?: () => void;
 };
 
-export function ContinueWithGoogleButton({ nextPath, disabled, className }: ContinueWithGoogleButtonProps) {
+export function ContinueWithGoogleButton({
+  nextPath,
+  disabled,
+  className,
+  onStart,
+}: ContinueWithGoogleButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function onClick() {
+    try {
+      onStart?.();
+    } catch {
+      // Tracking must not block the OAuth redirect.
+    }
     setError(null);
     setLoading(true);
     try {

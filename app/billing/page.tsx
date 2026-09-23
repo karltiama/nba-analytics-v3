@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FOUNDING_PRO_PRICE_CONCEPT } from '@/lib/entitlements/types';
+import { CHECKOUT_STARTED, checkoutStartedProperties } from '@/lib/product-analytics/conversion-events';
+import { trackEvent } from '@/lib/product-analytics/track-event';
 import {
   billingPlanLabel,
   billingRetentionCopy,
@@ -91,6 +93,7 @@ export default function BillingPage() {
         setActionError(data.error || 'Could not start checkout.');
         return;
       }
+      trackEvent(CHECKOUT_STARTED, checkoutStartedProperties());
       window.location.href = data.url;
     } catch {
       setActionError('Could not start checkout.');

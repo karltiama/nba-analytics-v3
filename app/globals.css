@@ -43,6 +43,9 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   
+  /* Passing secondary/metadata ink. Do not use #8aa0a3 or #72869A for readable text. */
+  --color-cc-secondary: #4a6366;
+
   /* Neon accent colors */
   --color-neon-cyan: var(--neon-cyan);
   --color-neon-magenta: var(--neon-magenta);
@@ -53,6 +56,7 @@
 
 :root {
   --radius: 0.625rem;
+  --cc-secondary: #4a6366;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -254,6 +258,69 @@
       opacity: 1;
     }
   }
+}
+
+/*
+ * Semantic type roles for product UI. See docs/typography.md.
+ * Marketing display type stays on its own classes. Do not use 9px or 10px for words, numbers, or actions.
+ * Barlow Condensed stays the UI face until the scale below has been applied and reassessed.
+ */
+@utility type-page-title {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+}
+
+@utility type-section-heading {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+@utility type-body {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+@utility type-card-data {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+@utility type-table-data {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+@utility type-secondary {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--cc-secondary);
+}
+
+@utility type-metadata {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--cc-secondary);
+}
+
+@utility type-interactive {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+@utility type-badge {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 /* Hide scrollbar utility */

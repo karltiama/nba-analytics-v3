@@ -9,6 +9,7 @@ import { GameLogTable } from '@/app/betting/players/[playerId]/components/GameLo
 import type { GameLog, MetricKey, PlayerProfile, SeasonAverages } from '@/lib/players/types';
 import { METRIC_LABELS, propTypeToMetricKey } from '@/lib/players/types';
 import { extractMetric, getSeasonAvgForMetric } from '@/lib/players/metrics';
+import { explorerPropContextLabel } from '@/lib/betting/props-explorer-filters';
 import { playerResearchHref } from '@/lib/betting/research-journey';
 
 const PREVIEW_GAMES = 25;
@@ -18,6 +19,7 @@ export type PropsExplorerSelection = {
   playerId: number;
   playerName: string | null;
   propType: string | null;
+  side?: string | null;
   lineValue: number | null;
   /** NBA game id for loading sidebar game context alongside the player preview. */
   gameId: number;
@@ -179,42 +181,65 @@ export function PropsExplorerPlayerPanel({
     (selection.playerName ?? '').trim() || data?.player?.full_name || String(selection.playerId);
   const profileId = data?.resolvedPlayerId ?? String(selection.playerId);
 
+  const propContext = explorerPropContextLabel(selection.propType, selection.side, selection.lineValue);
+  const drawer = variant === 'drawer';
+
   const inner = (
     <div
       className={
-        variant === 'drawer'
-          ? 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col h-full max-h-[calc(100dvh-1.5rem)]'
+        drawer
+          ? 'flex h-full min-h-0 flex-col bg-white'
           : 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] xl:max-h-full xl:min-h-0 xl:flex-1'
       }
     >
-      <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
+      <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-[#063f46] truncate">{displayName}</h2>
+          <h2 className={drawer ? 'type-card-data truncate text-[#063f46]' : 'text-sm font-semibold text-[#063f46] truncate'}>
+            {displayName}
+          </h2>
+          <p className={drawer ? 'type-secondary mt-0.5 capitalize' : 'text-[11px] text-[#4a6366] mt-0.5 capitalize'}>
+            {propContext}
+          </p>
           <Link
             href={playerResearchHref({
               playerId: profileId,
               date: researchDate,
               gameId: selection.gameId,
               propType: selection.propType,
+              side: selection.side,
               lineValue: selection.lineValue,
             })}
-            className="inline-flex items-center gap-1 text-[11px] text-[#075B5C] hover:underline mt-0.5"
+            className={
+              drawer
+                ? 'type-interactive inline-flex min-h-11 items-center gap-1 text-[#075B5C]'
+                : 'inline-flex items-center gap-1 text-[11px] text-[#075B5C] hover:underline mt-0.5'
+            }
           >
             Full profile
-            <ExternalLink className="w-3 h-3 shrink-0 opacity-70" />
+            <ExternalLink className="w-3 h-3 shrink-0" />
           </Link>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7] shrink-0"
+          className={
+            drawer
+              ? 'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#063f46]'
+              : 'p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7] shrink-0'
+          }
           aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="p-2.5 sm:p-3 overflow-y-auto flex-1 min-h-0 space-y-3">
+      <div
+        className={
+          drawer
+            ? 'min-h-0 flex-1 space-y-3 overflow-y-auto p-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]'
+            : 'p-2.5 sm:p-3 overflow-y-auto flex-1 min-h-0 space-y-3'
+        }
+      >
         {loading && (
           <div aria-busy="true" aria-label="Loading player stats">
             <PropsExplorerPlayerPanelBodySkeleton />
@@ -225,9 +250,13 @@ export function PropsExplorerPlayerPanel({
         )}
         {!loading && !error && data && (
           <>
-            <div className="[&_button]:px-2 [&_button]:py-1.5 [&_button]:text-xs">
-              <StatTabs activeMetric={activeMetric} onMetricChange={setActiveMetric} />
-            </div>
+            {drawer ? (
+              <StatTabs activeMetric={activeMetric} onMetricChange={setActiveMetric} scrollable />
+            ) : (
+              <div className="[&_button]:px-2 [&_button]:py-1.5 [&_button]:text-xs">
+                <StatTabs activeMetric={activeMetric} onMetricChange={setActiveMetric} />
+              </div>
+            )}
             <PlayerTrendChart
               data={chartDataChronological}
               seasonAvg={seasonAvgValue}
@@ -238,7 +267,7 @@ export function PropsExplorerPlayerPanel({
               chartHeight={180}
               compactTrend
             />
-            <div className="max-h-56 overflow-y-auto rounded-xl border border-[#DCE9EA]">
+            <div className={drawer ? 'rounded-xl border border-[#DCE9EA]' : 'max-h-56 overflow-y-auto rounded-xl border border-[#DCE9EA]'}>
               <GameLogTable
                 games={games}
                 activeMetric={activeMetric}
@@ -261,7 +290,7 @@ export function PropsExplorerPlayerPanel({
           aria-label="Dismiss"
           onClick={onClose}
         />
-        <div className="absolute inset-y-0 right-0 w-full max-w-md flex flex-col p-2 sm:p-3 border-l border-[#DCE9EA] bg-white shadow-2xl">
+        <div className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-[#DCE9EA] bg-white shadow-2xl pt-[env(safe-area-inset-top)]">
           <div className="flex-1 min-h-0 flex flex-col">{inner}</div>
         </div>
       </div>

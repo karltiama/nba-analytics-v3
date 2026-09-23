@@ -41,6 +41,7 @@ import { formatNbaSeasonLabel } from '@/lib/season';
 import { playerResearchHref, propsExplorerHref, slateHref } from '@/lib/betting/research-journey';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
 import { UPGRADE_COPY } from '@/lib/entitlements/types';
+import { CONTEXT_CHECK_OPENED, contextCheckOpenedProperties } from '@/lib/product-analytics/context-events';
 import { trackEvent } from '@/lib/product-analytics/track-event';
 import {
   HISTORICAL_GAME_VIEWED,
@@ -622,6 +623,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
   const showHistoricalTimeline = shouldShowHistoricalTimeline(availability);
   const historicalViewedKey = useRef<string | null>(null);
   const historicalTimelineKey = useRef<string | null>(null);
+  const contextOpenedKey = useRef<string | null>(null);
 
   const hasOdds =
     currentOdds != null &&
@@ -858,6 +860,15 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
     trackEvent(HISTORICAL_TIMELINE_OPENED, next.properties);
   }, [activeSection, isFinalView, showHistoricalTimeline, game.id]);
 
+  useEffect(() => {
+    if (!isFinalView || !showHistoricalRoleProfile) return;
+    if (activeSection !== 'section-context') return;
+    const gameId = String(game.id);
+    if (contextOpenedKey.current === gameId) return;
+    contextOpenedKey.current = gameId;
+    trackEvent(CONTEXT_CHECK_OPENED, contextCheckOpenedProperties());
+  }, [activeSection, isFinalView, showHistoricalRoleProfile, game.id]);
+
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
       {/* Sticky header: matchup + horizontal section nav (scroll-to-section everywhere) */}
@@ -1064,7 +1075,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               <div className="mt-3 space-y-2">
                 <p className="text-xs font-medium text-[#063f46]">{UPGRADE_COPY.ai_briefing.title}</p>
                 <p className="text-xs text-[#4a6366]">{UPGRADE_COPY.ai_briefing.detail}</p>
-                <FoundingProUpgradeLink />
+                <FoundingProUpgradeLink analyticsSurface="game_briefing" />
               </div>
             )}
             {aiSummaryStatus === 'unavailable' && (

@@ -3,6 +3,7 @@
  * Never send filenames, OCR text, player names, lines, or odds.
  */
 
+import { XRAY_EXTRACT_RESULTS, type XrayExtractResult } from '@/lib/parlay-xray/extraction/result-codes';
 import {
   PRODUCT_EVENTS,
   type ParlayXrayExtractProperties,
@@ -23,3 +24,15 @@ export type { ParlayXrayExtractProperties };
 export const parlayXraySurfaceProperties: ParlayXraySurfaceProperties = {
   surface: 'parlay_xray',
 };
+
+const CANONICAL_XRAY_RESULTS = new Set<string>(XRAY_EXTRACT_RESULTS);
+
+export type ClosedXrayResultCategory = XrayExtractResult | 'UNKNOWN';
+
+/** Analytics-only. Unknown API strings become UNKNOWN and are never forwarded. */
+export function closedXrayResultCategory(value: unknown): ClosedXrayResultCategory {
+  if (typeof value === 'string' && CANONICAL_XRAY_RESULTS.has(value)) {
+    return value as XrayExtractResult;
+  }
+  return 'UNKNOWN';
+}

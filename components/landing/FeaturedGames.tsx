@@ -96,7 +96,13 @@ const DEMO_GAMES: Game[] = [
   }),
 ];
 
-export function FeaturedGames() {
+export function FeaturedGames({
+  games = DEMO_GAMES,
+  description = 'Illustration only — not today’s live slate. Sign in to research historical props and parlays.',
+}: {
+  games?: Game[];
+  description?: string;
+} = {}) {
   return (
     <LandingSection aria-labelledby="landing-featured-games-heading">
       <LandingSectionHeader
@@ -105,13 +111,14 @@ export function FeaturedGames() {
         accent="lime"
         variant="watermark"
         title="Sample matchups"
-        description="Illustration only — not today’s live slate. Sign in to research historical props and parlays."
+        description={description}
         href="/betting"
         linkLabel="Open dashboard"
+        action="open_dashboard"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {DEMO_GAMES.map((game, index) => (
+        {games.map((game, index) => (
           <div
             key={game.id}
             className="fade-in"

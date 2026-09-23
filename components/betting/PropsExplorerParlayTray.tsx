@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { X } from 'lucide-react';
+import { mobileParlayBarCopy } from '@/lib/parlay/mobile-bar-copy';
 import {
   PARLAY_WORKSPACE_HREF,
   marketDisplayLabel,
@@ -146,11 +147,9 @@ export function PropsExplorerParlayTray({
 }) {
   if (legs.length === 0) return null;
 
-  const preview = summarizeCanonicalSelection(legs);
-
   return (
     <>
-      <div className="hidden xl:block">
+      <div className="hidden lg:block">
         <aside
           className="fixed bottom-4 right-4 xl:right-[calc(24rem+2.5rem)] z-40 w-96 max-w-[calc(100vw-2rem)] max-h-[min(28rem,50vh)] flex flex-col bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
           aria-label="Selected parlay"
@@ -159,14 +158,14 @@ export function PropsExplorerParlayTray({
         </aside>
       </div>
 
-      <div className="xl:hidden">
+      <div className="lg:hidden">
         <Link
           href={PARLAY_WORKSPACE_HREF}
-          className="fixed bottom-4 inset-x-4 z-40 rounded-2xl border border-[#DCE9EA] bg-white shadow-sm px-4 py-3 flex items-center justify-between gap-3 min-h-[44px]"
-          aria-label={`${preview.summary}. Review Parlay`}
+          className="fixed inset-x-4 z-40 flex min-h-11 items-center justify-between gap-3 rounded-2xl border border-[#DCE9EA] bg-white px-4 py-3 shadow-sm bottom-[max(1rem,env(safe-area-inset-bottom))]"
+          aria-label={`${mobileParlayBarCopy(legs)}. Review Parlay`}
         >
-          <span className="text-sm font-medium text-[#063f46] truncate">{preview.summary}</span>
-          <span className="text-xs font-semibold text-[#075B5C] shrink-0">Review Parlay</span>
+          <span className="type-secondary min-w-0 truncate text-[#063f46]">{mobileParlayBarCopy(legs)}</span>
+          <span className="type-interactive shrink-0 text-[#075B5C]">Review Parlay</span>
         </Link>
       </div>
     </>
