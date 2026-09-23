@@ -42,6 +42,15 @@ export type CanaryResult = {
 
 export type CanaryFetch = (url: string, init?: RequestInit) => Promise<Response>;
 
+/** fetchBdlLive types fetchImpl as typeof fetch. Canaries only pass string URLs. */
+function toRateLimitFetch(fetchImpl: CanaryFetch): typeof fetch {
+  return (input, init) => {
+    const url =
+      typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    return fetchImpl(url, init);
+  };
+}
+
 export function wantsExecute(argv: readonly string[]): boolean {
   return argv.includes('--execute');
 }
@@ -159,7 +168,7 @@ async function oneLimitedGet(args: {
       {
         env: args.env ?? canaryLimiterEnv(args.worker),
         worker: args.worker,
-        fetchImpl: args.fetchImpl,
+        fetchImpl: args.fetchImpl ? toRateLimitFetch(args.fetchImpl) : undefined,
         store: args.store,
       }
     );

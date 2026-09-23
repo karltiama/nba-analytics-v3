@@ -76,7 +76,8 @@ export default async function PreseasonDraftDetailPage({
               {JSON.stringify(
                 {
                   team: packet.team,
-                  previousSeasonSnapshot: packet.previousSeasonSnapshot,
+                  previousSeasonRegular: packet.previousSeasonRegular,
+                  previousSeasonAllGames: packet.previousSeasonAllGames,
                   additions: packet.additions,
                   departures: packet.departures,
                   returningCount: packet.returningPlayers.length,
