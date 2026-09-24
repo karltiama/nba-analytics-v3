@@ -22,7 +22,7 @@ export function SignupClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = useMemo(
-    () => safeInternalPath(searchParams.get('next'), '/betting'),
+    () => safeInternalPath(searchParams.get('next'), '/dashboard'),
     [searchParams]
   );
 

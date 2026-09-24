@@ -45,8 +45,6 @@ import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
 import { LegContextBody, WorkspaceDrawer } from './WorkspaceDrawer';
 
-const COURT_MOTIF = '/landing/hero-court-right.png';
-
 const TONE_CLASS: Record<WorkspaceSignalTone, string> = {
   support: 'border-[#bfe8d2] bg-[#f3fbf7]',
   watch: 'border-[#f0e0c8] bg-[#fff8ee]',
@@ -164,10 +162,23 @@ export function ParlayWorkspaceView({
     return (
       <main className="mx-auto max-w-[1800px] px-4 pb-12 pt-6 sm:px-6 lg:px-8">
         {previewBanner ? <div className="mb-4">{previewBanner}</div> : null}
-        <header className="mb-6 max-w-xl" data-coachmark="workspace-intro">
-          <p className="type-metadata">Tools / Parlay Workspace</p>
-          <h1 className="type-page-title text-[#063f46]">Parlay Workspace</h1>
-          <p className="type-secondary mt-1">Organize, review, and refine your parlay with data-driven context.</p>
+        <header className="mb-6 flex flex-col gap-6 lg:flex-row lg:items-end" data-coachmark="workspace-intro">
+          <div className="flex-1 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cc-secondary">
+              <Link href="/dashboard" className="text-[#075B5C] hover:underline">
+                Tools
+              </Link>
+              <span className="mx-1.5">/</span>
+              Parlay Workspace
+            </p>
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+              <span className="text-[#55ddb1]">Parlay</span>{' '}
+              <span className="text-[#063f46]">Workspace</span>
+            </h1>
+            <p className="type-body max-w-2xl text-cc-secondary">
+              Organize, review, and refine your parlay with data-driven context.
+            </p>
+          </div>
         </header>
         <section className="max-w-xl rounded-2xl border border-[#DCE9EA] bg-white p-6 shadow-sm">
           <p className="type-card-data text-[#063f46]">Your parlay is empty.</p>
@@ -205,60 +216,67 @@ export function ParlayWorkspaceView({
   return (
     <main className="mx-auto max-w-[1800px] px-4 pb-10 pt-4 sm:px-6 lg:px-8">
       {previewBanner ? <div className="mb-3">{previewBanner}</div> : null}
-      <header className="relative mb-4 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white px-4 py-3 shadow-sm sm:px-5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={COURT_MOTIF} alt="" aria-hidden className="pointer-events-none absolute right-0 top-0 h-full w-auto opacity-[0.07]" />
-        <div className="relative flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div data-coachmark="workspace-intro">
-            <p className="type-metadata">Tools / Parlay Workspace</p>
-            <h1 className="type-page-title text-[#063f46]">Parlay Workspace</h1>
-            <p className="type-secondary mt-0.5">Organize, review, and refine your parlay with data-driven context.</p>
-            {sourceLabel ? (
-              <p className="type-metadata mt-1" aria-label="Parlay source">
-                {sourceLabel}
-                {editedAfterXrayImport ? ' · Edited after import' : ''}
-              </p>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {showingResults ? (
-              <button
-                type="button"
-                className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20"
-                onClick={onShowReview}
-              >
-                Edit Parlay
-              </button>
-            ) : analysisBusy ? (
-              <button
-                type="button"
-                className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-3 text-white opacity-90"
-                disabled
-                aria-busy
-                data-coachmark="workspace-analyze"
-              >
-                Building Court Context analysis…
-              </button>
-            ) : eligibility.status === 'READY' ? (
-              <button
-                type="button"
-                className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-3 text-white hover:opacity-90"
-                onClick={onAnalyze}
-                data-coachmark="workspace-analyze"
-              >
-                Analyze with Court Context
-              </button>
-            ) : null}
+      <header className="mb-6 flex flex-col gap-6 lg:flex-row lg:items-end">
+        <div className="flex-1 space-y-2" data-coachmark="workspace-intro">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cc-secondary">
+            <Link href="/dashboard" className="text-[#075B5C] hover:underline">
+              Tools
+            </Link>
+            <span className="mx-1.5">/</span>
+            Parlay Workspace
+          </p>
+          <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+            <span className="text-[#55ddb1]">Parlay</span>{' '}
+            <span className="text-[#063f46]">Workspace</span>
+          </h1>
+          <p className="type-body max-w-2xl text-cc-secondary">
+            Organize, review, and refine your parlay with data-driven context.
+          </p>
+          {sourceLabel ? (
+            <p className="type-metadata" aria-label="Parlay source">
+              {sourceLabel}
+              {editedAfterXrayImport ? ' · Edited after import' : ''}
+            </p>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
+          {showingResults ? (
             <button
               type="button"
-              className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#DCE9EA] bg-white px-3 text-[#4a6366]"
-              disabled
-              title="Saved parlays are not available yet."
+              className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20"
+              onClick={onShowReview}
             >
-              Save
+              Edit Parlay
             </button>
-            {share}
-          </div>
+          ) : analysisBusy ? (
+            <button
+              type="button"
+              className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-3 text-white opacity-90"
+              disabled
+              aria-busy
+              data-coachmark="workspace-analyze"
+            >
+              Building Court Context analysis…
+            </button>
+          ) : eligibility.status === 'READY' ? (
+            <button
+              type="button"
+              className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-3 text-white hover:opacity-90"
+              onClick={onAnalyze}
+              data-coachmark="workspace-analyze"
+            >
+              Analyze with Court Context
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#DCE9EA] bg-white px-3 text-[#4a6366]"
+            disabled
+            title="Saved parlays are not available yet."
+          >
+            Save
+          </button>
+          {share}
         </div>
       </header>
 

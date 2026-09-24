@@ -31,7 +31,7 @@ type ProfilePayload = {
 };
 
 function navItemActive(pathname: string, href: string): boolean {
-  if (href === '/betting') return pathname === '/betting';
+  if (href === '/dashboard') return pathname === '/dashboard';
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -118,7 +118,7 @@ function ContextualParlayNav({
 
 export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
   const router = useRouter();
-  const pathname = usePathname() || '/betting';
+  const pathname = usePathname() || '/dashboard';
   const nextEncoded = encodeURIComponent(pathname);
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);

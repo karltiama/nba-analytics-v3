@@ -34,6 +34,7 @@ describe('proxy matcher', () => {
     expect(src).toContain("'/'");
     expect(src).toContain("'/login'");
     expect(src).toContain("'/signup'");
+    expect(src).toContain("'/dashboard'");
     expect(src).toContain("'/admin'");
     expect(src).toContain("'/api/admin/:path*'");
     expect(isSessionProtectedHtmlPath('/')).toBe(false);
@@ -45,6 +46,7 @@ describe('proxy matcher', () => {
 describe('isBettingHtmlPath', () => {
   it('matches betting pages only', () => {
     expect(isBettingHtmlPath('/betting')).toBe(true);
+    expect(isSessionProtectedHtmlPath('/dashboard')).toBe(true);
     expect(isBettingHtmlPath('/betting/props-explorer')).toBe(true);
     expect(isBettingHtmlPath('/api/betting/games')).toBe(false);
     expect(isBettingHtmlPath('/login')).toBe(false);
@@ -135,11 +137,32 @@ describe('updateSession', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon-key');
     getUser.mockResolvedValue({ data: { user: null } });
 
-    const response = await updateSession(makeRequest('/betting'));
+    const response = await updateSession(makeRequest('/betting/props-explorer'));
     expect(response.status).toBe(307);
     const location = response.headers.get('location') ?? '';
     expect(location).toContain('/login');
     expect(location).not.toContain('error=auth_config');
+  });
+
+  it('sends the old dashboard path to /dashboard and keeps the query', async () => {
+    const response = await updateSession(makeRequest('/betting?date=2026-09-24'));
+    expect(response.status).toBe(307);
+    const location = response.headers.get('location') ?? '';
+    expect(location).toContain('/dashboard');
+    expect(location).toContain('date=2026-09-24');
+    expect(location).not.toContain('/login');
+  });
+
+  it('redirects unauthenticated /dashboard HTML when auth config is present', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon-key');
+    getUser.mockResolvedValue({ data: { user: null } });
+
+    const response = await updateSession(makeRequest('/dashboard'));
+    expect(response.status).toBe(307);
+    const location = response.headers.get('location') ?? '';
+    expect(location).toContain('/login');
+    expect(location).toContain('next=%2Fdashboard');
   });
 
   it('redirects unauthenticated /ops HTML when auth config is present', async () => {
@@ -212,7 +235,7 @@ describe('updateSession', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon-key');
     getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
 
-    const response = await updateSession(makeRequest('/betting'));
+    const response = await updateSession(makeRequest('/dashboard'));
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
   });

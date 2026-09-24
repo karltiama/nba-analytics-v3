@@ -45,7 +45,7 @@ describe('research journey URLs', () => {
     expect(propsExplorerHref({ date: '2026-09-06' })).toBe(
       '/betting/props-explorer?date=2026-09-06'
     );
-    expect(slateHref('2026-09-06')).toBe('/betting?date=2026-09-06');
+    expect(slateHref('2026-09-06')).toBe('/dashboard?date=2026-09-06');
   });
 
   it('empty Explorer still has a game back-link from the same identifiers', () => {

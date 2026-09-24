@@ -112,7 +112,7 @@ export function FeaturedGames({
         variant="watermark"
         title="Sample matchups"
         description={description}
-        href="/betting"
+        href="/dashboard"
         linkLabel="Open dashboard"
         action="open_dashboard"
       />

@@ -19,9 +19,10 @@ describe('typography phase 4 workspace xray wowy', () => {
   const wowy = read('app/wowy/WowyResults.tsx');
   const events = read('lib/product-analytics/track-event.ts');
 
-  it('uses page and card roles on Workspace without 9px or 10px text', () => {
-    expect(workspace).toContain('type-page-title');
+  it('uses WOWY-style display title and card roles on Workspace without 9px or 10px text', () => {
+    expect(workspace).toContain('text-4xl font-black tracking-tight sm:text-5xl');
     expect(workspace).toContain('Parlay Workspace');
+    expect(workspace).not.toContain('type-page-title');
     expect(workspace).toContain('type-card-data');
     expect(workspace).toContain('type-section-heading');
     expect(workspace).toContain('type-metadata');

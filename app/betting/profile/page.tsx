@@ -235,7 +235,7 @@ export default function BettingProfilePage() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
       <Link
-        href="/betting"
+        href="/dashboard"
         className="text-sm text-[#075B5C] hover:underline inline-block mb-6"
       >
         ← Back to betting

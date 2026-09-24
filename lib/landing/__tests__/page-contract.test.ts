@@ -31,7 +31,7 @@ describe('landing honesty contract (E10)', () => {
     expect(featured).toMatch(/Illustration only/);
     expect(featured).not.toMatch(/View Full Terminal/);
     expect(featured).not.toMatch(/live odds and analysis/);
-    expect(cards).toMatch(/samplePreview \? '\/betting'/);
+    expect(cards).toMatch(/samplePreview \? '\/dashboard'/);
   });
 
   it('frames teammate impact as historical context, not a prediction or tip', () => {

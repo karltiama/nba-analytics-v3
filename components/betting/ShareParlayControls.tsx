@@ -103,7 +103,7 @@ export function ShareParlayControls({
       if (result.code === 'UNAUTHORIZED') {
         setError('Sign in to share this parlay.');
         const next = encodeURIComponent(
-          typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : '/betting'
+          typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : '/dashboard'
         );
         window.location.assign(`/login?next=${next}`);
         return;

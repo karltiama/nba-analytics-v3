@@ -161,7 +161,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
     (game.gameDate && /^\d{4}-\d{2}-\d{2}/.test(String(game.gameDate))
       ? String(game.gameDate).slice(0, 10)
       : null) ?? researchDate ?? undefined;
-  const gameHref = samplePreview ? '/betting' : gameDetailHref(game.id);
+  const gameHref = samplePreview ? '/dashboard' : gameDetailHref(game.id);
   const propsHref = samplePreview ? '/betting/props-explorer' : propsExplorerHref({ gameId: game.id, date: dateForProps });
 
   const hasOdds =

@@ -56,7 +56,7 @@ function stripOnboardParam(router: ReturnType<typeof useRouter>) {
 
 export function OnboardingGate({ children }: { children?: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname() || '/betting';
+  const pathname = usePathname() || '/dashboard';
   const searchParams = useSearchParams();
 
   const fromCtaRef = useRef<boolean | undefined>(undefined);

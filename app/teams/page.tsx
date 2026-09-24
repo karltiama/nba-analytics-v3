@@ -63,7 +63,7 @@ export default async function TeamsPage({
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         <header className="space-y-2">
           <p className="type-metadata">
-            <Link href="/betting" className="type-interactive text-[#075B5C] hover:underline">
+            <Link href="/dashboard" className="type-interactive text-[#075B5C] hover:underline">
               Dashboard
             </Link>
             <span className="mx-1.5 text-[#DCE9EA]">/</span>

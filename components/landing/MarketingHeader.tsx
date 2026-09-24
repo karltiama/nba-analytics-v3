@@ -32,7 +32,7 @@ export async function MarketingHeader() {
         <div className="flex items-center gap-3 sm:gap-6 shrink-0">
           {signedIn ? (
             <LandingTrackedLink
-              href="/betting"
+              href="/dashboard"
               location="header"
               action="open_dashboard"
               className="text-sm font-semibold bg-[#55ddb1] hover:bg-[#3dcc9f] text-[#063f46] rounded-lg px-3 sm:px-5 py-2 transition-colors"

@@ -56,7 +56,7 @@ export function MissedShot404({ chrome }: { chrome: 'marketing' | 'app' }) {
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              href="/betting"
+              href="/dashboard"
               className="inline-flex h-12 items-center justify-center rounded-lg border border-[#d7e2de] bg-white px-5 sm:px-6 text-[#063f46] font-semibold transition-colors hover:border-[#b7c9c4]"
             >
               Explore Games

@@ -9,7 +9,7 @@ function read(path: string): string {
 }
 
 describe('dashboard typography phase 1', () => {
-  const page = read('app/betting/page.tsx');
+  const page = read('app/dashboard/page.tsx');
   const card = read('components/betting/GameCard.tsx');
   const probability = read('components/betting/MarketProbability.tsx');
   const strip = read('components/betting/TrendingPlayerStrip.tsx');

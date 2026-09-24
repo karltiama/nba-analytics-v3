@@ -63,10 +63,10 @@ const DESTINATIONS: Record<PrimaryIntent, string> = {
   research_props: '/betting/props-explorer',
   analyze_parlay: '/parlay-workspace',
   research_players_games: '/teams',
-  explore: '/betting',
+  explore: '/dashboard',
 };
 
-export const SKIP_DESTINATION = '/betting';
+export const SKIP_DESTINATION = '/dashboard';
 
 export function isPublicXrayExtractionReady(): boolean {
   const decision = evaluateCapability(
@@ -115,7 +115,14 @@ export function surfaceForPath(pathname: string): OnboardingSurface {
   if (pathname.startsWith('/betting/props-explorer')) return 'props';
   if (pathname.startsWith('/parlay-workspace')) return 'workspace';
   if (pathname.startsWith('/parlay-xray')) return 'xray';
-  if (pathname === '/betting' || pathname.startsWith('/betting?')) return 'dashboard';
+  if (
+    pathname === '/dashboard' ||
+    pathname.startsWith('/dashboard?') ||
+    pathname === '/betting' ||
+    pathname.startsWith('/betting?')
+  ) {
+    return 'dashboard';
+  }
   return 'other';
 }
 

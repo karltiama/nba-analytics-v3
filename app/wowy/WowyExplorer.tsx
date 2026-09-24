@@ -257,7 +257,7 @@ export function WowyExplorer({
       <header className="flex flex-col lg:flex-row lg:items-end gap-6">
         <div className="flex-1 space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cc-secondary">
-            <Link href="/betting" className="text-[#075B5C] hover:underline">
+            <Link href="/dashboard" className="text-[#075B5C] hover:underline">
               Analytics
             </Link>
             <span className="mx-1.5">/</span>

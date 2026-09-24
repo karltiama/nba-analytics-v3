@@ -101,7 +101,7 @@ export default async function BettingPlayerPage({
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm border-l-4 border-l-red-500 p-8 text-center">
           <h1 className="text-2xl font-bold text-[#063f46] mb-3">Player not found</h1>
           <p className="text-[#4a6366] mb-4">The requested player could not be located.</p>
-          <Link href="/betting" className="text-[#075B5C] hover:underline text-sm">
+          <Link href="/dashboard" className="text-[#075B5C] hover:underline text-sm">
             &larr; Back to Dashboard
           </Link>
         </div>

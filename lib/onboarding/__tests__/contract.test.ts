@@ -24,8 +24,8 @@ describe('E9 onboarding contract', () => {
   it('routes primary intent to existing useful destinations', () => {
     expect(destinationForIntent('research_props')).toBe('/betting/props-explorer');
     expect(destinationForIntent('research_players_games')).toBe('/teams');
-    expect(destinationForIntent('explore')).toBe('/betting');
-    expect(destinationForIntent(null)).toBe('/betting');
+    expect(destinationForIntent('explore')).toBe('/dashboard');
+    expect(destinationForIntent(null)).toBe('/dashboard');
   });
 
   it('does not route Analyze a parlay into disabled public XRay extraction', () => {
@@ -86,7 +86,7 @@ describe('E9 onboarding contract', () => {
   });
 
   it('does not auto-open on billing and does not loop after completion', () => {
-    expect(shouldAutoOpenOnboarding('new_user', '/betting')).toBe(true);
+    expect(shouldAutoOpenOnboarding('new_user', '/dashboard')).toBe(true);
     expect(shouldAutoOpenOnboarding('new_user', '/billing')).toBe(false);
     expect(shouldAutoOpenOnboarding('completed', '/betting')).toBe(false);
     expect(shouldAutoOpenOnboarding('existing_user_prompt', '/betting')).toBe(false);
@@ -176,6 +176,7 @@ describe('E9 onboarding contract', () => {
     expect(surfaceForPath('/betting/props-explorer')).toBe('props');
     expect(surfaceForPath('/parlay-workspace')).toBe('workspace');
     expect(surfaceForPath('/parlay-xray')).toBe('xray');
+    expect(surfaceForPath('/dashboard')).toBe('dashboard');
     expect(surfaceForPath('/betting')).toBe('dashboard');
   });
 });

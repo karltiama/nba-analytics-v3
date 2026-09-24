@@ -178,20 +178,23 @@ function TrendingCard({
 
 function StripSkeleton() {
   return (
-    <div className="flex gap-3 overflow-hidden">
+    <div className="flex gap-3 overflow-hidden" aria-hidden role="presentation">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-3.5 w-max shrink-0">
+        <div
+          key={i}
+          className="w-max shrink-0 rounded-2xl border border-[#DCE9EA] bg-white p-3.5 shadow-sm"
+        >
           <div className="flex gap-2.5">
-            <Skeleton className="w-4 h-2.5 mt-1 shrink-0" />
-            <Skeleton className="w-[72px] h-[88px] rounded-2xl shrink-0" />
-            <div className="flex flex-col justify-between min-w-[160px] py-0.5">
+            <Skeleton className="mt-1 h-2.5 w-4 shrink-0 bg-[#DCE9EA]" />
+            <Skeleton className="h-[88px] w-[72px] shrink-0 rounded-2xl bg-[#E8F0F1]" />
+            <div className="flex min-w-[160px] flex-col justify-between py-0.5">
               <div className="space-y-1.5">
-                <Skeleton className="w-36 h-3.5" />
-                <Skeleton className="w-16 h-2.5" />
+                <Skeleton className="h-3.5 w-36 bg-[#E8F0F1]" />
+                <Skeleton className="h-2.5 w-16 bg-[#E8F0F1]" />
               </div>
-              <div className="flex items-end justify-between">
-                <Skeleton className="w-12 h-8" />
-                <Skeleton className="w-14 h-8" />
+              <div className="flex items-end justify-between gap-8">
+                <Skeleton className="h-8 w-12 bg-[#E8F0F1]" />
+                <Skeleton className="h-8 w-14 bg-[#E8F0F1]" />
               </div>
             </div>
           </div>

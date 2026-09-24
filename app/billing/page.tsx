@@ -144,7 +144,7 @@ export default function BillingPage() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-8 pb-16">
       <Link
-        href="/betting"
+        href="/dashboard"
         className="type-interactive text-[#075B5C] hover:underline inline-block mb-6"
       >
         ← Back to dashboard

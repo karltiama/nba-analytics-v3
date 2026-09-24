@@ -10,7 +10,7 @@ describe('marketing header session', () => {
     expect(src).toMatch(/getUser/);
     expect(src).toMatch(/href="\/login"/);
     expect(src).toMatch(/href="\/signup"/);
-    expect(src).toMatch(/href="\/betting"/);
+    expect(src).toMatch(/href="\/dashboard"/);
     expect(src).toMatch(/Dashboard/);
     expect(src).not.toMatch(/signOut/);
   });

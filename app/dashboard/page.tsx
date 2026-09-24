@@ -246,7 +246,7 @@ export default function BettingDashboard(props: PageProps) {
     (date: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set('date', date);
-      router.replace(`/betting?${params.toString()}`, { scroll: false });
+      router.replace(`/dashboard?${params.toString()}`, { scroll: false });
     },
     [router, searchParams]
   );
@@ -256,7 +256,7 @@ export default function BettingDashboard(props: PageProps) {
     if (!searchParams.get('date')) {
       const params = new URLSearchParams(searchParams.toString());
       params.set('date', getTodayET());
-      router.replace(`/betting?${params.toString()}`, { scroll: false });
+      router.replace(`/dashboard?${params.toString()}`, { scroll: false });
     }
   }, []); // run once on mount
 

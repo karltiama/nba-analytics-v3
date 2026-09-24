@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         destination: '/betting/games/:gameId',
         permanent: true,
       },
+      {
+        source: '/betting',
+        destination: '/dashboard',
+        permanent: false,
+      },
     ];
   },
 };

@@ -1,6 +1,6 @@
 /** Primary betting/app destinations (desktop + mobile menu). */
 export const PRIMARY_NAV = [
-  { href: '/betting', label: 'Dashboard' },
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/teams', label: 'Teams' },
   { href: '/wowy', label: 'WOWY' },
   { href: '/parlay-xray', label: 'Parlay XRay' },

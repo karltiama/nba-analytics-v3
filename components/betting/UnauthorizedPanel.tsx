@@ -21,7 +21,7 @@ export function UnauthorizedPanel({
   message = 'Your session expired or you are signed out. Sign in to load live betting data.',
   onRetry,
 }: UnauthorizedPanelProps) {
-  const pathname = usePathname() || '/betting';
+  const pathname = usePathname() || '/dashboard';
   const next = encodeURIComponent(pathname);
 
   return (

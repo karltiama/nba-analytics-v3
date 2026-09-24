@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const nextRaw = searchParams.get('next');
-  const nextPath = safeInternalPath(nextRaw, '/betting');
+  const nextPath = safeInternalPath(nextRaw, '/dashboard');
 
   if (code) {
     const supabase = await createSupabaseServerClient();

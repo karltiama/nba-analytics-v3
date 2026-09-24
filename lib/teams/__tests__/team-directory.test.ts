@@ -185,6 +185,7 @@ describe('team directory (Phase 2.T.4B)', () => {
     expect(shouldShowLayoutHeader('/teams')).toBe(true);
     expect(shouldShowLayoutHeader('/teams/2')).toBe(true);
     expect(shouldShowLayoutHeader('/wowy')).toBe(true);
+    expect(shouldShowLayoutHeader('/dashboard')).toBe(true);
     expect(shouldShowLayoutHeader('/betting')).toBe(true);
     expect(shouldShowLayoutHeader('/betting/players/x')).toBe(true);
 

@@ -8,6 +8,10 @@ export function isBettingHtmlPath(pathname: string): boolean {
   );
 }
 
+export function isDashboardHtmlPath(pathname: string): boolean {
+  return pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+}
+
 export function isOpsHtmlPath(pathname: string): boolean {
   return pathname === '/ops' || pathname.startsWith('/ops/');
 }
@@ -23,6 +27,7 @@ export function isAdminHtmlPath(pathname: string): boolean {
 export function isSessionProtectedHtmlPath(pathname: string): boolean {
   return (
     isBettingHtmlPath(pathname) ||
+    isDashboardHtmlPath(pathname) ||
     isOpsHtmlPath(pathname) ||
     isBillingHtmlPath(pathname) ||
     isAdminHtmlPath(pathname)
@@ -50,9 +55,16 @@ function redirectToLogin(request: NextRequest, extraParams?: Record<string, stri
 }
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
   const pathname = request.nextUrl.pathname;
+
+  // Dashboard moved off /betting. Exact path only — nested routes stay put.
+  if (pathname === '/betting') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
+  }
+
+  let supabaseResponse = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 

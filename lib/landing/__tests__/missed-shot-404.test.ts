@@ -15,7 +15,7 @@ describe('missed-shot 404 page', () => {
     const src = readFileSync(join(ROOT, 'components/landing/MissedShot404.tsx'), 'utf8');
     expect(src).toMatch(/missed the shot/);
     expect(src).toMatch(/href="\/"/);
-    expect(src).toMatch(/href="\/betting"/);
+    expect(src).toMatch(/href="\/dashboard"/);
     expect(src).toMatch(/hero-court-right\.png/);
     expect(src).not.toMatch(/MissedShotIllustration/);
     expect(src).not.toMatch(/hero-court-right\.svg/);

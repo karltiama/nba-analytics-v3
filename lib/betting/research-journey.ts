@@ -44,7 +44,7 @@ export function propsExplorerHref(input: {
 /** Player research page with enough return context for Explorer/game. */
 export function playerResearchHref(input: ResearchJourneyParams): string {
   const playerId = id(input.playerId);
-  if (!playerId) return '/betting';
+  if (!playerId) return '/dashboard';
   const params = new URLSearchParams();
   params.set('from', 'explorer');
   const date = ymd(input.date);
@@ -105,7 +105,7 @@ export function explorerReturnHref(ctx: PlayerReturnContext): string {
 
 export function slateHref(date?: string | null): string {
   const d = ymd(date);
-  return d ? `/betting?date=${d}` : '/betting';
+  return d ? `/dashboard?date=${d}` : '/dashboard';
 }
 
 export function explorerGamesApiHref(input: { dateEt: string; todayEt: string }): string {
