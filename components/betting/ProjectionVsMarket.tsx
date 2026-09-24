@@ -43,10 +43,10 @@ export function ProjectionVsMarket({
   if (!hasProjection) {
     return (
       <div className="rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2.5">
-        <p className="text-[10px] uppercase tracking-wide font-medium text-[#72869A]">
+        <p className="type-metadata">
           Court Context Projection
         </p>
-        <p className="text-xs text-[#4a6366] mt-1">Projection unavailable for this player.</p>
+        <p className="type-secondary mt-1">Projection unavailable for this player.</p>
       </div>
     );
   }
@@ -54,11 +54,11 @@ export function ProjectionVsMarket({
   return (
     <div className="rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2.5">
       <div className="flex items-center gap-1.5 mb-1.5">
-        <p className="text-[10px] uppercase tracking-wide font-medium text-[#72869A]">
+        <p className="type-metadata">
           Court Context Projection
         </p>
         <span
-          className="inline-flex text-[#8aa0a3] hover:text-[#4a6366]"
+          className="inline-flex text-[#4a6366] hover:text-[#063f46]"
           title={PROJECTION_METHODOLOGY}
           aria-label={PROJECTION_METHODOLOGY}
         >
@@ -68,24 +68,24 @@ export function ProjectionVsMarket({
       <p className="text-2xl font-bold text-[#063f46] tabular-nums leading-none">
         {projection!.toFixed(1)}
       </p>
-      <p className="text-[11px] text-[#4a6366] mt-1">Projected {unitBit}</p>
-      <dl className="mt-2.5 space-y-1 text-xs">
+      <p className="type-metadata mt-1">Projected {unitBit}</p>
+      <dl className="mt-2.5 space-y-1">
         <div className="flex items-baseline justify-between gap-3">
-          <dt className="text-[#4a6366]">Market line</dt>
-          <dd className="font-mono text-[#063f46] tabular-nums">
+          <dt className="type-secondary">Market line</dt>
+          <dd className="type-table-data font-mono text-[#063f46] tabular-nums">
             {hasLine ? line!.toFixed(1) : '—'}
           </dd>
         </div>
         <div className="flex items-baseline justify-between gap-3">
-          <dt className="text-[#4a6366]">Projection gap</dt>
+          <dt className="type-secondary">Projection gap</dt>
           <dd className={`font-mono font-semibold tabular-nums ${gap != null ? gapTone(gap) : 'text-[#4a6366]'}`}>
             {gap != null ? formatProjectionGap(gap) : '—'}
           </dd>
         </div>
         {estimatedEv != null && Number.isFinite(estimatedEv) ? (
           <div className="flex items-baseline justify-between gap-3 pt-1 border-t border-[#DCE9EA]">
-            <dt className="text-[#4a6366]">Estimated EV</dt>
-            <dd className="font-mono text-[#063f46] tabular-nums">{formatEvPct(estimatedEv)}</dd>
+            <dt className="type-secondary">Estimated EV</dt>
+            <dd className="type-table-data font-mono text-[#063f46] tabular-nums">{formatEvPct(estimatedEv)}</dd>
           </div>
         ) : null}
       </dl>

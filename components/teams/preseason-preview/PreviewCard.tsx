@@ -41,11 +41,11 @@ export function PreviewSectionHeading({
         </span>
       ) : null}
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-[#063f46]">
+        <h2 className="type-section-heading text-[#063f46]">
           {title}
         </h2>
         {subtitle ? (
-          <p className="text-[11px] text-[#4a6366] mt-0.5">{subtitle}</p>
+          <p className="type-metadata mt-0.5">{subtitle}</p>
         ) : null}
       </div>
     </div>

@@ -83,11 +83,11 @@ function confBadgeClass(conf: string): string {
   const c = conf.toLowerCase();
   if (c === 'high') return 'bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold';
   if (c === 'medium') return 'bg-amber-50 text-amber-700 rounded-full font-semibold';
-  return 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium';
+  return 'bg-[#F3F8F8] text-[#4a6366] rounded-full font-medium';
 }
 
 function evClass(ev: string): string {
-  if (ev.startsWith('+')) return 'text-[#20B95A]';
+  if (ev.startsWith('+')) return 'text-[#075B5C]';
   return 'text-[#063F46]';
 }
 
@@ -171,9 +171,9 @@ export function LandingPropsTablePreview({
 
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto max-h-[min(420px,70vh)] overflow-y-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left type-table-data">
             <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
-              <tr className="text-[11px] uppercase tracking-wide text-[#72869A]">
+              <tr className="type-metadata">
                 <th className="py-2.5 px-3 font-medium">Player</th>
                 <th className="py-2.5 px-3 font-medium">Prop</th>
                 <th className="py-2.5 px-3 font-medium">Side</th>
@@ -201,18 +201,18 @@ export function LandingPropsTablePreview({
                   className="border-b border-[#DCE9EA] hover:bg-[#F8FBFA]"
                 >
                   <td className="py-2.5 px-3">
-                    <span className="font-bold text-[#063F46] truncate min-w-0 max-w-[160px] inline-block align-middle">
+                    <span className="type-table-data text-[#063f46] truncate min-w-0 max-w-[160px] inline-block align-middle">
                       {r.player}
                     </span>
                   </td>
                   <td className="py-2.5 px-3 text-[#063F46] capitalize">{r.prop.replace(/_/g, ' ')}</td>
                   <td className="py-2.5 px-3 text-[#063F46] capitalize">{r.side}</td>
                   <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-[#063F46]">{r.line}</td>
-                  <td className="py-2.5 px-3 text-[#72869A] truncate max-w-[100px]">{r.book}</td>
+                  <td className="type-secondary py-2.5 px-3 truncate max-w-[100px]">{r.book}</td>
                   <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-[#063F46]">{r.odds}</td>
                   <td className="py-2.5 px-3 text-right tabular-nums text-[#063F46]">{r.implied}</td>
                   <td className="py-2.5 px-3 text-right">
-                    <span className={`text-[10px] px-2 py-0.5 capitalize ${confBadgeClass(r.conf)}`}>
+                    <span className={`type-badge px-2 py-0.5 capitalize ${confBadgeClass(r.conf)}`}>
                       {r.conf}
                     </span>
                   </td>
@@ -221,16 +221,16 @@ export function LandingPropsTablePreview({
                     {r.ev}
                   </td>
                   <td className="py-2.5 px-3 text-right font-semibold tabular-nums text-[#168DD8]">{r.proj}</td>
-                  <td className="py-2.5 px-3 text-[10px] text-[#72869A] whitespace-nowrap">
+                  <td className="type-metadata py-2.5 px-3 whitespace-nowrap">
                     {r.updated}
                   </td>
                   <td className="py-2.5 px-2">
-                    <span className="text-[10px] px-2 py-1 rounded-lg bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] font-semibold inline-block">
+                    <span className="type-interactive px-2 py-1 rounded-lg bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] inline-block">
                       Save
                     </span>
                   </td>
                   <td className="py-2.5 px-2">
-                    <span className="text-[10px] px-2 py-1 rounded-lg bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] font-semibold inline-block">
+                    <span className="type-interactive px-2 py-1 rounded-lg bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] inline-block">
                       Add
                     </span>
                   </td>

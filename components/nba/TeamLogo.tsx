@@ -16,6 +16,14 @@ const SIZE_BOX: Record<TeamLogoSize, string> = {
   xl: 'h-[4.5rem] w-[4.5rem]',
 };
 
+const FALLBACK_TYPE: Record<TeamLogoSize, string> = {
+  xs: 'text-[11px]',
+  sm: 'text-xs',
+  md: 'text-xs',
+  lg: 'text-sm',
+  xl: 'text-sm',
+};
+
 const SIZE_IMG: Record<TeamLogoSize, string> = {
   xs: 'max-h-4 max-w-4',
   sm: 'max-h-8 max-w-8',
@@ -40,7 +48,7 @@ function warnInvalidTeam(team: string) {
 function FallbackMark({ label, size }: { label: string; size: TeamLogoSize }) {
   return (
     <span
-      className={`flex ${SIZE_BOX[size]} items-center justify-center rounded-full bg-black/10 text-[10px] font-bold uppercase tracking-wide text-current`}
+      className={`flex ${SIZE_BOX[size]} items-center justify-center rounded-full bg-black/10 ${FALLBACK_TYPE[size]} font-bold uppercase tracking-wide text-current`}
     >
       {label.slice(0, 3)}
     </span>

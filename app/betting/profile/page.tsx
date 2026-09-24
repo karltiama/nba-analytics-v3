@@ -12,15 +12,15 @@ type PrimaryGoal = 'find_edges' | 'track_picks' | 'learn';
 type Experience = 'novice' | 'intermediate' | 'advanced';
 type Risk = 'low' | 'medium' | 'high';
 
-const labelCls = 'block text-xs font-medium text-[#4a6366] mb-1.5';
+const labelCls = 'type-interactive block text-[#063f46] mb-1.5';
 const inputCls =
-  'w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46] placeholder:text-[#8aa0a3] outline-none focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
+  'type-interactive w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-[#063f46] placeholder:text-[#4a6366] outline-none focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
 const selectCls = cn(inputCls, 'cursor-pointer');
 const btnPrimary =
-  'inline-flex items-center justify-center gap-2 rounded-lg bg-[#063f46] px-4 py-2 text-sm font-medium text-white hover:bg-[#075B5C] disabled:opacity-50';
+  'type-interactive inline-flex items-center justify-center gap-2 rounded-lg bg-[#063f46] px-4 py-2 text-white hover:bg-[#075B5C] disabled:opacity-50';
 const cardCls = 'bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5 sm:p-6';
 const msgCls = (msg: string) =>
-  cn('text-xs', msg.includes('saved') ? 'text-[#20B95A]' : 'text-amber-800');
+  cn('type-body', msg.includes('saved') ? 'text-[#075B5C]' : 'text-amber-800');
 
 export default function BettingProfilePage() {
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -241,7 +241,7 @@ export default function BettingProfilePage() {
         ← Back to betting
       </Link>
 
-      <h1 className="text-2xl font-bold text-[#063f46] tracking-tight mb-1">Profile & preferences</h1>
+      <h1 className="type-page-title text-[#063f46] mb-1">Profile & preferences</h1>
       <p className="text-sm text-[#4a6366] mb-2">Update how you appear and how odds and paper trading are shown.</p>
       <p className="text-sm text-[#4a6366] mb-8">
         <Link href="/billing" className="text-[#075B5C] hover:underline">
@@ -250,7 +250,7 @@ export default function BettingProfilePage() {
       </p>
 
       <section className={cn(cardCls, 'mb-6')}>
-        <h2 className="text-sm font-semibold text-[#063f46] mb-4">Account</h2>
+        <h2 className="type-section-heading text-[#063f46] mb-4">Account</h2>
         {email ? (
           <p className="text-xs text-[#4a6366] mb-4">
             Signed in as <span className="text-[#063f46]">{email}</span>
@@ -297,7 +297,7 @@ export default function BettingProfilePage() {
               placeholder="America/New_York"
               maxLength={80}
             />
-            <p className="mt-1 text-[11px] text-[#8aa0a3]">IANA name, e.g. America/Los_Angeles</p>
+            <p className="type-metadata mt-1">IANA name, e.g. America/Los_Angeles</p>
           </div>
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -310,7 +310,7 @@ export default function BettingProfilePage() {
       </section>
 
       <section className={cardCls}>
-        <h2 className="text-sm font-semibold text-[#063f46] mb-4">Betting preferences</h2>
+        <h2 className="type-section-heading text-[#063f46] mb-4">Betting preferences</h2>
         <div className="space-y-4">
           <div>
             <label className={labelCls} htmlFor="sportsbook">

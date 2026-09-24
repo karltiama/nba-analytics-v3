@@ -135,10 +135,10 @@ export function LandingTrendingPlayerStripPreview({
         {STAT_TABS.map((t) => (
           <span
             key={t.key}
-            className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
+            className={`type-interactive px-2.5 py-1 rounded-lg ${
               t.key === 'pts'
                 ? 'bg-[#F8FBFA] border border-[#DCE9EA] text-[#063F46]'
-                : 'text-[#72869A]'
+                : 'text-[#4a6366]'
             }`}
           >
             {t.label}
@@ -161,7 +161,7 @@ export function LandingTrendingPlayerStripPreview({
               className={`${CARD_SHELL} hover:border-[#075B5C]/30 transition-colors cursor-pointer group snap-start`}
             >
               <div className="flex gap-2.5">
-                <span className="text-[10px] font-mono text-[#72869A] leading-none pt-1 select-none shrink-0">
+                <span className="type-metadata font-mono leading-none pt-1 select-none shrink-0">
                   #{idx + 1}
                 </span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -175,32 +175,32 @@ export function LandingTrendingPlayerStripPreview({
                   <div>
                     <div className="flex items-center gap-1.5">
                       <TeamLogo team={player.team} size="xs" decorative />
-                      <p className="text-sm font-bold text-[#063F46] whitespace-nowrap leading-tight group-hover:text-[#075B5C] transition-colors">
+                      <p className="type-card-data whitespace-nowrap text-[#063F46] leading-tight group-hover:text-[#075B5C] transition-colors">
                         {player.name}
                       </p>
                       {player.badge && (
-                        <span className={`text-[10px] px-2 py-0.5 shrink-0 leading-none ${badgeClass(player.badge.label)}`}>
+                        <span className={`type-badge px-2 py-0.5 shrink-0 leading-none ${badgeClass(player.badge.label)}`}>
                           {player.badge.label}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-[#72869A] font-medium mt-0.5 pl-6">
+                    <p className="type-metadata mt-0.5 pl-6">
                       {player.team} · {player.position}
                     </p>
                   </div>
 
                   <div className="flex items-end justify-between gap-8 mt-2 whitespace-nowrap">
                     <div>
-                      <span className="text-[10px] uppercase tracking-wide text-[#72869A] font-medium">PTS L5</span>
+                      <span className="type-metadata">PTS L5</span>
                       <p className="text-lg font-bold text-[#063F46] tabular-nums leading-none mt-0.5">
                         {player.l5.toFixed(1)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] uppercase tracking-wide text-[#72869A] font-medium">vs SZN</span>
+                      <span className="type-metadata">vs SZN</span>
                       <div className="flex items-center gap-1 justify-end mt-0.5">
                         <TrendingUp className="w-3.5 h-3.5 text-[#20B95A]" />
-                        <span className="text-sm font-bold tabular-nums text-[#20B95A] leading-none">
+                        <span className="type-card-data tabular-nums text-[#075B5C] leading-none">
                           +{player.vsSzn.toFixed(1)}
                         </span>
                       </div>

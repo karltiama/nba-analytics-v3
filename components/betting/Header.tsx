@@ -215,7 +215,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                   'Court Context'
                 )}
               </h1>
-              <p className="text-xs text-[#4a6366] -mt-0.5">
+              <p className="type-metadata -mt-0.5 hidden md:block">
                 {teamName ? 'Analytics' : 'Betting Dashboard'}
               </p>
             </div>
@@ -382,7 +382,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                       <div className="px-3 py-2 border-b border-[#DCE9EA] mb-1">
                         <p className="text-sm font-medium text-[#063f46] truncate">{displayLabel}</p>
                         {profile?.email ? (
-                          <p className="text-xs text-[#4a6366] truncate mt-0.5">{profile.email}</p>
+                          <p className="type-metadata truncate mt-0.5">{profile.email}</p>
                         ) : null}
                         <p className="type-metadata mt-1">TZ: {profile?.timezone}</p>
                       </div>

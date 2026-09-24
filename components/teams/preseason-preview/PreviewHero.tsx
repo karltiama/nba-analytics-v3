@@ -84,13 +84,13 @@ export function PreviewHero({
         </nav>
 
         <div className="min-w-0 text-center">
-          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-[#8aa0a3]">
+          <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-cc-secondary">
             {seasonLabel}
           </p>
           <h1 className="mt-1 w-full font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight text-[#063f46] leading-[0.9] uppercase">
             {teamName}
           </h1>
-          <p className="mt-2 sm:mt-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-[#075B5C]">
+          <p className="mt-2 sm:mt-3 text-xs sm:text-sm font-bold uppercase tracking-[0.14em] text-[#075B5C]">
             Preseason Preview
           </p>
           <p className="mt-2 mx-auto text-sm sm:text-base text-[#4a6366] max-w-2xl">

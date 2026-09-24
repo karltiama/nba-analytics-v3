@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 function watchTone(watch: string) {
   if (watch === 'Stable') return 'text-[#4a6366]';
-  if (watch === 'Role TBD') return 'text-[#8aa0a3]';
+  if (watch === 'Role TBD') return 'text-[#4a6366]';
   return 'text-[#075B5C] font-semibold';
 }
 
@@ -29,13 +29,13 @@ export function RoleWatchSection({
         <table className="w-full min-w-[28rem] text-sm">
           <thead>
             <tr className="border-b border-[#DCE9EA] text-left">
-              <th className="py-2 pr-3 text-[10px] font-semibold uppercase tracking-wide text-[#8aa0a3]">
+              <th className="type-metadata py-2 pr-3 text-left">
                 Player
               </th>
-              <th className="py-2 pr-3 text-[10px] font-semibold uppercase tracking-wide text-[#8aa0a3]">
+              <th className="type-metadata py-2 pr-3 text-left">
                 Previous Role
               </th>
-              <th className="py-2 text-[10px] font-semibold uppercase tracking-wide text-[#8aa0a3]">
+              <th className="type-metadata py-2 text-left">
                 {seasonLabel} Watch
               </th>
             </tr>

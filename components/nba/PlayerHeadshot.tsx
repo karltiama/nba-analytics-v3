@@ -28,7 +28,7 @@ export function PlayerHeadshot({
   if (!nbaPlayerId || failed) {
     return (
       <div className={`${className} flex items-center justify-center`} aria-hidden>
-        <span className="text-sm font-bold text-[#8aa0a3]">{initials}</span>
+        <span className="text-sm font-bold text-[#4a6366]">{initials}</span>
       </div>
     );
   }

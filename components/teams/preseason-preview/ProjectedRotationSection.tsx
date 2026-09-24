@@ -76,7 +76,7 @@ export function ProjectedRotationSection({
                 <tr key={pos} className="border-b border-[#DCE9EA] last:border-0">
                   <th
                     scope="row"
-                    className="py-2.5 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-[#8aa0a3] w-12"
+                    className="type-metadata py-2.5 pr-3 text-left w-12"
                   >
                     {pos}
                   </th>
@@ -97,7 +97,7 @@ export function ProjectedRotationSection({
             >
               <span className="text-sm font-medium text-[#063f46]">{p.name}</span>
               {p.position ? (
-                <span className="text-[10px] uppercase tracking-wide text-[#8aa0a3]">
+                <span className="type-metadata">
                   {p.position}
                 </span>
               ) : null}

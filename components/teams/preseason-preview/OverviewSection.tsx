@@ -38,7 +38,7 @@ export function OverviewSection({
         <PreviewSectionHeading title="The Big Picture" icon={BarChart3} />
         <div className="space-y-3">
           {bigPicture.map((p) => (
-            <p key={p.slice(0, 48)} className="text-sm leading-relaxed text-[#4a6366]">
+            <p key={p.slice(0, 48)} className="type-body text-cc-secondary">
               {p}
             </p>
           ))}
@@ -63,8 +63,8 @@ export function OverviewSection({
                 key={f.label}
                 className="flex items-baseline justify-between gap-3 border-b border-[#DCE9EA] last:border-0 pb-2 last:pb-0"
               >
-                <dt className="text-xs text-[#4a6366]">{f.label}</dt>
-                <dd className="text-sm font-semibold font-mono text-[#063f46] tabular-nums">
+                <dt className="type-metadata">{f.label}</dt>
+                <dd className="type-table-data font-mono text-[#063f46] tabular-nums">
                   {f.value}
                 </dd>
               </div>
@@ -98,10 +98,10 @@ export function OverviewSection({
                   {i + 1}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#063f46] leading-snug">
+                  <p className="type-card-data text-[#063f46] leading-snug">
                     {q.headline}
                   </p>
-                  <p className="mt-1 text-xs leading-relaxed text-[#4a6366]">
+                  <p className="type-secondary mt-1">
                     {q.detail}
                   </p>
                 </div>

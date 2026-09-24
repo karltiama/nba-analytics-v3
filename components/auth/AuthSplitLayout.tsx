@@ -27,7 +27,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
           Court Context
         </span>
         {!compact ? (
-          <span className="block text-[11px] text-white/70 mt-1">More than the trend.</span>
+          <span className="block text-xs text-white/80 mt-1">More than the trend.</span>
         ) : null}
       </span>
     </Link>
@@ -67,7 +67,7 @@ function AuthBrandPanel() {
               game in <span className="text-[#55ddb1]">context.</span>
             </span>
           </h2>
-          <p className="mt-4 text-sm xl:text-base text-white/75 leading-relaxed">
+          <p className="type-body mt-4 text-white/80">
             Research player props, parlays, players, and games. Stats tell what happened; context helps explain why it
             matters.
           </p>
@@ -80,8 +80,8 @@ function AuthBrandPanel() {
                 <Icon className="h-4 w-4 text-[#55ddb1]" strokeWidth={2} />
               </span>
               <span>
-                <p className="text-sm font-semibold text-white leading-tight">{title}</p>
-                <p className="text-xs text-white/65 mt-0.5">{detail}</p>
+                <p className="type-card-data text-white leading-tight">{title}</p>
+                <p className="text-sm text-white/80 mt-0.5">{detail}</p>
               </span>
             </li>
           ))}
@@ -93,7 +93,7 @@ function AuthBrandPanel() {
         <p className="text-lg italic text-white/90 leading-snug">
           “Context turns numbers into stories.”
         </p>
-        <p className="mt-3 text-[11px] font-semibold tracking-[0.18em] uppercase text-white/55">
+        <p className="mt-3 text-xs font-medium text-white/75">
           — Court Context
         </p>
       </div>
@@ -118,7 +118,7 @@ export function AuthSplitLayout({
             <div className="lg:hidden">
               <BrandMark compact />
             </div>
-            <p className="text-sm text-[#4a6366] text-right">{topRight}</p>
+            <p className="type-secondary text-right">{topRight}</p>
           </div>
 
           <div className="relative z-10 flex flex-1 flex-col justify-center px-5 py-8 sm:px-10 lg:px-16">
@@ -141,8 +141,8 @@ export function AuthInsightCard() {
         </svg>
       </span>
       <div>
-        <p className="text-sm font-semibold text-[#063f46]">Same account, more insights</p>
-        <p className="text-xs text-[#4a6366] mt-0.5 leading-relaxed">
+        <p className="type-card-data text-[#063f46]">Same account, more insights</p>
+        <p className="type-secondary mt-0.5">
           Your data, saved players, and preferences sync across all your devices.
         </p>
       </div>

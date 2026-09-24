@@ -52,7 +52,7 @@ function ChangeColumn({
                 {p.name}
               </p>
               {p.position ? (
-                <p className="text-[10px] uppercase tracking-wide text-[#8aa0a3]">
+                <p className="type-metadata">
                   {p.position}
                 </p>
               ) : null}

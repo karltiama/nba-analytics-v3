@@ -52,7 +52,7 @@ export function LandingParlayXrayPreview({
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         <header className="lg:col-span-3 space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8aa0a3]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cc-secondary">
             Parlay XRay
           </p>
           <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-[#063f46] leading-[0.95]">

@@ -43,10 +43,10 @@ export function GettingStartedChecklist() {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 id="getting-started-heading" className="text-sm font-semibold text-[#063f46]">
+          <h2 id="getting-started-heading" className="type-section-heading text-[#063f46]">
             Getting started
           </h2>
-          <p className="text-xs text-[#4a6366] mt-1">
+          <p className="type-metadata mt-1">
             Optional. {completedCount} of {items.length} done.
           </p>
         </div>
@@ -69,10 +69,10 @@ export function GettingStartedChecklist() {
             <li key={item.id}>
               <Link
                 href={item.href}
-                className="flex items-center gap-2 min-h-[44px] rounded-xl px-2 text-sm text-[#063f46] hover:bg-[#f7f9f7]"
+                className="type-interactive flex items-center gap-2 min-h-[44px] rounded-xl px-2 text-[#063f46] hover:bg-[#f7f9f7]"
               >
                 <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full border text-[10px] ${
+                  className={`flex h-5 w-5 items-center justify-center rounded-full border text-xs ${
                     checked
                       ? 'border-[#075B5C] bg-[#55ddb1] text-[#063f46]'
                       : 'border-[#DCE9EA] text-transparent'

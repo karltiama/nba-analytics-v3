@@ -74,7 +74,7 @@ export function TeamTrendLinePanel({
           placeholder="110.5"
           className={cn(
             'w-28 px-3 py-1.5 rounded-lg text-sm font-mono',
-            'bg-white border border-[#DCE9EA] text-[#063f46] placeholder:text-[#8aa0a3]',
+            'bg-white border border-[#DCE9EA] text-[#063f46] placeholder:text-[#4a6366]',
             'focus:outline-none focus:ring-2 focus:ring-[#55ddb1]/60 focus:border-[#075B5C]'
           )}
         />

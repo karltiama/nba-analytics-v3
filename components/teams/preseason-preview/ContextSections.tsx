@@ -22,8 +22,8 @@ export function WowyContextSection({
         <ul className="space-y-4">
           {items.map((item) => (
             <li key={item.title} className="border-b border-[#DCE9EA] last:border-0 pb-4 last:pb-0">
-              <p className="text-sm font-semibold text-[#063f46]">{item.title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-[#4a6366]">
+              <p className="type-card-data text-[#063f46]">{item.title}</p>
+              <p className="type-body text-cc-secondary mt-1">
                 {item.detail}
               </p>
             </li>
@@ -35,7 +35,7 @@ export function WowyContextSection({
         </p>
       )}
 
-      <p className="mt-4 text-[11px] leading-relaxed text-[#8aa0a3]">
+      <p className="type-secondary mt-4">
         Historical with/without results describe what occurred in previous games
         and do not guarantee the same effect in a new lineup.
       </p>
@@ -92,7 +92,7 @@ export function ScheduleSection({
                   <span className="text-sm font-medium text-[#063f46] flex-1">
                     {matchup}
                   </span>
-                  <span className="text-xs text-[#8aa0a3] tabular-nums">
+                  <span className="type-metadata tabular-nums">
                     {g.timeLabel ?? 'TBD'}
                   </span>
                 </>
@@ -142,10 +142,10 @@ export function OutlookSection({
   const body = (
     <>
       <PreviewSectionHeading title="Court Context Outlook" icon={Lightbulb} />
-      <p className="text-sm sm:text-base leading-relaxed text-[#4a6366]">
+      <p className="type-body text-cc-secondary">
         {outlook}
       </p>
-      <p className="mt-3 text-[11px] text-[#8aa0a3]">
+      <p className="type-metadata mt-3">
         Editorial analysis — not a numerical prediction or model output.
       </p>
     </>

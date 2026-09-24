@@ -77,7 +77,7 @@ export function WowyImpactSection({
       <div className="space-y-6">
         <header className="flex flex-col lg:flex-row lg:items-end gap-6">
           <div className="flex-1 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8aa0a3]">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cc-secondary">
               Game-level WOWY
             </p>
             <h3 className="text-4xl sm:text-5xl font-black tracking-tight">

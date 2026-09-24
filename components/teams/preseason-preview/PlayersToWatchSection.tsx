@@ -38,7 +38,7 @@ export function PlayersToWatchSection({
                 />
                 <div className="min-w-0">
                   {p.jerseyNumber ? (
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8aa0a3]">
+                    <p className="type-metadata">
                       #{p.jerseyNumber}
                     </p>
                   ) : null}
@@ -51,10 +51,10 @@ export function PlayersToWatchSection({
                 </div>
               </div>
 
-              <p className="mt-3 text-[10px] font-semibold uppercase tracking-wide text-[#075B5C]">
+              <p className="type-badge mt-3 text-[#075B5C]">
                 What we&apos;re watching
               </p>
-              <p className="mt-1 text-sm leading-relaxed text-[#4a6366] flex-1">
+              <p className="type-body text-cc-secondary mt-1 flex-1">
                 {p.watching}
               </p>
 
