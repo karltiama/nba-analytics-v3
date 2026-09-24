@@ -115,7 +115,7 @@ export function PlayerTrendChart({
         <h3 className="text-sm font-semibold uppercase tracking-wider text-[#4a6366]">
           Trend Chart
         </h3>
-        <div className="flex items-center gap-3 text-[10px] text-[#4a6366]">
+        <div className="type-metadata flex items-center gap-3">
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-0.5 bg-[#075B5C] rounded-full inline-block" />
             Season Avg
@@ -320,7 +320,7 @@ export function PlayerTrendChart({
                   <span className="font-bold text-[#075B5C] text-lg">{data[displayIndex]}</span>
                   <span className="text-[#4a6366]">{metricLabel}</span>
                   <span className="text-[#4a6366]">vs {labels[displayIndex] ?? '—'}</span>
-                  <span className="text-xs text-[#8aa0a3]">(Game {displayIndex + 1}/{data.length})</span>
+                  <span className="type-metadata">(Game {displayIndex + 1}/{data.length})</span>
                 </div>
               )}
             </div>
@@ -338,7 +338,7 @@ export function PlayerTrendChart({
                     <button
                       type="button"
                       onClick={() => setPinnedIndex(null)}
-                      className="absolute top-1.5 right-1.5 text-[10px] text-[#8aa0a3] hover:text-[#063f46] transition-colors"
+                      className="type-interactive absolute top-1.5 right-1.5 text-[#075B5C] hover:text-[#063f46] transition-colors"
                     >
                       Unpin
                     </button>
@@ -347,13 +347,13 @@ export function PlayerTrendChart({
                   <div className="text-sm text-[#4a6366] w-full">
                     Opponent: {labels[displayIndex] ?? '—'}
                   </div>
-                  <div className="text-xs text-[#8aa0a3]">
+                  <div className="type-metadata">
                     Game {displayIndex + 1} of {data.length}
                   </div>
                 </div>
               ) : (
                 <div className="p-2 rounded-lg bg-[#F8FBFA] border border-[#DCE9EA] h-full flex items-center justify-center">
-                  <span className="text-base text-[#8aa0a3]">
+                  <span className="type-secondary">
                     Hover to see {metricLabel} value, opponent and game number
                   </span>
                 </div>

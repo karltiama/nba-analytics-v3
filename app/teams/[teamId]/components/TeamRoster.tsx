@@ -33,12 +33,12 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
 
   const inner = (
     <>
-      <span className="w-8 text-center text-xs font-mono text-[#8aa0a3] shrink-0">
+      <span className="type-metadata w-8 text-center font-mono shrink-0">
         {jerseyLabel}
       </span>
       <span className="flex-1 min-w-0">
         <span
-          className={`block text-sm truncate ${
+          className={`type-table-data block truncate ${
             href
               ? 'text-[#063f46] group-hover:text-[#075B5C] transition-colors'
               : 'text-[#063f46]'
@@ -49,7 +49,7 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
         {availability ? (
           <span
             className={cn(
-              'block text-[10px] font-medium truncate',
+              'type-badge block truncate',
               availabilityClass(availability.priority)
             )}
             title={availability.label}
@@ -57,12 +57,12 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
             {availability.label}
           </span>
         ) : showStatsPending ? (
-          <span className="block text-[10px] text-[#8aa0a3]">
+          <span className="type-metadata block truncate">
             Stats pending
           </span>
         ) : null}
       </span>
-      <span className="text-[10px] text-[#8aa0a3] font-medium shrink-0">
+      <span className="type-secondary shrink-0">
         {player.position || ''}
       </span>
     </>
@@ -92,7 +92,7 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
   if (!roster || roster.length === 0) {
     return (
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 text-center">
-        <p className="text-xs text-[#4a6366]">Roster not available yet</p>
+        <p className="type-secondary">Roster not available yet</p>
       </div>
     );
   }
@@ -130,10 +130,10 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
   return (
     <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]">
       <div className="px-4 py-2.5 border-b border-[#DCE9EA] flex items-center justify-between bg-[#F8FBFA] shrink-0">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#4a6366]">
+        <h3 className="type-section-heading text-[#063f46]">
           Roster
         </h3>
-        <span className="text-[10px] px-2 py-0.5 bg-[#55ddb1]/30 text-[#063f46] rounded-full font-medium">
+        <span className="type-badge px-2 py-0.5 bg-[#55ddb1]/30 text-[#063f46] rounded-full">
           {playersWithAvailability.length}
         </span>
       </div>
@@ -141,7 +141,7 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
         {positionGroups.map((group) => (
           <div key={group.name}>
             <div className="px-4 py-1.5 bg-[#F8FBFA] border-b border-[#DCE9EA]">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#8aa0a3]">
+              <span className="type-metadata">
                 {group.name}
               </span>
             </div>

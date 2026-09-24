@@ -70,12 +70,12 @@ function InsightCard({ insight }: { insight: Insight }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className={`w-1.5 h-1.5 rounded-full ${getImportanceDot(insight.importance)}`} />
-            <h4 className="text-sm font-medium text-[#063f46] truncate">{insight.title}</h4>
+            <h4 className="type-card-data min-w-0 truncate text-[#063f46]">{insight.title}</h4>
           </div>
-          <p className="text-xs text-[#4a6366] leading-relaxed">
+          <p className="type-body text-cc-secondary">
             {insight.description}
           </p>
-          <div className="mt-2 text-[10px] text-[#8aa0a3]">
+          <div className="type-metadata mt-2">
             {insight.timestamp}
           </div>
         </div>
@@ -102,19 +102,19 @@ export function AIInsightPanel({
             <Zap className="w-4 h-4 text-[#075B5C]" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[#063f46]">AI Insights</h3>
-            <p className="text-[10px] text-[#4a6366]">Slate + analytics signals</p>
+            <h3 className="type-section-heading text-[#063f46]">AI Insights</h3>
+            <p className="type-metadata">Slate + analytics signals</p>
           </div>
         </div>
         {slateSummaryLoading ? null : slateEntitlementRequired ? (
-          <span className="text-[10px] text-[#075B5C] font-medium">Founding Pro</span>
+          <span className="type-badge text-[#075B5C]">Founding Pro</span>
         ) : briefingEligible && slateSummary ? (
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-[#20B95A] pulse-dot" />
-            <span className="text-[10px] text-[#20B95A] font-medium">LIVE</span>
+            <span className="type-badge text-[#20B95A]">LIVE</span>
           </div>
         ) : (
-          <span className="text-[10px] text-[#8aa0a3] font-medium">Unavailable</span>
+          <span className="type-badge text-cc-secondary">Unavailable</span>
         )}
       </div>
 
@@ -123,21 +123,21 @@ export function AIInsightPanel({
         <div className="p-3 pb-3 border-b border-[#DCE9EA] flex-1">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-3.5 h-3.5 text-[#075B5C]" />
-            <span className="text-[11px] font-medium text-[#063f46]">Slate summary</span>
+            <span className="type-secondary">Slate summary</span>
           </div>
           {slateSummaryLoading ? (
-            <div className="flex items-center gap-2 py-3 text-xs text-[#4a6366]">
+            <div className="type-secondary flex items-center gap-2 py-3">
               <Loader2 className="w-4 h-4 animate-spin text-[#075B5C] shrink-0" />
               Loading briefing…
             </div>
           ) : slateSummary ? (
-            <p className="text-xs text-[#4a6366] leading-relaxed whitespace-pre-wrap">
+            <p className="type-body whitespace-pre-wrap text-[#063f46]">
               {slateSummary}
             </p>
           ) : slateEntitlementRequired ? (
             <div className="space-y-2 py-1">
-              <p className="text-xs font-medium text-[#063f46]">AI research briefing — Founding Pro</p>
-              <p className="text-xs text-[#4a6366]">
+              <p className="type-section-heading text-[#063f46]">AI research briefing — Founding Pro</p>
+              <p className="type-body text-cc-secondary">
                 Founding Pro adds a synthesized slate briefing from the research context you already see.
               </p>
               <FoundingProUpgradeLink
@@ -146,7 +146,7 @@ export function AIInsightPanel({
               />
             </div>
           ) : (
-            <p className="text-xs text-[#8aa0a3] py-1">
+            <p className="type-body py-1 text-cc-secondary">
               {slateSummaryHint || 'Briefing unavailable during offseason'}
             </p>
           )}
@@ -156,7 +156,7 @@ export function AIInsightPanel({
 
       {/* Footer */}
       <div className="px-4 py-2.5 border-t border-[#DCE9EA] bg-[#F8FBFA] shrink-0">
-        <p className="text-[10px] text-[#4a6366] text-center">
+        <p className="type-metadata text-center">
           Slate text via OpenAI (cached) • Does not produce numerical projections •{' '}
           <span className="text-[#075B5C]">Not betting advice</span>
         </p>

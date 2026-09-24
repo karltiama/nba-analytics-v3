@@ -35,10 +35,10 @@ function TeamDirectoryItem({
       className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#f7f9f7] transition-colors group min-h-9"
     >
       <TeamLogo team={team.abbreviation} size="xs" decorative />
-      <span className="min-w-0 flex-1 text-sm font-medium text-[#063f46] group-hover:text-[#075B5C] transition-colors truncate">
+      <span className="type-table-data min-w-0 flex-1 text-[#063f46] group-hover:text-[#075B5C] transition-colors truncate">
         {team.full_name}
       </span>
-      <span className="text-[11px] font-semibold tabular-nums text-[#8aa0a3] shrink-0">
+      <span className="type-metadata tabular-nums shrink-0">
         {team.abbreviation}
       </span>
     </Link>
@@ -62,8 +62,8 @@ export default async function TeamsPage({
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         <header className="space-y-2">
-          <p className="text-xs text-[#4a6366]">
-            <Link href="/betting" className="text-[#075B5C] hover:underline">
+          <p className="type-metadata">
+            <Link href="/betting" className="type-interactive text-[#075B5C] hover:underline">
               Dashboard
             </Link>
             <span className="mx-1.5 text-[#DCE9EA]">/</span>
@@ -72,7 +72,7 @@ export default async function TeamsPage({
           <h1 className="text-3xl sm:text-4xl font-bold text-[#063f46] tracking-tight">
             NBA Teams
           </h1>
-          <p className="text-sm text-[#4a6366] max-w-2xl">
+          <p className="type-body text-cc-secondary max-w-2xl">
             Choose a team to explore roster, schedule, continuity, and season context.
           </p>
           {integrity.warning && (
@@ -109,7 +109,7 @@ export default async function TeamsPage({
                     key={div.division}
                     className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
                   >
-                    <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[#4a6366] px-3 py-2 bg-[#F8FBFA] border-b border-[#DCE9EA]">
+                    <h3 className="type-metadata px-3 py-2 bg-[#F8FBFA] border-b border-[#DCE9EA]">
                       {div.division}
                     </h3>
                     <ul className="p-1">
@@ -150,7 +150,7 @@ export default async function TeamsPage({
             >
               Team Defensive Rankings
             </h2>
-            <p className="text-xs text-[#4a6366] mt-1">
+            <p className="type-secondary mt-1">
               Rankings are based on points allowed per game. Lower rank = better
               defense.
               {seasonParam && (
@@ -163,7 +163,7 @@ export default async function TeamsPage({
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-[#DCE9EA] hover:bg-transparent">
+                  <TableRow className="type-metadata border-[#DCE9EA] hover:bg-transparent">
                     <TableHead className="text-[#4a6366]">Rank</TableHead>
                     <TableHead className="text-[#4a6366]">Team</TableHead>
                     <TableHead className="text-[#4a6366]">Conference</TableHead>
@@ -176,7 +176,7 @@ export default async function TeamsPage({
                     <TableHead className="text-right text-[#4a6366]">Games</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="type-table-data">
                   {rankings.map((team: {
                     team_id: string;
                     points_allowed_rank: number;
@@ -206,12 +206,12 @@ export default async function TeamsPage({
                             season,
                             defaultSeason,
                           })}
-                          className="flex items-center gap-2 font-medium text-[#063f46] hover:text-[#075B5C] hover:underline"
+                          className="type-interactive flex items-center gap-2 text-[#063f46] hover:text-[#075B5C] hover:underline"
                         >
                           <TeamLogo team={team.abbreviation} size="xs" decorative />
                           <span>
                             <span className="block">{team.abbreviation}</span>
-                            <span className="block text-xs font-normal text-[#4a6366] no-underline">
+                            <span className="type-metadata block no-underline">
                               {team.full_name}
                             </span>
                           </span>
@@ -227,7 +227,7 @@ export default async function TeamsPage({
                         {team.points_allowed_per_game != null
                           ? Number(team.points_allowed_per_game).toFixed(1)
                           : '—'}
-                        <div className="text-xs text-[#4a6366]">
+                        <div className="type-metadata">
                           Rank: #{team.points_allowed_rank}
                         </div>
                       </TableCell>
@@ -235,7 +235,7 @@ export default async function TeamsPage({
                         {team.rebounds_allowed_per_game != null
                           ? Number(team.rebounds_allowed_per_game).toFixed(1)
                           : '—'}
-                        <div className="text-xs text-[#4a6366]">
+                        <div className="type-metadata">
                           Rank: #{team.rebounds_allowed_rank}
                         </div>
                       </TableCell>
@@ -243,7 +243,7 @@ export default async function TeamsPage({
                         {team.assists_allowed_per_game != null
                           ? Number(team.assists_allowed_per_game).toFixed(1)
                           : '—'}
-                        <div className="text-xs text-[#4a6366]">
+                        <div className="type-metadata">
                           Rank: #{team.assists_allowed_rank}
                         </div>
                       </TableCell>
@@ -251,7 +251,7 @@ export default async function TeamsPage({
                         {team.fg_pct_allowed != null
                           ? Number(team.fg_pct_allowed).toFixed(1) + '%'
                           : '—'}
-                        <div className="text-xs text-[#4a6366]">
+                        <div className="type-metadata">
                           Rank: #{team.fg_pct_allowed_rank}
                         </div>
                       </TableCell>
@@ -259,7 +259,7 @@ export default async function TeamsPage({
                         {team.three_pct_allowed != null
                           ? Number(team.three_pct_allowed).toFixed(1) + '%'
                           : '—'}
-                        <div className="text-xs text-[#4a6366]">
+                        <div className="type-metadata">
                           Rank: #{team.three_pct_allowed_rank}
                         </div>
                       </TableCell>

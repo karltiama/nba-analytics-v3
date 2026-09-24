@@ -97,28 +97,28 @@ export function WowyResults({
         }`}
         role="status"
       >
-        {low ? <p className="font-semibold text-[#063f46]">Low support</p> : null}
-        {blocked ? <p className="font-semibold text-[#063f46]">Insufficient sample</p> : null}
-        <p>
+        {low ? <p className="type-badge text-[#063f46]">Low support</p> : null}
+        {blocked ? <p className="type-badge text-[#063f46]">Insufficient sample</p> : null}
+        <p className="type-body">
           <span className="font-semibold text-[#063f46]">Sample size · </span>
           {self ? `When ${splitName} appeared` : `When ${splitName} played`}: {summary.with.gameCount} games · When{' '}
           {splitName} had a verified DNP: {summary.without.gameCount} games
         </p>
-        <p className="text-[#8aa0a3] mt-1">
+        <p className="type-metadata mt-1">
           Appeared {coverageRange(summary.with)} · Verified DNP {coverageRange(summary.without)}
         </p>
-        <p className="mt-1">{summary.support.label}</p>
+        <p className="type-secondary mt-1">{summary.support.label}</p>
       </div>
 
       {blocked ? (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 space-y-2" role="status">
-          <h2 className="text-sm font-semibold text-[#063f46]">Not a comparable WITH / WITHOUT split</h2>
-          <p className="text-sm text-[#4a6366]">
+          <h2 className="type-section-heading text-[#063f46]">Not a comparable WITH / WITHOUT split</h2>
+          <p className="type-body text-cc-secondary">
             Need at least 2 appeared games and 2 verified-DNP games before showing numeric comparison cards. Raw
             eligible games remain in the drill-down below. Games without a verified teammate participation row are
             excluded rather than counted as WITHOUT.
           </p>
-          <p className="text-sm tabular-nums text-[#063f46]">
+          <p className="type-card-data text-[#063f46]">
             {summary.with.gameCount} appeared · {summary.without.gameCount} verified DNP
             {summary.unknownMembershipCount > 0
               ? ` · ${summary.unknownMembershipCount} excluded unknown membership`
@@ -140,13 +140,13 @@ export function WowyResults({
                   : 'text-[#063f46]';
             return (
               <div key={stat.key} className="bg-white border border-[#DCE9EA] rounded-2xl p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8aa0a3]">{stat.label} / game</p>
+                <p className="type-metadata">{stat.label} / game</p>
                 <p className={`mt-1 text-2xl font-bold tabular-nums ${color}`}>{signed(diff)}</p>
-                <p className="mt-1 text-[11px] text-[#4a6366] tabular-nums">
+                <p className="type-table-data mt-1 whitespace-nowrap">
                   {fmt(withVal)} appeared · {fmt(withoutVal)} verified DNP
                 </p>
                 {stat.key === 'oppPts' && polarity !== 'neutral' ? (
-                  <p className="mt-1 text-[11px] text-[#4a6366]">
+                  <p className="type-secondary mt-1">
                     {polarity === 'unfavorable' ? 'Unfavorable (higher opponent scoring)' : 'Favorable (lower opponent scoring)'}
                   </p>
                 ) : null}
@@ -184,7 +184,7 @@ export function WowyResults({
         ) : null}
         <aside className={`bg-white border border-[#DCE9EA] rounded-2xl p-4 sm:p-5 space-y-4 ${blocked ? 'xl:col-span-3' : 'xl:row-span-2'}`}>
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-[#063f46] flex items-center gap-2">
+            <h2 className="type-section-heading flex items-center gap-2 text-[#063f46]">
               <Sparkles className="w-4 h-4 text-[#075B5C]" aria-hidden />
               Insights
             </h2>
@@ -201,8 +201,8 @@ export function WowyResults({
                       : 'bg-[#f7f9f7]'
                 }`}
               >
-                <p className="text-xs font-semibold text-[#063f46]">{insight.title}</p>
-                <p className="mt-1 text-xs text-[#4a6366] leading-relaxed">{insight.body}</p>
+                <p className="type-secondary text-[#063f46]">{insight.title}</p>
+                <p className="type-body mt-1 text-cc-secondary">{insight.body}</p>
               </li>
             ))}
           </ul>
@@ -211,11 +211,11 @@ export function WowyResults({
         {!blocked && (
           <div className="xl:col-span-2 bg-white border border-[#DCE9EA] rounded-2xl p-4 sm:p-5 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <h2 className="text-sm font-semibold text-[#063f46] flex items-center gap-2 mr-auto">
+              <h2 className="type-section-heading mr-auto flex items-center gap-2 text-[#063f46]">
                 <BarChart3 className="w-4 h-4 text-[#075B5C]" aria-hidden />
                 Key metric comparison
               </h2>
-              <div className="flex items-center gap-3 text-[11px] text-[#4a6366]">
+              <div className="type-metadata flex items-center gap-3">
                 <span className="inline-flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#075B5C]" /> {self ? 'Appeared' : 'Played'}
                 </span>
@@ -224,25 +224,25 @@ export function WowyResults({
                 </span>
               </div>
               {!self ? (
-                <div className="flex rounded-lg border border-[#DCE9EA] overflow-hidden text-xs font-semibold">
+                <div className="flex overflow-hidden rounded-lg border border-[#DCE9EA]">
                   <button
                     type="button"
                     onClick={() => onView('perGame')}
-                    className={`px-3 py-1.5 ${view === 'perGame' ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'}`}
+                    className={`type-interactive px-3 py-1.5 ${view === 'perGame' ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'}`}
                   >
                     Per game
                   </button>
                   <button
                     type="button"
                     onClick={() => onView('perMinute')}
-                    className={`px-3 py-1.5 ${view === 'perMinute' ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'}`}
+                    className={`type-interactive px-3 py-1.5 ${view === 'perMinute' ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'}`}
                   >
                     Per minute
                   </button>
                 </div>
               ) : null}
             </div>
-            <p className="text-xs text-[#8aa0a3]">
+            <p className="type-secondary">
               {self
                 ? 'Team counting stats in games this player appeared versus verified DNP. Not per 100 possessions, and not a causal effect.'
                 : 'Descriptive appeared − verified DNP only. Not a causal effect, and not per 100 possessions.'}
@@ -253,10 +253,10 @@ export function WowyResults({
       </div>
 
       <div className="bg-[#f7f9f7] border border-dashed border-[#DCE9EA] rounded-2xl p-4 sm:p-5 flex items-start gap-3">
-        <ShieldAlert className="w-5 h-5 text-[#8aa0a3] shrink-0 mt-0.5" aria-hidden />
+        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-cc-secondary" aria-hidden />
         <div>
-          <h2 className="text-sm font-semibold text-[#063f46]">Top 5 lineup combinations</h2>
-          <p className="mt-1 text-sm text-[#4a6366]">
+          <h2 className="type-section-heading text-[#063f46]">Top 5 lineup combinations</h2>
+          <p className="type-body mt-1 text-cc-secondary">
             Coming later. This page is game-level played/missed, not five-man stints or shared-court possessions, so
             lineup combinations are not computed here.
           </p>
@@ -265,11 +265,11 @@ export function WowyResults({
 
       <div className="bg-white border border-[#DCE9EA] rounded-2xl overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 px-4 sm:px-6 py-3 border-b border-[#DCE9EA]">
-          <h2 className="text-sm font-semibold text-[#063f46] mr-auto">Game-log drill-down</h2>
+          <h2 className="type-section-heading mr-auto text-[#063f46]">Game-log drill-down</h2>
           <button
             type="button"
             onClick={() => onDrill('with')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+            className={`type-interactive rounded-lg px-3 py-1.5 ${
               drill === 'with' ? 'bg-[#063f46] text-white' : 'bg-[#f7f9f7] text-[#4a6366]'
             }`}
           >
@@ -278,7 +278,7 @@ export function WowyResults({
           <button
             type="button"
             onClick={() => onDrill('without')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+            className={`type-interactive rounded-lg px-3 py-1.5 ${
               drill === 'without' ? 'bg-[#063f46] text-white' : 'bg-[#f7f9f7] text-[#4a6366]'
             }`}
           >
@@ -286,8 +286,8 @@ export function WowyResults({
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-xs text-[#4a6366] bg-[#f7f9f7]">
+          <table className="w-full">
+            <thead className="type-metadata bg-[#f7f9f7]">
               <tr>
                 <th className="text-left font-medium px-4 py-2">Date</th>
                 <th className="text-left font-medium px-4 py-2">Opp</th>
@@ -313,7 +313,7 @@ export function WowyResults({
                 <th className="text-left font-medium px-4 py-2">Game ID</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="type-table-data text-[#063f46]">
               {drillGames.map((g) => (
                 <tr key={g.gameId} className="border-t border-[#DCE9EA]">
                   <td className="px-4 py-2 tabular-nums">{g.basketballDateEt}</td>
@@ -339,11 +339,11 @@ export function WowyResults({
                   )}
                   <td className="px-4 py-2">
                     {linkGames ? (
-                      <Link href={gameDetailHref(g.gameId)} className="text-[#075B5C] hover:underline font-mono text-xs">
+                      <Link href={gameDetailHref(g.gameId)} className="type-interactive font-mono text-[#075B5C] hover:underline">
                         {g.gameId}
                       </Link>
                     ) : (
-                      <span className="font-mono text-xs text-[#8aa0a3]">{g.gameId}</span>
+                      <span className="type-metadata font-mono">{g.gameId}</span>
                     )}
                   </td>
                 </tr>
@@ -393,15 +393,15 @@ function SplitTable({
           className="relative w-12 h-14 rounded-xl overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
         />
         <div>
-          <h2 className={`text-base font-semibold ${accent === 'with' ? 'text-[#075B5C]' : 'text-[#c45c4a]'}`}>
+          <h2 className={`type-section-heading ${accent === 'with' ? 'text-[#075B5C]' : 'text-[#c45c4a]'}`}>
             {title}
           </h2>
-          <p className="text-xs text-[#4a6366]">{blurb}</p>
-          {note ? <p className="text-[11px] text-[#8aa0a3] mt-1">{note}</p> : null}
+          <p className="type-secondary">{blurb}</p>
+          {note ? <p className="type-metadata mt-1">{note}</p> : null}
         </div>
       </div>
-      <p className="text-sm text-[#063f46]">
-        <span className="font-semibold tabular-nums">{group.gameCount}</span> games
+      <p className="type-secondary text-[#063f46]">
+        <span className="type-card-data whitespace-nowrap">{group.gameCount}</span> games
         {!self ? (
           <>
             {' '}
@@ -409,14 +409,14 @@ function SplitTable({
           </>
         ) : null}
       </p>
-      <table className="w-full text-sm">
+      <table className="w-full">
         <thead>
-          <tr className="text-[11px] uppercase tracking-wide text-[#8aa0a3]">
+          <tr className="type-metadata">
             <th className="text-left font-medium py-1">Stat</th>
             <th className="text-right font-medium py-1">{view === 'perGame' ? 'Value' : 'Per min'}</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="type-table-data">
           {rows.map((key) => (
             <tr key={key} className="border-t border-[#DCE9EA]">
               <td className="py-1.5 text-[#4a6366]">{STAT_LABEL[key]}</td>
@@ -454,7 +454,7 @@ function ComparisonChart({
     <div className="space-y-3">
       {rows.map((row) => (
         <div key={row.key} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 items-center">
-          <p className="text-xs font-semibold text-[#4a6366]">{row.label}</p>
+          <p className="type-metadata">{row.label}</p>
           <div className="space-y-1">
             <Bar color="#075B5C" value={row.withVal} max={max} />
             <Bar color="#e08a7a" value={row.withoutVal} max={max} />
@@ -481,7 +481,7 @@ function Bar({ color, value, max }: { color: string; value: number | null; max: 
       <div className="h-2.5 flex-1 rounded-full bg-[#eef3f3] overflow-hidden">
         <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: color }} />
       </div>
-      <span className="w-10 text-right text-[11px] tabular-nums text-[#063f46]">
+      <span className="type-table-data w-12 whitespace-nowrap text-right text-[#063f46]">
         {fmt(value, value != null && value < 2 ? 2 : 1)}
       </span>
     </div>

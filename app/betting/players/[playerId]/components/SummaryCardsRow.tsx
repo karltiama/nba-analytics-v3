@@ -44,7 +44,7 @@ export function SummaryCardsRow({ summary, metricLabel, timeframe = 'season' }: 
   if (!hasSummarySample(summary)) {
     return (
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4">
-        <p className="text-sm text-[#4a6366]">Not enough data yet</p>
+        <p className="type-secondary">Not enough data yet</p>
       </div>
     );
   }
@@ -65,10 +65,10 @@ export function SummaryCardsRow({ summary, metricLabel, timeframe = 'season' }: 
             className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4"
           >
             <div className="flex items-center justify-between">
-              <div className="text-[10px] text-[#4a6366] uppercase tracking-widest">
+              <div className="type-metadata">
                 {label}
               </div>
-              <div className="text-[10px] text-[#8aa0a3]">{metricLabel}</div>
+              <div className="type-metadata">{metricLabel}</div>
             </div>
             <div className="flex items-baseline justify-between mt-1.5">
               <div className={cn('text-2xl font-bold font-mono', accent ?? 'text-[#063f46]')}>
@@ -77,7 +77,7 @@ export function SummaryCardsRow({ summary, metricLabel, timeframe = 'season' }: 
               {diffLabel !== null && (
                 <div
                   className={cn(
-                    'text-xs font-medium font-mono',
+                    'type-table-data font-mono',
                     val != null && summary.avg != null && val - summary.avg > 0
                       ? 'text-[#20B95A]'
                       : val != null && summary.avg != null && val - summary.avg < 0

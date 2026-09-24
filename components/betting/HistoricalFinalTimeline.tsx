@@ -47,7 +47,7 @@ function EventRow({
     <li className="min-w-0 py-2 border-t border-[#DCE9EA] first:border-t-0">
       <div className="flex gap-2 sm:gap-3 min-w-0 items-start">
         <span
-          className="shrink-0 w-[3.25rem] sm:w-14 text-right font-mono tabular-nums text-xs text-[#4a6366] pt-0.5"
+          className="type-metadata w-[3.25rem] shrink-0 pt-0.5 text-right font-mono tabular-nums sm:w-14"
           aria-label={event.clock ? `Clock ${event.clock}` : undefined}
         >
           {formatTimelineClock(event.clock) || '—'}
@@ -60,19 +60,19 @@ function EventRow({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-[10px] uppercase tracking-wide text-[#4a6366]">{category}</span>
+            <span className="type-metadata">{category}</span>
             {team ? (
-              <span className="text-[10px] font-medium text-[#4a6366]">{team}</span>
+              <span className="type-secondary">{team}</span>
             ) : null}
             {score ? (
-              <span className="ml-auto font-mono tabular-nums text-[11px] text-[#4a6366]">
+              <span className="type-table-data ml-auto whitespace-nowrap font-mono tabular-nums text-[#063f46]">
                 {score}
               </span>
             ) : null}
           </div>
           <p
-            className={`text-sm break-words ${
-              periodBoundary ? 'font-semibold text-[#063f46]' : scoring ? 'text-[#063f46]' : 'text-[#063f46]'
+            className={`type-secondary break-words ${
+              periodBoundary ? 'font-semibold text-[#063f46]' : 'text-[#063f46]'
             }`}
           >
             {headline}
@@ -108,7 +108,7 @@ function EventList({
     <div className="min-w-0">
       {blocks.map((block) => (
         <section key={block.periodLabel} className="min-w-0">
-          <h3 className="sticky top-0 z-[1] bg-white/95 backdrop-blur-sm text-xs font-semibold text-[#063f46] px-1 py-1.5 border-b border-[#DCE9EA]">
+          <h3 className="type-section-heading sticky top-0 z-[1] border-b border-[#DCE9EA] bg-white/95 px-1 py-1.5 text-[#063f46] backdrop-blur-sm">
             {block.periodLabel}
           </h3>
           <ol className="min-w-0">
@@ -213,11 +213,11 @@ export function HistoricalFinalTimeline({
       aria-labelledby="timeline-heading"
     >
       <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-        <p className="text-[10px] uppercase tracking-wide text-[#4a6366]">Timeline</p>
-        <h2 id="timeline-heading" className="text-sm font-semibold text-[#063f46]">
+        <p className="type-metadata">Timeline</p>
+        <h2 id="timeline-heading" className="type-section-heading text-[#063f46]">
           Game chronology
         </h2>
-        <p className="text-xs text-[#4a6366] mt-1">
+        <p className="type-body mt-1 text-cc-secondary">
           Play-by-play order. Official final stays in the header
           {showWarning && officialAwayScore != null && officialHomeScore != null
             ? ` (${officialAwayScore}–${officialHomeScore})`
@@ -228,13 +228,13 @@ export function HistoricalFinalTimeline({
 
       <div className="p-3 space-y-3 min-w-0 min-h-[6rem]">
         {status === 'idle' || status === 'loading' ? (
-          <p className="text-xs text-[#4a6366]" role="status">
+          <p className="type-secondary" role="status">
             Loading play-by-play…
           </p>
         ) : null}
 
         {status === 'error' || timelineOff ? (
-          <p className="text-xs text-[#4a6366]" role="status">
+          <p className="type-secondary" role="status">
             {TIMELINE_UNAVAILABLE_COPY}
           </p>
         ) : null}
@@ -243,7 +243,7 @@ export function HistoricalFinalTimeline({
           <>
             {showWarning ? (
               <p
-                className="text-xs text-amber-200/90 border border-amber-200/20 rounded-lg px-3 py-2 bg-amber-200/5"
+                className="type-body rounded-lg border border-amber-200/20 bg-amber-200/5 px-3 py-2 text-amber-800"
                 role="note"
               >
                 {TIMELINE_SCORE_MISMATCH_COPY}
@@ -257,10 +257,10 @@ export function HistoricalFinalTimeline({
                     key={item.label}
                     className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2 min-w-0"
                   >
-                    <dt className="text-[10px] uppercase tracking-wide text-[#4a6366]">
+                    <dt className="type-metadata">
                       {item.label}
                     </dt>
-                    <dd className="text-sm font-mono tabular-nums text-[#063f46] break-words">{item.value}</dd>
+                    <dd className="type-card-data break-words font-mono tabular-nums text-[#063f46]">{item.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -281,13 +281,13 @@ export function HistoricalFinalTimeline({
               >
                 <TabsTrigger
                   value={HISTORICAL_TIMELINE_VIEW_KEY}
-                  className="px-3 text-xs flex-1 sm:flex-none text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+                  className="type-interactive flex-1 px-3 text-cc-secondary data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! sm:flex-none"
                 >
                   Key Events
                 </TabsTrigger>
                 <TabsTrigger
                   value={HISTORICAL_TIMELINE_VIEW_FULL}
-                  className="px-3 text-xs flex-1 sm:flex-none text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+                  className="type-interactive flex-1 px-3 text-cc-secondary data-[state=active]:bg-[#063f46]! data-[state=active]:text-white! sm:flex-none"
                 >
                   Full Play-by-Play
                 </TabsTrigger>

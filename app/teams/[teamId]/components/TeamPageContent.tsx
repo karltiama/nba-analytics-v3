@@ -30,8 +30,8 @@ import type { TeamPageSeasonChoice } from '@/lib/teams/team-page-season';
 function StatPill({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] text-[#4a6366] uppercase">{label}</span>
-      <span className="text-sm font-bold font-mono" style={color ? { color } : { color: '#063f46' }}>{value}</span>
+      <span className="type-metadata uppercase">{label}</span>
+      <span className="type-card-data font-mono" style={color ? { color } : { color: '#063f46' }}>{value}</span>
     </div>
   );
 }
@@ -59,7 +59,7 @@ interface TeamPageClientProps {
   roster: ReactNode;
 }
 
-const buttonBase = 'rounded-lg text-xs font-medium transition-all';
+const buttonBase = 'type-interactive rounded-lg transition-all';
 const buttonActive = 'bg-[#063f46] text-white font-semibold';
 const buttonInactive = 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]';
 
@@ -171,14 +171,14 @@ export function TeamPageClient({
                     choices={seasonChoices}
                   />
                 </div>
-                <p className="text-[10px] text-[#4a6366]">
+                <p className="type-secondary">
                   {team.conference} • {team.division}
                   <span className="mx-1.5 text-[#DCE9EA]">·</span>
                   {seasonLabel}
                 </p>
                 <Link
                   href={`/teams/${routeTeamId}/preview`}
-                  className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#075B5C] hover:text-[#063f46] transition-colors"
+                  className="type-interactive mt-1.5 inline-flex items-center gap-1 text-[#075B5C] hover:text-[#063f46] transition-colors"
                 >
                   Preseason Preview
                   <span aria-hidden>→</span>
@@ -199,7 +199,7 @@ export function TeamPageClient({
                   {ppg && <StatPill label="PPG" value={ppg} />}
                   {streakCount > 0 && streakType && (
                     <span
-                      className={`text-xs font-semibold px-2 py-1 rounded ${
+                      className={`type-badge px-2 py-1 rounded ${
                         streakType === 'W'
                           ? 'bg-[#55ddb1]/25 text-[#075B5C]'
                           : 'bg-red-50 text-red-600'
@@ -215,7 +215,7 @@ export function TeamPageClient({
             ) : (
               <>
                 <div className="h-8 w-px bg-[#DCE9EA] hidden md:block" />
-                <p className="text-xs text-[#4a6366]">
+                <p className="type-secondary">
                   No season data yet
                 </p>
               </>
@@ -251,12 +251,12 @@ export function TeamPageClient({
             <section>
               <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
                 <div>
-                  <h2 className="text-lg font-semibold text-[#063f46]">Team Trends</h2>
-                  <p className="text-xs text-[#4a6366]">
+                  <h2 className="type-section-heading text-[#063f46]">Team Trends</h2>
+                  <p className="type-secondary">
                     Performance breakdown across {timeframeLabel}
                   </p>
                 </div>
-                <span className="text-[10px] px-2 py-1 bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46] rounded-full font-medium">
+                <span className="type-badge px-2 py-1 bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46] rounded-full">
                   {METRIC_BUTTONS.find((m) => m.value === trendMetric)?.label ?? metricLabel}
                 </span>
               </div>
@@ -361,15 +361,15 @@ export function TeamPageClient({
         {hasFourFactors && seasonAverages && (
           <section className="slide-up" style={{ animationDelay: '100ms' }}>
             <div className="mb-3">
-              <h2 className="text-sm font-semibold text-[#063f46]">Four Factors</h2>
-              <p className="text-[10px] text-[#4a6366]">
+              <h2 className="type-section-heading text-[#063f46]">Four Factors</h2>
+              <p className="type-secondary">
                 {seasonLabel} · shooting, turnovers, offensive boards
               </p>
             </div>
             <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">eFG%</div>
+                  <div className="type-metadata">eFG%</div>
                   <div className="text-base font-bold font-mono text-[#063f46]">
                     {seasonAverages.avg_efg_pct != null
                       ? (seasonAverages.avg_efg_pct * 100).toFixed(1) + '%'
@@ -377,7 +377,7 @@ export function TeamPageClient({
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">TOV%</div>
+                  <div className="type-metadata">TOV%</div>
                   <div className="text-base font-bold font-mono text-[#063f46]">
                     {seasonAverages.avg_tov_pct != null
                       ? (seasonAverages.avg_tov_pct * 100).toFixed(1) + '%'
@@ -385,7 +385,7 @@ export function TeamPageClient({
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">ORB%</div>
+                  <div className="type-metadata">ORB%</div>
                   <div className="text-base font-bold font-mono text-[#063f46]">
                     {seasonAverages.avg_orb_pct != null
                       ? (seasonAverages.avg_orb_pct * 100).toFixed(1) + '%'

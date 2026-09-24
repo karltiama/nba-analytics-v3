@@ -72,12 +72,12 @@ export function LineMovementChart({
   const content = (
     <>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-medium text-[#063f46]">{label}</h4>
+        <h4 className="type-secondary text-[#063f46]">{label}</h4>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-[#4a6366]">
-            {referenceCaption}: <span className="text-[#063f46] font-mono">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
+          <span className="type-metadata">
+            {referenceCaption}: <span className="type-table-data whitespace-nowrap font-mono text-[#063f46]">{openingValue > 0 ? `+${openingValue}` : openingValue}</span>
           </span>
-          <span className="text-[10px]" style={{ color: changeColor }}>
+          <span className="type-table-data whitespace-nowrap" style={{ color: changeColor }}>
             {change > 0 ? '+' : ''}{change.toFixed(1)}
           </span>
         </div>
@@ -115,8 +115,8 @@ export function LineMovementChart({
               <text
                 x={width - padding.right + 5}
                 y={y + 3}
-                fill="#8aa0a3"
-                fontSize="9"
+                fill="#4a6366"
+                fontSize="11"
                 fontFamily="monospace"
               >
                 {value.toFixed(1)}
@@ -162,8 +162,8 @@ export function LineMovementChart({
             key={i}
             x={point.x}
             y={height - 8}
-            fill="#8aa0a3"
-            fontSize="9"
+            fill="#4a6366"
+            fontSize="11"
             textAnchor="middle"
           >
             {point.time}
@@ -174,8 +174,8 @@ export function LineMovementChart({
 
       {/* Current Value */}
       <div className="mt-1.5 flex items-center justify-center gap-1.5">
-        <span className="text-[10px] text-[#4a6366]">{comparisonCaption}:</span>
-        <span className="text-sm font-mono font-bold" style={{ color }}>
+        <span className="type-metadata">{comparisonCaption}:</span>
+        <span className="type-card-data font-mono" style={{ color }}>
           {currentValue > 0 ? `+${currentValue}` : currentValue}
         </span>
       </div>

@@ -58,16 +58,16 @@ export function ExtractedLegsPanel({
     <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5 h-full flex flex-col">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-base font-bold text-[#063f46]">
+          <h2 className="type-section-heading text-[#063f46]">
             Extracted legs{counts.detected ? ` (${counts.detected})` : ''}
           </h2>
-          <p className="text-xs text-[#4a6366] mt-1">{extractionStatusLabel}</p>
+          <p className="type-metadata mt-1">{extractionStatusLabel}</p>
         </div>
         {counts.detected > 0 ? (
           <button
             type="button"
             onClick={onToggleEditing}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#075B5C] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60 rounded"
+            className="type-interactive inline-flex items-center gap-1.5 text-[#075B5C] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60 rounded"
             aria-pressed={editing}
           >
             <Pencil className="h-3.5 w-3.5" aria-hidden />
@@ -77,7 +77,7 @@ export function ExtractedLegsPanel({
       </div>
 
       {counts.detected === 0 ? (
-        <p className="text-sm text-[#4a6366] py-8 text-center">
+        <p className="type-body py-8 text-center text-cc-secondary">
           Extracted legs will appear here after a screenshot is read. Nothing is inferred from an unread image.
         </p>
       ) : (
@@ -100,7 +100,7 @@ export function ExtractedLegsPanel({
 
       {counts.detected > 0 ? (
         <div className="mt-4 pt-4 border-t border-[#DCE9EA] space-y-2">
-          <p className="text-xs text-[#4a6366]">
+          <p className="type-metadata">
             {counts.detected} detected · {counts.resolved} resolved · {counts.needsConfirmation} need confirmation
             {counts.unresolved ? ` · ${counts.unresolved} unresolved` : ''}
           </p>
@@ -108,7 +108,7 @@ export function ExtractedLegsPanel({
             type="button"
             onClick={onConfirm}
             disabled={!canConfirm || confirmed}
-            className="w-full rounded-lg bg-[#063f46] text-white text-sm font-semibold py-2.5 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0a525c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
+            className="type-interactive w-full rounded-lg bg-[#063f46] py-2.5 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0a525c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
           >
             {confirmLabel ?? (confirmed ? 'Legs confirmed' : 'Confirm legs')}
           </button>
@@ -116,17 +116,17 @@ export function ExtractedLegsPanel({
             <button
               type="button"
               onClick={onReviewInWorkspace}
-              className="w-full rounded-lg border border-[#075B5C] bg-white text-[#075B5C] text-sm font-semibold py-2.5 hover:bg-[#E7F6F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
+              className="type-interactive w-full rounded-lg border border-[#075B5C] bg-white py-2.5 text-[#075B5C] hover:bg-[#E7F6F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
             >
               Review in Workspace
             </button>
           ) : null}
-          {confirmHint ? <p className="text-xs text-[#4a6366]">{confirmHint}</p> : null}
+          {confirmHint ? <p className="type-secondary">{confirmHint}</p> : null}
           {showWholeNumberLineNote ? (
-            <p className="rounded-md bg-[#E7F6F1] px-2.5 py-2 text-xs text-[#075B5C]">{LINE_WHOLE_NUMBER_HINT}</p>
+            <p className="type-secondary rounded-md bg-[#E7F6F1] px-2.5 py-2">{LINE_WHOLE_NUMBER_HINT}</p>
           ) : null}
           {!canConfirm ? (
-            <p className="text-xs text-[#9a3412]">
+            <p className="type-body text-[#9a3412]">
               Accept each highlighted leg with the check, or edit a value that looks wrong.
             </p>
           ) : null}
@@ -165,19 +165,19 @@ function LegRow({
         className="relative w-10 h-12 rounded-lg overflow-hidden bg-[#E8F0F1] border border-[#DCE9EA] shrink-0"
       />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-[#063f46] truncate">{name}</p>
+        <p className="type-card-data truncate text-[#063f46]">{name}</p>
         {leg.rawSnippet && !leg.rawSnippet.includes(name) ? (
-          <p className="text-[11px] text-[#8aa0a3] truncate">Screenshot read: {leg.rawSnippet}</p>
+          <p className="type-metadata truncate">Screenshot read: {leg.rawSnippet}</p>
         ) : null}
         <MatchupLine leg={leg} />
       </div>
       <div className="text-right shrink-0">
-        <p className="text-sm font-semibold text-[#063f46]">
+        <p className="type-card-data whitespace-nowrap text-[#063f46]">
           {side} {line}
         </p>
-        <p className="text-xs text-[#4a6366]">{prop}</p>
+        <p className="type-secondary">{prop}</p>
       </div>
-      <p className="w-12 text-right text-sm tabular-nums text-[#063f46] shrink-0">{odds}</p>
+      <p className="type-table-data w-12 whitespace-nowrap text-right text-[#063f46] shrink-0">{odds}</p>
       {showAccept ? (
         <button
           type="button"
@@ -220,7 +220,7 @@ function LegEditor({
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <label className="flex flex-col gap-1 text-xs text-[#4a6366]">
+        <label className="type-secondary flex flex-col gap-1">
           Prop
           <select
             className="rounded-lg border border-[#DCE9EA] bg-white px-2 py-1.5 text-sm text-[#063f46] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
@@ -234,7 +234,7 @@ function LegEditor({
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-xs text-[#4a6366]">
+        <label className="type-secondary flex flex-col gap-1">
           Side
           <select
             className="rounded-lg border border-[#DCE9EA] bg-white px-2 py-1.5 text-sm text-[#063f46] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
@@ -271,7 +271,7 @@ function LegEditor({
         />
       </div>
       {leg.resolution !== 'resolved' ? (
-        <p className="text-xs font-medium text-[#9a3412]">Needs confirmation</p>
+        <p className="type-badge text-[#9a3412]">Needs confirmation</p>
       ) : null}
     </div>
   );
@@ -291,7 +291,7 @@ function Field({
   inputMode?: 'decimal' | 'numeric';
 }) {
   return (
-    <label className="flex flex-col gap-1 text-xs text-[#4a6366]">
+    <label className="type-secondary flex flex-col gap-1">
       {label}
       {warning ? <span className="sr-only">Needs confirmation</span> : null}
       <input

@@ -32,10 +32,10 @@ export function PlayerVsOpponentHistoryCard({
   if (!vsOpponentHistory) {
     return (
       <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#4a6366] mb-3">
+        <h3 className="type-section-heading text-[#063f46] mb-3">
           Vs {abbr} History
         </h3>
-        <p className="text-[#4a6366]">No next game to compare.</p>
+        <p className="type-secondary">No next game to compare.</p>
       </section>
     );
   }
@@ -43,10 +43,10 @@ export function PlayerVsOpponentHistoryCard({
   if (vsOpponentHistory.games_played === 0) {
     return (
       <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#4a6366] mb-3">
+        <h3 className="type-section-heading text-[#063f46] mb-3">
           Vs {abbr} History
         </h3>
-        <p className="text-[#4a6366]">No games vs this opponent this season.</p>
+        <p className="type-secondary">No games vs this opponent this season.</p>
       </section>
     );
   }
@@ -60,32 +60,32 @@ export function PlayerVsOpponentHistoryCard({
 
   return (
     <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#4a6366] mb-3">
+      <h3 className="type-section-heading text-[#063f46] mb-3">
         Vs {abbr} History
       </h3>
-      <p className="text-sm text-[#4a6366] mb-3">{sampleNote}</p>
+      <p className="type-secondary mb-3">{sampleNote}</p>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
         <div>
-          <div className="text-[10px] text-[#4a6366] uppercase">PTS</div>
+          <div className="type-metadata">PTS</div>
           <div className="text-lg font-bold font-mono text-[#063f46]">
             {fmt(vsOpponentHistory.avg_pts)}
           </div>
         </div>
         <div>
-          <div className="text-[10px] text-[#4a6366] uppercase">REB</div>
+          <div className="type-metadata">REB</div>
           <div className="text-lg font-bold font-mono text-[#063f46]">
             {fmt(vsOpponentHistory.avg_reb)}
           </div>
         </div>
         <div>
-          <div className="text-[10px] text-[#4a6366] uppercase">AST</div>
+          <div className="type-metadata">AST</div>
           <div className="text-lg font-bold font-mono text-[#063f46]">
             {fmt(vsOpponentHistory.avg_ast)}
           </div>
         </div>
         <div>
-          <div className="text-[10px] text-[#4a6366] uppercase">PRA</div>
+          <div className="type-metadata">PRA</div>
           <div className="text-lg font-bold font-mono text-[#063f46]">
             {fmt(vsOpponentHistory.avg_pra)}
           </div>
@@ -94,11 +94,11 @@ export function PlayerVsOpponentHistoryCard({
 
       {games.length > 0 && (
         <div className="border-t border-[#DCE9EA] pt-3">
-          <p className="text-[10px] text-[#4a6366] uppercase mb-2">Game Log</p>
+          <p className="type-metadata mb-2">Game Log</p>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full type-table-data">
               <thead>
-                <tr className="text-[10px] text-[#4a6366] uppercase">
+                <tr className="type-metadata">
                   <th className="text-left pr-3 pb-1.5 font-medium">Date</th>
                   <th className="text-center px-2 pb-1.5 font-medium">W/L</th>
                   <th className="text-center px-2 pb-1.5 font-medium">Score</th>
@@ -142,10 +142,10 @@ function GameRow({ game }: { game: GameLog }) {
         <span
           className={
             game.result === 'W'
-              ? 'text-[#20B95A] font-semibold'
+              ? 'type-badge text-[#20B95A]'
               : game.result === 'L'
-                ? 'text-[#c2410c] font-semibold'
-                : 'text-[#4a6366]'
+                ? 'type-badge text-[#c2410c]'
+                : 'type-badge text-[#4a6366]'
           }
         >
           {game.result ?? '—'}

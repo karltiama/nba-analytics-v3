@@ -16,7 +16,7 @@ function OpenWorkspaceLink({ className, children }: { className?: string; childr
       href={PARLAY_WORKSPACE_HREF}
       className={
         className ??
-        'mx-2.5 mb-2.5 text-center text-xs font-semibold rounded-lg border border-[#075B5C] text-[#075B5C] hover:bg-[#55ddb1]/20 px-3 py-2.5 min-h-[44px] flex items-center justify-center'
+        'type-interactive mx-2.5 mb-2.5 flex min-h-[44px] items-center justify-center rounded-lg border border-[#075B5C] px-3 py-2.5 text-center text-[#075B5C] hover:bg-[#55ddb1]/20'
       }
     >
       {children ?? 'Open Workspace'}
@@ -42,16 +42,16 @@ function LegRow({
     <li className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-2.5 py-2">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-xs font-medium text-[#063f46] truncate">{player}</p>
-          <p className="text-[11px] text-[#4a6366] mt-0.5">
+          <p className="type-card-data truncate text-[#063f46]">{player}</p>
+          <p className="type-secondary mt-0.5">
             {sideLine} {market}
           </p>
-          <p className="text-[11px] text-[#4a6366] truncate">{leg.offer.sportsbook.displayName}</p>
+          <p className="type-secondary truncate">{leg.offer.sportsbook.displayName}</p>
           {leg.gameLabel ? (
-            <p className="text-[10px] text-[#8aa0a3] truncate">{leg.gameLabel}</p>
+            <p className="type-metadata truncate">{leg.gameLabel}</p>
           ) : null}
           {samePlayer || sameGame ? (
-            <p className="text-[10px] text-[#075B5C] mt-1">
+            <p className="type-metadata mt-1">
               {[samePlayer ? 'Same player' : null, sameGame ? 'Same game' : null]
                 .filter(Boolean)
                 .join(' · ')}
@@ -94,17 +94,17 @@ function TrayBody({
     <div className="flex flex-col min-h-0 h-full">
       <div className="px-3 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-[#063f46]">Selected parlay</h2>
-          <p className="text-[11px] text-[#4a6366] mt-0.5">{preview.summary}</p>
+          <h2 className="type-section-heading text-[#063f46]">Selected parlay</h2>
+          <p className="type-secondary mt-0.5">{preview.summary}</p>
           {preview.labels.length ? (
-            <p className="text-[10px] text-[#075B5C] mt-1">{preview.labels.join(' · ')}</p>
+            <p className="type-metadata mt-1">{preview.labels.join(' · ')}</p>
           ) : null}
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {onDismiss ? (
             <button
               type="button"
-              className="px-2 py-1 text-[11px] font-medium rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] hover:bg-[#f7f9f7] min-h-[32px]"
+              className="type-interactive min-h-[32px] rounded-lg border border-[#DCE9EA] bg-white px-2 py-1 text-[#063f46] hover:bg-[#f7f9f7]"
               onClick={onDismiss}
             >
               Done
@@ -112,7 +112,7 @@ function TrayBody({
           ) : null}
           <button
             type="button"
-            className="px-2 py-1 text-[11px] font-medium rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] hover:bg-[#f7f9f7] min-h-[32px]"
+            className="type-interactive min-h-[32px] rounded-lg border border-[#DCE9EA] bg-white px-2 py-1 text-[#063f46] hover:bg-[#f7f9f7]"
             aria-label="Clear parlay"
             onClick={onClear}
           >

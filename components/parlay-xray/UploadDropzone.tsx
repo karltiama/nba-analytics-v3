@@ -100,12 +100,12 @@ export function UploadDropzone({
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white border border-[#DCE9EA]">
             <ImageUp className="h-7 w-7 text-[#075B5C]" aria-hidden />
           </div>
-          <p className="text-base font-semibold text-[#063f46]">Drop your bet slip here</p>
-          <p className="mt-1 text-sm text-[#4a6366]">PNG, JPG, or WebP · max 10 MB</p>
+          <p className="type-section-heading text-[#063f46]">Drop your bet slip here</p>
+          <p className="type-metadata mt-1">PNG, JPG, or WebP · max 10 MB</p>
           <button
             type="button"
             onClick={openPicker}
-            className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#55ddb1] px-5 py-2.5 text-sm font-semibold text-[#063f46] hover:bg-[#3dcc9f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
+            className="type-interactive mt-5 inline-flex items-center justify-center rounded-lg bg-[#55ddb1] px-5 py-2.5 text-[#063f46] hover:bg-[#3dcc9f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60"
           >
             Choose file
           </button>
@@ -125,7 +125,7 @@ export function UploadDropzone({
       )}
 
       {error ? (
-        <p className="text-sm text-[#9a3412]" role="alert">
+        <p className="type-body text-[#9a3412]" role="alert">
           {error}
         </p>
       ) : null}
@@ -163,14 +163,14 @@ function ScreenshotPreviewCard({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] font-semibold text-[#8aa0a3]">
+          <div className="type-metadata flex h-full w-full items-center justify-center px-1 text-center">
             {thumbnailHint ?? 'Design preview'}
           </div>
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-[#063f46]">{screenshot.filename}</p>
-        <p className="text-xs text-[#4a6366]">
+        <p className="type-secondary truncate text-[#063f46]">{screenshot.filename}</p>
+        <p className="type-metadata">
           {statusHint ?? (screenshot.sizeBytes > 0 ? 'Ready on this device' : 'Design-preview placeholder')}
         </p>
       </div>
@@ -178,7 +178,7 @@ function ScreenshotPreviewCard({
         <button
           type="button"
           onClick={onReplace}
-          className="text-sm font-medium text-[#075B5C] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60 rounded"
+          className="type-interactive text-[#075B5C] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60 rounded"
         >
           Replace
         </button>
@@ -187,7 +187,7 @@ function ScreenshotPreviewCard({
             type="button"
             onClick={onRemove}
             aria-label="Remove screenshot"
-            className="text-sm font-medium text-[#9a3412] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60 rounded"
+            className="type-interactive text-[#9a3412] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/60 rounded"
           >
             Remove
           </button>

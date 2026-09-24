@@ -83,7 +83,7 @@ function getStatusBadge(status: string | undefined): { label: string; className:
   if (!status) return null;
   const s = status.toLowerCase();
   if (s === 'final') return { label: 'FINAL', className: 'bg-[#063F46]/10 text-[#063F46] rounded-full font-semibold' };
-  if (s === 'scheduled') return { label: 'Scheduled', className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
+  if (s === 'scheduled') return { label: 'Scheduled', className: 'bg-[#F3F8F8] text-cc-secondary rounded-full' };
   if (s === 'in progress' || s === 'live') {
     return { label: 'In Progress', className: 'bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold' };
   }
@@ -91,18 +91,18 @@ function getStatusBadge(status: string | undefined): { label: string; className:
     return { label: 'Postponed', className: 'bg-amber-50 text-amber-700 rounded-full font-medium' };
   }
   if (s === 'canceled' || s === 'cancelled') {
-    return { label: 'Canceled', className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
+    return { label: 'Canceled', className: 'bg-[#F3F8F8] text-cc-secondary rounded-full' };
   }
   if (s === 'unknown') {
-    return { label: 'Status unavailable', className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
+    return { label: 'Status unavailable', className: 'bg-[#F3F8F8] text-cc-secondary rounded-full' };
   }
-  return { label: status, className: 'bg-[#F3F8F8] text-[#72869A] rounded-full font-medium' };
+  return { label: status, className: 'bg-[#F3F8F8] text-cc-secondary rounded-full' };
 }
 
 function FavBadge() {
   return (
     <span
-      className="text-[9px] px-1 py-px rounded font-bold shrink-0 bg-[#56D6A3]/30 text-[#075B5C]"
+      className="type-badge shrink-0 rounded bg-[#56D6A3]/30 px-1.5 py-0.5 text-[#075B5C]"
       title="Sportsbook moneyline favorite"
       aria-label="Market favorite"
     >
@@ -142,15 +142,13 @@ function TeamMatchupSide({
       />
       <div className="min-w-0 leading-none">
         {city ? (
-          <div className="text-[11px] text-[#72869A]">
-            {city}
-          </div>
+          <div className="type-secondary">{city}</div>
         ) : null}
-        <div className={`font-bold text-[#063F46] text-[13px] sm:text-sm ${city ? 'mt-0.5' : ''}`}>
+        <div className={`type-card-data text-[#063F46] ${city ? 'mt-0.5' : ''}`}>
           {nickname || team.name}
         </div>
-        <div className="flex items-center gap-1 mt-0.5">
-          <span className="text-[11px] text-[#72869A]">{team.record ?? '—'}</span>
+        <div className="mt-0.5 flex items-center gap-1">
+          <span className="type-secondary">{team.record ?? '—'}</span>
           {isFav ? <FavBadge /> : null}
         </div>
       </div>
@@ -186,16 +184,16 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
       <div className="px-5 sm:px-6 py-2 flex items-center justify-between border-b border-[#DCE9EA]">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-[#075B5C]" />
-          <span className="text-sm font-medium text-[#72869A]">{game.startTime}</span>
+          <span className="type-metadata">{game.startTime}</span>
         </div>
         {statusBadge ? (
-          <span className={`text-[10px] px-2 py-0.5 ${statusBadge.className}`}>{statusBadge.label}</span>
+          <span className={`type-badge px-2 py-0.5 ${statusBadge.className}`}>{statusBadge.label}</span>
         ) : isCloseMarket ? (
-          <span className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-semibold" title="Market implied probabilities within 10 points">
+          <span className="type-badge rounded-full bg-amber-50 px-2 py-0.5 text-amber-700" title="Market implied probabilities within 10 points">
             CLOSE
           </span>
         ) : (
-          <span className="inline-flex items-center gap-0.5 text-sm font-medium text-[#72869A]">
+          <span className="type-secondary inline-flex items-center gap-0.5">
             NBA
             <ChevronRight className="w-4 h-4" />
           </span>
@@ -208,7 +206,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
             <div className="text-2xl font-bold text-[#063F46] tabular-nums">
               {game.awayScore} – {game.homeScore}
             </div>
-            <div className="text-[10px] text-[#72869A] mt-0.5">
+            <div className="type-metadata mt-0.5">
               {game.awayTeam.abbreviation} – {game.homeTeam.abbreviation}
             </div>
           </div>
@@ -218,7 +216,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
       <div className="px-5 sm:px-6 py-2">
         <div className="flex items-center gap-2 sm:gap-3">
           <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} />
-          <span className="shrink-0 text-xs font-medium tracking-wide text-[#72869A]/80">
+          <span className="type-secondary shrink-0">
             VS
           </span>
           <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} />
@@ -228,54 +226,48 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
       {hasOdds ? (
         <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
           <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
-            <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
-              Market spread
-            </div>
-            <div className={`text-sm sm:text-base font-semibold ${favoredValue(awayIsFav)}`}>
+            <div className="type-secondary mb-1.5">Market spread</div>
+            <div className={`type-card-data ${favoredValue(awayIsFav)}`}>
               {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
             </div>
-            <div className={`text-sm sm:text-base font-semibold ${favoredValue(homeIsFav)}`}>
+            <div className={`type-card-data ${favoredValue(homeIsFav)}`}>
               {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
             </div>
           </div>
           <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
-            <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
-              Market total
-            </div>
-            <div className="text-sm sm:text-base font-semibold text-[#168DD8]">
+            <div className="type-secondary mb-1.5">Market total</div>
+            <div className="type-card-data text-[#168DD8]">
               {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
             </div>
-            <div className="text-[11px] text-[#72869A] mt-0.5">
+            <div className="type-secondary mt-0.5">
               {game.overUnder != null
                 ? `O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`
                 : ''}
             </div>
           </div>
           <div className="px-2 py-3 text-center">
-            <div className="text-[11px] uppercase tracking-wide text-[#72869A] mb-1.5 font-medium">
-              Market ML
-            </div>
-            <div className={`text-sm sm:text-base font-semibold ${favoredValue(awayIsFav)}`}>
+            <div className="type-secondary mb-1.5">Market ML</div>
+            <div className={`type-card-data ${favoredValue(awayIsFav)}`}>
               {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
             </div>
-            <div className={`text-sm sm:text-base font-semibold ${favoredValue(homeIsFav)}`}>
+            <div className={`type-card-data ${favoredValue(homeIsFav)}`}>
               {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
             </div>
           </div>
         </div>
       ) : (
         <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-3 text-center">
-          <div className="text-[11px] text-[#72869A]">No odds yet</div>
+          <div className="type-secondary">No odds yet</div>
         </div>
       )}
 
       {game.matchupContext ? (
         <div className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2">
-          <div className="text-[10px] uppercase tracking-wide font-medium text-center">
-            <span className="text-[#72869A]">Matchup </span>
+          <div className="type-metadata text-center">
+            <span>Matchup </span>
             <span className="text-[#55ddb1]">Context</span>
           </div>
-          <p className="text-[12px] text-[#063F46] leading-snug mt-1 text-pretty">{game.matchupContext}</p>
+          <p className="type-body mt-1 text-pretty text-[#063F46]">{game.matchupContext}</p>
         </div>
       ) : null}
 
@@ -292,10 +284,8 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
 
       {game.paceSignal ? (
         <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
-          <p className="text-[10px] uppercase tracking-wide font-medium text-[#72869A] text-center">
-            Pace context
-          </p>
-          <p className="text-[12px] text-[#063F46] text-center mt-0.5 tabular-nums">
+          <p className="type-metadata text-center">Pace context</p>
+          <p className="type-secondary mt-0.5 text-center tabular-nums">
             {game.paceSignal.projected.toFixed(1)} projected pace
             {game.paceSignal.label === 'FAST'
               ? ' · Above typical NBA pace'
@@ -313,7 +303,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
           className="sm:flex-[1.22] min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#075B5C] hover:bg-[#064D4E] transition-colors group whitespace-nowrap"
         >
           <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
-          <span className="text-sm font-semibold text-white">View matchup</span>
+          <span className="type-interactive text-white">View matchup</span>
           <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
         </Link>
         <Link
@@ -321,7 +311,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
           className="sm:flex-1 min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] hover:bg-[#EAF3F3] transition-colors whitespace-nowrap"
         >
           <ListFilter className="w-3.5 h-3.5 shrink-0" />
-          <span className="text-sm font-semibold">View props</span>
+          <span className="type-interactive">View props</span>
         </Link>
       </div>
     </div>

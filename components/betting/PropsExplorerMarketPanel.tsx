@@ -71,23 +71,23 @@ function MarketBody({
     // Do not mount MarketMovementSection here — viewed events fire only after a resolved payload.
     return (
       <div className="space-y-3" aria-busy="true" aria-live="polite">
-        <p className="text-xs text-[#4a6366] text-center">Loading market comparison…</p>
+        <p className="type-secondary text-center">Loading market comparison…</p>
         <div className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] h-16" />
         <div
           data-market-section="market-movement-loading"
           className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 min-h-[5.5rem]"
         >
-          <p className="text-[11px] font-medium uppercase tracking-wide text-[#4a6366]">
+          <p className="type-secondary">
             Market Movement
           </p>
           {/* Resolved MarketMovementSection is not mounted here — no market_movement_viewed. */}
-          <p className="text-xs text-[#4a6366] mt-2">Loading certified history…</p>
+          <p className="type-metadata mt-2">Loading certified history…</p>
         </div>
       </div>
     );
   }
   if (error) {
-    return <p className="text-xs text-red-600 py-4 text-center">{error}</p>;
+    return <p className="type-body py-4 text-center text-red-600">{error}</p>;
   }
   if (!data) return null;
 
@@ -96,31 +96,31 @@ function MarketBody({
 
   return (
     <div className="space-y-3">
-      <p className="text-[11px] uppercase tracking-wide text-[#4a6366]">{data.comparisonLabel}</p>
-      <p className="text-[11px] text-[#4a6366]">{data.lineLabel}</p>
+      <p className="type-secondary">{data.comparisonLabel}</p>
+      <p className="type-metadata">{data.lineLabel}</p>
 
       <section className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-1">
-        <h3 className="text-[11px] font-medium text-[#063f46]">Selected</h3>
-        <p className="text-xs text-[#063f46]">
+        <h3 className="type-secondary">Selected</h3>
+        <p className="type-card-data whitespace-nowrap text-[#063f46]">
           {formatBook(data.selected.sportsbook)} {data.selected.side} {formatLine(data.selected.lineValue)}{' '}
           {formatOdds(data.selected.oddsAmerican)}
         </p>
       </section>
 
       {shopping.status !== 'ok' ? (
-        <p className="text-xs text-[#4a6366]">{shopping.message}</p>
+        <p className="type-secondary">{shopping.message}</p>
       ) : (
         <>
           <section
             data-market-section="range"
             className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-1"
           >
-            <h3 className="text-[11px] font-medium text-[#063f46]">Market range</h3>
-            <p className="text-xs text-[#063f46]">
+            <h3 className="type-secondary">Market range</h3>
+            <p className="type-card-data whitespace-nowrap text-[#063f46]">
               {formatMarketRangePreview(shopping.bookCount, shopping.marketMinLine, shopping.marketMaxLine)}
             </p>
             {shopping.latestSnapshotAt ? (
-              <p className="text-[11px] text-[#4a6366]">
+              <p className="type-metadata">
                 Comparable snapshot {new Date(shopping.latestSnapshotAt).toLocaleString()}
               </p>
             ) : null}
@@ -133,18 +133,18 @@ function MarketBody({
                 data-premium-candidate="best-line"
                 className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-1"
               >
-                <h3 className="text-[11px] font-medium text-[#063f46]">Best available line</h3>
+                <h3 className="type-secondary">Best available line</h3>
                 {shopping.bestAvailableOverLine || shopping.bestAvailableUnderLine ? (
                   <>
                     {shopping.bestAvailableOverLine ? (
-                      <p className="text-xs text-[#063f46]">
+                      <p className="type-card-data whitespace-nowrap text-[#063f46]">
                         Over {formatBook(shopping.bestAvailableOverLine.sportsbook)}{' '}
                         {formatLine(shopping.bestAvailableOverLine.lineValue)}{' '}
                         {formatOdds(shopping.bestAvailableOverLine.oddsAmerican)}
                       </p>
                     ) : null}
                     {shopping.bestAvailableUnderLine ? (
-                      <p className="text-xs text-[#063f46]">
+                      <p className="type-card-data whitespace-nowrap text-[#063f46]">
                         Under {formatBook(shopping.bestAvailableUnderLine.sportsbook)}{' '}
                         {formatLine(shopping.bestAvailableUnderLine.lineValue)}{' '}
                         {formatOdds(shopping.bestAvailableUnderLine.oddsAmerican)}
@@ -152,7 +152,7 @@ function MarketBody({
                     ) : null}
                   </>
                 ) : (
-                  <p className="text-xs text-[#4a6366]">No comparable best line</p>
+                  <p className="type-secondary">No comparable best line</p>
                 )}
               </section>
 
@@ -161,15 +161,15 @@ function MarketBody({
                 data-premium-candidate="best-price"
                 className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-1"
               >
-                <h3 className="text-[11px] font-medium text-[#063f46]">Best price at this line</h3>
+                <h3 className="type-secondary">Best price at this line</h3>
                 {shopping.bestPriceAtSelectedLine ? (
-                  <p className="text-xs text-[#063f46]">
+                  <p className="type-card-data whitespace-nowrap text-[#063f46]">
                     {formatBook(shopping.bestPriceAtSelectedLine.sportsbook)} {shopping.bestPriceAtSelectedLine.side}{' '}
                     {formatLine(shopping.bestPriceAtSelectedLine.lineValue)}{' '}
                     {formatOdds(shopping.bestPriceAtSelectedLine.oddsAmerican)}
                   </p>
                 ) : (
-                  <p className="text-xs text-[#4a6366]">No other book at this line</p>
+                  <p className="type-secondary">No other book at this line</p>
                 )}
               </section>
 
@@ -178,12 +178,12 @@ function MarketBody({
                   data-market-section="books"
                   className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5 space-y-1.5"
                 >
-                  <h3 className="text-[11px] font-medium text-[#063f46]">Sportsbook comparison</h3>
+                  <h3 className="type-secondary">Sportsbook comparison</h3>
                   <ul className="space-y-1">
                     {shopping.books.map((book) => (
                       <li
                         key={`${book.sportsbook}-${book.side}-${book.lineValue}-${book.oddsAmerican}`}
-                        className="text-xs text-[#063f46] flex justify-between gap-2"
+                        className="flex justify-between gap-2"
                       >
                         <span className={readable ? 'type-secondary min-w-0 truncate' : 'truncate'}>
                           {formatBook(book.sportsbook)}
@@ -203,8 +203,8 @@ function MarketBody({
               data-premium-candidate="line-shopping"
               className="rounded-lg border border-dashed border-[#075B5C] bg-white p-2.5 space-y-2"
             >
-              <h3 className="text-[11px] font-medium text-[#063f46]">{UPGRADE_COPY.line_shopping_detail.title}</h3>
-              <p className="text-xs text-[#4a6366]">{UPGRADE_COPY.line_shopping_detail.detail}</p>
+              <h3 className="type-secondary">{UPGRADE_COPY.line_shopping_detail.title}</h3>
+              <p className="type-body text-cc-secondary">{UPGRADE_COPY.line_shopping_detail.detail}</p>
               <FoundingProUpgradeLink analyticsSurface="props_explorer_line_shopping" />
             </section>
           )}
@@ -273,15 +273,15 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
       <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
           <h2
-            className={drawer ? 'type-card-data truncate text-[#063f46]' : 'text-sm font-semibold text-[#063f46] truncate'}
+            className="type-card-data truncate text-[#063f46]"
             data-coachmark="props-compare"
           >
             {selection.playerName ?? `Player ${selection.playerId}`}
           </h2>
-          <p className={drawer ? 'type-secondary mt-0.5 capitalize' : 'text-[11px] text-[#4a6366] mt-0.5 capitalize'}>
+          <p className="type-secondary mt-0.5 capitalize">
             {explorerPropContextLabel(selection.propType, selection.side, selection.lineValue)}
           </p>
-          <p className={drawer ? 'type-metadata mt-0.5' : 'text-[11px] text-[#4a6366] mt-0.5'}>Compare books</p>
+          <p className="type-metadata mt-0.5">Compare books</p>
         </div>
         <button
           type="button"
@@ -303,7 +303,7 @@ export function PropsExplorerMarketPanel({ selection, dateEt, variant, onClose }
             : 'p-2.5 sm:p-3 overflow-y-auto flex-1 min-h-0'
         }
       >
-        <MarketBody data={data} loading={loading} error={error} readable={drawer} />
+        <MarketBody data={data} loading={loading} error={error} readable />
       </div>
     </div>
   );

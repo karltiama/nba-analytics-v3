@@ -38,8 +38,8 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
   if (games.length === 0) {
     return (
       <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-[#063f46] mb-4">{title}</h2>
-        <p className="text-sm text-[#4a6366]">No recent games found</p>
+        <h2 className="type-section-heading text-[#063f46] mb-4">{title}</h2>
+        <p className="type-secondary">No recent games found</p>
       </div>
     );
   }
@@ -47,10 +47,10 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
   return (
     <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-[#063f46]">{title}</h2>
+        <h2 className="type-section-heading text-[#063f46]">{title}</h2>
         <Link
           href={`/teams/${teamId}/schedule`}
-          className="text-xs text-[#075B5C] hover:underline"
+          className="type-interactive text-[#075B5C] hover:underline"
         >
           View full schedule &rarr;
         </Link>
@@ -60,11 +60,11 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#DCE9EA]">
-              <th className="text-left text-xs text-[#4a6366] py-2 px-2">Date</th>
-              <th className="text-left text-xs text-[#4a6366] py-2 px-2">Opponent</th>
-              <th className="text-center text-xs text-[#4a6366] py-2 px-2">Result</th>
-              <th className="text-center text-xs text-[#4a6366] py-2 px-2">Score</th>
-              <th className="text-center text-xs text-[#4a6366] py-2 px-2">Margin</th>
+              <th className="type-metadata text-left py-2 px-2">Date</th>
+              <th className="type-metadata text-left py-2 px-2">Opponent</th>
+              <th className="type-metadata text-center py-2 px-2">Result</th>
+              <th className="type-metadata text-center py-2 px-2">Score</th>
+              <th className="type-metadata text-center py-2 px-2">Margin</th>
             </tr>
           </thead>
           <tbody>
@@ -80,7 +80,7 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
                   className="border-b border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors"
                 >
                   <td className="py-3 px-2">
-                    <div className="flex items-center gap-1.5 text-xs text-[#4a6366]">
+                    <div className="type-metadata flex items-center gap-1.5">
                       {formatDate(game.game_date)}
                       {game.is_home ? (
                         <Home className="w-3 h-3 text-[#075B5C]" />
@@ -92,7 +92,7 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
                   <td className="py-3 px-2">
                     <Link
                       href={`/teams/${game.opponent_team_id}`}
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-[#063f46] hover:text-[#075B5C] transition-colors"
+                      className="type-table-data inline-flex items-center gap-1.5 text-[#063f46] hover:text-[#075B5C] transition-colors"
                     >
                       <TeamLogo team={game.opponent_abbr} size="xs" decorative />
                       {game.opponent_abbr}
@@ -100,7 +100,7 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
                   </td>
                   <td className="py-3 px-2 text-center">
                     <span
-                      className={`text-sm font-bold ${
+                      className={`type-badge ${
                         isWin ? 'text-[#20B95A]' : 'text-[#c2410c]'
                       }`}
                     >
@@ -108,21 +108,21 @@ export function RecentGamesTable({ games, teamId, title = 'Game Log', loading }:
                     </span>
                   </td>
                   <td className="py-3 px-2 text-center">
-                    <span className="text-sm font-mono font-semibold text-[#063f46]">
+                    <span className="type-table-data font-mono text-[#063f46] whitespace-nowrap">
                       {game.team_points} - {game.points_allowed ?? '?'}
                     </span>
                   </td>
                   <td className="py-3 px-2 text-center">
                     {margin != null ? (
                       <span
-                        className={`text-xs font-medium ${
+                        className={`type-table-data ${
                           margin > 0 ? 'text-[#20B95A]' : margin < 0 ? 'text-[#c2410c]' : 'text-[#063f46]'
                         }`}
                       >
                         {margin > 0 ? '+' : ''}{margin}
                       </span>
                     ) : (
-                      <span className="text-xs text-[#8aa0a3]">—</span>
+                      <span className="type-metadata">—</span>
                     )}
                   </td>
                 </tr>

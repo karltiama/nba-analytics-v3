@@ -121,10 +121,10 @@ export function MarketSentimentChart({
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-1.5 gap-2">
-        <h4 className="text-[11px] font-medium text-[#063f46] truncate">
+        <h4 className="type-secondary min-w-0 truncate text-[#063f46]">
           Home win % ({homeTeamAbbr})
         </h4>
-        <span className="text-[10px] text-[#4a6366] shrink-0 tabular-nums">
+        <span className="type-card-data shrink-0 tabular-nums text-[#063f46]">
           {safeData[safeData.length - 1].homeWinPct.toFixed(1)}%
         </span>
       </div>
@@ -154,7 +154,7 @@ export function MarketSentimentChart({
                 stroke="rgba(6,63,70,0.08)"
                 strokeDasharray="2,2"
               />
-              <text x={W - padding.right + 4} y={y + 3} fill="#8aa0a3" fontSize="9" fontFamily="monospace">
+              <text x={W - padding.right + 4} y={y + 3} fill="#4a6366" fontSize="11" fontFamily="monospace">
                 {value.toFixed(0)}
               </text>
             </g>
@@ -178,8 +178,8 @@ export function MarketSentimentChart({
               key={i}
               x={point.x}
               y={H - 6}
-              fill="#8aa0a3"
-              fontSize="9"
+              fill="#4a6366"
+              fontSize="11"
               textAnchor="middle"
             >
               {point.time}

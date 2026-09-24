@@ -58,7 +58,7 @@ export function FilterBar({
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm font-medium text-[#063f46] min-w-[72px] sm:min-w-[120px] text-center">
+            <span className="type-interactive min-w-[72px] text-center text-[#063f46] sm:min-w-[120px]">
               {getDateLabel(selectedDate)}
             </span>
             <button
@@ -73,21 +73,21 @@ export function FilterBar({
               <button
                 type="button"
                 onClick={() => onDateChange(addDaysET(today, -1))}
-                className="px-2 py-1 rounded text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]"
+                className="type-interactive rounded px-2 py-1 text-cc-secondary hover:bg-[#f7f9f7] hover:text-[#063f46]"
               >
                 Yesterday
               </button>
               <button
                 type="button"
                 onClick={() => onDateChange(today)}
-                className="px-2 py-1 rounded text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]"
+                className="type-interactive rounded px-2 py-1 text-cc-secondary hover:bg-[#f7f9f7] hover:text-[#063f46]"
               >
                 Today
               </button>
               <button
                 type="button"
                 onClick={() => onDateChange(addDaysET(today, 1))}
-                className="px-2 py-1 rounded text-xs font-medium text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]"
+                className="type-interactive rounded px-2 py-1 text-cc-secondary hover:bg-[#f7f9f7] hover:text-[#063f46]"
               >
                 Tomorrow
               </button>
@@ -100,20 +100,20 @@ export function FilterBar({
       {/* Search + sort + filters: wrap together in 640–950px so search keeps room */}
       <div className="flex flex-1 min-w-0 flex-wrap items-center gap-2 sm:gap-3">
         <div className="relative flex-1 min-w-[200px] w-full lg:min-w-0 lg:w-auto">
-          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8aa0a3]" />
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cc-secondary sm:left-3" />
           <input
             type="text"
             placeholder="Search teams..."
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-8 sm:pl-9 pr-8 sm:pr-9 py-1.5 sm:py-2 bg-[#f7f9f7] border border-[#DCE9EA] rounded-lg text-sm text-[#063f46] placeholder:text-[#8aa0a3] focus:outline-none focus:ring-2 focus:ring-[#55ddb1]/40 transition-all"
+            className="type-interactive w-full rounded-lg border border-[#DCE9EA] bg-[#f7f9f7] py-1.5 pl-8 pr-8 text-[#063f46] placeholder:text-[#4a6366] transition-all focus:outline-none focus:ring-2 focus:ring-[#55ddb1]/40 sm:py-2 sm:pl-9 sm:pr-9"
           />
           {searchValue && (
             <button
               onClick={() => onSearchChange('')}
               className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[#e8f0ee] transition-colors"
             >
-              <X className="w-3.5 h-3.5 text-[#8aa0a3]" />
+              <X className="h-3.5 w-3.5 text-cc-secondary" />
             </button>
           )}
         </div>
@@ -124,7 +124,7 @@ export function FilterBar({
             className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-[#f7f9f7] border border-[#DCE9EA] rounded-lg hover:bg-[#eef4f3] transition-colors whitespace-nowrap"
           >
             <ArrowUpDown className="w-4 h-4 text-[#4a6366] shrink-0" />
-            <span className="text-sm text-[#063f46]">
+            <span className="type-interactive text-[#063f46]">
               {sortOptions.find(o => o.value === sortBy)?.label}
             </span>
           </button>
@@ -142,8 +142,8 @@ export function FilterBar({
                       onSortChange(option.value);
                       setShowSortMenu(false);
                     }}
-                    className={`w-full px-3 py-2 text-left text-sm hover:bg-[#f7f9f7] transition-colors ${
-                      sortBy === option.value ? 'text-[#075B5C] font-semibold' : 'text-[#063f46]'
+                    className={`type-interactive w-full px-3 py-2 text-left hover:bg-[#f7f9f7] transition-colors ${
+                      sortBy === option.value ? 'text-[#075B5C]' : 'text-[#063f46]'
                     }`}
                   >
                     {option.label}
@@ -158,7 +158,7 @@ export function FilterBar({
           <button
             onClick={onFavoritesToggle}
             title="Games involving your favorite teams"
-            className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
+            className={`type-interactive whitespace-nowrap rounded-lg border px-2 py-1.5 transition-colors sm:px-3 sm:py-2 ${
               showFavoritesOnly 
                 ? 'bg-[#55ddb1]/25 border-[#55ddb1] text-[#075B5C]' 
                 : 'bg-[#f7f9f7] border-[#DCE9EA] text-[#4a6366] hover:bg-[#eef4f3]'
@@ -169,7 +169,7 @@ export function FilterBar({
           <button
             onClick={onCloseMatchupsToggle}
             title="Market implied probabilities within 10 points (vig-free display)"
-            className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap ${
+            className={`type-interactive whitespace-nowrap rounded-lg border px-2 py-1.5 transition-colors sm:px-3 sm:py-2 ${
               showCloseMatchups 
                 ? 'bg-amber-50 border-amber-200 text-amber-800' 
                 : 'bg-[#f7f9f7] border-[#DCE9EA] text-[#4a6366] hover:bg-[#eef4f3]'

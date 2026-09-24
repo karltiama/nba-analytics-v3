@@ -23,7 +23,7 @@ function StatCell({
 }) {
   return (
     <div className="p-3 rounded-lg bg-[#F8FBFA] border border-[#DCE9EA]">
-      <div className="text-[10px] text-[#4a6366] uppercase tracking-widest mb-1">
+      <div className="type-metadata mb-1">
         {label}
       </div>
       <div
@@ -53,15 +53,15 @@ export function TeamTrendLinePanel({
   return (
     <div className="border-l-2 border-l-[#c2410c] pl-4 flex flex-col items-center text-center">
       <div className="flex items-center justify-center gap-2 mb-3">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-[#4a6366]">
+        <h4 className="type-section-heading text-[#063f46]">
           Line Analysis
         </h4>
-        <span className="text-[9px] px-1.5 py-0.5 bg-red-50 text-[#c2410c] rounded-full font-semibold">
+        <span className="type-badge px-1.5 py-0.5 bg-red-50 text-[#c2410c] rounded-full">
           MANUAL
         </span>
       </div>
       <div className="flex flex-wrap items-center gap-3 mb-4 w-full justify-center">
-        <label className="text-sm text-[#4a6366]">{lineLabel}:</label>
+        <label className="type-secondary">{lineLabel}:</label>
         <input
           type="number"
           step="0.5"
@@ -81,7 +81,7 @@ export function TeamTrendLinePanel({
         {bettingLine !== null && (
           <button
             onClick={() => onLineChange(null)}
-            className="text-xs text-[#4a6366] hover:text-[#063f46] transition-colors"
+            className="type-interactive text-[#075B5C] hover:text-[#063f46] transition-colors"
           >
             Clear
           </button>
@@ -115,7 +115,7 @@ export function TeamTrendLinePanel({
           />
         </div>
       ) : (
-        <p className="text-sm text-[#8aa0a3]">
+        <p className="type-secondary">
           Enter a line above to see hit rate, margin, and streak analysis.
         </p>
       )}

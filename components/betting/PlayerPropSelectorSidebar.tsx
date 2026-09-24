@@ -271,7 +271,7 @@ export function PlayerPropSelectorSidebar({
   });
 
   const selectClass =
-    'rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] text-xs py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
+    'type-interactive rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
   const optionStyle = { backgroundColor: '#ffffff', color: '#063f46' };
 
   return (
@@ -283,8 +283,8 @@ export function PlayerPropSelectorSidebar({
             <Target className="w-4 h-4 text-[#075B5C]" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-semibold text-[#063f46] truncate">{playerName || 'Player'}</h3>
-            <p className="text-[10px] text-[#4a6366]">Prop lines</p>
+            <h3 className="type-section-heading text-[#063f46] truncate">{playerName || 'Player'}</h3>
+            <p className="type-metadata">Prop lines</p>
           </div>
         </div>
       </div>
@@ -411,10 +411,10 @@ export function PlayerPropSelectorSidebar({
                   ) : (
                     <Minus className="w-3.5 h-3.5 text-[#c2410c]" />
                   )}
-                  <span className="text-[10px] text-[#4a6366] capitalize">
+                  <span className="type-metadata capitalize">
                     {(propType ?? '').replace(/_/g, ' ')}
                   </span>
-                  <span className="text-xs font-mono text-[#063f46]">
+                  <span className="type-table-data font-mono text-[#063f46]">
                     {formatLineValue(lineValue)}
                   </span>
                 </div>
@@ -459,7 +459,7 @@ export function PlayerPropSelectorSidebar({
                             Est. EV {formatEv(r.ev)}
                           </span>
                           <span
-                            className="text-[10px] text-[#4a6366]"
+                            className="type-metadata"
                             title="Sportsbook implied vs consensus — not a Court Context projection gap"
                           >
                             vs cons. {hasEdge ? formatEdge(r.edgeProbability) : '—'}
@@ -467,7 +467,7 @@ export function PlayerPropSelectorSidebar({
                           <span>
                             {formatOdds(r.oddsAmerican)}
                             {isBest && (
-                              <span className="ml-1.5 text-[10px] text-[#075B5C] font-medium">
+                              <span className="type-badge ml-1.5 text-[#075B5C]">
                                 Best
                               </span>
                             )}

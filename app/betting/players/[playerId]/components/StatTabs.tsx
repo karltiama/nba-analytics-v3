@@ -27,7 +27,7 @@ export function StatTabs({
             'rounded-lg transition-all',
             scrollable
               ? 'type-interactive min-h-11 shrink-0 whitespace-nowrap px-3'
-              : 'px-4 py-2 text-sm font-medium',
+              : 'type-interactive px-4 py-2',
             activeMetric === key
               ? 'bg-[#55ddb1] text-[#063f46] font-semibold'
               : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'

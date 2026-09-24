@@ -84,10 +84,10 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
       <section className="space-y-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-[#063f46]">Player Trends</h2>
-            <p className="text-xs text-[#4a6366]">Performance breakdown across {timeframeLabel}</p>
+            <h2 className="type-section-heading text-[#063f46]">Player Trends</h2>
+            <p className="type-secondary">Performance breakdown across {timeframeLabel}</p>
           </div>
-          <span className="text-[10px] px-2 py-1 bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46] rounded-full font-medium">
+          <span className="type-badge px-2 py-1 bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46] rounded-full">
             {METRIC_LABELS[activeMetric]}
           </span>
         </div>
@@ -106,7 +106,7 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
                 key={label}
                 onClick={() => setTimeframe(value)}
                 className={cn(
-                  'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                  'type-interactive px-3 py-1.5 rounded-lg transition-all',
                   timeframe === value
                     ? 'bg-[#063f46] text-white font-semibold'
                     : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'
@@ -123,7 +123,7 @@ export function PlayerTrendsTab({ games, seasonAverages }: PlayerTrendsTabProps)
                 key={value}
                 onClick={() => setLocationFilter(value)}
                 className={cn(
-                  'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                  'type-interactive px-3 py-1.5 rounded-lg transition-all',
                   locationFilter === value
                     ? 'bg-[#063f46] text-white font-semibold'
                     : 'bg-white border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7]'

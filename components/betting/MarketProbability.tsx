@@ -18,13 +18,11 @@ export function MarketProbability({
 }) {
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wide font-medium text-[#72869A] text-center mb-2">
-        Market Implied Probability
-      </p>
+      <p className="type-secondary mb-2 text-center">Market implied probability</p>
       <div className="flex items-center gap-2.5">
-        <div className="text-left shrink-0">
-          <div className="text-xs font-medium text-[#72869A] leading-none">{awayAbbr}</div>
-          <div className="text-sm font-bold text-[#063F46] tabular-nums mt-0.5">{awayPct}%</div>
+        <div className="shrink-0 text-left">
+          <div className="type-metadata leading-none">{awayAbbr}</div>
+          <div className="type-card-data mt-0.5 tabular-nums text-[#063F46]">{awayPct}%</div>
         </div>
         <div
           className="flex-1 flex h-2 bg-[#E8F0F1] rounded-full overflow-hidden min-w-0"
@@ -41,8 +39,8 @@ export function MarketProbability({
           />
         </div>
         <div className="text-right shrink-0">
-          <div className="text-xs font-medium text-[#72869A] leading-none">{homeAbbr}</div>
-          <div className="text-sm font-bold text-[#063F46] tabular-nums mt-0.5">{homePct}%</div>
+          <div className="type-metadata leading-none">{homeAbbr}</div>
+          <div className="type-card-data mt-0.5 tabular-nums text-[#063F46]">{homePct}%</div>
         </div>
       </div>
     </div>

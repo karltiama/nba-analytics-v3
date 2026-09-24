@@ -33,12 +33,12 @@ function UpcomingRow({ game }: { game: CompactScheduleGame }) {
       href={compactGameHref(game.game_id)}
       className="grid grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-2 items-center py-1.5 px-1 rounded-md hover:bg-[#f7f9f7] transition-colors text-sm"
     >
-      <span className="text-xs text-[#4a6366] tabular-nums">{date}</span>
-      <span className="flex items-center gap-1.5 min-w-0 text-[#063f46] font-medium">
+      <span className="type-metadata tabular-nums">{date}</span>
+      <span className="type-table-data flex items-center gap-1.5 min-w-0 text-[#063f46]">
         <TeamLogo team={game.opponent_abbr} size="xs" decorative />
         <span className="truncate">{opp}</span>
       </span>
-      <span className="text-xs text-[#4a6366] text-right whitespace-nowrap">
+      <span className="type-metadata text-right whitespace-nowrap">
         {showStatus ? game.status : tip}
       </span>
     </Link>
@@ -65,13 +65,13 @@ function RecentRow({ game }: { game: CompactScheduleGame }) {
       href={compactGameHref(game.game_id)}
       className="grid grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-2 items-center py-1.5 px-1 rounded-md hover:bg-[#f7f9f7] transition-colors text-sm"
     >
-      <span className="text-xs text-[#4a6366] tabular-nums">{date}</span>
-      <span className="flex items-center gap-1.5 min-w-0 text-[#063f46] font-medium">
+      <span className="type-metadata tabular-nums">{date}</span>
+      <span className="type-table-data flex items-center gap-1.5 min-w-0 text-[#063f46]">
         <TeamLogo team={game.opponent_abbr} size="xs" decorative />
         <span className="truncate">{opp}</span>
       </span>
       <span
-        className={`text-xs font-mono font-semibold text-right whitespace-nowrap ${resultColor}`}
+        className={`type-badge text-right whitespace-nowrap ${resultColor}`}
       >
         {score}
       </span>
@@ -99,12 +99,12 @@ export function TeamCompactSchedule({
       aria-label={`${seasonLabel} upcoming and recent games`}
     >
       <div className="flex items-center justify-between gap-2 mb-3">
-        <h2 className="text-sm font-semibold text-[#063f46]">
+        <h2 className="type-section-heading text-[#063f46]">
           {showRecentColumn ? 'Upcoming / Recent' : 'Upcoming'}
         </h2>
         <Link
           href={fullScheduleHref(routeTeamId, season)}
-          className="text-xs text-[#075B5C] hover:underline shrink-0"
+          className="type-interactive text-[#075B5C] hover:underline shrink-0"
         >
           Full schedule →
         </Link>
@@ -113,12 +113,12 @@ export function TeamCompactSchedule({
       <div className={gridClass}>
         <div>
           {showRecentColumn && (
-            <h3 className="text-[10px] uppercase tracking-wide text-[#4a6366] mb-1.5">
+            <h3 className="type-metadata mb-1.5">
               Upcoming
             </h3>
           )}
           {upcoming.length === 0 ? (
-            <p className="text-xs text-[#4a6366] py-1">No upcoming games</p>
+            <p className="type-secondary py-1">No upcoming games</p>
           ) : (
             <div className="divide-y divide-[#DCE9EA]">
               {upcoming.map((g) => (
@@ -130,7 +130,7 @@ export function TeamCompactSchedule({
 
         {showRecentColumn ? (
           <div>
-            <h3 className="text-[10px] uppercase tracking-wide text-[#4a6366] mb-1.5">
+            <h3 className="type-metadata mb-1.5">
               Recent
             </h3>
             <div className="divide-y divide-[#DCE9EA]">
@@ -140,7 +140,7 @@ export function TeamCompactSchedule({
             </div>
           </div>
         ) : (
-          <p className="text-[10px] text-[#4a6366]">
+          <p className="type-secondary">
             No completed games yet
           </p>
         )}

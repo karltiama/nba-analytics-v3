@@ -106,7 +106,7 @@ function RankBadge({ rank, total = 30 }: { rank: number; total?: number }) {
   }
 
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${color}`}>
+    <span className={`type-badge whitespace-nowrap rounded px-2 py-0.5 ${color}`}>
       #{rank}
     </span>
   );
@@ -117,7 +117,7 @@ function StatDiff({ diff, stat }: { diff: number; stat: string }) {
   const isSignificant = Math.abs(diff) >= 1;
   
   if (!isSignificant) {
-    return <span className="text-xs text-[#4a6366]">—</span>;
+    return <span className="type-table-data text-[#4a6366]">—</span>;
   }
 
   return (
@@ -127,7 +127,7 @@ function StatDiff({ diff, stat }: { diff: number; stat: string }) {
       ) : (
         <TrendingDown className="w-3 h-3 text-[#c2410c]" />
       )}
-      <span className={`text-xs font-medium ${isPositive ? 'text-[#20B95A]' : 'text-[#c2410c]'}`}>
+      <span className={`type-table-data whitespace-nowrap ${isPositive ? 'text-[#20B95A]' : 'text-[#c2410c]'}`}>
         {isPositive ? '+' : ''}{diff.toFixed(1)}
       </span>
     </div>
@@ -179,19 +179,19 @@ function StatComparisonRow({ label, offenseRank, offenseValue, defenseRank, defe
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] text-[#4a6366]">{label}</span>
+        <span className="type-secondary">{label}</span>
       </div>
       
       {/* Single horizontal bar divided by ranking */}
       <div className="relative w-full">
         {/* Container bar */}
-        <div className="relative w-full h-3 bg-[#F8FBFA] rounded overflow-hidden flex">
+        <div className="relative flex h-5 w-full overflow-hidden rounded bg-[#F8FBFA]">
           {/* Left portion */}
           <div 
             className={`h-full ${leftColor} flex items-center justify-start pl-1.5`}
             style={{ width: `${leftPercentage}%` }}
           >
-            <span className="text-[9px] font-medium text-[#063f46]">
+            <span className="type-table-data whitespace-nowrap text-[#063f46]">
               {leftValue.toFixed(1)}
             </span>
           </div>
@@ -201,7 +201,7 @@ function StatComparisonRow({ label, offenseRank, offenseValue, defenseRank, defe
             className={`h-full ${rightColor} flex items-center justify-end pr-1.5`}
             style={{ width: `${rightPercentage}%` }}
           >
-            <span className="text-[9px] font-medium text-[#063f46]">
+            <span className="type-table-data whitespace-nowrap text-[#063f46]">
               {rightValue.toFixed(1)}
             </span>
           </div>
@@ -210,12 +210,12 @@ function StatComparisonRow({ label, offenseRank, offenseValue, defenseRank, defe
         {/* Rankings below the bar */}
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center gap-1.5 flex-1 justify-center">
-            <span className="text-[9px] text-[#4a6366]">{leftLabel}</span>
+            <span className="type-metadata">{leftLabel}</span>
             <RankBadge rank={leftRank} />
           </div>
           <div className="flex items-center gap-1.5 flex-1 justify-center">
             <RankBadge rank={rightRank} />
-            <span className="text-[9px] text-[#4a6366]">{rightLabel}</span>
+            <span className="type-metadata">{rightLabel}</span>
           </div>
         </div>
       </div>
@@ -224,10 +224,10 @@ function StatComparisonRow({ label, offenseRank, offenseValue, defenseRank, defe
       {(hasOffenseAdvantage || hasDefenseAdvantage) && (
         <div className="flex items-center justify-center gap-1 pt-0.5">
           {hasOffenseAdvantage && (
-            <span className="text-[9px] text-[#20B95A] font-medium">Offensive Advantage</span>
+            <span className="type-badge text-[#20B95A]">Offensive Advantage</span>
           )}
           {hasDefenseAdvantage && (
-            <span className="text-[9px] text-[#c2410c] font-medium">Defensive Advantage</span>
+            <span className="type-badge text-[#c2410c]">Defensive Advantage</span>
           )}
         </div>
       )}
@@ -253,10 +253,10 @@ export function OffenseVsDefenseComparison({
 }) {
   if (!offenseTeam || !defenseTeam) {
     return embedded ? (
-      <p className="text-xs text-[#4a6366]">No matchup data available</p>
+      <p className="type-secondary">No matchup data available</p>
     ) : (
       <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
-        <p className="text-xs text-[#4a6366]">No matchup data available</p>
+        <p className="type-secondary">No matchup data available</p>
       </div>
     );
   }
@@ -335,9 +335,9 @@ export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis 
       <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="w-4 h-4 text-[#075B5C]" />
-          <h4 className="text-xs font-semibold text-[#063f46]">Pace Context</h4>
+          <h4 className="type-section-heading text-[#063f46]">Pace Context</h4>
         </div>
-        <p className="text-xs text-[#4a6366]">Not enough season data</p>
+        <p className="type-secondary">Not enough season data</p>
       </div>
     );
   }
@@ -353,39 +353,39 @@ export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis 
     <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
       <div className="flex items-center gap-2 mb-3">
         <Zap className="w-4 h-4 text-[#075B5C]" />
-        <h4 className="text-xs font-semibold text-[#063f46]">Pace Context</h4>
+        <h4 className="type-section-heading text-[#063f46]">Pace Context</h4>
       </div>
       
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
-            <div className="text-[10px] text-[#4a6366] mb-1">Home season pace</div>
-            <div className="text-sm font-bold text-[#063f46]">{home_team_pace.toFixed(1)}</div>
+            <div className="type-metadata mb-1">Home season pace</div>
+            <div className="type-card-data text-[#063f46]">{home_team_pace.toFixed(1)}</div>
           </div>
           <div className="text-center p-2 rounded-lg bg-[#F8FBFA]">
-            <div className="text-[10px] text-[#4a6366] mb-1">Away season pace</div>
-            <div className="text-sm font-bold text-[#063f46]">{away_team_pace.toFixed(1)}</div>
+            <div className="type-metadata mb-1">Away season pace</div>
+            <div className="type-card-data text-[#063f46]">{away_team_pace.toFixed(1)}</div>
           </div>
         </div>
         
         <div className="border-t border-[#DCE9EA] pt-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] text-[#4a6366]">Projected pace</span>
-            <span className={`text-sm font-bold ${paceColor}`}>{projected_pace.toFixed(1)}</span>
+            <span className="type-metadata">Projected pace</span>
+            <span className={`type-card-data ${paceColor}`}>{projected_pace.toFixed(1)}</span>
           </div>
-          <p className="text-[10px] text-[#8aa0a3] mb-2">
+          <p className="type-secondary mb-2">
             Average of the two season paces. Descriptive context only — not a projected total or winner.
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#4a6366]">Pace Impact</span>
-            <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+            <span className="type-metadata">Pace Impact</span>
+            <span className={`type-badge whitespace-nowrap rounded px-2 py-0.5 ${
               pace_impact === 'fast' 
                 ? 'bg-[#20B95A]/15 text-[#20B95A]' 
                 : pace_impact === 'slow' 
                   ? 'bg-[#c2410c]/15 text-[#c2410c]' 
                   : 'bg-[#ff6b35]/20 text-[#ff6b35]'
             }`}>
-              {pace_impact.toUpperCase()}
+              {pace_impact}
             </span>
           </div>
         </div>
@@ -399,8 +399,8 @@ export function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOp
     <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-3">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h5 className="text-xs font-semibold text-[#063f46]">{player.player_name}</h5>
-          <p className="text-[10px] text-[#4a6366]">
+          <h5 className="type-card-data text-[#063f46]">{player.player_name}</h5>
+          <p className="type-secondary">
             {player.games_played} games vs {opponentAbbr}
           </p>
         </div>
@@ -408,9 +408,9 @@ export function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOp
       
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] text-[#4a6366]">Points</span>
+          <span className="type-metadata">Points</span>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#063f46]">
+            <span className="type-table-data whitespace-nowrap text-[#063f46]">
               {player.avg_points.toFixed(1)} (vs {player.season_avg_points.toFixed(1)} avg)
             </span>
             <StatDiff diff={player.points_diff} stat="points" />
@@ -418,9 +418,9 @@ export function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOp
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-[10px] text-[#4a6366]">Rebounds</span>
+          <span className="type-metadata">Rebounds</span>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#063f46]">
+            <span className="type-table-data whitespace-nowrap text-[#063f46]">
               {player.avg_rebounds.toFixed(1)} (vs {player.season_avg_rebounds.toFixed(1)} avg)
             </span>
             <StatDiff diff={player.rebounds_diff} stat="rebounds" />
@@ -428,9 +428,9 @@ export function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOp
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-[10px] text-[#4a6366]">Assists</span>
+          <span className="type-metadata">Assists</span>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#063f46]">
+            <span className="type-table-data whitespace-nowrap text-[#063f46]">
               {player.avg_assists.toFixed(1)} (vs {player.season_avg_assists.toFixed(1)} avg)
             </span>
             <StatDiff diff={player.assists_diff} stat="assists" />
@@ -438,9 +438,9 @@ export function PlayerMatchupCard({ player, opponentAbbr }: { player: PlayerVsOp
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-[10px] text-[#4a6366]">3PM</span>
+          <span className="type-metadata">3PM</span>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#063f46]">
+            <span className="type-table-data whitespace-nowrap text-[#063f46]">
               {player.avg_threes.toFixed(1)} (vs {player.season_avg_threes.toFixed(1)} avg)
             </span>
             <StatDiff diff={player.threes_diff} stat="threes" />
@@ -483,7 +483,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-[#bf5af2]" />
-          <h3 className="text-sm font-semibold text-[#063f46]">Matchup Analysis</h3>
+          <h3 className="type-section-heading text-[#063f46]">Matchup Analysis</h3>
         </div>
       </div>
 
@@ -496,7 +496,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
           <div className="flex items-center gap-2 flex-1 justify-center">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#20B95A]" />
-              <span className="text-xs font-semibold text-[#063f46]">{leftLabel}</span>
+              <span className="type-secondary text-[#063f46]">{leftLabel}</span>
             </div>
             <ArrowLeftRight 
               className="w-4 h-4 text-[#4a6366] cursor-pointer hover:text-[#063f46] transition-colors"
@@ -504,12 +504,12 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
             />
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#c2410c]" />
-              <span className="text-xs font-semibold text-[#063f46]">{rightLabel}</span>
+              <span className="type-secondary text-[#063f46]">{rightLabel}</span>
             </div>
           </div>
           <button
             onClick={() => setIsSwapped(!isSwapped)}
-            className="text-[10px] px-2 py-1 rounded bg-[#F8FBFA] hover:bg-white/20 text-[#4a6366] hover:text-[#063f46] transition-colors"
+            className="type-interactive rounded bg-[#F8FBFA] px-2 py-1 text-cc-secondary transition-colors hover:bg-white/20 hover:text-[#063f46]"
           >
             Switch
           </button>
@@ -527,7 +527,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
       {/* Key Player Matchups */}
       {(homePlayers.length > 0 || awayPlayers.length > 0) && (
         <div>
-          <h4 className="text-xs font-semibold text-[#063f46] mb-3">Key Player Matchups</h4>
+          <h4 className="type-section-heading mb-3 text-[#063f46]">Key Player Matchups</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {awayPlayers.map((player) => (
               <PlayerMatchupCard 
@@ -552,7 +552,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Users className="w-4 h-4 text-[#bf5af2]" />
-            <h4 className="text-xs font-semibold text-[#063f46]">Projected Starting Lineups</h4>
+            <h4 className="type-section-heading text-[#063f46]">Projected Starting Lineups</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {data.starting_lineups.away ? (
@@ -564,11 +564,11 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
               <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
-                    <span className="text-xs font-bold">{awayTeamAbbr}</span>
+                    <span className="type-metadata text-[#063f46]">{awayTeamAbbr}</span>
                   </div>
-                  <h5 className="text-xs font-semibold text-[#063f46]">{awayTeamAbbr} Starting 5</h5>
+                  <h5 className="type-secondary text-[#063f46]">{awayTeamAbbr} Starting 5</h5>
                 </div>
-                <p className="text-xs text-[#4a6366] text-center py-4">
+                <p className="type-secondary py-4 text-center">
                   Not enough current-season data
                 </p>
               </div>
@@ -582,11 +582,11 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
               <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
-                    <span className="text-xs font-bold">{homeTeamAbbr}</span>
+                    <span className="type-metadata text-[#063f46]">{homeTeamAbbr}</span>
                   </div>
-                  <h5 className="text-xs font-semibold text-[#063f46]">{homeTeamAbbr} Starting 5</h5>
+                  <h5 className="type-secondary text-[#063f46]">{homeTeamAbbr} Starting 5</h5>
                 </div>
-                <p className="text-xs text-[#4a6366] text-center py-4">
+                <p className="type-secondary py-4 text-center">
                   Not enough current-season data
                 </p>
               </div>
@@ -603,9 +603,9 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
     <>
       <div className="flex items-center gap-2 mb-3">
         <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
-          <span className="text-xs font-bold">{teamAbbr}</span>
+          <span className="type-metadata text-[#063f46]">{teamAbbr}</span>
         </div>
-        <h5 className="text-xs font-semibold text-[#063f46]">{teamAbbr} Starting 5</h5>
+        <h5 className="type-secondary text-[#063f46]">{teamAbbr} Starting 5</h5>
       </div>
       
       <div className="space-y-2">
@@ -617,25 +617,25 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
           >
             <div className="flex items-center gap-2 flex-1">
               <div className="w-6 h-6 rounded bg-[#F8FBFA] flex items-center justify-center">
-                <span className="text-[9px] font-bold text-[#063f46]">{index + 1}</span>
+                <span className="type-metadata text-[#063f46]">{index + 1}</span>
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-[#063f46]">{player.full_name}</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#F8FBFA] text-[#4a6366]">
+                  <span className="type-table-data text-[#063f46]">{player.full_name}</span>
+                  <span className="type-badge whitespace-nowrap rounded bg-[#F8FBFA] px-1.5 py-0.5">
                     {player.position}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[9px] text-[#4a6366]">
+                  <span className="type-metadata">
                     {player.games_started} starts
                   </span>
-                  <span className="text-[9px] text-[#4a6366]">•</span>
-                  <span className="text-[9px] text-[#4a6366]">
+                  <span className="type-metadata">•</span>
+                  <span className="type-metadata">
                     {player.avg_points.toFixed(1)} PPG
                   </span>
-                  <span className="text-[9px] text-[#4a6366]">•</span>
-                  <span className="text-[9px] text-[#4a6366]">
+                  <span className="type-metadata">•</span>
+                  <span className="type-metadata">
                     {player.avg_minutes.toFixed(1)} MPG
                   </span>
                 </div>
@@ -646,7 +646,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
       </div>
       
       {lineup.players.length === 0 && (
-        <p className="text-xs text-[#4a6366] text-center py-4">
+        <p className="type-secondary py-4 text-center">
           Not enough current-season data
         </p>
       )}

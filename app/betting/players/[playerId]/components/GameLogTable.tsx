@@ -27,13 +27,13 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
   if (games.length === 0) {
     return (
       <div className={cn('bg-white border border-[#DCE9EA] rounded-2xl shadow-sm text-center', compact ? 'p-4' : 'p-8')}>
-        <p className="text-[#4a6366] text-xs">No game logs found.</p>
+        <p className="type-secondary">No game logs found.</p>
       </div>
     );
   }
 
-  const cellText = compact ? 'text-[10px] py-1 px-1.5' : 'text-sm';
-  const headText = compact ? 'text-[10px] h-8 px-1.5' : '';
+  const cellText = compact ? 'type-table-data py-1 px-1.5' : 'type-table-data';
+  const headText = compact ? 'type-metadata h-8 px-1.5' : 'type-metadata';
 
   return (
     <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm border-l-4 border-l-[#20B95A] overflow-hidden">
@@ -45,16 +45,14 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
       >
         <h3
           className={cn(
-            'font-semibold uppercase tracking-wider text-[#4a6366]',
-            compact ? 'text-[10px]' : 'text-sm'
+            compact ? 'type-metadata' : 'type-section-heading text-[#063f46]'
           )}
         >
           Game Log
         </h3>
         <span
           className={cn(
-            'px-2 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full font-semibold',
-            compact ? 'text-[9px]' : 'text-[10px]'
+            'type-badge px-2 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full'
           )}
         >
           LAST {games.length}
@@ -64,7 +62,7 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-[#DCE9EA]">
+              <TableRow className="type-metadata border-[#DCE9EA]">
                 <TableHead className={cn(compact ? 'w-14' : 'w-24', 'text-[#4a6366]', headText)}>Date</TableHead>
                 {!compact && (
                   <>
@@ -124,7 +122,7 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                 )}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="type-table-data">
               {games.map((game) => {
                 const dateStr = formatGameDate(game.start_time || game.game_date || '');
                 const mv = metricValue(game, activeMetric);
@@ -149,8 +147,7 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                     {game.result && (
                       <span
                         className={cn(
-                          'font-semibold',
-                          compact ? 'text-[10px]' : '',
+                          'type-badge',
                           game.result === 'W' ? 'text-[#20B95A]' : 'text-[#c2410c]'
                         )}
                       >
@@ -160,8 +157,7 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                     {game.team_score != null && game.opponent_score != null && (
                       <span
                         className={cn(
-                          'text-[#4a6366]/50 ml-0.5',
-                          compact ? 'text-[9px]' : 'text-xs'
+                          'type-metadata ml-0.5'
                         )}
                       >
                         {game.team_score}-{game.opponent_score}
@@ -178,14 +174,14 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                         <TableCell className={cellText}>
                           <Link
                             href={`/betting/games/${game.game_id}`}
-                            className="text-[#075B5C] hover:underline text-[10px]"
+                            className="type-interactive text-[#075B5C] hover:underline"
                           >
                             {dateStr}
                           </Link>
                         </TableCell>
                         <TableCell
                           colSpan={dnpSpan}
-                          className="text-[#4a6366]/50 italic text-[10px] py-1"
+                          className="type-secondary italic py-1"
                         >
                           {game.dnp_reason}
                         </TableCell>
@@ -195,14 +191,14 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                   return (
                     <TableRow key={game.game_id} className="border-[#DCE9EA]">
                       <TableCell>
-                        <Link href={`/betting/games/${game.game_id}`} className="text-[#075B5C] hover:underline text-sm">
+                        <Link href={`/betting/games/${game.game_id}`} className="type-interactive text-[#075B5C] hover:underline">
                           {dateStr}
                         </Link>
                       </TableCell>
                       <TableCell className="text-[#4a6366]">
                         {game.location === 'away' ? '@' : 'vs'} {game.opponent_abbr}
                       </TableCell>
-                      <TableCell colSpan={activeMetric === 'pra' ? 9 : 8} className="text-[#4a6366]/50 italic text-sm">
+                      <TableCell colSpan={activeMetric === 'pra' ? 9 : 8} className="type-secondary italic">
                         {game.dnp_reason}
                       </TableCell>
                     </TableRow>
@@ -222,7 +218,7 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                       <TableCell className={cellText}>
                         <Link
                           href={`/betting/games/${game.game_id}`}
-                          className="text-[#075B5C] hover:underline text-[10px] whitespace-nowrap"
+                          className="type-interactive whitespace-nowrap text-[#075B5C] hover:underline"
                         >
                           {dateStr}
                         </Link>
@@ -261,12 +257,12 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                     )}
                   >
                     <TableCell>
-                      <Link href={`/betting/games/${game.game_id}`} className="text-[#075B5C] hover:underline text-sm">
+                      <Link href={`/betting/games/${game.game_id}`} className="type-interactive text-[#075B5C] hover:underline">
                         {dateStr}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link href={`/teams/${game.opponent_id}`} className="hover:text-[#075B5C] transition-colors">
+                      <Link href={`/teams/${game.opponent_id}`} className="type-table-data text-[#063f46] hover:text-[#075B5C] transition-colors">
                         {game.location === 'away' ? '@' : 'vs'} {game.opponent_abbr}
                       </Link>
                     </TableCell>
@@ -276,7 +272,7 @@ export function GameLogTable({ games, activeMetric, bettingLine, compact = false
                     <TableCell className={highlightClass('reb')}>{game.rebounds ?? '-'}</TableCell>
                     <TableCell className={highlightClass('ast')}>{game.assists ?? '-'}</TableCell>
                     <TableCell className={highlightClass('3pm')}>{game.three_pointers_made ?? '-'}</TableCell>
-                    <TableCell className="text-sm">{fgDisplay}</TableCell>
+                    <TableCell className="type-table-data whitespace-nowrap">{fgDisplay}</TableCell>
                     <TableCell
                       className={cn(
                         game.plus_minus != null && game.plus_minus > 0 && 'text-[#20B95A]',

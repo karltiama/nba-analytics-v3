@@ -94,7 +94,7 @@ export function PropsExplorerPlayerPanelSkeleton() {
         aria-label="Player preview. Choose a player from the table."
       >
         <PropsExplorerPlayerPanelBodySkeleton />
-        <p className="text-[10px] text-center text-[#8aa0a3] pt-0.5">Select a player in the table</p>
+        <p className="type-secondary pt-0.5 text-center">Select a player in the table</p>
       </div>
     </div>
   );
@@ -194,10 +194,10 @@ export function PropsExplorerPlayerPanel({
     >
       <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-start justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <h2 className={drawer ? 'type-card-data truncate text-[#063f46]' : 'text-sm font-semibold text-[#063f46] truncate'}>
+          <h2 className="type-card-data truncate text-[#063f46]">
             {displayName}
           </h2>
-          <p className={drawer ? 'type-secondary mt-0.5 capitalize' : 'text-[11px] text-[#4a6366] mt-0.5 capitalize'}>
+          <p className="type-secondary mt-0.5 capitalize">
             {propContext}
           </p>
           <Link
@@ -212,7 +212,7 @@ export function PropsExplorerPlayerPanel({
             className={
               drawer
                 ? 'type-interactive inline-flex min-h-11 items-center gap-1 text-[#075B5C]'
-                : 'inline-flex items-center gap-1 text-[11px] text-[#075B5C] hover:underline mt-0.5'
+                : 'type-interactive mt-0.5 inline-flex items-center gap-1 text-[#075B5C] hover:underline'
             }
           >
             Full profile
@@ -246,14 +246,14 @@ export function PropsExplorerPlayerPanel({
           </div>
         )}
         {error && !loading && (
-          <p className="text-xs text-red-600 py-4 text-center">{error}</p>
+          <p className="type-body py-4 text-center text-red-600">{error}</p>
         )}
         {!loading && !error && data && (
           <>
             {drawer ? (
               <StatTabs activeMetric={activeMetric} onMetricChange={setActiveMetric} scrollable />
             ) : (
-              <div className="[&_button]:px-2 [&_button]:py-1.5 [&_button]:text-xs">
+              <div className="[&_button]:type-interactive [&_button]:px-2 [&_button]:py-1.5">
                 <StatTabs activeMetric={activeMetric} onMetricChange={setActiveMetric} />
               </div>
             )}

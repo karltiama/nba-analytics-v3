@@ -48,7 +48,7 @@ export function XrayResultsPanel({
             <a
               key={`nav-${index}-${interp.identity.playerDisplayName ?? 'leg'}-${interp.identity.line ?? 'x'}`}
               href={`#xray-leg-${index}`}
-              className="rounded-full border border-[#DCE9EA] bg-white px-3 py-1 text-xs font-semibold text-[#075B5C] hover:bg-[#f3fbf7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/70"
+              className="type-interactive rounded-full border border-[#DCE9EA] bg-white px-3 py-1 text-[#075B5C] hover:bg-[#f3fbf7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/70"
             >
               {index + 1}. {interp.identity.playerDisplayName ?? 'Leg'}
             </a>
@@ -59,7 +59,7 @@ export function XrayResultsPanel({
       <XrayParlaySummary parlay={parlay} interpretations={interpretations} eyebrow={eyebrow} />
 
       <div className="space-y-6">
-        <h3 className="text-lg font-bold text-[#063f46]">Leg context</h3>
+        <h3 className="type-section-heading text-[#063f46]">Leg context</h3>
         {interpretations.map((interp, index) => (
           <LegInterpretationCard
             key={`${interp.identity.playerDisplayName ?? 'leg'}-${interp.identity.line ?? index}-${index}`}
@@ -111,14 +111,16 @@ function LegInterpretationCard({
               <h3 className="text-lg font-bold text-[#063f46] truncate">
                 {interp.identity.playerDisplayName ?? 'Unknown player'}
               </h3>
-              <p className="text-sm text-[#063f46]">
-                {formatMarketLabel(interp.identity.market)} {side} {formatXrayPropLine(interp.identity.line)}
+              <p className="type-card-data text-[#063f46]">
+                <span className="whitespace-nowrap">
+                  {formatMarketLabel(interp.identity.market)} {side} {formatXrayPropLine(interp.identity.line)}
+                </span>
               </p>
-              <p className="text-xs text-[#4a6366] mt-0.5">
+              <p className="type-secondary mt-0.5">
                 {formatSportsbookLabel(interp.identity.sportsbook)}
               </p>
               {leg?.rawSnippet ? (
-                <p className="text-[11px] text-[#8aa0a3] mt-0.5">
+                <p className="type-metadata mt-0.5">
                   Screenshot read: {leg.rawSnippet}
                   {leg.playerDisplayName.value && interp.identity.playerDisplayName &&
                   leg.rawSnippet.includes(leg.playerDisplayName.value) === false
@@ -131,7 +133,7 @@ function LegInterpretationCard({
                 </p>
               ) : null}
               {leg ? <MatchupLine leg={leg} /> : (
-                <p className="text-xs text-[#4a6366]">
+                <p className="type-secondary">
                   {[interp.identity.teamAbbr, interp.identity.opponentAbbr].filter(Boolean).join(' vs ') ||
                     'Matchup unavailable'}
                 </p>
@@ -141,7 +143,7 @@ function LegInterpretationCard({
           <SummaryBadge state={interp.summaryState} />
         </div>
 
-        <p className="text-sm text-[#4a6366] leading-relaxed">{interp.summarySentence}</p>
+        <p className="type-body text-cc-secondary">{interp.summarySentence}</p>
 
         <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           <Indicator label="Market" value={marketPositionLabel(interp.marketPosition.kind)} />
@@ -167,13 +169,13 @@ function LegInterpretationCard({
               />
             </div>
             {interp.marketPosition.threeHourOdds != null && interp.marketPosition.closeOdds != null ? (
-              <p className="mt-3 text-xs text-[#4a6366]">
+              <p className="type-secondary mt-3">
                 The price changed from {formatAmericanOdds(interp.marketPosition.threeHourOdds)} to{' '}
                 {formatAmericanOdds(interp.marketPosition.closeOdds)} while the line moved from{' '}
                 {interp.marketPosition.threeHourLine ?? '—'} to {interp.marketPosition.closeLine ?? '—'}.
               </p>
             ) : null}
-            <p className="mt-2 text-xs text-[#8aa0a3]">{coverageLabel(interp.dataAvailability.market)} historical market</p>
+            <p className="type-metadata mt-2">{coverageLabel(interp.dataAvailability.market)} historical market</p>
           </ContextBlock>
 
           <ContextBlock title="Recent form">
@@ -186,7 +188,7 @@ function LegInterpretationCard({
                 value={`${interp.recentForm.above} above · ${interp.recentForm.below} below`}
               />
             </dl>
-            <p className="mt-2 text-xs text-[#8aa0a3]">{sampleBandLabel(interp.recentForm.sampleBand)}</p>
+            <p className="type-metadata mt-2">{sampleBandLabel(interp.recentForm.sampleBand)}</p>
           </ContextBlock>
 
           <ContextBlock title="Role">
@@ -239,11 +241,11 @@ function LegInterpretationCard({
         </div>
 
         <div className="rounded-xl border border-[#DCE9EA] bg-white p-4">
-          <h4 className="text-sm font-semibold text-[#063f46]">Why this could fail</h4>
-          <p className="text-[11px] text-[#4a6366] mt-1">
+          <h4 className="type-secondary text-[#063f46]">Why this could fail</h4>
+          <p className="type-secondary mt-1">
             Factual gaps and contrary packet fields. Not a prediction.
           </p>
-          <ul className="mt-2 space-y-1.5 text-sm text-[#4a6366] list-disc pl-4">
+          <ul className="type-body mt-2 list-disc space-y-1.5 pl-4 text-cc-secondary">
             {interp.whyItCouldFail.map((item) => (
               <li key={item.code + item.detail}>{item.detail}</li>
             ))}
@@ -253,7 +255,7 @@ function LegInterpretationCard({
         <EvidenceList heading="Data limitations" items={interp.uncertainties} empty="No certified coverage gaps on this packet." />
 
         {historicalReplay ? (
-          <p className="text-xs text-[#8aa0a3]">
+          <p className="type-metadata">
             Historical Replay · {historicalReplay.dateLabel}
           </p>
         ) : null}
@@ -273,7 +275,7 @@ function SummaryBadge({ state }: { state: XRayLegInterpretation['summaryState'] 
   return (
     <p
       className={cn(
-        'inline-flex w-fit shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold',
+        'type-badge inline-flex w-fit shrink-0 items-center rounded-full border px-3 py-1',
         styles[state]
       )}
     >
@@ -285,8 +287,8 @@ function SummaryBadge({ state }: { state: XRayLegInterpretation['summaryState'] 
 function Indicator({ label, value }: { label: string; value: string }) {
   return (
     <li className="rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] px-3 py-2 min-w-0">
-      <p className="text-[10px] uppercase tracking-wide text-[#8aa0a3]">{label}</p>
-      <p className="text-xs font-semibold text-[#063f46] mt-0.5 wrap-break-word">{value}</p>
+      <p className="type-metadata">{label}</p>
+      <p className="type-table-data mt-0.5 text-[#063f46] wrap-break-word">{value}</p>
     </li>
   );
 }
@@ -294,7 +296,7 @@ function Indicator({ label, value }: { label: string; value: string }) {
 function ContextBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] p-4 min-w-0">
-      <h4 className="text-sm font-semibold text-[#063f46]">{title}</h4>
+      <h4 className="type-secondary text-[#063f46]">{title}</h4>
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -303,8 +305,8 @@ function ContextBlock({ title, children }: { title: string; children: ReactNode 
 function SnapshotStack({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-[10px] uppercase tracking-wide text-[#8aa0a3]">{label}</p>
-      <p className="text-sm font-bold text-[#063f46] tabular-nums mt-1 wrap-break-word">{value}</p>
+      <p className="type-metadata">{label}</p>
+      <p className="type-card-data mt-1 whitespace-nowrap text-[#063f46]">{value}</p>
     </div>
   );
 }
@@ -312,8 +314,8 @@ function SnapshotStack({ label, value }: { label: string; value: string }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[10px] uppercase tracking-wide text-[#8aa0a3]">{label}</dt>
-      <dd className="text-sm font-semibold text-[#063f46] tabular-nums mt-0.5 wrap-break-word">{value}</dd>
+      <dt className="type-metadata">{label}</dt>
+      <dd className="type-table-data mt-0.5 text-[#063f46]">{value}</dd>
     </div>
   );
 }
@@ -329,15 +331,15 @@ function EvidenceList({
 }) {
   return (
     <section>
-      <h4 className="text-sm font-semibold text-[#063f46]">{heading}</h4>
+      <h4 className="type-secondary text-[#063f46]">{heading}</h4>
       {items.length === 0 ? (
-        <p className="mt-1 text-sm text-[#4a6366]">{empty}</p>
+        <p className="type-secondary mt-1">{empty}</p>
       ) : (
         <ul className="mt-2 space-y-2">
           {items.map((item) => (
             <li key={item.code + item.detail} className="rounded-lg border border-[#DCE9EA] bg-[#f7f9f7] px-3 py-2">
-              <p className="text-sm font-semibold text-[#063f46]">{item.title}</p>
-              <p className="text-sm text-[#4a6366] mt-0.5">{item.detail}</p>
+              <p className="type-secondary text-[#063f46]">{item.title}</p>
+              <p className="type-body mt-0.5 text-cc-secondary">{item.detail}</p>
             </li>
           ))}
         </ul>
@@ -349,8 +351,8 @@ function EvidenceList({
 function MissingCard({ title, body }: { title: string; body: string }) {
   return (
     <article className="rounded-xl border border-[#DCE9EA] bg-[#f6f8f8] p-3">
-      <h4 className="text-sm font-semibold text-[#063f46]">{title}</h4>
-      <p className="text-xs text-[#4a6366] mt-1 leading-relaxed">{body}</p>
+      <h4 className="type-secondary text-[#063f46]">{title}</h4>
+      <p className="type-body mt-1 text-cc-secondary">{body}</p>
     </article>
   );
 }

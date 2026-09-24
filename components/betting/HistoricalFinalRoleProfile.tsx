@@ -60,21 +60,21 @@ function PlaytypeCards({ profile }: { profile: HistoricalPlayerRoleProfile }) {
   if (rows.length === 0) return null;
   return (
     <div>
-      <h4 className="text-xs font-semibold text-[#063f46] mb-2">Primary actions</h4>
+      <h4 className="type-secondary mb-2 text-[#063f46]">Primary actions</h4>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {rows.map((row) => (
           <div
             key={row.id}
             className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2"
           >
-            <p className="text-xs font-medium text-[#063f46]">{row.label}</p>
-            <p className="mt-1 text-sm font-mono tabular-nums text-[#063f46]">
+            <p className="type-secondary text-[#063f46]">{row.label}</p>
+            <p className="type-card-data mt-1 font-mono tabular-nums text-[#063f46]">
               {row.frequency}
-              <span className="ml-1 text-[10px] text-[#4a6366] font-sans">
+              <span className="type-metadata ml-1 font-sans">
                 <MetricAbbr abbr="freq" label="Frequency" help={ROLE_METRIC_HELP.possPct} />
               </span>
             </p>
-            <p className="text-xs font-mono tabular-nums text-[#4a6366]">
+            <p className="type-table-data font-mono tabular-nums text-[#063f46]">
               {row.ppp}{' '}
               <MetricAbbr abbr="PPP" label="Points per possession" help={ROLE_METRIC_HELP.ppp} />
             </p>
@@ -113,21 +113,21 @@ function CreationBlock({ profile }: { profile: HistoricalPlayerRoleProfile }) {
   if (items.length === 0) return null;
   return (
     <div>
-      <h4 className="text-xs font-semibold text-[#063f46] mb-2">Creation</h4>
+      <h4 className="type-secondary mb-2 text-[#063f46]">Creation</h4>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {items.map((item) => (
           <div
             key={item.label}
             className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2"
           >
-            <p className="text-[10px] text-[#4a6366]">
+            <p className="type-metadata">
               <abbr title={item.help} className="no-underline cursor-help">
                 {item.label}
               </abbr>
             </p>
-            <p className="text-sm font-mono tabular-nums text-[#063f46]">
+            <p className="type-card-data font-mono tabular-nums text-[#063f46]">
               {item.value}
-              <span className="ml-1 text-[10px] text-[#4a6366] font-sans">/ game</span>
+              <span className="type-metadata ml-1 font-sans">/ game</span>
             </p>
           </div>
         ))}
@@ -141,11 +141,11 @@ function ShotProfile({ profile }: { profile: HistoricalPlayerRoleProfile }) {
   const zones = shotProfileRows(profile);
   return (
     <div>
-      <h4 className="text-xs font-semibold text-[#063f46] mb-2">Shot profile</h4>
+      <h4 className="type-secondary mb-2 text-[#063f46]">Shot profile</h4>
       <ul className="space-y-1.5">
         {zones.map((zone) => (
           <li key={zone.id} className="min-w-0">
-            <div className="flex items-baseline justify-between gap-2 text-xs">
+            <div className="type-table-data flex items-baseline justify-between gap-2">
               <span className="text-[#063f46]">{zone.label}</span>
               <span className="font-mono tabular-nums text-[#4a6366]">
                 {zone.fga} FGA · {zone.fgPct}
@@ -206,19 +206,19 @@ export function HistoricalFinalRoleProfile({
       aria-labelledby="season-role-heading"
     >
       <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-        <p className="text-[10px] uppercase tracking-wide text-[#4a6366]">Context</p>
-        <h2 id="season-role-heading" className="text-sm font-semibold text-[#063f46]">
+        <p className="type-metadata">Context</p>
+        <h2 id="season-role-heading" className="type-section-heading text-[#063f46]">
           Season Role — {seasonLabel}
         </h2>
-        <p className="text-xs text-[#4a6366] mt-1">
+        <p className="type-body mt-1 text-cc-secondary">
           This season, not this game. Advanced above is game-level performance.
         </p>
       </div>
       <div className="p-3 space-y-4">
         <label className="block">
-          <span className="text-[10px] text-[#4a6366]">Player</span>
+          <span className="type-secondary">Player</span>
           <select
-            className="mt-1 w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46]"
+            className="type-interactive mt-1 w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-[#063f46]"
             value={selected?.playerId ?? ''}
             onChange={(event) => {
               setSelectedId(event.target.value);
@@ -256,22 +256,22 @@ export function HistoricalFinalRoleProfile({
                 {!visiblePlaytypes(profile).length &&
                 !hasCreationMetrics(profile) &&
                 !hasShotProfile(profile) ? (
-                  <p className="text-xs text-[#4a6366]">
+                  <p className="type-secondary">
                     Season role profile unavailable for this player.
                   </p>
                 ) : null}
               </>
             ) : (
-              <p className="text-xs text-[#4a6366]">
+              <p className="type-secondary">
                 Season role profile unavailable for this player.
               </p>
             )}
           </div>
         ) : (
-          <p className="text-xs text-[#4a6366]">No box-score players to profile.</p>
+          <p className="type-secondary">No box-score players to profile.</p>
         )}
 
-        <p className="text-[10px] text-[#4a6366] leading-relaxed">
+        <p className="type-body text-cc-secondary">
           Some play-type metrics appear only when a player meets provider qualification thresholds.
           Missing isolation or pick-and-roll numbers do not mean the player had no role.
         </p>

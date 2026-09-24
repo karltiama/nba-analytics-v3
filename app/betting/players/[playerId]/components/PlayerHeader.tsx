@@ -26,18 +26,18 @@ export function PlayerHeader({ player, seasonAverages, team, seasonLabel }: Play
       <div className="px-5 py-2.5 border-b border-[#DCE9EA] flex items-center justify-end bg-[#F8FBFA]">
         <div className="flex items-center gap-2 flex-wrap justify-end">
           {seasonLabel && (
-            <span className="text-[10px] px-2 py-0.5 bg-white border border-[#DCE9EA] text-[#4a6366] rounded-full font-medium">
+            <span className="type-badge px-2 py-0.5 bg-white border border-[#DCE9EA] text-[#4a6366] rounded-full">
               Season {seasonLabel}
             </span>
           )}
           {player.active !== null && (
-            <span className="flex items-center gap-1.5 text-xs text-[#4a6366]">
+            <span className="type-badge flex items-center gap-1.5 text-[#4a6366]">
               <span className={`w-1.5 h-1.5 rounded-full ${player.active ? 'bg-[#20B95A]' : 'bg-[#8aa0a3]'}`} />
               {player.active ? 'Active' : 'Inactive'}
             </span>
           )}
           {player.position && (
-            <span className="text-[10px] px-2 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full font-semibold">
+            <span className="type-badge px-2 py-0.5 bg-[#55ddb1]/25 text-[#075B5C] rounded-full">
               {player.position}
             </span>
           )}
@@ -52,7 +52,7 @@ export function PlayerHeader({ player, seasonAverages, team, seasonLabel }: Play
               <h1 className="text-2xl font-bold text-[#063f46]">
                 {player.full_name}
               </h1>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs text-[#4a6366] mt-0.5">
+              <div className="type-secondary flex flex-wrap items-center justify-center md:justify-start gap-2 mt-0.5">
                 {player.height && <span>{player.height}</span>}
                 {player.height && player.weight && <span className="text-[#DCE9EA]">•</span>}
                 {player.weight && <span>{player.weight} lbs</span>}
@@ -60,10 +60,10 @@ export function PlayerHeader({ player, seasonAverages, team, seasonLabel }: Play
               {team && (
                 <Link
                   href={`/teams/${team.team_id}`}
-                  className="inline-flex items-center justify-center md:justify-start gap-2 mt-2 text-xs text-[#4a6366] hover:text-[#075B5C] transition-colors"
+                  className="type-interactive inline-flex items-center justify-center md:justify-start gap-2 mt-2 text-[#075B5C] hover:text-[#063f46] transition-colors"
                 >
                   <TeamLogo team={team.abbreviation} size="xs" decorative />
-                  <span className="font-semibold text-[#063f46]">{team.abbreviation}</span>
+                  <span className="text-[#063f46]">{team.abbreviation}</span>
                   <span>{team.full_name}</span>
                 </Link>
               )}
@@ -99,7 +99,7 @@ function QuickStat({
       <div className="text-2xl font-bold font-mono text-[#063f46]">
         {Number(value).toFixed(decimals)}
       </div>
-      <div className="text-[10px] text-[#4a6366] uppercase tracking-widest">{label}</div>
+      <div className="type-metadata">{label}</div>
     </div>
   );
 }

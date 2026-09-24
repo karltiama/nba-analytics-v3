@@ -23,7 +23,7 @@ function StarterList({
 }) {
   return (
     <div className="min-w-0">
-      <h3 className="text-xs font-semibold text-[#063f46] tracking-wide mb-2">{heading}</h3>
+      <h3 className="type-secondary mb-2">{heading}</h3>
       <p className="sr-only">{teamName} historical starting five</p>
       <ol className="space-y-1.5">
         {rows.map((row) => (
@@ -35,7 +35,7 @@ function StarterList({
                 date,
                 season,
               })}
-              className="flex items-center gap-2.5 min-w-0 text-sm text-[#063f46] hover:text-[#075B5C]"
+              className="type-table-data flex min-w-0 items-center gap-2.5 text-[#063f46] hover:text-[#075B5C]"
             >
               <PlayerHeadshot
                 nbaPlayerId={row.nbaPlayerId}
@@ -44,7 +44,7 @@ function StarterList({
               />
               <span className="truncate font-medium">{row.playerName || 'Player'}</span>
               {row.position ? (
-                <span className="shrink-0 text-[11px] text-[#4a6366] font-medium">
+                <span className="type-metadata shrink-0">
                   {row.position}
                 </span>
               ) : null}
@@ -85,10 +85,10 @@ export function HistoricalStartingFive({
     >
       <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm overflow-hidden">
         <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-          <h2 id="starting-five-heading" className="text-sm font-semibold text-[#063f46]">
+          <h2 id="starting-five-heading" className="type-section-heading text-[#063f46]">
             Starting Five
           </h2>
-          <p className="text-[10px] text-[#4a6366] mt-0.5">
+          <p className="type-secondary mt-0.5">
             Historical designated starters for this game. Not projected, and not a full roster.
           </p>
         </div>

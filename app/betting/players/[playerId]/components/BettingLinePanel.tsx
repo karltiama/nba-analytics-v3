@@ -28,7 +28,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
   const content = (
     <>
       <div className="flex flex-wrap items-center gap-3 mb-4">
-        <label className="text-sm text-[#4a6366]">
+        <label className="type-secondary">
           {METRIC_LABELS[metricKey]} Line:
         </label>
         <input
@@ -50,7 +50,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
         {bettingLine !== null && (
           <button
             onClick={() => onLineChange(null)}
-            className="text-xs text-[#4a6366] hover:text-[#063f46] transition-colors"
+            className="type-interactive text-[#075B5C] hover:text-[#063f46] transition-colors"
           >
             Clear
           </button>
@@ -58,7 +58,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
       </div>
 
       {bettingLine !== null && values.length === 0 ? (
-        <p className="text-sm text-[#8aa0a3]">Not enough data yet</p>
+        <p className="type-secondary">Not enough data yet</p>
       ) : bettingLine !== null && hr && margin !== null && stk ? (
         <div className={cn('grid gap-3', 'grid-cols-4')}>
           <StatCell
@@ -87,7 +87,7 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
           />
         </div>
       ) : (
-        <p className="text-sm text-[#8aa0a3]">
+        <p className="type-secondary">
           Enter a line above to see hit rate, margin, and streak analysis.
         </p>
       )}
@@ -98,10 +98,10 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
     return (
       <div className="border-l-2 border-l-[#c2410c] pl-4 flex flex-col items-center text-center">
         <div className="flex items-center justify-center gap-2 mb-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-[#4a6366]">
+          <h4 className="type-section-heading text-[#063f46]">
             Line Analysis
           </h4>
-          <span className="text-[9px] px-1.5 py-0.5 bg-[#c2410c]/10 text-[#c2410c] rounded-full font-semibold">
+          <span className="type-badge px-1.5 py-0.5 bg-[#c2410c]/10 text-[#c2410c] rounded-full">
             MANUAL
           </span>
         </div>
@@ -113,10 +113,10 @@ export function BettingLinePanel({ values, bettingLine, onLineChange, metricKey,
   return (
     <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm border-l-4 border-l-[#c2410c] overflow-hidden">
       <div className="px-5 py-2.5 border-b border-[#DCE9EA] flex items-center justify-between bg-[#F8FBFA]">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#4a6366]">
+        <h3 className="type-section-heading text-[#063f46]">
           Line Analysis
         </h3>
-        <span className="text-[10px] px-2 py-0.5 bg-[#c2410c]/10 text-[#c2410c] rounded-full font-semibold">
+        <span className="type-badge px-2 py-0.5 bg-[#c2410c]/10 text-[#c2410c] rounded-full">
           MANUAL
         </span>
       </div>
@@ -138,7 +138,7 @@ function StatCell({
 }) {
   return (
     <div className="p-3 rounded-lg bg-[#F8FBFA] border border-[#DCE9EA]">
-      <div className="text-[10px] text-[#4a6366] uppercase tracking-widest mb-1">
+      <div className="type-metadata mb-1">
         {label}
       </div>
       <div

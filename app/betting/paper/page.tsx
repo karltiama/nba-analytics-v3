@@ -73,11 +73,11 @@ function SegmentTable({ title, rows, keyLabel }: { title: string; rows: Analytic
   if (rows.length === 0) return null;
   return (
     <div className="mt-5">
-      <h3 className="text-xs font-medium text-[#063f46] mb-2">{title}</h3>
+      <h3 className="type-section-heading text-[#063f46] mb-2">{title}</h3>
       <div className="overflow-x-auto border border-[#DCE9EA] rounded-xl">
-        <table className="w-full text-left text-[11px]">
-          <thead className="bg-[#F8FBFA] border-b border-[#DCE9EA] text-[#4a6366]">
-            <tr>
+        <table className="w-full text-left type-table-data">
+          <thead className="bg-[#F8FBFA] border-b border-[#DCE9EA]">
+            <tr className="type-metadata">
               <th className="py-1.5 px-2 font-medium">Segment</th>
               <th className="py-1.5 px-2 font-medium text-right">n</th>
               <th className="py-1.5 px-2 font-medium text-right">W/L/P/V</th>
@@ -93,7 +93,7 @@ function SegmentTable({ title, rows, keyLabel }: { title: string; rows: Analytic
                 <tr key={r.key} className="border-b border-[#DCE9EA]">
                   <td className="py-1 px-2 text-[#063f46] capitalize">{label}</td>
                   <td className="py-1 px-2 text-right font-mono text-[#4a6366]">{r.count}</td>
-                  <td className="py-1 px-2 text-right font-mono text-[#4a6366] text-[10px]">
+                  <td className="py-1 px-2 text-right font-mono text-[#4a6366] whitespace-nowrap">
                     {r.wins}/{r.losses}/{r.pushes}/{r.voids}
                   </td>
                   <td className={`py-1 px-2 text-right font-mono ${profitClass(r.profitSum)}`}>
@@ -225,7 +225,7 @@ function PaperBetsContent() {
   const displayRows = validTab === 'open' ? openBets : validTab === 'history' ? historyBets : [];
 
   const tabBtn = (active: boolean) =>
-    `px-3 py-1.5 rounded-lg text-xs border ${
+    `type-interactive px-3 py-1.5 rounded-lg border ${
       active
         ? 'border-[#55ddb1] bg-[#55ddb1] text-[#063f46] font-semibold'
         : 'border-[#DCE9EA] bg-white text-[#4a6366] hover:bg-[#f7f9f7]'
@@ -235,8 +235,8 @@ function PaperBetsContent() {
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-[#063f46]">Paper Bets</h1>
-          <p className="text-xs text-[#4a6366] mt-1">
+          <h1 className="type-page-title text-[#063f46]">Paper Bets</h1>
+          <p className="type-body text-cc-secondary mt-1">
             Log legs from Props Explorer. Settlement uses Final box scores (same stat mapping as research views).
             ROI = sum(profit) / sum(stake) on settled bets. Cron: GET /api/cron/paper-settle (Bearer{' '}
             <span className="font-mono">PAPER_SETTLE_CRON_SECRET</span> or <span className="font-mono">CRON_SECRET</span>
@@ -257,7 +257,7 @@ function PaperBetsContent() {
             type="button"
             disabled={settling || loading}
             onClick={handleSettle}
-            className="px-3 py-1.5 rounded-lg text-xs border border-[#075B5C] bg-[#55ddb1]/20 text-[#063f46] hover:bg-[#55ddb1]/40 disabled:opacity-50"
+            className="type-interactive px-3 py-1.5 rounded-lg border border-[#075B5C] bg-[#55ddb1]/20 text-[#063f46] hover:bg-[#55ddb1]/40 disabled:opacity-50"
           >
             {settling ? 'Settling…' : 'Settle now'}
           </button>
@@ -272,38 +272,38 @@ function PaperBetsContent() {
 
       {validTab === 'summary' && (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 sm:p-6 mb-6 space-y-3">
-          <h2 className="text-sm font-medium text-[#063f46]">ROI summary (settled only)</h2>
-          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <h2 className="type-section-heading text-[#063f46]">ROI summary (settled only)</h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
-              <dt className="text-[#4a6366]">Settled bets</dt>
+              <dt className="type-metadata">Settled bets</dt>
               <dd className="text-[#063f46] font-mono text-lg">{summary.n}</dd>
             </div>
             <div>
-              <dt className="text-[#4a6366]">W / L / Push / Void</dt>
+              <dt className="type-metadata">W / L / Push / Void</dt>
               <dd className="text-[#063f46] font-mono">
                 {summary.wins} / {summary.losses} / {summary.pushes} / {summary.voids}
               </dd>
             </div>
             <div>
-              <dt className="text-[#4a6366]">Net units</dt>
+              <dt className="type-metadata">Net units</dt>
               <dd className={`font-mono text-lg ${profitClass(summary.profitStaked)}`}>
                 {summary.profitStaked >= 0 ? '+' : ''}
                 {summary.profitStaked.toFixed(2)}
               </dd>
             </div>
             <div>
-              <dt className="text-[#4a6366]">ROI (profit / stake)</dt>
+              <dt className="type-metadata">ROI (profit / stake)</dt>
               <dd className="text-[#063f46] font-mono text-lg">
                 {summary.roi != null ? `${(summary.roi * 100).toFixed(2)}%` : '—'}
               </dd>
             </div>
           </dl>
-          <p className="text-[10px] text-[#8aa0a3]">
+          <p className="type-metadata">
             Breakdowns use all settled rows in the database (not limited by the 500-row history fetch). EV buckets use
             decimal edge as stored (e.g. 0.05 = 5%).
           </p>
           {loading && !analytics ? (
-            <p className="text-xs text-[#4a6366] mt-4">Loading breakdowns…</p>
+            <p className="type-secondary mt-4">Loading breakdowns…</p>
           ) : analytics ? (
             <>
               <SegmentTable title="By prop type" rows={analytics.byPropType} />
@@ -316,7 +316,7 @@ function PaperBetsContent() {
               />
             </>
           ) : (
-            <p className="text-xs text-[#4a6366] mt-4">Breakdowns unavailable.</p>
+            <p className="type-secondary mt-4">Breakdowns unavailable.</p>
           )}
         </div>
       )}
@@ -324,9 +324,9 @@ function PaperBetsContent() {
       {validTab !== 'summary' && (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto max-h-[calc(100vh-14rem)] overflow-y-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left type-table-data">
               <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
-                <tr className="text-[#4a6366]">
+                <tr className="type-metadata">
                   <th className="py-2 px-2 font-medium">Game</th>
                   <th className="py-2 px-2 font-medium">Player</th>
                   <th className="py-2 px-2 font-medium">Prop</th>
@@ -383,11 +383,11 @@ function PaperBetsContent() {
                         {(b.propType ?? '—').replace(/_/g, ' ')}
                       </td>
                       <td className="py-1.5 px-2 capitalize text-[#063f46]">{b.side ?? '—'}</td>
-                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{b.lineValue ?? '—'}</td>
+                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46] whitespace-nowrap">{b.lineValue ?? '—'}</td>
                       <td className="py-1.5 px-2 text-[#4a6366] truncate max-w-[100px]">
                         {b.sportsbook ?? '—'}
                       </td>
-                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{formatOdds(b.oddsAmerican)}</td>
+                      <td className="py-1.5 px-2 text-right font-mono text-[#063f46] whitespace-nowrap">{formatOdds(b.oddsAmerican)}</td>
                       <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{b.stakeUnits}</td>
                       <td className="py-1.5 px-2 text-right font-mono text-[#4a6366]">
                         {formatPct(b.modelProbability)}
@@ -395,7 +395,7 @@ function PaperBetsContent() {
                       <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
                         {b.projection != null && Number.isFinite(b.projection) ? b.projection.toFixed(1) : '—'}
                       </td>
-                      <td className="py-1.5 px-2 text-[10px] font-mono text-[#8aa0a3] truncate max-w-[100px]">
+                      <td className="py-1.5 px-2 type-metadata font-mono truncate max-w-[100px]">
                         {b.evSelectedTrack ?? '—'}
                       </td>
                       {validTab === 'open' && (
@@ -404,7 +404,7 @@ function PaperBetsContent() {
                             type="button"
                             disabled={removingBetId === b.id}
                             onClick={() => void handleRemoveBet(b.id)}
-                            className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#c2410c] hover:bg-[#f7f9f7] disabled:opacity-40"
+                            className="type-interactive px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#c2410c] hover:bg-[#f7f9f7] disabled:opacity-40"
                           >
                             {removingBetId === b.id ? 'Removing…' : 'Remove'}
                           </button>
@@ -420,7 +420,7 @@ function PaperBetsContent() {
                               ? `${b.profitUnits >= 0 ? '+' : ''}${b.profitUnits.toFixed(2)}`
                               : '—'}
                           </td>
-                          <td className="py-1.5 px-2 text-[10px] text-[#8aa0a3] whitespace-nowrap">
+                          <td className="py-1.5 px-2 type-metadata whitespace-nowrap">
                             {b.settledAt ? new Date(b.settledAt).toLocaleString() : '—'}
                           </td>
                         </>

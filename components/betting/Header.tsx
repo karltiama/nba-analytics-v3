@@ -384,7 +384,7 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                         {profile?.email ? (
                           <p className="text-xs text-[#4a6366] truncate mt-0.5">{profile.email}</p>
                         ) : null}
-                        <p className="text-[10px] text-[#8aa0a3] mt-1">TZ: {profile?.timezone}</p>
+                        <p className="type-metadata mt-1">TZ: {profile?.timezone}</p>
                       </div>
                       <DropdownMenu.Item
                         className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"

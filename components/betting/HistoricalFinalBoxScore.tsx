@@ -37,16 +37,16 @@ function TeamBoxTable({
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
       <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-        <Link href={`/teams/${teamId}`} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C]">
+        <Link href={`/teams/${teamId}`} className="type-section-heading text-[#063f46] hover:text-[#075B5C]">
           {teamName}
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="text-xs text-[#4a6366] p-4">No player logs for this team.</p>
+        <p className="type-secondary p-4">No player logs for this team.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
+          <table className="w-full">
+            <thead className="type-metadata">
               <tr className="text-[#4a6366] text-left">
                 <th className="px-3 py-2 font-medium">Player</th>
                 <th className="px-2 py-2 font-medium text-right">MIN</th>
@@ -57,7 +57,7 @@ function TeamBoxTable({
                 <th className="px-2 py-2 font-medium text-right">BLK</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="type-table-data text-[#063f46]">
               {rows.map((row) => (
                 <tr key={`${row.teamId}-${row.playerId}`} className="border-t border-[#DCE9EA]">
                   <td className="px-3 py-1.5">
@@ -73,22 +73,22 @@ function TeamBoxTable({
                       {row.playerName || 'Player'}
                     </Link>
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#4a6366]">
+                  <td className="whitespace-nowrap px-2 py-1.5 text-right font-mono tabular-nums">
                     {row.minutes ?? '—'}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
+                  <td className="whitespace-nowrap px-2 py-1.5 text-right font-mono tabular-nums">
                     {formatStat(row.points)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
+                  <td className="whitespace-nowrap px-2 py-1.5 text-right font-mono tabular-nums">
                     {formatStat(row.rebounds)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
+                  <td className="whitespace-nowrap px-2 py-1.5 text-right font-mono tabular-nums">
                     {formatStat(row.assists)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
+                  <td className="whitespace-nowrap px-2 py-1.5 text-right font-mono tabular-nums">
                     {formatStat(row.steals)}
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono tabular-nums text-[#063f46]">
+                  <td className="whitespace-nowrap px-2 py-1.5 text-right font-mono tabular-nums">
                     {formatStat(row.blocks)}
                   </td>
                 </tr>
@@ -128,8 +128,8 @@ export function HistoricalFinalBoxScore({
   if (!boxScore.available) {
     return (
       <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4">
-        <h2 className="text-sm font-semibold text-[#063f46] mb-1">Box score</h2>
-        <p className="text-xs text-[#4a6366]">
+        <h2 className="type-section-heading mb-1 text-[#063f46]">Box score</h2>
+        <p className="type-body text-cc-secondary">
           Box score is not available for this game. The official final is still shown above.
         </p>
       </div>
@@ -160,7 +160,7 @@ export function HistoricalFinalBoxScore({
   if (!showAdvanced) {
     return (
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-[#063f46]">Box score</h2>
+        <h2 className="type-section-heading text-[#063f46]">Box score</h2>
         {boxTables}
       </div>
     );
@@ -179,8 +179,8 @@ export function HistoricalFinalBoxScore({
       >
         <div className="flex flex-col gap-2">
           <div>
-            <h2 className="text-sm font-semibold text-[#063f46]">Players</h2>
-            <p className="text-[10px] text-[#4a6366] mt-0.5">
+            <h2 className="type-section-heading text-[#063f46]">Players</h2>
+            <p className="type-secondary mt-0.5">
               This game — Box Score or Advanced. Not season role.
             </p>
           </div>
@@ -190,13 +190,13 @@ export function HistoricalFinalBoxScore({
           >
             <TabsTrigger
               value={HISTORICAL_PLAYER_VIEW_BOX}
-              className="px-3 text-xs text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+              className="type-interactive px-3 text-cc-secondary data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
             >
               Box Score
             </TabsTrigger>
             <TabsTrigger
               value={HISTORICAL_PLAYER_VIEW_ADVANCED}
-              className="px-3 text-xs text-[#4a6366] data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
+              className="type-interactive px-3 text-cc-secondary data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!"
             >
               Advanced
             </TabsTrigger>

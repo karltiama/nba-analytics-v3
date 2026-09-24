@@ -43,7 +43,7 @@ export function NextGameOverviewCard({ nextGame, games, opponentContext }: NextG
 
   return (
     <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-5">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#4a6366] mb-2">
+      <h3 className="type-section-heading text-[#063f46] mb-2">
         Next Game & Opponent Context
       </h3>
       {nextGame ? (
@@ -52,10 +52,10 @@ export function NextGameOverviewCard({ nextGame, games, opponentContext }: NextG
             <span className="font-bold text-[#063f46]">
               {nextGame.is_home ? 'vs' : '@'} {nextGame.opponent_abbr}
             </span>
-            <span className="text-[#8aa0a3]">·</span>
+            <span className="text-cc-secondary">·</span>
             <span
               className={cn(
-                'text-[10px] px-2 py-0.5 rounded-full font-semibold',
+                'type-badge px-2 py-0.5 rounded-full',
                 nextGame.is_home
                   ? 'bg-[#55ddb1]/25 text-[#075B5C]'
                   : 'bg-[#F8FBFA] border border-[#DCE9EA] text-[#063f46]'
@@ -65,68 +65,68 @@ export function NextGameOverviewCard({ nextGame, games, opponentContext }: NextG
             </span>
             {daysRest != null && (
               <>
-                <span className="text-[#8aa0a3]">·</span>
+                <span className="text-cc-secondary">·</span>
                 <span className="text-[#4a6366]">
                   {daysRest} day{daysRest !== 1 ? 's' : ''} rest
                 </span>
               </>
             )}
-            <span className="text-[#8aa0a3]">·</span>
+            <span className="text-cc-secondary">·</span>
             <span className="text-[#4a6366]">{formatGameDateTime(nextGame.start_time)}</span>
-            <span className="text-[#8aa0a3]">·</span>
+            <span className="text-cc-secondary">·</span>
             <span className="font-medium text-[#063f46]">
               {nextGame.is_home
                 ? `${nextGame.team_abbr} vs ${nextGame.opponent_abbr}`
                 : `${nextGame.team_abbr} @ ${nextGame.opponent_abbr}`}
             </span>
-            <span className="text-[#8aa0a3]">·</span>
+            <span className="text-cc-secondary">·</span>
             <span className="text-[#4a6366]">{nextGame.opponent_name}</span>
           </div>
 
           {opponentContext ? (
             <div className="pt-3 border-t border-[#DCE9EA]">
-              <p className="text-[10px] text-[#4a6366] uppercase mb-2">
+              <p className="type-metadata mb-2">
                 Opponent {nextGame.opponent_abbr} (season)
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-x-4 gap-y-2">
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">Def. rating</div>
+                  <div className="type-metadata">Def. rating</div>
                   <div className="text-base font-bold font-mono text-[#063f46] leading-tight">
                     {fmt(opponentContext.avg_defensive_rating)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">Pace</div>
+                  <div className="type-metadata">Pace</div>
                   <div className="text-base font-bold font-mono text-[#063f46] leading-tight">
                     {fmt(opponentContext.avg_pace)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">Pts allowed</div>
+                  <div className="type-metadata">Pts allowed</div>
                   <div className="text-base font-bold font-mono text-[#063f46] leading-tight">
                     {fmt(opponentContext.avg_points_allowed)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4a6366] uppercase">Reb allowed</div>
+                  <div className="type-metadata">Reb allowed</div>
                   <div className="text-base font-bold font-mono text-[#063f46] leading-tight">
                     {fmt(opponentContext.avg_rebounds_allowed)}
                   </div>
                 </div>
                 <div title="Not yet available in analytics">
-                  <div className="text-[10px] text-[#4a6366] uppercase">Ast allowed</div>
-                  <div className="text-base font-bold font-mono text-[#8aa0a3] leading-tight">—</div>
+                  <div className="type-metadata">Ast allowed</div>
+                  <div className="text-base font-bold font-mono text-cc-secondary leading-tight">—</div>
                 </div>
               </div>
             </div>
           ) : (
             <div className="pt-3 border-t border-[#DCE9EA]">
-              <p className="text-sm text-[#4a6366]">Opponent team stats not available.</p>
+              <p className="type-secondary">Opponent team stats not available.</p>
             </div>
           )}
         </div>
       ) : (
-        <p className="text-[#4a6366]">No upcoming game scheduled.</p>
+        <p className="type-secondary">No upcoming game scheduled.</p>
       )}
     </section>
   );

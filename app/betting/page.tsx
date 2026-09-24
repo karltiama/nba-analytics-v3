@@ -435,10 +435,10 @@ export default function BettingDashboard(props: PageProps) {
             )}
             {error && !unauthorized && (
               <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-red-500">
-                <p className="text-sm text-red-600">Error loading data: {error}</p>
+                <p className="type-body text-red-600">Error loading data: {error}</p>
                 <button 
                   onClick={() => { setError(null); fetchGames(selectedDate); }}
-                  className="mt-2 text-xs text-[#075B5C] hover:underline"
+                  className="type-interactive mt-2 text-[#075B5C] hover:underline"
                 >
                   Retry
                 </button>
@@ -451,8 +451,8 @@ export default function BettingDashboard(props: PageProps) {
             {/* Games for selected date */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-[#063f46]">{gamesSectionTitle}</h2>
-                <span className="text-xs text-[#4a6366]">
+                <h2 className="type-section-heading text-[#063f46]">{gamesSectionTitle}</h2>
+                <span className="type-metadata">
                   {loadingGames ? 'Loading...' : `${sortedGames.length} games`}
                 </span>
               </div>
@@ -465,20 +465,20 @@ export default function BettingDashboard(props: PageProps) {
                 </div>
               ) : sortedGames.length === 0 ? (
                 <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
-                  <p className="text-[#063f46] font-medium">{emptyGamesMessage}</p>
-                  <p className="text-sm text-[#4a6366] mt-2">
+                  <p className="type-section-heading text-[#063f46]">{emptyGamesMessage}</p>
+                  <p className="type-body mt-2 text-cc-secondary">
                     You can still research historical props or open a parlay workspace.
                   </p>
                   <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                     <Link
                       href="/betting/props-explorer"
-                      className="inline-flex items-center justify-center min-h-[44px] rounded-xl border border-[#075B5C] px-4 text-sm font-semibold text-[#075B5C] hover:bg-[#55ddb1]/20"
+                      className="type-interactive inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[#075B5C] px-4 text-[#075B5C] hover:bg-[#55ddb1]/20"
                     >
                       Explore Props
                     </Link>
                     <Link
                       href="/parlay-workspace"
-                      className="inline-flex items-center justify-center min-h-[44px] rounded-xl border border-[#DCE9EA] px-4 text-sm font-medium text-[#063f46] hover:bg-[#f7f9f7]"
+                      className="type-interactive inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[#DCE9EA] px-4 text-[#063f46] hover:bg-[#f7f9f7]"
                     >
                       Open Workspace
                     </Link>

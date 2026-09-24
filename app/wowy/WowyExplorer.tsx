@@ -256,7 +256,7 @@ export function WowyExplorer({
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <header className="flex flex-col lg:flex-row lg:items-end gap-6">
         <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8aa0a3]">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cc-secondary">
             <Link href="/betting" className="text-[#075B5C] hover:underline">
               Analytics
             </Link>
@@ -267,7 +267,7 @@ export function WowyExplorer({
             <span className="text-[#55ddb1]">WOWY</span>{' '}
             <span className="text-[#063f46]">Impact</span>
           </h1>
-          <p className="text-sm text-[#4a6366] max-w-2xl">
+          <p className="type-body max-w-2xl text-cc-secondary">
             See how a team scored in games a player appeared versus games with a verified did-not-play roster row. Add a
             teammate to see that player&apos;s own box split instead. This is game-level participation, not shared-court possessions.
             A selected teammate is not implied to be injured.
@@ -282,14 +282,14 @@ export function WowyExplorer({
             />
             <div>
               <p className="text-base font-bold text-[#063f46]">{subject.fullName}</p>
-              <p className="text-xs text-[#4a6366]">
+              <p className="type-secondary">
                 {subject.position ?? 'Player'}
                 {selectedTeam ? ` · ${selectedTeam.abbreviation}` : ''}
               </p>
             </div>
           </div>
         ) : (
-          <blockquote className="lg:max-w-xs text-sm text-[#4a6366] border-l-4 border-[#55ddb1] pl-4">
+          <blockquote className="type-body border-l-4 border-[#55ddb1] pl-4 text-cc-secondary lg:max-w-xs">
             More than ratings. A game-level look at how a team&apos;s box moved with or without a player, or how a
             player&apos;s box moved with or without a teammate.
           </blockquote>
@@ -299,7 +299,7 @@ export function WowyExplorer({
       <section className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 sm:p-6 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <label className="block space-y-1.5 relative">
-            <span className="text-xs font-semibold text-[#4a6366]">Player</span>
+            <span className="type-interactive">Player</span>
             <input
               value={subject ? subject.fullName : playerQuery}
               onChange={(e) => {
@@ -317,7 +317,7 @@ export function WowyExplorer({
                   <li key={hit.playerId}>
                     <button
                       type="button"
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#f7f9f7]"
+                      className="type-table-data w-full px-3 py-2 text-left text-[#063f46] hover:bg-[#f7f9f7]"
                       onClick={() => {
                         trackEvent(
                           PLAYER_SEARCH_RESULT_OPENED,
@@ -331,7 +331,7 @@ export function WowyExplorer({
                       }}
                     >
                       {hit.fullName}
-                      {hit.position ? <span className="text-[#8aa0a3]"> · {hit.position}</span> : null}
+                      {hit.position ? <span className="type-metadata"> · {hit.position}</span> : null}
                     </button>
                   </li>
                 ))}
@@ -340,7 +340,7 @@ export function WowyExplorer({
           </label>
 
           <label className="block space-y-1.5">
-            <span className="text-xs font-semibold text-[#4a6366]">Season</span>
+            <span className="type-interactive">Season</span>
             <select
               value={season}
               onChange={(e) => {
@@ -364,7 +364,7 @@ export function WowyExplorer({
           </label>
 
           <label className="block space-y-1.5">
-            <span className="text-xs font-semibold text-[#4a6366]">Team stint</span>
+            <span className="type-interactive">Team stint</span>
             <select
               value={teamId}
               onChange={(e) => {
@@ -384,7 +384,7 @@ export function WowyExplorer({
               ))}
             </select>
             {selectedTeam ? (
-              <p className="text-[11px] text-[#8aa0a3]">
+              <p className="type-metadata">
                 Game-log coverage {selectedTeam.firstGameDate} to {selectedTeam.lastGameDate}. Not a verified trade
                 date.
               </p>
@@ -392,7 +392,7 @@ export function WowyExplorer({
           </label>
 
           <label className="block space-y-1.5">
-            <span className="text-xs font-semibold text-[#4a6366]">Season type</span>
+            <span className="type-interactive">Season type</span>
             <select
               value={seasonType}
               onChange={(e) => {
@@ -412,7 +412,7 @@ export function WowyExplorer({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="block space-y-1.5">
-            <span className="text-xs font-semibold text-[#4a6366]">Teammate (optional)</span>
+            <span className="type-interactive">Teammate (optional)</span>
             <select
               value={selection.visibleTeammateId ?? ''}
               onChange={(e) => {
@@ -436,7 +436,7 @@ export function WowyExplorer({
           </label>
 
           <div className="space-y-1.5">
-            <span className="text-xs font-semibold text-[#4a6366]">Stat view</span>
+            <span className="type-interactive">Stat view</span>
             <div className="flex rounded-lg border border-[#DCE9EA] overflow-hidden">
               <button
                 type="button"
@@ -445,7 +445,7 @@ export function WowyExplorer({
                   setView('perGame');
                   trackEvent(WOWY_FILTER_CHANGED, wowyStatViewFilterProperties('perGame'));
                 }}
-                className={`flex-1 px-3 py-2 text-sm font-semibold ${
+                className={`type-interactive flex-1 px-3 py-2 ${
                   view === 'perGame' || !selection.visibleTeammateId ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'
                 }`}
               >
@@ -459,7 +459,7 @@ export function WowyExplorer({
                   trackEvent(WOWY_FILTER_CHANGED, wowyStatViewFilterProperties('perMinute'));
                 }}
                 disabled={!selection.visibleTeammateId}
-                className={`flex-1 px-3 py-2 text-sm font-semibold disabled:opacity-40 ${
+                className={`type-interactive flex-1 px-3 py-2 disabled:opacity-40 ${
                   view === 'perMinute' && selection.visibleTeammateId ? 'bg-[#063f46] text-white' : 'bg-white text-[#4a6366]'
                 }`}
               >
@@ -471,28 +471,28 @@ export function WowyExplorer({
       </section>
 
       {state === 'loading' && (
-        <div className="bg-white border border-[#DCE9EA] rounded-2xl p-8 text-sm text-[#4a6366]">Loading comparison…</div>
+        <div className="type-secondary rounded-2xl border border-[#DCE9EA] bg-white p-8">Loading comparison…</div>
       )}
       {state === 'error' && (
-        <div className="bg-white border border-[#DCE9EA] rounded-2xl p-6 text-sm text-red-800">
+        <div className="type-body rounded-2xl border border-[#DCE9EA] bg-white p-6 text-red-800">
           {error ?? 'Something went wrong.'}
         </div>
       )}
       {state === 'unavailable' && (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl p-6 space-y-2">
-          <h2 className="text-sm font-semibold text-[#063f46]">Unavailable data</h2>
-          <p className="text-sm text-[#4a6366]">{error ?? 'This pair cannot be classified with current identity or coverage.'}</p>
+          <h2 className="type-section-heading text-[#063f46]">Unavailable data</h2>
+          <p className="type-body text-cc-secondary">{error ?? 'This pair cannot be classified with current identity or coverage.'}</p>
         </div>
       )}
       {state === 'idle' && !subject && (
-        <div className="bg-white border border-[#DCE9EA] rounded-2xl p-6 text-sm text-[#4a6366]">
+        <div className="type-body rounded-2xl border border-[#DCE9EA] bg-white p-6 text-cc-secondary">
           Select a player and team stint to load team with/without that player. A teammate is optional.
         </div>
       )}
       {state === 'empty' && summary && wowySummaryMatchesSelection(summary, selection.teammateIdForPair) && (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl p-6 space-y-2">
-          <h2 className="text-sm font-semibold text-[#063f46]">No eligible with/without games</h2>
-          <p className="text-sm text-[#4a6366]">
+          <h2 className="type-section-heading text-[#063f46]">No eligible with/without games</h2>
+          <p className="type-body text-cc-secondary">
             {summary.excludedCount} game(s) were classified but none met both-played or verified-DNP rules for this
             filter. Games without a verified teammate participation row are excluded rather than counted as WITHOUT (
             {summary.unknownMembershipCount} unknown membership).
@@ -530,9 +530,9 @@ export function WowyExplorer({
 
 function Methodology() {
   return (
-    <section className="bg-white border border-[#DCE9EA] rounded-2xl p-4 sm:p-6 space-y-3 text-sm text-[#4a6366]">
-      <h2 className="text-base font-semibold text-[#063f46]">Coverage and methodology</h2>
-      <ul className="list-disc pl-5 space-y-1.5">
+    <section className="space-y-3 rounded-2xl border border-[#DCE9EA] bg-white p-4 sm:p-6">
+      <h2 className="type-section-heading text-[#063f46]">Coverage and methodology</h2>
+      <ul className="type-body list-disc space-y-1.5 pl-5 text-cc-secondary">
         <li>
           <strong className="text-[#063f46]">Player only:</strong> team counting stats in games the subject appeared versus
           games with a verified DNP roster row in historical player game logs. Missing logs stay unknown, not without.

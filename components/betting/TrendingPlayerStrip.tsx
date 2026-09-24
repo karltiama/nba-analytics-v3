@@ -61,7 +61,7 @@ function PlayerHeadshot({ nbaId, name }: { nbaId: string | null; name: string })
   if (!nbaId || failed) {
     return (
       <div className={`${shell} flex items-center justify-center`} aria-hidden>
-        <span className="text-sm font-bold text-[#8aa0a3]">{playerInitials(name)}</span>
+        <span className="text-sm font-bold text-cc-secondary">{playerInitials(name)}</span>
       </div>
     );
   }
@@ -123,19 +123,19 @@ function TrendingCard({
                  snap-start"
     >
       <div className="flex gap-2.5">
-        <span className="text-[10px] font-mono text-[#8aa0a3] leading-none pt-1 select-none shrink-0">
+        <span className="type-metadata pt-1 font-mono leading-none select-none shrink-0">
           #{rank}
         </span>
         <PlayerHeadshot nbaId={player.nba_player_id ?? null} name={player.full_name} />
         <div className="flex flex-col justify-between py-0.5 shrink-0 min-w-[160px]">
           <div>
             <div className="flex items-center gap-1.5">
-              <p className="text-sm font-semibold text-[#063f46] whitespace-nowrap leading-tight group-hover:text-[#075B5C] transition-colors">
+              <p className="type-card-data whitespace-nowrap text-[#063f46] group-hover:text-[#075B5C] transition-colors">
                 {player.full_name}
               </p>
               {badge && (
                 <span
-                  className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 leading-none"
+                  className="type-badge shrink-0 rounded-full px-1.5 py-0.5 leading-none"
                   style={{ backgroundColor: `${badge.color}20`, color: badge.color }}
                 >
                   {badge.label}
@@ -144,27 +144,27 @@ function TrendingCard({
             </div>
             <div className="flex items-center gap-1 mt-0.5">
               <TeamLogo team={player.team_abbr} size="xs" decorative />
-              <span className="text-[10px] text-[#4a6366] font-medium">{player.team_abbr}</span>
+              <span className="type-secondary">{player.team_abbr}</span>
               {player.next_opponent_abbr && (
                 <>
-                  <span className="text-[10px] text-[#DCE9EA]">·</span>
-                  <span className="text-[10px] text-[#8aa0a3]">vs {player.next_opponent_abbr}</span>
+                  <span className="text-[#DCE9EA]" aria-hidden>·</span>
+                  <span className="type-metadata">vs {player.next_opponent_abbr}</span>
                 </>
               )}
             </div>
           </div>
           <div className="flex items-end justify-between gap-8 mt-2 whitespace-nowrap">
             <div>
-              <span className="text-[10px] text-[#4a6366]">{STAT_LABELS[stat]} L5</span>
+              <span className="type-metadata">{STAT_LABELS[stat]} L5</span>
               <p className="text-lg font-bold text-[#063f46] font-mono leading-none mt-0.5">
                 {player.l5_avg.toFixed(1)}
               </p>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-[#4a6366]">vs szn</span>
+              <span className="type-metadata">vs szn</span>
               <div className="flex items-center gap-1 justify-end mt-0.5">
                 <TrendingUp className="w-3 h-3 text-[#20B95A]" />
-                <span className="text-sm font-bold font-mono text-[#20B95A] leading-none">
+                <span className="type-card-data font-mono leading-none text-[#20B95A]">
                   +{diff.toFixed(1)}
                 </span>
               </div>
@@ -267,8 +267,8 @@ export function TrendingPlayerStrip() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-amber-600" />
-          <h2 className="text-lg font-semibold text-[#063f46]">Recent form</h2>
-          <span className="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium leading-none">
+          <h2 className="type-section-heading text-[#063f46]">Recent form</h2>
+          <span className="type-badge rounded-full bg-amber-50 px-2 py-0.5 leading-none text-amber-700">
             L5 vs SZN
           </span>
         </div>
@@ -299,16 +299,16 @@ export function TrendingPlayerStrip() {
       </div>
 
       {/* Stat filter tabs */}
-      <div className="flex items-center gap-1 mb-3">
+      <div className="mb-3 flex items-center gap-1 overflow-x-auto">
         {STAT_TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => setStat(t.key)}
-            className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all duration-150
+            className={`type-interactive shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 transition-all duration-150
               ${
                 stat === t.key
-                  ? 'bg-[#F8FBFA] border border-[#DCE9EA] text-[#063F46]'
-                  : 'text-[#72869A] hover:text-[#063f46] hover:bg-[#f7f9f7]'
+                  ? 'border border-[#DCE9EA] bg-[#F8FBFA] text-[#063F46]'
+                  : 'text-cc-secondary hover:bg-[#f7f9f7] hover:text-[#063f46]'
               }`}
           >
             {t.label}
@@ -321,7 +321,7 @@ export function TrendingPlayerStrip() {
         <StripSkeleton />
       ) : players.length === 0 ? (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6 text-center">
-          <p className="text-sm text-[#4a6366]">No trending players found for {STAT_LABELS[stat]}</p>
+          <p className="type-body text-cc-secondary">No trending players found for {STAT_LABELS[stat]}</p>
         </div>
       ) : (
         <div className="relative">

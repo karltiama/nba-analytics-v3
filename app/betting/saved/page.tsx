@@ -34,7 +34,7 @@ function MatchupCell({ matchup }: { matchup: string | null }) {
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[#063f46]">
       <TeamLogo team={away} size="xs" decorative />
       <span>{away}</span>
-      <span className="text-[#8aa0a3]">@</span>
+      <span className="text-cc-secondary">@</span>
       <TeamLogo team={home} size="xs" decorative />
       <span>{home}</span>
     </span>
@@ -102,8 +102,8 @@ export default function SavedResearchPage() {
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-[#063f46]">Saved Research</h1>
-        <p className="text-xs text-[#4a6366] mt-1 max-w-2xl">
+        <h1 className="type-page-title text-[#063f46]">Saved Research</h1>
+        <p className="type-body text-cc-secondary mt-1 max-w-2xl">
           Bookmarks of markets you saved while researching. These are not active bets and are not
           live sportsbook offers.
         </p>
@@ -111,28 +111,28 @@ export default function SavedResearchPage() {
 
       {unauthorized && (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-amber-500 mb-4">
-          <p className="text-sm text-amber-800">Sign in to view saved research.</p>
+          <p className="type-body text-amber-800">Sign in to view saved research.</p>
         </div>
       )}
       {error && (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-red-500 mb-4">
-          <p className="text-sm text-red-700">{error}</p>
+          <p className="type-body text-red-700">{error}</p>
         </div>
       )}
 
       <div className="flex flex-col xl:flex-row xl:items-start gap-4">
         <div className="flex-1 min-w-0">
           {loading ? (
-            <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center text-sm text-[#4a6366]">
+            <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center type-secondary">
               Loading saved research…
             </div>
           ) : rows.length === 0 && !unauthorized ? (
             <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center space-y-3">
-              <p className="text-sm text-[#063f46]">{empty.title}</p>
-              <p className="text-xs text-[#4a6366] max-w-md mx-auto">{empty.detail}</p>
+              <p className="type-card-data text-[#063f46]">{empty.title}</p>
+              <p className="type-secondary max-w-md mx-auto">{empty.detail}</p>
               <Link
                 href={propsExplorerHref({})}
-                className="inline-flex text-sm text-[#075B5C] hover:underline"
+                className="type-interactive inline-flex text-[#075B5C] hover:underline"
               >
                 {empty.cta}
               </Link>
@@ -140,9 +140,9 @@ export default function SavedResearchPage() {
           ) : (
             <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left type-table-data">
                   <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
-                    <tr className="text-[#4a6366]">
+                    <tr className="type-metadata">
                       <th className="py-2 px-2 font-medium">Player</th>
                       <th className="py-2 px-2 font-medium">Matchup</th>
                       <th className="py-2 px-2 font-medium">Date</th>
@@ -170,7 +170,7 @@ export default function SavedResearchPage() {
                       return (
                         <tr key={r.id} className="border-b border-[#DCE9EA] hover:bg-[#f7f9f7]">
                           <td className="py-1.5 px-2">
-                            <Link href={links.playerHref} className="text-[#075B5C] hover:underline">
+                            <Link href={links.playerHref} className="type-interactive text-[#075B5C] hover:underline">
                               {r.playerName ?? r.playerId}
                             </Link>
                           </td>
@@ -184,30 +184,30 @@ export default function SavedResearchPage() {
                             {(r.propType ?? '—').replace(/_/g, ' ')}
                           </td>
                           <td className="py-1.5 px-2 capitalize text-[#063f46]">{r.side ?? '—'}</td>
-                          <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
+                          <td className="py-1.5 px-2 text-right font-mono text-[#063f46] whitespace-nowrap">
                             {formatLine(r.lineValue)}
                           </td>
                           <td className="py-1.5 px-2 text-[#4a6366]">{r.sportsbook ?? '—'}</td>
-                          <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">{formatOdds(r.oddsAmerican)}</td>
+                          <td className="py-1.5 px-2 text-right font-mono text-[#063f46] whitespace-nowrap">{formatOdds(r.oddsAmerican)}</td>
                           <td className="py-1.5 px-2">
-                            <span className="text-[10px] uppercase tracking-wide text-[#4a6366]">
+                            <span className="type-badge text-[#4a6366]">
                               {r.lineLabel}
                             </span>
                           </td>
-                          <td className="py-1.5 px-2 text-[10px] text-[#8aa0a3] whitespace-nowrap">
+                          <td className="py-1.5 px-2 type-metadata whitespace-nowrap">
                             {r.createdAt ? new Date(r.createdAt).toLocaleString() : '—'}
                           </td>
                           <td className="py-1.5 px-2">
                             <div className="flex flex-wrap gap-1">
                               <Link
                                 href={links.gameHref}
-                                className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
+                                className="type-interactive px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
                               >
                                 Game
                               </Link>
                               <Link
                                 href={links.explorerHref}
-                                className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
+                                className="type-interactive px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
                               >
                                 Explorer
                               </Link>
@@ -227,7 +227,7 @@ export default function SavedResearchPage() {
                                     snapshotAt: r.snapshotAt ?? '',
                                   });
                                 }}
-                                className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
+                                className="type-interactive px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7]"
                               >
                                 Compare
                               </button>
@@ -235,7 +235,7 @@ export default function SavedResearchPage() {
                                 type="button"
                                 disabled={removingId === r.id}
                                 onClick={() => void remove(r.id)}
-                                className="text-[10px] px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7] disabled:opacity-40"
+                                className="type-interactive px-1.5 py-0.5 rounded border border-[#DCE9EA] text-[#063f46] hover:bg-[#f7f9f7] disabled:opacity-40"
                               >
                                 {removingId === r.id ? '…' : 'Remove'}
                               </button>

@@ -37,7 +37,7 @@ export function TeamSeasonSwitcher({
             })}
             scroll={false}
             className={cn(
-              'text-[10px] px-2 py-0.5 rounded-full font-semibold transition-colors',
+              'type-interactive px-2 py-0.5 rounded-full transition-colors',
               active
                 ? 'bg-[#063f46] text-white'
                 : 'bg-[#f7f9f7] border border-[#DCE9EA] text-[#4a6366] hover:text-[#063f46] hover:bg-white'
