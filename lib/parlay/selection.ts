@@ -154,6 +154,7 @@ export function addResultNotice(result: AddExplorerOfferResult): string {
 export function snapshotDisplayLabel(kind: ParlayOfferSnapshotKind): string {
   if (kind === 'decision_close') return 'Decision Close';
   if (kind === 'live_current') return 'Current';
+  if (kind === 'shared_snapshot') return 'Shared snapshot';
   return kind;
 }
 
@@ -182,6 +183,12 @@ export function workspaceSourceLabel(legs: SelectedParlayLeg[]): string | null {
   const context = selectionSourceContext(legs);
   if (context === 'xray') return 'Imported from Parlay XRay';
   if (context === 'props_explorer') return 'Built from Props Explorer';
+  if (context === 'shared_slip') return 'Loaded from a shared slip';
+  if (context === 'mixed') {
+    const sources = new Set(legs.map((leg) => leg.offer.source));
+    if (sources.has('shared_slip')) return 'Includes legs from a shared slip';
+    return 'Combined from Parlay XRay and Props Explorer';
+  }
   return 'Combined from Parlay XRay and Props Explorer';
 }
 

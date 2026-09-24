@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import { X } from 'lucide-react';
+import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
+import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
+import { canonicalBetLegFromSelectedParlayLeg } from '@/lib/bet-slip/adapt-parlay-leg';
 import { mobileParlayBarCopy } from '@/lib/parlay/mobile-bar-copy';
 import {
   PARLAY_WORKSPACE_HREF,
@@ -9,6 +12,7 @@ import {
   summarizeCanonicalSelection,
   type SelectedParlayLeg,
 } from '@/lib/parlay/selection';
+import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 
 function OpenWorkspaceLink({ className, children }: { className?: string; children?: string }) {
   return (
@@ -16,7 +20,7 @@ function OpenWorkspaceLink({ className, children }: { className?: string; childr
       href={PARLAY_WORKSPACE_HREF}
       className={
         className ??
-        'type-interactive mx-2.5 mb-2.5 flex min-h-[44px] items-center justify-center rounded-lg border border-[#075B5C] px-3 py-2.5 text-center text-[#075B5C] hover:bg-[#55ddb1]/20'
+        'type-interactive flex min-h-[44px] flex-1 items-center justify-center rounded-lg border border-[#075B5C] px-3 py-2.5 text-center text-[#075B5C] hover:bg-[#55ddb1]/20'
       }
     >
       {children ?? 'Open Workspace'}
@@ -131,7 +135,23 @@ function TrayBody({
           />
         ))}
       </ul>
-      <OpenWorkspaceLink />
+      <div className="mx-2.5 mb-2.5 flex flex-col gap-2">
+        <div className="flex gap-2">
+          <OpenWorkspaceLink />
+          <ShareParlayControls
+            legs={legs}
+            source="props_explorer"
+            surface="props_explorer"
+            className="type-interactive flex min-h-[44px] flex-1 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-3 py-2.5 text-center text-white hover:opacity-90 disabled:opacity-40"
+          />
+        </div>
+        <SendToSportsbookControls
+          legs={legs.map(handoffSheetLegFromSelected)}
+          spikeLegs={legs.map((leg) => canonicalBetLegFromSelectedParlayLeg(leg))}
+          surface="props_explorer"
+          className="type-interactive flex min-h-[44px] w-full items-center justify-center rounded-lg border border-[#075B5C] px-3 py-2.5 text-center text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
+        />
+      </div>
     </div>
   );
 }
@@ -159,14 +179,24 @@ export function PropsExplorerParlayTray({
       </div>
 
       <div className="lg:hidden">
-        <Link
-          href={PARLAY_WORKSPACE_HREF}
-          className="fixed inset-x-4 z-40 flex min-h-11 items-center justify-between gap-3 rounded-2xl border border-[#DCE9EA] bg-white px-4 py-3 shadow-sm bottom-[max(1rem,env(safe-area-inset-bottom))]"
-          aria-label={`${mobileParlayBarCopy(legs)}. Review Parlay`}
-        >
-          <span className="type-secondary min-w-0 truncate text-[#063f46]">{mobileParlayBarCopy(legs)}</span>
-          <span className="type-interactive shrink-0 text-[#075B5C]">Review Parlay</span>
-        </Link>
+        <div className="fixed inset-x-4 z-40 flex min-h-11 items-center gap-2 bottom-[max(1rem,env(safe-area-inset-bottom))]">
+          <Link
+            href={PARLAY_WORKSPACE_HREF}
+            className="flex min-h-11 min-w-0 flex-1 items-center justify-between gap-3 rounded-2xl border border-[#DCE9EA] bg-white px-4 py-3 shadow-sm"
+            aria-label={`${mobileParlayBarCopy(legs)}. Review Parlay`}
+          >
+            <span className="type-secondary min-w-0 truncate text-[#063f46]">
+              {mobileParlayBarCopy(legs)}
+            </span>
+            <span className="type-interactive shrink-0 text-[#075B5C]">Review Parlay</span>
+          </Link>
+          <ShareParlayControls
+            legs={legs}
+            source="props_explorer"
+            surface="props_explorer"
+            className="type-interactive flex min-h-11 shrink-0 items-center justify-center rounded-2xl border border-[#075B5C] bg-[#075B5C] px-4 text-white shadow-sm hover:opacity-90 disabled:opacity-40"
+          />
+        </div>
       </div>
     </>
   );

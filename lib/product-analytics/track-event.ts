@@ -33,6 +33,14 @@ export const PRODUCT_EVENTS = {
   PROP_OPENED: 'prop_opened',
   PROP_ADDED_TO_PARLAY: 'prop_added_to_parlay',
   PROP_CONTEXT_OPENED: 'prop_context_opened',
+  SHARED_SLIP_CREATED: 'shared_slip_created',
+  SHARED_SLIP_COPY_LINK: 'shared_slip_copy_link',
+  SHARED_SLIP_NATIVE_SHARE: 'shared_slip_native_share',
+  SHARED_SLIP_VIEWED: 'shared_slip_viewed',
+  SHARED_SLIP_CTA_CLICKED: 'shared_slip_cta_clicked',
+  SPORTSBOOK_HANDOFF_OPENED: 'sportsbook_handoff_opened',
+  SPORTSBOOK_HANDOFF_PROVIDER_SELECTED: 'sportsbook_handoff_provider_selected',
+  SPORTSBOOK_HANDOFF_OUTBOUND_CLICKED: 'sportsbook_handoff_outbound_clicked',
   WOWY_FILTER_CHANGED: 'wowy_filter_changed',
   CONTEXT_CHECK_OPENED: 'context_check_opened',
   UPGRADE_CLICKED: 'upgrade_clicked',
@@ -127,6 +135,55 @@ export type PropContextOpenedProperties = {
   market: ClosedPropMarket;
 };
 
+export type SharedSlipSurface = 'props_explorer' | 'parlay_workspace' | 'shared_slip';
+
+export type SharedSlipCreatedProperties = {
+  surface: SharedSlipSurface;
+  leg_count: number;
+  reused: boolean;
+};
+
+export type SharedSlipCopyLinkProperties = {
+  surface: SharedSlipSurface;
+};
+
+export type SharedSlipNativeShareProperties = {
+  surface: SharedSlipSurface;
+};
+
+export type SharedSlipViewedProperties = {
+  surface: 'shared_slip';
+  leg_count: number;
+};
+
+export type SharedSlipCtaClickedProperties = {
+  surface: 'shared_slip';
+  action: 'add_to_court_context' | 'open_props_explorer' | 'share' | 'sign_in';
+};
+
+export type SportsbookHandoffSurface = 'props_explorer' | 'parlay_workspace' | 'shared_slip';
+
+export type SportsbookHandoffOpenedProperties = {
+  surface: SportsbookHandoffSurface;
+  leg_count: number;
+  live_resolution_available: boolean;
+};
+
+export type SportsbookHandoffProviderSelectedProperties = {
+  surface: SportsbookHandoffSurface;
+  provider: string;
+  leg_count: number;
+  live_resolution_available: boolean;
+};
+
+export type SportsbookHandoffOutboundClickedProperties = {
+  surface: SportsbookHandoffSurface;
+  provider: string;
+  handoff_level: string;
+  leg_count: number;
+  live_resolution_available: boolean;
+};
+
 export type WowyFilterChangedProperties =
   | { surface: 'wowy'; filter: 'season'; value: '2023' | '2024' | '2025' }
   | { surface: 'wowy'; filter: 'team_stint' }
@@ -217,6 +274,14 @@ export type ProductEventProperties = {
   [PRODUCT_EVENTS.PROP_OPENED]: PropExplorerEventProperties;
   [PRODUCT_EVENTS.PROP_ADDED_TO_PARLAY]: PropExplorerEventProperties;
   [PRODUCT_EVENTS.PROP_CONTEXT_OPENED]: PropContextOpenedProperties;
+  [PRODUCT_EVENTS.SHARED_SLIP_CREATED]: SharedSlipCreatedProperties;
+  [PRODUCT_EVENTS.SHARED_SLIP_COPY_LINK]: SharedSlipCopyLinkProperties;
+  [PRODUCT_EVENTS.SHARED_SLIP_NATIVE_SHARE]: SharedSlipNativeShareProperties;
+  [PRODUCT_EVENTS.SHARED_SLIP_VIEWED]: SharedSlipViewedProperties;
+  [PRODUCT_EVENTS.SHARED_SLIP_CTA_CLICKED]: SharedSlipCtaClickedProperties;
+  [PRODUCT_EVENTS.SPORTSBOOK_HANDOFF_OPENED]: SportsbookHandoffOpenedProperties;
+  [PRODUCT_EVENTS.SPORTSBOOK_HANDOFF_PROVIDER_SELECTED]: SportsbookHandoffProviderSelectedProperties;
+  [PRODUCT_EVENTS.SPORTSBOOK_HANDOFF_OUTBOUND_CLICKED]: SportsbookHandoffOutboundClickedProperties;
   [PRODUCT_EVENTS.WOWY_FILTER_CHANGED]: WowyFilterChangedProperties;
   [PRODUCT_EVENTS.CONTEXT_CHECK_OPENED]: ContextCheckOpenedProperties;
   [PRODUCT_EVENTS.UPGRADE_CLICKED]: UpgradeClickedProperties;

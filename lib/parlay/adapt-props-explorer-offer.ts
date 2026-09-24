@@ -31,14 +31,21 @@ import {
 
 export const PARLAY_OFFER_SOURCE_PROPS_EXPLORER = 'props_explorer' as const;
 export const PARLAY_OFFER_SOURCE_XRAY = 'xray' as const;
+export const PARLAY_OFFER_SOURCE_SHARED_SLIP = 'shared_slip' as const;
 export type ParlayOfferSourceKind =
   | typeof PARLAY_OFFER_SOURCE_PROPS_EXPLORER
-  | typeof PARLAY_OFFER_SOURCE_XRAY;
-export type ParlayOfferSourceProvenance = 'selected_canonical_offer' | 'xray_confirmed';
+  | typeof PARLAY_OFFER_SOURCE_XRAY
+  | typeof PARLAY_OFFER_SOURCE_SHARED_SLIP;
+export type ParlayOfferSourceProvenance =
+  | 'selected_canonical_offer'
+  | 'xray_confirmed'
+  | 'shared_slip_import';
 
 export const PARLAY_SNAPSHOT_DECISION_CLOSE = PLAYER_PROP_COMPARISON_KIND;
 export const PARLAY_SNAPSHOT_LIVE_CURRENT = 'live_current' as const;
-export type ParlayOfferSnapshotKind = PlayerPropComparisonKind;
+export const PARLAY_SNAPSHOT_SHARED = 'shared_snapshot' as const;
+/** Includes shared_snapshot for historical share imports (not live priced offers). */
+export type ParlayOfferSnapshotKind = PlayerPropComparisonKind | typeof PARLAY_SNAPSHOT_SHARED;
 
 export const ADAPTER_FAILURE_CODES = [
   'MISSING_PLAYER_ID',

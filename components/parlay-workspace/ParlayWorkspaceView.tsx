@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
+import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
 import { XrayResultsPanel } from '@/components/parlay-xray/XrayResultsPanel';
+import { canonicalBetLegFromSelectedParlayLeg } from '@/lib/bet-slip/adapt-parlay-leg';
 import { shouldShowXrayOcrProvenance } from '@/lib/parlay/adapt-xray-confirmed';
 import {
   marketDisplayLabel,
@@ -13,7 +16,7 @@ import {
 import type { WorkspaceAnalysisEligibility } from '@/lib/parlay/workspace-analysis';
 import type { WorkspaceAnalysisRecord } from '@/lib/parlay/selection-store';
 import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
-
+import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 function formatOdds(odds: number | null): string {
   if (odds == null) return '—';
   return odds > 0 ? `+${odds}` : String(odds);
@@ -94,6 +97,7 @@ function WorkspaceActions({
   showingResults,
   onAnalyze,
   onShowReview,
+  legs,
 }: {
   explorerHref: string;
   onClear: () => void;
@@ -102,6 +106,7 @@ function WorkspaceActions({
   showingResults: boolean;
   onAnalyze: () => void;
   onShowReview: () => void;
+  legs: SelectedParlayLeg[];
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -125,6 +130,25 @@ function WorkspaceActions({
           {analysisBusy ? 'Building Court Context analysis…' : 'Analyze with Court Context'}
         </button>
       ) : null}
+      <ShareParlayControls
+        legs={legs}
+        source={
+          legs.every((leg) => leg.offer.source === 'xray')
+            ? 'parlay_xray'
+            : legs.every((leg) => leg.offer.source === 'shared_slip')
+              ? 'shared_slip'
+              : 'props_explorer'
+        }
+        surface="parlay_workspace"
+        className="type-interactive inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
+      />
+      <SendToSportsbookControls
+        legs={legs.map(handoffSheetLegFromSelected)}
+        spikeLegs={legs.map((leg) => canonicalBetLegFromSelectedParlayLeg(leg))}
+        surface="parlay_workspace"
+        fromSharedSnapshot={legs.some((leg) => leg.offer.snapshotKind === 'shared_snapshot')}
+        className="type-interactive inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
+      />
       <Link
         href={explorerHref}
         className="type-interactive inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg border border-[#075B5C] text-[#075B5C] hover:bg-[#55ddb1]/20"
@@ -242,6 +266,7 @@ export function ParlayWorkspaceView({
       showingResults={showingResults}
       onAnalyze={onAnalyze}
       onShowReview={onShowReview}
+      legs={legs}
     />
   );
 

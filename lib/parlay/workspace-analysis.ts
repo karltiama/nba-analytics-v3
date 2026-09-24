@@ -106,6 +106,14 @@ export function evaluateWorkspaceAnalysisEligibility(
     });
   }
 
+  if (snapshots.has('shared_snapshot')) {
+    reasons.push({
+      code: 'MIXED_SNAPSHOT',
+      message:
+        'Shared snapshot legs keep historical share prices. Re-select live or Decision Close offers to analyze.',
+    });
+  }
+
   if (gameIds.size > 1) {
     reasons.push({
       code: 'MULTI_GAME',
