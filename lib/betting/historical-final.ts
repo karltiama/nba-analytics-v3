@@ -171,12 +171,12 @@ export function groupBoxScoreByTeam(
   };
 }
 
-/** Sticky nav for historical Finals. Starting Five lives in Overview, not as its own pill. */
+/** Sticky nav for historical Finals. Starting Five lives in Overview, not as its own pill. Timeline is last. */
 export type HistoricalFinalNavId =
   | 'section-box'
   | 'section-context'
-  | 'section-timeline'
-  | 'section-odds';
+  | 'section-odds'
+  | 'section-timeline';
 
 export function historicalFinalNavIds(input: {
   roleProfile: boolean;
@@ -185,8 +185,8 @@ export function historicalFinalNavIds(input: {
 }): HistoricalFinalNavId[] {
   const ids: HistoricalFinalNavId[] = ['section-box'];
   if (input.roleProfile) ids.push('section-context');
-  if (input.timeline) ids.push('section-timeline');
   if (input.storedOdds) ids.push('section-odds');
+  if (input.timeline) ids.push('section-timeline');
   return ids;
 }
 

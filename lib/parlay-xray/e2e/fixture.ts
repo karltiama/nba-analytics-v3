@@ -7,16 +7,20 @@ import type { ExtractedParlayLeg, XrayPropKind } from '@/lib/parlay-xray/types';
 import type { HistoricalXrayReplayContext, HistoricalXrayReplayDeps } from './types';
 import {
   X3F_AJAY_ID,
+  X3F_AJAY_NBA_PLAYER_ID,
   X3F_AWAY_ABBR,
   X3F_AWAY_TEAM_ID,
   X3F_CUTOFF_AT,
   X3F_DORT_ID,
+  X3F_DORT_NBA_PLAYER_ID,
   X3F_GAME_ID,
   X3F_GROUND_TRUTH_LEGS,
   X3F_HISTORICAL_DATE,
   X3F_HOME_ABBR,
   X3F_HOME_TEAM_ID,
   X3F_LUKA_ID,
+  X3F_LUKA_NBA_PLAYER_ID,
+  X3F_NBA_PLAYER_ID_BY_PLAYER_ID,
   X3F_REPLAY_CONTEXT,
   X3F_SEASON,
   type X3FGroundTruthLeg,
@@ -28,15 +32,25 @@ function ocrSnippet(leg: X3FGroundTruthLeg): string {
   return `${leg.ocrPlayerName} ${side} ${leg.requestedLine} ${market}`;
 }
 
-function baseLeg(leg: X3FGroundTruthLeg, playerName: string, playerStatus: 'known' | 'needs_confirmation'): ExtractedParlayLeg {
+function baseLeg(
+  leg: X3FGroundTruthLeg,
+  playerName: string,
+  playerStatus: 'known' | 'needs_confirmation',
+  oddsMode: 'extracted' | 'confirmed' = 'extracted'
+): ExtractedParlayLeg {
   const nameField =
     playerStatus === 'needs_confirmation' ? needsConfirmation(playerName) : known(playerName);
-  const odds = leg.id === 'leg-dort-pts' ? unknown<number>() : known(leg.closeOverOdds);
+  // Extracted OCR leaves Dort price unknown; confirmed / Workspace legs use close odds for a real combined total.
+  const odds =
+    oddsMode === 'extracted' && leg.id === 'leg-dort-pts' ? unknown<number>() : known(leg.closeOverOdds);
   return withDerivedResolution({
     id: leg.id,
     playerDisplayName: nameField,
     playerId: unknown(),
-    nbaPlayerId: unknown(),
+    nbaPlayerId: (() => {
+      const nbaId = X3F_NBA_PLAYER_ID_BY_PLAYER_ID[leg.canonicalPlayerId];
+      return nbaId ? known(nbaId) : unknown();
+    })(),
     teamAbbr: known(leg.teamAbbr),
     opponentAbbr: known(leg.opponentAbbr),
     matchupLabel: known(`${X3F_AWAY_ABBR} @ ${X3F_HOME_ABBR}`),
@@ -53,16 +67,21 @@ function baseLeg(leg: X3FGroundTruthLeg, playerName: string, playerStatus: 'know
   });
 }
 
-/** Screenshot/OCR layer before the user confirms the Luka typo. */
+/** Screenshot/OCR layer (player names match confirmed spelling in the locked fixture). */
 export function buildX3fExtractedLegs(): ExtractedParlayLeg[] {
   return X3F_GROUND_TRUTH_LEGS.map((leg) =>
-    baseLeg(leg, leg.ocrPlayerName, leg.ocrPlayerName === leg.confirmedPlayerName ? 'known' : 'needs_confirmation')
+    baseLeg(
+      leg,
+      leg.ocrPlayerName,
+      leg.ocrPlayerName === leg.confirmedPlayerName ? 'known' : 'needs_confirmation',
+      'extracted'
+    )
   );
 }
 
-/** Confirmed user legs. OCR remains in rawSnippet. */
+/** Confirmed user legs. OCR remains in rawSnippet; prices use locked close odds. */
 export function buildX3fConfirmedLegs(): ExtractedParlayLeg[] {
-  return X3F_GROUND_TRUTH_LEGS.map((leg) => baseLeg(leg, leg.confirmedPlayerName, 'known'));
+  return X3F_GROUND_TRUTH_LEGS.map((leg) => baseLeg(leg, leg.confirmedPlayerName, 'known', 'confirmed'));
 }
 
 export const X3F_CATALOG: XrayResolutionCatalog = {
@@ -73,7 +92,7 @@ export const X3F_CATALOG: XrayResolutionCatalog = {
       displayName: 'Ajay Mitchell',
       firstName: 'Ajay',
       lastName: 'Mitchell',
-      nbaPlayerId: null,
+      nbaPlayerId: X3F_AJAY_NBA_PLAYER_ID,
     },
     {
       playerId: X3F_DORT_ID,
@@ -81,7 +100,7 @@ export const X3F_CATALOG: XrayResolutionCatalog = {
       displayName: 'Luguentz Dort',
       firstName: 'Luguentz',
       lastName: 'Dort',
-      nbaPlayerId: null,
+      nbaPlayerId: X3F_DORT_NBA_PLAYER_ID,
     },
     {
       playerId: X3F_LUKA_ID,
@@ -89,7 +108,7 @@ export const X3F_CATALOG: XrayResolutionCatalog = {
       displayName: 'Luka Doncic',
       firstName: 'Luka',
       lastName: 'Doncic',
-      nbaPlayerId: null,
+      nbaPlayerId: X3F_LUKA_NBA_PLAYER_ID,
     },
   ],
   teams: [

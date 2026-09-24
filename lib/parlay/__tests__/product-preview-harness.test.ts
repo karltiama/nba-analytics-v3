@@ -229,7 +229,7 @@ describe('product preview page contract', () => {
     expect(client).not.toMatch(/openai|balldontlie/i);
     const { parlay, historicalReplay } = buildHistoricalReplayReviewPreview();
     const luka = parlay.legs.find((leg) => (leg.playerDisplayName.value ?? '').includes('Luka'));
-    expect(luka?.playerDisplayName.value).toBe('Luka Doncik');
+    expect(luka?.playerDisplayName.value).toBe('Luka Doncic');
     const previewState = reduceXrayState(createInitialXrayState(), {
       type: 'LOAD_PREVIEW',
       parlay,
@@ -237,7 +237,7 @@ describe('product preview page contract', () => {
       confirmed: false,
       historicalReplay,
     });
-    expect(canConfirmLegs(previewState)).toBe(false);
+    expect(canConfirmLegs(previewState)).toBe(true);
     expect(client).toMatch(/handoffConfirmedXrayParlay/);
     expect(client).toMatch(/importConfirmedXrayLegsToStore/);
   });

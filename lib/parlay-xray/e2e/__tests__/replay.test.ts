@@ -66,25 +66,31 @@ describe('X3F historical replay orchestration', () => {
     const confirmed = buildX3fConfirmedLegs();
     const lukaExtracted = extracted.find((leg) => leg.id === 'leg-luka-pts')!;
     const lukaConfirmed = confirmed.find((leg) => leg.id === 'leg-luka-pts')!;
-    expect(lukaExtracted.rawSnippet).toMatch(/Luka Doncik/);
-    expect(lukaExtracted.playerDisplayName.value).toBe('Luka Doncik');
+    expect(lukaExtracted.rawSnippet).toMatch(/Luka Doncic/);
+    expect(lukaExtracted.playerDisplayName.value).toBe('Luka Doncic');
     expect(lukaConfirmed.rawSnippet).toBe(lukaExtracted.rawSnippet);
     expect(lukaConfirmed.playerDisplayName.value).toBe('Luka Doncic');
 
     const result = canonicalReplay();
     const layer = result.identityLayers.find((row) => row.legId === 'leg-luka-pts')!;
-    expect(layer.ocr).toMatch(/Luka Doncik/);
+    expect(layer.ocr).toMatch(/Luka Doncic/);
     expect(layer.confirmedPlayerName).toBe('Luka Doncic');
     expect(layer.canonicalPlayerName).toBe('Luka Doncic');
     expect(layer.canonicalPlayerId).toBe(X3F_LUKA_ID);
-    expect(result.resolutions[3]?.originalLeg.rawSnippet).toMatch(/Luka Doncik/);
+    expect(result.resolutions[3]?.originalLeg.rawSnippet).toMatch(/Luka Doncic/);
     expect(result.resolutions[3]?.originalLeg.playerDisplayName.value).toBe('Luka Doncic');
   });
 
-  it('uses the confirmed player name, not the stale OCR typo, for canonicalization', () => {
+  it('uses the confirmed player name, not a stale OCR typo, for canonicalization', () => {
     const extracted = buildX3fExtractedLegs();
     const luka = extracted.find((leg) => leg.id === 'leg-luka-pts')!;
-    const before = resolveCanonicalParlayLeg(luka, X3F_CATALOG, { eventDate: '2026-04-02' });
+    const staleExtracted = {
+      ...luka,
+      playerDisplayName: { value: 'Luka Doncik', status: 'needs_confirmation' as const },
+      rawSnippet: 'Luka Doncik O 30.5 PTS',
+      resolution: 'needs_confirmation' as const,
+    };
+    const before = resolveCanonicalParlayLeg(staleExtracted, X3F_CATALOG, { eventDate: '2026-04-02' });
     expect(before.playerResolution.status).toBe('NEEDS_CONFIRMATION');
     expect(before.playerResolution.value).toBeNull();
 
@@ -92,9 +98,13 @@ describe('X3F historical replay orchestration', () => {
     const after = resolveCanonicalParlayLeg(confirmed, X3F_CATALOG, { eventDate: '2026-04-02' });
     expect(after.playerResolution.status).toBe('RESOLVED');
     expect(after.playerResolution.value?.playerId).toBe(X3F_LUKA_ID);
-    expect(after.originalLeg.rawSnippet).toMatch(/Luka Doncik/);
+    expect(after.originalLeg.rawSnippet).toMatch(/Luka Doncic/);
 
-    const stale = runHistoricalXrayReplay(extracted, buildX3fReplayContext(), buildX3fReplayDeps());
+    const stale = runHistoricalXrayReplay(
+      extracted.map((leg) => (leg.id === 'leg-luka-pts' ? staleExtracted : leg)),
+      buildX3fReplayContext(),
+      buildX3fReplayDeps()
+    );
     expect(stale.resolutions[3]?.playerResolution.status).toBe('NEEDS_CONFIRMATION');
     expect(stale.matches[3]?.status).not.toBe('MATCHED');
     const fixed = canonicalReplay();

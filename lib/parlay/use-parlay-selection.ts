@@ -7,6 +7,7 @@ import {
   clearSelectedLegs,
   removeSelectedLeg,
   type AddExplorerOfferResult,
+  type SelectedParlayLegDisplay,
 } from './selection';
 import {
   emptyParlaySelectionSnapshot,
@@ -40,10 +41,7 @@ export function useParlaySelection() {
   );
 
   const addExplorerOffer = useCallback(
-    (
-      input: PropsExplorerOfferInput,
-      display?: { gameLabel?: string | null }
-    ): AddExplorerOfferResult => {
+    (input: PropsExplorerOfferInput, display?: SelectedParlayLegDisplay): AddExplorerOfferResult => {
       const result = addExplorerOfferToSelection(getParlaySelectionLegs(), input, display);
       if (result.status === 'added') replaceParlaySelectionLegs(result.legs);
       return result;

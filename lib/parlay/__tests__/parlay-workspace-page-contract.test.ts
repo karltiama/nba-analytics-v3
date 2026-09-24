@@ -31,7 +31,11 @@ describe('Parlay Workspace page contract', () => {
 
   it('renders empty and selected-leg review without duplicating discovery', () => {
     expect(view).toMatch(/Parlay Workspace/);
-    expect(view).toMatch(/Review how your selected legs connect before making your own decision/);
+    expect(view).toMatch(/Organize, review, and refine your parlay with data-driven context/);
+    expect(view).toMatch(/Your Parlay Legs/);
+    expect(view).toMatch(/Key signals/);
+    expect(view).toMatch(/Main risks/);
+    expect(view).toMatch(/View Context/);
     expect(view).toMatch(/Your parlay is empty/);
     expect(view).toMatch(/Add legs from Props Explorer/);
     expect(view).toMatch(/Import with XRay/);
@@ -42,7 +46,10 @@ describe('Parlay Workspace page contract', () => {
     expect(view).toMatch(/Building Court Context analysis/);
     expect(view).toMatch(/snapshotDisplayLabel/);
     expect(view).toMatch(/Analyze with Court Context/);
-    expect(view).toMatch(/XrayResultsPanel/);
+    expect(view).not.toMatch(/XrayResultsPanel/);
+    expect(view).not.toMatch(/Why this parlay could fail/);
+    expect(view).not.toMatch(/Legs needing review/);
+    expect(view).not.toMatch(/Supporting parlay context/);
     expect(read('lib/parlay/workspace-analysis.ts')).toMatch(
       /Historical Court Context analysis currently supports parlays from one game/
     );
@@ -63,7 +70,8 @@ describe('Parlay Workspace page contract', () => {
     expect(read('lib/parlay/adapt-xray-confirmed.ts')).not.toMatch(/localStorage|sessionStorage/);
     expect(view).not.toMatch(/localStorage|sessionStorage/);
     expect(client).toMatch(/onAnalyze/);
-    expect(client).not.toMatch(/useEffect/);
+    expect(client).toMatch(/useEffect/);
+    expect(client).toMatch(/runAnalyze/);
     expect(client).not.toMatch(/fetch\(|openai|balldontlie/i);
     expect(view).not.toMatch(/fetch\(|openai|balldontlie|interpretXray|assembleContext/i);
     expect(tray).toMatch(/Open Workspace/);

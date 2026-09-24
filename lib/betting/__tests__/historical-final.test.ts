@@ -131,7 +131,7 @@ describe('historical coverage and nav', () => {
   it('keeps Starting Five out of sticky nav and hides Timeline/Context when unavailable', () => {
     expect(
       historicalFinalNavIds({ roleProfile: true, timeline: true, storedOdds: true })
-    ).toEqual(['section-box', 'section-context', 'section-timeline', 'section-odds']);
+    ).toEqual(['section-box', 'section-context', 'section-odds', 'section-timeline']);
     expect(
       historicalFinalNavIds({ roleProfile: true, timeline: false, storedOdds: false })
     ).toEqual(['section-box', 'section-context']);

@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { X } from 'lucide-react';
+import { Maximize2, Minus, X } from 'lucide-react';
 import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
 import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
+import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
+import { TeamLogo } from '@/components/nba/TeamLogo';
 import { canonicalBetLegFromSelectedParlayLeg } from '@/lib/bet-slip/adapt-parlay-leg';
 import { mobileParlayBarCopy } from '@/lib/parlay/mobile-bar-copy';
 import {
@@ -41,31 +44,53 @@ function LegRow({
 }) {
   const player = leg.offer.playerDisplayName ?? `Player ${leg.offer.playerId}`;
   const market = marketDisplayLabel(leg.offer.market);
-  const sideLine = `${leg.offer.side === 'over' ? 'Over' : 'Under'} ${leg.offer.line}`;
+  const sideLabel = leg.offer.side === 'over' ? 'Over' : 'Under';
+  const lineLabel = String(leg.offer.line);
+  const awayAbbr = leg.awayAbbr?.trim() || null;
+  const homeAbbr = leg.homeAbbr?.trim() || null;
   return (
     <li className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] px-2.5 py-2">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="type-card-data truncate text-[#063f46]">{player}</p>
-          <p className="type-secondary mt-0.5">
-            {sideLine} {market}
-          </p>
-          <p className="type-secondary truncate">{leg.offer.sportsbook.displayName}</p>
-          {leg.gameLabel ? (
-            <p className="type-metadata truncate">{leg.gameLabel}</p>
-          ) : null}
-          {samePlayer || sameGame ? (
-            <p className="type-metadata mt-1">
-              {[samePlayer ? 'Same player' : null, sameGame ? 'Same game' : null]
-                .filter(Boolean)
-                .join(' · ')}
+      <div className="flex items-stretch gap-2.5">
+        <PlayerHeadshot
+          nbaPlayerId={leg.nbaPlayerId}
+          name={player}
+          className="relative w-14 min-h-[3.75rem] shrink-0 self-stretch overflow-hidden rounded-xl border border-[#DCE9EA] bg-[#E8F0F1]"
+        />
+        <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1">
+          <div className="min-w-0 space-y-0.5">
+            <p className="type-card-data truncate leading-5 text-[#063f46]">{player}</p>
+            {awayAbbr && homeAbbr ? (
+              <p className="type-metadata flex min-w-0 items-center gap-1 leading-4">
+                <TeamLogo team={awayAbbr} size="xs" decorative />
+                <span className="truncate font-medium text-[#063f46]">{awayAbbr}</span>
+                <span>@</span>
+                <TeamLogo team={homeAbbr} size="xs" decorative />
+                <span className="truncate font-medium text-[#063f46]">{homeAbbr}</span>
+              </p>
+            ) : leg.gameLabel ? (
+              <p className="type-metadata truncate leading-4">{leg.gameLabel}</p>
+            ) : null}
+            {samePlayer || sameGame ? (
+              <p className="type-metadata leading-4">
+                {[samePlayer ? 'Same player' : null, sameGame ? 'Same game' : null]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            ) : null}
+          </div>
+          <div className="min-w-0 text-right">
+            <p className="type-card-data leading-5 text-[#063f46]">
+              <span className="font-semibold">{sideLabel}</span>{' '}
+              <span className="tabular-nums">{lineLabel}</span>
             </p>
-          ) : null}
+            <p className="type-secondary truncate leading-5">{market}</p>
+            <p className="type-metadata truncate leading-4">{leg.offer.sportsbook.displayName}</p>
+          </div>
         </div>
         <button
           type="button"
-          className="p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-white shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center"
-          aria-label={`Remove ${player} ${sideLine} ${market} from parlay`}
+          className="self-start p-1.5 rounded-lg text-[#4a6366] hover:text-[#063f46] hover:bg-white shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center"
+          aria-label={`Remove ${player} ${sideLabel} ${lineLabel} ${market} from parlay`}
           onClick={() => onRemove(leg.offer.offerIdentity)}
         >
           <X className="w-3.5 h-3.5" />
@@ -80,11 +105,13 @@ function TrayBody({
   onRemove,
   onClear,
   onDismiss,
+  onMinimize,
 }: {
   legs: SelectedParlayLeg[];
   onRemove: (offerIdentity: string) => void;
   onClear: () => void;
   onDismiss?: () => void;
+  onMinimize?: () => void;
 }) {
   const preview = summarizeCanonicalSelection(legs);
   const playerCounts = new Map<string, number>();
@@ -105,6 +132,16 @@ function TrayBody({
           ) : null}
         </div>
         <div className="flex items-center gap-1 shrink-0">
+          {onMinimize ? (
+            <button
+              type="button"
+              className="p-1.5 rounded-lg border border-[#DCE9EA] bg-white text-[#4a6366] hover:text-[#063f46] hover:bg-[#f7f9f7] min-h-[32px] min-w-[32px] flex items-center justify-center"
+              aria-label="Minimize selected parlay"
+              onClick={onMinimize}
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+          ) : null}
           {onDismiss ? (
             <button
               type="button"
@@ -165,17 +202,42 @@ export function PropsExplorerParlayTray({
   onRemove: (offerIdentity: string) => void;
   onClear: () => void;
 }) {
+  const [minimized, setMinimized] = useState(false);
+
+  useEffect(() => {
+    if (legs.length === 0) setMinimized(false);
+  }, [legs.length]);
+
   if (legs.length === 0) return null;
+
+  const legCountLabel = `${legs.length} leg${legs.length === 1 ? '' : 's'}`;
 
   return (
     <>
       <div className="hidden lg:block">
-        <aside
-          className="fixed bottom-4 right-4 xl:right-[calc(24rem+2.5rem)] z-40 w-96 max-w-[calc(100vw-2rem)] max-h-[min(28rem,50vh)] flex flex-col bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
-          aria-label="Selected parlay"
-        >
-          <TrayBody legs={legs} onRemove={onRemove} onClear={onClear} />
-        </aside>
+        {minimized ? (
+          <button
+            type="button"
+            className="fixed bottom-4 right-4 xl:right-[calc(24rem+2.5rem)] z-40 flex items-center gap-2 rounded-2xl border border-[#DCE9EA] bg-white px-3 py-2.5 shadow-sm text-[#063f46] hover:bg-[#F8FBFA]"
+            aria-label={`Expand selected parlay, ${legCountLabel}`}
+            onClick={() => setMinimized(false)}
+          >
+            <span className="type-secondary">{legCountLabel}</span>
+            <Maximize2 className="w-3.5 h-3.5 shrink-0 text-[#4a6366]" aria-hidden />
+          </button>
+        ) : (
+          <aside
+            className="fixed bottom-4 right-4 xl:right-[calc(24rem+2.5rem)] z-40 w-96 max-w-[calc(100vw-2rem)] max-h-[min(28rem,50vh)] flex flex-col bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
+            aria-label="Selected parlay"
+          >
+            <TrayBody
+              legs={legs}
+              onRemove={onRemove}
+              onClear={onClear}
+              onMinimize={() => setMinimized(true)}
+            />
+          </aside>
+        )}
       </div>
 
       <div className="lg:hidden">

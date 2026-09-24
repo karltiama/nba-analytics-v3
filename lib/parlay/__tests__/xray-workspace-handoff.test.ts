@@ -17,7 +17,8 @@ import {
 } from '@/lib/parlay-xray/e2e/fixture';
 import { buildHistoricalReplayReviewPreview } from '@/lib/parlay-xray/e2e/preview';
 import { runHistoricalXrayReplay } from '@/lib/parlay-xray/e2e/run';
-import { acceptExtractedLeg } from '@/lib/parlay-xray/fields';
+import { acceptExtractedLeg, needsConfirmation, withDerivedResolution } from '@/lib/parlay-xray/fields';
+import type { ExtractedParlayLeg } from '@/lib/parlay-xray/types';
 import { adaptPropsExplorerOffer, type PropsExplorerOfferInput } from '../adapt-props-explorer-offer';
 import { handoffConfirmedXrayParlay, shouldShowXrayOcrProvenance } from '../adapt-xray-confirmed';
 import {
@@ -46,6 +47,19 @@ import {
 const OUTCOME_LEAK = /finalPoints|\bhit\b|\bmiss\b|wager result|final score|box score/i;
 
 const HISTORICAL_REPLAY = buildHistoricalReplayReviewPreview().historicalReplay;
+
+/** Synthetic OCR misspelling — not the locked X3F display name. */
+function withLukaOcrTypo(legs: ExtractedParlayLeg[]): ExtractedParlayLeg[] {
+  return legs.map((leg) =>
+    leg.id === 'leg-luka-pts'
+      ? withDerivedResolution({
+          ...leg,
+          playerDisplayName: needsConfirmation('Luka Doncik'),
+          rawSnippet: 'Luka Doncik O 30.5 PTS',
+        })
+      : leg
+  );
+}
 
 function mustAdapt(input: PropsExplorerOfferInput) {
   const result = adaptPropsExplorerOffer(input);
@@ -104,7 +118,7 @@ describe('XRay → Workspace source convergence', () => {
   it('does not hand off legs that still need confirmation', () => {
     const result = handoffConfirmedXrayParlay({
       confirmed: true,
-      legs: buildX3fExtractedLegs(),
+      legs: withLukaOcrTypo(buildX3fExtractedLegs()),
       catalog: X3F_CATALOG,
       historicalReplay: HISTORICAL_REPLAY,
       resolveContext: { eventDate: X3F_HISTORICAL_DATE },
@@ -115,7 +129,7 @@ describe('XRay → Workspace source convergence', () => {
   it('does not treat an accepted OCR typo as a canonical Workspace handoff', () => {
     const result = handoffConfirmedXrayParlay({
       confirmed: true,
-      legs: buildX3fExtractedLegs().map(acceptExtractedLeg),
+      legs: withLukaOcrTypo(buildX3fExtractedLegs()).map(acceptExtractedLeg),
       catalog: X3F_CATALOG,
       historicalReplay: HISTORICAL_REPLAY,
       resolveContext: { eventDate: X3F_HISTORICAL_DATE },
@@ -231,9 +245,17 @@ describe('XRay → Workspace source convergence', () => {
     const ajay = legs[0]!;
     const luka = legs[3]!;
     expect(shouldShowXrayOcrProvenance(ajay)).toBe(false);
-    expect(shouldShowXrayOcrProvenance(luka)).toBe(true);
-    expect(luka.xrayProvenance?.ocrSnippet).toMatch(/Luka Doncik/);
+    expect(shouldShowXrayOcrProvenance(luka)).toBe(false);
+    expect(luka.xrayProvenance?.ocrSnippet).toMatch(/Luka Doncic/);
     expect(luka.xrayProvenance?.confirmedPlayerName).toBe('Luka Doncic');
+    expect(
+      shouldShowXrayOcrProvenance({
+        xrayProvenance: {
+          ocrSnippet: 'Luka Doncik O 30.5 PTS',
+          confirmedPlayerName: 'Luka Doncic',
+        },
+      })
+    ).toBe(true);
     expect(workspaceSourceLabel(x3fPropsLegs())).toBe('Built from Props Explorer');
     expect(x3fPropsLegs().every((leg) => !leg.xrayProvenance)).toBe(true);
   });

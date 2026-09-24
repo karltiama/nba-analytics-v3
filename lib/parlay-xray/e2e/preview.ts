@@ -23,7 +23,7 @@ export function buildHistoricalReplayReviewPreview(): {
         objectUrl: '',
       },
       legs: buildX3fExtractedLegs(),
-      extractionStatus: 'partial',
+      extractionStatus: 'complete',
       analysisStatus: 'unavailable',
       createdAt: context.cutoffAt,
     },

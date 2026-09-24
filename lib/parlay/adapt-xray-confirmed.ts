@@ -48,6 +48,9 @@ export type HandoffConfirmedXrayParlayInput = {
 export type XrayHandoffLeg = {
   offer: CanonicalParlayOffer;
   gameLabel: string | null;
+  nbaPlayerId?: string | null;
+  awayAbbr?: string | null;
+  homeAbbr?: string | null;
   xrayProvenance: XrayLegProvenance;
 };
 
@@ -165,6 +168,9 @@ export function handoffConfirmedXrayParlay(
     next.push({
       offer: adapted.offer,
       gameLabel: gameLabelFromResolution(resolution),
+      nbaPlayerId: resolution.playerResolution.value?.nbaPlayerId ?? null,
+      awayAbbr: resolution.gameResolution.value?.awayTeamAbbr?.trim() || null,
+      homeAbbr: resolution.gameResolution.value?.homeTeamAbbr?.trim() || null,
       xrayProvenance: adapted.provenance,
     });
   }

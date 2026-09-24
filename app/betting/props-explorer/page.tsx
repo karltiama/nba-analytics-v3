@@ -86,6 +86,9 @@ type ExplorerRow = {
   lineLabel?: string;
   paperBetAllowed?: boolean;
   sourceTable?: string;
+  nbaPlayerId?: string | null;
+  awayTeamAbbr?: string | null;
+  homeTeamAbbr?: string | null;
 };
 
 type ExplorerMeta = {
@@ -183,7 +186,9 @@ export default function PropsExplorerPage(props: PageProps) {
   const [meta, setMeta] = useState<ExplorerMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [games, setGames] = useState<Array<{ id: string; label: string }>>([]);
+  const [games, setGames] = useState<
+    Array<{ id: string; label: string; awayAbbr: string; homeAbbr: string }>
+  >([]);
   const [addingPaperKey, setAddingPaperKey] = useState<string | null>(null);
   const [savedPropIdByKey, setSavedPropIdByKey] = useState<Record<string, string>>({});
   const [savingPropKey, setSavingPropKey] = useState<string | null>(null);
@@ -314,6 +319,8 @@ export default function PropsExplorerPage(props: PageProps) {
           }) => ({
             id: g.id,
             label: `${g.awayTeam.abbreviation} @ ${g.homeTeam.abbreviation}`,
+            awayAbbr: g.awayTeam.abbreviation,
+            homeAbbr: g.homeTeam.abbreviation,
           })
         );
         if (!cancelled) setGames(list);
@@ -547,8 +554,18 @@ export default function PropsExplorerPage(props: PageProps) {
   );
 
   const addToParlay = useCallback((r: ExplorerRow) => {
-    const gameLabel = games.find((g) => g.id === String(r.gameId))?.label ?? null;
-    const result = addExplorerOffer(rowToParlayOfferInput(r), { gameLabel });
+    const game = games.find((g) => g.id === String(r.gameId));
+    const awayAbbr = r.awayTeamAbbr ?? game?.awayAbbr ?? null;
+    const homeAbbr = r.homeTeamAbbr ?? game?.homeAbbr ?? null;
+    const gameLabel =
+      game?.label ??
+      (awayAbbr && homeAbbr ? `${awayAbbr} @ ${homeAbbr}` : null);
+    const result = addExplorerOffer(rowToParlayOfferInput(r), {
+      gameLabel,
+      nbaPlayerId: r.nbaPlayerId ?? null,
+      awayAbbr,
+      homeAbbr,
+    });
     setParlayNotice(addResultNotice(result));
     completeChecklistItem('parlay_leg_added');
     if (result.status === 'added') {

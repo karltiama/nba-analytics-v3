@@ -31,6 +31,9 @@ const HISTORICAL_ROW = {
   implied_probability: 0.524,
   snapshot_at: '2026-05-01T23:00:00.000Z',
   game_start_time: '2026-05-01T23:30:00.000Z',
+  nba_player_id: '1629027',
+  away_team_abbr: 'DAL',
+  home_team_abbr: 'LAL',
 };
 
 function sqlOf(callIdx: number): string {
@@ -78,6 +81,12 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(row.ev).toBeNull();
     expect(row.projection).toBeNull();
     expect(row.modelProbability).toBeNull();
+    expect(row.nbaPlayerId).toBe('1629027');
+    expect(row.awayTeamAbbr).toBe('DAL');
+    expect(row.homeTeamAbbr).toBe('LAL');
+    expect(sqlOf(1)).toMatch(/player_provider_ids/);
+    expect(sqlOf(1)).toMatch(/away_team_abbr/);
+    expect(sqlOf(1)).toMatch(/home_team_abbr/);
     expect(row.calibrationVersion).toBeUndefined();
   });
 

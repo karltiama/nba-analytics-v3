@@ -14,7 +14,7 @@ export const INTENT_COPY: Record<PrimaryIntent, { title: string; desc: string }>
   },
   analyze_parlay: {
     title: 'Analyze a parlay',
-    desc: 'Review selected legs in Parlay Workspace and run Court Context when you are ready.',
+    desc: 'Review selected legs in Parlay Workspace — Court Context analysis runs there.',
   },
   research_players_games: {
     title: 'Research players and games',
@@ -56,11 +56,11 @@ export const COACHMARK_COPY: Record<CoachmarkId, { title: string; body: string }
   },
   'workspace-intro': {
     title: 'This is your Parlay Workspace',
-    body: 'Review selected or imported legs together. Structural notes can appear here. Analysis does not run until you ask.',
+    body: 'Court Context analyzes your selected or imported legs here. Edit the slip anytime; analysis refreshes for the current legs.',
   },
   'workspace-analyze': {
-    title: 'Analyze with Court Context',
-    body: 'Run Court Context when you are ready to examine the parlay as a whole.',
+    title: 'Court Context analysis',
+    body: 'Analysis runs automatically in Parlay Workspace when the slip is eligible. Use Edit Parlay to adjust legs.',
   },
   'why-fail': {
     title: 'Why this parlay could fail',

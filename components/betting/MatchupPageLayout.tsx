@@ -1019,19 +1019,6 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             homeAbbr={game.homeTeam.abbreviation}
           />
         ) : null}
-        {showHistoricalTimeline ? (
-          <HistoricalFinalTimeline
-            gameId={game.id}
-            availability={availability}
-            homeTeamId={game.homeTeam.id}
-            awayTeamId={game.awayTeam.id}
-            homeAbbr={game.homeTeam.abbreviation}
-            awayAbbr={game.awayTeam.abbreviation}
-            officialHomeScore={game.homeScore}
-            officialAwayScore={game.awayScore}
-            loadNow={activeSection === 'section-timeline'}
-          />
-        ) : null}
         </>
         ) : null}
         {!isFinalView ? (
@@ -1278,6 +1265,20 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
         </section>
+        ) : null}
+
+        {isFinalView && showHistoricalTimeline ? (
+          <HistoricalFinalTimeline
+            gameId={game.id}
+            availability={availability}
+            homeTeamId={game.homeTeam.id}
+            awayTeamId={game.awayTeam.id}
+            homeAbbr={game.homeTeam.abbreviation}
+            awayAbbr={game.awayTeam.abbreviation}
+            officialHomeScore={game.homeScore}
+            officialAwayScore={game.awayScore}
+            loadNow={activeSection === 'section-timeline'}
+          />
         ) : null}
 
         {!isFinalView ? (

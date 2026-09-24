@@ -20,6 +20,17 @@ export const X3F_AJAY_ID = '1028037477';
 export const X3F_DORT_ID = '666541';
 export const X3F_LUKA_ID = '132';
 
+/** NBA.com CDN ids for Workspace / XRay portraits (analytics.player_provider_ids). */
+export const X3F_AJAY_NBA_PLAYER_ID = '1642349';
+export const X3F_DORT_NBA_PLAYER_ID = '1629652';
+export const X3F_LUKA_NBA_PLAYER_ID = '1629029';
+
+export const X3F_NBA_PLAYER_ID_BY_PLAYER_ID: Record<string, string> = {
+  [X3F_AJAY_ID]: X3F_AJAY_NBA_PLAYER_ID,
+  [X3F_DORT_ID]: X3F_DORT_NBA_PLAYER_ID,
+  [X3F_LUKA_ID]: X3F_LUKA_NBA_PLAYER_ID,
+};
+
 export const X3F_KNOWN_GAPS = ['WOWY', 'projection', 'availability'] as const;
 
 export type X3FExpectedMatchStatus = 'MATCHED' | 'PARTIAL_MATCH';
@@ -128,7 +139,7 @@ export const X3F_GROUND_TRUTH_LEGS: X3FGroundTruthLeg[] = [
   },
   {
     id: 'leg-luka-pts',
-    ocrPlayerName: 'Luka Doncik',
+    ocrPlayerName: 'Luka Doncic',
     confirmedPlayerName: 'Luka Doncic',
     canonicalPlayerId: X3F_LUKA_ID,
     canonicalPlayerName: 'Luka Doncic',

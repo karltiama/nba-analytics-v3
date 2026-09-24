@@ -10,11 +10,14 @@ import type { SelectedParlayLeg } from './selection';
 import { PARLAY_WORKSPACE_HREF } from './selection';
 import { parsePreviewScenario } from '@/lib/preview/scenario';
 import {
+  X3F_AWAY_ABBR,
   X3F_CUTOFF_AT,
   X3F_DATE_LABEL,
   X3F_GAME_ID,
   X3F_GROUND_TRUTH_LEGS,
   X3F_HISTORICAL_DATE,
+  X3F_HOME_ABBR,
+  X3F_NBA_PLAYER_ID_BY_PLAYER_ID,
   X3F_SLATE_LABEL,
 } from '@/lib/parlay-xray/e2e/ground-truth';
 
@@ -63,6 +66,9 @@ export function buildWorkspaceHistoricalPreviewLegs(): SelectedParlayLeg[] {
     return {
       offer: result.offer,
       gameLabel: X3F_SLATE_LABEL,
+      nbaPlayerId: X3F_NBA_PLAYER_ID_BY_PLAYER_ID[row.canonicalPlayerId] ?? null,
+      awayAbbr: X3F_AWAY_ABBR,
+      homeAbbr: X3F_HOME_ABBR,
     };
   });
 }

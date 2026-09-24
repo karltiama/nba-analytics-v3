@@ -33,6 +33,9 @@ export type PropsExplorerDbRow = {
   implied_probability: string | number | null;
   snapshot_at: string | Date;
   game_start_time: string | Date | null;
+  nba_player_id: string | null;
+  away_team_abbr: string | null;
+  home_team_abbr: string | null;
 };
 
 const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
@@ -118,11 +121,18 @@ export function buildPropsExplorerWhere(sp: {
 }
 
 function fromJoin(context: PropsMarketContext, whereSql: string): string {
+  const mediaJoins = `
+      LEFT JOIN analytics.player_provider_ids nba
+        ON nba.player_entity_id = pl.player_entity_id
+       AND nba.provider = 'nba'
+      LEFT JOIN analytics.teams t_home ON t_home.team_id = g.home_team_id
+      LEFT JOIN analytics.teams t_away ON t_away.team_id = g.away_team_id`;
   if (context === 'historical') {
     return `
       FROM research.prop_decision_lines p
       INNER JOIN analytics.games g ON g.game_id = p.game_id
       LEFT JOIN analytics.players pl ON pl.player_id = p.player_id
+      ${mediaJoins}
       ${whereSql}
     `;
   }
@@ -130,6 +140,7 @@ function fromJoin(context: PropsMarketContext, whereSql: string): string {
       FROM analytics.player_props_current p
       INNER JOIN analytics.games g ON g.game_id = p.game_id::text
       LEFT JOIN analytics.players pl ON pl.player_id = p.player_id::text
+      ${mediaJoins}
       ${whereSql}
     `;
 }
@@ -139,7 +150,10 @@ function selectList(context: PropsMarketContext): string {
     context === 'historical' ? 'p.decision_at AS snapshot_at' : 'p.snapshot_at';
   return `SELECT p.game_id, p.player_id, COALESCE(p.player_name, pl.full_name) AS player_name, p.sportsbook, p.prop_type, p.market_type, p.side,
                 p.line_value, p.odds_american, p.odds_decimal, p.implied_probability, ${observed},
-                g.start_time AS game_start_time`;
+                g.start_time AS game_start_time,
+                nba.provider_player_id AS nba_player_id,
+                t_away.abbreviation AS away_team_abbr,
+                t_home.abbreviation AS home_team_abbr`;
 }
 
 async function loadInputsForPlayers(playerIds: number[]): Promise<Map<number, PlayerPropModelInputs | null>> {
@@ -201,6 +215,9 @@ export type PropsExplorerRow = {
   lineLabel: string;
   paperBetAllowed: boolean;
   sourceTable: PropsServingSource;
+  nbaPlayerId: string | null;
+  awayTeamAbbr: string | null;
+  homeTeamAbbr: string | null;
 } & Partial<PropEvFields> & {
     evSelectedTrack?: string;
     calibrationVersion?: string;
@@ -364,6 +381,18 @@ export async function getPlayerPropsForExplorer(
         marketContext === 'live' &&
         isActivePaperBetAllowed({ gameStartTime: r.game_start_time, now }),
       sourceTable,
+      nbaPlayerId:
+        r.nba_player_id != null && String(r.nba_player_id).trim() !== ''
+          ? String(r.nba_player_id).trim()
+          : null,
+      awayTeamAbbr:
+        r.away_team_abbr != null && String(r.away_team_abbr).trim() !== ''
+          ? String(r.away_team_abbr).trim()
+          : null,
+      homeTeamAbbr:
+        r.home_team_abbr != null && String(r.home_team_abbr).trim() !== ''
+          ? String(r.home_team_abbr).trim()
+          : null,
       ...evFields,
       evSelectedTrack: selectedTrack,
       calibrationVersion: cal ?? undefined,

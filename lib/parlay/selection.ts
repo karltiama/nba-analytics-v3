@@ -34,11 +34,27 @@ export type CanonicalSelectionStructure = ParlaySelectionPreview & {
 /** Temporary runtime ceiling matching XRay structural scale tests. Not product policy. */
 export const PARLAY_SELECTION_SOFT_CAP = 12;
 
+/** Display-only fields for tray / workspace chrome. Not part of wager identity. */
+export type SelectedParlayLegDisplay = {
+  gameLabel?: string | null;
+  nbaPlayerId?: string | null;
+  awayAbbr?: string | null;
+  homeAbbr?: string | null;
+};
+
 export type SelectedParlayLeg = {
   offer: CanonicalParlayOffer;
   gameLabel: string | null;
+  nbaPlayerId?: string | null;
+  awayAbbr?: string | null;
+  homeAbbr?: string | null;
   xrayProvenance?: XrayLegProvenance | null;
 };
+
+function trimOrNull(value: string | null | undefined): string | null {
+  const t = value?.trim();
+  return t ? t : null;
+}
 
 export type AddExplorerOfferResult =
   | { status: 'added'; legs: SelectedParlayLeg[] }
@@ -71,7 +87,7 @@ export function emptyParlaySelection(): SelectedParlayLeg[] {
 export function addExplorerOfferToSelection(
   legs: SelectedParlayLeg[],
   input: PropsExplorerOfferInput,
-  display?: { gameLabel?: string | null }
+  display?: SelectedParlayLegDisplay
 ): AddExplorerOfferResult {
   const adapted = adaptPropsExplorerOffer(input);
   if (!adapted.ok) return { status: 'rejected', legs, code: adapted.code };
@@ -86,7 +102,10 @@ export function addExplorerOfferToSelection(
 
   const next: SelectedParlayLeg = {
     offer: adapted.offer,
-    gameLabel: display?.gameLabel?.trim() || null,
+    gameLabel: trimOrNull(display?.gameLabel),
+    nbaPlayerId: trimOrNull(display?.nbaPlayerId),
+    awayAbbr: trimOrNull(display?.awayAbbr),
+    homeAbbr: trimOrNull(display?.homeAbbr),
   };
   return { status: 'added', legs: [...legs, next] };
 }

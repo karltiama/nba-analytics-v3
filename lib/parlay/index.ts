@@ -63,6 +63,7 @@ export type {
   CanonicalSelectionStructure,
   ParlaySelectionPreview,
   SelectedParlayLeg,
+  SelectedParlayLegDisplay,
 } from './selection';
 export {
   CERTIFIED_HISTORICAL_PROP_COVERAGE,

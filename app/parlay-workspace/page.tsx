@@ -3,7 +3,7 @@ import { ParlayWorkspaceEntry } from './ParlayWorkspaceEntry';
 
 export const metadata = {
   title: 'Parlay Workspace · Court Context',
-  description: 'Review selected props together before running Court Context analysis.',
+  description: 'Review selected props together with Court Context analysis in Parlay Workspace.',
 };
 
 export default function ParlayWorkspacePage() {
