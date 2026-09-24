@@ -5,6 +5,7 @@
 
 import type { XrayExtractResult } from '@/lib/parlay-xray/extraction/result-codes';
 import type { CanonicalPropType } from '@/lib/betting/market-movement';
+import type { CanonicalParlaySelectionSourceContext } from '@/lib/parlay/selection';
 import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
 
 export const PRODUCT_EVENTS = {
@@ -223,7 +224,7 @@ export type ParlayXrayOpenWorkspaceProperties = {
 
 export type ParlayWorkspaceAnalysisStartedProperties = {
   surface: 'parlay_workspace';
-  source: 'xray' | 'props_explorer' | 'mixed';
+  source: CanonicalParlaySelectionSourceContext;
   action: 'analysis_started';
 };
 
