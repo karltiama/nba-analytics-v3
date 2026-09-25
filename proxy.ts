@@ -12,6 +12,8 @@ export const config = {
     '/',
     '/login',
     '/signup',
+    '/forgot-password',
+    '/update-password',
     '/dashboard',
     '/dashboard/:path*',
     '/betting/:path*',

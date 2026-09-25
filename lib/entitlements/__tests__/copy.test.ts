@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { FOUNDING_PRO_PRICE_CONCEPT, UPGRADE_COPY } from '../types';
+import { FOUNDING_PRICE_LOCK_COPY, FOUNDING_PRO_PRICE_CONCEPT, FREE_PRICE_DISPLAY, UPGRADE_COPY } from '../types';
 import { FOUNDING_PRO_UPGRADE_HREF } from '@/components/betting/betting-shell-paths';
 
 const BANNED_PLAN_ALIASES = [/\bPremium\b/i, /\bPlus\b/i, /\bPro\+\b/i, /\bVIP\b/i];
 
 describe('Founding Pro terminology', () => {
   it('keeps the public plan name Founding Pro', () => {
-    expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$10/month');
+    expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$9.99/month');
     expect(UPGRADE_COPY.line_shopping_detail.title).toBe('Find the best book');
     expect(UPGRADE_COPY.line_shopping_detail.detail).toMatch(/Founding Pro/);
     expect(UPGRADE_COPY.market_movement.title).toBe(
@@ -29,11 +29,19 @@ describe('Founding Pro terminology', () => {
   });
 
   it('does not market WOWY or unshipped features as current Founding Pro exclusives', () => {
-    expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$10/month');
+    expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$9.99/month');
     expect(UPGRADE_COPY.wowy.detail).not.toMatch(/Unlock game-level/);
     expect(UPGRADE_COPY.wowy.detail).toMatch(/already available/);
     const billing = readFileSync(join(process.cwd(), 'app/billing/page.tsx'), 'utf8');
     expect(billing).toMatch(/FOUNDING_PRO_PRICE_CONCEPT/);
+    expect(billing).toMatch(/FREE_PRICE_DISPLAY/);
+    expect(billing).toMatch(/FOUNDING_PRICE_LOCK_COPY/);
+    expect(billing).not.toMatch(/\$10\/month/);
+    expect(billing).not.toMatch(/\$14\.99/);
+    expect(FOUNDING_PRICE_LOCK_COPY).toBe(
+      'Keep your founding price while your subscription remains active.'
+    );
+    expect(FREE_PRICE_DISPLAY).toBe('$0');
     expect(billing).toMatch(/3-Hour Pre-Tip to Decision Close/);
     expect(billing).not.toMatch(/Stop checking multiple sportsbooks/);
     expect(billing).not.toMatch(/Start Winning/);

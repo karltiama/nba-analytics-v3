@@ -221,8 +221,8 @@ describe('client / server feature parity', () => {
 });
 
 describe('billing / checkout freeze', () => {
-  it('does not enable production checkout or change the $10 planning price', () => {
-    expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$10/month');
+  it('does not enable production checkout and shows Founding Pro at $9.99/month', () => {
+    expect(FOUNDING_PRO_PRICE_CONCEPT).toBe('$9.99/month');
     const production = getBillingAvailability({
       VERCEL_ENV: 'production',
       STRIPE_SECRET_KEY: 'sk_test_x',

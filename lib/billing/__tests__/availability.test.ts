@@ -21,7 +21,7 @@ describe('getBillingAvailability', () => {
     expect(result.mode).toBe('stripe_test');
     expect(result.checkoutEnabled).toBe(true);
     expect(result.notice).toMatch(/test mode/i);
-    expect(result.priceLabel).toBe('$10/month');
+    expect(result.priceLabel).toBe('$9.99/month');
   });
 
   it('does not present live purchase when test Stripe is on Vercel Production', () => {

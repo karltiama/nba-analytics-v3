@@ -5,6 +5,8 @@ export type {
   CapabilityReadiness,
   CapabilityRuntime,
   CapabilitySpec,
+  CommercialQuota,
+  CommercialQuotaStatus,
   CourtContextCapability,
   PlanSnapshot,
 } from './capabilities';
@@ -27,7 +29,9 @@ export {
 } from './resolve';
 export {
   FEATURE_KEYS,
+  FOUNDING_PRICE_LOCK_COPY,
   FOUNDING_PRO_PRICE_CONCEPT,
+  FREE_PRICE_DISPLAY,
   PLANS,
   SUBSCRIPTION_STATUSES,
   UPGRADE_COPY,

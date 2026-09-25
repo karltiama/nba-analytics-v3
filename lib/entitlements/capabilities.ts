@@ -1,9 +1,11 @@
 /**
  * Court Context capability registry.
- * Source of truth: reports/product/parlay-product-acceptance-entitlement-architecture.md (E6).
+ * Runtime source of truth for access decisions (E8): readiness is checked before plan.
+ * Product tier direction: docs/product/free-pro-entitlement-policy.md (STEP 14P.E14).
  *
- * Readiness is independent of plan. A Pro user cannot unlock NOT_READY / INTERNAL /
- * PROVIDER_BLOCKED / kill-switched capabilities.
+ * A Pro user cannot unlock NOT_READY / INTERNAL / PROVIDER_BLOCKED / kill-switched
+ * capabilities. `commercialQuota` is frozen product policy only. evaluateCapability
+ * does not read it, and it cannot bypass a kill switch or technical safety limit.
  */
 
 import type { FeatureKey } from './types';
@@ -66,6 +68,17 @@ export type CapabilityAccessReason =
   | 'AUTH_REQUIRED'
   | 'KILL_SWITCH';
 
+/** Frozen commercial plan quota. Not a technical safety limit and not enforced here. */
+export type CommercialQuotaStatus = 'PREPARED_NOT_ACTIVE' | 'PROPOSED_NOT_ACTIVE';
+
+export type CommercialQuota = {
+  status: CommercialQuotaStatus;
+  kind: 'COMMERCIAL_LIMIT';
+  free: number;
+  pro: number;
+  unit: 'imports_per_day' | 'saved_count';
+};
+
 export type CapabilitySpec = {
   capability: CourtContextCapability;
   readiness: CapabilityReadiness;
@@ -73,6 +86,11 @@ export type CapabilitySpec = {
   neverPaywall?: boolean;
   /** HTML/public surface; auth is a separate check for APIs. */
   public?: boolean;
+  /**
+   * Future commercial allowance. Inactive until a later step enforces it in the
+   * feature that owns persistence. Must not override readiness or safety limits.
+   */
+  commercialQuota?: CommercialQuota;
 };
 
 export type PlanSnapshot = {
@@ -140,7 +158,7 @@ export const CAPABILITY_REGISTRY: Record<CourtContextCapability, CapabilitySpec>
   CURRENT_LIVE_ANALYSIS: {
     capability: 'CURRENT_LIVE_ANALYSIS',
     readiness: 'NOT_READY',
-    planAccess: 'PRO',
+    planAccess: 'BOTH',
   },
   XRAY_UPLOAD_UI: {
     capability: 'XRAY_UPLOAD_UI',
@@ -152,6 +170,13 @@ export const CAPABILITY_REGISTRY: Record<CourtContextCapability, CapabilitySpec>
     capability: 'XRAY_EXTRACTION',
     readiness: 'DISABLED',
     planAccess: 'BOTH',
+    commercialQuota: {
+      status: 'PREPARED_NOT_ACTIVE',
+      kind: 'COMMERCIAL_LIMIT',
+      free: 3,
+      pro: 10,
+      unit: 'imports_per_day',
+    },
   },
   XRAY_CORRECTION: {
     capability: 'XRAY_CORRECTION',
@@ -193,7 +218,18 @@ export const CAPABILITY_REGISTRY: Record<CourtContextCapability, CapabilitySpec>
   WOWY_BASIC: { capability: 'WOWY_BASIC', readiness: 'AVAILABLE', planAccess: 'FREE', public: true },
   WOWY_ADVANCED: { capability: 'WOWY_ADVANCED', readiness: 'NOT_READY', planAccess: 'PRO' },
   SAVED_PROPS: { capability: 'SAVED_PROPS', readiness: 'AVAILABLE', planAccess: 'FREE' },
-  SAVED_PARLAYS: { capability: 'SAVED_PARLAYS', readiness: 'NOT_READY', planAccess: 'PRO' },
+  SAVED_PARLAYS: {
+    capability: 'SAVED_PARLAYS',
+    readiness: 'NOT_READY',
+    planAccess: 'BOTH',
+    commercialQuota: {
+      status: 'PROPOSED_NOT_ACTIVE',
+      kind: 'COMMERCIAL_LIMIT',
+      free: 5,
+      pro: 50,
+      unit: 'saved_count',
+    },
+  },
   PAPER_TRACKING: { capability: 'PAPER_TRACKING', readiness: 'AVAILABLE', planAccess: 'FREE' },
   AI_BRIEFING: { capability: 'AI_BRIEFING', readiness: 'AVAILABLE', planAccess: 'PRO' },
   ALERTS: { capability: 'ALERTS', readiness: 'NOT_READY', planAccess: 'PRO' },
@@ -202,7 +238,8 @@ export const CAPABILITY_REGISTRY: Record<CourtContextCapability, CapabilitySpec>
   AVAILABILITY_CONTEXT: {
     capability: 'AVAILABILITY_CONTEXT',
     readiness: 'PROVIDER_BLOCKED',
-    planAccess: 'PRO',
+    planAccess: 'BOTH',
+    neverPaywall: true,
   },
   MEASURED_CORRELATION: {
     capability: 'MEASURED_CORRELATION',
@@ -256,7 +293,7 @@ function allow(spec: CapabilitySpec, readiness: CapabilityReadiness = spec.readi
  * 3. readiness (internal / provider / not ready)
  * 4. plan access
  *
- * Safety quotas are not applied here.
+ * Safety quotas and commercialQuota are not applied here.
  */
 export function evaluateCapability(
   plan: PlanSnapshot,

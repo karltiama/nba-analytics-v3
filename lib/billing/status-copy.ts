@@ -46,7 +46,7 @@ export function billingStatusLine(status: BillingStatusCopyInput): string {
 export function billingRetentionCopy(status: BillingStatusCopyInput): string | null {
   if (status.isPro && status.status === 'canceled') return null;
   if (status.status === 'past_due' || status.status === 'expired' || status.status === 'canceled') {
-    return 'Your research is still saved. Renew Founding Pro to restore premium market tools.';
+    return 'Your research is still saved. Renew Founding Pro to restore deeper market research.';
   }
   return null;
 }

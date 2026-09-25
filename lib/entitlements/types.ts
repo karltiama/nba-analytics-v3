@@ -40,7 +40,10 @@ export type ResolvedEntitlement = {
   source: 'default' | 'row' | 'dev_override';
 };
 
-export const FOUNDING_PRO_PRICE_CONCEPT = '$10/month';
+export const FREE_PRICE_DISPLAY = '$0';
+export const FOUNDING_PRO_PRICE_CONCEPT = '$9.99/month';
+export const FOUNDING_PRICE_LOCK_COPY =
+  'Keep your founding price while your subscription remains active.';
 
 export const UPGRADE_COPY: Record<FeatureKey, { title: string; detail: string }> = {
   line_shopping_detail: {

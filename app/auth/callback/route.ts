@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
+import { finishAuthCallback, planAuthCallback } from '@/lib/auth/auth-callback';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { safeInternalPath } from '@/lib/auth/safe-next';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const nextRaw = searchParams.get('next');
-  const nextPath = safeInternalPath(nextRaw, '/dashboard');
+  const plan = planAuthCallback({
+    origin,
+    code: searchParams.get('code'),
+    next: searchParams.get('next'),
+    providerError: searchParams.get('error'),
+  });
 
-  if (code) {
-    const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${nextPath}`);
-    }
+  if (plan.action === 'redirect') {
+    return NextResponse.redirect(plan.location);
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth_callback`);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.exchangeCodeForSession(plan.code);
+  return NextResponse.redirect(
+    finishAuthCallback({
+      origin,
+      next: plan.next,
+      exchangeOk: !error,
+    })
+  );
 }

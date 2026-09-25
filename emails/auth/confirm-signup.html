@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confirm your Court Context account</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: #f9fbfc;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #063f46;
+    "
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      style="width: 100%; background: #f9fbfc; padding: 40px 16px;"
+    >
+      <tr>
+        <td align="center">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              width: 100%;
+              max-width: 600px;
+              background: #ffffff;
+              border: 1px solid #dce9ea;
+              border-radius: 18px;
+              overflow: hidden;
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td style="padding: 28px 34px 20px 34px;">
+                <img
+                  src="https://courtcontext.com/brand/court-context-logo.png"
+                  width="150"
+                  alt="Court Context"
+                  style="
+                    display: block;
+                    width: 150px;
+                    max-width: 100%;
+                    height: auto;
+                    border: 0;
+                    outline: none;
+                    text-decoration: none;
+                  "
+                />
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style="padding: 0 34px;">
+                <div style="height: 1px; width: 100%; background: #dce9ea;"></div>
+              </td>
+            </tr>
+
+            <!-- Main content -->
+            <tr>
+              <td style="padding: 42px 34px 36px 34px;">
+                <div
+                  style="
+                    margin-bottom: 12px;
+                    font-size: 10px;
+                    line-height: 14px;
+                    font-weight: 700;
+                    color: #8aa0a3;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
+                  "
+                >
+                  More than the trend.
+                </div>
+
+                <h1
+                  style="
+                    margin: 0 0 18px 0;
+                    font-size: 42px;
+                    line-height: 43px;
+                    font-weight: 900;
+                    color: #063f46;
+                    letter-spacing: -1.5px;
+                    text-transform: uppercase;
+                  "
+                >
+                  Confirm your<br />
+                  <span style="color: #55ddb1;">email.</span>
+                </h1>
+
+                <p
+                  style="
+                    margin: 0 0 28px 0;
+                    max-width: 470px;
+                    font-size: 16px;
+                    line-height: 26px;
+                    color: #4a6366;
+                  "
+                >
+                  Welcome to Court Context. Confirm your email to finish creating your account.
+                </p>
+
+                <!-- CTA -->
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  style="margin: 0 0 24px 0;"
+                >
+                  <tr>
+                    <td align="center" bgcolor="#063f46" style="border-radius: 10px;">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="
+                          display: inline-block;
+                          padding: 15px 24px;
+                          font-size: 14px;
+                          line-height: 18px;
+                          font-weight: 700;
+                          color: #ffffff;
+                          text-decoration: none;
+                          border-radius: 10px;
+                        "
+                      >
+                        Confirm email &nbsp;&rarr;
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p
+                  style="
+                    margin: 0;
+                    max-width: 470px;
+                    font-size: 13px;
+                    line-height: 20px;
+                    color: #4a6366;
+                  "
+                >
+                  See the game in context — research props, parlays, players, and games.
+                </p>
+
+                <!-- Fallback link -->
+                <p
+                  style="
+                    margin: 28px 0 0 0;
+                    font-size: 12px;
+                    line-height: 19px;
+                    color: #4a6366;
+                  "
+                >
+                  If the button doesn't work, copy and paste this link into your browser:
+                </p>
+
+                <p
+                  style="
+                    margin: 8px 0 0 0;
+                    font-size: 12px;
+                    line-height: 18px;
+                    word-break: break-all;
+                  "
+                >
+                  <a
+                    href="{{ .ConfirmationURL }}"
+                    style="color: #075b5c; text-decoration: underline;"
+                  >
+                    {{ .ConfirmationURL }}
+                  </a>
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 24px 34px 30px 34px;
+                  background: #f7f9f7;
+                  border-top: 1px solid #dce9ea;
+                "
+              >
+                <p
+                  style="
+                    margin: 0 0 8px 0;
+                    font-size: 12px;
+                    line-height: 18px;
+                    color: #4a6366;
+                  "
+                >
+                  If you didn't create a Court Context account, you can safely ignore this email.
+                </p>
+
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 11px;
+                    line-height: 17px;
+                    color: #8aa0a3;
+                  "
+                >
+                  &copy; Court Context &middot; courtcontext.com
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

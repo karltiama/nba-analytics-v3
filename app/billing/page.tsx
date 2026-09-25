@@ -4,7 +4,11 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { FOUNDING_PRO_PRICE_CONCEPT } from '@/lib/entitlements/types';
+import {
+  FOUNDING_PRICE_LOCK_COPY,
+  FOUNDING_PRO_PRICE_CONCEPT,
+  FREE_PRICE_DISPLAY,
+} from '@/lib/entitlements/types';
 import { CHECKOUT_STARTED, checkoutStartedProperties } from '@/lib/product-analytics/conversion-events';
 import { trackEvent } from '@/lib/product-analytics/track-event';
 import {
@@ -209,11 +213,12 @@ export default function BillingPage() {
 
       <section className={cardCls}>
         <h2 className="type-section-heading text-[#063f46] mb-1">Founding Pro</h2>
-        <p className="text-lg font-semibold text-[#063f46] mb-2">{priceLabel}</p>
+        <p className="text-lg font-semibold text-[#063f46] mb-1">{priceLabel}</p>
+        <p className="type-secondary mb-4">{FOUNDING_PRICE_LOCK_COPY}</p>
         <p className="type-body text-[#063f46] mb-4">
-          Deeper sportsbook research on top of the Court Context Free already includes — Props Explorer, Add to
-          Parlay, Workspace analysis, Why this parlay could fail, and close consensus. Founding Pro does not sell locks
-          or win calls.
+          Court Context Free is {FREE_PRICE_DISPLAY}. It includes Props Explorer, Add to Parlay, Workspace, supported
+          Court Context analysis, and Why this parlay could fail. Founding Pro adds deeper market comparison and
+          research on top of that. It does not sell locks or win calls.
         </p>
         <ul className="type-secondary space-y-1.5 list-disc pl-5">
           <li>Exact best sportsbook for the selected market</li>

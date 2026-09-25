@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
 import { Sun, Moon, User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu, CircleHelp } from 'lucide-react';
+import { signOutToLogin } from '@/lib/auth/logout';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { PRIMARY_NAV } from '@/components/betting/primary-nav';
@@ -117,7 +118,6 @@ function ContextualParlayNav({
 }
 
 export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
-  const router = useRouter();
   const pathname = usePathname() || '/dashboard';
   const nextEncoded = encodeURIComponent(pathname);
 
@@ -127,10 +127,10 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
   const [profile, setProfile] = useState<ProfilePayload | null>(null);
   const [tourOpen, setTourOpen] = useState(false);
 
-  /** Signed-in UI follows the browser Supabase session (same as middleware). Profile API only enriches fields. */
+  /** Signed-in UI follows getUser, the same check the proxy uses. Profile API only enriches fields. */
   const syncAccount = useCallback(async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const user = data.user;
     if (!user) {
       setSessionState('guest');
       setProfile(null);
@@ -174,15 +174,11 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
   }, [supabase, syncAccount]);
 
   const handleSignOut = useCallback(async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch {
-      // still refresh UI
-    }
     setSessionState('guest');
     setProfile(null);
-    router.refresh();
-  }, [router, supabase]);
+    const next = await signOutToLogin(() => supabase.auth.signOut());
+    window.location.assign(next);
+  }, [supabase]);
 
   const explorerOwnsWorkspaceEntry = pathname.startsWith('/betting/props-explorer');
   const displayLabel =

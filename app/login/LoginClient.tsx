@@ -7,6 +7,7 @@ import { ArrowRight, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { ContinueWithGoogleButton } from '@/components/auth/ContinueWithGoogleButton';
 import { AuthInsightCard, AuthSplitLayout } from '@/components/auth/AuthSplitLayout';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { loginErrorMessage, loginNoticeMessage } from '@/lib/auth/auth-notices';
 import { safeInternalPath } from '@/lib/auth/safe-next';
 
 const fieldClass =
@@ -17,6 +18,14 @@ export function LoginClient() {
   const searchParams = useSearchParams();
   const nextPath = useMemo(
     () => safeInternalPath(searchParams.get('next'), '/dashboard'),
+    [searchParams]
+  );
+  const callbackError = useMemo(
+    () => loginErrorMessage(searchParams.get('error')),
+    [searchParams]
+  );
+  const notice = useMemo(
+    () => loginNoticeMessage(searchParams.get('notice')),
     [searchParams]
   );
 
@@ -132,9 +141,19 @@ export function LoginClient() {
             </button>
           </div>
         </div>
-        {error ? (
+        <div className="flex justify-end">
+          <Link href="/forgot-password" className="type-secondary text-[#075B5C] hover:underline">
+            Forgot password?
+          </Link>
+        </div>
+        {notice ? (
+          <p className="type-body text-[#075B5C]" role="status">
+            {notice}
+          </p>
+        ) : null}
+        {error || callbackError ? (
           <p className="type-body text-red-600" role="alert">
-            {error}
+            {error ?? callbackError}
           </p>
         ) : null}
         <button
