@@ -42,7 +42,7 @@ Never commit `.env` or paste secrets into the repo.
 
 - **Authentication → URL configuration:** Site URL = your production origin (e.g. `https://yourdomain.com`). Add `https://yourdomain.com/auth/callback` to **Redirect URLs** (and `http://localhost:3000/...` for local dev).
 - **Email:** Custom SMTP (e.g. Resend) and templates for confirm signup.
-- **Google OAuth:** Authorized redirect URI in Google Cloud remains `https://<project-ref>.supabase.co/auth/v1/callback` (not your app domain).
+- **Google OAuth / GIS:** Google login uses Google Identity Services (ID token) via `signInWithIdToken`, not a redirect through `…supabase.co` for the button flow. Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` to the Web client ID. In Google Cloud, add **Authorized JavaScript origins** for `http://localhost:3000` and production. Keep Authorized redirect URI `https://<project-ref>.supabase.co/auth/v1/callback` for Supabase provider config and email/recovery callbacks. Enable Google in Supabase Auth → Providers with the same Client ID + Secret.
 - **RLS / policies:** Confirm policies match what you expect for logged-in users.
 
 ## 4. Vercel Cron and paper settlement
