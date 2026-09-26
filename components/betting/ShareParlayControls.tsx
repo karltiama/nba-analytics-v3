@@ -187,7 +187,7 @@ export function ShareParlayControls({
 
       <dialog
         ref={dialogRef}
-        className="w-[min(24rem,calc(100vw-2rem))] rounded-2xl border border-[#DCE9EA] bg-white p-0 text-[#063f46] shadow-lg backdrop:bg-[#063f46]/40"
+        className="fixed top-1/2 left-1/2 w-[min(24rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[#DCE9EA] bg-white p-0 text-[#063f46] shadow-lg backdrop:bg-[#063f46]/40"
         aria-labelledby={titleId}
         onClick={(e) => {
           if (e.target === dialogRef.current) closeSheet();

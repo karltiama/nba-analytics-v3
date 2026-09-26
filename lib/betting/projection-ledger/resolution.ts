@@ -3,7 +3,8 @@
  * Does not change how production averages treat DNP logs.
  */
 
-import { classifyAppearance, type EvalGameLog } from '@/lib/betting/minutes-projection-eval';
+import { classifyAppearance } from '@/lib/betting/minutes-projection-eval';
+import type { EvalGameLog } from '@/lib/betting/player-projection-eval';
 import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
 
 export const LEDGER_RESOLUTION = ['PLAYED', 'DNP_VOID', 'POSTPONED', 'CANCELED', 'UNRESOLVED'] as const;
