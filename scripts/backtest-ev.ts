@@ -99,7 +99,14 @@ function rebuildInputs(games: GameLog[], gameDateStr: string): PlayerPropModelIn
       : buildStabilitySignals(last10Games, k);
   }
 
-  return { last10, season, ext: { last5, std10 }, meta: { signalsByStat } };
+  return {
+    last10,
+    season,
+    ext: { last5, std10 },
+    meta: { signalsByStat },
+    l10GameIds: last10Games.map((game) => game.game_id),
+    latestInputGameStartTime: last10Games[0]?.start_time ?? null,
+  };
 }
 
 interface BetResult {

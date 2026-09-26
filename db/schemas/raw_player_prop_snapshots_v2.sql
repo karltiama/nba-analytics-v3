@@ -2,7 +2,9 @@
 -- One row per sportsbook/prop/side/line with odds_american, odds_decimal, implied_probability.
 -- Populated by lambda/player-props-snapshot. Run after raw_schema.sql (raw schema must exist).
 
--- raw.player_prop_snapshots_v2: append-only; no unique constraint.
+-- raw.player_prop_snapshots_v2: append-only provider observations.
+-- Uniqueness is one row per pull_run_id + game + player + book + prop + side + line.
+-- Price is not part of the key, so a later pull keeps a new price on the same line.
 create table if not exists raw.player_prop_snapshots_v2 (
   id                  uuid primary key default gen_random_uuid(),
   game_id             integer not null,
@@ -29,4 +31,16 @@ create index if not exists raw_player_prop_snapshots_v2_game_player_prop_idx
   on raw.player_prop_snapshots_v2 (game_id, player_id, prop_type);
 create index if not exists raw_player_prop_snapshots_v2_pull_run_idx
   on raw.player_prop_snapshots_v2 (pull_run_id, game_id)
+  where pull_run_id is not null;
+
+create unique index if not exists raw_player_prop_snapshots_v2_pull_observation_uidx
+  on raw.player_prop_snapshots_v2 (
+    pull_run_id,
+    game_id,
+    player_id,
+    sportsbook,
+    prop_type,
+    side,
+    line_value
+  )
   where pull_run_id is not null;

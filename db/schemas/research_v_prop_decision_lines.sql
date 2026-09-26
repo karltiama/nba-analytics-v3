@@ -61,7 +61,8 @@ select * from (
     r.sportsbook,
     r.prop_type,
     r.side,
-    r.fetched_at desc
+    r.fetched_at desc,
+    r.pull_run_id desc nulls last
 ) live;
 
 comment on view research.v_prop_decision_lines is

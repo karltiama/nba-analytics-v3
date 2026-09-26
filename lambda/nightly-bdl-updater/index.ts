@@ -38,6 +38,7 @@ try {
 
 import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
+import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
 
 // ============================================
 // CONFIGURATION
@@ -88,22 +89,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function sid(id: number | null | undefined): string {
   if (id == null) return '';
   return String(id);
-}
-
-/**
- * Same source as app `getAnalyticsSeason` / `resolveIngestionSeasonStartYear`:
- * CURRENT_ANALYTICS_SEASON or NBA_STATS_SEASON (YYYY or YYYY-YY), else pin 2025.
- * Explicit caller season still wins at the call site.
- */
-function resolveIngestionSeasonStartYear(season?: number | null): number {
-  if (season != null && Number.isFinite(season)) return Math.trunc(season);
-  const raw = (process.env.CURRENT_ANALYTICS_SEASON || process.env.NBA_STATS_SEASON || '').trim();
-  if (raw) {
-    const hyphen = raw.match(/^(\d{4})-\d{2}$/);
-    if (hyphen) return Number(hyphen[1]);
-    if (/^\d{4}$/.test(raw)) return Number(raw);
-  }
-  return 2025; // PINNED_ANALYTICS_SEASON — keep aligned with lib/season.ts
 }
 
 // ============================================
@@ -634,7 +619,8 @@ async function runPipeline(): Promise<PipelineResult> {
     return result;
   }
 
-  const season = resolveIngestionSeasonStartYear();
+  // Fail closed before any provider call. Does not read the product season pin.
+  const season = requireLiveIngestionSeasonStartYear(process.env);
   const forwardRaw = process.env.BDL_SCHEDULE_SYNC_DAYS_FORWARD;
   const parsedForward = parseInt(forwardRaw ?? '14', 10);
   const forwardDays = Number.isFinite(parsedForward)

@@ -14,7 +14,7 @@ import {
 } from '@/lib/betting/player-prop-model';
 import { computePropEvFields, type PropEvRowInput } from '@/lib/betting/player-prop-ev-row';
 import type { PlayerPropModelInputs, ModelInputStats } from '@/lib/betting/player-prop-inputs';
-import { getStatsForPropType } from '@/lib/betting/player-prop-inputs';
+import { getStatsForPropType, inputWindowProvenance } from '@/lib/betting/player-prop-inputs';
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { brierScore, expectedCalibrationError } from '@/lib/betting/ev-eval-metrics';
 import {
@@ -363,6 +363,7 @@ export function buildAsOfModelInputs(
   for (const k of STAT_KEYS) {
     signalsByStat[k] = buildStabilitySignals(mapped, k);
   }
+  const provenance = inputWindowProvenance(last10Games);
   return {
     last10: toStats(last10Games),
     season: toStats(priorNewestFirst),
@@ -371,6 +372,8 @@ export function buildAsOfModelInputs(
     seasonKey,
     sampleGamesUsed: last10Games.length,
     seasonGamesPlayed: priorNewestFirst.length,
+    l10GameIds: provenance.l10GameIds,
+    latestInputGameStartTime: provenance.latestInputGameStartTime,
   };
 }
 

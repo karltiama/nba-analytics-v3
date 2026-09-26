@@ -1,9 +1,12 @@
 /**
- * Creates hourly unique index on raw.player_prop_snapshots_v2 (IMMUTABLE expression).
- * Run after dedupe. Env: SUPABASE_DB_URL
+ * SUPERSEDED. Do not run. Hourly uniqueness drops later prices in the same hour.
  */
 import 'dotenv/config';
 import { Pool } from 'pg';
+
+throw new Error(
+  'Refusing hourly prop unique index. Use MIGRATION_player_prop_observation_grain.sql.'
+);
 
 const dbUrl = process.env.SUPABASE_DB_URL;
 if (!dbUrl) {

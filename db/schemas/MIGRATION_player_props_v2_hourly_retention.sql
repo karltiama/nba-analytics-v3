@@ -1,3 +1,5 @@
+-- SUPERSEDED. Do not re-apply. This file deletes duplicate hourly rows.
+-- New polls use db/schemas/MIGRATION_player_prop_observation_grain.sql.
 -- Enforce hourly dedupe for raw.player_prop_snapshots_v2.
 -- Keeps newest row per (game, player, sportsbook, prop, side, line, hour bucket).
 

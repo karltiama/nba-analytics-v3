@@ -48,6 +48,7 @@
     "build:ingestion-lambdas": "node scripts/ops/bundle-ingestion-lambda.mjs --all",
     "build:shadow-projection-lambda": "node scripts/ops/bundle-ingestion-lambda.mjs --lambda=shadow-projection",
     "build:context-prospective-shadow-lambda": "node scripts/ops/bundle-ingestion-lambda.mjs --lambda=context-prospective-shadow",
+    "build:projection-ledger-lambda": "node scripts/ops/bundle-ingestion-lambda.mjs --lambda=projection-ledger && tsx scripts/ops/stamp-projection-ledger-revision.ts",
     "ops:context-projection-prospective-status": "tsx scripts/ops/context-projection-prospective-status.ts",
     "ops:context-projection-prospective-cycle": "tsx scripts/ops/run-context-projection-prospective-cycle.ts",
     "ops:context-projection-activation-readiness": "tsx scripts/ops/certify-context-projection-activation-readiness.ts",

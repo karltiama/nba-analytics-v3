@@ -14,6 +14,7 @@ const SCHEDULE_RESOURCES: Array<{ marker: string; state: string }> = [
   { marker: 'aws_cloudwatch_event_rule" "injuries_schedule', state: 'local.injuries_schedule_state' },
   { marker: 'aws_cloudwatch_event_rule" "boxscore_schedule', state: 'local.boxscore_schedule_state' },
   { marker: 'aws_scheduler_schedule" "player_props_crons', state: 'local.player_props_schedule_state' },
+  { marker: 'aws_scheduler_schedule" "player_props_near_tip', state: 'local.player_props_schedule_state' },
   { marker: 'aws_scheduler_schedule" "player_props_rate', state: 'local.player_props_schedule_state' },
 ];
 

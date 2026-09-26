@@ -8,7 +8,7 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
 import { 
-  getGameTargetsForDate, 
+  getGameTargets, 
   getTodayET 
 } from '../lambda/player-props-snapshot/src/game-discovery';
 import { fetchPlayerPropsForGame } from '../lambda/player-props-snapshot/src/fetch';
@@ -35,7 +35,7 @@ async function main() {
   const date = getTodayET();
   console.log(`🚀 Manual Props Sync for ${date}`);
 
-  const targets = await getGameTargetsForDate(pool as any, date);
+  const targets = await getGameTargets({ pool: pool as any, universe: 'broad', date });
   console.log(`📡 Found ${targets.length} games to target.`);
 
   const pullRunId = await createPullRun(pool as any, targets.map((g) => g.gameId));

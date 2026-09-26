@@ -3,8 +3,7 @@ import type { Pool } from 'pg';
 export const RETENTION_DAYS = 3;
 export const DELETE_BATCH = 50_000;
 
-export async function materializeClosingLines(pool: Pool): Promise<number> {
-  const result = await pool.query(`
+export const MATERIALIZE_CLOSING_LINES_SQL = `
     INSERT INTO research.prop_decision_lines
       (game_id, player_id, player_name, team_id, sportsbook, prop_type,
        market_type, side, line_value, odds_american, odds_decimal,
@@ -41,9 +40,47 @@ export async function materializeClosingLines(pool: Pool): Promise<number> {
       )
     ORDER BY
       r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side,
-      r.fetched_at DESC
+      r.fetched_at DESC,
+      r.pull_run_id DESC NULLS LAST
     ON CONFLICT (game_id, player_id, sportsbook, prop_type, side) DO NOTHING
-  `);
+`;
+
+export type PreTipObservation = {
+  gameId: string;
+  playerId: string;
+  sportsbook: string;
+  propType: string;
+  side: string;
+  lineValue: number;
+  oddsAmerican: number;
+  fetchedAt: Date;
+  pullRunId: number;
+};
+
+/** Same order as MATERIALIZE_CLOSING_LINES_SQL: latest fetched_at, then later pull. */
+export function selectLatestPreTipObservations<T extends PreTipObservation>(
+  rows: T[],
+  tip: Date
+): T[] {
+  const eligible = rows.filter((row) => row.fetchedAt.getTime() < tip.getTime());
+  const best = new Map<string, T>();
+  for (const row of eligible) {
+    const key = [row.gameId, row.playerId, row.sportsbook, row.propType, row.side].join('|');
+    const prev = best.get(key);
+    if (!prev) {
+      best.set(key, row);
+      continue;
+    }
+    const newer =
+      row.fetchedAt.getTime() > prev.fetchedAt.getTime() ||
+      (row.fetchedAt.getTime() === prev.fetchedAt.getTime() && row.pullRunId > prev.pullRunId);
+    if (newer) best.set(key, row);
+  }
+  return [...best.values()];
+}
+
+export async function materializeClosingLines(pool: Pool): Promise<number> {
+  const result = await pool.query(MATERIALIZE_CLOSING_LINES_SQL);
   return result.rowCount ?? 0;
 }
 

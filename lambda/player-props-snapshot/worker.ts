@@ -20,6 +20,7 @@ import {
   filterRowsByServingProviderId,
 } from './src/prop-identity-boundary';
 import { archiveGameSnapshot } from './src/archive-game';
+import { logMarketOutcome, outcomeForProviderResult } from './src/market-outcome';
 
 function parseMessage(body: string): WorkerMessage {
   const payload = JSON.parse(body) as WorkerMessage;
@@ -59,8 +60,17 @@ export const handler = async (event: SQSEvent) => {
   for (const record of event.Records) {
     const msg = parseMessage(record.body);
     let gameRunFinalized = false;
+    let providerSettled = false;
     try {
       const props = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId);
+      providerSettled = true;
+      logMarketOutcome({
+        outcome: outcomeForProviderResult({ threw: false, rowCount: props.length }),
+        universe: msg.universe ?? null,
+        gameId: msg.gameId,
+        pullRunId: msg.runId,
+        rowsFetched: props.length,
+      });
       const normalized = normalizePlayerPropRows(props);
       const startedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
       const snapshotAt = startedAt ?? new Date();
@@ -156,6 +166,17 @@ export const handler = async (event: SQSEvent) => {
       }
       successCount++;
     } catch (error: unknown) {
+      if (!providerSettled) {
+        const message = error instanceof Error ? error.message : '';
+        const http = message.match(/player_props (\d+)/);
+        logMarketOutcome({
+          outcome: outcomeForProviderResult({ threw: true, rowCount: 0 }),
+          reason: http ? `provider_http_${http[1]}` : 'provider_request_failed',
+          universe: msg.universe ?? null,
+          gameId: msg.gameId,
+          pullRunId: msg.runId,
+        });
+      }
       if (!gameRunFinalized) {
         await completeGameRun(
           pool,

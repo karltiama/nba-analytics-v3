@@ -226,8 +226,10 @@ data "archive_file" "player_props" {
 }
 
 resource "aws_sqs_queue" "player_props_dlq" {
-  name                      = "nba-player-props-game-dlq"
-  message_retention_seconds = 1209600
+  name = "nba-player-props-game-dlq"
+  # Live queue is the 4-day SQS default. A 14-day increase was written in
+  # config and never applied. Do not change it in a disabled package publish.
+  message_retention_seconds = 345600
 }
 
 resource "aws_sqs_queue" "player_props_game_queue" {
@@ -327,6 +329,32 @@ resource "aws_scheduler_schedule" "player_props_crons" {
   target {
     arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
+    input    = jsonencode({ universe = "broad" })
+  }
+}
+
+# Near-tip polls. Created only when schedules exist; state stays DISABLED until
+# player_props_execution_enabled is true. Does not enable provider calls.
+resource "aws_scheduler_schedule" "player_props_near_tip" {
+  count       = var.player_props_enable_schedule ? 1 : 0
+  name        = "nba-player-props-near-tip"
+  group_name  = "default"
+  description = "Targeted player props for games tipping in [now+60m, now+75m). Disabled unless player_props execution is enabled."
+  state       = local.player_props_schedule_state
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  # Every 15 minutes from 08:00 through 23:45 America/New_York.
+  # Minute 0/15 and hours 8-23 include 23:45 and exclude 00:00.
+  schedule_expression          = "cron(0/15 8-23 ? * * *)"
+  schedule_expression_timezone = var.player_props_schedule_timezone
+
+  target {
+    arn      = aws_lambda_function.player_props_controller.arn
+    role_arn = aws_iam_role.scheduler_player_props_invoke.arn
+    input    = jsonencode({ universe = "near_tip" })
   }
 }
 
@@ -347,6 +375,7 @@ resource "aws_scheduler_schedule" "player_props_rate" {
   target {
     arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
+    input    = jsonencode({ universe = "broad" })
   }
 }
 

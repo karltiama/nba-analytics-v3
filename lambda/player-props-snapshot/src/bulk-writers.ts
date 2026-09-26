@@ -42,12 +42,17 @@ export async function completePullRun(
   );
 }
 
-export async function createGameRun(pool: Pool, pullRunId: number, gameId: string): Promise<void> {
+export async function createGameRun(
+  pool: Pool,
+  pullRunId: number,
+  gameId: string,
+  universe?: 'broad' | 'near_tip' | null
+): Promise<void> {
   await pool.query(
-    `INSERT INTO raw.player_prop_game_runs (pull_run_id, game_id, status, started_at)
-     VALUES ($1, $2, 'started', now())
+    `INSERT INTO raw.player_prop_game_runs (pull_run_id, game_id, status, started_at, universe)
+     VALUES ($1, $2, 'started', now(), $3)
      ON CONFLICT (pull_run_id, game_id) DO NOTHING`,
-    [pullRunId, gameId]
+    [pullRunId, gameId, universe ?? null]
   );
 }
 
@@ -209,9 +214,9 @@ export async function bulkInsertRawV2(
          game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
          line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json, pull_run_id
        ) VALUES ${tuples.join(',')}
-       ON CONFLICT (
-         game_id, player_id, sportsbook, prop_type, side, line_value, (date_trunc('hour', fetched_at at time zone 'UTC'))
-       ) DO NOTHING`,
+       ON CONFLICT (pull_run_id, game_id, player_id, sportsbook, prop_type, side, line_value)
+       WHERE pull_run_id IS NOT NULL
+       DO NOTHING`,
       values
     );
     inserted += result.rowCount ?? 0;

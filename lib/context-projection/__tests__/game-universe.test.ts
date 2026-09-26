@@ -22,14 +22,24 @@ describe('Phase 19B — prospective game universe', () => {
     expect([...PROSPECTIVE_GAME_UNIVERSE]).toContain('REGULAR_SEASON');
   });
 
-  it('excludes preseason before RS open', () => {
+  it('excludes preseason before the Oct 20 2026 regular-season open', () => {
     const c = classifyProspectiveCompetition({
       season: '2026',
-      startTimeIso: '2026-10-20T19:00:00.000Z',
-      status: '2026-10-20T19:00:00Z',
+      startTimeIso: '2026-10-19T23:00:00.000Z',
+      status: '2026-10-19T23:00:00Z',
     });
     expect(c.class).toBe('PRESEASON');
     expect(c.primaryEligible).toBe(false);
+  });
+
+  it('includes Oct 20 2026 opening night as regular season', () => {
+    const c = classifyProspectiveCompetition({
+      season: '2026',
+      startTimeIso: '2026-10-20T23:00:00.000Z',
+      status: '2026-10-20T23:00:00Z',
+    });
+    expect(c.primaryEligible).toBe(true);
+    expect(c.class).toBe('REGULAR_SEASON');
   });
 
   it('includes regular season on/after open', () => {

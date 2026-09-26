@@ -1,13 +1,13 @@
 /**
- * Applies hourly dedupe for raw.player_prop_snapshots_v2 in hour-sized chunks (avoids statement timeout),
- * then creates raw_player_prop_snapshots_v2_hourly_unique_idx if missing.
- *
- * Env: SUPABASE_DB_URL
- *
- * Usage: npx tsx scripts/apply-player-props-v2-hourly-migration.ts
+ * SUPERSEDED. Do not run. This script deletes raw rows.
+ * The live grain is db/schemas/MIGRATION_player_prop_observation_grain.sql.
  */
 import 'dotenv/config';
 import { Pool } from 'pg';
+
+throw new Error(
+  'Refusing hourly prop dedupe. That script deletes observations. Use MIGRATION_player_prop_observation_grain.sql.'
+);
 
 const dbUrl = process.env.SUPABASE_DB_URL;
 if (!dbUrl) {

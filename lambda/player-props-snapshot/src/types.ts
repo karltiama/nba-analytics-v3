@@ -52,4 +52,5 @@ export interface WorkerMessage {
   gameId: string;
   bdlGameId: number;
   date: string;
+  universe?: 'broad' | 'near_tip';
 }

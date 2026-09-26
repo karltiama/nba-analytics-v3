@@ -23,8 +23,8 @@ export const REGULAR_SEASON_OPEN_ET: Readonly<Record<string, string>> = {
   '2023': '2023-10-24',
   '2024': '2024-10-22',
   '2025': '2025-10-21',
-  /** Conservative: first 2026 analytics tip 2026-10-20 treated as preseason until RS open. */
-  '2026': '2026-10-21',
+  /** Official 2026–27 regular-season opening night (America/New_York). */
+  '2026': '2026-10-20',
 };
 
 export const PROSPECTIVE_GAME_UNIVERSE = [

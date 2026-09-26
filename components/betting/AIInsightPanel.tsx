@@ -9,6 +9,7 @@ import {
   Activity,
   Sparkles,
   Loader2,
+  Lock,
 } from 'lucide-react';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
 
@@ -107,7 +108,9 @@ export function AIInsightPanel({
           </div>
         </div>
         {slateSummaryLoading ? null : slateEntitlementRequired ? (
-          <span className="type-badge text-[#075B5C]">Founding Pro</span>
+          <span className="type-badge rounded-md border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[#075B5C]">
+            Requires Founding Pro
+          </span>
         ) : briefingEligible && slateSummary ? (
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-[#20B95A] pulse-dot" />
@@ -135,15 +138,25 @@ export function AIInsightPanel({
               {slateSummary}
             </p>
           ) : slateEntitlementRequired ? (
-            <div className="space-y-2 py-1">
-              <p className="type-section-heading text-[#063f46]">AI research briefing — Founding Pro</p>
-              <p className="type-body text-cc-secondary">
-                Founding Pro adds a synthesized slate briefing from the research context you already see.
-              </p>
+            <div className="rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] p-3 space-y-3">
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 rounded-lg border border-[#DCE9EA] bg-white p-1.5 shrink-0">
+                  <Lock className="h-3.5 w-3.5 text-[#075B5C]" aria-hidden />
+                </div>
+                <div className="min-w-0 space-y-1">
+                  <p className="type-section-heading text-[#063f46]">AI research briefing</p>
+                  <p className="type-body text-cc-secondary">
+                    This slate briefing is a Founding Pro feature. Free keeps the full research workflow;
+                    Founding Pro adds a synthesized summary from the context you already see.
+                  </p>
+                </div>
+              </div>
               <FoundingProUpgradeLink
                 analyticsSurface="slate_briefing"
-                className="bg-[#063f46] from-[#063f46] to-[#063f46] hover:bg-[#0a525c]"
-              />
+                className="w-full bg-[#063f46] from-[#063f46] to-[#063f46] hover:bg-[#0a525c]"
+              >
+                Unlock with Founding Pro
+              </FoundingProUpgradeLink>
             </div>
           ) : (
             <p className="type-body py-1 text-cc-secondary">

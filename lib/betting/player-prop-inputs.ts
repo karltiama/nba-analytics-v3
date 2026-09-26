@@ -54,6 +54,10 @@ export interface PlayerPropModelInputs {
   sampleGamesUsed: number;
   /** Season games_played from player_season_averages for the active season. */
   seasonGamesPlayed: number;
+  /** Newest-first ids of the Final logs that fed the L10 window. */
+  l10GameIds: string[];
+  /** Start time of the newest Final log in that window. Not a row-update timestamp. */
+  latestInputGameStartTime: string | null;
 }
 
 const STABILITY_STAT_KEYS: PropStatSeriesKey[] = [
@@ -179,6 +183,7 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
     ra: stddev(games.slice(0, 10).map((g) => (g.rebounds ?? 0) + (g.assists ?? 0))),
   };
 
+  const provenance = inputWindowProvenance(games);
   return {
     last10,
     season,
@@ -187,6 +192,26 @@ export async function getPlayerPropModelInputs(playerId: string): Promise<Player
     seasonKey,
     sampleGamesUsed: games.length,
     seasonGamesPlayed: gp,
+    l10GameIds: provenance.l10GameIds,
+    latestInputGameStartTime: provenance.latestInputGameStartTime,
+  };
+}
+
+/** Game ids and newest start time for the logs already selected as model inputs. */
+export function inputWindowProvenance(
+  games: Array<{ game_id: string; start_time: string }>
+): { l10GameIds: string[]; latestInputGameStartTime: string | null } {
+  let latest: string | null = null;
+  let latestMs = Number.NEGATIVE_INFINITY;
+  for (const game of games) {
+    const ms = Date.parse(game.start_time);
+    if (!Number.isFinite(ms) || ms < latestMs) continue;
+    latestMs = ms;
+    latest = new Date(ms).toISOString();
+  }
+  return {
+    l10GameIds: games.map((game) => game.game_id),
+    latestInputGameStartTime: latest,
   };
 }
 
