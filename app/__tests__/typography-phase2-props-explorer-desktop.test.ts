@@ -13,7 +13,9 @@ describe('typography phase 2 desktop props explorer', () => {
   const tray = read('components/betting/PropsExplorerParlayTray.tsx');
   const context = read('components/betting/PropsExplorerGameContextPanel.tsx');
   const mobile = read('components/betting/PropsExplorerMobileControls.tsx');
-  const card = read('components/betting/PropsExplorerPropCard.tsx');
+  const list = read('components/betting/PropsExplorerPropList.tsx');
+  const sheet = read('components/betting/PropsExplorerPropDetailSheet.tsx');
+  const actions = read('components/betting/PropsExplorerDesktopActions.tsx');
 
   it('uses the page title role and semantic table data', () => {
     expect(page).toContain('type-page-title');
@@ -28,7 +30,7 @@ describe('typography phase 2 desktop props explorer', () => {
 
   it('keeps the desktop table and filters behind the lg boundary', () => {
     expect(page).toContain('hidden lg:block');
-    expect(page).toContain('lg:hidden min-w-0 space-y-3');
+    expect(page).toContain('lg:hidden min-w-0');
     expect(page).toContain('py-1.5 px-2');
     expect(page).not.toContain('text-[9px]');
     expect(page).not.toContain('text-[10px]');
@@ -53,13 +55,21 @@ describe('typography phase 2 desktop props explorer', () => {
     expect(tray).not.toContain('text-[10px]');
   });
 
-  it('leaves the completed mobile card and filter contracts in place', () => {
+  it('leaves the dense mobile list and filter contracts in place', () => {
     expect(mobile).toContain('data-mobile-toolbar');
     expect(mobile).toContain('data-filter-sheet');
+    expect(mobile).toContain('sticky top-16');
     expect(mobile).toContain('lg:hidden');
-    expect(card).toContain('type-card-data');
-    expect(card).toContain('data-prop-odds');
-    expect(card).toContain('min-h-11');
+    expect(list).toContain('data-prop-row');
+    expect(list).toContain('type-table-data');
+    expect(list).toContain('min-h-[4.5rem]');
+    expect(list).toContain('max-h-[5.625rem]');
+    expect(list).not.toContain('rounded-2xl');
+    expect(sheet).toContain('data-prop-detail-sheet');
+    expect(sheet).toContain('type-table-data');
+    expect(actions).toContain('aria-label="More actions"');
+    expect(actions).toContain('+ Parlay');
+    expect(page).not.toContain('PropsExplorerPropCard');
     expect(tray).toContain('mobileParlayBarCopy');
     expect(tray).toContain('lg:hidden');
     expect(page).toContain('schedulePlayerSearch');

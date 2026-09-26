@@ -75,9 +75,11 @@ describe('props explorer mobile phase 3 contract', () => {
     'utf8'
   );
 
-  it('keeps phase 1 cards and phase 2 filters', () => {
-    expect(page).toContain('lg:hidden min-w-0 space-y-3');
-    expect(page).toContain('<PropsExplorerPropCard');
+  it('keeps the dense mobile list and phase 2 filters', () => {
+    expect(page).toContain('lg:hidden min-w-0');
+    expect(page).toContain('<PropsExplorerPropList');
+    expect(page).toContain('<PropsExplorerPropDetailSheet');
+    expect(page).not.toContain('PropsExplorerPropCard');
     expect(page).toContain('<PropsExplorerMobileControls');
     expect(page).toContain('PLAYER_SEARCH_USED');
     expect(page).toContain('PROP_ADDED_TO_PARLAY');

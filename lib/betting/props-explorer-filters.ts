@@ -46,9 +46,8 @@ export type ExplorerFilterCountInput = {
 };
 
 /**
- * Non-default sheet filters only.
- * Search stays on the page, so it is not counted.
- * Sort stays visible, so it is not counted.
+ * Non-default filters that stay in the sheet only.
+ * Search, sort, prop type, and side stay on the mobile bar, so they are not counted.
  * Advanced metrics is a display toggle, not a result filter, so it is not counted.
  * Each selected sportsbook counts as one.
  */
@@ -56,8 +55,6 @@ export function explorerActiveFilterCount(input: ExplorerFilterCountInput): numb
   let count = 0;
   if (input.date !== input.today) count += 1;
   if (input.gameId.trim()) count += 1;
-  if (input.propType.trim()) count += 1;
-  if (input.side && input.side !== 'all') count += 1;
   if (input.minEv.trim()) count += 1;
   count += input.sportsbook.split(',').map((book) => book.trim()).filter(Boolean).length;
   return count;

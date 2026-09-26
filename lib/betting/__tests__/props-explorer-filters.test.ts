@@ -25,7 +25,7 @@ describe('explorer active filter count', () => {
     expect(explorerActiveFilterCount(base)).toBe(0);
   });
 
-  it('counts each non-default sheet filter, including each sportsbook', () => {
+  it('counts sheet-only filters and ignores prop type and side on the bar', () => {
     expect(
       explorerActiveFilterCount({
         ...base,
@@ -36,7 +36,7 @@ describe('explorer active filter count', () => {
         minEv: '1',
         sportsbook: 'draftkings,fanduel',
       })
-    ).toBe(7);
+    ).toBe(5);
   });
 });
 
@@ -65,10 +65,11 @@ describe('props explorer mobile phase 2 contract', () => {
   const page = readFileSync(join(ROOT, 'app/betting/props-explorer/page.tsx'), 'utf8');
   const mobile = readFileSync(join(ROOT, 'components/betting/PropsExplorerMobileControls.tsx'), 'utf8');
 
-  it('keeps the phase 1 card and table split', () => {
-    expect(page).toContain('lg:hidden min-w-0 space-y-3');
-    expect(page).toContain('<PropsExplorerPropCard');
+  it('keeps the dense list and table split', () => {
+    expect(page).toContain('lg:hidden min-w-0');
+    expect(page).toContain('<PropsExplorerPropList');
     expect(page).toContain('hidden lg:block');
+    expect(page).not.toContain('PropsExplorerPropCard');
   });
 
   it('shows mobile controls below lg and keeps the desktop filter card', () => {

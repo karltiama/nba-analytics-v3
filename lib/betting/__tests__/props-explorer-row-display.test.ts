@@ -52,29 +52,31 @@ describe('explorer value labels', () => {
 
 describe('props explorer mobile phase 1 contract', () => {
   const page = readFileSync(join(ROOT, 'app/betting/props-explorer/page.tsx'), 'utf8');
-  const card = readFileSync(join(ROOT, 'components/betting/PropsExplorerPropCard.tsx'), 'utf8');
+  const list = readFileSync(join(ROOT, 'components/betting/PropsExplorerPropList.tsx'), 'utf8');
+  const sheet = readFileSync(join(ROOT, 'components/betting/PropsExplorerPropDetailSheet.tsx'), 'utf8');
   const coachmark = readFileSync(join(ROOT, 'components/onboarding/CoachmarkCallout.tsx'), 'utf8');
 
-  it('shows cards below lg and the table from lg up', () => {
-    expect(page).toContain('lg:hidden min-w-0 space-y-3');
+  it('shows a compact list below lg and the table from lg up', () => {
+    expect(page).toContain('lg:hidden min-w-0');
     expect(page).toContain('hidden lg:block');
-    expect(page).toContain('<PropsExplorerPropCard');
+    expect(page).toContain('<PropsExplorerPropList');
+    expect(page).not.toContain('PropsExplorerPropCard');
   });
 
-  it('wires card actions to the existing handlers', () => {
-    expect(page).toContain('onParlay={() => addToParlay(r)}');
-    expect(page).toContain('onCompare={() => {');
+  it('wires list and sheet actions to the existing handlers', () => {
+    expect(page).toContain('onParlay={(r) => addToParlay(r)}');
+    expect(page).toContain('openCompare');
     expect(page).toContain("completeChecklistItem('compare_opened')");
     expect(page).toContain('PROP_ADDED_TO_PARLAY');
     expect(page).toContain('PLAYER_SEARCH_RESULT_OPENED');
     expect(page).toContain('PROP_CONTEXT_OPENED');
-    expect(card).toContain('Compare books');
-    expect(card).toContain("'Paper'");
-    expect(card).toContain('aria-pressed={isOnParlay}');
-    expect(card).toContain('aria-label={isOnParlay ? \'Added to parlay\' : \'Add to Parlay\'}');
-    expect(card).toContain('whitespace-nowrap');
-    expect(card).toContain('min-h-11');
-    expect(card).not.toContain('formatPlayerLabel');
+    expect(sheet).toContain('Compare Sportsbooks');
+    expect(sheet).toContain('Add to Paper');
+    expect(sheet).toContain('aria-pressed={isOnParlay}');
+    expect(list).toContain("aria-label={onSlip ? 'Added to parlay' : 'Add to parlay'}");
+    expect(list).toContain('whitespace-nowrap');
+    expect(list).not.toContain('rounded-2xl');
+    expect(list).not.toContain('formatPlayerLabel');
   });
 
   it('keeps the coachmark dismiss inside a bounded, safe-area layout', () => {

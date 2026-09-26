@@ -7,7 +7,23 @@ const ROWS = 12;
  */
 export function PropsExplorerTableSkeleton() {
   return (
-    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden" aria-busy="true" aria-label="Loading props">
+    <div aria-busy="true" aria-label="Loading props">
+      <div className="border-y border-[#DCE9EA] bg-white lg:hidden">
+        {Array.from({ length: 8 }, (_, i) => (
+          <div key={i} className="flex h-[4.75rem] items-center gap-3 border-b border-[#DCE9EA] px-3 last:border-b-0">
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex items-center justify-between gap-3">
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-3.5 w-10" />
+              </div>
+              <Skeleton className="h-3.5 w-36" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-8 w-8 shrink-0 rounded-lg" />
+          </div>
+        ))}
+      </div>
+    <div className="hidden bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden lg:block">
       <div className="overflow-x-auto max-h-[calc(100vh-16rem)] overflow-y-auto">
         <table className="w-full text-left text-xs">
           <thead className="sticky top-0 z-10 bg-[#F8FBFA] border-b border-[#DCE9EA]">
@@ -81,6 +97,7 @@ export function PropsExplorerTableSkeleton() {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 }

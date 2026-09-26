@@ -59,9 +59,16 @@ describe('E9 first-run page contract', () => {
   });
 
   it('places contextual coachmarks and replayable help', () => {
-    expect(explorer).toMatch(/data-coachmark="props-discover"/);
-    expect(explorer).toMatch(/data-coachmark="props-compare"/);
-    expect(explorer).toMatch(/data-coachmark="props-add-parlay"/);
+    const explorerSurface = [
+      explorer,
+      read('components/betting/PropsExplorerMobileControls.tsx'),
+      read('components/betting/PropsExplorerPropList.tsx'),
+      read('components/betting/PropsExplorerDesktopActions.tsx'),
+      read('components/betting/PropsExplorerPropDetailSheet.tsx'),
+    ].join('\n');
+    expect(explorerSurface).toMatch(/data-coachmark="props-discover"/);
+    expect(explorerSurface).toMatch(/data-coachmark="props-compare"/);
+    expect(explorerSurface).toMatch(/data-coachmark="props-add-parlay"/);
     expect(workspace).toMatch(/data-coachmark="workspace-intro"/);
     expect(workspace).toMatch(/data-coachmark="workspace-analyze"/);
     expect(summary).toMatch(/data-coachmark="why-fail"/);
