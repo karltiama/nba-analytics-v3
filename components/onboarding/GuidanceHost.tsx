@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { CoachmarkCallout } from '@/components/onboarding/CoachmarkCallout';
 import {
@@ -29,9 +29,11 @@ export function GuidanceHost() {
   const previewMode = shouldSuppressProductPreviewAnalytics(previewFlag);
   const [active, setActive] = useState<CoachmarkId | null>(null);
   const [previewDismissed, setPreviewDismissed] = useState<CoachmarkId[]>([]);
+  const heldId = useRef<CoachmarkId | null>(null);
 
   const refresh = useCallback(() => {
     if (previewMode) {
+      heldId.current = null;
       const next = nextCoachmark({
         surface: surfaceForPath(pathname),
         level: 'getting_started',
@@ -45,17 +47,29 @@ export function GuidanceHost() {
     }
     const state = readOnboardingState();
     if (!state.completed && !state.replay) {
+      heldId.current = null;
       setActive(null);
       return;
     }
+    const present = presentCoachmarkIds();
     const next = nextCoachmark({
       surface: surfaceForPath(pathname),
       level: state.replay ? 'getting_started' : state.guidanceLevel,
       dismissed: state.dismissedCoachmarks,
-      presentIds: presentCoachmarkIds(),
+      presentIds: present,
       replay: state.replay,
       previewFlag,
     });
+    if (state.replay) {
+      heldId.current = null;
+      setActive(next);
+      return;
+    }
+    if (heldId.current && present.includes(heldId.current)) {
+      setActive(heldId.current);
+      return;
+    }
+    heldId.current = next;
     setActive(next);
   }, [pathname, previewFlag, previewMode, previewDismissed]);
 
@@ -82,6 +96,9 @@ export function GuidanceHost() {
     if (!active) return;
     if (previewMode) return;
     trackEvent('coachmark_seen', { surface: 'onboarding', coachmark_id: active });
+    const state = readOnboardingState();
+    if (state.replay || state.dismissedCoachmarks.includes(active)) return;
+    dismissCoachmark(active);
   }, [active, previewMode]);
 
   if (!active) return null;
@@ -107,18 +124,19 @@ export function GuidanceHost() {
           );
           return;
         }
+        heldId.current = null;
         const after = dismissCoachmark(active);
-        if (!after.completed && !after.replay) {
+        if (!after.replay) {
           setActive(null);
           return;
         }
         setActive(
           nextCoachmark({
             surface: surfaceForPath(pathname),
-            level: after.replay ? 'getting_started' : after.guidanceLevel,
+            level: 'getting_started',
             dismissed: after.dismissedCoachmarks,
             presentIds: presentCoachmarkIds(),
-            replay: after.replay,
+            replay: true,
             previewFlag,
           })
         );

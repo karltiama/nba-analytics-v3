@@ -195,6 +195,12 @@ export function nextCoachmark(input: {
   const dismissed = new Set(input.dismissed);
   const present = new Set(input.presentIds);
   const sequence = coachmarksForSurface(input.surface, input.level, input.previewFlag);
+  if (!input.replay) {
+    const primary = sequence[0];
+    if (!primary || !present.has(primary)) return null;
+    if (sequence.some((id) => dismissed.has(id))) return null;
+    return primary;
+  }
   for (const id of sequence) {
     if (!present.has(id)) continue;
     if (dismissed.has(id)) continue;

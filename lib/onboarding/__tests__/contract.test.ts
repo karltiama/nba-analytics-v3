@@ -117,7 +117,15 @@ describe('E9 onboarding contract', () => {
     expect(coachmarksForSurface('xray', 'advanced', 'replay')).toEqual([]);
   });
 
-  it('does not repeat dismissed coachmarks unless replay is set', () => {
+  it('shows one coachmark the first time a feature is opened', () => {
+    expect(
+      nextCoachmark({
+        surface: 'props',
+        level: 'getting_started',
+        dismissed: [],
+        presentIds: ['props-discover', 'props-compare', 'props-add-parlay'],
+      })
+    ).toBe('props-discover');
     expect(
       nextCoachmark({
         surface: 'props',
@@ -125,13 +133,56 @@ describe('E9 onboarding contract', () => {
         dismissed: ['props-discover'],
         presentIds: ['props-discover', 'props-compare', 'props-add-parlay'],
       })
-    ).toBe('props-compare');
+    ).toBeNull();
+    expect(
+      nextCoachmark({
+        surface: 'props',
+        level: 'getting_started',
+        dismissed: ['props-compare'],
+        presentIds: ['props-discover', 'props-compare', 'props-add-parlay'],
+      })
+    ).toBeNull();
+    expect(
+      nextCoachmark({
+        surface: 'props',
+        level: 'stats_researcher',
+        dismissed: [],
+        presentIds: ['props-discover', 'props-add-parlay'],
+      })
+    ).toBe('props-add-parlay');
+    expect(
+      nextCoachmark({
+        surface: 'workspace',
+        level: 'getting_started',
+        dismissed: [],
+        presentIds: ['workspace-intro', 'workspace-analyze', 'why-fail'],
+      })
+    ).toBe('workspace-intro');
+    expect(
+      nextCoachmark({
+        surface: 'workspace',
+        level: 'stats_researcher',
+        dismissed: [],
+        presentIds: ['workspace-analyze', 'why-fail'],
+      })
+    ).toBe('workspace-analyze');
+    expect(
+      nextCoachmark({
+        surface: 'workspace',
+        level: 'getting_started',
+        dismissed: [],
+        presentIds: ['why-fail'],
+      })
+    ).toBeNull();
+  });
+
+  it('walks the full coachmark sequence only when replay is set', () => {
     expect(
       nextCoachmark({
         surface: 'props',
         level: 'getting_started',
         dismissed: ['props-discover'],
-        presentIds: ['props-discover', 'props-compare'],
+        presentIds: ['props-discover', 'props-compare', 'props-add-parlay'],
         replay: true,
       })
     ).toBe('props-compare');
@@ -141,6 +192,7 @@ describe('E9 onboarding contract', () => {
         level: 'getting_started',
         dismissed: [],
         presentIds: ['workspace-intro'],
+        replay: true,
       })
     ).toBe('workspace-intro');
     expect(
@@ -149,6 +201,7 @@ describe('E9 onboarding contract', () => {
         level: 'getting_started',
         dismissed: [],
         presentIds: ['why-fail'],
+        replay: true,
       })
     ).toBe('why-fail');
   });
