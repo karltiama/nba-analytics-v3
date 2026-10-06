@@ -8,7 +8,8 @@ Environment variables in `.env`:
 
 ```
 SUPABASE_DB_URL=postgresql://...          # Required for all scripts
-BALDONTLIE_API_KEY=...                    # Required for teams + game schedule
+BALLDONTLIE_API_KEY=...                   # Canonical name for teams + game schedule
+# BALDONTLIE_API_KEY is a typo alias fallback only. Do not prefer it.
 APISPORTS_API_KEY=...                     # Required for player rosters
 ```
 

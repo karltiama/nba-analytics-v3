@@ -1,5 +1,7 @@
 # Schema Architecture Decision
 
+> **Not settled for the whole repo.** The decision below was never closed (scraper and Lambda follow-ups are still open). Live ingestion also writes BallDontLie stats to `raw.*`. See [docs/architecture.md](../../docs/architecture.md) before using this file as the box-score rule.
+
 ## Decision: BBRef Tables as Primary Source
 
 **BBRef tables are the PRIMARY and AUTHORITATIVE source** for all Basketball Reference data.

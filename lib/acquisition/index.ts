@@ -1,6 +1,6 @@
 /**
  * Shared immutable raw-acquisition primitive (STEP 14D.DATA2A).
- * Not wired into any collector. S3 adapter lives in ./s3-store (kept out of
+ * Wired only into game-status-sync (DATA2E.1). S3 adapter lives in ./s3-store (kept out of
  * this barrel so importing the core does not pull in the AWS SDK).
  */
 
@@ -10,3 +10,4 @@ export * from './envelope';
 export * from './keys';
 export * from './archive';
 export * from './ledger';
+export * from './ledger-pg';

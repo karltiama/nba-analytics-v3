@@ -111,7 +111,11 @@ describe('game-status-sync built artifact (13C.3)', () => {
     expect(src).not.toContain('CODE_ONLY_NOT_BUNDLED');
     expect(src).not.toContain('postgame_game_stages');
     expect(src).not.toContain('@aws-sdk/client-sqs');
-    expect(src).not.toContain('@aws-sdk/client-s3');
+    // DATA2E.1: immutable archive path (S3 client is bundled, loaded lazily on the live path only).
+    expect(src).toContain('acq_envelope.v1');
+    expect(src).toContain('insert into raw.acquisition_requests');
+    expect(src).toContain('IfNoneMatch');
+    expect(src).toContain('GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED');
     const bytes = fs.statSync(artifactPath).size;
     expect(bytes).toBeGreaterThan(10_000);
     expect(bytes).toBeLessThan(8 * 1024 * 1024);
@@ -289,6 +293,30 @@ describe('game-status-sync built artifact (13C.3)', () => {
     expect(reasons[0]).toMatch(/missing STATUS_SYNC_TARGET_SEASON/);
     expect(reasons[1]).toMatch(/invalid STATUS_SYNC_TARGET_SEASON/);
     expect(reasons[2]).toMatch(/protected historical season 2025/);
+  });
+
+  it('thawed production path without NBA_DATA_BUCKET fails closed before BDL/DB', async () => {
+    const mod = loadArtifact();
+    const result = await mod.runLambdaGameStatusSync({
+      env: liveEnv,
+      now,
+      store: createMemoryGameStore(),
+      ledger: {
+        insertRow: async () => {
+          throw new Error('ledger must not run');
+        },
+        updateArchiveOutcome: async () => {
+          throw new Error('ledger must not run');
+        },
+        recordParseResult: async () => {
+          throw new Error('ledger must not run');
+        },
+      },
+    });
+    expect(result.status).toBe('failed');
+    expect(String(result.reason)).toMatch(/missing NBA_DATA_BUCKET/);
+    expect(result.bdlHttp).toBe(0);
+    expect(result.wroteDb).toBe(false);
   });
 
   it('provider failures are bounded (no retry loop)', async () => {

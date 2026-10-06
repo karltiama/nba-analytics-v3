@@ -29,7 +29,8 @@ EventBridge (cron 08:00 UTC / 03:00 ET)
 | `SUPABASE_DB_URL` | Yes | -- | Postgres connection string (pooled recommended) |
 | `BALLDONTLIE_API_KEY` | Yes | -- | BallDontLie API key |
 | `BALLDONTLIE_REQUEST_DELAY_MS` | No | `200` | Delay between API calls (ms). GOAT tier: 200. Free tier: 12000 |
-| `MAX_RETRIES` | No | `3` | Max retry attempts for 429/5xx errors |
+| `MAX_RETRIES` | No | `3` | Max retries of this Lambda's own 5xx loop (`fetchWithRetry`) |
+| `BDL_RATE_LIMIT_MAX_RETRIES` | No | `3` | Shared live limiter: retries after the original attempt on 429. Non-negative integer; invalid values fail closed before any HTTP |
 | `BDL_SCHEDULE_SYNC_DAYS_FORWARD` | No | `14` | Inclusive end date = today (ET) + this many days; BDL schedule upsert for playoffs / Scheduled games |
 | `DISABLE_BDL_SCHEDULE_SYNC` | No | unset | Set to `1` to skip the forward schedule sync step |
 

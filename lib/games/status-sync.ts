@@ -7,14 +7,23 @@ import { shouldPreserveCertifiedFinal } from '@/lib/betting/final-preserve';
 import { isFinalStatus, normalizeGameStatus } from '@/lib/betting/normalize-game-status';
 import { BdlRateLimitError, shouldSkipLiveBdlHttp } from '@/lib/balldontlie/live-rate-limit';
 import { shouldSkipLiveMutations } from '@/lib/runtime/ingestion-mode';
+import { randomUUID } from 'node:crypto';
 import { canonicalStartTimeUtc, startTimeIsoUtc } from './canonical-start-time';
 import {
-  planStatusSyncQuery,
+  isPreseasonDiscoveryEnabled,
+  planStatusSyncQueries,
   resolveStatusSyncTargetSeason,
   statusSyncRequestUrl,
   type StatusSyncQueryMode,
   type StatusSyncQueryPlan,
 } from './status-sync-query';
+import {
+  classifySeasonPhase,
+  SEASON_PHASES,
+  strongerSeasonPhase,
+  type SeasonPhase,
+  type SeasonPhaseClassification,
+} from './season-phase';
 import { PINNED_ANALYTICS_SEASON } from '@/lib/season';
 
 export const STATUS_SYNC_JOB = 'game_status_sync';
@@ -63,6 +72,9 @@ export type ProviderGame = {
   visitor_team_score?: number | null;
   home_team?: { id?: number | string | null } | null;
   visitor_team?: { id?: number | string | null } | null;
+  /** Season-phase hints only (DATA1 §8.4); never mapped into the scoreboard row. */
+  ist_stage?: string | null;
+  postseason?: boolean | null;
 };
 
 export type GameStatusWriteAction =
@@ -85,14 +97,41 @@ export type GameStatusWritePlan = {
 export type GameStatusStore = {
   getById(gameId: string): Promise<LocalGameRow | null> | LocalGameRow | null;
   upsert(row: LocalGameRow): Promise<void> | void;
+  /** True only when analytics.games can persist season_phase (prepared migration applied). */
+  supportsSeasonPhase?(): Promise<boolean> | boolean;
+  /** Sets a classified phase on an UNCLASSIFIED row; never downgrades an existing phase. */
+  applySeasonPhase?(gameId: string, phase: SeasonPhaseClassification): Promise<void> | void;
 };
 
-export type StatusSyncFetchPage = (url: string) => Promise<{
+export type StatusSyncPageContext = {
+  plan: StatusSyncQueryPlan;
+  pageIndex: number;
+  cursor: number | null;
+  /** Shared by every page of one query in one cycle. */
+  pullRunId: string;
+};
+
+/** Per-page immutable-archive evidence (one entry per HTTP attempt). */
+export type StatusSyncPageAcquisition = {
+  requestIds: string[];
+  archiveStatuses: Array<'ARCHIVED' | 'ARCHIVE_FAILED' | 'IMMUTABILITY_CONFLICT'>;
+  s3Keys: string[];
+  /** Non-null = archive or ledger did not permit serving; the cycle must write nothing. */
+  blockedReason: string | null;
+};
+
+export type StatusSyncFetchPage = (
+  url: string,
+  ctx?: StatusSyncPageContext
+) => Promise<{
   status: number;
   ok: boolean;
   json?: { data?: ProviderGame[]; meta?: { next_cursor?: number | null } };
   error?: string;
   timeout?: boolean;
+  acquisition?: StatusSyncPageAcquisition;
+  /** 2xx body archived but failed JSON/shape validation. */
+  parseError?: string;
 }>;
 
 function sid(value: number | string | null | undefined): string {
@@ -323,8 +362,29 @@ export type GameStatusSyncResult = {
     new_status: string | null;
     became_final: boolean;
   }>;
+  preseasonDiscovery: boolean;
+  queries: Array<{
+    seasonTypeRequested: string | null;
+    pullRunId: string;
+    pages: number;
+    truncated: boolean;
+    requestIds: string[];
+  }>;
+  acquisition: {
+    required: boolean;
+    archivedRequests: number;
+    blockedReason: string | null;
+  };
+  seasonPhases: Record<SeasonPhase, number>;
+  /** PRESEASON games refused because season_phase cannot be persisted yet. */
+  preseasonFenced: number;
+  seasonPhaseWrites: number;
   reason?: string;
 };
+
+function zeroSeasonPhaseCounts(): Record<SeasonPhase, number> {
+  return Object.fromEntries(SEASON_PHASES.map((p) => [p, 0])) as Record<SeasonPhase, number>;
+}
 
 export async function runGameStatusSync(input: {
   env?: Record<string, string | undefined>;
@@ -339,6 +399,10 @@ export async function runGameStatusSync(input: {
   endDate?: string;
   store: GameStatusStore;
   fetchPage?: StatusSyncFetchPage;
+  /** Production adapters set this: a page without archive evidence fails the cycle. */
+  requireAcquisition?: boolean;
+  /** pull_run_id generator (tests). */
+  newId?: () => string;
   emit?: (event: GameStatusSyncEvent) => void;
 }): Promise<GameStatusSyncResult> {
   const started = input.now ?? new Date();
@@ -353,13 +417,20 @@ export async function runGameStatusSync(input: {
     events.push(event);
     input.emit?.(event);
   };
-  const plan = planStatusSyncQuery({
+  const preseasonDiscovery = isPreseasonDiscoveryEnabled(env);
+  const requireAcquisition = input.requireAcquisition === true;
+  const newId = input.newId ?? randomUUID;
+  const plans = planStatusSyncQueries({
     mode: input.mode ?? 'frequent',
     targetSeason: targetSeasonNum,
     now: started,
     startDate: input.startDate,
     endDate: input.endDate,
+    preseasonDiscovery,
   });
+  const plan = plans[0];
+  const queries: GameStatusSyncResult['queries'] = [];
+  let archivedRequests = 0;
 
   emit({ event: 'game_status_sync_started', counts: { targetSeason: targetSeasonNum } });
 
@@ -387,6 +458,12 @@ export async function runGameStatusSync(input: {
     bdlHttp: 0,
     events,
     transitions: [],
+    preseasonDiscovery,
+    queries,
+    acquisition: { required: requireAcquisition, archivedRequests, blockedReason: null },
+    seasonPhases: zeroSeasonPhaseCounts(),
+    preseasonFenced: 0,
+    seasonPhaseWrites: 0,
     reason,
     ...extra,
   });
@@ -405,50 +482,121 @@ export async function runGameStatusSync(input: {
     return empty('skipped', 'no provider adapter; fixture/dry-run required');
   }
 
-  const games: ProviderGame[] = [];
-  let pages = 0;
-  let cursor: number | null = null;
+  // Every page of every query is fetched (and, in production, archived) before any write.
+  // Any failed or blocked page fails the whole cycle with zero analytics.games writes.
+  type Entry = { raw: ProviderGame; phase: SeasonPhaseClassification };
+  const byId = new Map<string, Entry>();
+  const entries: Entry[] = [];
+  let gamesFetched = 0;
   let bdlHttp = 0;
   let providerStatus: number | null = null;
-  while (pages < plan.maxPages) {
-    const url = statusSyncRequestUrl(plan, cursor);
-    let page;
-    try {
-      page = await input.fetchPage(url);
-    } catch (err) {
-      const timeout = err instanceof BdlRateLimitError && err.code === 'timeout';
-      const classified = classifyStatusSyncProviderError({
-        timeout,
-        code: err instanceof BdlRateLimitError ? err.code : undefined,
-      });
-      emit({ event: 'game_status_sync_failed', reason: classified.reason });
-      return empty('failed', classified.reason, { providerErrors: 1, bdlHttp });
+  let truncated = false;
+  for (const queryPlan of plans) {
+    const query = {
+      seasonTypeRequested: queryPlan.seasonTypeRequested,
+      pullRunId: newId(),
+      pages: 0,
+      truncated: false,
+      requestIds: [] as string[],
+    };
+    queries.push(query);
+    let cursor: number | null = null;
+    while (query.pages < queryPlan.maxPages) {
+      const url = statusSyncRequestUrl(queryPlan, cursor);
+      let page;
+      try {
+        page = await input.fetchPage(url, {
+          plan: queryPlan,
+          pageIndex: query.pages,
+          cursor,
+          pullRunId: query.pullRunId,
+        });
+      } catch (err) {
+        const timeout = err instanceof BdlRateLimitError && err.code === 'timeout';
+        const classified = classifyStatusSyncProviderError({
+          timeout,
+          code: err instanceof BdlRateLimitError ? err.code : undefined,
+        });
+        emit({ event: 'game_status_sync_failed', reason: classified.reason });
+        return empty('failed', classified.reason, { providerErrors: 1, bdlHttp });
+      }
+      const acquisition = page.acquisition;
+      bdlHttp += acquisition ? acquisition.requestIds.length : 1;
+      if (acquisition) {
+        query.requestIds.push(...acquisition.requestIds);
+        archivedRequests += acquisition.archiveStatuses.filter((s) => s === 'ARCHIVED').length;
+      }
+      providerStatus = page.status;
+      const blockedReason = acquisition
+        ? acquisition.blockedReason
+        : requireAcquisition
+          ? 'acquisition evidence missing for page'
+          : null;
+      if (blockedReason) {
+        const reason = `acquisition blocked: ${blockedReason}; no analytics.games writes`;
+        emit({ event: 'game_status_sync_failed', reason, provider_status: page.status });
+        return empty('failed', reason, {
+          providerStatus: page.status,
+          bdlHttp,
+          acquisition: { required: requireAcquisition, archivedRequests, blockedReason },
+        });
+      }
+      if (!page.ok) {
+        const classified = classifyStatusSyncProviderError({
+          status: page.status,
+          timeout: page.timeout,
+        });
+        emit({
+          event: 'game_status_sync_failed',
+          reason: classified.reason,
+          provider_status: page.status,
+        });
+        return empty('failed', classified.reason, {
+          providerErrors: 1,
+          providerStatus: page.status,
+          bdlHttp,
+        });
+      }
+      if (page.parseError) {
+        const reason = `provider body failed validation after archive: ${page.parseError}`;
+        emit({ event: 'game_status_sync_failed', reason, provider_status: page.status });
+        return empty('failed', reason, { providerErrors: 1, providerStatus: page.status, bdlHttp });
+      }
+      for (const raw of page.json?.data ?? []) {
+        gamesFetched += 1;
+        const phase = classifySeasonPhase({
+          requestSeasonType: queryPlan.seasonTypeRequested,
+          game: raw && typeof raw === 'object' ? raw : null,
+        });
+        const id = raw && typeof raw === 'object' ? sid(raw.id) : '';
+        const seen = id ? byId.get(id) : undefined;
+        if (seen) {
+          seen.phase = strongerSeasonPhase(seen.phase, phase);
+          continue;
+        }
+        const entry = { raw, phase };
+        if (id) byId.set(id, entry);
+        entries.push(entry);
+      }
+      query.pages += 1;
+      cursor = page.json?.meta?.next_cursor ?? null;
+      if (cursor == null) break;
     }
-    bdlHttp += 1;
-    providerStatus = page.status;
-    if (!page.ok) {
-      const classified = classifyStatusSyncProviderError({
-        status: page.status,
-        timeout: page.timeout,
-      });
-      emit({
-        event: 'game_status_sync_failed',
-        reason: classified.reason,
-        provider_status: page.status,
-      });
-      return empty('failed', classified.reason, {
-        providerErrors: 1,
-        providerStatus: page.status,
-        bdlHttp,
-      });
-    }
-    games.push(...(page.json?.data ?? []));
-    pages += 1;
-    cursor = page.json?.meta?.next_cursor ?? null;
-    if (cursor == null) break;
+    query.truncated = cursor != null && query.pages >= queryPlan.maxPages;
+    if (query.truncated) truncated = true;
   }
 
-  const truncated = cursor != null && pages >= plan.maxPages;
+  const seasonPhases = zeroSeasonPhaseCounts();
+  for (const e of entries) seasonPhases[e.phase.phase] += 1;
+  const phaseSupported =
+    entries.some((e) => e.phase.phase !== 'UNCLASSIFIED') &&
+    input.store.supportsSeasonPhase != null &&
+    input.store.applySeasonPhase != null
+      ? (await input.store.supportsSeasonPhase()) === true
+      : false;
+  let preseasonFenced = 0;
+  let seasonPhaseWrites = 0;
+
   let inserted = 0;
   let updated = 0;
   let unchanged = 0;
@@ -459,10 +607,22 @@ export async function runGameStatusSync(input: {
   const transitions: GameStatusSyncResult['transitions'] = [];
   const wroteDb = !dryRun && (!shouldSkipGameStatusSync(env) || manualCanary);
 
-  for (const raw of games) {
-    const incoming = mapProviderGame(raw, targetSeason);
+  const applyPhase = async (gameId: string, phase: SeasonPhaseClassification) => {
+    if (!wroteDb || !phaseSupported || phase.phase === 'UNCLASSIFIED' || !input.store.applySeasonPhase) return;
+    await input.store.applySeasonPhase(gameId, phase);
+    seasonPhaseWrites += 1;
+  };
+
+  for (const { raw, phase } of entries) {
+    const incoming = raw && typeof raw === 'object' ? mapProviderGame(raw, targetSeason) : null;
     if (!incoming) {
       rejected += 1;
+      continue;
+    }
+    // PRESEASON must never land as an unlabeled row that downstream could read as regular season.
+    if (phase.phase === 'PRESEASON' && !phaseSupported) {
+      rejected += 1;
+      preseasonFenced += 1;
       continue;
     }
     const local = await input.store.getById(incoming.gameId);
@@ -473,10 +633,12 @@ export async function runGameStatusSync(input: {
     }
     if (planned.action === 'unchanged') {
       unchanged += 1;
+      await applyPhase(planned.gameId, phase);
       continue;
     }
     if (planned.action === 'final_preserved') {
       finalPreserved += 1;
+      await applyPhase(planned.gameId, phase);
       emit({
         event: 'game_final_preserved',
         game_id: planned.gameId,
@@ -511,6 +673,7 @@ export async function runGameStatusSync(input: {
     if (planned.action === 'insert') inserted += 1;
     if (planned.action === 'update') updated += 1;
     if (wroteDb && planned.row) await input.store.upsert(planned.row);
+    await applyPhase(planned.gameId, phase);
   }
 
   const durationMs = Date.now() - startedMs;
@@ -522,7 +685,7 @@ export async function runGameStatusSync(input: {
     queryMode: plan.mode,
     startDate: plan.startDate,
     endDate: plan.endDate,
-    gamesFetched: games.length,
+    gamesFetched,
     inserted,
     updated,
     unchanged,
@@ -538,12 +701,18 @@ export async function runGameStatusSync(input: {
     bdlHttp,
     events,
     transitions,
+    preseasonDiscovery,
+    queries,
+    acquisition: { required: requireAcquisition, archivedRequests, blockedReason: null },
+    seasonPhases,
+    preseasonFenced,
+    seasonPhaseWrites,
     reason: truncated ? 'frequent page cap reached; not a full-season scan' : undefined,
   };
   emit({
     event: 'game_status_sync_completed',
     counts: {
-      fetched: games.length,
+      fetched: gamesFetched,
       inserted,
       updated,
       unchanged,
@@ -555,10 +724,15 @@ export async function runGameStatusSync(input: {
   return result;
 }
 
-export function createMemoryGameStore(seed: LocalGameRow[] = []): GameStatusStore & { rows: Map<string, LocalGameRow> } {
+export function createMemoryGameStore(
+  seed: LocalGameRow[] = [],
+  options: { seasonPhase?: boolean } = {}
+): GameStatusStore & { rows: Map<string, LocalGameRow>; phases: Map<string, SeasonPhaseClassification> } {
   const rows = new Map(seed.map((row) => [row.gameId, { ...row }]));
-  return {
+  const phases = new Map<string, SeasonPhaseClassification>();
+  const store: GameStatusStore & { rows: typeof rows; phases: typeof phases } = {
     rows,
+    phases,
     getById(gameId) {
       const row = rows.get(gameId);
       return row ? { ...row } : null;
@@ -567,6 +741,16 @@ export function createMemoryGameStore(seed: LocalGameRow[] = []): GameStatusStor
       rows.set(row.gameId, { ...row });
     },
   };
+  if (options.seasonPhase) {
+    store.supportsSeasonPhase = () => true;
+    store.applySeasonPhase = (gameId, phase) => {
+      const existing = phases.get(gameId);
+      if (rows.has(gameId) && phase.phase !== 'UNCLASSIFIED' && (!existing || existing.phase === 'UNCLASSIFIED')) {
+        phases.set(gameId, { ...phase });
+      }
+    };
+  }
+  return store;
 }
 
 export function createFixtureFetchPage(games: ProviderGame[]): StatusSyncFetchPage {

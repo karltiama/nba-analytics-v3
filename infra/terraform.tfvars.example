@@ -56,7 +56,8 @@ lambda_env = {
   CRON_DRY_RUN          = "1"
   # Optional:
   # BALLDONTLIE_REQUEST_DELAY_MS = "200"
-  # MAX_RETRIES                  = "3"
+  # MAX_RETRIES                  = "3"   # nightly 5xx loop only
+  # BDL_RATE_LIMIT_MAX_RETRIES   = "3"   # shared limiter 429 retries (0 = one attempt)
 }
 
 # Account-level BDL limiter. Applied to nightly/odds/injuries/props worker.

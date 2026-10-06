@@ -30,7 +30,10 @@ export type LiveRateLimitConfig = {
   maxRequests: number;
   burst: number;
   acquireTimeoutMs: number;
+  /** Retries after the original attempt on 429 (0 = one attempt total). */
   maxRetries: number;
+  /** Set when BDL_RATE_LIMIT_MAX_RETRIES is invalid; assertLiveRateLimitConfig fails closed on it. */
+  maxRetriesError: string | null;
   retryBaseDelayMs: number;
   worker: string;
   backend: 'memory' | 'dynamodb';
@@ -113,6 +116,22 @@ function envInt(
   return Number.isFinite(n) ? n : fallback;
 }
 
+/** Canonical BDL limiter retry setting. The generic MAX_RETRIES belongs to other retry loops. */
+export const BDL_RATE_LIMIT_MAX_RETRIES_ENV = 'BDL_RATE_LIMIT_MAX_RETRIES';
+
+/**
+ * Unset or empty → DEFAULT_MAX_RETRIES. A non-negative base-10 integer → that value.
+ * Anything else (negative, decimal, non-numeric) → error with value 0, never a larger budget.
+ */
+export function parseBdlMaxRetries(raw: string | undefined): { value: number; error: string | null } {
+  if (raw == null || raw.trim() === '') return { value: DEFAULT_MAX_RETRIES, error: null };
+  const trimmed = raw.trim();
+  if (!/^\d+$/.test(trimmed)) {
+    return { value: 0, error: `${BDL_RATE_LIMIT_MAX_RETRIES_ENV} must be a non-negative integer` };
+  }
+  return { value: Number(trimmed), error: null };
+}
+
 export function readLiveRateLimitConfig(
   env: Record<string, string | undefined> = process.env
 ): LiveRateLimitConfig {
@@ -132,13 +151,15 @@ export function readLiveRateLimitConfig(
   else if (tableName) backend = 'dynamodb';
   else if (env.VITEST === 'true' || env.NODE_ENV === 'test') backend = 'memory';
   else backend = 'dynamodb';
+  const retries = parseBdlMaxRetries(env[BDL_RATE_LIMIT_MAX_RETRIES_ENV]);
 
   return {
     intervalMs,
     maxRequests,
     burst: Math.max(burst, maxRequests),
     acquireTimeoutMs: Math.max(1, envInt(env, 'BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS', DEFAULT_ACQUIRE_TIMEOUT_MS)),
-    maxRetries: Math.max(0, envInt(env, 'MAX_RETRIES', DEFAULT_MAX_RETRIES)),
+    maxRetries: retries.value,
+    maxRetriesError: retries.error,
     retryBaseDelayMs: Math.max(1, envInt(env, 'BDL_RATE_LIMIT_RETRY_BASE_MS', DEFAULT_RETRY_BASE_MS)),
     worker: (env.BDL_RATE_LIMIT_WORKER ?? env.AWS_LAMBDA_FUNCTION_NAME ?? 'unknown').trim() || 'unknown',
     backend,
@@ -150,6 +171,9 @@ export function readLiveRateLimitConfig(
 export function assertLiveRateLimitConfig(config: LiveRateLimitConfig): void {
   if (config.backend === 'dynamodb' && !config.tableName) {
     throw new BdlRateLimitError(BDL_LIVE_RATE_LIMIT_TABLE_REQUIRED, 'config');
+  }
+  if (config.maxRetriesError) {
+    throw new BdlRateLimitError(config.maxRetriesError, 'config');
   }
 }
 

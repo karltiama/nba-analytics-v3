@@ -15,6 +15,8 @@ export interface LedgerGameCandidate {
   status: string | null;
   homeTeamId: string;
   awayTeamId: string;
+  /** analytics.games.season_phase when the loader selects it. */
+  seasonPhase?: string | null;
 }
 
 export function gameEligibleForLedgerPublish(game: LedgerGameCandidate): boolean {
@@ -25,6 +27,7 @@ export function gameEligibleForLedgerPublish(game: LedgerGameCandidate): boolean
     season: game.season,
     startTimeIso: game.startTime,
     status: game.status,
+    seasonPhase: game.seasonPhase,
   });
 }
 

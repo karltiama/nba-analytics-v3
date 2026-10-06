@@ -12,6 +12,7 @@ import type { LearnedEvalLog, TeamGameContextRow } from '@/lib/betting/player-pr
 import type { ScheduledShadowGame, ShadowPredictionRecord, SettlementRecord } from '@/lib/betting/player-projection-shadow-scoring';
 import { SHADOW_MODEL_VERSION, SHADOW_SEASON } from '@/lib/betting/player-projection-shadow-protocol';
 import type { ShadowWindowAnchor } from '@/lib/betting/player-projection-shadow-timing';
+import { analyticsGamesHasSeasonPhase, readSeasonPhase } from '@/lib/context-projection/game-universe';
 
 export const INSERT_PREDICTION_SNAPSHOT_SQL = `
   INSERT INTO analytics.prediction_snapshots (
@@ -59,13 +60,15 @@ export async function loadUpcomingGames(
   client: SqlQueryable,
   season = SHADOW_SEASON
 ): Promise<ScheduledShadowGame[]> {
+  const hasPhase = await analyticsGamesHasSeasonPhase(client);
   const res = await client.query(
     `SELECT game_id::text AS game_id,
             season::text AS season,
             start_time,
             home_team_id::text AS home_team_id,
             away_team_id::text AS away_team_id,
-            status
+            status,
+            ${hasPhase ? 'season_phase' : 'NULL::text AS season_phase'}
        FROM analytics.games
       WHERE season = $1
         AND start_time IS NOT NULL`,
@@ -78,6 +81,7 @@ export async function loadUpcomingGames(
     homeTeamId: String(row.home_team_id),
     awayTeamId: String(row.away_team_id),
     status: row.status == null ? null : String(row.status),
+    seasonPhase: readSeasonPhase(row, hasPhase),
   }));
 }
 

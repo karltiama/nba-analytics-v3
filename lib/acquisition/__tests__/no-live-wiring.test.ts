@@ -25,12 +25,21 @@ function walk(dir: string, out: string[]): void {
   }
 }
 
-describe('DATA2A: shared acquisition primitive is not wired into any collector', () => {
-  it('no source outside lib/acquisition imports it', () => {
+/** DATA2E.1 wires game-status-sync only. Props / odds / injuries collectors stay unwired. */
+const ALLOWED_IMPORTERS = new Set([
+  'lib/games/status-sync-acquisition.ts',
+  'lib/games/status-sync-lambda.ts',
+]);
+
+describe('acquisition primitive wiring is limited to game-status-sync', () => {
+  it('no source outside lib/acquisition imports it except the allowlisted game-status-sync files', () => {
     const files: string[] = [];
     for (const d of SCAN_DIRS) walk(path.join(ROOT, d), files);
     expect(files.length).toBeGreaterThan(50);
-    const offenders = files.filter((f) => IMPORT_PATTERN.test(readFileSync(f, 'utf8'))).map((f) => path.relative(ROOT, f));
-    expect(offenders).toEqual([]);
+    const importers = files
+      .filter((f) => IMPORT_PATTERN.test(readFileSync(f, 'utf8')))
+      .map((f) => path.relative(ROOT, f).replace(/\\/g, '/'));
+    expect(importers.filter((f) => !ALLOWED_IMPORTERS.has(f))).toEqual([]);
+    expect([...ALLOWED_IMPORTERS].every((f) => importers.includes(f))).toBe(true);
   });
 });

@@ -18,6 +18,8 @@ import {
 } from '@/lib/betting/projection-ledger/protocol';
 import { isProductionGitSha } from '@/lib/betting/projection-ledger/revision';
 import { classifyLedgerCapture } from '@/lib/betting/projection-ledger/timing';
+import { analyticsGamesHasSeasonPhase, readSeasonPhase } from '@/lib/context-projection/game-universe';
+import type { SqlQueryable } from '@/lib/db/schema-capability';
 
 export interface CycleSummary {
   gamesSeen: number;
@@ -65,10 +67,12 @@ async function logAttempt(
   );
 }
 
-async function loadUpcomingGames(client: PoolClient, nowIso: string): Promise<LedgerGameCandidate[]> {
+export async function loadUpcomingGames(client: SqlQueryable, nowIso: string): Promise<LedgerGameCandidate[]> {
+  const hasPhase = await analyticsGamesHasSeasonPhase(client);
   const res = await client.query(
     `SELECT game_id::text AS game_id, season::text AS season, start_time, status,
-            home_team_id::text AS home_team_id, away_team_id::text AS away_team_id
+            home_team_id::text AS home_team_id, away_team_id::text AS away_team_id,
+            ${hasPhase ? 'season_phase' : 'NULL::text AS season_phase'}
        FROM analytics.games
       WHERE start_time IS NOT NULL
         AND start_time > $1::timestamptz
@@ -82,6 +86,7 @@ async function loadUpcomingGames(client: PoolClient, nowIso: string): Promise<Le
     status: row.status == null ? null : String(row.status),
     homeTeamId: String(row.home_team_id),
     awayTeamId: String(row.away_team_id),
+    seasonPhase: readSeasonPhase(row, hasPhase),
   }));
 }
 

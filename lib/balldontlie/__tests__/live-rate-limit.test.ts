@@ -1,9 +1,13 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import {
+  BDL_RATE_LIMIT_MAX_RETRIES_ENV,
   BdlRateLimitError,
   acquireLiveBdlPermit,
   createMemoryLiveRateLimitStore,
   fetchBdlLive,
+  parseBdlMaxRetries,
   readLiveRateLimitConfig,
   refillBucket,
   shouldSkipLiveBdlHttp,
@@ -21,7 +25,7 @@ const LIVE_ENV = {
   BDL_RATE_LIMIT_MAX_REQUESTS: '1',
   BDL_RATE_LIMIT_BURST: '1',
   BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS: '5000',
-  MAX_RETRIES: '2',
+  BDL_RATE_LIMIT_MAX_RETRIES: '2',
   BDL_RATE_LIMIT_RETRY_BASE_MS: '50',
   BDL_RATE_LIMIT_WORKER: 'test-worker',
 };
@@ -242,7 +246,7 @@ describe('429 / Retry-After', () => {
       return okResponse();
     });
     const res = await fetchBdlLive('https://api.balldontlie.io/v1/games', undefined, {
-      env: { ...LIVE_ENV, MAX_RETRIES: '3' },
+      env: { ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '3' },
       store,
       fetchImpl,
       nowMs: clock.nowMs,
@@ -263,7 +267,7 @@ describe('429 / Retry-After', () => {
     );
     await expect(
       fetchBdlLive('https://api.balldontlie.io/v1/games', undefined, {
-        env: { ...LIVE_ENV, MAX_RETRIES: '1' },
+        env: { ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '1' },
         store,
         fetchImpl,
         nowMs: clock.nowMs,
@@ -283,7 +287,7 @@ describe('429 / Retry-After', () => {
 
     await expect(
       fetchBdlLive('https://api.balldontlie.io/v1/odds', undefined, {
-        env: { ...LIVE_ENV, MAX_RETRIES: '0' },
+        env: { ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '0' },
         store,
         fetchImpl,
         nowMs: clock.nowMs,
@@ -303,6 +307,114 @@ describe('429 / Retry-After', () => {
 
     expect(clock.sleeps).toContain(3000);
   });
+});
+
+describe('BDL_RATE_LIMIT_MAX_RETRIES (canonical 429 retry count)', () => {
+  const url = 'https://api.balldontlie.io/v1/games';
+  const always429 = () =>
+    vi.fn(async () => new Response('no', { status: 429, headers: { 'Retry-After': '1' } }));
+
+  async function run(env: Record<string, string | undefined>, fetchImpl: ReturnType<typeof vi.fn>) {
+    const clock = fakeClock();
+    const outcome = await fetchBdlLive(url, undefined, {
+      env,
+      store: createMemoryLiveRateLimitStore(),
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+      nowMs: clock.nowMs,
+      sleepFn: clock.sleepFn,
+    }).then(
+      (res) => ({ res, err: null as unknown }),
+      (err: unknown) => ({ res: null as Response | null, err })
+    );
+    return { ...outcome, clock };
+  }
+
+  it.each([
+    ['0', 1],
+    ['1', 2],
+    ['3', 4],
+  ])('configured %s → exactly %i provider attempts on persistent 429, then fails closed', async (n, attempts) => {
+    const fetchImpl = always429();
+    const { err } = await run({ ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: n }, fetchImpl);
+    expect(err).toMatchObject({ code: 'timeout' });
+    expect(fetchImpl).toHaveBeenCalledTimes(attempts);
+  });
+
+  it('successful first response never retries', async () => {
+    const fetchImpl = vi.fn(async () => okResponse());
+    const { res } = await run({ ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '3' }, fetchImpl);
+    expect(res?.status).toBe(200);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it('non-429 errors are returned as-is without limiter retries', async () => {
+    for (const status of [401, 403, 500, 503]) {
+      const fetchImpl = vi.fn(async () => new Response('x', { status }));
+      const { res } = await run({ ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '3' }, fetchImpl);
+      expect(res?.status).toBe(status);
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it('429 followed by success stops after the success', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('no', { status: 429, headers: { 'Retry-After': '2' } }))
+      .mockResolvedValueOnce(okResponse())
+      .mockResolvedValue(new Response('unexpected', { status: 500 }));
+    const { res, clock } = await run({ ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '3' }, fetchImpl);
+    expect(res?.status).toBe(200);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(clock.sleeps).toContain(2000);
+  });
+
+  it('the generic MAX_RETRIES is ignored by the limiter', async () => {
+    const fetchImpl = always429();
+    const { err } = await run({ ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '0', MAX_RETRIES: '5' }, fetchImpl);
+    expect(err).toMatchObject({ code: 'timeout' });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(readLiveRateLimitConfig({ MAX_RETRIES: '0' }).maxRetries).toBe(3);
+  });
+
+  it('unset or empty → documented default of 3 retries', async () => {
+    expect(parseBdlMaxRetries(undefined)).toEqual({ value: 3, error: null });
+    expect(parseBdlMaxRetries('')).toEqual({ value: 3, error: null });
+    expect(parseBdlMaxRetries('  ')).toEqual({ value: 3, error: null });
+    const env = { ...LIVE_ENV };
+    delete (env as Record<string, string | undefined>).BDL_RATE_LIMIT_MAX_RETRIES;
+    const fetchImpl = always429();
+    await run(env, fetchImpl);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+  });
+
+  it('runtime reads the same env name Terraform sets (game-status-sync = 0)', () => {
+    const tf = readFileSync(path.resolve(__dirname, '../../../infra/game-status-sync.tf'), 'utf8');
+    const m = tf.match(new RegExp(`${BDL_RATE_LIMIT_MAX_RETRIES_ENV}\\s*=\\s*"([^"]*)"`));
+    expect(m?.[1]).toBe('0');
+    expect(readLiveRateLimitConfig({ [BDL_RATE_LIMIT_MAX_RETRIES_ENV]: m![1] }).maxRetries).toBe(0);
+    expect(readFileSync(path.resolve(__dirname, '../../../lambda/shared/bdl-live-rate-limit.ts'), 'utf8')).not.toMatch(
+      /['"]MAX_RETRIES['"]/
+    );
+  });
+
+  it('valid values parse as non-negative integers', () => {
+    expect(parseBdlMaxRetries('0')).toEqual({ value: 0, error: null });
+    expect(parseBdlMaxRetries(' 2 ')).toEqual({ value: 2, error: null });
+    expect(parseBdlMaxRetries('10')).toEqual({ value: 10, error: null });
+  });
+
+  it.each(['-1', '1.5', 'abc', '3x', '0x2', '1e2', '+1'])(
+    'invalid %j fails closed with a config error before any provider attempt',
+    async (raw) => {
+      const parsed = parseBdlMaxRetries(raw);
+      expect(parsed.error).toMatch(/BDL_RATE_LIMIT_MAX_RETRIES must be a non-negative integer/);
+      expect(parsed.value).toBe(0);
+      const fetchImpl = vi.fn(async () => okResponse());
+      const { err } = await run({ ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: raw }, fetchImpl);
+      expect(err).toMatchObject({ code: 'config' });
+      expect(fetchImpl).not.toHaveBeenCalled();
+    }
+  );
 });
 
 describe('account-level overlap simulation (no HTTP to BDL)', () => {

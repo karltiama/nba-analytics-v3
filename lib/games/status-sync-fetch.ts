@@ -1,6 +1,6 @@
 /**
- * Production /v1/games adapter for frequent status sync.
- * Always goes through fetchBdlLive (shared nba-bdl-rate-limit). No independent limiter.
+ * Legacy non-archiving /v1/games adapter (not used by the Lambda since DATA2E.1; the
+ * Lambda uses status-sync-acquisition.ts). Always goes through fetchBdlLive.
  */
 
 import { BdlRateLimitError, fetchBdlLive } from '@/lib/balldontlie/live-rate-limit';
@@ -44,21 +44,28 @@ export function createStatusSyncFetchPage(
         json,
       };
     } catch (err) {
-      if (err instanceof BdlRateLimitError) {
-        if (err.code === 'timeout') {
-          return { status: 0, ok: false, timeout: true, error: err.message };
-        }
-        if (err.code === 'replay' || err.code === 'skip') {
-          return { status: 0, ok: false, error: err.message };
-        }
-        return { status: 0, ok: false, error: err.message };
-      }
-      const name = err instanceof Error ? err.name : '';
-      const message = err instanceof Error ? err.message : String(err);
-      if (name === 'TimeoutError' || name === 'AbortError' || /aborted|timeout/i.test(message)) {
-        return { status: 0, ok: false, timeout: true, error: message };
-      }
-      return { status: 0, ok: false, error: message };
+      return statusSyncFetchErrorResult(err);
     }
   };
+}
+
+/** Limiter / transport failure → page result (no HTTP response reached the caller). */
+export function statusSyncFetchErrorResult(err: unknown): {
+  status: number;
+  ok: false;
+  timeout?: boolean;
+  error: string;
+} {
+  if (err instanceof BdlRateLimitError) {
+    if (err.code === 'timeout') {
+      return { status: 0, ok: false, timeout: true, error: err.message };
+    }
+    return { status: 0, ok: false, error: err.message };
+  }
+  const name = err instanceof Error ? err.name : '';
+  const message = err instanceof Error ? err.message : String(err);
+  if (name === 'TimeoutError' || name === 'AbortError' || /aborted|timeout/i.test(message)) {
+    return { status: 0, ok: false, timeout: true, error: message };
+  }
+  return { status: 0, ok: false, error: message };
 }

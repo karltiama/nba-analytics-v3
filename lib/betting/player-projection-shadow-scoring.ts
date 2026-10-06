@@ -55,6 +55,8 @@ export type ScheduledShadowGame = {
   homeTeamId: string;
   awayTeamId: string;
   status?: string | null;
+  /** analytics.games.season_phase; undefined when the column is absent. */
+  seasonPhase?: string | null;
 };
 
 export type ShadowRosterAppearance = {

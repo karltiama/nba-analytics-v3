@@ -15,7 +15,9 @@ import type { B0MinPriorGame } from '@/lib/context-projection/min/baseline';
 import { classifyWowyAppearance } from '@/lib/wowy/appearance';
 import type { SqlQueryable } from '@/lib/db/schema-capability';
 import {
+  analyticsGamesHasSeasonPhase,
   isPrimaryProspectiveCompetitionGame,
+  readSeasonPhase,
 } from '@/lib/context-projection/game-universe';
 
 export interface ProspectiveGame {
@@ -90,10 +92,12 @@ export async function loadProspectiveUpcomingGames(
   nowIso: string,
   horizonHours = 48
 ): Promise<ProspectiveGame[]> {
+  const hasPhase = await analyticsGamesHasSeasonPhase(client);
   const res = await client.query(
     `
     SELECT game_id::text, season::text, start_time,
-           home_team_id::text, away_team_id::text, status
+           home_team_id::text, away_team_id::text, status,
+           ${hasPhase ? 'season_phase' : 'NULL::text AS season_phase'}
       FROM analytics.games
      WHERE start_time IS NOT NULL
        AND start_time > $1::timestamptz
@@ -103,22 +107,25 @@ export async function loadProspectiveUpcomingGames(
     `,
     [nowIso, String(horizonHours)]
   );
-  return res.rows
-    .map((r) => ({
+  const out: ProspectiveGame[] = [];
+  for (const r of res.rows) {
+    const game: ProspectiveGame = {
       gameId: String(r.game_id),
       season: String(r.season),
       scheduledTipoff: iso(r.start_time as string)!,
       homeTeamId: String(r.home_team_id),
       awayTeamId: String(r.away_team_id),
       status: r.status == null ? null : String(r.status),
-    }))
-    .filter((g) =>
-      isPrimaryProspectiveCompetitionGame({
-        season: g.season,
-        startTimeIso: g.scheduledTipoff,
-        status: g.status,
-      })
-    );
+    };
+    const eligible = isPrimaryProspectiveCompetitionGame({
+      season: game.season,
+      startTimeIso: game.scheduledTipoff,
+      status: game.status,
+      seasonPhase: readSeasonPhase(r, hasPhase),
+    });
+    if (eligible) out.push(game);
+  }
+  return out;
 }
 
 /** Inclusive T−60 due window: [cutoff − lookahead, cutoff]. */

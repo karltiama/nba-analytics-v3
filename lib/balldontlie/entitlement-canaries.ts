@@ -92,7 +92,7 @@ export function canaryLimiterEnv(worker: string): Record<string, string | undefi
     BDL_RATE_LIMIT_BURST: '1',
     BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS: '90000',
     BDL_RATE_LIMIT_WORKER: worker,
-    MAX_RETRIES: '0',
+    BDL_RATE_LIMIT_MAX_RETRIES: '0',
   };
 }
 

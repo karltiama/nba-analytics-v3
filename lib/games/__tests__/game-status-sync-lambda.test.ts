@@ -69,6 +69,25 @@ describe('game-status-sync Lambda freeze + env contract', () => {
     expect(result.bdlHttp).toBe(0);
   });
 
+  it('thawed production path requires NBA_DATA_BUCKET before any BDL or DB work', async () => {
+    const result = await runLambdaGameStatusSync({
+      env: {
+        DATA_MODE: 'live_api',
+        OFFSEASON_MODE: '0',
+        CRON_DRY_RUN: '0',
+        LIVE_INGESTION_ENABLED: 'true',
+        STATUS_SYNC_TARGET_SEASON: '2026',
+        BALLDONTLIE_API_KEY: 'test-not-a-real-key',
+        SUPABASE_DB_URL: 'postgresql://unused.example/postgres',
+      },
+      store: createMemoryGameStore(),
+    });
+    expect(result.status).toBe('failed');
+    expect(result.reason).toMatch(/missing NBA_DATA_BUCKET/);
+    expect(result.bdlHttp).toBe(0);
+    expect(result.wroteDb).toBe(false);
+  });
+
   it('manual canary parse requires confirm + 2026 window and rejects EventBridge/Scheduler', () => {
     expect(
       parseManualStatusSyncCanaryEvent({

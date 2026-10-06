@@ -54,6 +54,7 @@ import {
   type SqlQueryable,
 } from '@/lib/db/schema-capability';
 import { shouldSkipLiveMutations } from '@/lib/runtime/ingestion-mode';
+import { seasonPhaseExclusionReason } from '@/lib/context-projection/game-universe';
 
 export type ShadowScorerRow = {
   player_id: string;
@@ -149,7 +150,9 @@ export async function runShadowScoreCycle(ports: ShadowWorkerPorts): Promise<Sha
   const artifacts = await ports.loadArtifacts();
   assertFeatureOrder(artifacts.featureOrder, SHADOW_FEATURE_ORDER);
 
-  const games = await loadUpcomingGames(ports.db, SHADOW_SEASON);
+  const games = (await loadUpcomingGames(ports.db, SHADOW_SEASON)).filter(
+    (g) => seasonPhaseExclusionReason(g.seasonPhase) == null
+  );
   const previousAnchor = schema.shadowWindowAnchors
     ? await loadCurrentWindowAnchor(ports.db, SHADOW_SEASON)
     : null;

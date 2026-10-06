@@ -120,7 +120,7 @@ function liveLimiterEnv(worker: string): Record<string, string | undefined> {
     BDL_RATE_LIMIT_BURST: '1',
     BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS: process.env.BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS || '90000',
     BDL_RATE_LIMIT_WORKER: worker,
-    MAX_RETRIES: '3',
+    BDL_RATE_LIMIT_MAX_RETRIES: '3',
   };
 }
 

@@ -19,6 +19,21 @@ const SELECT_GAME_SQL = `
   where game_id = $1
 `;
 
+/** Both columns from db/schemas/MIGRATION_analytics_games_season_phase.sql must exist. */
+export const SEASON_PHASE_COLUMNS_SQL = `
+  select count(*)::int as n
+  from information_schema.columns
+  where table_schema = 'analytics' and table_name = 'games'
+    and column_name in ('season_phase', 'season_phase_source')
+`;
+
+/** Only fills an UNCLASSIFIED row; never downgrades or overwrites an existing phase. */
+export const APPLY_SEASON_PHASE_SQL = `
+  update analytics.games
+  set season_phase = $2, season_phase_source = $3
+  where game_id = $1 and season_phase = 'UNCLASSIFIED' and $2 <> 'UNCLASSIFIED'
+`;
+
 function toIso(value: unknown): string | null {
   if (value == null) return null;
   if (value instanceof Date) return value.toISOString();
@@ -51,16 +66,15 @@ function mapRow(row: {
   };
 }
 
-export function createPostgresGameStatusStore(
-  env: Record<string, string | undefined> = process.env
-): ClosableGameStatusStore {
+/** One small pool shared by the game store and the acquisition ledger writer. */
+export function createStatusSyncPool(env: Record<string, string | undefined> = process.env): Pool {
   const connectionString = (env.SUPABASE_DB_URL ?? '').trim();
   if (!connectionString) {
     throw new Error('Missing SUPABASE_DB_URL environment variable');
   }
   const useSsl =
     connectionString.includes('supabase.co') || connectionString.includes('pooler.supabase.com');
-  const pool = new Pool({
+  return new Pool({
     connectionString,
     ssl: useSsl ? { rejectUnauthorized: false } : undefined,
     max: 1,
@@ -68,15 +82,25 @@ export function createPostgresGameStatusStore(
     connectionTimeoutMillis: Number(env.DB_CONNECTION_TIMEOUT_MS ?? 10_000),
     statement_timeout: Number(env.DB_STATEMENT_TIMEOUT_MS ?? 15_000),
   });
+}
+
+/** `pool` given → the caller owns it and close() does not end it. */
+export function createPostgresGameStatusStore(
+  env: Record<string, string | undefined> = process.env,
+  pool?: Pool
+): ClosableGameStatusStore {
+  const ownsPool = !pool;
+  const db = pool ?? createStatusSyncPool(env);
+  let seasonPhaseSupport: Promise<boolean> | null = null;
 
   return {
     async getById(gameId) {
-      const result = await pool.query(SELECT_GAME_SQL, [gameId]);
+      const result = await db.query(SELECT_GAME_SQL, [gameId]);
       if (result.rowCount === 0) return null;
       return mapRow(result.rows[0]);
     },
     async upsert(row) {
-      await pool.query(ANALYTICS_GAMES_FINAL_PRESERVE_UPSERT_SQL, [
+      await db.query(ANALYTICS_GAMES_FINAL_PRESERVE_UPSERT_SQL, [
         row.gameId,
         row.season,
         row.startTime,
@@ -88,8 +112,17 @@ export function createPostgresGameStatusStore(
         row.venue,
       ]);
     },
+    supportsSeasonPhase() {
+      seasonPhaseSupport ??= db
+        .query(SEASON_PHASE_COLUMNS_SQL)
+        .then((r) => Number(r.rows[0]?.n ?? 0) === 2);
+      return seasonPhaseSupport;
+    },
+    async applySeasonPhase(gameId, phase) {
+      await db.query(APPLY_SEASON_PHASE_SQL, [gameId, phase.phase, phase.source]);
+    },
     async close() {
-      await pool.end();
+      if (ownsPool) await db.end();
     },
   };
 }

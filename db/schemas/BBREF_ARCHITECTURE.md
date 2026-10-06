@@ -1,5 +1,7 @@
 # Basketball Reference Architecture
 
+> **Not settled for the whole repo.** This note describes Basketball Reference tables. The BallDontLie nightly job writes `raw.*`, and many product queries read `analytics.player_game_logs`. Some team and player queries still read `bbref_*`. See [docs/architecture.md](../../docs/architecture.md) before treating BBRef as the only box-score source.
+
 ## Overview
 
 **Basketball Reference tables are the PRIMARY and AUTHORITATIVE source of truth** for all box score data. All BBRef scrapers write directly to these tables.

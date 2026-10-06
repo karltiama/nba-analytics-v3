@@ -54,7 +54,20 @@ Frozen opens: see `REGULAR_SEASON_OPEN_ET` in `lib/context-projection/game-unive
 
 Preseason / exhibition may be used only as `CONTEXT_PROSPECTIVE_DRY_RUN=1` (no window inserts). They must not increment PTS/MIN primary counters.
 
+## season_phase overlay (DATA2E.1P, implementation note — universe unchanged)
+
+Once `analytics.games.season_phase` exists (`db/schemas/MIGRATION_analytics_games_season_phase.sql`), loaders pass it to `seasonPhaseExclusionReason`:
+
+| season_phase | Effect |
+| --- | --- |
+| column absent (pre-migration) | date rules above only |
+| `PRESEASON` | excluded |
+| `UNCLASSIFIED`, NULL, unknown | excluded; an in-season date does not override |
+| `REGULAR`, `IST`, `PLAYIN`, `PLAYOFFS` | date rules above (v1 includes Cup, Play-In, Playoffs) |
+
+Applying the migration before a writer labels upcoming games `REGULAR` empties the cohort.
+
 ## Implementation
 
 - `lib/context-projection/game-universe.ts`
-- Enforced in `loadProspectiveUpcomingGames` filter
+- Enforced in `loadProspectiveUpcomingGames` filter, `projection-ledger/cycle.ts` (`gameEligibleForLedgerPublish`), and `player-projection-shadow-worker.ts`

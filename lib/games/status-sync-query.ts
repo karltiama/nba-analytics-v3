@@ -22,7 +22,18 @@ export type StatusSyncQueryPlan = {
   maxPages: number;
   path: typeof BDL_GAMES_V1_PATH;
   params: URLSearchParams;
+  /** Provider season_type sent verbatim; null = parameter omitted (provider default). */
+  seasonTypeRequested: string | null;
 };
+
+export const GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV = 'GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED';
+export const BDL_PRESEASON_SEASON_TYPE = 'preseason';
+
+/** Default false. Only an explicit '1' or 'true' enables the extra preseason query. */
+export function isPreseasonDiscoveryEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  const raw = (env[GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV] ?? '').trim().toLowerCase();
+  return raw === '1' || raw === 'true';
+}
 
 export function resolveStatusSyncTargetSeason(
   env: Record<string, string | undefined> = process.env,
@@ -98,6 +109,7 @@ export function planStatusSyncQuery(input: {
       maxPages: Number.POSITIVE_INFINITY,
       path: BDL_GAMES_V1_PATH,
       params,
+      seasonTypeRequested: null,
     };
   }
 
@@ -119,7 +131,26 @@ export function planStatusSyncQuery(input: {
     maxPages: STATUS_SYNC_FREQUENT_MAX_PAGES,
     path: BDL_GAMES_V1_PATH,
     params,
+    seasonTypeRequested: null,
   };
+}
+
+/** Same window/season/page cap as `base`, plus an explicit season_type. */
+export function withSeasonType(base: StatusSyncQueryPlan, seasonType: string): StatusSyncQueryPlan {
+  const params = new URLSearchParams(base.params);
+  params.set('season_type', seasonType);
+  return { ...base, params, seasonTypeRequested: seasonType };
+}
+
+/**
+ * Primary query (unchanged) first; when preseason discovery is enabled, one additional
+ * season_type=preseason query for the same window. The primary query is never replaced.
+ */
+export function planStatusSyncQueries(
+  input: Parameters<typeof planStatusSyncQuery>[0] & { preseasonDiscovery: boolean }
+): StatusSyncQueryPlan[] {
+  const primary = planStatusSyncQuery(input);
+  return input.preseasonDiscovery ? [primary, withSeasonType(primary, BDL_PRESEASON_SEASON_TYPE)] : [primary];
 }
 
 export function statusSyncRequestUrl(plan: StatusSyncQueryPlan, cursor?: number | null): string {

@@ -16,6 +16,10 @@ import {
   type StatusSyncFetchPage,
 } from './status-sync';
 import { bdlApiKey } from './status-sync-fetch';
+import type { AcqArchiveStore } from '@/lib/acquisition/archive';
+import type { AcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
+import { isPreseasonDiscoveryEnabled } from './status-sync-query';
+import { SEASON_PHASES, type SeasonPhase } from './season-phase';
 
 export const STATUS_SYNC_MANUAL_CANARY_CONFIRM = 'STATUS_SYNC_MANUAL_CANARY';
 
@@ -52,8 +56,11 @@ export type LambdaGameStatusSyncResult = GameStatusSyncResult & {
 export type LambdaGameStatusSyncDeps = {
   env?: Record<string, string | undefined>;
   now?: Date;
+  /** Injected fetch = fixture/test path; production builds the archiving adapter. */
   fetchPage?: StatusSyncFetchPage;
   store?: GameStatusStore;
+  archiveStore?: AcqArchiveStore;
+  ledger?: AcqLedgerWriter;
   dryRun?: boolean;
   allowFrozenSimulation?: boolean;
   manualCanary?: boolean;
@@ -98,6 +105,12 @@ function failed(
     bdlHttp: extra?.bdlHttp ?? 0,
     events: extra?.events ?? [{ event: 'game_status_sync_failed', reason }],
     transitions: [],
+    preseasonDiscovery: isPreseasonDiscoveryEnabled(env),
+    queries: [],
+    acquisition: { required: false, archivedRequests: 0, blockedReason: null },
+    seasonPhases: Object.fromEntries(SEASON_PHASES.map((p) => [p, 0])) as Record<SeasonPhase, number>,
+    preseasonFenced: 0,
+    seasonPhaseWrites: 0,
     reason,
     ...extra,
   };
@@ -132,40 +145,66 @@ export async function runLambdaGameStatusSync(
   if (!deps.fetchPage && !bdlApiKey(env)) {
     return failed(env, 'missing BALLDONTLIE_API_KEY');
   }
-  if (!deps.store && !(env.SUPABASE_DB_URL ?? '').trim()) {
+  const acquiring = !deps.fetchPage;
+  const needsPool = !deps.store || (acquiring && !deps.ledger);
+  if (needsPool && !(env.SUPABASE_DB_URL ?? '').trim()) {
     return failed(env, 'missing SUPABASE_DB_URL');
   }
-
-  let store = deps.store;
-  let closeStore: (() => Promise<void>) | undefined;
-  if (!store) {
-    const { createPostgresGameStatusStore } = await import('./status-sync-db');
-    const created = createPostgresGameStatusStore(env);
-    store = created;
-    closeStore = () => created.close();
+  const bucket = (env.NBA_DATA_BUCKET ?? '').trim();
+  if (acquiring && !deps.archiveStore && !bucket) {
+    return failed(env, 'missing NBA_DATA_BUCKET: immutable archive is required before any provider call');
   }
 
-  let fetchPage = deps.fetchPage;
-  if (!fetchPage) {
-    const { createStatusSyncFetchPage } = await import('./status-sync-fetch');
-    const fetchEnv = deps.manualCanary
-      ? {
-          ...env,
-          DATA_MODE: 'live_api',
-          OFFSEASON_MODE: '0',
-          CRON_DRY_RUN: '0',
-        }
-      : env;
-    fetchPage = createStatusSyncFetchPage(fetchEnv);
+  let pool: import('pg').Pool | undefined;
+  if (needsPool) {
+    const { createStatusSyncPool } = await import('./status-sync-db');
+    pool = createStatusSyncPool(env);
   }
 
   try {
+    let store = deps.store;
+    if (!store) {
+      const { createPostgresGameStatusStore } = await import('./status-sync-db');
+      store = createPostgresGameStatusStore(env, pool);
+    }
+
+    let fetchPage = deps.fetchPage;
+    if (!fetchPage) {
+      const { createAcquiringStatusSyncFetchPage } = await import('./status-sync-acquisition');
+      let ledger = deps.ledger;
+      if (!ledger) {
+        const { createPgAcqLedgerWriter } = await import('@/lib/acquisition/ledger-pg');
+        ledger = createPgAcqLedgerWriter(pool!);
+      }
+      let archiveStore = deps.archiveStore;
+      if (!archiveStore) {
+        const { S3AcqArchiveStore } = await import('@/lib/acquisition/s3-store');
+        archiveStore = new S3AcqArchiveStore({ bucket });
+      }
+      const fetchEnv = deps.manualCanary
+        ? {
+            ...env,
+            DATA_MODE: 'live_api',
+            OFFSEASON_MODE: '0',
+            CRON_DRY_RUN: '0',
+          }
+        : env;
+      fetchPage = createAcquiringStatusSyncFetchPage({
+        env: fetchEnv,
+        apiKey: bdlApiKey(env),
+        archiveStore,
+        ledger,
+        rawPrefix: (env.NBA_RAW_PREFIX ?? '').trim() || undefined,
+      });
+    }
+
     const result = await runGameStatusSync({
       env,
       now: deps.now,
       targetSeason: parsed.season,
       store,
       fetchPage,
+      requireAcquisition: acquiring,
       dryRun: deps.dryRun ?? false,
       allowFrozenSimulation: deps.allowFrozenSimulation,
       manualCanary: deps.manualCanary,
@@ -175,7 +214,7 @@ export async function runLambdaGameStatusSync(
     });
     return { ...result, skipped: result.status === 'skipped' };
   } finally {
-    if (closeStore) await closeStore();
+    if (pool) await pool.end();
   }
 }
 

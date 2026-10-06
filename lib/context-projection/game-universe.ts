@@ -10,6 +10,7 @@
  */
 
 import { etCalendarDate, WOWY_POSTSEASON_START_ET } from '@/lib/wowy/calendar';
+import { columnExists, type SqlQueryable } from '@/lib/db/schema-capability';
 
 /** Protocol amendment id — freeze before first live cohort row. */
 export const PROSPECTIVE_GAME_UNIVERSE_AMENDMENT_ID =
@@ -57,10 +58,41 @@ export function isCorruptScheduleStatus(status: string | null | undefined): bool
   return /^\d{4}-\d{2}-\d{2}T/.test(status);
 }
 
+/** Phases that defer to the frozen date rules (v1 universe includes Cup, Play-In, Playoffs). */
+const DATE_RULE_PHASES = new Set(['REGULAR', 'IST', 'PLAYIN', 'PLAYOFFS']);
+
+/**
+ * Single season_phase rule for every prospective loader.
+ * `undefined` = column not selected (pre-migration schema) → date rules only.
+ * null / UNCLASSIFIED / unknown labels are excluded; an in-season date never overrides them.
+ */
+export function seasonPhaseExclusionReason(seasonPhase: string | null | undefined): string | null {
+  if (seasonPhase === undefined) return null;
+  if (seasonPhase === 'PRESEASON') return 'season_phase_preseason';
+  if (seasonPhase != null && DATE_RULE_PHASES.has(seasonPhase)) return null;
+  return 'season_phase_unclassified';
+}
+
+/** True once db/schemas/MIGRATION_analytics_games_season_phase.sql has been applied. */
+export async function analyticsGamesHasSeasonPhase(client: SqlQueryable): Promise<boolean> {
+  return columnExists(client, 'analytics', 'games', 'season_phase');
+}
+
+/** Row value → seasonPhase; `undefined` when the loader ran against the pre-migration schema. */
+export function readSeasonPhase(
+  row: Record<string, unknown>,
+  hasColumn: boolean
+): string | null | undefined {
+  if (!hasColumn) return undefined;
+  return row.season_phase == null ? null : String(row.season_phase);
+}
+
 export function classifyProspectiveCompetition(opts: {
   season: string;
   startTimeIso: string;
   status?: string | null;
+  /** analytics.games.season_phase; see seasonPhaseExclusionReason. */
+  seasonPhase?: string | null;
 }): {
   class: ProspectiveGameUniverseClass;
   primaryEligible: boolean;
@@ -72,6 +104,15 @@ export function classifyProspectiveCompetition(opts: {
       class: 'CANCELLED_OR_POSTPONED',
       primaryEligible: false,
       reason: 'status_cancelled_or_postponed',
+    };
+  }
+
+  const phaseExclusion = seasonPhaseExclusionReason(opts.seasonPhase);
+  if (phaseExclusion) {
+    return {
+      class: phaseExclusion === 'season_phase_preseason' ? 'PRESEASON' : 'EXHIBITION_OR_UNKNOWN',
+      primaryEligible: false,
+      reason: phaseExclusion,
     };
   }
 
@@ -123,6 +164,7 @@ export function isPrimaryProspectiveCompetitionGame(opts: {
   season: string;
   startTimeIso: string;
   status?: string | null;
+  seasonPhase?: string | null;
 }): boolean {
   return classifyProspectiveCompetition(opts).primaryEligible;
 }

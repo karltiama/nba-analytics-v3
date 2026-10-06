@@ -90,7 +90,7 @@ Note: Lambda packages are intentionally excluded from the root TypeScript projec
 
 ### Prerequisites
 
-- Node.js `20.x`
+- Node.js `24.x` (`package.json` `engines`). Lambda runtimes are per function in `infra/*.tf`, not this pin.
 
 ### Run Locally
 
@@ -167,6 +167,7 @@ Reactivation next season:
 
 ## Additional Documentation
 
+- [Agent instructions](AGENTS.md)
 - [Documentation index (start here)](docs/index.md)
 - [Deployment checklist](docs/deployment-checklist.md)
 - [Supabase troubleshooting](docs/internal/supabase-connection-troubleshooting.md)

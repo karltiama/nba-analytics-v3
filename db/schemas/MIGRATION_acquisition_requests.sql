@@ -1,8 +1,14 @@
--- PREPARED ONLY. Do not apply in STEP 14D.DATA2A.
+-- PREPARED ONLY. Do not apply until an explicit apply step authorizes it.
 -- Acquisition ledger for acq_envelope.v1 (reports/data/immutable-raw-acquisition-contract.md §3.2).
 -- One row per HTTP attempt. Never pruned. Row shape: lib/acquisition/ledger.ts (AcqLedgerRow).
--- Identity, request, clock, and body-checksum columns are write-once; only archive/parse
--- outcome columns may change; 'archived' and 'immutability_conflict' are terminal.
+-- Append-only: DELETE and TRUNCATE are rejected.
+-- Identity, request, clock, and body-checksum columns are write-once.
+-- Archive evidence (s3_key, envelope_sha256, archived_at) is write-once once non-null and frozen
+-- once archive_status is terminal ('archived', 'immutability_conflict').
+-- Allowed archive_status transitions:
+--   pending -> archived | archive_failed | immutability_conflict
+--   archive_failed -> archived | immutability_conflict
+-- Same-status updates (e.g. parse_ok, archive_error diagnostics) are allowed under the evidence rules.
 
 create table if not exists raw.acquisition_requests (
   request_id              text primary key,
@@ -49,7 +55,10 @@ create table if not exists raw.acquisition_requests (
     check (http_status is null or (body_sha256 is not null and body_bytes is not null
                                    and response_received_at is not null and body_completed_at is not null)),
   constraint acquisition_requests_archived_complete
-    check (archive_status <> 'archived' or (s3_key is not null and archived_at is not null)),
+    check (archive_status <> 'archived'
+           or (s3_key is not null and envelope_sha256 is not null and archived_at is not null)),
+  constraint acquisition_requests_archive_evidence_only_when_archived
+    check (archive_status = 'archived' or (envelope_sha256 is null and archived_at is null)),
   constraint acquisition_requests_acq_zone_key
     check (s3_key is null or s3_key ~ '/entity=acq_[a-z0-9_]+/'),
   constraint acquisition_requests_clock_order
@@ -70,6 +79,7 @@ create index if not exists acquisition_requests_not_archived_idx
 create or replace function raw.acquisition_requests_guard()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   if tg_op = 'DELETE' then
@@ -90,21 +100,52 @@ begin
     raise exception 'raw.acquisition_requests evidence columns are write-once (request %)', old.request_id;
   end if;
 
-  -- archived and immutability_conflict are terminal; archive_failed may later become
-  -- archived when the same envelope is re-archived idempotently.
-  if old.archive_status in ('archived', 'immutability_conflict')
-     and new.archive_status is distinct from old.archive_status then
-    raise exception 'archive_status % is terminal for request %', old.archive_status, old.request_id;
-  end if;
-  if old.archive_status = 'archive_failed' and new.archive_status = 'pending' then
-    raise exception 'archive_status cannot return to pending (request %)', old.request_id;
+  -- archived and immutability_conflict are terminal; archive_failed may later become archived
+  -- (same envelope re-archived idempotently) or immutability_conflict (retry found a different object).
+  if new.archive_status is distinct from old.archive_status then
+    if old.archive_status in ('archived', 'immutability_conflict') then
+      raise exception 'archive_status % is terminal for request %', old.archive_status, old.request_id;
+    end if;
+    if new.archive_status = 'pending' then
+      raise exception 'archive_status cannot return to pending (request %)', old.request_id;
+    end if;
+    if not ((old.archive_status = 'pending'
+             and new.archive_status in ('archived', 'archive_failed', 'immutability_conflict'))
+         or (old.archive_status = 'archive_failed'
+             and new.archive_status in ('archived', 'immutability_conflict'))) then
+      raise exception 'archive_status transition % -> % is not allowed (request %)',
+        old.archive_status, new.archive_status, old.request_id;
+    end if;
   end if;
 
   if old.s3_key is not null and new.s3_key is distinct from old.s3_key then
     raise exception 's3_key is write-once (request %)', old.request_id;
   end if;
+  if old.envelope_sha256 is not null and new.envelope_sha256 is distinct from old.envelope_sha256 then
+    raise exception 'envelope_sha256 is write-once (request %)', old.request_id;
+  end if;
+  if old.archived_at is not null and new.archived_at is distinct from old.archived_at then
+    raise exception 'archived_at is write-once (request %)', old.request_id;
+  end if;
+
+  if old.archive_status in ('archived', 'immutability_conflict')
+     and (new.s3_key, new.envelope_sha256, new.archived_at)
+         is distinct from (old.s3_key, old.envelope_sha256, old.archived_at) then
+    raise exception 'archive evidence is immutable once archive_status is % (request %)',
+      old.archive_status, old.request_id;
+  end if;
 
   return new;
+end;
+$$;
+
+create or replace function raw.acquisition_requests_block_truncate()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  raise exception 'raw.acquisition_requests is append-only (truncate rejected)';
 end;
 $$;
 
@@ -112,6 +153,15 @@ drop trigger if exists acquisition_requests_guard_trg on raw.acquisition_request
 create trigger acquisition_requests_guard_trg
   before update or delete on raw.acquisition_requests
   for each row execute function raw.acquisition_requests_guard();
+
+drop trigger if exists acquisition_requests_block_truncate_trg on raw.acquisition_requests;
+create trigger acquisition_requests_block_truncate_trg
+  before truncate on raw.acquisition_requests
+  for each statement execute function raw.acquisition_requests_block_truncate();
+
+-- Defense in depth: the Data API roles never read or write the ledger. Schema-level access to
+-- raw is intentionally not changed here (it would affect unrelated raw tables).
+revoke all on table raw.acquisition_requests from public, anon, authenticated;
 
 comment on table raw.acquisition_requests is
   'One row per provider HTTP attempt archived as acq_envelope.v1. Append-only, never pruned. Prune gates and research provenance join here.';
@@ -122,6 +172,6 @@ comment on column raw.acquisition_requests.response_received_at is
 comment on column raw.acquisition_requests.body_sha256 is
   'SHA-256 of APPLICATION_RESPONSE_BODY_BYTES (decoded by the runtime if transport-encoded; not wire bytes).';
 comment on column raw.acquisition_requests.archive_status is
-  'pending -> archived | archive_failed | immutability_conflict; archive_failed -> archived allowed. Collectors must not normalize/serve unless archived.';
+  'pending -> archived | archive_failed | immutability_conflict; archive_failed -> archived | immutability_conflict. archived and immutability_conflict are terminal. Collectors must not normalize/serve unless archived.';
 comment on column raw.acquisition_requests.parse_ok is
   'Set by the validation step after archive. Null = not yet validated.';
