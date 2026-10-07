@@ -114,7 +114,8 @@ async function main() {
       rows,
       snapshotAt,
       { enabled: false, sampleRate: 0 },
-      pullRunId
+      pullRunId,
+      { controllerEnqueuedAt: snapshotAt, observedAt: new Date(snapshotAt.getTime() + 2 * 60_000) }
     );
     const archive = await archiveGameSnapshot({
       env,

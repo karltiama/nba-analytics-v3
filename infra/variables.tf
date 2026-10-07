@@ -278,6 +278,17 @@ variable "player_props_worker_reserved_concurrency" {
   default     = 4
 }
 
+variable "player_props_worker_max_concurrency" {
+  description = "SQS event-source maximum concurrency for the props worker. Messages beyond this wait in the queue without consuming receive counts. 2 is the AWS minimum and already saturates the shared 1-permit/13 s BDL limiter (one worker writes while the other waits for the next permit). Raising it adds no provider throughput."
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = var.player_props_worker_max_concurrency >= 2 && var.player_props_worker_max_concurrency <= 4
+    error_message = "player_props_worker_max_concurrency must be 2-4 (AWS minimum is 2; more workers only add limiter contention)."
+  }
+}
+
 variable "player_props_apply_reserved_concurrency" {
   description = "When false, Terraform does not set reserved concurrency (AWS remains unreserved). Set true only after the account ConcurrentExecutions quota can hold this reservation plus the unreserved floor of 10."
   type        = bool

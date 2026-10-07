@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
-import { MATERIALIZE_CLOSING_LINES_SQL } from '@/lib/prune/closing-lines';
+import { materializeClosingLines } from '@/lib/prune/closing-lines';
 
 /**
  * Materializes closing-line snapshots (last pre-tip row per market) from
@@ -67,8 +67,8 @@ async function main() {
       return;
     }
 
-    const result = await pool.query(MATERIALIZE_CLOSING_LINES_SQL);
-    console.log(`Materialized ${result.rowCount ?? 0} rows into research.prop_decision_lines.`);
+    const inserted = await materializeClosingLines(pool);
+    console.log(`Materialized ${inserted} rows into research.prop_decision_lines.`);
 
     const total = await pool.query<{ cnt: string }>(
       `SELECT count(*)::text AS cnt FROM research.prop_decision_lines`

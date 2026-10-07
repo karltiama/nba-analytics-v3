@@ -281,6 +281,12 @@ resource "aws_lambda_event_source_mapping" "player_props_worker_queue" {
   batch_size                         = 1
   maximum_batching_window_in_seconds = 0
   enabled                            = local.family_schedule_enabled.player_props
+
+  # Queue-native shaping: Lambda stops polling at this many in-flight workers instead of
+  # starting one worker per game that then blocks on the shared BDL permit.
+  scaling_config {
+    maximum_concurrency = var.player_props_worker_max_concurrency
+  }
 }
 
 resource "aws_lambda_function" "player_props_controller" {

@@ -64,6 +64,10 @@ export type PlayerPropArchiveEnvelope = {
   snapshot_at: string;
   game_start_time: string | null;
   timing: SnapshotTiming;
+  /** response_received_at of the stored provider attempt. Absent on legacy envelopes (controller time only). */
+  observed_at?: string;
+  controller_enqueued_at?: string | null;
+  observation_clock?: 'RESPONSE_RECEIVED';
   row_count: number;
   checksum: string;
   rows: PlayerPropArchiveRow[];
@@ -189,6 +193,7 @@ export function buildArchiveEnvelope(args: {
   snapshotAt: Date | string;
   gameStartTime: Date | string | null;
   rows: PlayerPropArchiveRow[];
+  observation?: { observedAt: Date | string; controllerEnqueuedAt: Date | string | null };
 }): PlayerPropArchiveEnvelope {
   const snapshotIso =
     typeof args.snapshotAt === 'string' ? new Date(args.snapshotAt).toISOString() : args.snapshotAt.toISOString();
@@ -203,7 +208,8 @@ export function buildArchiveEnvelope(args: {
     game_id: args.gameId,
     rows: args.rows,
   };
-  return {
+  const observedIso = args.observation ? new Date(args.observation.observedAt).toISOString() : null;
+  const envelope: PlayerPropArchiveEnvelope = {
     schemaVersion: 1,
     archiveVersion: PLAYER_PROP_SNAPSHOT_ARCHIVE_VERSION,
     source: PLAYER_PROP_SNAPSHOT_SOURCE,
@@ -215,11 +221,20 @@ export function buildArchiveEnvelope(args: {
     game_date: args.gameDate,
     snapshot_at: snapshotIso,
     game_start_time: startIso,
-    timing: classifySnapshotTiming(snapshotIso, startIso),
+    timing: classifySnapshotTiming(observedIso ?? snapshotIso, startIso),
     row_count: args.rows.length,
     checksum: checksumCanonical(body),
     rows: args.rows,
   };
+  if (args.observation && observedIso) {
+    envelope.observed_at = observedIso;
+    envelope.controller_enqueued_at =
+      args.observation.controllerEnqueuedAt == null
+        ? null
+        : new Date(args.observation.controllerEnqueuedAt).toISOString();
+    envelope.observation_clock = 'RESPONSE_RECEIVED';
+  }
+  return envelope;
 }
 
 export function gzipEnvelope(envelope: PlayerPropArchiveEnvelope): Buffer {
@@ -425,6 +440,18 @@ export function rowsFromNormalized(args: {
 
 export function filterPregameRows(rows: PlayerPropArchiveRow[]): PlayerPropArchiveRow[] {
   return rows.filter((r) => isValidPregameResearchSnapshot(r.snapshot_at, r.game_start_time));
+}
+
+/**
+ * Observed envelopes are pregame only when observed_at < tip. A declared observation clock without
+ * observed_at fails closed. Legacy envelopes keep the controller-time row filter.
+ */
+export function filterPregameRowsForEnvelope(envelope: PlayerPropArchiveEnvelope): PlayerPropArchiveRow[] {
+  if (envelope.observation_clock === 'RESPONSE_RECEIVED' || envelope.observed_at !== undefined) {
+    if (!envelope.observed_at) return [];
+    return envelope.rows.filter((r) => isValidPregameResearchSnapshot(envelope.observed_at as string, r.game_start_time));
+  }
+  return filterPregameRows(envelope.rows);
 }
 
 export type InMemoryS3Object = {

@@ -1,4 +1,11 @@
 import type { Pool } from 'pg';
+import {
+  PROP_CLOCK_LEGACY_CONTROLLER_TIME,
+  PROP_CLOCK_RESPONSE_RECEIVED,
+  isPreTipObservation,
+  type PropObservationClockLabel,
+} from '@/lib/betting/prop-observation-clock';
+import { columnExists, type SqlQueryable } from '@/lib/db/schema-capability';
 
 export const RETENTION_DAYS = 3;
 export const DELETE_BATCH = 50_000;
@@ -45,6 +52,66 @@ export const MATERIALIZE_CLOSING_LINES_SQL = `
     ON CONFLICT (game_id, player_id, sportsbook, prop_type, side) DO NOTHING
 `;
 
+/**
+ * Decision close after MIGRATION_player_prop_observation_clock.sql.
+ * RESPONSE_RECEIVED rows: observed_at < tip (null observed_at is never eligible).
+ * Legacy rows (observation_clock IS NULL): fetched_at < tip, labelled LEGACY_CONTROLLER_TIME.
+ */
+export const MATERIALIZE_CLOSING_LINES_OBSERVED_SQL = `
+    INSERT INTO research.prop_decision_lines
+      (game_id, player_id, player_name, team_id, sportsbook, prop_type,
+       market_type, side, line_value, odds_american, odds_decimal,
+       implied_probability, decision_at, game_start_time, decision_clock)
+    SELECT DISTINCT ON (r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side)
+      g.game_id,
+      r.player_id::text,
+      r.player_name,
+      r.team_id,
+      r.sportsbook,
+      r.prop_type,
+      r.market_type,
+      r.side,
+      r.line_value,
+      r.odds_american,
+      r.odds_decimal,
+      r.implied_probability,
+      d.decision_at,
+      g.start_time,
+      d.decision_clock
+    FROM raw.player_prop_snapshots_v2 r
+    INNER JOIN analytics.games g ON g.game_id = r.game_id::text
+    CROSS JOIN LATERAL (
+      SELECT
+        CASE
+          WHEN r.observation_clock = 'RESPONSE_RECEIVED' THEN r.observed_at
+          WHEN r.observation_clock IS NULL THEN r.fetched_at
+        END AS decision_at,
+        CASE
+          WHEN r.observation_clock = 'RESPONSE_RECEIVED' THEN 'RESPONSE_RECEIVED'
+          ELSE 'LEGACY_CONTROLLER_TIME'
+        END AS decision_clock
+    ) d
+    WHERE g.status = 'Final'
+      AND g.start_time IS NOT NULL
+      AND d.decision_at IS NOT NULL
+      AND d.decision_at < g.start_time
+      AND lower(coalesce(r.market_type, '')) = 'over_under'
+      AND lower(r.side) IN ('over', 'under')
+      AND NOT EXISTS (
+        SELECT 1 FROM research.prop_decision_lines m
+        WHERE m.game_id = g.game_id
+          AND m.player_id = r.player_id::text
+          AND m.sportsbook = r.sportsbook
+          AND m.prop_type = r.prop_type
+          AND m.side = r.side
+      )
+    ORDER BY
+      r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side,
+      d.decision_at DESC,
+      r.pull_run_id DESC NULLS LAST
+    ON CONFLICT (game_id, player_id, sportsbook, prop_type, side) DO NOTHING
+`;
+
 export type PreTipObservation = {
   gameId: string;
   playerId: string;
@@ -53,34 +120,69 @@ export type PreTipObservation = {
   side: string;
   lineValue: number;
   oddsAmerican: number;
+  /** Legacy controller-time column (raw fetched_at). */
   fetchedAt: Date;
   pullRunId: number;
+  observedAt?: Date | null;
+  observationClock?: string | null;
 };
 
-/** Same order as MATERIALIZE_CLOSING_LINES_SQL: latest fetched_at, then later pull. */
+/**
+ * Mirrors MATERIALIZE_CLOSING_LINES_OBSERVED_SQL. Returns null when the row can never be a decision close.
+ * Controller time is used only for legacy rows that carry no observation clock.
+ */
+export function decisionInstant(row: PreTipObservation): { at: Date; clock: PropObservationClockLabel } | null {
+  if (row.observationClock === PROP_CLOCK_RESPONSE_RECEIVED) {
+    return row.observedAt ? { at: row.observedAt, clock: PROP_CLOCK_RESPONSE_RECEIVED } : null;
+  }
+  if (row.observationClock == null) {
+    return { at: row.fetchedAt, clock: PROP_CLOCK_LEGACY_CONTROLLER_TIME };
+  }
+  return null;
+}
+
+/** Latest valid pre-tip observation per market key, then later pull. */
 export function selectLatestPreTipObservations<T extends PreTipObservation>(
   rows: T[],
   tip: Date
 ): T[] {
-  const eligible = rows.filter((row) => row.fetchedAt.getTime() < tip.getTime());
-  const best = new Map<string, T>();
-  for (const row of eligible) {
+  const best = new Map<string, { row: T; at: number }>();
+  for (const row of rows) {
+    const decision = decisionInstant(row);
+    if (!decision || !isPreTipObservation(decision.at, tip)) continue;
+    const at = decision.at.getTime();
     const key = [row.gameId, row.playerId, row.sportsbook, row.propType, row.side].join('|');
     const prev = best.get(key);
-    if (!prev) {
-      best.set(key, row);
-      continue;
+    if (!prev || at > prev.at || (at === prev.at && row.pullRunId > prev.row.pullRunId)) {
+      best.set(key, { row, at });
     }
-    const newer =
-      row.fetchedAt.getTime() > prev.fetchedAt.getTime() ||
-      (row.fetchedAt.getTime() === prev.fetchedAt.getTime() && row.pullRunId > prev.pullRunId);
-    if (newer) best.set(key, row);
   }
-  return [...best.values()];
+  return [...best.values()].map((entry) => entry.row);
+}
+
+export type ClosingLinesSqlMode = 'legacy' | 'observed';
+
+/**
+ * Before the migration every row is legacy, so the legacy SQL is exact. A half-applied migration
+ * (raw clock columns without decision_clock, or the reverse) fails closed.
+ */
+export async function resolveClosingLinesSqlMode(client: SqlQueryable): Promise<ClosingLinesSqlMode> {
+  const rawClock = await columnExists(client, 'raw', 'player_prop_snapshots_v2', 'observation_clock');
+  const rawObserved = await columnExists(client, 'raw', 'player_prop_snapshots_v2', 'observed_at');
+  const decisionClock = await columnExists(client, 'research', 'prop_decision_lines', 'decision_clock');
+  if (rawClock && rawObserved && decisionClock) return 'observed';
+  if (!rawClock && !rawObserved && !decisionClock) return 'legacy';
+  throw new Error(
+    'closing-lines: observation-clock migration partially applied ' +
+      `(raw.observation_clock=${rawClock}, raw.observed_at=${rawObserved}, research.decision_clock=${decisionClock})`
+  );
 }
 
 export async function materializeClosingLines(pool: Pool): Promise<number> {
-  const result = await pool.query(MATERIALIZE_CLOSING_LINES_SQL);
+  const mode = await resolveClosingLinesSqlMode(pool as unknown as SqlQueryable);
+  const result = await pool.query(
+    mode === 'observed' ? MATERIALIZE_CLOSING_LINES_OBSERVED_SQL : MATERIALIZE_CLOSING_LINES_SQL
+  );
   return result.rowCount ?? 0;
 }
 

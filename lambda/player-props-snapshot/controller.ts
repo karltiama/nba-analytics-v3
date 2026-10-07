@@ -2,7 +2,12 @@ import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
 import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { getGameTargets, getTodayET, parsePropUniverse, type PropUniverse } from './src/game-discovery';
-import { completePullRun, createPullRun, createGameRun } from './src/bulk-writers';
+import {
+  CONTROLLER_DEDUPE_WINDOW_SECONDS,
+  claimGameRunsForWave,
+  completePullRun,
+  markGameRunsEnqueueFailed,
+} from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
 import { logMarketOutcome, noRequestCoverage } from './src/market-outcome';
 import type { WorkerMessage } from './src/types';
@@ -65,14 +70,24 @@ export const handler = async (event: ControllerEvent) => {
     return skip('no_eligible_games', { universe, date });
   }
 
-  const pullRunId = await createPullRun(pool, targets.map((g) => g.gameId));
+  const claim = await claimGameRunsForWave(pool, universe, targets);
+  if (claim.skipped.length > 0) {
+    console.log(
+      JSON.stringify({
+        event: 'player_props_controller_dedupe',
+        universe,
+        skippedGameIds: claim.skipped.map((t) => t.gameId),
+        windowSeconds: CONTROLLER_DEDUPE_WINDOW_SECONDS,
+      })
+    );
+  }
+  if (claim.pullRunId == null) {
+    return skip('already_claimed', { universe, date, skippedGames: claim.skipped.length });
+  }
+  const pullRunId = claim.pullRunId;
 
   try {
-    for (const t of targets) {
-      await createGameRun(pool, pullRunId, t.gameId, universe);
-    }
-
-    const messages: WorkerMessage[] = targets.map((t) => ({
+    const messages: WorkerMessage[] = claim.claimed.map((t) => ({
       runId: pullRunId,
       gameId: t.gameId,
       bdlGameId: t.bdlGameId,
@@ -80,27 +95,48 @@ export const handler = async (event: ControllerEvent) => {
       universe,
     }));
 
+    const failedGameIds: string[] = [];
     for (const batch of toBatches(messages, 10)) {
-      await sqs.send(
-        new SendMessageBatchCommand({
-          QueueUrl: queueUrl,
-          Entries: batch.map((msg, idx) => ({
-            Id: `${msg.gameId}-${idx}`,
-            MessageBody: JSON.stringify(msg),
-          })),
-        })
-      );
+      try {
+        const res = await sqs.send(
+          new SendMessageBatchCommand({
+            QueueUrl: queueUrl,
+            Entries: batch.map((msg, idx) => ({
+              Id: `${msg.gameId}-${idx}`,
+              MessageBody: JSON.stringify(msg),
+            })),
+          })
+        );
+        for (const failed of res.Failed ?? []) {
+          const idx = Number(String(failed.Id ?? '').split('-').pop());
+          const msg = batch[idx];
+          if (msg) failedGameIds.push(msg.gameId);
+        }
+      } catch {
+        failedGameIds.push(...batch.map((m) => m.gameId));
+      }
+    }
+    if (failedGameIds.length > 0) {
+      await markGameRunsEnqueueFailed(pool, pullRunId, failedGameIds);
+      throw new Error(`SQS enqueue failed for ${failedGameIds.length} game(s): ${failedGameIds.join(',')}`);
     }
 
     emitCoverageMetric(
       'NBA/PlayerProps',
       { Component: 'Controller' },
-      { GamesTargeted: targets.length, GamesQueued: targets.length }
+      { GamesTargeted: targets.length, GamesQueued: messages.length, GamesDeduped: claim.skipped.length }
     );
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, pullRunId, queuedGames: targets.length, date, universe }),
+      body: JSON.stringify({
+        success: true,
+        pullRunId,
+        queuedGames: messages.length,
+        dedupedGames: claim.skipped.length,
+        date,
+        universe,
+      }),
     };
   } catch (error: unknown) {
     await completePullRun(

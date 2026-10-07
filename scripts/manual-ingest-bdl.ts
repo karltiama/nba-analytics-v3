@@ -13,6 +13,7 @@ import {
 } from '../lambda/player-props-snapshot/src/game-discovery';
 import { fetchPlayerPropsForGame } from '../lambda/player-props-snapshot/src/fetch';
 import { normalizePlayerPropRows } from '../lambda/player-props-snapshot/src/normalize';
+import { assertObservationClockSchema } from '../lambda/player-props-snapshot/src/observation-clock';
 import { 
   bulkUpsertCurrent, 
   createPullRun, 
@@ -38,20 +39,24 @@ async function main() {
   const targets = await getGameTargets({ pool: pool as any, universe: 'broad', date });
   console.log(`📡 Found ${targets.length} games to target.`);
 
+  await assertObservationClockSchema(pool);
   const pullRunId = await createPullRun(pool as any, targets.map((g) => g.gameId));
   const snapshotAt = new Date();
 
   for (const t of targets) {
     console.log(`\n🎮 Game: ${t.gameId} (BDL ID: ${t.bdlGameId})`);
     try {
-      const props = await fetchPlayerPropsForGame(BALLDONTLIE_API_KEY as string, t.bdlGameId);
+      const { rows: props, observation } = await fetchPlayerPropsForGame(BALLDONTLIE_API_KEY as string, t.bdlGameId);
       console.log(`   ✅ Fetched ${props.length} props.`);
 
       if (props.length > 0) {
         const normalized = normalizePlayerPropRows(props);
         
         // 1. Update modern analytics.player_props_current (used by current UI)
-        const currentCount = await bulkUpsertCurrent(pool as any, normalized, snapshotAt);
+        const currentCount = await bulkUpsertCurrent(pool as any, normalized, snapshotAt, {
+          controllerEnqueuedAt: null,
+          observedAt: observation.responseReceivedAt,
+        });
         console.log(`   💾 Upserted ${currentCount} rows into analytics.player_props_current.`);
 
         // 2. Update legacy analytics.player_prop_current (if still in use by some parts of the app)

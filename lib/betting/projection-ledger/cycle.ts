@@ -19,7 +19,8 @@ import {
 import { isProductionGitSha } from '@/lib/betting/projection-ledger/revision';
 import { classifyLedgerCapture } from '@/lib/betting/projection-ledger/timing';
 import { analyticsGamesHasSeasonPhase, readSeasonPhase } from '@/lib/context-projection/game-universe';
-import type { SqlQueryable } from '@/lib/db/schema-capability';
+import { columnExists, type SqlQueryable } from '@/lib/db/schema-capability';
+import { marketObservedAtIso } from '@/lib/betting/prop-observation-clock';
 
 export interface CycleSummary {
   gamesSeen: number;
@@ -38,6 +39,15 @@ interface MarketRow {
   odds_decimal: string;
   implied_probability: string;
   snapshot_at: Date | string;
+  observed_at: Date | string | null;
+  observation_clock: string | null;
+}
+
+export async function playerPropsCurrentHasObservationClock(client: SqlQueryable): Promise<boolean> {
+  return (
+    (await columnExists(client, 'analytics', 'player_props_current', 'observed_at')) &&
+    (await columnExists(client, 'analytics', 'player_props_current', 'observation_clock'))
+  );
 }
 
 async function logAttempt(
@@ -114,10 +124,19 @@ async function loadPlayers(client: PoolClient, game: LedgerGameCandidate, cutoff
   return [...seen.entries()].map(([playerId, teamId]) => ({ playerId, teamId }));
 }
 
-async function loadMarkets(client: PoolClient, gameId: string, playerId: string, market: string): Promise<MarketRow[]> {
+async function loadMarkets(
+  client: PoolClient,
+  gameId: string,
+  playerId: string,
+  market: string,
+  hasObservationClock: boolean
+): Promise<MarketRow[]> {
+  const clockColumns = hasObservationClock
+    ? 'observed_at, observation_clock'
+    : 'NULL::timestamptz AS observed_at, NULL::text AS observation_clock';
   const res = await client.query(
     `SELECT id::text, sportsbook, lower(side) AS side, line_value, odds_american, odds_decimal,
-            implied_probability, snapshot_at
+            implied_probability, snapshot_at, ${clockColumns}
        FROM analytics.player_props_current
       WHERE game_id::text = $1
         AND player_id::text = $2
@@ -137,6 +156,7 @@ export async function runProjectionLedgerCycle(pool: Pool, now = new Date()): Pr
   const client = await pool.connect();
   try {
     const games = await loadUpcomingGames(client, now.toISOString());
+    const hasObservationClock = await playerPropsCurrentHasObservationClock(client);
     summary.gamesSeen = games.length;
     if (!isProductionGitSha(codeRevision)) {
       await logAttempt(client, {
@@ -295,10 +315,10 @@ export async function runProjectionLedgerCycle(pool: Pool, now = new Date()): Pr
             }
 
             const snapshotId = String(inserted.rows[0].projection_snapshot_id);
-            const markets = await loadMarkets(client, game.gameId, player.playerId, market);
+            const markets = await loadMarkets(client, game.gameId, player.playerId, market, hasObservationClock);
             const observed = markets.map((book) => ({
               ...book,
-              observedAt: new Date(book.snapshot_at).toISOString(),
+              observedAt: marketObservedAtIso(book),
             }));
             const parts = partitionSportsbookObservations(observed, now.toISOString());
             for (const book of parts.rejected) {

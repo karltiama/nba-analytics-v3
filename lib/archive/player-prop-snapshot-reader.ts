@@ -4,7 +4,7 @@
  */
 
 import {
-  filterPregameRows,
+  filterPregameRowsForEnvelope,
   gunzipEnvelope,
   isProtectedHistoricalKey,
   playerPropSnapshotGameDatePrefix,
@@ -48,5 +48,5 @@ export async function listPlayerPropArchiveKeys(args: {
 export function researchPregameRowsFromEnvelope(
   envelope: PlayerPropArchiveEnvelope
 ): PlayerPropArchiveRow[] {
-  return filterPregameRows(envelope.rows);
+  return filterPregameRowsForEnvelope(envelope);
 }

@@ -25,7 +25,9 @@ export function normalizePlayerPropRows(rows: BdlPlayerPropRow[]): NormalizedPro
   const out: NormalizedPropRow[] = [];
   for (const row of rows) {
     const line = parseNumeric(row.line_value);
-    const providerUpdatedAt = row.updated_at ? new Date(row.updated_at) : null;
+    const parsedUpdatedAt = row.updated_at ? new Date(row.updated_at) : null;
+    const providerUpdatedAt =
+      parsedUpdatedAt && Number.isFinite(parsedUpdatedAt.getTime()) ? parsedUpdatedAt : null;
     if (row.market.type === 'over_under') {
       out.push({
         game_id: row.game_id,

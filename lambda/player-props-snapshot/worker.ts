@@ -3,6 +3,7 @@ import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
 import { normalizePlayerPropRows } from './src/normalize';
+import { assertObservationClockSchema, describeObservation } from './src/observation-clock';
 import {
   bulkInsertRawV2,
   bulkUpsertCurrent,
@@ -10,6 +11,7 @@ import {
   completeGameRun,
   finalizePullRunIfComplete,
   getGameRunStartedAt,
+  getGameRunStatus,
   lookupGameArchiveContext,
   refreshPreferredVendorCurrent,
 } from './src/bulk-writers';
@@ -57,12 +59,22 @@ export const handler = async (event: SQSEvent) => {
   let archiveGapCount = 0;
   let archiveFailedCount = 0;
 
+  await assertObservationClockSchema(pool);
+
   for (const record of event.Records) {
     const msg = parseMessage(record.body);
     let gameRunFinalized = false;
     let providerSettled = false;
+    if ((await getGameRunStatus(pool, msg.runId, msg.gameId)) === 'success') {
+      console.log(
+        JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
+      );
+      successCount++;
+      continue;
+    }
     try {
-      const props = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId);
+      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId);
+      const props = fetched.rows;
       providerSettled = true;
       logMarketOutcome({
         outcome: outcomeForProviderResult({ threw: false, rowCount: props.length }),
@@ -72,9 +84,27 @@ export const handler = async (event: SQSEvent) => {
         rowsFetched: props.length,
       });
       const normalized = normalizePlayerPropRows(props);
-      const startedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
-      const snapshotAt = startedAt ?? new Date();
+      const controllerEnqueuedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
+      const clocks = {
+        controllerEnqueuedAt,
+        observedAt: fetched.observation.responseReceivedAt,
+      };
+      // Legacy controller-time column value; unchanged so archive keys and retention stay stable.
+      const snapshotAt = controllerEnqueuedAt ?? clocks.observedAt;
       const gameCtx = await lookupGameArchiveContext(pool, msg.gameId);
+      console.log(
+        JSON.stringify({
+          event: 'player_prop_observation',
+          pullRunId: msg.runId,
+          gameId: msg.gameId,
+          ...describeObservation({
+            controllerEnqueuedAt,
+            observedAt: clocks.observedAt,
+            tip: gameCtx.startTime,
+            attempts: fetched.observation.attempts.length,
+          }),
+        })
+      );
       const rawV2 = await bulkInsertRawV2(
         pool,
         normalized,
@@ -83,7 +113,8 @@ export const handler = async (event: SQSEvent) => {
           enabled: env.storePropRawJson,
           sampleRate: env.propRawJsonSampleRate,
         },
-        msg.runId
+        msg.runId,
+        clocks
       );
       const identity = await classifyBdlPropPlayerIds(
         pool,
@@ -95,7 +126,7 @@ export const handler = async (event: SQSEvent) => {
         (row) => row.player_id,
         identity.servingIds
       ).keep;
-      const current = await bulkUpsertCurrent(pool, servingNormalized, snapshotAt);
+      const current = await bulkUpsertCurrent(pool, servingNormalized, snapshotAt, clocks);
       const preferred = buildPreferredVendorLines(
         servingNormalized,
         env.preferredVendor,
@@ -110,6 +141,7 @@ export const handler = async (event: SQSEvent) => {
         bdlGameId: msg.bdlGameId,
         gameDate: msg.date,
         snapshotAt,
+        observation: clocks,
         gameStartTime: gameCtx.startTime,
         season: gameCtx.season,
         opponentId: null,

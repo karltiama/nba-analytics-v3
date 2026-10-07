@@ -36,8 +36,13 @@ function successManifest(): EntityManifest {
 
 type QueryHandler = (sql: string, params?: unknown[]) => Promise<{ rows: unknown[]; rowCount?: number }>;
 
+/** Capability probes see the pre-migration schema (no observation-clock columns). */
 function makePool(handler: QueryHandler): Pool {
-  return { query: vi.fn(handler) } as unknown as Pool;
+  return {
+    query: vi.fn(async (sql: string, params?: unknown[]) =>
+      sql.includes('information_schema.columns') ? { rows: [] } : handler(sql, params)
+    ),
+  } as unknown as Pool;
 }
 
 function defaultSqlHandler(state: {

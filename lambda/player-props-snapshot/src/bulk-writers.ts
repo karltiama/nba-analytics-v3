@@ -1,5 +1,6 @@
-import type { Pool } from 'pg';
+import type { Pool, PoolClient } from 'pg';
 import type { NormalizedPropRow } from './types';
+import { OBSERVATION_CLOCK_RESPONSE_RECEIVED, type PropObservationClocks } from './observation-clock';
 
 const CHUNK_SIZE = 500;
 
@@ -14,7 +15,91 @@ function chunk<T>(items: T[], size: number): T[][] {
   return out;
 }
 
-export async function createPullRun(pool: Pool, gameIdsQueried: string[]): Promise<number> {
+/**
+ * A game already claimed for the same universe inside this window is not re-enqueued.
+ * Covers duplicate Scheduler deliveries and Lambda async retries (minutes apart) and stays below the
+ * shortest same-universe cadence (near-tip 15 min; broad crons hours apart, rate fallback 30 min).
+ */
+export const CONTROLLER_DEDUPE_WINDOW_SECONDS = 600;
+/** Marker for game runs whose SQS send failed. They were never queued, so a retry may claim them again. */
+export const ENQUEUE_FAILED = 'enqueue_failed';
+
+export function selectUnclaimedTargets<T extends { gameId: string }>(
+  targets: T[],
+  recentlyClaimed: Set<string>
+): { claim: T[]; skipped: T[] } {
+  const claim: T[] = [];
+  const skipped: T[] = [];
+  const seen = new Set<string>();
+  for (const t of targets) {
+    if (recentlyClaimed.has(t.gameId) || seen.has(t.gameId)) skipped.push(t);
+    else {
+      seen.add(t.gameId);
+      claim.push(t);
+    }
+  }
+  return { claim, skipped };
+}
+
+/**
+ * Creates the pull run and game runs for games not claimed in the dedupe window, under a
+ * per-universe advisory lock so concurrent controller invocations cannot both claim a game.
+ */
+export async function claimGameRunsForWave<T extends { gameId: string }>(
+  pool: Pool,
+  universe: 'broad' | 'near_tip',
+  targets: T[],
+  windowSeconds: number = CONTROLLER_DEDUPE_WINDOW_SECONDS
+): Promise<{ pullRunId: number | null; claimed: T[]; skipped: T[] }> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`player-props-controller:${universe}`]);
+    const recent = await client.query<{ game_id: string }>(
+      `SELECT DISTINCT game_id
+         FROM raw.player_prop_game_runs
+        WHERE universe = $1
+          AND game_id = ANY($2::text[])
+          AND started_at > now() - ($3::int * interval '1 second')
+          AND NOT (status = 'error' AND error_message IS NOT DISTINCT FROM $4)`,
+      [universe, targets.map((t) => t.gameId), windowSeconds, ENQUEUE_FAILED]
+    );
+    const { claim, skipped } = selectUnclaimedTargets(targets, new Set(recent.rows.map((r) => String(r.game_id))));
+    if (claim.length === 0) {
+      await client.query('COMMIT');
+      return { pullRunId: null, claimed: [], skipped };
+    }
+    const pullRunId = await createPullRun(client, claim.map((t) => t.gameId));
+    for (const t of claim) await createGameRun(client, pullRunId, t.gameId, universe);
+    await client.query('COMMIT');
+    return { pullRunId, claimed: claim, skipped };
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => undefined);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+export async function markGameRunsEnqueueFailed(pool: Pool, pullRunId: number, gameIds: string[]): Promise<void> {
+  if (gameIds.length === 0) return;
+  await pool.query(
+    `UPDATE raw.player_prop_game_runs
+        SET status = 'error', error_message = $3, completed_at = now()
+      WHERE pull_run_id = $1 AND game_id = ANY($2::text[]) AND status = 'started'`,
+    [pullRunId, gameIds, ENQUEUE_FAILED]
+  );
+}
+
+export async function getGameRunStatus(pool: Pool, pullRunId: number, gameId: string): Promise<string | null> {
+  const result = await pool.query<{ status: string }>(
+    `SELECT status FROM raw.player_prop_game_runs WHERE pull_run_id = $1 AND game_id = $2`,
+    [pullRunId, gameId]
+  );
+  return result.rows[0]?.status ?? null;
+}
+
+export async function createPullRun(pool: Pool | PoolClient, gameIdsQueried: string[]): Promise<number> {
   const result = await pool.query(
     `INSERT INTO raw.player_prop_pull_runs (pulled_at, provider, game_ids_queried, status)
      VALUES (now(), 'balldontlie', $1, 'started')
@@ -43,7 +128,7 @@ export async function completePullRun(
 }
 
 export async function createGameRun(
-  pool: Pool,
+  pool: Pool | PoolClient,
   pullRunId: number,
   gameId: string,
   universe?: 'broad' | 'near_tip' | null
@@ -177,19 +262,21 @@ export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): 
   );
 }
 
+/** `fetchedAt` keeps its legacy controller-time meaning; true observation lives in `clocks.observedAt`. */
 export async function bulkInsertRawV2(
   pool: Pool,
   rows: NormalizedPropRow[],
   fetchedAt: Date,
   rawJsonOptions: RawJsonOptions,
-  pullRunId?: number | null
+  pullRunId: number | null,
+  clocks: PropObservationClocks
 ): Promise<number> {
   if (rows.length === 0) return 0;
   let inserted = 0;
   for (const group of chunk(rows, CHUNK_SIZE)) {
     const values: unknown[] = [];
     const tuples = group.map((r, i) => {
-      const base = i * 15;
+      const base = i * 19;
       values.push(
         r.game_id,
         r.player_id,
@@ -205,14 +292,19 @@ export async function bulkInsertRawV2(
         r.implied_probability,
         fetchedAt,
         rawJsonOptions.enabled && Math.random() < rawJsonOptions.sampleRate ? JSON.stringify(r.raw_json) : null,
-        pullRunId ?? null
+        pullRunId ?? null,
+        clocks.observedAt,
+        clocks.controllerEnqueuedAt,
+        r.provider_updated_at,
+        OBSERVATION_CLOCK_RESPONSE_RECEIVED
       );
-      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base + 9},$${base + 10},$${base + 11},$${base + 12},$${base + 13},$${base + 14},$${base + 15})`;
+      return `(${Array.from({ length: 19 }, (_, k) => `$${base + k + 1}`).join(',')})`;
     });
     const result = await pool.query(
       `INSERT INTO raw.player_prop_snapshots_v2 (
          game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
-         line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json, pull_run_id
+         line_value, odds_american, odds_decimal, implied_probability, fetched_at, raw_json, pull_run_id,
+         observed_at, controller_enqueued_at, provider_updated_at, observation_clock
        ) VALUES ${tuples.join(',')}
        ON CONFLICT (pull_run_id, game_id, player_id, sportsbook, prop_type, side, line_value)
        WHERE pull_run_id IS NOT NULL
@@ -224,13 +316,22 @@ export async function bulkInsertRawV2(
   return inserted;
 }
 
-export async function bulkUpsertCurrent(pool: Pool, rows: NormalizedPropRow[], snapshotAt: Date): Promise<number> {
+/**
+ * `snapshotAt` keeps its legacy controller-time meaning. An older observation never overwrites a newer one,
+ * so a late SQS retry cannot roll the current line backwards.
+ */
+export async function bulkUpsertCurrent(
+  pool: Pool,
+  rows: NormalizedPropRow[],
+  snapshotAt: Date,
+  clocks: PropObservationClocks
+): Promise<number> {
   if (rows.length === 0) return 0;
   let upserted = 0;
   for (const group of chunk(rows, CHUNK_SIZE)) {
     const values: unknown[] = [];
     const tuples = group.map((r, i) => {
-      const base = i * 13;
+      const base = i * 17;
       values.push(
         r.game_id,
         r.player_id,
@@ -244,15 +345,20 @@ export async function bulkUpsertCurrent(pool: Pool, rows: NormalizedPropRow[], s
         r.odds_american,
         r.odds_decimal,
         r.implied_probability,
-        snapshotAt
+        snapshotAt,
+        clocks.observedAt,
+        clocks.controllerEnqueuedAt,
+        r.provider_updated_at,
+        OBSERVATION_CLOCK_RESPONSE_RECEIVED
       );
-      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base + 9},$${base + 10},$${base + 11},$${base + 12},$${base + 13})`;
+      return `(${Array.from({ length: 17 }, (_, k) => `$${base + k + 1}`).join(',')})`;
     });
 
     const result = await pool.query(
       `INSERT INTO analytics.player_props_current (
          game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
-         line_value, odds_american, odds_decimal, implied_probability, snapshot_at
+         line_value, odds_american, odds_decimal, implied_probability, snapshot_at,
+         observed_at, controller_enqueued_at, provider_updated_at, observation_clock
        ) VALUES ${tuples.join(',')}
        ON CONFLICT (game_id, player_id, sportsbook, prop_type, side, line_value)
        DO UPDATE SET
@@ -261,7 +367,13 @@ export async function bulkUpsertCurrent(pool: Pool, rows: NormalizedPropRow[], s
          odds_american = excluded.odds_american,
          odds_decimal = excluded.odds_decimal,
          implied_probability = excluded.implied_probability,
-         snapshot_at = excluded.snapshot_at`,
+         snapshot_at = excluded.snapshot_at,
+         observed_at = excluded.observed_at,
+         controller_enqueued_at = excluded.controller_enqueued_at,
+         provider_updated_at = excluded.provider_updated_at,
+         observation_clock = excluded.observation_clock
+       WHERE analytics.player_props_current.observed_at IS NULL
+          OR excluded.observed_at >= analytics.player_props_current.observed_at`,
       values
     );
     upserted += result.rowCount ?? 0;

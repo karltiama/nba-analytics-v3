@@ -25,6 +25,7 @@ export async function archiveGameSnapshot(args: {
   bdlGameId: number;
   gameDate: string;
   snapshotAt: Date;
+  observation?: { observedAt: Date; controllerEnqueuedAt: Date | null };
   gameStartTime: Date | null;
   season: string | null;
   opponentId: string | null;
@@ -104,6 +105,7 @@ export async function archiveGameSnapshot(args: {
     snapshotAt: args.snapshotAt,
     gameStartTime: args.gameStartTime,
     rows,
+    observation: args.observation,
   });
   const store =
     args.store ??
