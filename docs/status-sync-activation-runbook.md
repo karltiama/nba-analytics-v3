@@ -121,7 +121,7 @@ Readiness alarm semantics:
 
 Nothing alarms on `status='partial'` by itself. A partial run also produces `ready=false` with `coverage='db_only'`, so repeated partial runs fire the readiness alarm.
 
-A deployed metric filter has never published a datapoint in `CourtContext/Ingestion`. On the first `ready=false` event (or the first failure of any family), confirm the metric receives a datapoint. `aws logs filter-log-events` with the same JSON pattern matches the real tab-prefixed Lambda lines. `aws logs test-metric-filter` does not, so do not use it on raw Lambda lines.
+Real Lambda messages are `timestamp<TAB>requestId<TAB>LEVEL<TAB>{json}\n`. JSON metric filter patterns match them: `aws logs test-metric-filter` against exact production messages matches every alarm pattern on its intended lines and on no others. Build test inputs in Node or from `filter-log-events` output, not from PowerShell strings, which corrupt the payload. `CourtContext/Ingestion` has no datapoints only because no matching event has been logged since the filters were created on 2026-10-09.
 
 ## 24-hour observation checklist
 
