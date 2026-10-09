@@ -153,6 +153,17 @@ resource "aws_lambda_function" "game_status_sync" {
   }
 }
 
+# EventBridge Scheduler invokes asynchronously. Handled failures return a result and are never
+# retried; only uncaught errors, timeouts and OOM would be. Each retry is a fresh archived BDL
+# request, and the next 15-minute poll already retries, so automatic retries are off.
+# Stale events (throttled, e.g. reserved concurrency 0 during rollback) drop after one cadence.
+resource "aws_lambda_function_event_invoke_config" "game_status_sync" {
+  count                        = var.game_status_sync_create ? 1 : 0
+  function_name                = aws_lambda_function.game_status_sync[0].function_name
+  maximum_retry_attempts       = 0
+  maximum_event_age_in_seconds = 900
+}
+
 resource "aws_iam_role" "scheduler_game_status_sync_invoke" {
   count = var.game_status_sync_create && var.game_status_sync_enable_schedule ? 1 : 0
   name  = "nba-game-status-sync-schedule-invoke-role"

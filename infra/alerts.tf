@@ -109,6 +109,62 @@ resource "aws_cloudwatch_metric_alarm" "ingestion_run_failed" {
 }
 
 # ---------------------------------------------------------------------------
+# Status-sync season-phase readiness (season_phase_readiness log event).
+# Evaluated only after a run that wrote; `status` and `ready` are separate verdicts.
+# A provider-confirmed no-game window logs ready=true and never counts.
+# coverage="db_only" with ready=false means provider evidence was incomplete (page cap) or the
+# readiness read failed; coverage="provider_verified" with ready=false means classification gaps.
+# Filters always exist (no notifications); the alarm exists only while the family is live, so
+# manual canaries during the freeze cannot page.
+# ---------------------------------------------------------------------------
+
+resource "aws_cloudwatch_log_metric_filter" "game_status_sync_readiness_not_ready" {
+  count          = var.game_status_sync_create ? 1 : 0
+  name           = "court-context-game_status_sync-readiness-not-ready"
+  log_group_name = local.bdl_log_groups.game_status_sync
+  pattern        = "{ $.event = \"season_phase_readiness\" && $.ready IS FALSE }"
+
+  metric_transformation {
+    name      = "ReadinessNotReady-game_status_sync"
+    namespace = local.ingestion_metric_ns
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "game_status_sync_readiness_unverified" {
+  count          = var.game_status_sync_create ? 1 : 0
+  name           = "court-context-game_status_sync-readiness-unverified"
+  log_group_name = local.bdl_log_groups.game_status_sync
+  pattern        = "{ $.event = \"season_phase_readiness\" && $.ready IS FALSE && $.coverage = \"db_only\" }"
+
+  metric_transformation {
+    name      = "ReadinessUnverified-game_status_sync"
+    namespace = local.ingestion_metric_ns
+    value     = "1"
+  }
+}
+
+# One not-ready run can be a game labelled on the next poll; 2 of 3 consecutive 15-minute
+# windows is a repeated gap.
+resource "aws_cloudwatch_metric_alarm" "game_status_sync_readiness_not_ready" {
+  count               = var.game_status_sync_create && var.game_status_sync_enable_schedule && local.family_schedule_enabled.game_status_sync ? 1 : 0
+  alarm_name          = "court-context-game-status-sync-readiness-not-ready"
+  alarm_description   = "game-status-sync logged season_phase_readiness ready=false in 2 of 3 consecutive 15-minute windows. Not downstream-ready: check reasons (unclassified, missing, provider evidence incomplete)."
+  namespace           = local.ingestion_metric_ns
+  metric_name         = "ReadinessNotReady-game_status_sync"
+  statistic           = "Sum"
+  period              = 900
+  evaluation_periods  = 3
+  datapoints_to_alarm = 2
+  threshold           = 1
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
+
+  depends_on = [aws_cloudwatch_log_metric_filter.game_status_sync_readiness_not_ready]
+}
+
+# ---------------------------------------------------------------------------
 # Shared limiter signals from the bdl_throttle log line (all BDL Lambdas).
 # ---------------------------------------------------------------------------
 
