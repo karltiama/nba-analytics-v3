@@ -10,6 +10,8 @@
  * Environment Variables:
  * - SUPABASE_DB_URL (required)
  * - BALLDONTLIE_API_KEY (required)
+ * - INJURY_MAX_PAGES (optional, default 20): a pull needing more pages fails as incomplete
+ * - INJURY_MIN_COMPLETE_ROW_COUNT (optional, default 50): floor below which removals are blocked
  */
 
 try {
@@ -28,9 +30,18 @@ try {
   // dotenv not available in Lambda
 }
 
-import { Pool } from 'pg';
-import { z } from 'zod';
-import { REMOVED_FROM_REPORT_STATUS } from './leave-report';
+import { Pool, type PoolClient } from 'pg';
+import {
+  INJURY_MIN_COMPLETE_ROW_COUNT_ENV,
+  REMOVED_FROM_REPORT_STATUS,
+  resolveMinCompleteInjuryRowCount,
+} from './leave-report';
+import {
+  INJURY_MAX_PAGES_ENV,
+  collectInjuryPages,
+  resolveInjuryMaxPages,
+  type InjuryPullRecord,
+} from './pull-pages';
 import { planInjuryIngest, type InjuryFieldSnapshot, type InjuryPullRow } from './ingest-plan';
 import { persistInjuryCollectorExtras, planInjuryCollectorExtras } from './collector-persist';
 import { CollectionSchemaPreflightError } from './schema-capability';
@@ -66,6 +77,10 @@ if (!SUPABASE_DB_URL) {
 if (!SHOULD_SKIP_MUTATIONS && !BALLDONTLIE_API_KEY) {
   throw new Error('Missing BALLDONTLIE_API_KEY environment variable');
 }
+const MAX_PAGES = resolveInjuryMaxPages(process.env[INJURY_MAX_PAGES_ENV]);
+const MIN_COMPLETE_ROW_COUNT = resolveMinCompleteInjuryRowCount(process.env[INJURY_MIN_COMPLETE_ROW_COUNT_ENV]);
+/** Serialises overlapping runs (manual invoke during a scheduled one). */
+const INJURY_TRANSFORM_LOCK_KEY = 'injuries-snapshot-transform';
 
 const pool = new Pool({
   connectionString: SUPABASE_DB_URL.trim(),
@@ -76,35 +91,6 @@ const pool = new Pool({
 });
 
 // ============================================
-// ZOD SCHEMAS (BDL NBAPlayerInjury)
-// ============================================
-
-const BdlPlayerSchema = z.object({
-  id: z.number(),
-  first_name: z.string().nullable().optional(),
-  last_name: z.string().nullable().optional(),
-  team_id: z.number().nullable().optional(),
-  team: z.any().nullable().optional(),
-});
-
-const BdlPlayerInjurySchema = z.object({
-  player: BdlPlayerSchema,
-  return_date: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  status: z.string().nullable().optional(),
-});
-
-const BdlInjuriesResponseSchema = z.object({
-  data: z.array(BdlPlayerInjurySchema),
-  meta: z.object({
-    next_cursor: z.number().nullable().optional(),
-    per_page: z.number().optional(),
-  }).optional(),
-});
-
-type BdlPlayerInjury = z.infer<typeof BdlPlayerInjurySchema>;
-
-// ============================================
 // FETCH INJURIES FROM BDL
 // ============================================
 
@@ -112,11 +98,8 @@ type BdlPlayerInjury = z.infer<typeof BdlPlayerInjurySchema>;
 const DEADLINE_MARGIN_MS = 30_000;
 let runDeadlineMs: number | undefined;
 
-async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
-  const all: BdlPlayerInjury[] = [];
-  let cursor: number | null = null;
-
-  while (true) {
+async function fetchAllInjuries(): Promise<{ records: InjuryPullRecord[]; pages: number }> {
+  return collectInjuryPages(async (cursor) => {
     const url = new URL(`${BDL_BASE}/nba/v1/player_injuries`);
     url.searchParams.set('per_page', '100');
     if (cursor != null) {
@@ -133,16 +116,8 @@ async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
       const body = await res.text().catch(() => '');
       throw new Error(`BDL API error: ${res.status} ${res.statusText} — ${body}`);
     }
-
-    const json = await res.json();
-    const parsed = BdlInjuriesResponseSchema.parse(json);
-    all.push(...parsed.data);
-
-    cursor = parsed.meta?.next_cursor ?? null;
-    if (cursor == null) break;
-  }
-
-  return all;
+    return res.json();
+  }, { maxPages: MAX_PAGES });
 }
 
 // ============================================
@@ -197,8 +172,9 @@ async function completePullRun(
 
 async function insertRawSnapshot(
   pullRunId: number,
-  row: BdlPlayerInjury
+  record: InjuryPullRecord
 ): Promise<void> {
+  const row = record.row;
   const playerId = row.player?.id ?? 0;
   const teamId = row.player?.team_id ?? (row.player?.team && typeof row.player.team === 'object' && 'id' in row.player.team ? (row.player.team as { id: number }).id : null);
 
@@ -214,7 +190,7 @@ async function insertRawSnapshot(
       row.status ?? null,
       row.description ?? null,
       row.return_date ?? null,
-      JSON.stringify(row),
+      JSON.stringify(record.raw),
     ]
   );
 }
@@ -223,11 +199,45 @@ async function insertRawSnapshot(
 // TRANSFORM: raw -> analytics (current + history on meaningful change)
 // ============================================
 
+type TransformResult = Awaited<ReturnType<typeof transformInTransaction>>;
+
+/**
+ * Current/history/delete changes commit together or not at all. The advisory lock makes an
+ * overlapping run fail without writes instead of interleaving deletes with another pull.
+ */
 async function transformToAnalytics(
   pullRunId: number,
   opts: { rowsStored: number; rowsReturned: number }
+): Promise<TransformResult> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const lock = await client.query<{ locked: boolean }>(
+      'SELECT pg_try_advisory_xact_lock(hashtext($1)) AS locked',
+      [INJURY_TRANSFORM_LOCK_KEY]
+    );
+    if (!lock.rows[0]?.locked) {
+      throw new Error('another injuries transform holds the lock; no analytics rows written');
+    }
+    const result = await transformInTransaction(client, pullRunId, opts);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK').catch((rollbackErr) => {
+      console.error('Failed to roll back injuries transform', rollbackErr);
+    });
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function transformInTransaction(
+  db: PoolClient,
+  pullRunId: number,
+  opts: { rowsStored: number; rowsReturned: number }
 ) {
-  const teamMapRes = await pool.query(
+  const teamMapRes = await db.query(
     `SELECT r.id as raw_id, t.team_id
      FROM raw.teams r
      JOIN analytics.teams t ON upper(trim(r.abbreviation)) = upper(trim(t.abbreviation))`
@@ -242,7 +252,7 @@ async function transformToAnalytics(
     return providerTeamIdToAnalytics.get(providerTeamId) ?? null;
   };
 
-  const prevCompleteRes = await pool.query<{ rows_stored: number | string }>(
+  const prevCompleteRes = await db.query<{ rows_stored: number | string }>(
     `SELECT rows_stored
      FROM raw.injury_pull_runs
      WHERE pull_run_id < $1
@@ -259,7 +269,7 @@ async function transformToAnalytics(
   const previousCompleteRowCount =
     prevCompleteRes.rows[0] != null ? Number(prevCompleteRes.rows[0].rows_stored) : null;
 
-  const rawRows = await pool.query(
+  const rawRows = await db.query(
     `SELECT DISTINCT ON (provider_player_id)
        provider_player_id, provider_team_id, status, description, return_date_raw, created_at
      FROM raw.player_injuries
@@ -272,7 +282,7 @@ async function transformToAnalytics(
     ...new Set(rawRows.rows.map((row) => String(row.provider_player_id))),
   ];
   const bridges = requestedIds.length
-    ? await pool.query<{ provider_player_id: string; player_entity_id: string }>(
+    ? await db.query<{ provider_player_id: string; player_entity_id: string }>(
         IDENTITY_BRIDGES_SQL,
         ['balldontlie', requestedIds]
       )
@@ -281,7 +291,7 @@ async function transformToAnalytics(
     ...new Set(bridges.rows.map((r) => r.player_entity_id)),
   ];
   const projections = entityIds.length
-    ? await pool.query<{ player_entity_id: string; analytics_player_id: string }>(
+    ? await db.query<{ player_entity_id: string; analytics_player_id: string }>(
         IDENTITY_PROJECTIONS_SQL,
         [entityIds]
       )
@@ -289,7 +299,7 @@ async function transformToAnalytics(
   const identity = classifyFromSqlRows(requestedIds, bridges.rows, projections.rows);
   const observedAtIso = new Date().toISOString();
   for (const q of identity.quarantine) {
-    await pool.query(IDENTITY_QUARANTINE_SQL, [
+    await db.query(IDENTITY_QUARANTINE_SQL, [
       'balldontlie',
       q.providerPlayerId,
       'INJURY',
@@ -317,7 +327,7 @@ async function transformToAnalytics(
   const observedAt =
     pullRows[0]?.snapshotAt ?? new Date().toISOString();
 
-  const prevCurrentRes = await pool.query<{
+  const prevCurrentRes = await db.query<{
     player_id: string;
     team_id: string | null;
     status: string | null;
@@ -338,7 +348,7 @@ async function transformToAnalytics(
     });
   }
 
-  const existingLeaveRes = await pool.query<{ player_id: string }>(
+  const existingLeaveRes = await db.query<{ player_id: string }>(
     `SELECT player_id
      FROM analytics.player_injury_status_history
      WHERE pull_run_id = $1
@@ -357,6 +367,8 @@ async function transformToAnalytics(
     pullRows,
     previousCurrent,
     existingLeaveReportPlayerIds: existingLeaveRes.rows.map((r) => String(r.player_id)),
+    reportPlayerIds: requestedIds,
+    minCompleteRowCount: MIN_COMPLETE_ROW_COUNT,
   });
 
   if (plan.massClearBlocked) {
@@ -375,11 +387,12 @@ async function transformToAnalytics(
     previousCompleteRowCount,
     inReportPlayerIds: rawRows.rows.map((row) => String(row.provider_player_id)),
     notInReportPlayerIds: plan.currentDeletes,
+    minCompleteRowCount: MIN_COMPLETE_ROW_COUNT,
   });
 
   let historyCount = 0;
   for (const insert of plan.historyInserts) {
-    await pool.query(
+    await db.query(
       `INSERT INTO analytics.player_injury_status_history (
          player_id, team_id, status, description, return_date_raw, snapshot_at, pull_run_id
        ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
@@ -398,7 +411,7 @@ async function transformToAnalytics(
 
   let currentCount = 0;
   for (const row of plan.currentUpserts) {
-    await pool.query(
+    await db.query(
       `INSERT INTO analytics.player_injury_status_current (
          player_id, team_id, status, description, return_date_raw, snapshot_at, pull_run_id, updated_at
        ) VALUES ($1, $2, $3, $4, $5, $6, $7, now())
@@ -425,7 +438,7 @@ async function transformToAnalytics(
 
   let removedCount = 0;
   if (!plan.massClearBlocked && plan.currentDeletes.length > 0) {
-    const removed = await pool.query(
+    const removed = await db.query(
       `DELETE FROM analytics.player_injury_status_current c
        WHERE c.player_id = ANY($1::text[])
        RETURNING c.player_id`,
@@ -475,21 +488,22 @@ export const handler = async (_event?: unknown, context?: { getRemainingTimeInMi
     }
 
     let pullRunId: number | null = null;
+    let pullRecordedSuccess = false;
     try {
       pullRunId = await createPullRun();
       console.log('Created pull run:', pullRunId);
 
-      const rows = await fetchAllInjuries();
-      console.log('Fetched', rows.length, 'injury rows from BDL');
+      const { records: rows, pages } = await fetchAllInjuries();
+      console.log('Fetched', rows.length, 'injury rows from BDL in', pages, 'pages');
 
       let stored = 0;
-      for (const row of rows) {
+      for (const record of rows) {
         try {
-          await insertRawSnapshot(pullRunId, row);
+          await insertRawSnapshot(pullRunId, record);
           stored++;
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : String(err);
-          console.error('Error storing snapshot for player', row.player?.id, msg);
+          console.error('Error storing snapshot for player', record.row.player?.id, msg);
         }
       }
       console.log('Stored', stored, '/', rows.length, 'raw snapshots');
@@ -518,7 +532,10 @@ export const handler = async (_event?: unknown, context?: { getRemainingTimeInMi
           membershipRows: transformResult.membershipRows,
         },
         collector: transformResult.collectorExtras.metadata,
+        pagination: { pages, maxPages: MAX_PAGES },
+        minCompleteRowCount: MIN_COMPLETE_ROW_COUNT,
       });
+      pullRecordedSuccess = true;
       const persist = await persistCollectorExtras(transformResult.collectorExtras);
 
       return {
@@ -546,6 +563,24 @@ export const handler = async (_event?: unknown, context?: { getRemainingTimeInMi
       };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
+      if (pullRecordedSuccess) {
+        // Analytics rows committed and the pull is recorded as success; only the optional
+        // collector extras failed. Keep the success record and report the extras failure.
+        if (error instanceof CollectionSchemaPreflightError) {
+          console.error('Injury collection schema preflight failed', error.missing);
+        }
+        console.error('Error in injuries snapshot: collector extras failed after a successful pull', error);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            success: false,
+            pullRunId,
+            pullRecorded: 'success',
+            error: message,
+            timestamp: new Date().toISOString(),
+          }),
+        };
+      }
       if (pullRunId != null) {
         const extras = planInjuryCollectorExtras({
           pullRunId,

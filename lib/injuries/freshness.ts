@@ -22,10 +22,20 @@ export function resolveInjuryFreshnessHours(
   return n;
 }
 
+/** Injury-only serving switch, independent of the app-wide DATA_MODE / OFFSEASON_MODE / CRON_DRY_RUN freeze. */
+export const INJURY_SERVING_ENABLED_ENV = 'INJURY_SERVING_ENABLED';
+
+/**
+ * `INJURY_SERVING_ENABLED=1` serves injuries without unfreezing the rest of the app;
+ * `=0` hides them even when the app is live; unset follows the app-wide freeze.
+ * Any other value is frozen. Freshness still applies in every live case.
+ */
 export function isFrozenInjuryServing(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env
 ): boolean {
-  return shouldSkipLiveMutations(env);
+  const flag = env[INJURY_SERVING_ENABLED_ENV];
+  if (flag === undefined || flag.trim() === '') return shouldSkipLiveMutations(env);
+  return flag.trim() !== '1';
 }
 
 export function parseInjurySnapshotAt(

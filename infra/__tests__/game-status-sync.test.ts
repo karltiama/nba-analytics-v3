@@ -201,9 +201,10 @@ describe('game-status-sync terraform (13I.2 creation boundary)', () => {
 
   it('other deployed Lambdas do not take live_ingestion_enabled into DATA_MODE', () => {
     const lambdaTf = read('infra/lambda.tf');
-    expect(lambdaTf).not.toMatch(
-      /resource "aws_lambda_function" "nightly_bdl_updater"[\s\S]*?DATA_MODE\s*=\s*local\.family_schedule_enabled/
-    );
+    const nightlyStart = lambdaTf.indexOf('resource "aws_lambda_function" "nightly_bdl_updater"');
+    const nightly = lambdaTf.slice(nightlyStart, lambdaTf.indexOf('\nresource "', nightlyStart + 10));
+    expect(nightly).toContain('nightly_bdl_updater');
+    expect(nightly).not.toMatch(/DATA_MODE\s*=\s*local\.family_schedule_enabled/);
     expect(lambdaTf).not.toMatch(/LIVE_INGESTION_ENABLED\s*=\s*var\.live_ingestion_enabled/);
     expect(lambdaTf).toMatch(/enabled\s*=\s*local\.family_schedule_enabled\.player_props/);
   });

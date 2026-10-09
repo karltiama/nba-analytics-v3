@@ -36,6 +36,7 @@ export function planInjuryCollectorExtras(args: {
   previousCompleteRowCount: number | null;
   inReportPlayerIds: Iterable<string>;
   notInReportPlayerIds?: Iterable<string>;
+  minCompleteRowCount?: number;
 }): {
   pullRunId: number;
   membership: InjuryMembershipRow[];
@@ -50,6 +51,7 @@ export function planInjuryCollectorExtras(args: {
     rowsStored: args.rowsStored,
     rowsReturned: args.rowsReturned,
     previousRowsStored: args.previousCompleteRowCount,
+    minRowCount: args.minCompleteRowCount,
   });
   const healthClass = injuryPullHealthClass({
     status: args.pullStatus,

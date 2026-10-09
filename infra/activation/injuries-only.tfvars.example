@@ -17,11 +17,12 @@
 #
 # Expected resource changes (no destroy of game_status_sync):
 #   aws_cloudwatch_event_rule.injuries_schedule[0].state: DISABLED -> ENABLED
-#   aws_lambda_function.injuries_snapshot environment:
+#   aws_lambda_function.injuries_snapshot environment (set by injuries_execution_enabled, last merge):
+#     LIVE_INGESTION_ENABLED 0 -> 1
 #     DATA_MODE replay -> live_api
 #     OFFSEASON_MODE 1 -> 0
 #     CRON_DRY_RUN 1 -> 0
-#     COLLECTION_SCHEMA_MODE optional -> required  (only after SQL migration)
+#     COLLECTION_SCHEMA_MODE optional -> required  (only after SQL migration, via injuries_lambda_env)
 #
 # Unchanged: nba-game-status-sync-schedule remains ENABLED.
 
@@ -29,11 +30,12 @@ injuries_execution_enabled = true
 injuries_enable_schedule   = true
 injuries_schedule_cron     = "cron(0 13,18,22 * * ? *)"
 
-# Replace only the injuries env map. Do not rewrite nightly/odds/props/boxscore maps.
+# DATA_MODE / OFFSEASON_MODE / CRON_DRY_RUN in injuries_lambda_env are overridden by the flag.
+# Only non-mode keys belong here. Do not rewrite nightly/odds/props/boxscore maps.
 # injuries_lambda_env = {
-#   DATA_MODE              = "live_api"
-#   OFFSEASON_MODE         = "0"
-#   CRON_DRY_RUN           = "0"
-#   COLLECTION_SCHEMA_MODE = "required"
-#   BDL_GOAT_SUBSCRIPTION  = unset
+#   COLLECTION_SCHEMA_MODE        = "required"
+#   INJURY_MAX_PAGES              = "20"   # optional; 1-50
+#   INJURY_MIN_COMPLETE_ROW_COUNT = "50"   # optional; 10-1000
 # }
+#
+# Serving is separate: set INJURY_SERVING_ENABLED=1 on Vercel only after a verified fresh pull.

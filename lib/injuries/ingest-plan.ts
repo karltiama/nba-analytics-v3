@@ -62,6 +62,9 @@ export function planInjuryIngest(args: {
   previousCurrent: Map<string, InjuryFieldSnapshot>;
   /** player_ids that already have RemovedFromReport history for this pull_run_id */
   existingLeaveReportPlayerIds?: Iterable<string>;
+  /** Every player id on this report, including quarantined identities; they are not removals. */
+  reportPlayerIds?: Iterable<string>;
+  minCompleteRowCount?: number;
 }): InjuryIngestPlan {
   const completeness = evaluateInjuryPullCompleteness({
     status: args.pullStatus,
@@ -69,6 +72,7 @@ export function planInjuryIngest(args: {
     rowsStored: args.rowsStored,
     rowsReturned: args.rowsReturned,
     previousRowsStored: args.previousCompleteRowCount,
+    minRowCount: args.minCompleteRowCount,
   });
 
   const historyInserts: PlannedHistoryInsert[] = [];
@@ -113,7 +117,9 @@ export function planInjuryIngest(args: {
     };
   }
 
-  const removedIds = detectRemovedPlayerIds(args.previousCurrent.keys(), seen);
+  const onReport = new Set(seen);
+  for (const id of args.reportPlayerIds ?? []) onReport.add(String(id));
+  const removedIds = detectRemovedPlayerIds(args.previousCurrent.keys(), onReport);
   const currentDeletes: string[] = [];
 
   for (const playerId of removedIds) {

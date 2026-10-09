@@ -185,9 +185,22 @@ resource "aws_lambda_function" "injuries_snapshot" {
         BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
         BDL_RATE_LIMIT_BACKEND = "dynamodb"
         BDL_RATE_LIMIT_WORKER  = "injuries-snapshot"
+        # Last merge: injuries_lambda_env cannot make this Lambda live unless injuries_execution_enabled.
+        LIVE_INGESTION_ENABLED = local.family_schedule_enabled.injuries ? "1" : "0"
+        DATA_MODE              = local.family_schedule_enabled.injuries ? "live_api" : "replay"
+        OFFSEASON_MODE         = local.family_schedule_enabled.injuries ? "0" : "1"
+        CRON_DRY_RUN           = local.family_schedule_enabled.injuries ? "0" : "1"
       }
     )
   }
+}
+
+# Handled failures return a result and never retry. The next scheduled pull is the retry, so an
+# uncaught error or timeout must not trigger extra provider pulls; stale events drop after an hour.
+resource "aws_lambda_function_event_invoke_config" "injuries_snapshot" {
+  function_name                = aws_lambda_function.injuries_snapshot.function_name
+  maximum_retry_attempts       = 0
+  maximum_event_age_in_seconds = 3600
 }
 
 resource "aws_cloudwatch_event_rule" "injuries_schedule" {

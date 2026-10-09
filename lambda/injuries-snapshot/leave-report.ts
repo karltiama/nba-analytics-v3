@@ -9,12 +9,29 @@ export const MIN_COMPLETE_INJURY_ROW_COUNT = 50;
 
 export const COMPLETE_PULL_FRACTION_OF_PREVIOUS = 0.5;
 
+export const INJURY_MIN_COMPLETE_ROW_COUNT_ENV = 'INJURY_MIN_COMPLETE_ROW_COUNT';
+export const INJURY_MIN_COMPLETE_ROW_COUNT_RANGE = { min: 10, max: 1000 } as const;
+
+/** Unset means 50. Anything other than an integer in [10, 1000] throws: a bad floor must not run. */
+export function resolveMinCompleteInjuryRowCount(raw: string | undefined): number {
+  if (raw === undefined || raw.trim() === '') return MIN_COMPLETE_INJURY_ROW_COUNT;
+  const trimmed = raw.trim();
+  const n = Number(trimmed);
+  const { min, max } = INJURY_MIN_COMPLETE_ROW_COUNT_RANGE;
+  if (!/^\d+$/.test(trimmed) || !Number.isInteger(n) || n < min || n > max) {
+    throw new Error(`invalid ${INJURY_MIN_COMPLETE_ROW_COUNT_ENV}=${trimmed}: expected an integer in [${min}, ${max}]`);
+  }
+  return n;
+}
+
 export type InjuryPullCompletenessInput = {
   status: string | null | undefined;
   completed: boolean;
   rowsStored: number | null | undefined;
   rowsReturned: number | null | undefined;
   previousRowsStored: number | null | undefined;
+  /** Absolute floor override; defaults to MIN_COMPLETE_INJURY_ROW_COUNT. */
+  minRowCount?: number;
 };
 
 export type InjuryPullCompleteness = {
@@ -26,12 +43,15 @@ export function isSuccessfulInjuryPullStatus(status: string | null | undefined):
   return (status ?? '').trim().toLowerCase() === 'success';
 }
 
-export function completeInjuryRowFloor(previousRowsStored: number | null | undefined): number {
+export function completeInjuryRowFloor(
+  previousRowsStored: number | null | undefined,
+  minRowCount: number = MIN_COMPLETE_INJURY_ROW_COUNT
+): number {
   if (previousRowsStored == null || !Number.isFinite(previousRowsStored) || previousRowsStored < 1) {
-    return MIN_COMPLETE_INJURY_ROW_COUNT;
+    return minRowCount;
   }
   return Math.max(
-    MIN_COMPLETE_INJURY_ROW_COUNT,
+    minRowCount,
     Math.ceil(previousRowsStored * COMPLETE_PULL_FRACTION_OF_PREVIOUS)
   );
 }
@@ -56,7 +76,7 @@ export function evaluateInjuryPullCompleteness(
   if (stored <= 0) {
     return { complete: false, reason: 'empty_successful_provider_response' };
   }
-  const floor = completeInjuryRowFloor(input.previousRowsStored);
+  const floor = completeInjuryRowFloor(input.previousRowsStored, input.minRowCount);
   if (stored < floor) {
     return {
       complete: false,
