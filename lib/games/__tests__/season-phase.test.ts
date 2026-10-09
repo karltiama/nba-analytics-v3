@@ -3,11 +3,11 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { classifySeasonPhase, strongerSeasonPhase } from '@/lib/games/season-phase';
 import {
-  GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV,
-  isPreseasonDiscoveryEnabled,
+  assertStatusSyncSeasonTypes,
   planStatusSyncQueries,
   planStatusSyncQuery,
   statusSyncRequestUrl,
+  withSeasonType,
 } from '@/lib/games/status-sync-query';
 
 describe('classifySeasonPhase (DATA1 §8.4)', () => {
@@ -84,20 +84,11 @@ describe('classifySeasonPhase (DATA1 §8.4)', () => {
   });
 });
 
-describe('preseason discovery query planning', () => {
+describe('status-sync query planning (preseason retired)', () => {
   const now = new Date('2026-10-05T15:00:00.000Z');
 
-  it('flag defaults to disabled; only 1/true enable it', () => {
-    expect(isPreseasonDiscoveryEnabled({})).toBe(false);
-    for (const v of ['0', 'false', 'yes', 'on', '']) {
-      expect(isPreseasonDiscoveryEnabled({ [GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV]: v })).toBe(false);
-    }
-    expect(isPreseasonDiscoveryEnabled({ [GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV]: '1' })).toBe(true);
-    expect(isPreseasonDiscoveryEnabled({ [GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV]: 'TRUE' })).toBe(true);
-  });
-
-  it('flag false: one primary query with explicit season_type=regular', () => {
-    const plans = planStatusSyncQueries({ targetSeason: 2026, now, preseasonDiscovery: false });
+  it('one primary query with explicit season_type=regular, even during preseason', () => {
+    const plans = planStatusSyncQueries({ targetSeason: 2026, now });
     const primary = planStatusSyncQuery({ targetSeason: 2026, now });
     expect(plans).toHaveLength(1);
     expect(statusSyncRequestUrl(plans[0], null)).toBe(statusSyncRequestUrl(primary, null));
@@ -115,27 +106,18 @@ describe('preseason discovery query planning', () => {
     const plans = planStatusSyncQueries({
       targetSeason: 2025,
       now: new Date('2026-04-15T15:00:00.000Z'),
-      preseasonDiscovery: false,
     });
     expect(plans.map((p) => p.seasonTypeRequested)).toEqual(['regular', 'playin', 'playoffs']);
     expect(new Set(plans.map((p) => `${p.startDate}|${p.endDate}|${p.maxPages}`)).size).toBe(1);
   });
 
-  it('flag true: primary query kept first, plus season_type=preseason for the same window and cap', () => {
-    const plans = planStatusSyncQueries({ targetSeason: 2026, now, preseasonDiscovery: true });
-    expect(plans).toHaveLength(2);
-    const [primary, pre] = plans;
-    expect(statusSyncRequestUrl(primary, null)).toBe(statusSyncRequestUrl(planStatusSyncQuery({ targetSeason: 2026, now }), null));
-    expect(pre.seasonTypeRequested).toBe('preseason');
-    expect(pre.startDate).toBe(primary.startDate);
-    expect(pre.endDate).toBe(primary.endDate);
-    expect(pre.maxPages).toBe(primary.maxPages);
-    expect(pre.maxPages).toBe(3);
-    const url = new URL(statusSyncRequestUrl(pre, 7));
-    expect(url.searchParams.get('season_type')).toBe('preseason');
-    expect(url.searchParams.get('seasons[]')).toBe('2026');
-    expect(url.searchParams.get('cursor')).toBe('7');
-    expect(primary.params.get('season_type')).toBe('regular');
+  it('preseason, an omitted season_type, or an unknown season_type is refused', () => {
+    const primary = planStatusSyncQuery({ targetSeason: 2026, now });
+    for (const t of ['preseason', 'PRESEASON', 'ist', 'something_new']) {
+      expect(() => assertStatusSyncSeasonTypes([primary, withSeasonType(primary, t)]), t).toThrow(/refuses/);
+    }
+    expect(() => assertStatusSyncSeasonTypes([{ ...primary, seasonTypeRequested: null }])).toThrow(/omitted/);
+    expect(() => assertStatusSyncSeasonTypes([primary, withSeasonType(primary, 'playoffs')])).not.toThrow();
   });
 });
 

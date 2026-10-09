@@ -127,6 +127,9 @@ export function createPostgresGameStatusStore(
     },
     supportsSeasonPhase,
     async applySeasonPhase(gameId, phase) {
+      if (phase.phase === 'PRESEASON') {
+        throw new Error(`game-status-sync refuses to label ${gameId} PRESEASON in analytics.games`);
+      }
       await db.query(APPLY_SEASON_PHASE_SQL, [gameId, phase.phase, phase.source]);
     },
     async loadReadinessRows(startDate, endDate) {

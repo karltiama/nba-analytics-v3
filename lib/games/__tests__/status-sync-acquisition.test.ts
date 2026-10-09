@@ -16,6 +16,7 @@ import {
   type ProviderGame,
 } from '@/lib/games/status-sync';
 import { createAcquiringStatusSyncFetchPage, parseGamesPageBody } from '@/lib/games/status-sync-acquisition';
+import { createPostgresGameStatusStore } from '@/lib/games/status-sync-db';
 import { planStatusSyncQuery } from '@/lib/games/status-sync-query';
 
 const API_KEY = 'test-key-not-real-0000';
@@ -406,69 +407,56 @@ describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
   });
 });
 
-describe('DATA2E.1 preseason discovery (disabled by default)', () => {
+describe('preseason boundary: game-status-sync never writes preseason', () => {
   const regular = game({ id: 901 });
   const pre = game({ id: 902, datetime: '2026-10-05T23:00:00.000Z', date: '2026-10-05' });
   const respond: Responder = (url) =>
     new URL(url).searchParams.get('season_type') === 'preseason' ? ok(page([pre])) : ok(page([regular]));
 
-  it('flag absent: one query, explicit season_type=regular', async () => {
-    const h = harness({ respond });
-    const result = await h.runSync();
-    expect(result.preseasonDiscovery).toBe(false);
-    expect(h.urls).toHaveLength(1);
-    expect(h.urls[0]).toContain('season_type=regular');
-    expect(h.urls[0]).not.toContain('season_type=preseason');
-    expect(result.queries).toHaveLength(1);
-    expect(result.inserted).toBe(1);
-  });
+  for (const flag of [undefined, '1', 'true']) {
+    it(`retired discovery flag=${flag ?? '<unset>'}: one query, explicit season_type=regular`, async () => {
+      const env = flag === undefined ? undefined : { GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED: flag };
+      const h = harness({ respond, env, seasonPhaseStore: true });
+      const result = await h.runSync();
+      expect(h.urls).toHaveLength(1);
+      expect(h.urls[0]).toContain('season_type=regular');
+      expect(h.urls.some((u) => u.includes('preseason'))).toBe(false);
+      expect(result.queries.map((q) => q.seasonTypeRequested)).toEqual(['regular']);
+      expect(result.inserted).toBe(1);
+      expect(h.store.rows.has('902')).toBe(false);
+      expect([...memLedger(h.ledger).rows.values()].map((r) => r.season_type_requested)).toEqual(['regular']);
+    });
+  }
 
-  it('flag true: extra preseason query with its own pull_run_id; PRESEASON fenced until season_phase exists', async () => {
-    const h = harness({ respond, env: { GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED: 'true' } });
+  it('a regular-query response carrying a pre-opening-night game is fenced, even with season_phase support', async () => {
+    const h = harness({ respond: () => ok(page([regular, pre])), seasonPhaseStore: true });
     const result = await h.runSync();
-    expect(result.preseasonDiscovery).toBe(true);
-    expect(h.urls).toHaveLength(2);
-    expect(h.urls[0]).toContain('season_type=regular');
-    expect(h.urls[1]).toContain('season_type=preseason');
-    expect(result.queries.map((q) => [q.seasonTypeRequested, q.pullRunId])).toEqual([
-      ['regular', 'run-1'],
-      ['preseason', 'run-2'],
-    ]);
-    expect(result.seasonPhases.PRESEASON).toBe(1);
+    expect(result.status).toBe('success');
     expect(result.preseasonFenced).toBe(1);
-    expect(result.inserted).toBe(1);
     expect(h.store.rows.has('901')).toBe(true);
     expect(h.store.rows.has('902')).toBe(false);
-
-    const rows = [...memLedger(h.ledger).rows.values()];
-    expect(rows.map((r) => r.season_type_requested)).toEqual(['regular', 'preseason']);
-    expect(rows[0].scope_id).not.toBe(rows[1].scope_id);
-    expect(rows.every((r) => r.archive_status === 'archived' && r.parse_ok === true)).toBe(true);
+    expect(h.store.phases.has('902')).toBe(false);
+    expect(result.transitions.some((t) => t.game_id === '902')).toBe(false);
   });
 
-  it('flag true + season_phase-capable store: preseason row written and labeled from the request', async () => {
-    const h = harness({
-      respond,
-      env: { GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED: '1' },
-      seasonPhaseStore: true,
-    });
+  it('the Postgres adapter refuses to label any game PRESEASON', async () => {
+    const queries: unknown[] = [];
+    const pool = { query: async (...args: unknown[]) => { queries.push(args); return { rows: [] }; } };
+    const store = createPostgresGameStatusStore({}, pool as never);
+    await expect(
+      store.applySeasonPhase!('902', { phase: 'PRESEASON', source: 'request_season_type' })
+    ).rejects.toThrow(/refuses/);
+    expect(queries).toHaveLength(0);
+  });
+
+  it('a row whose payload declares preseason is fenced even when dated in the regular season', async () => {
+    const declared = { ...game({ id: 903 }), season_type: 'Preseason' };
+    const phased = { ...game({ id: 904 }), season_phase: 'PRESEASON' };
+    const h = harness({ respond: () => ok(page([regular, declared, phased])), seasonPhaseStore: true });
     const result = await h.runSync();
-    expect(result.inserted).toBe(2);
-    expect(result.preseasonFenced).toBe(0);
-    expect(h.store.phases.get('902')).toEqual({ phase: 'PRESEASON', source: 'request_season_type' });
+    expect(result.preseasonFenced).toBe(2);
+    expect([...h.store.rows.keys()]).toEqual(['901']);
     expect(h.store.phases.get('901')).toEqual({ phase: 'REGULAR', source: 'request_season_type' });
-    expect(result.seasonPhaseWrites).toBe(2);
-  });
-
-  it('preseason query failure fails the whole cycle (no partial writes from the primary query)', async () => {
-    const h = harness({
-      respond: (url) =>
-        new URL(url).searchParams.get('season_type') === 'preseason' ? ok('nope', 500) : ok(page([regular])),
-      env: { GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED: '1' },
-    });
-    const result = await h.runSync();
-    expect(result.status).toBe('failed');
-    expect(h.store.rows.size).toBe(0);
   });
 
   it('provider ist_stage labels IST on the primary query when the store supports it', async () => {

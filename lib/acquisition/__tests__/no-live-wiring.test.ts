@@ -25,14 +25,15 @@ function walk(dir: string, out: string[]): void {
   }
 }
 
-/** DATA2E.1 wires game-status-sync only. Props / odds / injuries collectors stay unwired. */
+/** game-status-sync and the display-only scoreboard collector. Props / odds / injuries stay unwired. */
 const ALLOWED_IMPORTERS = new Set([
   'lib/games/status-sync-acquisition.ts',
   'lib/games/status-sync-lambda.ts',
+  'lib/scoreboard/lambda.ts',
 ]);
 
-describe('acquisition primitive wiring is limited to game-status-sync', () => {
-  it('no source outside lib/acquisition imports it except the allowlisted game-status-sync files', () => {
+describe('acquisition primitive wiring is limited to game-status-sync and the scoreboard collector', () => {
+  it('no source outside lib/acquisition imports it except the allowlisted files', () => {
     const files: string[] = [];
     for (const d of SCAN_DIRS) walk(path.join(ROOT, d), files);
     expect(files.length).toBeGreaterThan(50);

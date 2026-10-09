@@ -18,7 +18,6 @@ import {
 import { bdlApiKey } from './status-sync-fetch';
 import type { AcqArchiveStore } from '@/lib/acquisition/archive';
 import type { AcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
-import { isPreseasonDiscoveryEnabled } from './status-sync-query';
 import { SEASON_PHASES, type SeasonPhase } from './season-phase';
 import { regularSeasonOpenEt } from './season-eligibility';
 
@@ -168,7 +167,6 @@ function failed(
     bdlHttp: extra?.bdlHttp ?? 0,
     events: extra?.events ?? [{ event: 'game_status_sync_failed', reason }],
     transitions: [],
-    preseasonDiscovery: isPreseasonDiscoveryEnabled(env),
     queries: [],
     acquisition: { required: false, archivedRequests: 0, blockedReason: null },
     seasonPhases: Object.fromEntries(SEASON_PHASES.map((p) => [p, 0])) as Record<SeasonPhase, number>,

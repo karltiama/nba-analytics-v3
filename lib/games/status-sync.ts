@@ -10,7 +10,6 @@ import { shouldSkipLiveMutations } from '@/lib/runtime/ingestion-mode';
 import { randomUUID } from 'node:crypto';
 import { canonicalStartTimeUtc, startTimeIsoUtc } from './canonical-start-time';
 import {
-  isPreseasonDiscoveryEnabled,
   planStatusSyncQueries,
   resolveStatusSyncTargetSeason,
   statusSyncRequestUrl,
@@ -171,6 +170,15 @@ export function shouldSkipGameStatusSync(
     !isLiveIngestionEnabled(env) ||
     shouldSkipLiveMutations(env) ||
     shouldSkipLiveBdlHttp(env)
+  );
+}
+
+/** A row whose own payload names preseason (season_type / season_phase), whatever query returned it. */
+export function providerRowDeclaresPreseason(raw: unknown): boolean {
+  if (!raw || typeof raw !== 'object') return false;
+  const r = raw as Record<string, unknown>;
+  return [r.season_type, r.season_phase].some(
+    (v) => typeof v === 'string' && v.trim().toLowerCase() === 'preseason'
   );
 }
 
@@ -382,7 +390,6 @@ export type GameStatusSyncResult = {
     new_status: string | null;
     became_final: boolean;
   }>;
-  preseasonDiscovery: boolean;
   queries: Array<{
     seasonTypeRequested: string | null;
     pullRunId: string;
@@ -396,7 +403,7 @@ export type GameStatusSyncResult = {
     blockedReason: string | null;
   };
   seasonPhases: Record<SeasonPhase, number>;
-  /** PRESEASON games refused because season_phase cannot be persisted yet. */
+  /** Rows refused as preseason: PRESEASON phase, a payload declaring preseason, or dated before opening night. */
   preseasonFenced: number;
   seasonPhaseWrites: number;
   /**
@@ -442,7 +449,6 @@ export async function runGameStatusSync(input: {
     events.push(event);
     input.emit?.(event);
   };
-  const preseasonDiscovery = isPreseasonDiscoveryEnabled(env);
   const requireAcquisition = input.requireAcquisition === true;
   const newId = input.newId ?? randomUUID;
   const plans = planStatusSyncQueries({
@@ -451,7 +457,6 @@ export async function runGameStatusSync(input: {
     now: started,
     startDate: input.startDate,
     endDate: input.endDate,
-    preseasonDiscovery,
   });
   const plan = plans[0];
   const queries: GameStatusSyncResult['queries'] = [];
@@ -483,7 +488,6 @@ export async function runGameStatusSync(input: {
     bdlHttp: 0,
     events,
     transitions: [],
-    preseasonDiscovery,
     queries,
     acquisition: { required: requireAcquisition, archivedRequests, blockedReason: null },
     seasonPhases: zeroSeasonPhaseCounts(),
@@ -644,8 +648,8 @@ export async function runGameStatusSync(input: {
       rejected += 1;
       continue;
     }
-    // PRESEASON must never land as an unlabeled row that downstream could read as regular season.
-    if (phase.phase === 'PRESEASON' && !phaseSupported) {
+    // Preseason is display-only: never written to analytics.games, labeled or not, whatever the provider sent.
+    if (phase.phase === 'PRESEASON' || providerRowDeclaresPreseason(raw)) {
       rejected += 1;
       preseasonFenced += 1;
       continue;
@@ -654,13 +658,11 @@ export async function runGameStatusSync(input: {
       rejected += 1;
       continue;
     }
-    if (phase.phase !== 'PRESEASON') {
-      const etDate = etDateOfProviderGame(raw) ?? etDateOfInstant(incoming.startTime);
-      if (!servingDateDecision(targetSeason, etDate).eligible) {
-        rejected += 1;
-        preseasonFenced += 1;
-        continue;
-      }
+    const etDate = etDateOfProviderGame(raw) ?? etDateOfInstant(incoming.startTime);
+    if (!servingDateDecision(targetSeason, etDate).eligible) {
+      rejected += 1;
+      preseasonFenced += 1;
+      continue;
     }
     const local = await input.store.getById(incoming.gameId);
     const planned = planGameStatusWrite({ local, incoming, targetSeason });
@@ -780,7 +782,6 @@ export async function runGameStatusSync(input: {
     bdlHttp,
     events,
     transitions,
-    preseasonDiscovery,
     queries,
     acquisition: { required: requireAcquisition, archivedRequests, blockedReason: null },
     seasonPhases,

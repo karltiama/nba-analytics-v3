@@ -115,7 +115,6 @@ describe('game-status-sync built artifact (13C.3)', () => {
     expect(src).toContain('acq_envelope.v1');
     expect(src).toContain('insert into raw.acquisition_requests');
     expect(src).toContain('IfNoneMatch');
-    expect(src).toContain('GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED');
     const bytes = fs.statSync(artifactPath).size;
     expect(bytes).toBeGreaterThan(10_000);
     expect(bytes).toBeLessThan(8 * 1024 * 1024);

@@ -27,6 +27,7 @@ import {
 import type { AcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
 import { fetchBdlLive, type LiveRateLimitStore } from '@/lib/balldontlie/live-rate-limit';
 import type { ProviderGame, StatusSyncFetchPage, StatusSyncPageAcquisition } from './status-sync';
+import type { StatusSyncQueryPlan } from './status-sync-query';
 import { statusSyncFetchErrorResult } from './status-sync-fetch';
 
 export const GAME_STATUS_SYNC_COLLECTOR = { name: 'game-status-sync', version: 'data2e1.v1' } as const;
@@ -89,7 +90,42 @@ function errText(err: unknown): string {
   return err instanceof Error ? `${err.name}: ${err.message}` : String(err);
 }
 
+/** What the archive envelope needs from the caller's query; StatusSyncPageContext satisfies it. */
+export type AcquisitionPageContext = {
+  plan: Pick<StatusSyncQueryPlan, 'targetSeason' | 'seasonTypeRequested' | 'startDate' | 'endDate'>;
+  pageIndex: number;
+  cursor: number | null;
+  pullRunId: string;
+};
+
+export type AcquiringCollectorIdentity = {
+  collector: { name: string; version: string };
+  endpointFamily: string;
+  /** Rate-limit worker label when BDL_RATE_LIMIT_WORKER is unset. */
+  defaultWorker: string;
+};
+
+export type AcquiringBdlFetch = (
+  url: string,
+  ctx?: AcquisitionPageContext
+) => ReturnType<StatusSyncFetchPage>;
+
 export function createAcquiringStatusSyncFetchPage(deps: StatusSyncAcquisitionDeps): StatusSyncFetchPage {
+  return createAcquiringBdlFetch(deps, {
+    collector: GAME_STATUS_SYNC_COLLECTOR,
+    endpointFamily: GAME_STATUS_SYNC_ENDPOINT_FAMILY,
+    defaultWorker: 'game-status-sync',
+  });
+}
+
+/**
+ * Shared archive-before-serve BDL fetch: rate-limit token, capture, envelope, ledger, immutable archive,
+ * then parse of the archived bytes. Body shape must be `{ data: object[], meta? }`.
+ */
+export function createAcquiringBdlFetch(
+  deps: StatusSyncAcquisitionDeps,
+  identity: AcquiringCollectorIdentity
+): AcquiringBdlFetch {
   const now = deps.now ?? (() => new Date());
   const nextRequestId = deps.newRequestId ?? newRequestId;
 
@@ -131,7 +167,7 @@ export function createAcquiringStatusSyncFetchPage(deps: StatusSyncAcquisitionDe
         { headers: { Authorization: deps.apiKey }, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) },
         {
           env: deps.env,
-          worker: deps.env.BDL_RATE_LIMIT_WORKER ?? 'game-status-sync',
+          worker: deps.env.BDL_RATE_LIMIT_WORKER ?? identity.defaultWorker,
           fetchImpl: capturingFetch as typeof fetch,
           store: deps.rateLimitStore,
           sleepFn: deps.rateLimitSleep,
@@ -152,10 +188,10 @@ export function createAcquiringStatusSyncFetchPage(deps: StatusSyncAcquisitionDe
       let envelope: AcqEnvelopeV1;
       try {
         envelope = buildEnvelope({
-          collector: GAME_STATUS_SYNC_COLLECTOR,
+          collector: identity.collector,
           provider: GAME_STATUS_SYNC_PROVIDER,
           league: GAME_STATUS_SYNC_LEAGUE,
-          endpoint_family: GAME_STATUS_SYNC_ENDPOINT_FAMILY,
+          endpoint_family: identity.endpointFamily,
           capture,
           page_index: ctx.pageIndex,
           cursor_in: ctx.cursor == null ? null : String(ctx.cursor),

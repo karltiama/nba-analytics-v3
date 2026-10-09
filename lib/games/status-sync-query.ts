@@ -29,13 +29,19 @@ export type StatusSyncQueryPlan = {
   seasonTypeRequested: string | null;
 };
 
-export const GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV = 'GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENABLED';
-export const BDL_PRESEASON_SEASON_TYPE = 'preseason';
+/**
+ * The only provider season_type values game-status-sync may request. Preseason is display-only and
+ * belongs to the scoreboard collector; it never reaches analytics.games through this job.
+ */
+export const STATUS_SYNC_ALLOWED_SEASON_TYPES: ReadonlySet<string> = new Set(['regular', 'playin', 'playoffs']);
 
-/** Default false. Only an explicit '1' or 'true' enables the extra preseason query. */
-export function isPreseasonDiscoveryEnabled(env: Record<string, string | undefined> = process.env): boolean {
-  const raw = (env[GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV] ?? '').trim().toLowerCase();
-  return raw === '1' || raw === 'true';
+export function assertStatusSyncSeasonTypes(plans: readonly StatusSyncQueryPlan[]): void {
+  for (const plan of plans) {
+    const t = (plan.seasonTypeRequested ?? '').trim().toLowerCase();
+    if (!STATUS_SYNC_ALLOWED_SEASON_TYPES.has(t)) {
+      throw new Error(`game-status-sync refuses season_type=${plan.seasonTypeRequested ?? '<omitted>'}`);
+    }
+  }
 }
 
 export function resolveStatusSyncTargetSeason(
@@ -148,18 +154,15 @@ export function withSeasonType(base: StatusSyncQueryPlan, seasonType: string): S
 
 /**
  * Primary season_type=regular query first, then playin/playoffs queries once the window reaches
- * the season's known postseason floor; when preseason discovery is enabled, one additional
- * season_type=preseason query for the same window. The primary query is never replaced.
+ * the season's known postseason floor. The primary query is never replaced. Never preseason.
  */
-export function planStatusSyncQueries(
-  input: Parameters<typeof planStatusSyncQuery>[0] & { preseasonDiscovery: boolean }
-): StatusSyncQueryPlan[] {
+export function planStatusSyncQueries(input: Parameters<typeof planStatusSyncQuery>[0]): StatusSyncQueryPlan[] {
   const primary = planStatusSyncQuery(input);
   const plans = [primary];
   for (const seasonType of providerSeasonTypesForWindow(primary.targetSeason, primary.endDate ?? '9999-12-31')) {
     if (seasonType !== BDL_SEASON_TYPE_REGULAR) plans.push(withSeasonType(primary, seasonType));
   }
-  if (input.preseasonDiscovery) plans.push(withSeasonType(primary, BDL_PRESEASON_SEASON_TYPE));
+  assertStatusSyncSeasonTypes(plans);
   return plans;
 }
 
