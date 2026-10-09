@@ -5,6 +5,46 @@
 
 export const REMOVED_FROM_REPORT_STATUS = 'RemovedFromReport';
 
+/** Exit at an unknown time inside a collection gap. Not recovery, clearance, or Available. */
+export const COLLECTION_GAP_EXIT_STATUS = 'AbsentAfterCollectionGap';
+
+export const INJURY_CONTINUITY_MAX_GAP_HOURS_ENV = 'INJURY_CONTINUITY_MAX_GAP_HOURS';
+export const DEFAULT_INJURY_CONTINUITY_MAX_GAP_HOURS = 48;
+export const INJURY_CONTINUITY_MAX_GAP_HOURS_RANGE = { min: 24, max: 168 } as const;
+
+export function resolveContinuityMaxGapHours(raw: string | undefined): number {
+  if (raw === undefined || raw.trim() === '') return DEFAULT_INJURY_CONTINUITY_MAX_GAP_HOURS;
+  const trimmed = raw.trim();
+  const n = Number(trimmed);
+  const { min, max } = INJURY_CONTINUITY_MAX_GAP_HOURS_RANGE;
+  if (!/^\d+$/.test(trimmed) || !Number.isInteger(n) || n < min || n > max) {
+    throw new Error(`invalid ${INJURY_CONTINUITY_MAX_GAP_HOURS_ENV}=${trimmed}: expected an integer in [${min}, ${max}]`);
+  }
+  return n;
+}
+
+export function isCollectionGap(args: {
+  previousCompletedAt: string | Date | null | undefined;
+  observedAt: string | Date;
+  maxGapHours: number;
+}): boolean {
+  if (args.previousCompletedAt == null) return false;
+  const prev = new Date(args.previousCompletedAt).getTime();
+  const now = new Date(args.observedAt).getTime();
+  if (!Number.isFinite(prev) || !Number.isFinite(now)) {
+    throw new Error('isCollectionGap: invalid timestamp');
+  }
+  return now - prev > args.maxGapHours * 3_600_000;
+}
+
+export function isCollectionGapExitStatus(status: string | null | undefined): boolean {
+  return (status ?? '').trim() === COLLECTION_GAP_EXIT_STATUS;
+}
+
+export function isTerminalReportHistoryStatus(status: string | null | undefined): boolean {
+  return isRemovedFromReportStatus(status) || isCollectionGapExitStatus(status);
+}
+
 export const MIN_COMPLETE_INJURY_ROW_COUNT = 50;
 
 export const COMPLETE_PULL_FRACTION_OF_PREVIOUS = 0.5;

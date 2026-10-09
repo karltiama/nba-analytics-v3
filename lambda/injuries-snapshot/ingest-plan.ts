@@ -4,6 +4,7 @@
  */
 
 import {
+  COLLECTION_GAP_EXIT_STATUS,
   REMOVED_FROM_REPORT_STATUS,
   detectRemovedPlayerIds,
   evaluateInjuryPullCompleteness,
@@ -25,7 +26,7 @@ export type InjuryPullRow = InjuryFieldSnapshot & {
 export type PlannedHistoryInsert = InjuryFieldSnapshot & {
   snapshotAt: string;
   pullRunId: number;
-  kind: 'first' | 'change' | 'leave_report';
+  kind: 'first' | 'change' | 'leave_report' | 'gap_exit';
 };
 
 export type InjuryIngestPlan = {
@@ -34,6 +35,8 @@ export type InjuryIngestPlan = {
   currentDeletes: string[];
   massClearBlocked: boolean;
   completenessReason: string;
+  baseline: boolean;
+  alreadyTerminatedIds: string[];
 };
 
 export function injuryTupleChanged(
@@ -63,6 +66,8 @@ export function planInjuryIngest(args: {
   /** Every player id on this report, including quarantined identities; they are not removals. */
   reportPlayerIds?: Iterable<string>;
   minCompleteRowCount?: number;
+  collectionGap?: boolean;
+  terminatedPlayerIds?: Iterable<string>;
 }): InjuryIngestPlan {
   const completeness = evaluateInjuryPullCompleteness({
     status: args.pullStatus,
@@ -112,30 +117,51 @@ export function planInjuryIngest(args: {
       currentDeletes: [],
       massClearBlocked: true,
       completenessReason: completeness.reason,
+      baseline: false,
+      alreadyTerminatedIds: [],
     };
   }
 
+  const baseline = args.collectionGap === true;
+  const terminated = new Set(Array.from(args.terminatedPlayerIds ?? []).map(String));
   const onReport = new Set(seen);
   for (const id of args.reportPlayerIds ?? []) onReport.add(String(id));
   const removedIds = detectRemovedPlayerIds(args.previousCurrent.keys(), onReport);
   const currentDeletes: string[] = [];
+  const alreadyTerminatedIds: string[] = [];
 
   for (const playerId of removedIds) {
     currentDeletes.push(playerId);
     if (existingLeave.has(playerId)) continue;
     const prev = args.previousCurrent.get(playerId);
     if (!prev) continue;
-    if (isRemovedFromReportStatus(prev.status)) continue;
-    historyInserts.push({
-      playerId,
-      teamId: prev.teamId,
-      status: REMOVED_FROM_REPORT_STATUS,
-      description: prev.description,
-      returnDateRaw: prev.returnDateRaw,
-      snapshotAt: args.observedAt,
-      pullRunId: args.pullRunId,
-      kind: 'leave_report',
-    });
+    if (isRemovedFromReportStatus(prev.status) || terminated.has(playerId)) {
+      alreadyTerminatedIds.push(playerId);
+      continue;
+    }
+    historyInserts.push(
+      baseline
+        ? {
+            playerId,
+            teamId: prev.teamId,
+            status: COLLECTION_GAP_EXIT_STATUS,
+            description: null,
+            returnDateRaw: null,
+            snapshotAt: args.observedAt,
+            pullRunId: args.pullRunId,
+            kind: 'gap_exit',
+          }
+        : {
+            playerId,
+            teamId: prev.teamId,
+            status: REMOVED_FROM_REPORT_STATUS,
+            description: prev.description,
+            returnDateRaw: prev.returnDateRaw,
+            snapshotAt: args.observedAt,
+            pullRunId: args.pullRunId,
+            kind: 'leave_report',
+          }
+    );
   }
 
   return {
@@ -144,6 +170,8 @@ export function planInjuryIngest(args: {
     currentDeletes,
     massClearBlocked: false,
     completenessReason: completeness.reason,
+    baseline,
+    alreadyTerminatedIds,
   };
 }
 

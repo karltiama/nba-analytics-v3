@@ -4,6 +4,8 @@
  *
  * Pulls are ordered by pull_run_id. Consecutive means next_id = prev_id + 1
  * (no intervening pull of any status). Only successful complete pulls qualify.
+ * Pulls recorded in raw.injury_collection_baselines start a new baseline and are never leave-report
+ * pairs; this SQL errors until that table exists, which keeps the prune gate closed.
  */
 
 import { MIN_COMPLETE_INJURY_ROW_COUNT } from './leave-report';
@@ -31,6 +33,10 @@ pairs AS (
     AND prev_id = pull_run_id - 1
     AND rows_stored >= GREATEST(${MIN_COMPLETE_INJURY_ROW_COUNT}, ceil(0.5 * prev_stored))
     AND prev_stored >= ${MIN_COMPLETE_INJURY_ROW_COUNT}
+    AND NOT EXISTS (
+      SELECT 1 FROM raw.injury_collection_baselines b
+      WHERE b.baseline_pull_run_id = complete.pull_run_id
+    )
 ),
 last_raw AS (
   SELECT DISTINCT ON (r.pull_run_id, r.provider_player_id)

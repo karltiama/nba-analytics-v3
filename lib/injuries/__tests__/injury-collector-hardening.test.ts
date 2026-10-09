@@ -212,6 +212,100 @@ describe('identity quarantine is not a removal', () => {
   });
 });
 
+describe('collection-gap baseline', () => {
+  for (const [label, plan, leave] of [
+    ['lib', libPlan, libLeave],
+    ['lambda', lambdaPlan, lambdaLeave],
+  ] as const) {
+    it(`${label}: absent players get one gap marker that carries no injury detail and no recovery`, () => {
+      const r = plan.planInjuryIngest(planArgs({ collectionGap: true }));
+      expect(r.baseline).toBe(true);
+      expect(r.currentDeletes.sort()).toEqual(['2', '3']);
+      const exits = r.historyInserts.filter((h) => h.playerId !== '1');
+      expect(exits.map((h) => [h.playerId, h.kind, h.status]).sort()).toEqual([
+        ['2', 'gap_exit', 'AbsentAfterCollectionGap'],
+        ['3', 'gap_exit', 'AbsentAfterCollectionGap'],
+      ]);
+      for (const h of exits) {
+        expect(h.description).toBeNull();
+        expect(h.returnDateRaw).toBeNull();
+        expect(h.teamId).toBe('22');
+        expect(h.snapshotAt).toBe(observedAt);
+        expect(h.status).not.toMatch(/available|cleared|healthy|active|removedfromreport/i);
+      }
+    });
+
+    it(`${label}: players already terminated in history are deleted from current with no new row`, () => {
+      for (const collectionGap of [true, false]) {
+        const r = plan.planInjuryIngest(planArgs({ collectionGap, terminatedPlayerIds: ['3'] }));
+        expect(r.currentDeletes.sort()).toEqual(['2', '3']);
+        expect(r.alreadyTerminatedIds).toEqual(['3']);
+        expect(r.historyInserts.some((h) => h.playerId === '3')).toBe(false);
+      }
+    });
+
+    it(`${label}: an incomplete pull after a gap is not a baseline and removes nobody`, () => {
+      const r = plan.planInjuryIngest(planArgs({ collectionGap: true, pullStatus: 'error', completed: false }));
+      expect(r.baseline).toBe(false);
+      expect(r.currentDeletes).toEqual([]);
+      expect(r.historyInserts.some((h) => h.kind === 'gap_exit')).toBe(false);
+    });
+
+    it(`${label}: without a gap removals stay RemovedFromReport`, () => {
+      const r = plan.planInjuryIngest(planArgs());
+      expect(r.baseline).toBe(false);
+      expect(r.historyInserts.filter((h) => h.kind === 'leave_report')).toHaveLength(2);
+    });
+
+    it(`${label}: gap detection uses a strict window and the 24-168 hour bound`, () => {
+      const at = '2026-10-10T00:00:00.000Z';
+      expect(leave.isCollectionGap({ previousCompletedAt: '2026-10-08T00:00:00.000Z', observedAt: at, maxGapHours: 48 })).toBe(false);
+      expect(leave.isCollectionGap({ previousCompletedAt: '2026-10-07T23:59:59.000Z', observedAt: at, maxGapHours: 48 })).toBe(true);
+      expect(leave.isCollectionGap({ previousCompletedAt: null, observedAt: at, maxGapHours: 48 })).toBe(false);
+      expect(() => leave.isCollectionGap({ previousCompletedAt: 'nope', observedAt: at, maxGapHours: 48 })).toThrow();
+      expect(leave.resolveContinuityMaxGapHours(undefined)).toBe(48);
+      expect(leave.resolveContinuityMaxGapHours('168')).toBe(168);
+      for (const bad of ['23', '169', '48.5', 'abc', '-48']) {
+        expect(() => leave.resolveContinuityMaxGapHours(bad), bad).toThrow();
+      }
+      expect(leave.isTerminalReportHistoryStatus('AbsentAfterCollectionGap')).toBe(true);
+      expect(leave.isTerminalReportHistoryStatus('RemovedFromReport')).toBe(true);
+      expect(leave.isTerminalReportHistoryStatus('Out')).toBe(false);
+    });
+  }
+
+  it('the gap marker is never an active injury and is distinct from every recovery status', () => {
+    expect(libLeave.isActiveReportedInjuryStatus('AbsentAfterCollectionGap')).toBe(false);
+    expect(libLeave.COLLECTION_GAP_EXIT_STATUS).toBe(lambdaLeave.COLLECTION_GAP_EXIT_STATUS);
+    for (const s of ['Available', 'Cleared', 'RemovedFromReport', 'Active', 'Healthy']) {
+      expect(libLeave.isCollectionGapExitStatus(s)).toBe(false);
+    }
+  });
+
+  it('lib and lambda copies plan baselines identically', () => {
+    for (const args of [
+      planArgs({ collectionGap: true }),
+      planArgs({ collectionGap: true, terminatedPlayerIds: ['2'] }),
+      planArgs({ terminatedPlayerIds: ['3'] }),
+    ]) {
+      expect(lambdaPlan.planInjuryIngest(args)).toEqual(libPlan.planInjuryIngest(args));
+    }
+  });
+
+  it('leave-report candidates exclude baseline pulls, failing closed until the table exists', () => {
+    expect(read('lib/injuries/leave-report-sql.ts')).toMatch(
+      /FROM raw\.injury_collection_baselines b\s+WHERE b\.baseline_pull_run_id = complete\.pull_run_id/
+    );
+  });
+
+  it('the Lambda refuses a baseline write when the baselines table is missing', () => {
+    const src = read('lambda/injuries-snapshot/index.ts');
+    expect(src).toContain("to_regclass('raw.injury_collection_baselines')");
+    expect(src).toContain('collectionGap,\n    terminatedPlayerIds,');
+    expect(src).toContain('ON CONFLICT (baseline_pull_run_id) DO NOTHING');
+  });
+});
+
 describe('INJURY_SERVING_ENABLED', () => {
   const frozenApp = { DATA_MODE: 'replay', OFFSEASON_MODE: '1', CRON_DRY_RUN: '1' };
   const liveApp = { DATA_MODE: 'live_api', OFFSEASON_MODE: '0', CRON_DRY_RUN: '0' };

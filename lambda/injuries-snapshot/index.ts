@@ -12,6 +12,8 @@
  * - BALLDONTLIE_API_KEY (required)
  * - INJURY_MAX_PAGES (optional, default 20): a pull needing more pages fails as incomplete
  * - INJURY_MIN_COMPLETE_ROW_COUNT (optional, default 50): floor below which removals are blocked
+ * - INJURY_CONTINUITY_MAX_GAP_HOURS (optional, default 48, range 24-168): a complete pull this long after
+ *   the previous complete pull starts a new baseline (raw.injury_collection_baselines)
  */
 
 try {
@@ -32,8 +34,13 @@ try {
 
 import { Pool, type PoolClient } from 'pg';
 import {
+  COLLECTION_GAP_EXIT_STATUS,
+  INJURY_CONTINUITY_MAX_GAP_HOURS_ENV,
   INJURY_MIN_COMPLETE_ROW_COUNT_ENV,
   REMOVED_FROM_REPORT_STATUS,
+  isCollectionGap,
+  isTerminalReportHistoryStatus,
+  resolveContinuityMaxGapHours,
   resolveMinCompleteInjuryRowCount,
 } from './leave-report';
 import {
@@ -79,6 +86,7 @@ if (!SHOULD_SKIP_MUTATIONS && !BALLDONTLIE_API_KEY) {
 }
 const MAX_PAGES = resolveInjuryMaxPages(process.env[INJURY_MAX_PAGES_ENV]);
 const MIN_COMPLETE_ROW_COUNT = resolveMinCompleteInjuryRowCount(process.env[INJURY_MIN_COMPLETE_ROW_COUNT_ENV]);
+const CONTINUITY_MAX_GAP_HOURS = resolveContinuityMaxGapHours(process.env[INJURY_CONTINUITY_MAX_GAP_HOURS_ENV]);
 /** Serialises overlapping runs (manual invoke during a scheduled one). */
 const INJURY_TRANSFORM_LOCK_KEY = 'injuries-snapshot-transform';
 
@@ -252,8 +260,12 @@ async function transformInTransaction(
     return providerTeamIdToAnalytics.get(providerTeamId) ?? null;
   };
 
-  const prevCompleteRes = await db.query<{ rows_stored: number | string }>(
-    `SELECT rows_stored
+  const prevCompleteRes = await db.query<{
+    pull_run_id: number | string;
+    rows_stored: number | string;
+    completed_at: Date | string;
+  }>(
+    `SELECT pull_run_id, rows_stored, completed_at
      FROM raw.injury_pull_runs
      WHERE pull_run_id < $1
        AND status = 'success'
@@ -352,9 +364,36 @@ async function transformInTransaction(
     `SELECT player_id
      FROM analytics.player_injury_status_history
      WHERE pull_run_id = $1
-       AND status = $2`,
-    [pullRunId, REMOVED_FROM_REPORT_STATUS]
+       AND status = ANY($2::text[])`,
+    [pullRunId, [REMOVED_FROM_REPORT_STATUS, COLLECTION_GAP_EXIT_STATUS]]
   );
+
+  const previousIds = [...previousCurrent.keys()];
+  const latestHistoryRes = previousIds.length
+    ? await db.query<{ player_id: string; status: string | null }>(
+        `SELECT DISTINCT ON (player_id) player_id, status
+         FROM analytics.player_injury_status_history
+         WHERE player_id = ANY($1::text[])
+         ORDER BY player_id, snapshot_at DESC, id DESC`,
+        [previousIds]
+      )
+    : { rows: [] as Array<{ player_id: string; status: string | null }> };
+  const terminatedPlayerIds = latestHistoryRes.rows
+    .filter((r) => isTerminalReportHistoryStatus(r.status))
+    .map((r) => String(r.player_id));
+
+  const previousComplete = prevCompleteRes.rows[0] ?? null;
+  const previousCompletedAt =
+    previousComplete == null
+      ? null
+      : previousComplete.completed_at instanceof Date
+        ? previousComplete.completed_at.toISOString()
+        : String(previousComplete.completed_at);
+  const collectionGap = isCollectionGap({
+    previousCompletedAt,
+    observedAt,
+    maxGapHours: CONTINUITY_MAX_GAP_HOURS,
+  });
 
   const plan = planInjuryIngest({
     pullRunId,
@@ -369,12 +408,25 @@ async function transformInTransaction(
     existingLeaveReportPlayerIds: existingLeaveRes.rows.map((r) => String(r.player_id)),
     reportPlayerIds: requestedIds,
     minCompleteRowCount: MIN_COMPLETE_ROW_COUNT,
+    collectionGap,
+    terminatedPlayerIds,
   });
 
   if (plan.massClearBlocked) {
     console.warn(
       `[injuries] mass-clear blocked for pull ${pullRunId}: ${plan.completenessReason}`
     );
+  }
+
+  if (plan.baseline) {
+    const table = await db.query<{ t: string | null }>(
+      `SELECT to_regclass('raw.injury_collection_baselines')::text AS t`
+    );
+    if (table.rows[0]?.t == null) {
+      throw new Error(
+        `[injuries] pull ${pullRunId} follows a collection gap but raw.injury_collection_baselines is missing; refusing to write`
+      );
+    }
   }
 
   const extras = planInjuryCollectorExtras({
@@ -447,10 +499,43 @@ async function transformInTransaction(
     removedCount = removed.rowCount ?? 0;
   }
 
+  if (plan.baseline && previousComplete != null && previousCompletedAt != null) {
+    const gapSeconds = Math.max(
+      0,
+      Math.floor((new Date(observedAt).getTime() - new Date(previousCompletedAt).getTime()) / 1000)
+    );
+    await db.query(
+      `INSERT INTO raw.injury_collection_baselines (
+         baseline_pull_run_id, previous_pull_run_id, previous_completed_at, observed_at, gap_seconds,
+         reason, max_gap_hours, present_count, continuing_count, new_count,
+         absent_marked_count, absent_already_terminated_count, previous_current
+       ) VALUES ($1, $2, $3, $4, $5, 'collection_gap', $6, $7, $8, $9, $10, $11, $12::jsonb)
+       ON CONFLICT (baseline_pull_run_id) DO NOTHING`,
+      [
+        pullRunId,
+        Number(previousComplete.pull_run_id),
+        previousCompletedAt,
+        observedAt,
+        gapSeconds,
+        CONTINUITY_MAX_GAP_HOURS,
+        requestedIds.length,
+        pullRows.filter((r) => previousCurrent.has(r.playerId)).length,
+        plan.historyInserts.filter((h) => h.kind === 'first').length,
+        plan.historyInserts.filter((h) => h.kind === 'gap_exit').length,
+        plan.alreadyTerminatedIds.length,
+        JSON.stringify([...previousCurrent.values()]),
+      ]
+    );
+    console.warn(
+      `[injuries] pull ${pullRunId} is a collection-gap baseline (gap ${gapSeconds}s > ${CONTINUITY_MAX_GAP_HOURS}h)`
+    );
+  }
+
   return {
     current: currentCount,
     history: historyCount,
     removed: removedCount,
+    baseline: plan.baseline,
     massClearBlocked: plan.massClearBlocked,
     completenessReason: plan.completenessReason,
     collectorHealthClass: extras.healthClass,

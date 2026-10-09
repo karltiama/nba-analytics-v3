@@ -8,6 +8,56 @@
 
 export const REMOVED_FROM_REPORT_STATUS = 'RemovedFromReport';
 
+/**
+ * History marker written once, on the first complete pull after a collection gap, for a player who was on
+ * the last report before the gap and is absent from this one. The exit happened at an unknown time inside
+ * the gap. It is not recovery, clearance, or Available: the player's availability is unknown.
+ */
+export const COLLECTION_GAP_EXIT_STATUS = 'AbsentAfterCollectionGap';
+
+export const INJURY_CONTINUITY_MAX_GAP_HOURS_ENV = 'INJURY_CONTINUITY_MAX_GAP_HOURS';
+export const DEFAULT_INJURY_CONTINUITY_MAX_GAP_HOURS = 48;
+export const INJURY_CONTINUITY_MAX_GAP_HOURS_RANGE = { min: 24, max: 168 } as const;
+
+/** Unset means 48 hours. Anything other than an integer in [24, 168] throws. */
+export function resolveContinuityMaxGapHours(raw: string | undefined): number {
+  if (raw === undefined || raw.trim() === '') return DEFAULT_INJURY_CONTINUITY_MAX_GAP_HOURS;
+  const trimmed = raw.trim();
+  const n = Number(trimmed);
+  const { min, max } = INJURY_CONTINUITY_MAX_GAP_HOURS_RANGE;
+  if (!/^\d+$/.test(trimmed) || !Number.isInteger(n) || n < min || n > max) {
+    throw new Error(`invalid ${INJURY_CONTINUITY_MAX_GAP_HOURS_ENV}=${trimmed}: expected an integer in [${min}, ${max}]`);
+  }
+  return n;
+}
+
+/**
+ * A pull starts a new baseline when the previous complete pull finished more than maxGapHours before it.
+ * No previous complete pull means there is nothing to remove, so no gap.
+ */
+export function isCollectionGap(args: {
+  previousCompletedAt: string | Date | null | undefined;
+  observedAt: string | Date;
+  maxGapHours: number;
+}): boolean {
+  if (args.previousCompletedAt == null) return false;
+  const prev = new Date(args.previousCompletedAt).getTime();
+  const now = new Date(args.observedAt).getTime();
+  if (!Number.isFinite(prev) || !Number.isFinite(now)) {
+    throw new Error('isCollectionGap: invalid timestamp');
+  }
+  return now - prev > args.maxGapHours * 3_600_000;
+}
+
+export function isCollectionGapExitStatus(status: string | null | undefined): boolean {
+  return (status ?? '').trim() === COLLECTION_GAP_EXIT_STATUS;
+}
+
+/** History statuses that already end a player's report membership; no further exit row is written. */
+export function isTerminalReportHistoryStatus(status: string | null | undefined): boolean {
+  return isRemovedFromReportStatus(status) || isCollectionGapExitStatus(status);
+}
+
 /** Absolute floor: empty/tiny payloads cannot mass-clear. Observed successful pulls are >= 110. */
 export const MIN_COMPLETE_INJURY_ROW_COUNT = 50;
 
@@ -127,13 +177,14 @@ export function isRemovedFromReportStatus(status: string | null | undefined): bo
 
 /**
  * Provider-supplied injury statuses that may be shown as current availability.
- * RemovedFromReport / Cleared / Available are not provider-current injuries.
+ * RemovedFromReport / AbsentAfterCollectionGap / Cleared / Available are not provider-current injuries.
  */
 export function isActiveReportedInjuryStatus(status: string | null | undefined): boolean {
   const trimmed = (status ?? '').trim();
   if (!trimmed) return false;
   const lower = trimmed.toLowerCase();
   if (lower === 'removedfromreport') return false;
+  if (lower === 'absentaftercollectiongap') return false;
   if (lower === 'cleared') return false;
   if (lower === 'available') return false;
   return true;
