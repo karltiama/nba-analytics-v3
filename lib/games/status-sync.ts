@@ -26,6 +26,15 @@ import {
 } from './season-phase';
 import { PINNED_ANALYTICS_SEASON } from '@/lib/season';
 import {
+  evaluateLoadedSeasonPhaseReadiness,
+  operatingHorizon,
+  summarizeSeasonPhaseReadiness,
+  type ProviderScheduleEvidence,
+  type ReadinessGameRow,
+  type ReadinessHorizon,
+  type SeasonPhaseReadinessSummary,
+} from './season-phase-readiness';
+import {
   etDateOfInstant,
   etDateOfProviderGame,
   servingDateDecision,
@@ -42,7 +51,8 @@ export type GameStatusSyncEventName =
   | 'game_became_final'
   | 'game_final_preserved'
   | 'game_status_sync_completed'
-  | 'game_status_sync_failed';
+  | 'game_status_sync_failed'
+  | 'season_phase_readiness';
 
 export type GameStatusSyncEvent = {
   event: GameStatusSyncEventName;
@@ -53,6 +63,9 @@ export type GameStatusSyncEvent = {
   duration_ms?: number;
   reason?: string;
   provider_status?: number | null;
+  ready?: boolean;
+  horizon?: string;
+  coverage?: string;
 };
 
 export type LocalGameRow = {
@@ -106,6 +119,8 @@ export type GameStatusStore = {
   supportsSeasonPhase?(): Promise<boolean> | boolean;
   /** Sets a classified phase on an UNCLASSIFIED row; never downgrades an existing phase. */
   applySeasonPhase?(gameId: string, phase: SeasonPhaseClassification): Promise<void> | void;
+  /** Read-only rows for an inclusive ET date window; null when season-phase columns are absent. */
+  loadReadinessRows?(startDate: string, endDate: string): Promise<ReadinessGameRow[] | null> | ReadinessGameRow[] | null;
 };
 
 export type StatusSyncPageContext = {
@@ -384,6 +399,11 @@ export type GameStatusSyncResult = {
   /** PRESEASON games refused because season_phase cannot be persisted yet. */
   preseasonFenced: number;
   seasonPhaseWrites: number;
+  /**
+   * Post-write classification readiness for the operating horizon (manual canary: its window).
+   * Observability only; never changes `status`. Absent when no writes ran or the store cannot read.
+   */
+  readiness?: SeasonPhaseReadinessSummary;
   reason?: string;
 };
 
@@ -693,6 +713,48 @@ export async function runGameStatusSync(input: {
     await applyPhase(planned.gameId, phase);
   }
 
+  let readiness: SeasonPhaseReadinessSummary | undefined;
+  if (wroteDb && input.store.loadReadinessRows) {
+    const horizon: ReadinessHorizon =
+      manualCanary && plan.startDate && plan.endDate
+        ? { season: targetSeason, startDate: plan.startDate, endDate: plan.endDate }
+        : operatingHorizon(targetSeason, started);
+    const provider: ProviderScheduleEvidence = {
+      startDate: plan.startDate ?? horizon.startDate,
+      endDate: plan.endDate ?? horizon.endDate,
+      complete: !truncated,
+      games: entries.flatMap(({ raw, phase }) => {
+        const id = raw && typeof raw === 'object' ? sid(raw.id) : '';
+        if (!id) return [];
+        return [{ gameId: id, etDate: etDateOfProviderGame(raw) ?? etDateOfInstant(raw.datetime ?? null), phase }];
+      }),
+    };
+    try {
+      const rows = await input.store.loadReadinessRows(horizon.startDate, horizon.endDate);
+      readiness = summarizeSeasonPhaseReadiness(evaluateLoadedSeasonPhaseReadiness({ horizon, rows, provider }));
+    } catch {
+      readiness = summarizeSeasonPhaseReadiness({
+        ready: false,
+        horizon,
+        coverage: 'db_only',
+        reasons: ['readiness_query_failed'],
+        warnings: [],
+        eligible: [],
+        unclassified: [],
+        ineligible: [],
+        missing: [],
+      });
+    }
+    emit({
+      event: 'season_phase_readiness',
+      ready: readiness.ready,
+      horizon: `${horizon.startDate}..${horizon.endDate}`,
+      coverage: readiness.coverage,
+      counts: readiness.counts,
+      reason: readiness.reasons.length > 0 ? readiness.reasons.join(';') : undefined,
+    });
+  }
+
   const durationMs = Date.now() - startedMs;
   const result: GameStatusSyncResult = {
     job: STATUS_SYNC_JOB,
@@ -724,6 +786,7 @@ export async function runGameStatusSync(input: {
     seasonPhases,
     preseasonFenced,
     seasonPhaseWrites,
+    readiness,
     reason: truncated ? 'frequent page cap reached; not a full-season scan' : undefined,
   };
   emit({
@@ -766,6 +829,22 @@ export function createMemoryGameStore(
         phases.set(gameId, { ...phase });
       }
     };
+    store.loadReadinessRows = (startDate, endDate) =>
+      [...rows.values()]
+        .filter((row) => {
+          const et = etDateOfInstant(row.startTime);
+          return et != null && et >= startDate && et <= endDate;
+        })
+        .map((row) => {
+          const phase = phases.get(row.gameId);
+          return {
+            gameId: row.gameId,
+            season: row.season,
+            startTime: row.startTime,
+            seasonPhase: phase?.phase ?? 'UNCLASSIFIED',
+            seasonPhaseSource: phase ? phase.source : null,
+          };
+        });
   }
   return store;
 }

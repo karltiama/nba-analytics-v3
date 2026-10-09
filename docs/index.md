@@ -21,6 +21,7 @@ Agent entrypoint: [../AGENTS.md](../AGENTS.md). Map of code and schemas: [archit
 - [Roster snapshot semantics](./roster-snapshot-semantics.md)
 - [Projection ledger activation runbook](./projection-ledger-activation-runbook.md)
 - [Player-prop observation clock recovery](./player-prop-observation-clock-runbook.md)
+- [Game-status-sync activation runbook](./status-sync-activation-runbook.md)
 
 ## Domain notes (only when the task is that feature)
 

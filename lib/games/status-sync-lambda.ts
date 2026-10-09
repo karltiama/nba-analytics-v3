@@ -20,8 +20,12 @@ import type { AcqArchiveStore } from '@/lib/acquisition/archive';
 import type { AcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
 import { isPreseasonDiscoveryEnabled } from './status-sync-query';
 import { SEASON_PHASES, type SeasonPhase } from './season-phase';
+import { regularSeasonOpenEt } from './season-eligibility';
 
 export const STATUS_SYNC_MANUAL_CANARY_CONFIRM = 'STATUS_SYNC_MANUAL_CANARY';
+
+/** Inclusive ET days. Any 31-day regular-season window stays under the 3 x 100 frequent page cap. */
+export const STATUS_SYNC_MANUAL_CANARY_MAX_DAYS = 31;
 
 const CANARY_YMD = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -30,23 +34,82 @@ export type ManualStatusSyncCanary = {
   endDate: string;
 };
 
+export type ManualStatusSyncCanaryEvent =
+  | { kind: 'none' }
+  | { kind: 'invalid'; reason: string }
+  | ({ kind: 'canary' } & ManualStatusSyncCanary);
+
+function utcDayNumber(ymd: string): number | null {
+  if (!CANARY_YMD.test(ymd)) return null;
+  const ms = Date.parse(`${ymd}T00:00:00.000Z`);
+  if (!Number.isFinite(ms) || new Date(ms).toISOString().slice(0, 10) !== ymd) return null;
+  return ms / 86_400_000;
+}
+
 /**
- * Direct-invoke only. Scheduler/EventBridge payloads never match.
- * Requires manualCanary=true, confirm token, and 2026 YMD window.
+ * Legal canary dates for an NBA season start-year: regular-season opening night through 30 June of
+ * the following calendar year. A season without a known opening night has no legal window.
  */
-export function parseManualStatusSyncCanaryEvent(event: unknown): ManualStatusSyncCanary | null {
-  if (event == null || typeof event !== 'object') return null;
+export function manualCanarySeasonBounds(targetSeason: number): { first: string; last: string } | null {
+  const open = regularSeasonOpenEt(targetSeason);
+  if (!open) return null;
+  return { first: open, last: `${targetSeason + 1}-06-30` };
+}
+
+/**
+ * Direct-invoke only. Scheduler/EventBridge payloads are never a canary.
+ * An event that sets manualCanary=true but fails any check is `invalid` and must not fall through
+ * to the scheduled path.
+ */
+export function classifyManualStatusSyncCanaryEvent(
+  event: unknown,
+  targetSeason: number | null
+): ManualStatusSyncCanaryEvent {
+  if (event == null || typeof event !== 'object') return { kind: 'none' };
   const e = event as Record<string, unknown>;
-  if (e.source === 'aws.events' || e.source === 'aws.scheduler') return null;
-  if (typeof e['detail-type'] === 'string') return null;
-  if (e.manualCanary !== true) return null;
-  if (e.confirm !== STATUS_SYNC_MANUAL_CANARY_CONFIRM) return null;
+  if (e.source === 'aws.events' || e.source === 'aws.scheduler') return { kind: 'none' };
+  if (typeof e['detail-type'] === 'string') return { kind: 'none' };
+  if (e.manualCanary !== true) return { kind: 'none' };
+  if (e.confirm !== STATUS_SYNC_MANUAL_CANARY_CONFIRM) {
+    return { kind: 'invalid', reason: 'manual canary confirm token mismatch' };
+  }
   const startDate = typeof e.startDate === 'string' ? e.startDate : '';
   const endDate = typeof e.endDate === 'string' ? e.endDate : '';
-  if (!CANARY_YMD.test(startDate) || !CANARY_YMD.test(endDate)) return null;
-  if (!startDate.startsWith('2026-') || !endDate.startsWith('2026-')) return null;
-  if (startDate > endDate) return null;
-  return { startDate, endDate };
+  const window = manualCanaryWindowDecision(targetSeason, startDate, endDate);
+  if (!window.ok) return { kind: 'invalid', reason: window.reason };
+  return { kind: 'canary', startDate, endDate };
+}
+
+export function manualCanaryWindowDecision(
+  targetSeason: number | null,
+  startDate: string,
+  endDate: string
+): { ok: true } | { ok: false; reason: string } {
+  const start = utcDayNumber(startDate);
+  const end = utcDayNumber(endDate);
+  if (start == null || end == null) return { ok: false, reason: 'manual canary dates must be valid YYYY-MM-DD' };
+  if (start > end) return { ok: false, reason: 'manual canary startDate is after endDate' };
+  if (end - start + 1 > STATUS_SYNC_MANUAL_CANARY_MAX_DAYS) {
+    return { ok: false, reason: `manual canary window exceeds ${STATUS_SYNC_MANUAL_CANARY_MAX_DAYS} days` };
+  }
+  if (targetSeason == null) return { ok: false, reason: 'manual canary requires a valid target season' };
+  const bounds = manualCanarySeasonBounds(targetSeason);
+  if (!bounds) return { ok: false, reason: `manual canary season ${targetSeason} has no known opening night` };
+  if (startDate < bounds.first || endDate > bounds.last) {
+    return {
+      ok: false,
+      reason: `manual canary window must stay within season ${targetSeason} (${bounds.first}..${bounds.last})`,
+    };
+  }
+  return { ok: true };
+}
+
+export function parseManualStatusSyncCanaryEvent(
+  event: unknown,
+  targetSeason: number | null
+): ManualStatusSyncCanary | null {
+  const parsed = classifyManualStatusSyncCanaryEvent(event, targetSeason);
+  return parsed.kind === 'canary' ? { startDate: parsed.startDate, endDate: parsed.endDate } : null;
 }
 
 export type LambdaGameStatusSyncResult = GameStatusSyncResult & {
@@ -142,6 +205,11 @@ export async function runLambdaGameStatusSync(
     return failed(env, parsed.reason);
   }
 
+  if (deps.manualCanary) {
+    const window = manualCanaryWindowDecision(parsed.season, deps.startDate ?? '', deps.endDate ?? '');
+    if (!window.ok) return failed(env, window.reason);
+  }
+
   if (!deps.fetchPage && !bdlApiKey(env)) {
     return failed(env, 'missing BALLDONTLIE_API_KEY');
   }
@@ -219,8 +287,12 @@ export async function runLambdaGameStatusSync(
 }
 
 export async function handler(event?: unknown): Promise<LambdaGameStatusSyncResult> {
-  const canary = parseManualStatusSyncCanaryEvent(event);
-  if (!canary) {
+  const target = parseRequiredStatusSyncTargetSeason(process.env, PROTECTED_HISTORY_SEASONS);
+  const canary = classifyManualStatusSyncCanaryEvent(event, target.ok ? target.season : null);
+  if (canary.kind === 'invalid') {
+    return failed(process.env, canary.reason);
+  }
+  if (canary.kind === 'none') {
     return runLambdaGameStatusSync();
   }
   return runLambdaGameStatusSync({

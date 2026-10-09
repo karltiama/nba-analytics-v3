@@ -8,6 +8,7 @@
 import { Pool } from 'pg';
 import { ANALYTICS_GAMES_FINAL_PRESERVE_UPSERT_SQL } from '@/lib/betting/final-preserve';
 import type { GameStatusStore, LocalGameRow } from './status-sync';
+import type { ReadinessGameRow } from './season-phase-readiness';
 
 export type ClosableGameStatusStore = GameStatusStore & {
   close(): Promise<void>;
@@ -25,6 +26,14 @@ export const SEASON_PHASE_COLUMNS_SQL = `
   from information_schema.columns
   where table_schema = 'analytics' and table_name = 'games'
     and column_name in ('season_phase', 'season_phase_source')
+`;
+
+/** Read-only. Loads by ET date regardless of season so cross-season rows are reported, not hidden. */
+export const READINESS_ROWS_SQL = `
+  select game_id, season, start_time, season_phase, season_phase_source
+  from analytics.games
+  where (start_time at time zone 'America/New_York')::date between $1::date and $2::date
+  order by start_time, game_id
 `;
 
 /** Only fills an UNCLASSIFIED row; never downgrades or overwrites an existing phase. */
@@ -92,6 +101,10 @@ export function createPostgresGameStatusStore(
   const ownsPool = !pool;
   const db = pool ?? createStatusSyncPool(env);
   let seasonPhaseSupport: Promise<boolean> | null = null;
+  const supportsSeasonPhase = () => {
+    seasonPhaseSupport ??= db.query(SEASON_PHASE_COLUMNS_SQL).then((r) => Number(r.rows[0]?.n ?? 0) === 2);
+    return seasonPhaseSupport;
+  };
 
   return {
     async getById(gameId) {
@@ -112,14 +125,22 @@ export function createPostgresGameStatusStore(
         row.venue,
       ]);
     },
-    supportsSeasonPhase() {
-      seasonPhaseSupport ??= db
-        .query(SEASON_PHASE_COLUMNS_SQL)
-        .then((r) => Number(r.rows[0]?.n ?? 0) === 2);
-      return seasonPhaseSupport;
-    },
+    supportsSeasonPhase,
     async applySeasonPhase(gameId, phase) {
       await db.query(APPLY_SEASON_PHASE_SQL, [gameId, phase.phase, phase.source]);
+    },
+    async loadReadinessRows(startDate, endDate) {
+      if (!(await supportsSeasonPhase())) return null;
+      const result = await db.query(READINESS_ROWS_SQL, [startDate, endDate]);
+      return result.rows.map(
+        (r: Record<string, unknown>): ReadinessGameRow => ({
+          gameId: String(r.game_id),
+          season: String(r.season),
+          startTime: toIso(r.start_time),
+          seasonPhase: r.season_phase == null ? null : String(r.season_phase),
+          seasonPhaseSource: r.season_phase_source == null ? null : String(r.season_phase_source),
+        })
+      );
     },
     async close() {
       if (ownsPool) await db.end();
