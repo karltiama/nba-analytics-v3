@@ -309,6 +309,166 @@ describe('429 / Retry-After', () => {
   });
 });
 
+describe('paid-tier production setting (500 ms interval, burst 5)', () => {
+  const paid = () =>
+    readLiveRateLimitConfig({
+      ...LIVE_ENV,
+      BDL_RATE_LIMIT_ALLOW_FAST: undefined,
+      BDL_RATE_LIMIT_INTERVAL_MS: '500',
+      BDL_RATE_LIMIT_MAX_REQUESTS: '1',
+      BDL_RATE_LIMIT_BURST: '5',
+      BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS: '600000',
+    });
+
+  it('parses without hitting the 200 ms floor', () => {
+    const c = paid();
+    expect([c.intervalMs, c.maxRequests, c.burst]).toEqual([500, 1, 5]);
+  });
+
+  it('10 concurrent callers never exceed burst + 120 permits in any 60 s window', async () => {
+    const config = paid();
+    const store = createMemoryLiveRateLimitStore();
+    let now = 0;
+    const grants: number[] = [];
+    const timers: Array<{ at: number; wake: () => void }> = [];
+    const sleepFn = (ms: number) => new Promise<void>((wake) => timers.push({ at: now + ms, wake }));
+    let done = false;
+    const workers = Promise.all(
+      Array.from({ length: 10 }, async () => {
+        while (now < 180_000) {
+          await acquireLiveBdlPermit({ store, config, nowMs: () => now, sleepFn });
+          grants.push(now);
+        }
+      })
+    ).then(() => {
+      done = true;
+    });
+    while (!done) {
+      await new Promise((r) => setImmediate(r));
+      if (timers.length === 0) continue;
+      const at = Math.min(...timers.map((t) => t.at));
+      now = Math.max(now, at);
+      for (const t of timers.filter((x) => x.at === at)) {
+        timers.splice(timers.indexOf(t), 1);
+        t.wake();
+      }
+    }
+    await workers;
+    expect(grants.length).toBeGreaterThan(300);
+    grants.sort((a, b) => a - b);
+    let peak = 0;
+    for (let i = 0, j = 0; i < grants.length; i += 1) {
+      while (grants[i] - grants[j] >= 60_000) j += 1;
+      peak = Math.max(peak, i - j + 1);
+    }
+    expect(peak).toBeLessThanOrEqual(5 + 120);
+    expect(peak).toBeLessThan(600);
+  });
+});
+
+describe('bounded waits and request timeouts', () => {
+  const url = 'https://api.balldontlie.io/v1/games';
+
+  it('a Retry-After longer than the wait budget publishes the cooldown and fails without sleeping', async () => {
+    const store = createMemoryLiveRateLimitStore();
+    const clock = fakeClock();
+    const fetchImpl = vi.fn(async () => new Response('no', { status: 429, headers: { 'Retry-After': '120' } }));
+    await expect(
+      fetchBdlLive(url, undefined, {
+        env: { ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '3' },
+        store,
+        fetchImpl,
+        nowMs: clock.nowMs,
+        sleepFn: clock.sleepFn,
+      })
+    ).rejects.toMatchObject({ code: 'timeout' });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(clock.sleeps).toEqual([]);
+    expect(await store.getCooldownUntilMs()).toBe(clock.nowMs() + 120_000);
+  });
+
+  it('fallback backoff without Retry-After is capped and jittered', async () => {
+    const clock = fakeClock();
+    const fetchImpl = vi.fn(async () => new Response('no', { status: 429 }));
+    await expect(
+      fetchBdlLive(url, undefined, {
+        env: {
+          ...LIVE_ENV,
+          BDL_RATE_LIMIT_MAX_RETRIES: '3',
+          BDL_RATE_LIMIT_RETRY_BASE_MS: '5000',
+          BDL_RATE_LIMIT_MAX_RETRY_WAIT_MS: '12000',
+        },
+        store: createMemoryLiveRateLimitStore(),
+        fetchImpl,
+        nowMs: clock.nowMs,
+        sleepFn: clock.sleepFn,
+        randomFn: () => 1,
+      })
+    ).rejects.toMatchObject({ code: 'timeout' });
+    const backoffs = clock.sleeps.filter((ms) => ms >= 1000);
+    expect(backoffs.slice(0, 3)).toEqual([5000, 10000, 12000]);
+  });
+
+  it('no retry sleep crosses the caller deadline', async () => {
+    const clock = fakeClock();
+    const fetchImpl = vi.fn(async () => new Response('no', { status: 429, headers: { 'Retry-After': '10' } }));
+    await expect(
+      fetchBdlLive(url, undefined, {
+        env: { ...LIVE_ENV, BDL_RATE_LIMIT_MAX_RETRIES: '3', BDL_HTTP_TIMEOUT_MS: '5000' },
+        store: createMemoryLiveRateLimitStore(),
+        fetchImpl,
+        nowMs: clock.nowMs,
+        sleepFn: clock.sleepFn,
+        deadlineMs: clock.nowMs() + 12_000,
+      })
+    ).rejects.toMatchObject({ code: 'timeout' });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(clock.sleeps).toEqual([]);
+  });
+
+  it('an exhausted deadline never acquires a permit or calls BDL', async () => {
+    const clock = fakeClock();
+    const fetchImpl = vi.fn(async () => okResponse());
+    await expect(
+      fetchBdlLive(url, undefined, {
+        env: { ...LIVE_ENV, BDL_HTTP_TIMEOUT_MS: '5000' },
+        store: createMemoryLiveRateLimitStore(),
+        fetchImpl,
+        nowMs: clock.nowMs,
+        sleepFn: clock.sleepFn,
+        deadlineMs: clock.nowMs() + 4000,
+      })
+    ).rejects.toMatchObject({ code: 'timeout' });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('adds an abort signal when the caller has none and keeps a caller signal', async () => {
+    const seen: Array<AbortSignal | null | undefined> = [];
+    const fetchImpl = vi.fn(async (_u: string, init?: RequestInit) => {
+      seen.push(init?.signal);
+      return okResponse();
+    });
+    const opts = { env: LIVE_ENV, store: createMemoryLiveRateLimitStore(), fetchImpl: fetchImpl as unknown as typeof fetch };
+    await fetchBdlLive(url, { headers: { Authorization: 'k' } }, opts);
+    const own = new AbortController().signal;
+    await fetchBdlLive(url, { signal: own }, opts);
+    expect(seen[0]).toBeInstanceOf(AbortSignal);
+    expect(seen[1]).toBe(own);
+  });
+
+  it('a transport failure is logged and rethrown', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const fetchImpl = vi.fn(async () => {
+      throw new DOMException('timed out', 'TimeoutError');
+    });
+    await expect(
+      fetchBdlLive(url, undefined, { env: LIVE_ENV, store: createMemoryLiveRateLimitStore(), fetchImpl })
+    ).rejects.toMatchObject({ name: 'TimeoutError' });
+    expect(log.mock.calls.some(([line]) => String(line).includes('"decision":"http_error"'))).toBe(true);
+    log.mockRestore();
+  });
+});
+
 describe('BDL_RATE_LIMIT_MAX_RETRIES (canonical 429 retry count)', () => {
   const url = 'https://api.balldontlie.io/v1/games';
   const always429 = () =>

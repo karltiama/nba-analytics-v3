@@ -9,6 +9,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_worker_failures" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     Component = "WorkerBatch"
@@ -43,6 +44,7 @@ resource "aws_cloudwatch_metric_alarm" "injuries_snapshot_errors" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     FunctionName = aws_lambda_function.injuries_snapshot.function_name
@@ -62,6 +64,7 @@ resource "aws_cloudwatch_metric_alarm" "nightly_bdl_errors" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     FunctionName = aws_lambda_function.nightly_bdl_updater.function_name
@@ -79,6 +82,7 @@ resource "aws_cloudwatch_metric_alarm" "odds_pre_game_errors" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     FunctionName = aws_lambda_function.odds_pre_game_snapshot.function_name
@@ -134,6 +138,7 @@ resource "aws_cloudwatch_metric_alarm" "game_status_sync_errors" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     FunctionName = aws_lambda_function.game_status_sync[0].function_name
@@ -153,6 +158,7 @@ resource "aws_cloudwatch_metric_alarm" "postgame_stage_dlq_not_empty" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     QueueName = aws_sqs_queue.postgame_stage_dlq[0].name
@@ -171,6 +177,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_dlq_not_empty" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     QueueName = aws_sqs_queue.player_props_dlq.name
@@ -188,6 +195,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_archive_gap" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     Component = "WorkerBatch"
@@ -205,6 +213,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_archive_failed" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
 
   dimensions = {
     Component = "WorkerBatch"

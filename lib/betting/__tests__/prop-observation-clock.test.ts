@@ -337,6 +337,31 @@ describe('LIVE-CLOCK-P0A prepared migration', () => {
     expect(sql).toContain('add column if not exists decision_clock text');
   });
 
+  it('standalone research view files carry the same v_prop_decision_lines definition', () => {
+    const viewSql = (src: string) => {
+      const code = src
+        .replace(/\r\n/g, '\n')
+        .split('\n')
+        .filter((l) => !l.trim().startsWith('--'))
+        .join('\n');
+      const start = code.indexOf('create or replace view research.v_prop_decision_lines');
+      const end = code.indexOf(') live;', start);
+      expect(start).toBeGreaterThanOrEqual(0);
+      return code.slice(start, end).replace(/\s+/g, ' ').trim();
+    };
+    const canonical = viewSql(sql);
+    for (const rel of ['research_v_prop_decision_lines.sql', 'research_install_all.sql']) {
+      const other = fs.readFileSync(path.resolve(__dirname, '../../../db/schemas', rel), 'utf8');
+      expect(viewSql(other), rel).toBe(canonical);
+    }
+  });
+
+  it('row clock checks cannot evaluate to NULL for a half-labelled row', () => {
+    const nullSafe = "or (observation_clock is not distinct from 'RESPONSE_RECEIVED' and observed_at is not null)";
+    expect(sql.split(nullSafe).length - 1).toBe(2);
+    expect(sql).not.toContain("or (observation_clock = 'RESPONSE_RECEIVED' and observed_at is not null)");
+  });
+
   it('view live fallback uses the same observed_at eligibility', () => {
     expect(sql).toContain("when r.observation_clock = 'RESPONSE_RECEIVED' then r.observed_at");
     expect(sql).toContain('d.decision_at < g.start_time');

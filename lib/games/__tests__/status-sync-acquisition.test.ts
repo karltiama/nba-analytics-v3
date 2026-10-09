@@ -153,7 +153,7 @@ const ok = (body: string, status = 200, headers: Record<string, string> = {}) =>
   new Response(body, { status, headers: { 'content-type': 'application/json', ...headers } });
 
 describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
-  it('regular/unparameterized response: archived, ledgered parse_ok, then written; phase UNCLASSIFIED', async () => {
+  it('primary season_type=regular response: archived, ledgered parse_ok, then written; phase REGULAR', async () => {
     const h = harness({ respond: () => ok(page([game({ id: 501 })]), 200, { 'x-ratelimit-remaining': '59' }) });
     const result = await h.runSync();
 
@@ -162,8 +162,8 @@ describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
     expect(result.wroteDb).toBe(true);
     expect(result.bdlHttp).toBe(1);
     expect(result.acquisition).toEqual({ required: true, archivedRequests: 1, blockedReason: null });
-    expect(result.seasonPhases.UNCLASSIFIED).toBe(1);
-    expect(result.seasonPhases.REGULAR).toBe(0);
+    expect(result.seasonPhases.UNCLASSIFIED).toBe(0);
+    expect(result.seasonPhases.REGULAR).toBe(1);
     expect(h.store.rows.get('501')?.status).toBe('Scheduled');
     expect(h.order).toEqual(['archive', 'upsert']);
     expect(h.authHeaders[0]).toBe(API_KEY);
@@ -178,7 +178,7 @@ describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
       endpoint_path: '/v1/games',
       scope_kind: 'query',
       season: 2026,
-      season_type_requested: null,
+      season_type_requested: 'regular',
       page_index: 0,
       attempt: 1,
       http_status: 200,
@@ -196,11 +196,11 @@ describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
     expect(env.scope).toMatchObject({
       kind: 'query',
       season: 2026,
-      season_type_requested: null,
+      season_type_requested: 'regular',
       date_window_et: [plan.startDate, plan.endDate],
     });
     expect(env.request.params).toContainEqual(['seasons[]', '2026']);
-    expect(env.request.params.some(([k]) => k === 'season_type')).toBe(false);
+    expect(env.request.params).toContainEqual(['season_type', 'regular']);
     expect(env.response?.headers['x-ratelimit-remaining']).toBe('59');
     expect(env.response?.body).toBe(page([game({ id: 501 })]));
     expect(env.times.request_started_at).toBe(NOW.toISOString());
@@ -229,7 +229,7 @@ describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
     expect(result.status).toBe('success');
     expect(result.inserted).toBe(2);
     expect(result.queries).toEqual([
-      { seasonTypeRequested: null, pullRunId: 'run-1', pages: 2, truncated: false, requestIds: ['req-1', 'req-2'] },
+      { seasonTypeRequested: 'regular', pullRunId: 'run-1', pages: 2, truncated: false, requestIds: ['req-1', 'req-2'] },
     ]);
     const rows = [...memLedger(h.ledger).rows.values()];
     expect(rows.map((r) => [r.request_id, r.pull_run_id, r.page_index, r.archive_status, r.parse_ok])).toEqual([
@@ -412,12 +412,13 @@ describe('DATA2E.1 preseason discovery (disabled by default)', () => {
   const respond: Responder = (url) =>
     new URL(url).searchParams.get('season_type') === 'preseason' ? ok(page([pre])) : ok(page([regular]));
 
-  it('flag absent: one query, no season_type param', async () => {
+  it('flag absent: one query, explicit season_type=regular', async () => {
     const h = harness({ respond });
     const result = await h.runSync();
     expect(result.preseasonDiscovery).toBe(false);
     expect(h.urls).toHaveLength(1);
-    expect(h.urls[0]).not.toContain('season_type');
+    expect(h.urls[0]).toContain('season_type=regular');
+    expect(h.urls[0]).not.toContain('season_type=preseason');
     expect(result.queries).toHaveLength(1);
     expect(result.inserted).toBe(1);
   });
@@ -427,10 +428,10 @@ describe('DATA2E.1 preseason discovery (disabled by default)', () => {
     const result = await h.runSync();
     expect(result.preseasonDiscovery).toBe(true);
     expect(h.urls).toHaveLength(2);
-    expect(h.urls[0]).not.toContain('season_type');
+    expect(h.urls[0]).toContain('season_type=regular');
     expect(h.urls[1]).toContain('season_type=preseason');
     expect(result.queries.map((q) => [q.seasonTypeRequested, q.pullRunId])).toEqual([
-      [null, 'run-1'],
+      ['regular', 'run-1'],
       ['preseason', 'run-2'],
     ]);
     expect(result.seasonPhases.PRESEASON).toBe(1);
@@ -440,7 +441,7 @@ describe('DATA2E.1 preseason discovery (disabled by default)', () => {
     expect(h.store.rows.has('902')).toBe(false);
 
     const rows = [...memLedger(h.ledger).rows.values()];
-    expect(rows.map((r) => r.season_type_requested)).toEqual([null, 'preseason']);
+    expect(rows.map((r) => r.season_type_requested)).toEqual(['regular', 'preseason']);
     expect(rows[0].scope_id).not.toBe(rows[1].scope_id);
     expect(rows.every((r) => r.archive_status === 'archived' && r.parse_ok === true)).toBe(true);
   });
@@ -455,8 +456,8 @@ describe('DATA2E.1 preseason discovery (disabled by default)', () => {
     expect(result.inserted).toBe(2);
     expect(result.preseasonFenced).toBe(0);
     expect(h.store.phases.get('902')).toEqual({ phase: 'PRESEASON', source: 'request_season_type' });
-    expect(h.store.phases.has('901')).toBe(false);
-    expect(result.seasonPhaseWrites).toBe(1);
+    expect(h.store.phases.get('901')).toEqual({ phase: 'REGULAR', source: 'request_season_type' });
+    expect(result.seasonPhaseWrites).toBe(2);
   });
 
   it('preseason query failure fails the whole cycle (no partial writes from the primary query)', async () => {
@@ -478,6 +479,27 @@ describe('DATA2E.1 preseason discovery (disabled by default)', () => {
     const result = await h.runSync();
     expect(result.seasonPhases.IST).toBe(1);
     expect(h.store.phases.get('911')).toEqual({ phase: 'IST', source: 'provider_ist_stage' });
+  });
+
+  it('regular-query rows dated before opening night are fenced; a late Oct 20 ET tip is written', async () => {
+    const oct19 = game({ id: 921, date: '2026-10-19', datetime: '2026-10-19T23:30:00.000Z' });
+    const lateOct20 = game({ id: 922, date: '2026-10-20', datetime: '2026-10-21T02:30:00.000Z' });
+    const h = harness({ respond: () => ok(page([oct19, lateOct20])) });
+    const result = await h.runSync();
+    expect(result.status).toBe('success');
+    expect(result.preseasonFenced).toBe(1);
+    expect(result.rejected).toBe(1);
+    expect(h.store.rows.has('921')).toBe(false);
+    expect(h.store.rows.has('922')).toBe(true);
+  });
+
+  it('postseason=false alone never makes a pre-opening row eligible', async () => {
+    const h = harness({
+      respond: () => ok(page([game({ id: 931, date: '2026-10-09', datetime: '2026-10-09T23:00:00.000Z', postseason: false })])),
+    });
+    const result = await h.runSync();
+    expect(result.preseasonFenced).toBe(1);
+    expect(h.store.rows.size).toBe(0);
   });
 });
 

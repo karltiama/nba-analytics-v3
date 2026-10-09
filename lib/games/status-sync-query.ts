@@ -1,7 +1,10 @@
 /**
  * Frequent /v1/games query planner. Default is a short ET date window + season.
  * Full-season polling is explicit/manual only — never the frequent default.
+ * The primary query always sends season_type=regular; the provider default is never relied on.
  */
+
+import { BDL_SEASON_TYPE_REGULAR, providerSeasonTypesForWindow } from '@/lib/games/season-eligibility';
 
 export const STATUS_SYNC_TARGET_SEASON_ENV = 'STATUS_SYNC_TARGET_SEASON';
 export const STATUS_SYNC_DEFAULT_TARGET_SEASON = 2026;
@@ -97,6 +100,7 @@ export function planStatusSyncQuery(input: {
   const mode = input.mode ?? 'frequent';
   const params = new URLSearchParams();
   params.set('seasons[]', String(input.targetSeason));
+  params.set('season_type', BDL_SEASON_TYPE_REGULAR);
   params.set('per_page', String(STATUS_SYNC_PER_PAGE));
 
   if (mode === 'full_season') {
@@ -109,7 +113,7 @@ export function planStatusSyncQuery(input: {
       maxPages: Number.POSITIVE_INFINITY,
       path: BDL_GAMES_V1_PATH,
       params,
-      seasonTypeRequested: null,
+      seasonTypeRequested: BDL_SEASON_TYPE_REGULAR,
     };
   }
 
@@ -131,7 +135,7 @@ export function planStatusSyncQuery(input: {
     maxPages: STATUS_SYNC_FREQUENT_MAX_PAGES,
     path: BDL_GAMES_V1_PATH,
     params,
-    seasonTypeRequested: null,
+    seasonTypeRequested: BDL_SEASON_TYPE_REGULAR,
   };
 }
 
@@ -143,14 +147,20 @@ export function withSeasonType(base: StatusSyncQueryPlan, seasonType: string): S
 }
 
 /**
- * Primary query (unchanged) first; when preseason discovery is enabled, one additional
+ * Primary season_type=regular query first, then playin/playoffs queries once the window reaches
+ * the season's known postseason floor; when preseason discovery is enabled, one additional
  * season_type=preseason query for the same window. The primary query is never replaced.
  */
 export function planStatusSyncQueries(
   input: Parameters<typeof planStatusSyncQuery>[0] & { preseasonDiscovery: boolean }
 ): StatusSyncQueryPlan[] {
   const primary = planStatusSyncQuery(input);
-  return input.preseasonDiscovery ? [primary, withSeasonType(primary, BDL_PRESEASON_SEASON_TYPE)] : [primary];
+  const plans = [primary];
+  for (const seasonType of providerSeasonTypesForWindow(primary.targetSeason, primary.endDate ?? '9999-12-31')) {
+    if (seasonType !== BDL_SEASON_TYPE_REGULAR) plans.push(withSeasonType(primary, seasonType));
+  }
+  if (input.preseasonDiscovery) plans.push(withSeasonType(primary, BDL_PRESEASON_SEASON_TYPE));
+  return plans;
 }
 
 export function statusSyncRequestUrl(plan: StatusSyncQueryPlan, cursor?: number | null): string {

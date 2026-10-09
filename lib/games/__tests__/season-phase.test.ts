@@ -37,6 +37,30 @@ describe('classifySeasonPhase (DATA1 §8.4)', () => {
     expect(classifySeasonPhase({ requestSeasonType: 'something_new' }).phase).toBe('UNCLASSIFIED');
   });
 
+  it('regular request with an ist_stage is IST (NBA Cup stays labelled); preseason request is not', () => {
+    expect(classifySeasonPhase({ requestSeasonType: 'regular', game: { ist_stage: 'group' } })).toEqual({
+      phase: 'IST',
+      source: 'provider_ist_stage',
+    });
+    expect(classifySeasonPhase({ requestSeasonType: 'regular', game: { ist_stage: null } }).phase).toBe('REGULAR');
+    expect(classifySeasonPhase({ requestSeasonType: 'preseason', game: { ist_stage: 'group' } }).phase).toBe(
+      'PRESEASON'
+    );
+  });
+
+  it('NBA Cup championship stage is UNCLASSIFIED under any request; semifinal stays IST', () => {
+    for (const requestSeasonType of ['regular', 'ist', null]) {
+      expect(classifySeasonPhase({ requestSeasonType, game: { ist_stage: 'Championship' } })).toEqual({
+        phase: 'UNCLASSIFIED',
+        source: 'provider_ist_stage',
+      });
+    }
+    expect(classifySeasonPhase({ requestSeasonType: 'regular', game: { ist_stage: 'final' } }).phase).toBe(
+      'UNCLASSIFIED'
+    );
+    expect(classifySeasonPhase({ requestSeasonType: 'regular', game: { ist_stage: 'semifinal' } }).phase).toBe('IST');
+  });
+
   it('ist_stage → IST; postseason flag alone stays UNCLASSIFIED', () => {
     expect(classifySeasonPhase({ game: { ist_stage: 'quarterfinal' } })).toEqual({
       phase: 'IST',
@@ -72,16 +96,32 @@ describe('preseason discovery query planning', () => {
     expect(isPreseasonDiscoveryEnabled({ [GAME_STATUS_SYNC_PRESEASON_DISCOVERY_ENV]: 'TRUE' })).toBe(true);
   });
 
-  it('flag false: exactly the existing query, unchanged URL', () => {
+  it('flag false: one primary query with explicit season_type=regular', () => {
     const plans = planStatusSyncQueries({ targetSeason: 2026, now, preseasonDiscovery: false });
-    const legacy = planStatusSyncQuery({ targetSeason: 2026, now });
+    const primary = planStatusSyncQuery({ targetSeason: 2026, now });
     expect(plans).toHaveLength(1);
-    expect(statusSyncRequestUrl(plans[0], null)).toBe(statusSyncRequestUrl(legacy, null));
-    expect(statusSyncRequestUrl(plans[0], null)).not.toContain('season_type');
-    expect(plans[0].seasonTypeRequested).toBeNull();
+    expect(statusSyncRequestUrl(plans[0], null)).toBe(statusSyncRequestUrl(primary, null));
+    expect(new URL(statusSyncRequestUrl(plans[0], null)).searchParams.get('season_type')).toBe('regular');
+    expect(plans[0].seasonTypeRequested).toBe('regular');
   });
 
-  it('flag true: existing query kept first, plus season_type=preseason for the same window and cap', () => {
+  it('full_season mode also sends season_type=regular', () => {
+    const plan = planStatusSyncQuery({ targetSeason: 2026, now, mode: 'full_season' });
+    expect(plan.params.get('season_type')).toBe('regular');
+    expect(plan.seasonTypeRequested).toBe('regular');
+  });
+
+  it('window reaching the known postseason floor adds playin and playoffs queries', () => {
+    const plans = planStatusSyncQueries({
+      targetSeason: 2025,
+      now: new Date('2026-04-15T15:00:00.000Z'),
+      preseasonDiscovery: false,
+    });
+    expect(plans.map((p) => p.seasonTypeRequested)).toEqual(['regular', 'playin', 'playoffs']);
+    expect(new Set(plans.map((p) => `${p.startDate}|${p.endDate}|${p.maxPages}`)).size).toBe(1);
+  });
+
+  it('flag true: primary query kept first, plus season_type=preseason for the same window and cap', () => {
     const plans = planStatusSyncQueries({ targetSeason: 2026, now, preseasonDiscovery: true });
     expect(plans).toHaveLength(2);
     const [primary, pre] = plans;
@@ -95,7 +135,7 @@ describe('preseason discovery query planning', () => {
     expect(url.searchParams.get('season_type')).toBe('preseason');
     expect(url.searchParams.get('seasons[]')).toBe('2026');
     expect(url.searchParams.get('cursor')).toBe('7');
-    expect(primary.params.has('season_type')).toBe(false);
+    expect(primary.params.get('season_type')).toBe('regular');
   });
 });
 
@@ -124,5 +164,33 @@ describe('prepared season-phase migration (not applied)', () => {
     expect(code).toMatch(/'request_season_type', 'provider_ist_stage', 'provider_postseason_flag'/);
     expect(code).toMatch(/season_phase = 'unclassified' or season_phase_source is not null/);
     expect(code).toMatch(/lock_timeout/);
+  });
+});
+
+describe('prepared historical season-phase backfill (not applied)', () => {
+  const sql = readFileSync(
+    path.resolve(__dirname, '../../../db/schemas/MIGRATION_analytics_games_season_phase_backfill.sql'),
+    'utf8'
+  ).replace(/\r\n/g, '\n');
+  const code = sql
+    .split('\n')
+    .filter((l) => !l.trim().startsWith('--'))
+    .join('\n')
+    .toLowerCase();
+
+  it('covers only protected history seasons and only fills UNCLASSIFIED rows', () => {
+    expect(code).toMatch(/\('2023'/);
+    expect(code).toMatch(/\('2024'/);
+    expect(code).toMatch(/\('2025'/);
+    expect(code).not.toMatch(/'2026'/);
+    expect(code).toMatch(/a\.season_phase = 'unclassified'/);
+    expect(code).toMatch(/'historical_backfill_v1'/);
+    expect(code).not.toMatch(/\bdelete\b|\btruncate\b|drop table|drop column/);
+  });
+
+  it('never defaults to REGULAR and reconciles counts before writing', () => {
+    expect(code).toMatch(/else null/);
+    expect(code).toMatch(/raise exception/);
+    expect(code.indexOf('raise exception')).toBeLessThan(code.indexOf('update analytics.games'));
   });
 });

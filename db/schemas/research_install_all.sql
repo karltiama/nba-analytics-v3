@@ -2,7 +2,8 @@
 -- Research eval views — run this entire file once in Supabase SQL Editor
 -- (fixes: relation "research.v_prop_eval_units" does not exist)
 --
--- Prerequisites: analytics.games, analytics.player_game_logs, raw.player_prop_snapshots_v2
+-- Prerequisites: analytics.games, analytics.player_game_logs, raw.player_prop_snapshots_v2,
+-- research.prop_decision_lines, MIGRATION_player_prop_observation_clock.sql
 -- =============================================================================
 
 create schema if not exists research;
@@ -29,16 +30,31 @@ where g.status = 'Final';
 comment on view research.v_player_game_outcomes is
   'Box score outcomes for Final games; combo columns match lib/betting player-prop stat series.';
 
--- Closing-line proxy: materialized table + live raw fallback
+-- Decision close: materialized table + live raw fallback.
+-- Requires MIGRATION_player_prop_observation_clock.sql; identical to research_v_prop_decision_lines.sql.
 create or replace view research.v_prop_decision_lines as
+-- Materialized closing lines (backfilled + incremental)
 select
-  game_id, player_id, player_name, team_id, sportsbook, prop_type,
-  market_type, side, line_value, odds_american, odds_decimal,
-  implied_probability, decision_at, game_start_time
+  game_id,
+  player_id,
+  player_name,
+  team_id,
+  sportsbook,
+  prop_type,
+  market_type,
+  side,
+  line_value,
+  odds_american,
+  odds_decimal,
+  implied_probability,
+  decision_at,
+  game_start_time,
+  coalesce(decision_clock, 'LEGACY_CONTROLLER_TIME') as decision_clock
 from research.prop_decision_lines
 
 union all
 
+-- Live fallback: Final games still in raw but not yet materialized
 select * from (
   select distinct on (r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side)
     g.game_id,
@@ -53,13 +69,26 @@ select * from (
     r.odds_american,
     r.odds_decimal,
     r.implied_probability,
-    r.fetched_at as decision_at,
-    g.start_time as game_start_time
+    d.decision_at,
+    g.start_time as game_start_time,
+    d.decision_clock
   from raw.player_prop_snapshots_v2 r
   inner join analytics.games g on g.game_id = r.game_id::text
+  cross join lateral (
+    select
+      case
+        when r.observation_clock = 'RESPONSE_RECEIVED' then r.observed_at
+        when r.observation_clock is null then r.fetched_at
+      end as decision_at,
+      case
+        when r.observation_clock = 'RESPONSE_RECEIVED' then 'RESPONSE_RECEIVED'
+        else 'LEGACY_CONTROLLER_TIME'
+      end::text as decision_clock
+  ) d
   where g.status = 'Final'
     and g.start_time is not null
-    and r.fetched_at < g.start_time
+    and d.decision_at is not null
+    and d.decision_at < g.start_time
     and lower(coalesce(r.market_type, '')) = 'over_under'
     and lower(r.side) in ('over', 'under')
     and not exists (
@@ -76,11 +105,12 @@ select * from (
     r.sportsbook,
     r.prop_type,
     r.side,
-    r.fetched_at desc
+    d.decision_at desc,
+    r.pull_run_id desc nulls last
 ) live;
 
 comment on view research.v_prop_decision_lines is
-  'Closing-line proxy: materialized rows + live raw fallback for unmaterialized Final games.';
+  'Decision close: materialized rows + live raw fallback. RESPONSE_RECEIVED rows use observed_at < tip; legacy rows use controller time.';
 
 -- Join lines to outcomes
 create or replace view research.v_prop_eval_units as

@@ -121,6 +121,10 @@ function parseNumeric(val: string | null | undefined): number | null {
 // FETCH ODDS FROM BDL
 // ============================================
 
+/** Reserved after the last provider page for snapshot writes and transform. */
+const DEADLINE_MARGIN_MS = 45_000;
+let runDeadlineMs: number | undefined;
+
 async function fetchOddsForDate(dateStr: string): Promise<BdlOddsRow[]> {
   const allRows: BdlOddsRow[] = [];
   let cursor: number | null = null;
@@ -138,7 +142,7 @@ async function fetchOddsForDate(dateStr: string): Promise<BdlOddsRow[]> {
     const res = await fetchBdlLive(
       url.toString(),
       { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
-      { worker: 'odds-pre-game-snapshot' }
+      { worker: 'odds-pre-game-snapshot', deadlineMs: runDeadlineMs }
     );
 
     if (!res.ok) {
@@ -446,7 +450,9 @@ async function processDate(dateStr: string): Promise<{
   return { date: dateStr, pullRunId, rowsFetched: oddsRows.length, rowsStored: stored, uniqueGames: games.length, uniqueVendors: vendors.length, transform: transformResult };
 }
 
-export const handler = async (event: LambdaEvent) => {
+export const handler = async (event: LambdaEvent, context?: { getRemainingTimeInMillis?: () => number }) => {
+  const remainingMs = context?.getRemainingTimeInMillis?.();
+  runDeadlineMs = remainingMs != null ? Date.now() + remainingMs - DEADLINE_MARGIN_MS : undefined;
   try {
     console.log('Starting pre-game odds snapshot (BallDontLie /v2/odds)...');
     console.log('Event:', JSON.stringify(event));

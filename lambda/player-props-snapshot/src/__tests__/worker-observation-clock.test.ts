@@ -9,11 +9,17 @@ const at = (minutesBeforeTip: number) => new Date(TIP.getTime() - minutesBeforeT
 const mocks = vi.hoisted(() => ({
   pool: null as unknown,
   fetchResult: null as unknown,
+  fetchError: null as Error | null,
+  fetchOptions: [] as unknown[],
+  metrics: [] as Array<{ dims: Record<string, string>; values: Record<string, number> }>,
   fetchCalls: 0,
 }));
 
 vi.mock('../../src/db', () => ({ getDbPool: () => mocks.pool }));
-vi.mock('../../src/metrics', () => ({ emitCoverageMetric: () => {} }));
+vi.mock('../../src/metrics', () => ({
+  emitCoverageMetric: (_ns: string, dims: Record<string, string>, values: Record<string, number>) =>
+    void mocks.metrics.push({ dims, values }),
+}));
 vi.mock('../../src/prop-identity-boundary', () => ({
   classifyBdlPropPlayerIds: async (_pool: unknown, ids: string[]) => ({
     servingIds: new Set(ids),
@@ -23,8 +29,10 @@ vi.mock('../../src/prop-identity-boundary', () => ({
   filterRowsByServingProviderId: <T>(rows: T[]) => ({ keep: rows, skipped: [] }),
 }));
 vi.mock('../../src/fetch', () => ({
-  fetchPlayerPropsForGame: async () => {
+  fetchPlayerPropsForGame: async (_key: string, _game: number, options: unknown) => {
     mocks.fetchCalls += 1;
+    mocks.fetchOptions.push(options);
+    if (mocks.fetchError) throw mocks.fetchError;
     return mocks.fetchResult;
   },
 }));
@@ -82,6 +90,9 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
   beforeEach(() => {
     resetObservationClockSchemaCacheForTests();
     mocks.fetchCalls = 0;
+    mocks.fetchError = null;
+    mocks.fetchOptions = [];
+    mocks.metrics = [];
     vi.stubEnv('DATA_MODE', 'live_api');
     vi.stubEnv('OFFSEASON_MODE', '0');
     vi.stubEnv('CRON_DRY_RUN', '0');
@@ -153,6 +164,37 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     await handler(event);
     spy.mockRestore();
     expect(mocks.fetchCalls).toBe(1);
+  });
+
+  it('a failed acquisition stores no snapshot rows, emits GamesFailed, and rethrows for SQS retry', async () => {
+    const { pool, calls } = workerPool(true, 'started');
+    mocks.pool = pool;
+    mocks.fetchError = new Error('BDL /odds/player_props 503 (page 2): upstream');
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const { handler } = await import('../../worker');
+    await expect(handler(event)).rejects.toThrow(/503/);
+    spy.mockRestore();
+    expect(calls.some((c) => c.sql.includes('INSERT INTO raw.player_prop_snapshots_v2'))).toBe(false);
+    expect(calls.some((c) => c.sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
+    const batch = mocks.metrics.find((m) => m.dims.Component === 'WorkerBatch');
+    expect(batch?.values.GamesFailed).toBe(1);
+  });
+
+  it('passes a provider deadline derived from the Lambda remaining time', async () => {
+    const { pool } = workerPool(true, 'started');
+    mocks.pool = pool;
+    mocks.fetchResult = {
+      rows: PROVIDER_ROWS,
+      observation: { requestStartedAt: at(9), responseReceivedAt: at(8), attempts: [{}] },
+    };
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const { handler } = await import('../../worker');
+    const before = Date.now();
+    await handler(event, { getRemainingTimeInMillis: () => 300_000 });
+    spy.mockRestore();
+    const deadline = (mocks.fetchOptions[0] as { limiter: { deadlineMs: number } }).limiter.deadlineMs;
+    expect(deadline).toBeGreaterThanOrEqual(before + 240_000);
+    expect(deadline).toBeLessThanOrEqual(Date.now() + 240_000);
   });
 
   it('missing schema fails closed before any provider call or write', async () => {

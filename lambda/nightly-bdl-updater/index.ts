@@ -39,6 +39,12 @@ try {
 import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
+import {
+  partitionServingGames,
+  providerSeasonTypesForWindow,
+  regularSeasonOpenValuesSql,
+  type TaggedProviderGame,
+} from './season-eligibility';
 
 // ============================================
 // CONFIGURATION
@@ -49,7 +55,11 @@ const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 const BALLDONTLIE_API_KEY = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;
 const REQUEST_DELAY_MS = parseInt(process.env.BALLDONTLIE_REQUEST_DELAY_MS || '200', 10);
 const MAX_RETRIES = parseInt(process.env.MAX_RETRIES || '3', 10);
-const RETRY_BASE_DELAY_MS = 60000;
+const RETRY_BASE_DELAY_MS = 2_000;
+const RETRY_MAX_DELAY_MS = 20_000;
+/** Reserved at the end of the invocation for logging and DB cleanup after the last BDL call. */
+const DEADLINE_MARGIN_MS = 20_000;
+let runDeadlineMs: number | undefined;
 const OFFSEASON_MODE = process.env.OFFSEASON_MODE === '1';
 const CRON_DRY_RUN = process.env.CRON_DRY_RUN === '1';
 
@@ -100,11 +110,20 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Respo
     const res = await fetchBdlLive(
       url,
       { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
-      { worker: 'nightly-bdl-updater' }
+      { worker: 'nightly-bdl-updater', deadlineMs: runDeadlineMs }
     );
     if (res.status >= 500 && attempt < retries) {
-      const delay = RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
-      console.warn(`Server error (${res.status}). Waiting ${delay / 1000}s before retry ${attempt + 1}...`);
+      const capped = Math.min(RETRY_MAX_DELAY_MS, RETRY_BASE_DELAY_MS * Math.pow(2, attempt));
+      const delay = Math.ceil(capped / 2 + (Math.random() * capped) / 2);
+      if (runDeadlineMs != null && Date.now() + delay > runDeadlineMs) {
+        console.error(
+          JSON.stringify({ event: 'bdl_server_error_retry_abandoned', status: res.status, attempt, reason: 'deadline' })
+        );
+        return res;
+      }
+      console.warn(
+        JSON.stringify({ event: 'bdl_server_error_retry', status: res.status, attempt: attempt + 1, delay_ms: delay })
+      );
       await sleep(delay);
       continue;
     }
@@ -113,7 +132,7 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Respo
   throw new Error(`BDL API failed after ${retries + 1} attempts: ${url}`);
 }
 
-async function fetchGames(startDate: string, endDate: string, season: number): Promise<any[]> {
+async function fetchGames(startDate: string, endDate: string, season: number, seasonType: string): Promise<any[]> {
   const out: any[] = [];
   let cursor: number | null = null;
   while (true) {
@@ -121,6 +140,7 @@ async function fetchGames(startDate: string, endDate: string, season: number): P
       start_date: startDate,
       end_date: endDate,
       'seasons[]': String(season),
+      season_type: seasonType,
       per_page: '100',
     });
     if (cursor != null) params.set('cursor', String(cursor));
@@ -132,6 +152,36 @@ async function fetchGames(startDate: string, endDate: string, season: number): P
     if (cursor == null) break;
   }
   return out;
+}
+
+/**
+ * One explicit season_type query per serving type for the window, then the shared serving fence.
+ * Only `eligible` rows may reach raw/analytics writes or the box-score cascade.
+ */
+async function fetchServingGames(
+  startDate: string,
+  endDate: string,
+  season: number,
+): Promise<{ eligible: any[]; fetched: number; fenced: number }> {
+  const tagged: TaggedProviderGame<any>[] = [];
+  for (const seasonType of providerSeasonTypesForWindow(season, endDate)) {
+    const rows = await fetchGames(startDate, endDate, season, seasonType);
+    for (const game of rows) tagged.push({ game, requestedSeasonType: seasonType });
+  }
+  const { eligible, ineligible } = partitionServingGames(tagged, season);
+  for (const { game, requestedSeasonType, reason } of ineligible) {
+    console.warn(
+      JSON.stringify({
+        evt: 'serving_game_fenced',
+        game_id: game?.id ?? null,
+        date: game?.date ?? null,
+        season: game?.season ?? null,
+        season_type_requested: requestedSeasonType,
+        reason,
+      })
+    );
+  }
+  return { eligible, fetched: tagged.length, fenced: ineligible.length };
 }
 
 async function fetchStatsByGameIds(gameIds: number[]): Promise<any[]> {
@@ -550,7 +600,8 @@ async function syncUpcomingScheduleFromBdl(
   season: number,
 ): Promise<number> {
   console.log(`[0/9] Schedule sync (all statuses): BDL ${startDateET} .. ${endDateET}, season ${season}...`);
-  const games = await fetchGames(startDateET, endDateET, season);
+  const { eligible: games, fenced } = await fetchServingGames(startDateET, endDateET, season);
+  if (fenced > 0) console.log(`  Fenced ${fenced} ineligible game rows (not written).`);
   if (games.length === 0) {
     console.log('  No games in window; nothing to upsert.');
     return 0;
@@ -584,6 +635,7 @@ interface PipelineResult {
   skippedProviderCalls: boolean;
   scheduleGamesSynced: number;
   gamesFound: number;
+  gamesFenced: number;
   finalGames: number;
   statsUpserted: number;
   playersUpserted: number;
@@ -601,6 +653,7 @@ async function runPipeline(): Promise<PipelineResult> {
     skippedProviderCalls: false,
     scheduleGamesSynced: 0,
     gamesFound: 0,
+    gamesFenced: 0,
     finalGames: 0,
     statsUpserted: 0,
     playersUpserted: 0,
@@ -650,9 +703,10 @@ async function runPipeline(): Promise<PipelineResult> {
   const endDate = today_et;
 
   console.log(`[1/9] Fetching games from BDL: ${startDate} to ${endDate} (season ${season})...`);
-  const allGames = await fetchGames(startDate, endDate, season);
-  result.gamesFound = allGames.length;
-  console.log(`  Found ${allGames.length} total games.`);
+  const { eligible: allGames, fetched, fenced } = await fetchServingGames(startDate, endDate, season);
+  result.gamesFound = fetched;
+  result.gamesFenced = fenced;
+  console.log(`  Found ${fetched} total games; ${fenced} fenced as not serving-eligible.`);
 
   const finalGames = allGames.filter((g: any) => g.status === 'Final');
   result.finalGames = finalGames.length;
@@ -1015,8 +1069,11 @@ async function runPipeline(): Promise<PipelineResult> {
           avg(efg_pct) as avg_efg_pct,
           avg(tov_pct) as avg_tov_pct,
           avg(orb_pct) as avg_orb_pct
-        from analytics.team_game_stats
-        where season in (${seasonPlaceholders})
+        from analytics.team_game_stats t
+        left join (values ${regularSeasonOpenValuesSql()}) as rs_open(open_season, open_et)
+          on rs_open.open_season = t.season
+        where t.season in (${seasonPlaceholders})
+          and (rs_open.open_et is null or t.game_date >= rs_open.open_et)
         group by team_id, season`,
         affectedSeasons,
       );
@@ -1055,9 +1112,12 @@ async function runPipeline(): Promise<PipelineResult> {
           case when sum(field_goals_attempted) > 0 then sum(field_goals_made)::numeric / sum(field_goals_attempted) else null end as fg_pct,
           case when sum(three_pointers_attempted) > 0 then sum(three_pointers_made)::numeric / sum(three_pointers_attempted) else null end as fg3_pct,
           case when sum(free_throws_attempted) > 0 then sum(free_throws_made)::numeric / sum(free_throws_attempted) else null end as ft_pct
-        from analytics.player_game_logs
-        where player_id in (${playerPlaceholders})
-          and season is not null and season <> ''
+        from analytics.player_game_logs l
+        left join (values ${regularSeasonOpenValuesSql()}) as rs_open(open_season, open_et)
+          on rs_open.open_season = l.season
+        where l.player_id in (${playerPlaceholders})
+          and l.season is not null and l.season <> ''
+          and (rs_open.open_et is null or l.game_date >= rs_open.open_et)
         group by player_id, season`,
         affectedPlayerIds,
       );
@@ -1090,8 +1150,13 @@ async function runPipeline(): Promise<PipelineResult> {
 // LAMBDA HANDLER
 // ============================================
 
-export async function handler(event?: any): Promise<{ statusCode: number; body: string }> {
+export async function handler(
+  event?: any,
+  context?: { getRemainingTimeInMillis?: () => number }
+): Promise<{ statusCode: number; body: string }> {
   const startTime = Date.now();
+  const remainingMs = context?.getRemainingTimeInMillis?.();
+  runDeadlineMs = remainingMs != null ? startTime + remainingMs - DEADLINE_MARGIN_MS : undefined;
   console.log('=== Nightly BDL Updater: START ===');
   console.log(`Timestamp: ${new Date().toISOString()}`);
 

@@ -10,8 +10,19 @@
 --
 -- Activation order: apply this file, then deploy the player-props worker. The new worker refuses
 -- to run (before any provider call) until these columns exist.
+--
+-- Row clocks are all-or-nothing: either both observation_clock and observed_at are NULL (legacy
+-- writer), or observation_clock = 'RESPONSE_RECEIVED' with observed_at set. A half-labelled row
+-- (observed_at without a clock) is rejected rather than read as legacy controller time.
+-- The checks use IS NOT DISTINCT FROM because a CHECK that evaluates to NULL passes.
+--
+-- Rollback (only before the new worker writes): drop the three check constraints, the added columns,
+-- and recreate research.v_prop_decision_lines from research_v_prop_decision_lines.sql.
 
 begin;
+
+set local lock_timeout = '5s';
+set local statement_timeout = '60s';
 
 alter table raw.player_prop_snapshots_v2
   add column if not exists observed_at timestamptz,
@@ -27,8 +38,8 @@ begin
     alter table raw.player_prop_snapshots_v2
       add constraint player_prop_snapshots_v2_observation_clock_check
       check (
-        observation_clock is null
-        or (observation_clock = 'RESPONSE_RECEIVED' and observed_at is not null)
+        (observation_clock is null and observed_at is null)
+        or (observation_clock is not distinct from 'RESPONSE_RECEIVED' and observed_at is not null)
       ) not valid;
   end if;
 end $$;
@@ -47,8 +58,8 @@ begin
     alter table analytics.player_props_current
       add constraint player_props_current_observation_clock_check
       check (
-        observation_clock is null
-        or (observation_clock = 'RESPONSE_RECEIVED' and observed_at is not null)
+        (observation_clock is null and observed_at is null)
+        or (observation_clock is not distinct from 'RESPONSE_RECEIVED' and observed_at is not null)
       ) not valid;
   end if;
 end $$;

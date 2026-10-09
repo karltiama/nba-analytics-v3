@@ -2,13 +2,18 @@
 --
 -- analytics.games season-phase labels (DATA1 §8.4).
 --   season_phase         PRESEASON | REGULAR | IST | PLAYIN | PLAYOFFS | UNCLASSIFIED
---   season_phase_source  request_season_type | provider_ist_stage | provider_postseason_flag | NULL
+--   season_phase_source  request_season_type | provider_ist_stage | provider_postseason_flag
+--                        | historical_backfill_v1 | NULL
 --
--- Existing rows become UNCLASSIFIED (never REGULAR). No backfill.
+-- Existing rows become UNCLASSIFIED (never REGULAR). No backfill in this file; the optional
+-- historical backfill (2023–2025 only) is MIGRATION_analytics_games_season_phase_backfill.sql.
 -- Constant default → metadata-only column add on PG 11+ (no table rewrite).
 -- Writer: lib/games/status-sync-db.ts APPLY_SEASON_PHASE_SQL only fills UNCLASSIFIED rows.
 --
--- Rollback (only if nothing reads the columns yet):
+-- Release order: deploy the 1B.2 game-status-sync first. Older status-sync never labels a game,
+-- so with this column every 2026 game stays UNCLASSIFIED and prospective loaders select nothing.
+--
+-- Rollback: readers detect the column at runtime and fall back to date rules when it is absent.
 --   alter table analytics.games drop column if exists season_phase_source, drop column if exists season_phase;
 
 begin;
@@ -29,7 +34,8 @@ alter table analytics.games
   drop constraint if exists games_season_phase_source_check,
   add constraint games_season_phase_source_check
     check (season_phase_source is null
-           or season_phase_source in ('request_season_type', 'provider_ist_stage', 'provider_postseason_flag'));
+           or season_phase_source in ('request_season_type', 'provider_ist_stage', 'provider_postseason_flag',
+                                      'historical_backfill_v1'));
 
 alter table analytics.games
   drop constraint if exists games_season_phase_has_source,
@@ -39,6 +45,6 @@ alter table analytics.games
 comment on column analytics.games.season_phase is
   'Competition phase from the acquisition request/provider (DATA1 §8.4). UNCLASSIFIED = unknown; never assumed REGULAR.';
 comment on column analytics.games.season_phase_source is
-  'Evidence for season_phase: request_season_type (explicit season_type param), provider_ist_stage, provider_postseason_flag.';
+  'Evidence for season_phase: request_season_type (explicit season_type param), provider_ist_stage, provider_postseason_flag, historical_backfill_v1 (calendar + provider postseason flag, 2023–2025 only).';
 
 commit;

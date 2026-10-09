@@ -11,22 +11,13 @@
 
 import { etCalendarDate, WOWY_POSTSEASON_START_ET } from '@/lib/wowy/calendar';
 import { columnExists, type SqlQueryable } from '@/lib/db/schema-capability';
+import { REGULAR_SEASON_OPEN_ET } from '@/lib/games/season-eligibility';
+
+export { REGULAR_SEASON_OPEN_ET };
 
 /** Protocol amendment id — freeze before first live cohort row. */
 export const PROSPECTIVE_GAME_UNIVERSE_AMENDMENT_ID =
   'prospective-game-universe-v1' as const;
-
-/**
- * Inclusive America/New_York calendar date of regular-season opening night
- * for each analytics season start-year. Tips strictly before this are PRESEASON.
- */
-export const REGULAR_SEASON_OPEN_ET: Readonly<Record<string, string>> = {
-  '2023': '2023-10-24',
-  '2024': '2024-10-22',
-  '2025': '2025-10-21',
-  /** Official 2026–27 regular-season opening night (America/New_York). */
-  '2026': '2026-10-20',
-};
 
 export const PROSPECTIVE_GAME_UNIVERSE = [
   'REGULAR_SEASON',

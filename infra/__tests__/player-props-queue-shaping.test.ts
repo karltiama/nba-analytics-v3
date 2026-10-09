@@ -42,13 +42,13 @@ describe('player-props queue shaping (LIVE-CLOCK-P0B)', () => {
     expect(v).toMatch(/>=\s*2\s*&&\s*var\.player_props_worker_max_concurrency\s*<=\s*4/);
   });
 
-  it('queue visibility, redrive count and limiter defaults are unchanged', () => {
+  it('queue visibility, redrive count and paid-tier limiter defaults', () => {
     const lambda = read('infra/lambda.tf');
     const queue = block(lambda, 'resource "aws_sqs_queue" "player_props_game_queue"');
     expect(queue).toMatch(/visibility_timeout_seconds\s*=\s*max\(180,\s*var\.player_props_lambda_timeout\s*\+\s*30\)/);
     expect(queue).toMatch(/maxReceiveCount\s*=\s*4\b/);
     const limiter = read('infra/bdl-rate-limit.tf');
-    expect(limiter.match(/variable "bdl_rate_limit_interval_ms"[\s\S]*?default\s*=\s*(\d+)/)?.[1]).toBe('13000');
+    expect(limiter.match(/variable "bdl_rate_limit_interval_ms"[\s\S]*?default\s*=\s*(\d+)/)?.[1]).toBe('500');
   });
 
   it('shaping does not touch schedules or reserved-concurrency gating', () => {

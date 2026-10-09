@@ -64,9 +64,9 @@ lambda_env = {
 # activation-canary safety rate (13s / burst 1) until paid GOAT entitlement is confirmed.
 # This is the Court Context operating rate, not the provider entitlement.
 # bdl_rate_limit_table_name          = "nba-bdl-rate-limit"
-# bdl_rate_limit_interval_ms         = 13000
+# bdl_rate_limit_interval_ms         = 500   # 120 req/min; 13000 restores the trial cadence
 # bdl_rate_limit_max_requests        = 1
-# bdl_rate_limit_burst               = 1
+# bdl_rate_limit_burst               = 5
 # bdl_rate_limit_acquire_timeout_ms  = 90000
 # player_props_worker_reserved_concurrency = 4
 # player_props_apply_reserved_concurrency  = false
@@ -201,4 +201,8 @@ boxscore_lambda_env = {
 # injuries_execution_enabled = true
 # Keep odds_execution_enabled / player_props_execution_enabled / boxscore_execution_enabled / postgame_execution_enabled false
 # unless those families are intentionally activated.
+
+# Ingestion alerts (SNS email). Put the real address in the gitignored infra/alerts.auto.tfvars so
+# every apply loads it; an apply without it removes the subscription. Confirm the AWS email within 3 days.
+# ingestion_alert_email = "alerts@example.com"
 

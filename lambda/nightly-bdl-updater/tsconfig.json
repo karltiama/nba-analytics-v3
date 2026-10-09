@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["index.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts"],
+  "include": ["index.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "ingestion-season.ts", "season-eligibility.ts"],
   "exclude": ["node_modules", "dist"]
 }

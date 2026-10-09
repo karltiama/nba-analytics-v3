@@ -3,11 +3,9 @@
  * Values match POSTSEASON_START_ET / etCalendarDate in minutes-projection-eval.ts.
  */
 
-export const WOWY_POSTSEASON_START_ET: Record<string, string> = {
-  '2023': '2024-04-16',
-  '2024': '2025-04-15',
-  '2025': '2026-04-14',
-};
+import { POSTSEASON_START_ET } from '@/lib/games/season-eligibility';
+
+export const WOWY_POSTSEASON_START_ET: Readonly<Record<string, string>> = POSTSEASON_START_ET;
 
 /**
  * NBA Cup Championship tip dates (America/New_York calendar).

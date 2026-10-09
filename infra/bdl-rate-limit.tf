@@ -1,5 +1,10 @@
 # Account-level BALLDONTLIE rate-limit coordination (Step 13B/13C.1).
-# Default interval is the activation-canary safety rate. This module does not enable schedules.
+# This module does not enable schedules.
+#
+# Paid-tier setting (Phase 1B.4): verified provider limit is 600 req/min. Token bucket refills
+# max_requests per interval_ms up to burst, shared by every Lambda through one DynamoDB item:
+#   sustained = 60000 / 500 * 1 = 120 req/min; worst 60 s window = burst + 120 = 125 (about 21% of 600).
+# Concurrency does not add throughput: all workers draw from the same bucket.
 
 variable "bdl_rate_limit_table_name" {
   description = "DynamoDB table for shared BDL token-bucket coordination."
@@ -8,9 +13,9 @@ variable "bdl_rate_limit_table_name" {
 }
 
 variable "bdl_rate_limit_interval_ms" {
-  description = "Activation-canary safety rate: ms to refill BDL_RATE_LIMIT_MAX_REQUESTS tokens. Default 13000 matches the historical 5 req/min trial cadence until paid GOAT entitlement is confirmed. Floor 200 in worker code unless BDL_RATE_LIMIT_ALLOW_FAST=1."
+  description = "ms to refill BDL_RATE_LIMIT_MAX_REQUESTS tokens. 500 = 120 req/min sustained, a fifth of the verified 600 req/min paid limit. 13000 restores the trial cadence. Floor 200 in worker code unless BDL_RATE_LIMIT_ALLOW_FAST=1."
   type        = number
-  default     = 13000
+  default     = 500
 }
 
 variable "bdl_rate_limit_max_requests" {
@@ -20,13 +25,13 @@ variable "bdl_rate_limit_max_requests" {
 }
 
 variable "bdl_rate_limit_burst" {
-  description = "Maximum tokens in the shared bucket."
+  description = "Maximum tokens in the shared bucket (idle burst). Peak permits in any 60 s window = burst + 60000 / interval_ms * max_requests."
   type        = number
-  default     = 1
+  default     = 5
 }
 
 variable "bdl_rate_limit_acquire_timeout_ms" {
-  description = "How long a worker waits for a BDL permit before failing closed. Sized above the activation-canary interval so a short queue can wait one token."
+  description = "How long a worker waits for a BDL permit before failing closed. Callers that pass a deadline wait less when their Lambda has less time left."
   type        = number
   default     = 90000
 }

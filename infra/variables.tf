@@ -279,7 +279,7 @@ variable "player_props_worker_reserved_concurrency" {
 }
 
 variable "player_props_worker_max_concurrency" {
-  description = "SQS event-source maximum concurrency for the props worker. Messages beyond this wait in the queue without consuming receive counts. 2 is the AWS minimum and already saturates the shared 1-permit/13 s BDL limiter (one worker writes while the other waits for the next permit). Raising it adds no provider throughput."
+  description = "SQS event-source maximum concurrency for the props worker. Messages beyond this wait in the queue without consuming receive counts. 2 is the AWS minimum. Provider throughput is capped by the shared BDL token bucket regardless of this value."
   type        = number
   default     = 2
 

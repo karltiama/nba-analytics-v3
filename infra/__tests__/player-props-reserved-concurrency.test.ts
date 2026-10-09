@@ -84,16 +84,17 @@ describe('centralized BDL throttle terraform', () => {
     expect(src).not.toMatch(/enable_schedule\s*=\s*true/);
   });
 
-  it('Terraform limiter default is the activation-canary safety interval', () => {
+  it('Terraform limiter defaults stay well under the verified 600 req/min paid limit', () => {
     const src = read('infra/bdl-rate-limit.tf');
-    const interval = src.match(
-      /variable "bdl_rate_limit_interval_ms"[\s\S]*?default\s*=\s*(\d+)/
-    );
-    const acquire = src.match(
-      /variable "bdl_rate_limit_acquire_timeout_ms"[\s\S]*?default\s*=\s*(\d+)/
-    );
-    expect(interval?.[1]).toBe('13000');
-    expect(acquire?.[1]).toBe('90000');
+    const num = (name: string) =>
+      Number(src.match(new RegExp(`variable "${name}"[\\s\\S]*?default\\s*=\\s*(\\d+)`))?.[1]);
+    const interval = num('bdl_rate_limit_interval_ms');
+    const perInterval = num('bdl_rate_limit_max_requests');
+    const burst = num('bdl_rate_limit_burst');
+    expect([interval, perInterval, burst]).toEqual([500, 1, 5]);
+    expect(num('bdl_rate_limit_acquire_timeout_ms')).toBe(90000);
+    const peakPerMinute = burst + (60_000 / interval) * perInterval;
+    expect(peakPerMinute).toBeLessThanOrEqual(600 * 0.25);
   });
 
   it('freeze defaults remain replay / offseason / dry-run', () => {

@@ -1,4 +1,4 @@
-import type { SQSEvent } from 'aws-lambda';
+import type { Context, SQSEvent } from 'aws-lambda';
 import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
@@ -32,7 +32,12 @@ function parseMessage(body: string): WorkerMessage {
   return payload;
 }
 
-export const handler = async (event: SQSEvent) => {
+/** Left for the DB writes, archive and run bookkeeping after the last provider page. */
+const PROVIDER_DEADLINE_MARGIN_MS = 60_000;
+
+export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemainingTimeInMillis'>) => {
+  const remainingMs = context?.getRemainingTimeInMillis?.();
+  const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
   const mode = getRuntimeMode();
   if (mode.shouldSkipMutations) {
     console.log(
@@ -73,7 +78,7 @@ export const handler = async (event: SQSEvent) => {
       continue;
     }
     try {
-      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId);
+      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, { limiter: { deadlineMs } });
       const props = fetched.rows;
       providerSettled = true;
       logMarketOutcome({
@@ -229,6 +234,16 @@ export const handler = async (event: SQSEvent) => {
         await finalizePullRunIfComplete(pool, msg.runId);
       }
       failCount++;
+      emitCoverageMetric(
+        'NBA/PlayerProps',
+        { Component: 'WorkerBatch' },
+        {
+          GamesSucceeded: successCount,
+          GamesFailed: failCount,
+          ArchiveGap: archiveGapCount,
+          ArchiveFailed: archiveFailedCount,
+        }
+      );
       throw error;
     }
   }

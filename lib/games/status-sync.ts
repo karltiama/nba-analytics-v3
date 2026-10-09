@@ -25,6 +25,11 @@ import {
   type SeasonPhaseClassification,
 } from './season-phase';
 import { PINNED_ANALYTICS_SEASON } from '@/lib/season';
+import {
+  etDateOfInstant,
+  etDateOfProviderGame,
+  servingDateDecision,
+} from '@/lib/games/season-eligibility';
 
 export const STATUS_SYNC_JOB = 'game_status_sync';
 export const PROTECTED_HISTORY_SEASONS = new Set(['2023', '2024', '2025']);
@@ -624,6 +629,18 @@ export async function runGameStatusSync(input: {
       rejected += 1;
       preseasonFenced += 1;
       continue;
+    }
+    if (phase.phase === 'UNCLASSIFIED') {
+      rejected += 1;
+      continue;
+    }
+    if (phase.phase !== 'PRESEASON') {
+      const etDate = etDateOfProviderGame(raw) ?? etDateOfInstant(incoming.startTime);
+      if (!servingDateDecision(targetSeason, etDate).eligible) {
+        rejected += 1;
+        preseasonFenced += 1;
+        continue;
+      }
     }
     const local = await input.store.getById(incoming.gameId);
     const planned = planGameStatusWrite({ local, incoming, targetSeason });

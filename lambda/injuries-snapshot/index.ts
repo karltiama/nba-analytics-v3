@@ -108,6 +108,10 @@ type BdlPlayerInjury = z.infer<typeof BdlPlayerInjurySchema>;
 // FETCH INJURIES FROM BDL
 // ============================================
 
+/** Reserved after the last provider page for raw writes, transform and pull-run bookkeeping. */
+const DEADLINE_MARGIN_MS = 30_000;
+let runDeadlineMs: number | undefined;
+
 async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
   const all: BdlPlayerInjury[] = [];
   let cursor: number | null = null;
@@ -122,7 +126,7 @@ async function fetchAllInjuries(): Promise<BdlPlayerInjury[]> {
     const res = await fetchBdlLive(
       url.toString(),
       { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
-      { worker: 'injuries-snapshot' }
+      { worker: 'injuries-snapshot', deadlineMs: runDeadlineMs }
     );
 
     if (!res.ok) {
@@ -446,7 +450,9 @@ async function transformToAnalytics(
 // LAMBDA HANDLER
 // ============================================
 
-export const handler = async () => {
+export const handler = async (_event?: unknown, context?: { getRemainingTimeInMillis?: () => number }) => {
+  const remainingMs = context?.getRemainingTimeInMillis?.();
+  runDeadlineMs = remainingMs != null ? Date.now() + remainingMs - DEADLINE_MARGIN_MS : undefined;
   try {
     console.log('Starting injuries snapshot (BallDontLie /nba/v1/player_injuries)...');
 

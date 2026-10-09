@@ -5,6 +5,8 @@
  * Default interval (13000ms / burst 1) is the activation-canary safety rate until
  * paid GOAT entitlement is confirmed. Fail-closed: coordination errors and
  * acquire timeouts do not call BDL. 429 still publishes a global Retry-After cooldown.
+ * Every in-process wait is bounded by acquire timeout, BDL_RATE_LIMIT_MAX_RETRY_WAIT_MS,
+ * and the optional caller deadline, so retries never outlive the Lambda.
  */
 
 export const BDL_LIVE_RATE_LIMIT_SKIP = 'BDL live request skipped by replay/offseason/dry-run flags';
@@ -19,7 +21,9 @@ const DEFAULT_MAX_REQUESTS = 1;
 const DEFAULT_BURST = 1;
 const DEFAULT_ACQUIRE_TIMEOUT_MS = 90_000;
 const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_RETRY_BASE_MS = 60_000;
+const DEFAULT_RETRY_BASE_MS = 5_000;
+const DEFAULT_MAX_RETRY_WAIT_MS = 30_000;
+const DEFAULT_HTTP_TIMEOUT_MS = 20_000;
 const ENV_INTERVAL_FLOOR_MS = 200;
 const BUCKET_PK = 'bdl';
 const BUCKET_SK = 'token-bucket';
@@ -35,6 +39,10 @@ export type LiveRateLimitConfig = {
   /** Set when BDL_RATE_LIMIT_MAX_RETRIES is invalid; assertLiveRateLimitConfig fails closed on it. */
   maxRetriesError: string | null;
   retryBaseDelayMs: number;
+  /** Longest in-process wait after a 429. A longer Retry-After is published as cooldown, then fails. */
+  maxRetryWaitMs: number;
+  /** Per-request abort when the caller supplies no signal. Covers headers and body. */
+  httpTimeoutMs: number;
   worker: string;
   backend: 'memory' | 'dynamodb';
   tableName: string | null;
@@ -161,6 +169,8 @@ export function readLiveRateLimitConfig(
     maxRetries: retries.value,
     maxRetriesError: retries.error,
     retryBaseDelayMs: Math.max(1, envInt(env, 'BDL_RATE_LIMIT_RETRY_BASE_MS', DEFAULT_RETRY_BASE_MS)),
+    maxRetryWaitMs: Math.max(1, envInt(env, 'BDL_RATE_LIMIT_MAX_RETRY_WAIT_MS', DEFAULT_MAX_RETRY_WAIT_MS)),
+    httpTimeoutMs: Math.max(1, envInt(env, 'BDL_HTTP_TIMEOUT_MS', DEFAULT_HTTP_TIMEOUT_MS)),
     worker: (env.BDL_RATE_LIMIT_WORKER ?? env.AWS_LAMBDA_FUNCTION_NAME ?? 'unknown').trim() || 'unknown',
     backend,
     tableName,
@@ -238,23 +248,26 @@ export async function acquireLiveBdlPermit(args: {
   config: LiveRateLimitConfig;
   nowMs?: () => number;
   sleepFn?: (ms: number) => Promise<void>;
+  /** Tighter bound than config.acquireTimeoutMs, e.g. from a caller deadline. */
+  timeoutMs?: number;
 }): Promise<AcquirePermitResult> {
   const nowMs = args.nowMs ?? Date.now;
   const sleepFn = args.sleepFn ?? sleep;
   const started = nowMs();
+  const limitMs = Math.min(args.config.acquireTimeoutMs, args.timeoutMs ?? Infinity);
   let retries = 0;
   let waitMs = 0;
 
   while (true) {
     const now = nowMs();
-    if (now - started > args.config.acquireTimeoutMs) {
+    if (now - started > limitMs) {
       throw new BdlRateLimitError(BDL_LIVE_RATE_LIMIT_TIMEOUT, 'timeout');
     }
 
     try {
       const cooldown = await args.store.getCooldownUntilMs();
       if (cooldown != null && cooldown > now) {
-        const delay = Math.min(cooldown - now, args.config.acquireTimeoutMs - (now - started));
+        const delay = Math.min(cooldown - now, limitMs - (now - started));
         if (delay <= 0) throw new BdlRateLimitError(BDL_LIVE_RATE_LIMIT_TIMEOUT, 'timeout');
         waitMs += delay;
         await sleepFn(delay);
@@ -277,7 +290,7 @@ export async function acquireLiveBdlPermit(args: {
     if (current.tokens < 1) {
       const deficit = 1 - current.tokens;
       const wait = Math.ceil((deficit / args.config.maxRequests) * args.config.intervalMs);
-      const delay = Math.min(Math.max(1, wait), args.config.acquireTimeoutMs - (nowMs() - started));
+      const delay = Math.min(Math.max(1, wait), limitMs - (nowMs() - started));
       if (delay <= 0) throw new BdlRateLimitError(BDL_LIVE_RATE_LIMIT_TIMEOUT, 'timeout');
       waitMs += delay;
       await sleepFn(delay);
@@ -314,6 +327,9 @@ export type FetchBdlLiveOptions = {
   nowMs?: () => number;
   sleepFn?: (ms: number) => Promise<void>;
   worker?: string;
+  /** Absolute epoch ms the caller must finish by (e.g. Lambda remaining time minus a margin). */
+  deadlineMs?: number;
+  randomFn?: () => number;
 };
 
 let defaultMemoryStore: ReturnType<typeof createMemoryLiveRateLimitStore> | null = null;
@@ -377,9 +393,20 @@ export async function fetchBdlLive(
   }
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
   const sleepFn = options.sleepFn ?? sleep;
+  const clock = options.nowMs ?? Date.now;
+  const randomFn = options.randomFn ?? Math.random;
+  const deadlineMs = options.deadlineMs;
 
   let attempt = 0;
   while (true) {
+    let budgetMs: number | undefined;
+    if (deadlineMs != null) {
+      budgetMs = deadlineMs - clock() - config.httpTimeoutMs;
+      if (budgetMs <= 0) {
+        logBdlThrottle({ worker: config.worker, decision: 'deadline', phase: 'acquire', attempt });
+        throw new BdlRateLimitError(BDL_LIVE_RATE_LIMIT_TIMEOUT, 'timeout');
+      }
+    }
     let permit: AcquirePermitResult;
     try {
       permit = await acquireLiveBdlPermit({
@@ -387,6 +414,7 @@ export async function fetchBdlLive(
         config,
         nowMs: options.nowMs,
         sleepFn,
+        timeoutMs: budgetMs,
       });
     } catch (err) {
       logBdlThrottle({
@@ -404,12 +432,31 @@ export async function fetchBdlLive(
       attempt,
     });
 
-    const res = await fetchImpl(url, init);
+    const attemptInit: RequestInit = init?.signal
+      ? init
+      : { ...init, signal: AbortSignal.timeout(config.httpTimeoutMs) };
+    let res: Response;
+    try {
+      res = await fetchImpl(url, attemptInit);
+    } catch (err) {
+      logBdlThrottle({
+        worker: config.worker,
+        decision: 'http_error',
+        error: err instanceof Error ? err.name : 'unknown',
+        attempt,
+      });
+      throw err;
+    }
     if (res.status !== 429) return res;
 
     const retryAfter = parseRetryAfterMs(res.headers.get('retry-after'));
-    const delayMs =
-      retryAfter ?? config.retryBaseDelayMs * Math.pow(2, Math.min(attempt, 8));
+    let delayMs: number;
+    if (retryAfter != null) {
+      delayMs = retryAfter;
+    } else {
+      const capped = Math.min(config.maxRetryWaitMs, config.retryBaseDelayMs * Math.pow(2, Math.min(attempt, 8)));
+      delayMs = Math.ceil(capped / 2 + (randomFn() * capped) / 2);
+    }
     logBdlThrottle({
       worker: config.worker,
       decision: 'provider_429',
@@ -419,7 +466,7 @@ export async function fetchBdlLive(
     });
     try {
       await store.setCooldownUntilMs(
-        (options.nowMs ?? Date.now)() + delayMs,
+        clock() + delayMs,
         Math.max(config.slotTtlSeconds, Math.ceil(delayMs / 1000) + 5)
       );
     } catch {
@@ -435,6 +482,14 @@ export async function fetchBdlLive(
         `BDL 429 after ${config.maxRetries + 1} attempts`,
         'timeout'
       );
+    }
+    if (delayMs > config.maxRetryWaitMs) {
+      logBdlThrottle({ worker: config.worker, decision: 'retry_wait_exceeds_budget', delay_ms: delayMs, attempt });
+      throw new BdlRateLimitError(`BDL 429 retry wait ${delayMs}ms exceeds ${config.maxRetryWaitMs}ms`, 'timeout');
+    }
+    if (deadlineMs != null && clock() + delayMs + config.httpTimeoutMs > deadlineMs) {
+      logBdlThrottle({ worker: config.worker, decision: 'deadline', phase: 'retry', delay_ms: delayMs, attempt });
+      throw new BdlRateLimitError(`BDL 429 retry would pass the caller deadline`, 'timeout');
     }
     attempt += 1;
     await sleepFn(delayMs);

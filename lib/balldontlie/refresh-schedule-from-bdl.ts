@@ -7,6 +7,11 @@ import type { PoolClient } from 'pg';
 import pool from '@/lib/db';
 import { resolveIngestionSeasonStartYear } from '@/lib/season';
 import { fetchBdlLive } from '@/lib/balldontlie/live-rate-limit';
+import {
+  partitionServingGames,
+  providerSeasonTypesForWindow,
+  type TaggedProviderGame,
+} from '@/lib/games/season-eligibility';
 
 const BDL_BASE = 'https://api.balldontlie.io/v1';
 
@@ -109,7 +114,8 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchWithRetry(url: string, apiKey: string): Promise<Response> {
   const maxRetries = Number.parseInt(process.env.MAX_RETRIES || '3', 10);
-  const retryBaseDelayMs = 60000;
+  const retryBaseDelayMs = 1_000;
+  const retryMaxDelayMs = 5_000;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const res = await fetchBdlLive(
@@ -118,8 +124,9 @@ async function fetchWithRetry(url: string, apiKey: string): Promise<Response> {
       { worker: 'refresh-schedule-from-bdl' }
     );
     if (res.status >= 500 && attempt < maxRetries) {
-      const delay = retryBaseDelayMs * Math.pow(2, attempt);
-      console.warn(`[refresh-schedule-from-bdl] Server error (${res.status}). Waiting ${delay / 1000}s before retry ${attempt + 1}...`);
+      const capped = Math.min(retryMaxDelayMs, retryBaseDelayMs * Math.pow(2, attempt));
+      const delay = Math.ceil(capped / 2 + (Math.random() * capped) / 2);
+      console.warn(`[refresh-schedule-from-bdl] Server error (${res.status}). Waiting ${delay}ms before retry ${attempt + 1}...`);
       await sleep(delay);
       continue;
     }
@@ -132,6 +139,7 @@ async function fetchGamesPage(
   startDate: string,
   endDate: string,
   season: number,
+  seasonType: string,
   apiKey: string,
 ): Promise<any[]> {
   const out: any[] = [];
@@ -141,6 +149,7 @@ async function fetchGamesPage(
       start_date: startDate,
       end_date: endDate,
       'seasons[]': String(season),
+      season_type: seasonType,
       per_page: '100',
     });
     if (cursor != null) params.set('cursor', String(cursor));
@@ -240,7 +249,9 @@ export function getTodayEtYmd(): string {
  *
  * @param season Optional BDL season start year (e.g. 2026 for 2026-27). When omitted,
  *   uses resolveIngestionSeasonStartYear() → CURRENT_ANALYTICS_SEASON / pin (not calendar).
- * @returns number of BDL rows processed, or null if skipped (no API key).
+ * Only rows from explicit regular/postseason season_type queries that pass the shared serving
+ * fence (season match, on or after opening night ET) are upserted; preseason is never written.
+ * @returns number of eligible BDL rows upserted, or null if skipped (no API key).
  */
 export async function refreshBdlScheduleForEtDateRange(
   startDateET: string,
@@ -254,7 +265,19 @@ export async function refreshBdlScheduleForEtDateRange(
   }
 
   const resolvedSeason = resolveIngestionSeasonStartYear(season);
-  const games = await fetchGamesPage(startDateET, endDateET, resolvedSeason, apiKey);
+  const tagged: TaggedProviderGame<any>[] = [];
+  for (const seasonType of providerSeasonTypesForWindow(resolvedSeason, endDateET)) {
+    const rows = await fetchGamesPage(startDateET, endDateET, resolvedSeason, seasonType, apiKey);
+    for (const game of rows) tagged.push({ game, requestedSeasonType: seasonType });
+  }
+  const { eligible: games, ineligible } = partitionServingGames(tagged, resolvedSeason);
+  if (ineligible.length > 0) {
+    console.warn(
+      `[refresh-schedule-from-bdl] Fenced ${ineligible.length} game rows not eligible for serving: ${ineligible
+        .map((r) => `${r.game?.id}:${r.reason}`)
+        .join(', ')}`
+    );
+  }
   if (games.length === 0) return 0;
 
   const client = await pool.connect();
