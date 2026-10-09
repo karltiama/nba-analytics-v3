@@ -1,11 +1,76 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { InMemoryAcqArchiveStore } from '@/lib/acquisition';
+import { createMemoryAcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
+import { createMemoryLiveRateLimitStore } from '@/lib/balldontlie/live-rate-limit';
+import { createMemoryGameStore, runGameStatusSync } from '@/lib/games/status-sync';
+import { createAcquiringStatusSyncFetchPage } from '@/lib/games/status-sync-acquisition';
 
 const root = path.resolve(__dirname, '../..');
 
 function read(rel: string): string {
   return fs.readFileSync(path.join(root, rel), 'utf8').replace(/\r\n/g, '\n');
+}
+
+const S3_RESOURCE_TEMPLATE =
+  'arn:aws:s3:::${var.nba_data_bucket_name}/${local.game_status_sync_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_games/*';
+
+async function archiveKeysFromStatusSync(rawPrefix: string): Promise<string[]> {
+  const env: Record<string, string> = {
+    DATA_MODE: 'live_api',
+    OFFSEASON_MODE: '0',
+    CRON_DRY_RUN: '0',
+    LIVE_INGESTION_ENABLED: 'true',
+    STATUS_SYNC_TARGET_SEASON: '2026',
+    BDL_RATE_LIMIT_BACKEND: 'memory',
+    BDL_RATE_LIMIT_ALLOW_FAST: '1',
+    BDL_RATE_LIMIT_INTERVAL_MS: '1',
+    BDL_RATE_LIMIT_MAX_REQUESTS: '1000',
+    BDL_RATE_LIMIT_BURST: '1000',
+    BDL_RATE_LIMIT_MAX_RETRIES: '0',
+  };
+  const archive = new InMemoryAcqArchiveStore();
+  const now = new Date('2026-10-20T15:00:00.000Z');
+  let req = 0;
+  const body = JSON.stringify({
+    data: [
+      {
+        id: 9001,
+        season: 2026,
+        status: 'Scheduled',
+        datetime: '2026-10-20T23:30:00.000Z',
+        date: '2026-10-20',
+        home_team_score: 0,
+        visitor_team_score: 0,
+        home_team: { id: 1 },
+        visitor_team: { id: 2 },
+      },
+    ],
+    meta: { next_cursor: null, per_page: 100 },
+  });
+  const fetchPage = createAcquiringStatusSyncFetchPage({
+    env,
+    apiKey: 'test-key-not-real-0000',
+    archiveStore: archive,
+    ledger: createMemoryAcqLedgerWriter(),
+    rawPrefix,
+    fetchImpl: async () => new Response(body, { status: 200, headers: { 'content-type': 'application/json' } }),
+    rateLimitStore: createMemoryLiveRateLimitStore(),
+    now: () => now,
+    newRequestId: () => `req-${++req}`,
+    logger: { error: () => undefined },
+  });
+  await runGameStatusSync({
+    env,
+    now,
+    store: createMemoryGameStore([]),
+    fetchPage,
+    requireAcquisition: true,
+    dryRun: false,
+    newId: () => 'run-1',
+  });
+  return [...archive.objects.keys()];
 }
 
 describe('game-status-sync terraform (13I.2 creation boundary)', () => {
@@ -61,11 +126,40 @@ describe('game-status-sync terraform (13I.2 creation boundary)', () => {
     expect(src).toMatch(/variable "game_status_sync_lambda_memory_size"[\s\S]*?default\s*=\s*256/);
   });
 
-  it('has no S3, SQS, Step Functions, or unrelated DynamoDB permissions', () => {
-    expect(src).not.toMatch(/s3:/i);
+  it('has no SQS, Step Functions, or unrelated DynamoDB permissions', () => {
     expect(src).not.toMatch(/sqs:/i);
     expect(src).not.toMatch(/states:/i);
     expect(src).toMatch(/local\.bdl_rate_limit_iam/);
+  });
+
+  it('S3 is limited to Put/Get on the 2026 acq_games archive prefix of the status-sync role', () => {
+    expect(src.match(/"s3:[A-Za-z*]+"/g)).toEqual(['"s3:PutObject"', '"s3:GetObject"']);
+    expect(src).not.toMatch(/s3:\*|s3:Delete|s3:List|s3:PutObjectAcl|s3:PutBucket/);
+    expect(src.match(/arn:aws:s3:::[^"]*/g)).toEqual([S3_RESOURCE_TEMPLATE]);
+    const block = src.slice(src.indexOf('resource "aws_iam_role_policy" "game_status_sync_s3_archive"'));
+    expect(block).toMatch(/count\s*=\s*var\.game_status_sync_create && var\.nba_data_bucket_name != "" \? 1 : 0/);
+    expect(block).toMatch(/role\s*=\s*aws_iam_role\.lambda_game_status_sync_execution\[0\]\.id/);
+    expect(src).toMatch(/game_status_sync_raw_prefix\s*=\s*trim\(var\.nba_raw_prefix, "\/"\)/);
+  });
+
+  it('archive env is set in the last merge so tfvars cannot drop it', () => {
+    const last = src.slice(src.indexOf('# Last-merge wins.'));
+    expect(last).toMatch(/NBA_DATA_BUCKET\s*=\s*var\.nba_data_bucket_name/);
+    expect(last).toMatch(/NBA_RAW_PREFIX\s*=\s*local\.game_status_sync_raw_prefix/);
+  });
+
+  it('runtime archive keys fall inside the IAM resource for slash-wrapped and plain prefixes', async () => {
+    for (const configured of ['raw', '/raw/']) {
+      const trimmed = configured.replace(/^\/+|\/+$/g, '');
+      const resource = S3_RESOURCE_TEMPLATE.replace('${var.nba_data_bucket_name}', 'bucket').replace(
+        '${local.game_status_sync_raw_prefix}',
+        trimmed
+      );
+      const pattern = new RegExp(`^${resource.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`);
+      const keys = await archiveKeysFromStatusSync(configured);
+      expect(keys.length).toBe(1);
+      for (const key of keys) expect(`arn:aws:s3:::bucket/${key}`).toMatch(pattern);
+    }
   });
 
   it('pins STATUS_SYNC_TARGET_SEASON=2026 and does not use PINNED_ANALYTICS_SEASON', () => {

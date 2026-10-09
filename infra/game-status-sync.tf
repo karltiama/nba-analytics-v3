@@ -83,6 +83,35 @@ resource "aws_iam_role_policy" "game_status_sync_bdl_rate_limit" {
   policy = jsonencode(local.bdl_rate_limit_iam)
 }
 
+locals {
+  # Mirrors normalizeRawPrefix() in lib/acquisition/keys.ts (surrounding slashes trimmed).
+  game_status_sync_raw_prefix = trim(var.nba_raw_prefix, "/")
+}
+
+# Archive-before-write for /v1/games acquisition (lib/acquisition/s3-store.ts):
+# conditional PutObject (If-None-Match) then HeadObject readback, which s3:GetObject authorizes.
+# season=2026 must change together with STATUS_SYNC_TARGET_SEASON at season rollover.
+resource "aws_iam_role_policy" "game_status_sync_s3_archive" {
+  count = var.game_status_sync_create && var.nba_data_bucket_name != "" ? 1 : 0
+  name  = "${var.game_status_sync_lambda_function_name}-s3-archive"
+  role  = aws_iam_role.lambda_game_status_sync_execution[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "GameStatusSyncAcquisitionArchiveObjects"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ]
+        Resource = "arn:aws:s3:::${var.nba_data_bucket_name}/${local.game_status_sync_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_games/*"
+      }
+    ]
+  })
+}
+
 resource "aws_lambda_function" "game_status_sync" {
   count            = var.game_status_sync_create ? 1 : 0
   filename         = data.archive_file.game_status_sync[0].output_path
@@ -112,6 +141,8 @@ resource "aws_lambda_function" "game_status_sync" {
         OFFSEASON_MODE                    = local.family_schedule_enabled.game_status_sync ? "0" : "1"
         CRON_DRY_RUN                      = local.family_schedule_enabled.game_status_sync ? "0" : "1"
         STATUS_SYNC_TARGET_SEASON         = "2026"
+        NBA_DATA_BUCKET                   = var.nba_data_bucket_name
+        NBA_RAW_PREFIX                    = local.game_status_sync_raw_prefix
         BDL_RATE_LIMIT_TABLE              = aws_dynamodb_table.bdl_rate_limit.name
         BDL_RATE_LIMIT_BACKEND            = "dynamodb"
         BDL_RATE_LIMIT_WORKER             = "game-status-sync"

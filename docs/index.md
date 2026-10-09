@@ -20,6 +20,7 @@ Agent entrypoint: [../AGENTS.md](../AGENTS.md). Map of code and schemas: [archit
 - [Roster canonical identity](./roster-canonical-identity-design.md)
 - [Roster snapshot semantics](./roster-snapshot-semantics.md)
 - [Projection ledger activation runbook](./projection-ledger-activation-runbook.md)
+- [Player-prop observation clock recovery](./player-prop-observation-clock-runbook.md)
 
 ## Domain notes (only when the task is that feature)
 

@@ -16,8 +16,10 @@
 -- (observed_at without a clock) is rejected rather than read as legacy controller time.
 -- The checks use IS NOT DISTINCT FROM because a CHECK that evaluates to NULL passes.
 --
--- Rollback (only before the new worker writes): drop the three check constraints, the added columns,
--- and recreate research.v_prop_decision_lines from research_v_prop_decision_lines.sql.
+-- Rollback (only before any observation-clock value is written): run
+-- ROLLBACK_player_prop_observation_clock.sql. research_v_prop_decision_lines.sql cannot be used
+-- because it needs these columns, and CREATE OR REPLACE VIEW cannot drop decision_clock.
+-- See docs/player-prop-observation-clock-runbook.md.
 
 begin;
 
