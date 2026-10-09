@@ -1,9 +1,9 @@
 /**
- * Bundle lib/games status-sync + shared BDL limiter into a Lambda-safe CJS artifact.
+ * Bundle lib/scoreboard + shared BDL limiter/acquisition into a Lambda-safe CJS artifact.
  * Resolves @/* to the repo root. Does not copy .env or Terraform files.
  *
- * Usage (from repo root): npm run build:game-status-sync-lambda
- * Or: node lambda/game-status-sync/build.mjs
+ * Usage (from repo root): npm run build:scoreboard-lambda
+ * Or: node lambda/scoreboard/build.mjs
  * Tests pass --out-root=<dir> so they never overwrite .package, which Terraform hashes.
  */
 
@@ -16,7 +16,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
 const outRootArg = process.argv.find((a) => a.startsWith('--out-root='));
 const packageRoot = outRootArg
-  ? path.join(path.resolve(outRootArg.slice('--out-root='.length)), 'game-status-sync', '.package')
+  ? path.join(path.resolve(outRootArg.slice('--out-root='.length)), 'scoreboard', '.package')
   : path.join(here, '.package');
 const outfile = path.join(packageRoot, 'dist/index.js');
 
@@ -59,4 +59,4 @@ await esbuild.build({
   logLevel: 'info',
 });
 
-console.log(`game-status-sync bundle written: ${path.relative(root, outfile)}`);
+console.log(`scoreboard bundle written: ${path.relative(root, outfile)}`);

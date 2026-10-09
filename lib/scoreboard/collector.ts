@@ -13,12 +13,8 @@ import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import { shiftEtYmd, etYmd } from '@/lib/games/status-sync-query';
 import type { ScoreboardSeasonType, StoredScoreboardGame } from './contract';
 import { parseScoreboardTargetSeason, resolveScoreboardCollection } from './flags';
-import {
-  boxScoreCompleteness,
-  matchLiveBoxScores,
-  mergeObservation,
-  normalizeGameRow,
-} from './normalize';
+import { boxScoreCompleteness, carriedBoxCompleteness, verifyFinalBoxScore } from './box-verify';
+import { matchLiveBoxScores, mergeObservation, normalizeGameRow } from './normalize';
 import { needsLiveBox, nextPollingState, planScoreboardTick } from './planner';
 import type { ScoreboardStore } from './store';
 
@@ -57,7 +53,14 @@ export type ScoreboardSeasonTypeResult = {
   upserted: number;
   rejected: Array<{ gameId: string | null; reason: string }>;
   truncated: boolean;
-  box: { requested: boolean; matched: number; unmatched: number; ambiguous: number };
+  box: {
+    requested: boolean;
+    matched: number;
+    unmatched: number;
+    ambiguous: number;
+    /** Final games whose box row failed verification this tick, with the first failed check. */
+    unverified: Array<{ gameId: string; reason: string | null }>;
+  };
 };
 
 export type ScoreboardCycleResult = {
@@ -120,7 +123,7 @@ export async function runScoreboardCycle(input: {
       upserted: 0,
       rejected: [],
       truncated: false,
-      box: { requested: false, matched: 0, unmatched: 0, ambiguous: 0 },
+      box: { requested: false, matched: 0, unmatched: 0, ambiguous: 0, unverified: [] },
     };
     seasonTypes.push(result);
     if (!plan.gamesRequest) continue;
@@ -226,22 +229,20 @@ export async function runScoreboardCycle(input: {
     const priorLines = await input.store.loadPlayerLines(boxGames.map((g) => g.gameId));
     const updates: StoredScoreboardGame[] = [];
     for (const g of boxGames) {
-      const lines = match.byGame.get(g.gameId);
+      const box = match.byGame.get(g.gameId);
       let next: StoredScoreboardGame = {
         ...g,
         finalBoxAttempts: g.lifecycle === 'final' ? g.finalBoxAttempts + 1 : g.finalBoxAttempts,
       };
-      if (lines && lines.length > 0) {
-        await input.store.replacePlayerLines(g.gameId, lines);
-        next = {
-          ...next,
-          boxRequestId,
-          boxObservedAt,
-          boxCompleteness: boxScoreCompleteness(next, lines, boxObservedAt),
-        };
+      if (box && box.lines.length > 0) {
+        await input.store.replacePlayerLines(g.gameId, box.lines);
+        next = { ...next, boxRequestId, boxObservedAt, boxCompleteness: boxScoreCompleteness(next, box, boxObservedAt) };
+        if (next.lifecycle === 'final' && next.boxCompleteness !== 'verified_final') {
+          result.box.unverified.push({ gameId: g.gameId, reason: verifyFinalBoxScore(next, box, boxObservedAt).failures[0] ?? null });
+        }
       } else {
-        const old = priorLines.filter((l) => l.gameId === g.gameId);
-        next = { ...next, boxCompleteness: boxScoreCompleteness(next, old, next.boxObservedAt) };
+        const hasStored = priorLines.some((l) => l.gameId === g.gameId);
+        next = { ...next, boxCompleteness: carriedBoxCompleteness(next, hasStored) };
       }
       updates.push({ ...next, pollingState: nextPollingState(next, now) });
     }

@@ -1,0 +1,13 @@
+{
+  "name": "scoreboard",
+  "version": "1.0.0",
+  "description": "Display-only scoreboard collector Lambda. Bundle before deploy. Do not enable the schedule without approval.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node ./build.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}

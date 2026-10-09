@@ -92,6 +92,18 @@ variable "game_status_sync_execution_enabled" {
   default     = false
 }
 
+variable "scoreboard_create" {
+  description = "When true, create the display-only scoreboard Lambda, IAM, and alarms. Does not enable execution. Default false keeps it out of a baseline plan."
+  type        = bool
+  default     = false
+}
+
+variable "scoreboard_execution_enabled" {
+  description = "When true with live_ingestion_enabled, the scoreboard schedule is ENABLED and preseason collection is switched on in the Lambda env. Regular season, play-in and playoffs stay off in Terraform and are refused in code."
+  type        = bool
+  default     = false
+}
+
 variable "postgame_create" {
   description = "When true, create postgame SQS, DLQ, worker, IAM, ESM, and DLQ alarm. Default false keeps parked postgame out of a baseline plan."
   type        = bool

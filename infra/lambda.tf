@@ -17,6 +17,7 @@ locals {
     game_status_sync = var.live_ingestion_enabled && var.game_status_sync_execution_enabled
     postgame         = var.live_ingestion_enabled && var.postgame_execution_enabled
     shadow           = var.live_ingestion_enabled && var.shadow_execution_enabled
+    scoreboard       = var.live_ingestion_enabled && var.scoreboard_execution_enabled
   }
 
   nightly_schedule_state          = local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED"
@@ -26,6 +27,7 @@ locals {
   boxscore_schedule_state         = local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED"
   game_status_sync_schedule_state = local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED"
   shadow_schedule_state           = local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED"
+  scoreboard_schedule_state       = local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED"
 
   player_props_bundle_hash = base64sha256(join("", [
     filesha256("${path.module}/../lambda/player-props-snapshot/.package/dist/controller.js"),

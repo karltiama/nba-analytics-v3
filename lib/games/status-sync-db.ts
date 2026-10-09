@@ -7,6 +7,7 @@
 
 import { Pool } from 'pg';
 import { ANALYTICS_GAMES_FINAL_PRESERVE_UPSERT_SQL } from '@/lib/betting/final-preserve';
+import { createLambdaPgPool } from '@/lib/runtime/lambda-pg-pool';
 import type { GameStatusStore, LocalGameRow } from './status-sync';
 import type { ReadinessGameRow } from './season-phase-readiness';
 
@@ -77,20 +78,7 @@ function mapRow(row: {
 
 /** One small pool shared by the game store and the acquisition ledger writer. */
 export function createStatusSyncPool(env: Record<string, string | undefined> = process.env): Pool {
-  const connectionString = (env.SUPABASE_DB_URL ?? '').trim();
-  if (!connectionString) {
-    throw new Error('Missing SUPABASE_DB_URL environment variable');
-  }
-  const useSsl =
-    connectionString.includes('supabase.co') || connectionString.includes('pooler.supabase.com');
-  return new Pool({
-    connectionString,
-    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
-    max: 1,
-    idleTimeoutMillis: 5_000,
-    connectionTimeoutMillis: Number(env.DB_CONNECTION_TIMEOUT_MS ?? 10_000),
-    statement_timeout: Number(env.DB_STATEMENT_TIMEOUT_MS ?? 15_000),
-  });
+  return createLambdaPgPool(env);
 }
 
 /** `pool` given → the caller owns it and close() does not end it. */

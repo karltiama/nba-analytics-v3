@@ -5,7 +5,13 @@ import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { runScoreboardCycle, scoreboardGamesUrl, scoreboardLiveBoxUrl } from '@/lib/scoreboard/collector';
 import { isScoreboardServingEnabled, resolveScoreboardCollection } from '@/lib/scoreboard/flags';
-import { boxScoreCompleteness, matchLiveBoxScores, normalizeGameRow } from '@/lib/scoreboard/normalize';
+import {
+  boxScoreCompleteness,
+  carriedBoxCompleteness,
+  parseMinutes,
+  verifyFinalBoxScore,
+} from '@/lib/scoreboard/box-verify';
+import { matchLiveBoxScores, normalizeGameRow } from '@/lib/scoreboard/normalize';
 import {
   activeCadenceMs,
   needsLiveBox,
@@ -14,7 +20,7 @@ import {
   SCOREBOARD_POLICY,
 } from '@/lib/scoreboard/planner';
 import { serveScoreboard } from '@/lib/scoreboard/serve';
-import { createMemoryScoreboardStore } from '@/lib/scoreboard/store';
+import { createMemoryScoreboardStore, createPgScoreboardStore } from '@/lib/scoreboard/store';
 
 const ROOT = path.resolve(__dirname, '../../..');
 const TIP = '2026-10-10T00:00:00.000Z';
@@ -48,15 +54,34 @@ function bdlGame(over: Record<string, unknown> = {}) {
   };
 }
 
-function liveBox(homePts: number[], visitorPts: number[]) {
-  const players = (ids: number[], pts: number[]) =>
-    pts.map((p, i) => ({ player: { id: ids[i], first_name: 'P', last_name: String(ids[i]) }, min: '20', pts: p, reb: 1, ast: 1 }));
+/** Internally consistent player line: pts = 2*fgm + fg3m + ftm, makes <= attempts, reb = oreb + dreb. */
+function statLine(id: number, pts: number, min: string) {
+  const fg3m = pts >= 3 ? 1 : 0;
+  const ftm = (pts - fg3m) % 2;
+  const fgm = (pts - fg3m - ftm) / 2;
   return {
-    date: '2026-10-09',
-    home_team: { id: 5, players: players([1, 2], homePts) },
-    visitor_team: { id: 15, players: players([3, 4], visitorPts) },
+    player: { id, first_name: 'P', last_name: String(id) },
+    min, pts, fgm, fga: fgm + 3, fg3m, fg3a: fg3m + 1, ftm, fta: ftm + 1, oreb: 1, dreb: 2, reb: 3, ast: 1,
   };
 }
+
+/** Points per player; five players per team with 48 minutes each (240 team minutes). */
+function liveBox(homePts: number[], visitorPts: number[], over: Record<string, unknown> = {}) {
+  const lines = (base: number, pts: number[]) => pts.map((p, i) => statLine(base + i, p, '48'));
+  const sum = (pts: number[]) => pts.reduce((s, p) => s + p, 0);
+  return {
+    date: '2026-10-09',
+    status: '1st Qtr',
+    home_team_score: sum(homePts),
+    visitor_team_score: sum(visitorPts),
+    home_team: { id: 5, players: lines(1, homePts) },
+    visitor_team: { id: 15, players: lines(101, visitorPts) },
+    ...over,
+  };
+}
+
+const FINAL_HOME = [20, 20, 20, 20, 20];
+const FINAL_VISITOR = [20, 20, 20, 20, 18];
 
 type Respond = (url: string) => unknown[] | { status: number } | { blocked: string };
 
@@ -192,21 +217,68 @@ describe('season provenance and normalization', () => {
   it('live box rows match by date and teams; unmatched and ambiguous rows are dropped', () => {
     const games = [stored()];
     const m = matchLiveBoxScores([liveBox([10, 5], [7]), { ...liveBox([1], [1]), home_team: { id: 99 } }], games);
-    expect(m.byGame.get('5001')?.map((l) => l.playerId)).toEqual(['1', '2', '3']);
+    expect(m.byGame.get('5001')?.lines.map((l) => l.playerId)).toEqual(['1', '2', '101']);
+    expect(m.byGame.get('5001')).toMatchObject({ providerStatus: '1st Qtr', homeScore: 15, visitorScore: 7 });
     expect(m.unmatched).toBe(1);
     const dup = matchLiveBoxScores([liveBox([1], [1])], [stored(), stored({ gameId: '5002' })]);
     expect(dup.ambiguous).toBe(1);
     expect(dup.byGame.size).toBe(0);
   });
 
-  it('verified_final requires final, observation after final, and points reconciling to the score', () => {
-    const lines = matchLiveBoxScores([liveBox([60, 40], [50, 48])], [stored()]).byGame.get('5001')!;
-    const final = { ...stored({ lifecycle: 'final', homeScore: 100, visitorScore: 98, finalObservedAt: TIP }) };
-    expect(boxScoreCompleteness(final, lines, at(MIN).toISOString())).toBe('verified_final');
-    expect(boxScoreCompleteness(final, lines, at(-MIN).toISOString())).toBe('final_unverified');
-    expect(boxScoreCompleteness({ ...final, homeScore: 101 }, lines, at(MIN).toISOString())).toBe('final_unverified');
-    expect(boxScoreCompleteness({ ...final, lifecycle: 'live' }, lines, at(MIN).toISOString())).toBe('live_partial');
-    expect(boxScoreCompleteness(final, [], null)).toBe('none');
+  it('verified_final needs provider-final evidence and passing statistical checks', () => {
+    const boxOf = (row: unknown) => matchLiveBoxScores([row], [stored()]).byGame.get('5001')!;
+    const box = boxOf(liveBox(FINAL_HOME, FINAL_VISITOR, { status: 'Final' }));
+    const final = stored({ lifecycle: 'final', homeScore: 100, visitorScore: 98, finalObservedAt: TIP, terminalConfirmations: 2 });
+    const after = at(MIN).toISOString();
+    expect(verifyFinalBoxScore(final, box, after)).toEqual({ ok: true, failures: [] });
+    expect(boxScoreCompleteness(final, box, after)).toBe('verified_final');
+
+    const fails = (g: typeof final, b: typeof box, t = after) => verifyFinalBoxScore(g, b, t).failures;
+    // Provider-final evidence.
+    expect(fails({ ...final, terminalConfirmations: 1 }, box)).toContain('final not yet confirmed');
+    expect(fails(final, box, at(-MIN).toISOString())).toContain('box observed before final');
+    expect(fails(final, boxOf(liveBox(FINAL_HOME, FINAL_VISITOR, { status: '4th Qtr' })))).toContain('box status not final: 4th Qtr');
+    expect(fails(final, boxOf(liveBox(FINAL_HOME, FINAL_VISITOR, { status: 'Final', home_team_score: 102 })))[0]).toMatch(/^box score 98-102 != final 98-100/);
+    expect(fails({ ...final, homeScore: 101 }, box)).toContain('home: player points 100 != score 101');
+
+    // Points sum to the score but a line is internally inconsistent: not verified.
+    const bad = (mutate: (l: (typeof box.lines)[number]) => void) => {
+      const b = structuredClone(box);
+      mutate(b.lines[0]);
+      return fails(final, b);
+    };
+    expect(bad((l) => { l.fgm = (l.fgm ?? 0) + 1; l.fga = (l.fga ?? 0) + 1; })).toContain('player 1: pts != 2*fgm + fg3m + ftm');
+    expect(bad((l) => { l.fga = 0; })).toContain('player 1: fgm > fga');
+    expect(bad((l) => { l.fg3a = 0; })).toContain('player 1: fg3m > fg3a');
+    expect(bad((l) => { l.reb = 9; })).toContain('player 1: reb != oreb + dreb');
+    expect(bad((l) => { l.ftm = null; })).toContain('player 1: missing ftm');
+    expect(bad((l) => { l.min = 'DNP?'; })).toContain('player 1: unparseable min');
+    expect(bad((l) => { l.min = '20'; })).toContain('home: minutes 212.0 != 240 ± 5');
+
+    // Team checks: too few lines; overtime raises the minutes target.
+    const short = { ...box, lines: box.lines.filter((l) => l.playerId !== '5') };
+    expect(fails({ ...final, homeScore: 80 }, { ...short, homeScore: 80 })).toContain('home: 4 player lines < 5');
+    expect(fails({ ...final, overtimePeriods: 1 }, box)).toContain('home: minutes 240.0 != 265 ± 5');
+
+    expect(boxScoreCompleteness({ ...final, terminalConfirmations: 1 }, box, after)).toBe('final_unverified');
+    expect(boxScoreCompleteness({ ...final, lifecycle: 'live' }, box, after)).toBe('live_partial');
+    expect(boxScoreCompleteness(final, null, null)).toBe('none');
+  });
+
+  it('minutes parse as MM, MM:SS or decimal; blank is did-not-play', () => {
+    expect(parseMinutes('34')).toBe(34);
+    expect(parseMinutes('34:30')).toBe(34.5);
+    expect(parseMinutes('12.5')).toBe(12.5);
+    expect(parseMinutes(null)).toBe(0);
+    expect(parseMinutes('')).toBe(0);
+    expect(parseMinutes('34:75')).toBeNaN();
+  });
+
+  it('without a fresh box row, a final game keeps verified only if already verified', () => {
+    expect(carriedBoxCompleteness({ lifecycle: 'final', boxCompleteness: 'verified_final' }, true)).toBe('verified_final');
+    expect(carriedBoxCompleteness({ lifecycle: 'final', boxCompleteness: 'live_partial' }, true)).toBe('final_unverified');
+    expect(carriedBoxCompleteness({ lifecycle: 'live', boxCompleteness: 'verified_final' }, true)).toBe('live_partial');
+    expect(carriedBoxCompleteness({ lifecycle: 'final', boxCompleteness: 'verified_final' }, false)).toBe('none');
   });
 });
 
@@ -329,14 +401,17 @@ describe('collector cycle (fake fetch, memory store)', () => {
     expect(r.bdlRequests).toBe(0);
 
     state = { status_state: 'final', status: 'Final', period: 4, home_team_score: 100, visitor_team_score: 98 };
-    box = [liveBox([60, 40], [50, 48])];
+    box = [liveBox(FINAL_HOME, FINAL_VISITOR, { status: 'Final' })];
     r = await tick(140 * MIN);
     expect(r.bdlRequests).toBe(2);
-    expect(store.games.get('5001')).toMatchObject({ lifecycle: 'final', boxCompleteness: 'verified_final', terminalConfirmations: 1, pollingState: 'active' });
+    expect(store.games.get('5001')).toMatchObject({ lifecycle: 'final', boxCompleteness: 'final_unverified', terminalConfirmations: 1, pollingState: 'active' });
+    expect(r.seasonTypes[0].box.unverified).toEqual([{ gameId: '5001', reason: 'final not yet confirmed' }]);
 
+    // Second final observation confirms the final; the box is re-read and now verifies.
     r = await tick(141 * MIN);
-    expect(r.bdlRequests).toBe(1);
-    expect(store.games.get('5001')?.pollingState).toBe('complete');
+    expect(r.bdlRequests).toBe(2);
+    expect(store.games.get('5001')).toMatchObject({ boxCompleteness: 'verified_final', terminalConfirmations: 2, pollingState: 'complete' });
+    expect(store.lines.get('5001')).toHaveLength(10);
 
     r = await tick(142 * MIN);
     expect(r.bdlRequests).toBe(0);
@@ -363,6 +438,39 @@ describe('collector cycle (fake fetch, memory store)', () => {
     const r = await runScoreboardCycle({ env: LIVE_ENV, store, fetch: f.fetch, now: at(-60 * MIN) });
     expect([...store.games.keys()]).toEqual(['5001']);
     expect(r.seasonTypes[0].rejected.map((x) => x.gameId)).toEqual(['5002', '5003']);
+  });
+});
+
+describe('Postgres display store (recording fake db)', () => {
+  it('replaces player lines with one upsert plus a stale-player delete, all in display.*', async () => {
+    const calls: Array<{ text: string; params: unknown[] }> = [];
+    const db = {
+      query: async (text: string, params: unknown[] = []) => {
+        calls.push({ text, params });
+        if (/^\s*SELECT game_id, player_id/.test(text)) {
+          return { rows: [{ game_id: '5001', player_id: 1, team_id: 5, name: 'P 1', min: '48', pts: 20, reb: 3, ast: 1, fgm: 8, fga: 11, fg3m: 1, fg3a: 2, ftm: 1, fta: 2, oreb: 1, dreb: 2 }] };
+        }
+        return { rows: [] };
+      },
+    };
+    const store = createPgScoreboardStore(db);
+    const box = matchLiveBoxScores([liveBox(FINAL_HOME, FINAL_VISITOR, { status: 'Final' })], [stored()]).byGame.get('5001')!;
+    await store.replacePlayerLines('5001', box.lines);
+    expect(calls).toHaveLength(2);
+    expect(calls[0].text).toMatch(/^INSERT INTO display\.scoreboard_player_lines/);
+    expect(calls[0].text).toMatch(/ON CONFLICT \(game_id, player_id\) DO UPDATE/);
+    expect(calls[0].params[0]).toBe('5001');
+    expect(calls[0].params).toHaveLength(16);
+    for (const arr of calls[0].params.slice(1)) expect(arr).toHaveLength(10);
+    expect(calls[1].text).toMatch(/^DELETE FROM display\.scoreboard_player_lines WHERE game_id = \$1 AND NOT \(player_id = ANY/);
+    expect(calls[1].params[1]).toEqual(box.lines.map((l) => l.playerId));
+    expect(calls.every((c) => !/analytics\.|raw\./.test(c.text))).toBe(true);
+
+    const [line] = await store.loadPlayerLines(['5001']);
+    expect(line).toEqual({
+      gameId: '5001', playerId: '1', teamId: '5', name: 'P 1', min: '48',
+      pts: 20, reb: 3, ast: 1, fgm: 8, fga: 11, fg3m: 1, fg3a: 2, ftm: 1, fta: 2, oreb: 1, dreb: 2,
+    });
   });
 });
 
@@ -436,6 +544,8 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
   const scoreboardSources = [
     ...walk('lib/scoreboard').filter((f) => !f.includes('__tests__')),
     'app/api/scoreboard/route.ts',
+    'lambda/scoreboard/index.ts',
+    'lib/runtime/lambda-pg-pool.ts',
   ];
 
   it('scoreboard code references only the display schema, never analytics/raw tables or model modules', () => {
@@ -453,7 +563,7 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
     const others = ['lib', 'app', 'lambda', 'scripts']
       .flatMap((d) => walk(d))
       .filter((f) => !f.includes('/__tests__/'))
-      .filter((f) => !f.startsWith('lib/scoreboard/') && f !== 'app/api/scoreboard/route.ts');
+      .filter((f) => !f.startsWith('lib/scoreboard/') && !f.startsWith('lambda/scoreboard/') && f !== 'app/api/scoreboard/route.ts');
     for (const f of others) {
       const src = read(f);
       expect(src, f).not.toMatch(/display\.scoreboard_/);

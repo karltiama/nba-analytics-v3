@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
@@ -12,8 +13,10 @@ import {
 import { PINNED_ANALYTICS_SEASON } from '@/lib/season';
 
 const root = path.resolve(__dirname, '../../..');
-const artifactPath = path.join(root, 'lambda/game-status-sync/.package/dist/index.js');
-const packageDir = path.join(root, 'lambda/game-status-sync/.package');
+// Built into a temp dir: lambda/game-status-sync/.package is what reviewed Terraform plans hash.
+const outRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'gss-artifact-'));
+const packageDir = path.join(outRoot, 'game-status-sync/.package');
+const artifactPath = path.join(packageDir, 'dist/index.js');
 const require = createRequire(import.meta.url);
 
 const freezeEnv = {
@@ -85,7 +88,7 @@ function walkFiles(dir: string): string[] {
 
 describe('game-status-sync built artifact (13C.3)', () => {
   it('builds a Lambda-safe bundle without AWS/BDL/Postgres secrets', () => {
-    const result = spawnSync(process.execPath, ['lambda/game-status-sync/build.mjs'], {
+    const result = spawnSync(process.execPath, ['lambda/game-status-sync/build.mjs', `--out-root=${outRoot}`], {
       cwd: root,
       encoding: 'utf8',
     });

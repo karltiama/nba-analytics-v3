@@ -94,6 +94,43 @@ const GAME_COLUMNS = [
   ['final_box_attempts', 'finalBoxAttempts'],
 ] as const satisfies ReadonlyArray<readonly [string, keyof StoredScoreboardGame]>;
 
+const LINE_FIELDS = {
+  player_id: 'playerId',
+  team_id: 'teamId',
+  name: 'name',
+  min: 'min',
+  pts: 'pts',
+  reb: 'reb',
+  ast: 'ast',
+  fgm: 'fgm',
+  fga: 'fga',
+  fg3m: 'fg3m',
+  fg3a: 'fg3a',
+  ftm: 'ftm',
+  fta: 'fta',
+  oreb: 'oreb',
+  dreb: 'dreb',
+} as const satisfies Record<string, Exclude<keyof ScoreboardPlayerLine, 'gameId'>>;
+type LineColumn = keyof typeof LINE_FIELDS;
+const LINE_COLUMNS = Object.keys(LINE_FIELDS) as LineColumn[];
+const LINE_TYPES: Record<LineColumn, 'text' | 'int'> = {
+  player_id: 'text',
+  team_id: 'text',
+  name: 'text',
+  min: 'text',
+  pts: 'int',
+  reb: 'int',
+  ast: 'int',
+  fgm: 'int',
+  fga: 'int',
+  fg3m: 'int',
+  fg3a: 'int',
+  ftm: 'int',
+  fta: 'int',
+  oreb: 'int',
+  dreb: 'int',
+};
+
 const TIMESTAMP_FIELDS = new Set<string>([
   'scheduledTip',
   'firstObservedAt',
@@ -170,32 +207,38 @@ export function createPgScoreboardStore(db: Queryable): ScoreboardStore {
       }
     },
     async replacePlayerLines(gameId, lines) {
-      await db.query(`DELETE FROM display.scoreboard_player_lines WHERE game_id = $1`, [gameId]);
-      for (const l of lines) {
+      // One upsert for every line, then drop players no longer in the box. Never leaves a game
+      // with a partially inserted box; at worst a dropped player lingers until the next tick.
+      if (lines.length > 0) {
+        const col = <K extends keyof ScoreboardPlayerLine>(k: K) => lines.map((l) => l[k]);
         await db.query(
-          `INSERT INTO display.scoreboard_player_lines (game_id, player_id, team_id, name, min, pts, reb, ast)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-          [l.gameId, l.playerId, l.teamId, l.name, l.min, l.pts, l.reb, l.ast]
+          `INSERT INTO display.scoreboard_player_lines (game_id, ${LINE_COLUMNS.join(', ')}, updated_at)
+           SELECT $1, u.*, now() FROM unnest(${LINE_COLUMNS.map((c, i) => `$${i + 2}::${LINE_TYPES[c]}[]`).join(', ')}) AS u
+           ON CONFLICT (game_id, player_id) DO UPDATE SET
+             ${LINE_COLUMNS.filter((c) => c !== 'player_id').map((c) => `${c} = excluded.${c}`).join(', ')}, updated_at = now()`,
+          [gameId, ...LINE_COLUMNS.map((c) => col(LINE_FIELDS[c]))]
         );
       }
+      await db.query(
+        `DELETE FROM display.scoreboard_player_lines WHERE game_id = $1 AND NOT (player_id = ANY($2::text[]))`,
+        [gameId, lines.map((l) => l.playerId)]
+      );
     },
     async loadPlayerLines(gameIds) {
       if (gameIds.length === 0) return [];
       const res = await db.query(
-        `SELECT game_id, player_id, team_id, name, min, pts, reb, ast
+        `SELECT game_id, ${LINE_COLUMNS.join(', ')}
          FROM display.scoreboard_player_lines WHERE game_id = ANY($1::text[]) ORDER BY game_id, team_id, pts DESC NULLS LAST`,
         [gameIds]
       );
-      return res.rows.map((r) => ({
-        gameId: String(r.game_id),
-        playerId: String(r.player_id),
-        teamId: String(r.team_id),
-        name: (r.name as string | null) ?? null,
-        min: (r.min as string | null) ?? null,
-        pts: (r.pts as number | null) ?? null,
-        reb: (r.reb as number | null) ?? null,
-        ast: (r.ast as number | null) ?? null,
-      }));
+      return res.rows.map((r) => {
+        const line: Record<string, unknown> = { gameId: String(r.game_id) };
+        for (const c of LINE_COLUMNS) {
+          const v = r[c];
+          line[LINE_FIELDS[c]] = LINE_TYPES[c] === 'text' ? (v == null ? null : String(v)) : ((v as number | null) ?? null);
+        }
+        return line as ScoreboardPlayerLine;
+      });
     },
   };
 }

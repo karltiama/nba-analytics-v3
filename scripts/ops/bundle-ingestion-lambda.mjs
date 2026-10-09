@@ -8,6 +8,8 @@
  *   npm run build:ingestion-lambdas
  *
  * Does not copy .env or Terraform files. Does not invoke AWS.
+ * --out-root=<dir> writes <dir>/<name>/.package instead; tests use it so they never
+ * overwrite the lambda/<name>/.package artifacts that Terraform hashes.
  */
 
 import { createHash } from 'node:crypto';
@@ -84,17 +86,18 @@ export function sha256File(filePath) {
   return createHash('sha256').update(readFileSync(filePath)).digest('hex');
 }
 
-export async function bundleIngestionLambda(name, esbuild = null) {
+export async function bundleIngestionLambda(name, esbuild = null, outRoot = null) {
   const spec = INGESTION_LAMBDA_BUNDLES[name];
   if (!spec) {
     throw new Error(`Unknown ingestion Lambda bundle: ${name}`);
   }
   const engine = esbuild ?? (await resolveEsbuild());
   const lambdaRoot = path.join(root, spec.dir);
+  const packageRoot = outRoot ? path.join(path.resolve(outRoot), name, '.package') : path.join(lambdaRoot, '.package');
   const hashes = {};
 
   for (const [outRel, entryRel] of Object.entries(spec.entries)) {
-    const outfile = path.join(lambdaRoot, '.package', outRel);
+    const outfile = path.join(packageRoot, outRel);
     mkdirSync(path.dirname(outfile), { recursive: true });
     await engine.build({
       absWorkingDir: root,
@@ -118,23 +121,25 @@ export async function bundleIngestionLambda(name, esbuild = null) {
 function parseArgs(argv) {
   const names = [];
   let all = false;
+  let outRoot = null;
   for (const arg of argv) {
     if (arg === '--all') all = true;
     else if (arg.startsWith('--lambda=')) names.push(arg.slice('--lambda='.length));
+    else if (arg.startsWith('--out-root=')) outRoot = arg.slice('--out-root='.length);
   }
-  if (all) return Object.keys(INGESTION_LAMBDA_BUNDLES);
+  if (all) return { names: Object.keys(INGESTION_LAMBDA_BUNDLES), outRoot };
   if (names.length === 0) {
     throw new Error('Pass --all or --lambda=<name>');
   }
-  return names;
+  return { names, outRoot };
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
-  const names = parseArgs(process.argv.slice(2));
+  const { names, outRoot } = parseArgs(process.argv.slice(2));
   const esbuild = await resolveEsbuild();
   for (const name of names) {
-    const hashes = await bundleIngestionLambda(name, esbuild);
+    const hashes = await bundleIngestionLambda(name, esbuild, outRoot);
     for (const [file, hash] of Object.entries(hashes)) {
       console.log(`${name}/${file} sha256=${hash}`);
     }

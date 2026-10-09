@@ -28,8 +28,9 @@ export function isScoreboardSeasonType(value: unknown): value is ScoreboardSeaso
 /**
  * none: no box score observed.
  * live_partial: player lines observed while the game was not final.
- * final_unverified: game final, but player points do not (yet) reconcile with the final score.
- * verified_final: game final and player points sum to each team's final score, observed after final.
+ * final_unverified: game final, but the box score has not passed every check in box-verify.ts.
+ * verified_final: provider-final evidence (confirmed /games final, box row itself final with the same
+ * scores, observed after final) and every per-player and per-team statistical check passes.
  */
 export const BOX_SCORE_COMPLETENESS = ['none', 'live_partial', 'final_unverified', 'verified_final'] as const;
 export type BoxScoreCompleteness = (typeof BOX_SCORE_COMPLETENESS)[number];
@@ -92,6 +93,22 @@ export type ScoreboardPlayerLine = {
   pts: number | null;
   reb: number | null;
   ast: number | null;
+  fgm: number | null;
+  fga: number | null;
+  fg3m: number | null;
+  fg3a: number | null;
+  ftm: number | null;
+  fta: number | null;
+  oreb: number | null;
+  dreb: number | null;
+};
+
+/** One /box_scores/live row matched to a game: the row's own status and scores plus player lines. */
+export type LiveBoxObservation = {
+  providerStatus: string | null;
+  homeScore: number | null;
+  visitorScore: number | null;
+  lines: ScoreboardPlayerLine[];
 };
 
 export type ScoreboardTeam = {

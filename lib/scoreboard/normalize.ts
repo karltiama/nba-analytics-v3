@@ -9,7 +9,7 @@
 import { resolveGameLifecycle, type GameLifecycleState } from '@/lib/betting/normalize-game-status';
 import { etYmd } from '@/lib/games/status-sync-query';
 import type {
-  BoxScoreCompleteness,
+  LiveBoxObservation,
   ScoreboardPlayerLine,
   ScoreboardSeasonType,
   StoredScoreboardGame,
@@ -188,7 +188,7 @@ export function mergeObservation(prev: StoredScoreboardGame | null, next: GameOb
 }
 
 export type LiveBoxMatch = {
-  byGame: Map<string, ScoreboardPlayerLine[]>;
+  byGame: Map<string, LiveBoxObservation>;
   unmatched: number;
   ambiguous: number;
 };
@@ -214,6 +214,14 @@ function playerLines(gameId: string, team: Obj | null): ScoreboardPlayerLine[] {
       pts: int(row.pts),
       reb: int(row.reb),
       ast: int(row.ast),
+      fgm: int(row.fgm),
+      fga: int(row.fga),
+      fg3m: int(row.fg3m),
+      fg3a: int(row.fg3a),
+      ftm: int(row.ftm),
+      fta: int(row.fta),
+      oreb: int(row.oreb),
+      dreb: int(row.dreb),
     });
   }
   return lines;
@@ -229,7 +237,7 @@ export function matchLiveBoxScores(rows: unknown[], games: StoredScoreboardGame[
     const key = `${g.etDate}|${g.homeTeamId}|${g.visitorTeamId}`;
     index.set(key, [...(index.get(key) ?? []), g]);
   }
-  const byGame = new Map<string, ScoreboardPlayerLine[]>();
+  const byGame = new Map<string, LiveBoxObservation>();
   let unmatched = 0;
   let ambiguous = 0;
   for (const r of rows) {
@@ -251,24 +259,12 @@ export function matchLiveBoxScores(rows: unknown[], games: StoredScoreboardGame[
       continue;
     }
     const gameId = candidates[0].gameId;
-    byGame.set(gameId, [...playerLines(gameId, home), ...playerLines(gameId, visitor)]);
+    byGame.set(gameId, {
+      providerStatus: str(row.status),
+      homeScore: int(row.home_team_score),
+      visitorScore: int(row.visitor_team_score),
+      lines: [...playerLines(gameId, home), ...playerLines(gameId, visitor)],
+    });
   }
   return { byGame, unmatched, ambiguous };
-}
-
-export function boxScoreCompleteness(
-  game: Pick<StoredScoreboardGame, 'lifecycle' | 'finalObservedAt' | 'homeTeamId' | 'visitorTeamId' | 'homeScore' | 'visitorScore'>,
-  lines: ScoreboardPlayerLine[],
-  boxObservedAt: string | null
-): BoxScoreCompleteness {
-  if (lines.length === 0 || !boxObservedAt) return 'none';
-  if (game.lifecycle !== 'final') return 'live_partial';
-  const sum = (teamId: string) => lines.filter((l) => l.teamId === teamId).reduce((s, l) => s + (l.pts ?? 0), 0);
-  const afterFinal = game.finalObservedAt != null && Date.parse(boxObservedAt) >= Date.parse(game.finalObservedAt);
-  const reconciles =
-    game.homeScore != null &&
-    game.visitorScore != null &&
-    sum(game.homeTeamId) === game.homeScore &&
-    sum(game.visitorTeamId) === game.visitorScore;
-  return afterFinal && reconciles ? 'verified_final' : 'final_unverified';
 }

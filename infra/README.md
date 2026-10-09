@@ -131,6 +131,18 @@ Player props now run as **controller + per-game workers**:
 3. Optional schedule: `boxscore_enable_schedule = true` and `boxscore_schedule_cron = "cron(0 8 * * ? *)"` (03:00 ET).
 4. **Do not full-apply** while `player_props_enable_schedule = true` in live tfvars if those Scheduler rules must stay DISABLED. Use `-target` for boxscore + error alarms.
 
+## Scoreboard collector (display-only, prepared)
+
+`infra/scoreboard.tf`. Everything defaults off; each step below is a separate approval.
+
+1. **Prerequisite:** `db/schemas/MIGRATION_display_scoreboard.sql` applied (the Lambda writes `display.*`).
+2. **Build before apply:** `npm run build:scoreboard-lambda` writes `lambda/scoreboard/.package`.
+3. **Created, frozen:** `scoreboard_create = true` with `scoreboard_execution_enabled = false` and `scoreboard_enable_schedule = false`. Creates the Lambda, IAM (shared limiter table plus the `acq_scoreboard_games` and `acq_box_scores_live` S3 prefixes only), the log group and alarms. The Lambda env stays replay / dry run with no season type collected.
+4. **Activation:** `scoreboard_enable_schedule = true`, `scoreboard_execution_enabled = true` and `live_ingestion_enabled = true`. Every other family keeps its own `*_execution_enabled = false`, so their schedules stay DISABLED. Review the plan for that: only scoreboard resources may change. Exception to check: if `postgame_create = true`, the postgame worker env reads `live_ingestion_enabled` directly (its queue mapping stays family-gated). Only preseason is collected; regular season, play-in and playoffs are pinned off in Terraform and refused in code.
+5. **Serving** is separate: `SCOREBOARD_SERVING_ENABLED=1` in the web app env. Until then `/api/scoreboard` returns 503.
+
+Tests build Lambda packages into a temp dir (`--out-root`), never into `lambda/*/.package`. Before any plan, confirm the `.package` hashes are the ones you reviewed.
+
 ## Remote state (deferred)
 
 State is still local (`infra/`). Moving to an S3 backend is not required to deploy boxscore; do it before a second environment or shared laptop.

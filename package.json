@@ -45,6 +45,7 @@
     "ops:aws-ingestion-status": "tsx scripts/ops/aws-ingestion-status.ts",
     "ops:game-status-sync": "tsx scripts/ops/game-status-sync.ts --season=2026 --dry-run",
     "build:game-status-sync-lambda": "tsx scripts/ops/build-game-status-sync-lambda.ts",
+    "build:scoreboard-lambda": "node lambda/scoreboard/build.mjs",
     "build:ingestion-lambdas": "node scripts/ops/bundle-ingestion-lambda.mjs --all",
     "build:shadow-projection-lambda": "node scripts/ops/bundle-ingestion-lambda.mjs --lambda=shadow-projection",
     "build:context-prospective-shadow-lambda": "node scripts/ops/bundle-ingestion-lambda.mjs --lambda=context-prospective-shadow",

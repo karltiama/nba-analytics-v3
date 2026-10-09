@@ -59,9 +59,18 @@ create table if not exists display.scoreboard_player_lines (
   team_id    text not null,
   name       text,
   min        text,
-  pts        integer,
-  reb        integer,
-  ast        integer,
+  pts        integer check (pts >= 0),
+  reb        integer check (reb >= 0),
+  ast        integer check (ast >= 0),
+  fgm        integer check (fgm >= 0),
+  fga        integer check (fga >= 0),
+  fg3m       integer check (fg3m >= 0),
+  fg3a       integer check (fg3a >= 0),
+  ftm        integer check (ftm >= 0),
+  fta        integer check (fta >= 0),
+  oreb       integer check (oreb >= 0),
+  dreb       integer check (dreb >= 0),
+  updated_at timestamptz not null default now(),
   primary key (game_id, player_id)
 );
 

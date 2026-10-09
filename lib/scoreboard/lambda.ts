@@ -1,6 +1,6 @@
 /**
  * Scoreboard collector Lambda runtime: gates first, then wires the display store and the shared
- * acquiring BDL fetch. No Terraform resource exists for this handler yet (Phase C).
+ * acquiring BDL fetch. Packaged by lambda/scoreboard; Terraform in infra/scoreboard.tf.
  */
 
 import type { AcqArchiveStore } from '@/lib/acquisition/archive';
@@ -63,8 +63,8 @@ export async function runLambdaScoreboard(deps: ScoreboardLambdaDeps = {}): Prom
 
   let pool: import('pg').Pool | undefined;
   if (needsPool) {
-    const { createStatusSyncPool } = await import('@/lib/games/status-sync-db');
-    pool = createStatusSyncPool(env);
+    const { createLambdaPgPool } = await import('@/lib/runtime/lambda-pg-pool');
+    pool = createLambdaPgPool(env);
   }
   try {
     let store = deps.store;
