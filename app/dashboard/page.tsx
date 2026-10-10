@@ -26,6 +26,13 @@ import {
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import { filterSlateGames } from '@/lib/betting/slate-filters';
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
+import {
+  interpretScoreboardPayload,
+  scoreboardApiUrl,
+  scoreboardPollDelayMs,
+} from '@/lib/scoreboard/client';
+import type { ScoreboardResponse } from '@/lib/scoreboard/contract';
+import { mergeTodaysGames } from '@/lib/scoreboard/slate-merge';
 
 // ================================
 // DATA FETCHING
@@ -203,6 +210,8 @@ export default function BettingDashboard(props: PageProps) {
 
   // Data states
   const [games, setGames] = useState<Game[]>([]);
+  const [scoreboard, setScoreboard] = useState<ScoreboardResponse | null>(null);
+  const [scoreboardDate, setScoreboardDate] = useState(selectedDate);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [widgets, setWidgets] = useState<any[]>([]);
   const [slateSummary, setSlateSummary] = useState<string | null>(null);
@@ -216,6 +225,11 @@ export default function BettingDashboard(props: PageProps) {
   const [slateSummaryLoading, setSlateSummaryLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [unauthorized, setUnauthorized] = useState(false);
+
+  if (scoreboardDate !== selectedDate) {
+    setScoreboardDate(selectedDate);
+    setScoreboard(null);
+  }
 
   // Fetch games for a given date
   const fetchGames = useCallback(async (date: string) => {
@@ -264,6 +278,44 @@ export default function BettingDashboard(props: PageProps) {
   useEffect(() => {
     fetchGames(selectedDate);
   }, [selectedDate, fetchGames]);
+
+  const loadScoreboard = useCallback(async (date: string, signal: AbortSignal) => {
+    try {
+      const res = await fetch(scoreboardApiUrl(date), { signal });
+      const body: unknown = await res.json().catch(() => null);
+      if (signal.aborted) return;
+      const outcome = interpretScoreboardPayload(res.status, body);
+      if (outcome.status === 'ready') setScoreboard(outcome.response);
+      else if (outcome.status === 'disabled') setScoreboard(null);
+    } catch (err) {
+      if (signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
+    }
+  }, []);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    const timer = window.setTimeout(() => {
+      void loadScoreboard(selectedDate, ac.signal);
+    }, 0);
+    return () => {
+      window.clearTimeout(timer);
+      ac.abort();
+    };
+  }, [selectedDate, loadScoreboard]);
+
+  const scoreboardPollDelay = scoreboardPollDelayMs(scoreboard?.games);
+  useEffect(() => {
+    if (scoreboardPollDelay == null) return;
+    const ac = new AbortController();
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'hidden') return;
+      void loadScoreboard(selectedDate, ac.signal);
+    }, scoreboardPollDelay);
+    return () => {
+      window.clearInterval(interval);
+      ac.abort();
+    };
+  }, [scoreboardPollDelay, selectedDate, loadScoreboard]);
 
   useEffect(() => {
     let cancelled = false;
@@ -366,9 +418,14 @@ export default function BettingDashboard(props: PageProps) {
     return () => ac.abort();
   }, [selectedDate]);
 
+  const slateGames = useMemo(
+    () => (unauthorized ? games : mergeTodaysGames(games, scoreboard)),
+    [games, scoreboard, unauthorized]
+  );
+
   // Filter games
   const filteredGames = filterSlateGames({
-    games,
+    games: slateGames,
     searchValue,
     showCloseMatchups,
     isClose: (game) => game.isClose,
