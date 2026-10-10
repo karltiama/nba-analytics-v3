@@ -11,7 +11,7 @@
 import { randomUUID } from 'node:crypto';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import { shiftEtYmd, etYmd } from '@/lib/games/status-sync-query';
-import type { ScoreboardSeasonType, StoredScoreboardGame } from './contract';
+import type { ScoreboardPlayerLine, ScoreboardSeasonType, StoredScoreboardGame } from './contract';
 import { parseScoreboardTargetSeason, resolveScoreboardCollection } from './flags';
 import { boxScoreCompleteness, carriedBoxCompleteness, verifyFinalBoxScore } from './box-verify';
 import { matchLiveBoxScores, mergeObservation, normalizeGameRow } from './normalize';
@@ -132,7 +132,8 @@ export async function runScoreboardCycle(input: {
     const pullRunId = newId();
     const pages: Array<{ rows: unknown[]; requestId: string }> = [];
     let cursor: number | null = null;
-    let observedAt = now.toISOString();
+    // Order by when this cycle started, not by when its response is written.
+    const observedAt = now.toISOString();
     for (let pageIndex = 0; pageIndex < SCOREBOARD_GAMES_MAX_PAGES; pageIndex += 1) {
       const url = scoreboardGamesUrl({
         season: target.season,
@@ -160,7 +161,6 @@ export async function runScoreboardCycle(input: {
       if (!page.ok || page.parseError || !page.json) {
         return done('failed', `games request failed: ${page.parseError ?? page.error ?? `HTTP ${page.status}`}`);
       }
-      observedAt = clock().toISOString();
       pages.push({ rows: page.json.data ?? [], requestId });
       cursor = page.json.meta?.next_cursor ?? null;
       if (cursor == null) break;
@@ -196,9 +196,8 @@ export async function runScoreboardCycle(input: {
       const state = nextPollingState(g, now);
       if (state !== g.pollingState) touched.set(g.gameId, { ...g, pollingState: state });
     }
-    await input.store.upsertGames([...touched.values()]);
+    result.upserted = await input.store.upsertGames([...touched.values()]);
     await input.store.recordGamesRequest(seasonType, observedAt, pages.at(-1)!.requestId);
-    result.upserted = touched.size;
 
     // 3. Live box scores, only when a game is in progress or still needs final player lines.
     const current = new Map(stored.map((g) => [g.gameId, g]));
@@ -227,15 +226,15 @@ export async function runScoreboardCycle(input: {
     result.box.ambiguous = match.ambiguous;
 
     const priorLines = await input.store.loadPlayerLines(boxGames.map((g) => g.gameId));
-    const updates: StoredScoreboardGame[] = [];
     for (const g of boxGames) {
       const box = match.byGame.get(g.gameId);
       let next: StoredScoreboardGame = {
         ...g,
         finalBoxAttempts: g.lifecycle === 'final' ? g.finalBoxAttempts + 1 : g.finalBoxAttempts,
       };
+      let lines: ScoreboardPlayerLine[] | null = null;
       if (box && box.lines.length > 0) {
-        await input.store.replacePlayerLines(g.gameId, box.lines);
+        lines = box.lines;
         next = { ...next, boxRequestId, boxObservedAt, boxCompleteness: boxScoreCompleteness(next, box, boxObservedAt) };
         if (next.lifecycle === 'final' && next.boxCompleteness !== 'verified_final') {
           result.box.unverified.push({ gameId: g.gameId, reason: verifyFinalBoxScore(next, box, boxObservedAt).failures[0] ?? null });
@@ -244,9 +243,9 @@ export async function runScoreboardCycle(input: {
         const hasStored = priorLines.some((l) => l.gameId === g.gameId);
         next = { ...next, boxCompleteness: carriedBoxCompleteness(next, hasStored) };
       }
-      updates.push({ ...next, pollingState: nextPollingState(next, now) });
+      const accepted = await input.store.applyObservation({ ...next, pollingState: nextPollingState(next, now) }, lines);
+      if (!accepted) result.rejected.push({ gameId: g.gameId, reason: 'stale_observation' });
     }
-    await input.store.upsertGames(updates);
   }
   return done('success', null);
 }

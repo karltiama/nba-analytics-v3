@@ -56,6 +56,15 @@ locals {
     "${local.scoreboard_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_scoreboard_games",
     "${local.scoreboard_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_box_scores_live",
   ]
+  scoreboard_schedule_name  = "nba-scoreboard-schedule"
+  scoreboard_schedule_group = "default"
+}
+
+# Same-account Scheduler invocation uses the execution role below. A Lambda resource policy is
+# not required, and an unscoped scheduler.amazonaws.com permission would let any schedule in
+# the account invoke this function. See AWS Lambda "Invoke a Lambda function on a schedule".
+data "aws_caller_identity" "scoreboard" {
+  count = var.scoreboard_create && var.scoreboard_enable_schedule ? 1 : 0
 }
 
 data "archive_file" "scoreboard" {
@@ -184,6 +193,14 @@ resource "aws_iam_role" "scheduler_scoreboard_invoke" {
           Service = "scheduler.amazonaws.com"
         }
         Action = "sts:AssumeRole"
+        # Confused-deputy limit. Scheduler passes the schedule group as aws:SourceArn,
+        # not the individual schedule ARN.
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.scoreboard[0].account_id
+            "aws:SourceArn"     = "arn:aws:scheduler:${var.aws_region}:${data.aws_caller_identity.scoreboard[0].account_id}:schedule-group/${local.scoreboard_schedule_group}"
+          }
+        }
       }
     ]
   })
@@ -208,8 +225,8 @@ resource "aws_iam_role_policy" "scheduler_scoreboard_invoke_lambda" {
 
 resource "aws_scheduler_schedule" "scoreboard" {
   count       = var.scoreboard_create && var.scoreboard_enable_schedule ? 1 : 0
-  name        = "nba-scoreboard-schedule"
-  group_name  = "default"
+  name        = local.scoreboard_schedule_name
+  group_name  = local.scoreboard_schedule_group
   description = "Display-only scoreboard tick. Disabled unless live_ingestion_enabled AND scoreboard_execution_enabled."
   state       = local.scoreboard_schedule_state
 
@@ -223,15 +240,14 @@ resource "aws_scheduler_schedule" "scoreboard" {
     arn      = aws_lambda_function.scoreboard[0].arn
     role_arn = aws_iam_role.scheduler_scoreboard_invoke[0].arn
     input    = "{}"
-  }
-}
 
-resource "aws_lambda_permission" "allow_scheduler_scoreboard" {
-  count         = var.scoreboard_create && var.scoreboard_enable_schedule ? 1 : 0
-  statement_id  = "allow-eventbridge-scheduler-invoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.scoreboard[0].function_name
-  principal     = "scheduler.amazonaws.com"
+    # Distinct from the Lambda async invoke config. The provider default is 185 retries over
+    # 24 hours; each retry would be another archived provider call. The next minute already retries.
+    retry_policy {
+      maximum_event_age_in_seconds = 60
+      maximum_retry_attempts       = 0
+    }
+  }
 }
 
 # Follows creation. Quiet while frozen (notBreaching).

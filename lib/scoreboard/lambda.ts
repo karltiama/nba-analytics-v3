@@ -113,7 +113,8 @@ const NO_STORE: ScoreboardStore = {
   loadGamesForDate: async () => [],
   loadLastGamesRequestAt: async () => null,
   recordGamesRequest: async () => undefined,
-  upsertGames: async () => undefined,
+  upsertGames: async () => 0,
+  applyObservation: async () => false,
   replacePlayerLines: async () => undefined,
   loadPlayerLines: async () => [],
 };

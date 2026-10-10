@@ -15,7 +15,13 @@ export type ScoreboardStore = {
   loadGamesForDate(etDate: string, seasonType?: ScoreboardSeasonType): Promise<StoredScoreboardGame[]>;
   loadLastGamesRequestAt(seasonType: ScoreboardSeasonType): Promise<string | null>;
   recordGamesRequest(seasonType: ScoreboardSeasonType, at: string, requestId: string): Promise<void>;
-  upsertGames(rows: StoredScoreboardGame[]): Promise<void>;
+  /** Writes each row only when its collection time is at least the stored one. Returns how many applied. */
+  upsertGames(rows: StoredScoreboardGame[]): Promise<number>;
+  /**
+   * Writes the game and, when lines is non-null, replaces that game's player lines in one
+   * transaction. A stale collection time writes nothing and returns false.
+   */
+  applyObservation(game: StoredScoreboardGame, lines: ScoreboardPlayerLine[] | null): Promise<boolean>;
   replacePlayerLines(gameId: string, lines: ScoreboardPlayerLine[]): Promise<void>;
   loadPlayerLines(gameIds: string[]): Promise<ScoreboardPlayerLine[]>;
 };
@@ -26,11 +32,11 @@ export function createMemoryScoreboardStore(): ScoreboardStore & {
   gamesRequests: Map<ScoreboardSeasonType, { at: string; requestId: string }>;
 } {
   const games = new Map<string, StoredScoreboardGame>();
-  const lines = new Map<string, ScoreboardPlayerLine[]>();
+  const playerLines = new Map<string, ScoreboardPlayerLine[]>();
   const gamesRequests = new Map<ScoreboardSeasonType, { at: string; requestId: string }>();
   return {
     games,
-    lines,
+    lines: playerLines,
     gamesRequests,
     async loadGames(seasonType, startDate, endDate) {
       return [...games.values()].filter(
@@ -44,21 +50,34 @@ export function createMemoryScoreboardStore(): ScoreboardStore & {
       return gamesRequests.get(seasonType)?.at ?? null;
     },
     async recordGamesRequest(seasonType, at, requestId) {
+      const prev = gamesRequests.get(seasonType);
+      if (prev && Date.parse(prev.at) > Date.parse(at)) return;
       gamesRequests.set(seasonType, { at, requestId });
     },
     async upsertGames(rows) {
-      for (const r of rows) games.set(r.gameId, { ...r });
+      let applied = 0;
+      for (const r of rows) if (await this.applyObservation(r, null)) applied += 1;
+      return applied;
+    },
+    async applyObservation(game, nextLines) {
+      const prev = games.get(game.gameId);
+      if (prev && Date.parse(prev.lastObservedAt) > Date.parse(game.lastObservedAt)) return false;
+      games.set(game.gameId, { ...game });
+      if (nextLines) playerLines.set(game.gameId, nextLines.map((l) => ({ ...l })));
+      return true;
     },
     async replacePlayerLines(gameId, next) {
-      lines.set(gameId, next.map((l) => ({ ...l })));
+      playerLines.set(gameId, next.map((l) => ({ ...l })));
     },
     async loadPlayerLines(gameIds) {
-      return gameIds.flatMap((id) => lines.get(id) ?? []);
+      return gameIds.flatMap((id) => playerLines.get(id) ?? []);
     },
   };
 }
 
-type Queryable = { query: (text: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> };
+type QueryResult = { rows: Record<string, unknown>[]; rowCount?: number | null };
+type Queryable = { query: (text: string, params?: unknown[]) => Promise<QueryResult> };
+type TxClient = Queryable & { release: () => void };
 
 const GAME_COLUMNS = [
   ['game_id', 'gameId'],
@@ -154,11 +173,63 @@ function rowToGame(r: Record<string, unknown>): StoredScoreboardGame {
 const SELECT_GAMES = `SELECT ${GAME_COLUMNS.map(([c]) => (c === 'et_date' ? 'et_date::text AS et_date' : c)).join(', ')}
   FROM display.scoreboard_games`;
 
+// Collection time, not commit time. An equal timestamp may complete the same observation
+// (games row, then its player lines). An older timestamp does not write.
 const UPSERT_GAME_SQL = `INSERT INTO display.scoreboard_games (${GAME_COLUMNS.map(([c]) => c).join(', ')}, updated_at)
   VALUES (${GAME_COLUMNS.map((_, i) => `$${i + 1}`).join(', ')}, now())
   ON CONFLICT (game_id) DO UPDATE SET ${GAME_COLUMNS.filter(([c]) => c !== 'game_id')
     .map(([c]) => `${c} = excluded.${c}`)
-    .join(', ')}, updated_at = now()`;
+    .join(', ')}, updated_at = now()
+  WHERE display.scoreboard_games.last_observed_at <= excluded.last_observed_at
+  RETURNING game_id`;
+
+async function withTransaction<T>(db: Queryable, fn: (q: Queryable) => Promise<T>): Promise<T> {
+  const connect = (db as { connect?: () => Promise<TxClient> }).connect;
+  if (typeof connect !== 'function') return fn(db);
+  const client = await connect.call(db);
+  try {
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      /* the original error is the one to surface */
+    }
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function replaceLines(q: Queryable, gameId: string, lines: ScoreboardPlayerLine[]): Promise<void> {
+  if (lines.length > 0) {
+    const col = <K extends keyof ScoreboardPlayerLine>(k: K) => lines.map((l) => l[k]);
+    await q.query(
+      `INSERT INTO display.scoreboard_player_lines (game_id, ${LINE_COLUMNS.join(', ')}, updated_at)
+       SELECT $1, u.*, now() FROM unnest(${LINE_COLUMNS.map((c, i) => `$${i + 2}::${LINE_TYPES[c]}[]`).join(', ')}) AS u
+       ON CONFLICT (game_id, player_id) DO UPDATE SET
+         ${LINE_COLUMNS.filter((c) => c !== 'player_id').map((c) => `${c} = excluded.${c}`).join(', ')}, updated_at = now()`,
+      [gameId, ...LINE_COLUMNS.map((c) => col(LINE_FIELDS[c]))]
+    );
+  }
+  await q.query(
+    `DELETE FROM display.scoreboard_player_lines WHERE game_id = $1 AND NOT (player_id = ANY($2::text[]))`,
+    [gameId, lines.map((l) => l.playerId)]
+  );
+}
+
+async function writeObservation(q: Queryable, game: StoredScoreboardGame, lines: ScoreboardPlayerLine[] | null): Promise<boolean> {
+  const written = await q.query(
+    UPSERT_GAME_SQL,
+    GAME_COLUMNS.map(([, field]) => game[field])
+  );
+  if (written.rows.length === 0) return false;
+  if (lines) await replaceLines(q, game.gameId, lines);
+  return true;
+}
 
 export function createPgScoreboardStore(db: Queryable): ScoreboardStore {
   return {
@@ -194,35 +265,23 @@ export function createPgScoreboardStore(db: Queryable): ScoreboardStore {
          ON CONFLICT (season_type) DO UPDATE SET
            last_games_request_at = excluded.last_games_request_at,
            last_games_request_id = excluded.last_games_request_id,
-           updated_at = now()`,
+           updated_at = now()
+         WHERE display.scoreboard_collector_state.last_games_request_at <= excluded.last_games_request_at`,
         [seasonType, at, requestId]
       );
     },
     async upsertGames(rows) {
-      for (const r of rows) {
-        await db.query(
-          UPSERT_GAME_SQL,
-          GAME_COLUMNS.map(([, field]) => r[field])
-        );
-      }
+      return withTransaction(db, async (q) => {
+        let applied = 0;
+        for (const row of rows) if (await writeObservation(q, row, null)) applied += 1;
+        return applied;
+      });
+    },
+    async applyObservation(game, lines) {
+      return withTransaction(db, (q) => writeObservation(q, game, lines));
     },
     async replacePlayerLines(gameId, lines) {
-      // One upsert for every line, then drop players no longer in the box. Never leaves a game
-      // with a partially inserted box; at worst a dropped player lingers until the next tick.
-      if (lines.length > 0) {
-        const col = <K extends keyof ScoreboardPlayerLine>(k: K) => lines.map((l) => l[k]);
-        await db.query(
-          `INSERT INTO display.scoreboard_player_lines (game_id, ${LINE_COLUMNS.join(', ')}, updated_at)
-           SELECT $1, u.*, now() FROM unnest(${LINE_COLUMNS.map((c, i) => `$${i + 2}::${LINE_TYPES[c]}[]`).join(', ')}) AS u
-           ON CONFLICT (game_id, player_id) DO UPDATE SET
-             ${LINE_COLUMNS.filter((c) => c !== 'player_id').map((c) => `${c} = excluded.${c}`).join(', ')}, updated_at = now()`,
-          [gameId, ...LINE_COLUMNS.map((c) => col(LINE_FIELDS[c]))]
-        );
-      }
-      await db.query(
-        `DELETE FROM display.scoreboard_player_lines WHERE game_id = $1 AND NOT (player_id = ANY($2::text[]))`,
-        [gameId, lines.map((l) => l.playerId)]
-      );
+      await replaceLines(db, gameId, lines);
     },
     async loadPlayerLines(gameIds) {
       if (gameIds.length === 0) return [];

@@ -76,6 +76,27 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
     expect(src).not.toMatch(/elasticache|aws_cloudfront|aws_api_gateway/i);
   });
 
+  it('Scheduler invokes through a schedule-scoped role, with no Lambda resource policy and no retries', () => {
+    expect(src).not.toMatch(/resource "aws_lambda_permission"/);
+    const role = blocks(src).find((b) => b.header.includes('scheduler_scoreboard_invoke"'))!.body;
+    expect(role).toMatch(/Service\s*=\s*"scheduler\.amazonaws\.com"/);
+    expect(role).not.toMatch(/events\.amazonaws\.com/);
+    expect(role).toMatch(/aws:SourceAccount/);
+    expect(role).toMatch(/schedule-group\/\$\{local\.scoreboard_schedule_group\}/);
+    expect(role).not.toMatch(/schedule\/\$\{local\.scoreboard_schedule_group\}\/\$\{local\.scoreboard_schedule_name\}/);
+    const invoke = blocks(src).find((b) => b.header.includes('scheduler_scoreboard_invoke_lambda'))!.body;
+    expect(invoke).toMatch(/"lambda:InvokeFunction"/);
+    expect(invoke).toMatch(/aws_lambda_function\.scoreboard\[0\]\.arn/);
+    expect(invoke).not.toMatch(/Resource"\s*=\s*"\*"/);
+    const schedule = blocks(src).find((b) => b.header.includes('aws_scheduler_schedule" "scoreboard"'))!.body;
+    expect(schedule).toMatch(/input\s*=\s*"\{\}"/);
+    expect(schedule).toMatch(/mode\s*=\s*"OFF"/);
+    expect(schedule).toMatch(/maximum_retry_attempts\s*=\s*0/);
+    expect(schedule).toMatch(/maximum_event_age_in_seconds\s*=\s*60/);
+    expect(schedule).toMatch(/role_arn\s*=\s*aws_iam_role\.scheduler_scoreboard_invoke\[0\]\.arn/);
+    expect(schedule).toMatch(/arn\s*=\s*aws_lambda_function\.scoreboard\[0\]\.arn/);
+  });
+
   it('packages from lambda/scoreboard/.package and hashes the bundle', () => {
     expect(src).toMatch(/source_dir\s*=\s*"\$\{path\.module\}\/\.\.\/lambda\/scoreboard\/\.package"/);
     expect(src).toMatch(/filebase64sha256\("\$\{path\.module\}\/\.\.\/lambda\/scoreboard\/\.package\/dist\/index\.js"\)/);

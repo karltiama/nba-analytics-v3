@@ -549,17 +549,24 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
   ];
 
   it('scoreboard code references only the display schema, never analytics/raw tables or model modules', () => {
+    const withoutComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
     for (const f of scoreboardSources) {
       const src = read(f);
-      expect(src, f).not.toMatch(/\banalytics\.[a-z_]+|\braw\.(?:games|players|teams|player_\w+)\b|player_game_logs/);
-      expect(src, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center|players|analytics|postgame)/);
+      const code = withoutComments(src);
+      expect(code, f).not.toMatch(/\banalytics\.[a-z_]+|\braw\.(?:games|players|teams|player_\w+)\b|player_game_logs/);
+      expect(code, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center|players|analytics|postgame)/);
       for (const m of src.matchAll(/\b(?:FROM|INTO|UPDATE|JOIN|TABLE)\s+([a-z_]+)\.[a-z_]+/gi)) {
         expect(m[1], `${f}: ${m[0]}`).toBe('display');
       }
     }
+    for (const f of ['lib/scoreboard/store.ts', 'lib/scoreboard/collector.ts']) {
+      const code = withoutComments(read(f));
+      expect(code, f).not.toMatch(/\banalytics\.|player_game_logs|projection_ledger/);
+    }
   });
 
   it('nothing outside the scoreboard reads display tables or imports scoreboard modules', () => {
+    const presentationImport = /@\/lib\/scoreboard\/(client|contract|slate-merge|present)\b/;
     const others = ['lib', 'app', 'lambda', 'scripts']
       .flatMap((d) => walk(d))
       .filter((f) => !f.includes('/__tests__/'))
@@ -567,6 +574,13 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
     for (const f of others) {
       const src = read(f);
       expect(src, f).not.toMatch(/display\.scoreboard_/);
+      if (f === 'app/dashboard/page.tsx') {
+        for (const imp of src.matchAll(/@\/lib\/scoreboard\/[A-Za-z0-9_-]+/g)) {
+          expect(imp[0], f).toMatch(presentationImport);
+        }
+        expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
+        continue;
+      }
       expect(src, f).not.toMatch(/lib\/scoreboard/);
     }
   });
