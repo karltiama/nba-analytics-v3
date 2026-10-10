@@ -12,7 +12,6 @@ import {
   getDateLabel,
   TrendingPlayerStrip,
   UnauthorizedPanel,
-  type Game,
   type Insight,
   type SortOption,
 } from '@/components/betting';
@@ -23,9 +22,7 @@ import {
   BettingInsightsSkeleton,
   AIInsightPanelSkeleton,
 } from '@/components/betting/skeletons';
-import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import { filterSlateGames } from '@/lib/betting/slate-filters';
-import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import {
   interpretScoreboardPayload,
   SCOREBOARD_CLIENT_REFRESH_MS,
@@ -33,152 +30,15 @@ import {
   scoreboardPollDelayMs,
 } from '@/lib/scoreboard/client';
 import type { ScoreboardResponse } from '@/lib/scoreboard/contract';
-import { mergeTodaysGames } from '@/lib/scoreboard/slate-merge';
+import {
+  mergeTodaysGames,
+  todaysGamesUnavailableCopy,
+  type ScoreboardSlateAvailability,
+} from '@/lib/scoreboard/slate-merge';
 
 // ================================
 // DATA FETCHING
 // ================================
-
-interface ApiGame {
-  id: string;
-  gameDate: string;
-  startTime: string;
-  status: string;
-  statusRaw?: string | null;
-  homeTeam: {
-    id: string;
-    name: string;
-    abbreviation: string;
-    record: string | null;
-    offensiveRating: number | null;
-    defensiveRating: number | null;
-    defensiveRank: number | null;
-    pace: number | null;
-    avgPoints: number | null;
-    hasSeasonAnalytics?: boolean;
-    recentForm: Array<{
-      game_id: string;
-      result: 'W' | 'L';
-      team_score: number;
-      opponent_score: number;
-      opponent_abbr: string;
-    }>;
-  };
-  awayTeam: {
-    id: string;
-    name: string;
-    abbreviation: string;
-    record: string | null;
-    offensiveRating: number | null;
-    defensiveRating: number | null;
-    defensiveRank: number | null;
-    pace: number | null;
-    avgPoints: number | null;
-    hasSeasonAnalytics?: boolean;
-    recentForm: Array<{
-      game_id: string;
-      result: 'W' | 'L';
-      team_score: number;
-      opponent_score: number;
-      opponent_abbr: string;
-    }>;
-  };
-  homeScore: number | null;
-  awayScore: number | null;
-  odds: {
-    home: { moneyline: number | null; spread: number | null; spreadOdds: number | null };
-    away: { moneyline: number | null; spread: number | null; spreadOdds: number | null };
-    overUnder: number | null;
-    overOdds: number | null;
-    underOdds: number | null;
-    bookmaker?: string | null;
-  };
-}
-
-// Transform API game to GameCard format
-function transformGame(apiGame: ApiGame): Game {
-  const odds = apiGame.odds;
-  const market = twoWayMarketDisplay(odds.away.moneyline, odds.home.moneyline);
-  const hasOdds =
-    odds.home.moneyline != null ||
-    odds.away.moneyline != null ||
-    odds.home.spread != null ||
-    odds.away.spread != null ||
-    odds.overUnder != null;
-
-  const homePace = apiGame.homeTeam.pace;
-  const awayPace = apiGame.awayTeam.pace;
-  const paceSignal =
-    homePace != null && awayPace != null
-      ? {
-          label:
-            (homePace + awayPace) / 2 >= 102
-              ? 'FAST'
-              : (homePace + awayPace) / 2 <= 98
-                ? 'SLOW'
-                : 'AVG',
-          projected: (homePace + awayPace) / 2,
-        }
-      : undefined;
-
-  const homeDef = apiGame.homeTeam.defensiveRating;
-  const awayDef = apiGame.awayTeam.defensiveRating;
-  let weakness: Game['weakness'] | undefined;
-  if (homeDef != null && awayDef != null) {
-    const worseTeam = homeDef > awayDef ? apiGame.homeTeam : apiGame.awayTeam;
-    const worseRank =
-      homeDef > awayDef ? apiGame.homeTeam.defensiveRank : apiGame.awayTeam.defensiveRank;
-    if (worseRank != null && worseRank > 0) {
-      weakness = {
-        label: 'Def Rtg',
-        team: worseTeam.abbreviation,
-        rank: worseRank,
-      };
-    }
-  }
-
-  // Tipoff in ET — slate dates are ET; do not use server/browser local TZ for schedule times.
-  return {
-    id: apiGame.id,
-    gameDate: apiGame.gameDate,
-    homeTeam: {
-      id: apiGame.homeTeam.id,
-      name: apiGame.homeTeam.name,
-      abbreviation: apiGame.homeTeam.abbreviation,
-      record: apiGame.homeTeam.record,
-    },
-    awayTeam: {
-      id: apiGame.awayTeam.id,
-      name: apiGame.awayTeam.name,
-      abbreviation: apiGame.awayTeam.abbreviation,
-      record: apiGame.awayTeam.record,
-    },
-    startTime: formatTipoffEt(apiGame.startTime),
-    homeOdds: {
-      moneyline: odds.home.moneyline,
-      spread: odds.home.spread,
-      spreadOdds: odds.home.spreadOdds,
-    },
-    awayOdds: {
-      moneyline: odds.away.moneyline,
-      spread: odds.away.spread,
-      spreadOdds: odds.away.spreadOdds,
-    },
-    overUnder: odds.overUnder,
-    overOdds: odds.overOdds,
-    underOdds: odds.underOdds,
-    homeImpliedProb: market?.homePct ?? null,
-    awayImpliedProb: market?.awayPct ?? null,
-    isFavorite: market?.favorite ?? null,
-    isClose: market?.isClose ?? false,
-    paceSignal,
-    weakness,
-    status: apiGame.status || undefined,
-    homeScore: apiGame.homeScore ?? undefined,
-    awayScore: apiGame.awayScore ?? undefined,
-    hasOdds,
-  };
-}
 
 // ================================
 // MAIN COMPONENT
@@ -210,9 +70,9 @@ export default function BettingDashboard(props: PageProps) {
   }, [searchParams]);
 
   // Data states
-  const [games, setGames] = useState<Game[]>([]);
   const [scoreboard, setScoreboard] = useState<ScoreboardResponse | null>(null);
   const [scoreboardDate, setScoreboardDate] = useState(selectedDate);
+  const [scoreboardAvailability, setScoreboardAvailability] = useState<ScoreboardSlateAvailability>('loading');
   const [insights, setInsights] = useState<Insight[]>([]);
   const [widgets, setWidgets] = useState<any[]>([]);
   const [slateSummary, setSlateSummary] = useState<string | null>(null);
@@ -221,40 +81,15 @@ export default function BettingDashboard(props: PageProps) {
   const [slateBriefingEligible, setSlateBriefingEligible] = useState(false);
 
   // Loading states
-  const [loadingGames, setLoadingGames] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
   const [slateSummaryLoading, setSlateSummaryLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [unauthorized, setUnauthorized] = useState(false);
 
   if (scoreboardDate !== selectedDate) {
     setScoreboardDate(selectedDate);
     setScoreboard(null);
+    setScoreboardAvailability('loading');
   }
-
-  // Fetch games for a given date
-  const fetchGames = useCallback(async (date: string) => {
-    setLoadingGames(true);
-    setError(null);
-    setUnauthorized(false);
-    try {
-      const res = await fetch(`/api/betting/games?date=${encodeURIComponent(date)}`);
-      if (res.status === 401) {
-        setUnauthorized(true);
-        setGames([]);
-        return;
-      }
-      if (!res.ok) throw new Error('Failed to fetch games');
-      const data = await res.json();
-      const transformedGames = data.games.map(transformGame);
-      setGames(transformedGames);
-    } catch (err: any) {
-      console.error('Error fetching games:', err);
-      setError(err.message);
-    } finally {
-      setLoadingGames(false);
-    }
-  }, []);
 
   // Update URL when date changes (shareable link)
   const handleDateChange = useCallback(
@@ -275,21 +110,26 @@ export default function BettingDashboard(props: PageProps) {
     }
   }, []); // run once on mount
 
-  // Refetch games when selected date changes
-  useEffect(() => {
-    fetchGames(selectedDate);
-  }, [selectedDate, fetchGames]);
-
   const loadScoreboard = useCallback(async (date: string, signal: AbortSignal) => {
     try {
       const res = await fetch(scoreboardApiUrl(date), { signal });
       const body: unknown = await res.json().catch(() => null);
       if (signal.aborted) return;
       const outcome = interpretScoreboardPayload(res.status, body);
-      if (outcome.status === 'ready') setScoreboard(outcome.response);
-      else if (outcome.status === 'disabled') setScoreboard(null);
+      if (outcome.status === 'ready') {
+        setScoreboard(outcome.response);
+        setScoreboardAvailability('ready');
+        return;
+      }
+      if (outcome.status === 'disabled') {
+        setScoreboard(null);
+        setScoreboardAvailability('disabled');
+        return;
+      }
+      setScoreboardAvailability('error');
     } catch (err) {
       if (signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
+      setScoreboardAvailability('error');
     }
   }, []);
 
@@ -421,10 +261,7 @@ export default function BettingDashboard(props: PageProps) {
     return () => ac.abort();
   }, [selectedDate]);
 
-  const slateGames = useMemo(
-    () => (unauthorized ? games : mergeTodaysGames(games, scoreboard)),
-    [games, scoreboard, unauthorized]
-  );
+  const slateGames = useMemo(() => mergeTodaysGames(scoreboard), [scoreboard]);
 
   // Filter games
   const filteredGames = filterSlateGames({
@@ -489,20 +326,8 @@ export default function BettingDashboard(props: PageProps) {
               onDateChange={handleDateChange}
             />
 
-            {/* Auth / Error State */}
             {unauthorized && (
-              <UnauthorizedPanel onRetry={() => fetchGames(selectedDate)} />
-            )}
-            {error && !unauthorized && (
-              <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 border-l-4 border-l-red-500">
-                <p className="type-body text-red-600">Error loading data: {error}</p>
-                <button 
-                  onClick={() => { setError(null); fetchGames(selectedDate); }}
-                  className="type-interactive mt-2 text-[#075B5C] hover:underline"
-                >
-                  Retry
-                </button>
-              </div>
+              <UnauthorizedPanel onRetry={() => fetchInsights()} />
             )}
 
             {/* Trending Players Strip */}
@@ -513,11 +338,17 @@ export default function BettingDashboard(props: PageProps) {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="type-section-heading text-[#063f46]">{gamesSectionTitle}</h2>
                 <span className="type-metadata">
-                  {loadingGames ? 'Loading...' : `${sortedGames.length} games`}
+                  {scoreboardAvailability === 'loading' ? 'Loading...' : `${sortedGames.length} games`}
                 </span>
               </div>
+
+              {scoreboardAvailability === 'error' && sortedGames.length > 0 ? (
+                <p className="type-secondary mb-3 text-amber-700" data-scoreboard-refresh="failed">
+                  Showing the last scoreboard update. A refresh failed.
+                </p>
+              ) : null}
               
-              {loadingGames ? (
+              {scoreboardAvailability === 'loading' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[...Array(6)].map((_, i) => (
                     <GameCardSkeleton key={i} />
@@ -525,10 +356,17 @@ export default function BettingDashboard(props: PageProps) {
                 </div>
               ) : sortedGames.length === 0 ? (
                 <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
-                  <p className="type-section-heading text-[#063f46]">{emptyGamesMessage}</p>
+                  <p className="type-section-heading text-[#063f46]" data-slate-empty>
+                    {scoreboardAvailability === 'ready'
+                      ? emptyGamesMessage
+                      : todaysGamesUnavailableCopy(scoreboardAvailability === 'disabled' ? 'disabled' : 'error')}
+                  </p>
+                  {scoreboardAvailability === 'ready' ? (
                   <p className="type-body mt-2 text-cc-secondary">
                     You can still research historical props or open a parlay workspace.
                   </p>
+                  ) : null}
+                  {scoreboardAvailability === 'ready' ? (
                   <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                     <Link
                       href="/betting/props-explorer"
@@ -543,12 +381,13 @@ export default function BettingDashboard(props: PageProps) {
                       Open Workspace
                     </Link>
                   </div>
+                  ) : null}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {sortedGames.map((game, index) => (
                     <div key={game.id} className="slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                      <GameCard game={game} researchDate={selectedDate} />
+                      <GameCard game={game} researchDate={selectedDate} presentation="scoreboard" />
                     </div>
                   ))}
                 </div>

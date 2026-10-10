@@ -8,7 +8,7 @@ const FIXTURE_BANNER = 'Fixture data for local preview. This is not a live score
 
 /** Dev-only preview of Today's Games cards. Does not call /api/scoreboard. */
 export function ScoreboardPreview() {
-  const games = mergeTodaysGames([], loadScoreboardFixture());
+  const games = mergeTodaysGames(loadScoreboardFixture());
   return (
     <div className="space-y-6">
       <div>
@@ -25,7 +25,7 @@ export function ScoreboardPreview() {
         <h2 className="type-section-heading mb-4 text-[#063f46]">Today&apos;s Games</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {games.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <GameCard key={game.id} game={game} presentation="scoreboard" />
           ))}
         </div>
       </section>

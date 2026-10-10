@@ -69,6 +69,11 @@ interface GameCardProps {
   researchDate?: string;
   /** Marketing sample cards must not deep-link to fake game ids. */
   samplePreview?: boolean;
+  /**
+   * Today's Games uses scoreboard. Market cards keep odds, projections, and research links.
+   * Default remains market so other views are unchanged.
+   */
+  presentation?: 'market' | 'scoreboard';
 }
 
 function formatOdds(odds: number | null | undefined): string {
@@ -135,9 +140,11 @@ function splitTeamDisplayName(name: string): { city: string; nickname: string } 
 function TeamMatchupSide({
   team,
   isFav,
+  showRecord,
 }: {
   team: TeamInfo;
   isFav: boolean;
+  showRecord: boolean;
 }) {
   const { city, nickname } = splitTeamDisplayName(team.name);
   return (
@@ -154,10 +161,12 @@ function TeamMatchupSide({
         <div className={`type-card-data text-[#063F46] ${city ? 'mt-0.5' : ''}`}>
           {nickname || team.name}
         </div>
-        <div className="mt-0.5 flex items-center gap-1">
-          <span className="type-secondary">{team.record ?? '—'}</span>
-          {isFav ? <FavBadge /> : null}
-        </div>
+        {showRecord ? (
+          <div className="mt-0.5 flex items-center gap-1">
+            <span className="type-secondary">{team.record ?? '—'}</span>
+            {isFav ? <FavBadge /> : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -203,7 +212,13 @@ function ScoreboardLines({ board }: { board: PresentedGame }) {
   );
 }
 
-export function GameCard({ game, onViewDetails, researchDate, samplePreview = false }: GameCardProps) {
+export function GameCard({
+  game,
+  onViewDetails,
+  researchDate,
+  samplePreview = false,
+  presentation = 'market',
+}: GameCardProps) {
   const dateForProps =
     (game.gameDate && /^\d{4}-\d{2}-\d{2}/.test(String(game.gameDate))
       ? String(game.gameDate).slice(0, 10)
@@ -229,12 +244,15 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
   const showScoreline = isFinal || (board?.showScores === true && game.homeScore != null && game.awayScore != null);
   const statusBadge = getStatusBadge(game.status);
   const preseason = board?.preseason === true;
+  const scoreboardPresentation = presentation === 'scoreboard';
   const favoredValue = (isFav: boolean) => (isFav ? 'text-[#20B95A]' : 'text-[#063F46]');
 
   return (
     <div
       className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
       data-game-id={game.id}
+      data-presentation={presentation}
+      data-betting={scoreboardPresentation ? 'hidden' : 'visible'}
       data-final={board ? (board.isFinal ? 'true' : 'false') : undefined}
       data-season-type={board?.seasonType ?? undefined}
       data-stale={board ? (board.stale ? 'true' : 'false') : undefined}
@@ -293,15 +311,15 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
 
       <div className="px-5 sm:px-6 py-2">
         <div className="flex items-center gap-2 sm:gap-3">
-          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} />
+          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} showRecord={!scoreboardPresentation} />
           <span className="type-secondary shrink-0">
             VS
           </span>
-          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} />
+          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} showRecord={!scoreboardPresentation} />
         </div>
       </div>
 
-      {preseason ? null : hasOdds ? (
+      {scoreboardPresentation ? null : preseason ? null : hasOdds ? (
         <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
           <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
             <div className="type-secondary mb-1.5">Market spread</div>
@@ -339,7 +357,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
         </div>
       )}
 
-      {preseason || !game.matchupContext ? null : (
+      {scoreboardPresentation || preseason || !game.matchupContext ? null : (
         <div className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2">
           <div className="type-metadata text-center">
             <span>Matchup </span>
@@ -349,7 +367,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
         </div>
       )}
 
-      {!preseason && hasOdds && marketDisplay ? (
+      {!scoreboardPresentation && !preseason && hasOdds && marketDisplay ? (
         <div className="px-5 sm:px-6 pb-5">
           <MarketProbability
             awayAbbr={game.awayTeam.abbreviation}
@@ -360,7 +378,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
         </div>
       ) : null}
 
-      {preseason || !game.paceSignal ? null : (
+      {scoreboardPresentation || preseason || !game.paceSignal ? null : (
         <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
           <p className="type-metadata text-center">Pace context</p>
           <p className="type-secondary mt-0.5 text-center tabular-nums">
@@ -389,6 +407,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
         </details>
       ) : null}
 
+      {scoreboardPresentation ? null : (
       <div className="px-5 sm:px-6 pb-5 flex flex-col sm:flex-row gap-2.5">
         {preseason ? (
           <p className="type-secondary" data-preseason-betting="disabled">
@@ -415,6 +434,7 @@ export function GameCard({ game, onViewDetails, researchDate, samplePreview = fa
           </>
         )}
       </div>
+      )}
     </div>
   );
 }

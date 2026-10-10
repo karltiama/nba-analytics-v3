@@ -1,8 +1,7 @@
 /**
- * Presentation merge for Today's Games.
- * Reads scoreboard.v1 beside the existing betting slate. Does not write either store.
- * Dedup is an exact provider game id match (analytics.games.game_id and scoreboard game_id
- * are both the provider id stored as text).
+ * Today's Games list from a scoreboard.v1 payload.
+ * One card per provider game id. A game is included only when its et_date is the payload date.
+ * Betting rows are not a source for this list. This module does not write either store.
  */
 
 import type { Game } from '@/components/betting/GameCard';
@@ -49,38 +48,26 @@ export function scoreboardToSlateGame(game: ScoreboardGame): (Game & { scoreboar
   };
 }
 
-function overlayRegular(betting: Game, board: PresentedGame): Game {
-  return {
-    ...betting,
-    status: board.lifecycleLabel,
-    startTime: board.periodClock || betting.startTime,
-    homeScore: board.showScores && board.homeScore != null ? Number(board.homeScore) : betting.homeScore,
-    awayScore: board.showScores && board.visitorScore != null ? Number(board.visitorScore) : betting.awayScore,
-    scoreboard: board,
-  };
+export type ScoreboardSlateAvailability = 'loading' | 'ready' | 'disabled' | 'error';
+
+/** Copy for a Today's Games section that has no cards. A ready empty date is a real empty slate. */
+export function todaysGamesUnavailableCopy(availability: 'disabled' | 'error'): string {
+  if (availability === 'disabled') return 'Scoreboard serving is turned off.';
+  return 'The game schedule is temporarily unavailable.';
 }
 
 /**
- * Betting games stay in place when the scoreboard is missing.
- * A matching provider id overlays live fields. Preseason overlays drop odds and model context.
- * Scoreboard-only games are appended.
+ * Cards for the payload date only. Duplicate provider ids collapse to the later row.
+ * A missing payload yields no cards. It does not invent a slate from another feed.
  */
-export function mergeTodaysGames(betting: Game[], scoreboard: ScoreboardResponse | null | undefined): Game[] {
-  if (!scoreboard) return betting;
-  const overlaid = new Map<string, Game>();
-  const extras: Game[] = [];
+export function mergeTodaysGames(scoreboard: ScoreboardResponse | null | undefined): Game[] {
+  if (!scoreboard || !Array.isArray(scoreboard.games)) return [];
+  const byId = new Map<string, Game>();
   for (const raw of scoreboard.games) {
+    if (raw.et_date !== scoreboard.date) continue;
     const card = scoreboardToSlateGame(raw);
     if (!card) continue;
-    const existing = betting.find((game) => game.id === card.id);
-    if (!existing) {
-      extras.push(card);
-      continue;
-    }
-    overlaid.set(
-      card.id,
-      card.scoreboard.preseason ? { ...card, gameDate: existing.gameDate || card.gameDate } : overlayRegular(existing, card.scoreboard)
-    );
+    byId.set(card.id, card);
   }
-  return [...betting.map((game) => overlaid.get(game.id) ?? game), ...extras];
+  return [...byId.values()];
 }

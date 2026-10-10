@@ -7,7 +7,7 @@ import { GameCard, type Game } from '@/components/betting/GameCard';
 import { interpretScoreboardPayload, SCOREBOARD_CLIENT_REFRESH_MS, SCOREBOARD_REFRESH_LEAD_MS, scoreboardPollDelayMs } from '@/lib/scoreboard/client';
 import { scoreboardGame, scoreboardPreviewResponse, scoreboardResponse } from '@/lib/scoreboard/fixtures';
 import { SCOREBOARD_POLICY } from '@/lib/scoreboard/planner';
-import { mergeTodaysGames, scoreboardToSlateGame } from '@/lib/scoreboard/slate-merge';
+import { mergeTodaysGames, scoreboardToSlateGame, todaysGamesUnavailableCopy } from '@/lib/scoreboard/slate-merge';
 import { SCOREBOARD_CACHE_CONTROL } from '@/lib/scoreboard/serve';
 
 function bettingGame(over: Partial<Game> = {}): Game {
@@ -32,29 +32,44 @@ function bettingGame(over: Partial<Game> = {}): Game {
   };
 }
 
-function cardHtml(game: Game) {
-  return renderToStaticMarkup(createElement(GameCard, { game }));
+function cardHtml(game: Game, presentation: 'market' | 'scoreboard' = 'market') {
+  return renderToStaticMarkup(createElement(GameCard, { game, presentation }));
 }
 
 describe('Today\'s Games scoreboard merge', () => {
-  it('keeps regular-season games when the scoreboard is missing', () => {
+  it('does not invent a slate from betting games when the scoreboard payload is missing', () => {
     const slate = [bettingGame()];
-    expect(mergeTodaysGames(slate, null)).toEqual(slate);
-    expect(mergeTodaysGames(slate, undefined)).toEqual(slate);
-    expect(mergeTodaysGames(slate, scoreboardResponse([]))).toEqual(slate);
+    expect(mergeTodaysGames(null)).toEqual([]);
+    expect(mergeTodaysGames(undefined)).toEqual([]);
+    expect(mergeTodaysGames(scoreboardResponse([]))).toEqual([]);
+    expect(mergeTodaysGames({ date: '2026-10-10' } as never)).toEqual([]);
+    expect(slate[0]?.hasOdds).toBe(true);
   });
 
-  it('adds preseason games and does not drop a regular-season card on a scoreboard error path', () => {
-    const regular = bettingGame();
-    const merged = mergeTodaysGames([regular], scoreboardPreviewResponse());
-    expect(merged[0]).toEqual(regular);
-    expect(merged.some((game) => game.id === 'sched-1' && game.scoreboard?.preseason)).toBe(true);
-    expect(merged.length).toBe(1 + scoreboardPreviewResponse().games.length);
+  it('shows a preseason game and a regular-season game that have no odds', () => {
+    const preseason = scoreboardGame({ game_id: 'pre-no-odds', lifecycle: 'scheduled' });
+    const regular = scoreboardGame({
+      game_id: 'reg-no-odds',
+      lifecycle: 'scheduled',
+      season_type: 'regular',
+      home: { abbreviation: 'BOS', name: 'Boston Celtics' },
+      visitor: { abbreviation: 'NYK', name: 'New York Knicks' },
+    });
+    const merged = mergeTodaysGames(scoreboardResponse([preseason, regular]));
+    expect(merged.map((game) => game.id)).toEqual(['pre-no-odds', 'reg-no-odds']);
+    expect(merged.every((game) => game.hasOdds === false)).toBe(true);
+    const html = merged.map((game) => cardHtml(game, 'scoreboard')).join('\n');
+    expect(html).not.toContain('Market spread');
+    expect(html).not.toContain('View matchup');
+    expect(html).not.toContain('View props');
+    expect(html).not.toContain('No odds yet');
+    expect(html).not.toContain('Projections and expected value');
+    expect(html).toContain('Preseason');
+    expect(html).toContain('Regular season');
   });
 
-  it('dedups on provider game id and keeps regular-season odds', () => {
-    const regular = bettingGame({ id: '5001', status: 'Scheduled' });
-    const live = scoreboardGame({
+  it('keeps one card when the same provider id appears twice and ignores a different date', () => {
+    const early = scoreboardGame({
       game_id: '5001',
       lifecycle: 'live',
       season_type: 'regular',
@@ -63,15 +78,6 @@ describe('Today\'s Games scoreboard merge', () => {
       home: { abbreviation: 'BOS', name: 'Boston Celtics', score: 91 },
       visitor: { abbreviation: 'NYK', name: 'New York Knicks', score: 88 },
     });
-    const [merged] = mergeTodaysGames([regular], scoreboardResponse([live]));
-    expect(merged?.id).toBe('5001');
-    expect(merged?.homeOdds.moneyline).toBe(-150);
-    expect(merged?.hasOdds).toBe(true);
-    expect(merged?.status).toBe('Live');
-    expect(merged?.awayScore).toBe(88);
-    expect(merged?.homeScore).toBe(91);
-    expect(merged?.scoreboard?.isFinal).toBe(false);
-    expect(merged?.scoreboard?.preseason).toBe(false);
     const later = scoreboardGame({
       game_id: '5001',
       lifecycle: 'live',
@@ -81,11 +87,19 @@ describe('Today\'s Games scoreboard merge', () => {
       home: { abbreviation: 'BOS', name: 'Boston Celtics', score: 94 },
       visitor: { abbreviation: 'NYK', name: 'New York Knicks', score: 90 },
     });
-    const [updated] = mergeTodaysGames([regular], scoreboardResponse([later]));
-    expect(updated?.homeScore).toBe(94);
-    expect(updated?.awayScore).toBe(90);
-    expect(updated?.scoreboard?.periodClock).toContain('3:40');
-    expect(updated?.id).toBe('5001');
+    const tomorrow = scoreboardGame({
+      game_id: 'tomorrow',
+      et_date: '2026-10-10',
+      lifecycle: 'scheduled',
+    });
+    const merged = mergeTodaysGames(scoreboardResponse([early, later, tomorrow]));
+    expect(merged).toHaveLength(1);
+    expect(merged[0]?.id).toBe('5001');
+    expect(merged[0]?.homeScore).toBe(94);
+    expect(merged[0]?.awayScore).toBe(90);
+    expect(merged[0]?.scoreboard?.periodClock).toContain('3:40');
+    expect(merged[0]?.scoreboard?.isFinal).toBe(false);
+    expect(merged[0]?.hasOdds).toBe(false);
   });
 
   it('does not treat live scores as Final', () => {
@@ -101,7 +115,7 @@ describe('Today\'s Games scoreboard merge', () => {
     );
     expect(live?.scoreboard?.isFinal).toBe(false);
     expect(live?.status).toBe('Live');
-    const html = cardHtml(live!);
+    const html = cardHtml(live!, 'scoreboard');
     expect(html).toContain('data-final="false"');
     expect(html).toContain('>Live<');
     expect(html).toContain('120');
@@ -118,12 +132,13 @@ describe('Today\'s Games scoreboard merge', () => {
     );
     expect(scheduled?.scoreboard?.isFinal).toBe(false);
     expect(scheduled?.homeScore).toBeUndefined();
-    expect(cardHtml(scheduled!)).not.toContain('>102<');
+    expect(cardHtml(scheduled!, 'scoreboard')).not.toContain('>102<');
+    expect(cardHtml(scheduled!, 'scoreboard')).not.toContain('0 – 0');
   });
 
   it('renders lifecycle, season labels, freshness, and stale copy on the existing card', () => {
-    const slate = mergeTodaysGames([], scoreboardPreviewResponse());
-    const html = slate.map((game) => cardHtml(game)).join('\n');
+    const slate = mergeTodaysGames(scoreboardPreviewResponse());
+    const html = slate.map((game) => cardHtml(game, 'scoreboard')).join('\n');
     for (const label of ['Preseason', 'Regular season', 'Play-in', 'Playoffs', 'Halftime', 'Overtime', 'FINAL', 'Postponed', 'Canceled']) {
       expect(html).toContain(`>${label}<`);
     }
@@ -168,29 +183,43 @@ describe('Today\'s Games scoreboard merge', () => {
         },
       })
     );
-    const html = cardHtml(game!);
+    const html = cardHtml(game!, 'scoreboard');
     expect(html).toContain('data-box-completeness="live_partial"');
     expect(html).toContain('Partial box score');
     expect(html).toContain('Jayson Tatum');
     expect(html).toContain('>22<');
   });
 
-  it('disables preseason matchup and props actions and keeps regular-season links', () => {
+  it('hides betting actions on Today\'s Games and keeps them on a market card', () => {
     const preseason = scoreboardToSlateGame(scoreboardGame({ game_id: 'pre', lifecycle: 'scheduled' }));
-    const preHtml = cardHtml(preseason!);
-    expect(preHtml).toContain('data-preseason-betting="disabled"');
-    expect(preHtml).toContain('Projections and expected value are unavailable for preseason.');
-    expect(preHtml).not.toContain('/betting/games/');
-    expect(preHtml).not.toContain('View matchup');
-    expect(preHtml).not.toContain('View props');
-    expect(preHtml).not.toContain('No odds yet');
+    const regularBoard = scoreboardToSlateGame(
+      scoreboardGame({ game_id: 'reg', lifecycle: 'scheduled', season_type: 'regular' })
+    );
+    const preHtml = cardHtml(preseason!, 'scoreboard');
+    const regularHtml = cardHtml(regularBoard!, 'scoreboard');
+    for (const html of [preHtml, regularHtml]) {
+      expect(html).toContain('data-betting="hidden"');
+      expect(html).not.toContain('/betting/games/');
+      expect(html).not.toContain('View matchup');
+      expect(html).not.toContain('View props');
+      expect(html).not.toContain('Market spread');
+      expect(html).not.toContain('No odds yet');
+      expect(html).not.toContain('data-preseason-betting');
+    }
+    const scheduled = scoreboardToSlateGame(
+      scoreboardGame({ game_id: 'sched-scores', lifecycle: 'scheduled', home: { score: 0 }, visitor: { score: 0 } })
+    );
+    const scheduledHtml = cardHtml(scheduled!, 'scoreboard');
+    expect(scheduledHtml).toContain('>Scheduled<');
+    expect(scheduledHtml).not.toContain('0 – 0');
 
-    const regular = cardHtml(bettingGame());
-    expect(regular).toContain('View matchup');
-    expect(regular).toContain('/betting/games/reg-1');
-    expect(regular).toContain('View props');
-    expect(regular).toContain('Market spread');
-    expect(regular).not.toContain('data-preseason-betting');
+    const market = cardHtml(bettingGame(), 'market');
+    expect(market).toContain('data-betting="visible"');
+    expect(market).toContain('View matchup');
+    expect(market).toContain('/betting/games/reg-1');
+    expect(market).toContain('View props');
+    expect(market).toContain('Market spread');
+    expect(readFileSync(path.join(process.cwd(), 'components/landing/FeaturedGames.tsx'), 'utf8')).not.toContain('presentation="scoreboard"');
   });
 
   it('refreshes through tip, live play, and an unconfirmed delay, then stops when every game is terminal', () => {
@@ -225,6 +254,10 @@ describe('Today\'s Games scoreboard merge', () => {
     const merge = read('lib/scoreboard/slate-merge.ts');
     expect(dash.match(/Today's Games/g)?.length).toBe(1);
     expect(dash).toContain('mergeTodaysGames');
+    expect(dash).toContain('presentation="scoreboard"');
+    expect(dash).toContain('todaysGamesUnavailableCopy');
+    expect(dash).toContain('No games scheduled for today');
+    expect(dash).not.toContain('/api/betting/games');
     expect(dash).not.toContain('LiveScoreboard');
     expect(dash).not.toContain('ScoreboardView');
     expect(dash).toContain('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
@@ -233,5 +266,8 @@ describe('Today\'s Games scoreboard merge', () => {
     expect(merge).not.toMatch(/\b(INSERT|UPDATE|DELETE)\b/);
     expect(read('lib/scoreboard/client.ts')).not.toMatch(/balldontlie\.io/);
     expect(read('app/dev/scoreboard/page.tsx')).toMatch(/NODE_ENV === 'production'/);
+    expect(todaysGamesUnavailableCopy('disabled')).toBe('Scoreboard serving is turned off.');
+    expect(todaysGamesUnavailableCopy('error')).toBe('The game schedule is temporarily unavailable.');
+    expect(todaysGamesUnavailableCopy('error')).not.toContain('No games');
   });
 });
