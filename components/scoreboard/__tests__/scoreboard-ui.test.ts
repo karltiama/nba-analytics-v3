@@ -126,14 +126,19 @@ describe('Today\'s Games scoreboard merge', () => {
       scoreboardGame({
         game_id: 'sched-scores',
         lifecycle: 'scheduled',
+        stale: true,
+        stale_reason: 'no_recent_observation',
         home: { score: 102 },
         visitor: { score: 99 },
       })
     );
     expect(scheduled?.scoreboard?.isFinal).toBe(false);
+    expect(scheduled?.scoreboard?.staleLabel).toBeNull();
     expect(scheduled?.homeScore).toBeUndefined();
-    expect(cardHtml(scheduled!, 'scoreboard')).not.toContain('>102<');
-    expect(cardHtml(scheduled!, 'scoreboard')).not.toContain('0 – 0');
+    const scheduledHtml = cardHtml(scheduled!, 'scoreboard');
+    expect(scheduledHtml).not.toContain('>102<');
+    expect(scheduledHtml).not.toContain('0 – 0');
+    expect(scheduledHtml).not.toContain('Score may be out of date');
   });
 
   it('renders lifecycle, season labels, freshness, and stale copy on the existing card', () => {

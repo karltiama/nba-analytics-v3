@@ -141,14 +141,16 @@ function TeamMatchupSide({
   team,
   isFav,
   showRecord,
+  center = false,
 }: {
   team: TeamInfo;
   isFav: boolean;
   showRecord: boolean;
+  center?: boolean;
 }) {
   const { city, nickname } = splitTeamDisplayName(team.name);
   return (
-    <div className="flex items-center gap-2 min-w-0 flex-1">
+    <div className={`flex items-center gap-2 min-w-0 flex-1${center ? ' justify-center' : ''}`}>
       <TeamLogo
         team={team.abbreviation}
         size="md"
@@ -311,11 +313,11 @@ export function GameCard({
 
       <div className="px-5 sm:px-6 py-2">
         <div className="flex items-center gap-2 sm:gap-3">
-          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} showRecord={!scoreboardPresentation} />
+          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} showRecord={!scoreboardPresentation} center={scoreboardPresentation} />
           <span className="type-secondary shrink-0">
             VS
           </span>
-          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} showRecord={!scoreboardPresentation} />
+          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} showRecord={!scoreboardPresentation} center={scoreboardPresentation} />
         </div>
       </div>
 

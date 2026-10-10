@@ -126,9 +126,12 @@ export function lifecycleLabel(lifecycle: GameLifecycleState | null): string {
   return LIFECYCLE_LABEL[lifecycle];
 }
 
-export function staleWarning(game: Pick<ScoreboardGame, 'stale' | 'stale_reason'>): string | null {
+const NOT_STARTED: ReadonlySet<GameLifecycleState> = new Set(['scheduled', 'postponed', 'canceled']);
+
+export function staleWarning(game: Pick<ScoreboardGame, 'stale' | 'stale_reason' | 'lifecycle'>): string | null {
   if (!game.stale) return null;
   if (game.stale_reason === 'polling_safety_stopped') return 'Updates paused';
+  if (NOT_STARTED.has(game.lifecycle)) return null;
   return 'Score may be out of date';
 }
 
