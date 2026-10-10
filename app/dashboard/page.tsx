@@ -28,6 +28,7 @@ import { filterSlateGames } from '@/lib/betting/slate-filters';
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import {
   interpretScoreboardPayload,
+  SCOREBOARD_CLIENT_REFRESH_MS,
   scoreboardApiUrl,
   scoreboardPollDelayMs,
 } from '@/lib/scoreboard/client';
@@ -307,12 +308,14 @@ export default function BettingDashboard(props: PageProps) {
   useEffect(() => {
     if (scoreboardPollDelay == null) return;
     const ac = new AbortController();
-    const interval = window.setInterval(() => {
-      if (document.visibilityState === 'hidden') return;
-      void loadScoreboard(selectedDate, ac.signal);
-    }, scoreboardPollDelay);
+    let timer = 0;
+    const tick = () => {
+      if (document.visibilityState !== 'hidden') void loadScoreboard(selectedDate, ac.signal);
+      timer = window.setTimeout(tick, SCOREBOARD_CLIENT_REFRESH_MS);
+    };
+    timer = window.setTimeout(tick, scoreboardPollDelay);
     return () => {
-      window.clearInterval(interval);
+      window.clearTimeout(timer);
       ac.abort();
     };
   }, [scoreboardPollDelay, selectedDate, loadScoreboard]);

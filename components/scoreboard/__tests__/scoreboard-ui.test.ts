@@ -4,7 +4,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { GameCard, type Game } from '@/components/betting/GameCard';
-import { interpretScoreboardPayload, SCOREBOARD_CLIENT_REFRESH_MS, scoreboardPollDelayMs } from '@/lib/scoreboard/client';
+import { interpretScoreboardPayload, SCOREBOARD_CLIENT_REFRESH_MS, SCOREBOARD_REFRESH_LEAD_MS, scoreboardPollDelayMs } from '@/lib/scoreboard/client';
 import { scoreboardGame, scoreboardPreviewResponse, scoreboardResponse } from '@/lib/scoreboard/fixtures';
 import { SCOREBOARD_POLICY } from '@/lib/scoreboard/planner';
 import { mergeTodaysGames, scoreboardToSlateGame } from '@/lib/scoreboard/slate-merge';
@@ -72,6 +72,20 @@ describe('Today\'s Games scoreboard merge', () => {
     expect(merged?.homeScore).toBe(91);
     expect(merged?.scoreboard?.isFinal).toBe(false);
     expect(merged?.scoreboard?.preseason).toBe(false);
+    const later = scoreboardGame({
+      game_id: '5001',
+      lifecycle: 'live',
+      season_type: 'regular',
+      period: 3,
+      clock: '3:40',
+      home: { abbreviation: 'BOS', name: 'Boston Celtics', score: 94 },
+      visitor: { abbreviation: 'NYK', name: 'New York Knicks', score: 90 },
+    });
+    const [updated] = mergeTodaysGames([regular], scoreboardResponse([later]));
+    expect(updated?.homeScore).toBe(94);
+    expect(updated?.awayScore).toBe(90);
+    expect(updated?.scoreboard?.periodClock).toContain('3:40');
+    expect(updated?.id).toBe('5001');
   });
 
   it('does not treat live scores as Final', () => {
@@ -179,13 +193,27 @@ describe('Today\'s Games scoreboard merge', () => {
     expect(regular).not.toContain('data-preseason-betting');
   });
 
-  it('polls about once a minute only while a game is actively collected', () => {
+  it('refreshes through tip, live play, and an unconfirmed delay, then stops when every game is terminal', () => {
     expect(SCOREBOARD_CLIENT_REFRESH_MS).toBe(SCOREBOARD_POLICY.LIVE_INTERVAL_MS);
     expect(SCOREBOARD_CLIENT_REFRESH_MS).toBe(60_000);
-    expect(scoreboardPollDelayMs([{ polling_state: 'active' }])).toBe(60_000);
-    expect(scoreboardPollDelayMs([{ polling_state: 'pending' }])).toBeNull();
-    expect(scoreboardPollDelayMs([{ polling_state: 'complete' }])).toBeNull();
-    expect(scoreboardPollDelayMs(null)).toBeNull();
+    expect(SCOREBOARD_REFRESH_LEAD_MS).toBe(SCOREBOARD_POLICY.PRE_TIP_WINDOW_MS);
+    const tip = '2026-10-10T22:30:00.000Z';
+    const hoursBefore = new Date('2026-10-10T16:30:00.000Z');
+    const soon = new Date('2026-10-10T22:20:00.000Z');
+    const scheduled = { lifecycle: 'scheduled', polling_state: 'pending', scheduled_tip: tip };
+
+    expect(scoreboardPollDelayMs([scheduled], hoursBefore)).toBe(Date.parse('2026-10-10T22:15:00.000Z') - hoursBefore.getTime());
+    expect(scoreboardPollDelayMs([scheduled], soon)).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ ...scheduled, lifecycle: 'live', polling_state: 'active' }], soon)).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ lifecycle: 'halftime', polling_state: 'active' }], soon)).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ lifecycle: 'overtime', polling_state: 'active' }], soon)).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ lifecycle: 'scheduled', polling_state: 'active', scheduled_tip: tip, stale: true }], new Date('2026-10-10T22:40:00.000Z'))).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ lifecycle: 'postponed', polling_state: 'active', scheduled_tip: tip }], soon)).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ lifecycle: 'final', polling_state: 'active' }], soon)).toBe(60_000);
+    expect(scoreboardPollDelayMs([{ lifecycle: 'final', polling_state: 'complete' }], soon)).toBeNull();
+    expect(scoreboardPollDelayMs([{ lifecycle: 'postponed', polling_state: 'complete' }], soon)).toBeNull();
+    expect(scoreboardPollDelayMs([], soon)).toBeNull();
+    expect(scoreboardPollDelayMs(null, soon)).toBeNull();
     expect(SCOREBOARD_CACHE_CONTROL).toContain('s-maxage=15');
     expect(interpretScoreboardPayload(503, { error: 'scoreboard_unavailable' }).status).toBe('disabled');
   });
@@ -200,7 +228,8 @@ describe('Today\'s Games scoreboard merge', () => {
     expect(dash).not.toContain('LiveScoreboard');
     expect(dash).not.toContain('ScoreboardView');
     expect(dash).toContain('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
-    expect(dash.match(/setInterval/g)).toHaveLength(1);
+    expect(dash.match(/setInterval/g)).toBeNull();
+    expect(dash.match(/setTimeout/g)).toHaveLength(3);
     expect(merge).not.toMatch(/\b(INSERT|UPDATE|DELETE)\b/);
     expect(read('lib/scoreboard/client.ts')).not.toMatch(/balldontlie\.io/);
     expect(read('app/dev/scoreboard/page.tsx')).toMatch(/NODE_ENV === 'production'/);
