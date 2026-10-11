@@ -55,6 +55,10 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
     for (const k of ['SCOREBOARD_COLLECT_REGULAR', 'SCOREBOARD_COLLECT_PLAYIN', 'SCOREBOARD_COLLECT_PLAYOFFS']) {
       expect(lastMerge).toMatch(new RegExp(`${k}\\s*=\\s*"0"`));
     }
+    expect(lastMerge).toMatch(
+      /SCOREBOARD_COLLECT_ODDS\s*=\s*local\.family_schedule_enabled\.scoreboard && var\.scoreboard_odds_enabled \? "1" : "0"/
+    );
+    expect(src).toMatch(/variable "scoreboard_odds_enabled" \{[^}]*type\s*=\s*bool\s*default\s*=\s*false\s*\}/);
     expect(lastMerge).toMatch(/BDL_RATE_LIMIT_WORKER\s*=\s*"scoreboard-collector"/);
     expect(lastMerge).toMatch(/BDL_RATE_LIMIT_BACKEND\s*=\s*"dynamodb"/);
     expect(lastMerge).toMatch(/BDL_RATE_LIMIT_TABLE\s*=\s*aws_dynamodb_table\.bdl_rate_limit\.name/);
@@ -63,7 +67,7 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
     expect(src).toMatch(/maximum_retry_attempts\s*=\s*0/);
   });
 
-  it('reuses the shared limiter table and writes only the two scoreboard S3 prefixes', () => {
+  it('reuses the shared limiter table and writes only the three scoreboard S3 prefixes', () => {
     expect(src).toMatch(/policy\s*=\s*jsonencode\(local\.bdl_rate_limit_iam\)/);
     expect(src).not.toMatch(/resource "aws_dynamodb_table"/);
     const s3 = blocks(src).find((b) => b.header.includes('scoreboard_s3_archive'))!.body;
@@ -71,7 +75,9 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
     expect(s3).not.toMatch(/s3:\*|DeleteObject|ListBucket/);
     expect(src).toMatch(/entity=acq_scoreboard_games"/);
     expect(src).toMatch(/entity=acq_box_scores_live"/);
-    expect(src.match(/entity=acq_/g)).toHaveLength(2);
+    expect(src).toMatch(/entity=acq_scoreboard_odds"/);
+    expect(src.match(/entity=acq_/g)).toHaveLength(3);
+    expect(src).not.toMatch(/odds-pre-game-snapshot|odds_pre_game/);
     expect(src).not.toMatch(/espn/i);
     expect(src).not.toMatch(/elasticache|aws_cloudfront|aws_api_gateway/i);
   });

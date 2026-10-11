@@ -64,6 +64,25 @@ export function resolveScoreboardCollection(env: Env): ScoreboardCollectionDecis
   return { seasonTypes: requested, refused, frozen: false, reason: null };
 }
 
+export const SCOREBOARD_COLLECT_ODDS_ENV = 'SCOREBOARD_COLLECT_ODDS';
+
+/**
+ * Odds collection rides on the games decision: it never enables a season type and never bypasses the
+ * freeze. With the family flag on, odds are requested only for games of season types already collecting.
+ */
+export function resolveScoreboardOddsCollection(
+  env: Env,
+  collection: ScoreboardCollectionDecision
+): { enabled: boolean; seasonTypes: ScoreboardSeasonType[]; reason: string | null } {
+  const raw = env[SCOREBOARD_COLLECT_ODDS_ENV];
+  if (raw === undefined || raw.trim() === '') return { enabled: false, seasonTypes: [], reason: 'odds collection disabled' };
+  if (raw.trim() !== '1') return { enabled: false, seasonTypes: [], reason: `invalid ${SCOREBOARD_COLLECT_ODDS_ENV}` };
+  if (collection.frozen || collection.seasonTypes.length === 0) {
+    return { enabled: false, seasonTypes: [], reason: collection.reason ?? 'no season type enabled for collection' };
+  }
+  return { enabled: true, seasonTypes: [...collection.seasonTypes], reason: null };
+}
+
 export function isScoreboardServingEnabled(env: Env): { enabled: boolean; reason: string | null } {
   const raw = env[SCOREBOARD_SERVING_ENV];
   if (raw === undefined || raw.trim() === '') return { enabled: false, reason: 'serving_disabled' };

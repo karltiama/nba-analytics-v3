@@ -6,8 +6,10 @@ import {
   type ScoreboardGame,
   type ScoreboardPlayerLine,
   type ScoreboardResponse,
+  type StoredOddsQuote,
   type StoredScoreboardGame,
 } from './contract';
+import { selectMarket } from './market';
 import { IN_GAME } from './normalize';
 
 /** In-game observation older than this is stale (collector targets 60 s). */
@@ -31,9 +33,14 @@ export function buildScoreboardResponse(input: {
   now: Date;
   games: StoredScoreboardGame[];
   lines: ScoreboardPlayerLine[];
+  /** Stored current quotes; omitted when the odds read failed or is not configured. */
+  odds?: StoredOddsQuote[];
 }): ScoreboardResponse {
   const games: ScoreboardGame[] = input.games.map((g) => {
     const s = staleness(g, input.now);
+    const market = input.odds
+      ? selectMarket({ game: g, quotes: input.odds, now: input.now, gameStale: s.stale }).market
+      : null;
     return {
       game_id: g.gameId,
       provider: SCOREBOARD_PROVIDER,
@@ -67,6 +74,7 @@ export function buildScoreboardResponse(input: {
           .filter((l) => l.gameId === g.gameId)
           .map(({ gameId: _gameId, ...rest }) => rest),
       },
+      ...(market ? { market } : {}),
     };
   });
   return {

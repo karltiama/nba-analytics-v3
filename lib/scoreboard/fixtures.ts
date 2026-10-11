@@ -7,6 +7,7 @@ import {
   SCOREBOARD_PROVIDER,
   SCOREBOARD_SCHEMA_VERSION,
   type ScoreboardGame,
+  type ScoreboardMarket,
   type ScoreboardResponse,
 } from './contract';
 
@@ -96,6 +97,76 @@ function line(partial: Partial<Player> & Pick<Player, 'playerId' | 'teamId'>): P
   };
 }
 
+/** name, min, fgm, fga, fg3m, fg3a, ftm, fta, oreb, dreb, ast */
+type BoxRow = [string, string, number, number, number, number, number, number, number, number, number];
+
+/** Consistent player lines: pts = 2*FGM + 3PM + FTM and reb = oreb + dreb. */
+function boxLines(teamId: string, rows: BoxRow[]): Player[] {
+  return rows.map(([name, min, fgm, fga, fg3m, fg3a, ftm, fta, oreb, dreb, ast], i) =>
+    line({ playerId: `${teamId}${String(i + 1).padStart(2, '0')}`, teamId, name, min, pts: 2 * fgm + fg3m + ftm, reb: oreb + dreb, ast, fgm, fga, fg3m, fg3a, ftm, fta, oreb, dreb })
+  );
+}
+
+/**
+ * Shape of the audited preseason snapshot (game 21717908, LAC at TOR, Q1 4:35, 10–17).
+ * The provider clock already carries the quarter. Fixture only; not live data.
+ */
+export function auditLiveGame(over: Partial<GameInput> = {}): ScoreboardGame {
+  return scoreboardGame({
+    game_id: '21717908',
+    lifecycle: 'live',
+    provider_status: '1st Qtr',
+    period: 1,
+    clock: 'Q1 4:35',
+    acquired_at: '2026-10-09T23:39:00.000Z',
+    home: { provider_team_id: '28', abbreviation: 'TOR', name: 'Toronto Raptors', score: 17 },
+    visitor: { provider_team_id: '13', abbreviation: 'LAC', name: 'LA Clippers', score: 10 },
+    box_score: {
+      completeness: 'live_partial',
+      acquired_at: '2026-10-09T23:39:00.000Z',
+      players: [
+        line({ playerId: '501', teamId: '28', name: 'RJ Barrett', min: '7', pts: 9, reb: 1, ast: 0 }),
+        line({ playerId: '502', teamId: '28', name: 'Scottie Barnes', min: '7', pts: 4, reb: 3, ast: 2 }),
+        line({ playerId: '503', teamId: '13', name: 'James Harden', min: '7', pts: 5, reb: 0, ast: 3 }),
+        line({ playerId: '504', teamId: '13', name: 'Ivica Zubac', min: '7', pts: null, reb: 2, ast: 0 }),
+      ],
+    },
+    ...over,
+  });
+}
+
+/**
+ * Prices from the audited DraftKings /v2/odds row for game 21826163 (SAS at PHX, captured
+ * 2026-10-11T00:26Z). Timestamps are moved onto the fixture clock so the caption reads "3m ago".
+ */
+export function auditPregameMarket(over: Partial<ScoreboardMarket> = {}): ScoreboardMarket {
+  return {
+    kind: 'current_pregame',
+    vendor: 'draftkings',
+    vendor_label: 'DraftKings',
+    freshness: 'fresh',
+    provider_updated_at: '2026-10-09T23:38:00.000Z',
+    observed_at: '2026-10-09T23:38:30.000Z',
+    moneyline: { home: 200, away: -245 },
+    spread: { home: 7.5, away: -7.5, home_odds: -115, away_odds: -105 },
+    total: { line: 223.5, over_odds: -115, under_odds: -105 },
+    ...over,
+  };
+}
+
+export function auditPregameGame(over: Partial<GameInput> = {}): ScoreboardGame {
+  return scoreboardGame({
+    game_id: '21826163',
+    lifecycle: 'scheduled',
+    polling_state: 'pending',
+    scheduled_tip: '2026-10-10T02:00:00.000Z',
+    home: { provider_team_id: '24', abbreviation: 'PHX', name: 'Phoenix Suns' },
+    visitor: { provider_team_id: '27', abbreviation: 'SAS', name: 'San Antonio Spurs' },
+    market: auditPregameMarket(),
+    ...over,
+  });
+}
+
 /** Mixed preseason slate plus season-label samples. Fixture only. */
 export function scoreboardPreviewResponse(): ScoreboardResponse {
   const partialPlayers: Player[] = [
@@ -159,6 +230,132 @@ export function scoreboardPreviewResponse(): ScoreboardResponse {
       polling_state: 'pending',
       home: { score: 0 },
       visitor: { score: 0 },
+    }),
+    auditPregameGame(),
+    auditLiveGame(),
+    scoreboardGame({
+      game_id: 'live-shooting',
+      lifecycle: 'live',
+      period: 3,
+      clock: 'Q3 6:10',
+      home: { provider_team_id: '2', abbreviation: 'BOS', name: 'Boston Celtics', score: 83 },
+      visitor: { provider_team_id: '17', abbreviation: 'MIL', name: 'Milwaukee Bucks', score: 65 },
+      box_score: {
+        completeness: 'live_partial',
+        acquired_at: SCOREBOARD_FIXTURE_OBSERVED_AT,
+        players: [
+          ...boxLines('2', [
+            ['Jayson Tatum', '28', 8, 16, 4, 8, 4, 4, 1, 6, 3],
+            ['Jaylen Brown', '26', 7, 14, 3, 6, 3, 4, 1, 4, 2],
+            ['Derrick White', '27', 5, 10, 3, 6, 1, 2, 1, 3, 5],
+            ['Jrue Holiday', '25', 4, 9, 2, 4, 2, 2, 1, 3, 4],
+            ['Kristaps Porzingis', '22', 4, 8, 1, 2, 0, 0, 2, 5, 1],
+            ['Sam Hauser', '14', 2, 5, 0, 1, 0, 0, 1, 1, 0],
+          ]),
+          ...boxLines('17', [
+            ['Giannis Antetokounmpo', '27', 10, 18, 0, 1, 3, 6, 3, 7, 5],
+            ['Damian Lillard', '27', 6, 15, 3, 10, 2, 2, 0, 2, 4],
+            ['Kyle Kuzma', '24', 4, 10, 1, 5, 0, 0, 1, 3, 1],
+            ['Bobby Portis', '18', 4, 9, 1, 4, 0, 0, 1, 4, 0],
+            ['Gary Trent Jr.', '20', 2, 7, 1, 4, 0, 0, 0, 1, 1],
+            ['AJ Green', '12', 1, 4, 0, 1, 0, 2, 1, 1, 0],
+          ]),
+        ],
+      },
+    }),
+    scoreboardGame({
+      game_id: 'live-glass',
+      lifecycle: 'live',
+      period: 2,
+      clock: 'Q2 3:12',
+      home: { provider_team_id: '20', abbreviation: 'NYK', name: 'New York Knicks', score: 52 },
+      visitor: { provider_team_id: '18', abbreviation: 'MIN', name: 'Minnesota Timberwolves', score: 50 },
+      box_score: {
+        completeness: 'live_partial',
+        acquired_at: SCOREBOARD_FIXTURE_OBSERVED_AT,
+        players: [
+          ...boxLines('20', [
+            ['Jalen Brunson', '20', 6, 14, 1, 4, 3, 4, 0, 2, 5],
+            ['Karl-Anthony Towns', '19', 5, 10, 1, 3, 2, 2, 4, 5, 1],
+            ['OG Anunoby', '18', 3, 8, 1, 4, 0, 0, 2, 3, 1],
+            ['Josh Hart', '18', 3, 6, 0, 1, 1, 2, 3, 4, 3],
+            ['Mikal Bridges', '19', 3, 8, 1, 3, 0, 0, 1, 1, 2],
+            ['Mitchell Robinson', '10', 1, 2, 0, 0, 0, 0, 1, 3, 0],
+          ]),
+          ...boxLines('18', [
+            ['Anthony Edwards', '20', 7, 15, 2, 6, 2, 2, 0, 2, 2],
+            ['Julius Randle', '18', 4, 9, 1, 2, 2, 3, 1, 4, 2],
+            ['Rudy Gobert', '17', 3, 4, 0, 0, 0, 1, 1, 5, 0],
+            ['Jaden McDaniels', '18', 2, 6, 1, 3, 0, 0, 0, 3, 1],
+            ['Mike Conley', '15', 2, 5, 1, 3, 1, 2, 0, 1, 4],
+            ['Naz Reid', '11', 2, 5, 0, 2, 0, 0, 1, 2, 0],
+          ]),
+        ],
+      },
+    }),
+    scoreboardGame({
+      game_id: 'final-recap',
+      lifecycle: 'final',
+      period: 4,
+      polling_state: 'complete',
+      home: { score: 105 },
+      visitor: { score: 100 },
+      box_score: {
+        completeness: 'verified_final',
+        acquired_at: SCOREBOARD_FIXTURE_OBSERVED_AT,
+        players: [
+          ...boxLines('5', [
+            ['Zach LaVine', '38', 9, 19, 3, 8, 8, 9, 0, 4, 4],
+            ['Nikola Vucevic', '36', 8, 16, 1, 3, 4, 5, 3, 9, 3],
+            ['Josh Giddey', '34', 5, 12, 1, 4, 3, 4, 1, 6, 8],
+            ['Patrick Williams', '32', 4, 10, 2, 5, 3, 4, 1, 4, 1],
+            ['Coby White', '30', 4, 11, 2, 6, 2, 2, 0, 3, 4],
+            ['Matas Buzelis', '28', 3, 7, 1, 3, 1, 2, 1, 3, 1],
+            ['Jalen Smith', '24', 2, 5, 1, 3, 0, 0, 1, 2, 1],
+            ['Julian Phillips', '18', 1, 3, 0, 1, 1, 2, 1, 2, 0],
+          ]),
+          ...boxLines('15', [
+            ['Ja Morant', '36', 9, 20, 2, 6, 5, 6, 1, 4, 7],
+            ['Desmond Bane', '36', 8, 17, 4, 9, 2, 2, 0, 4, 3],
+            ['Jaren Jackson Jr.', '34', 7, 14, 2, 5, 3, 4, 2, 6, 1],
+            ['Jaylen Wells', '32', 4, 9, 2, 5, 0, 0, 1, 3, 1],
+            ['Zach Edey', '28', 4, 6, 0, 0, 1, 2, 3, 6, 0],
+            ['Santi Aldama', '28', 3, 8, 1, 4, 0, 0, 1, 4, 2],
+            ['Scotty Pippen Jr.', '26', 2, 6, 1, 3, 1, 1, 0, 2, 3],
+            ['John Konchar', '20', 1, 3, 0, 1, 0, 0, 1, 2, 1],
+          ]),
+        ],
+      },
+    }),
+    scoreboardGame({
+      game_id: 'live-one-team',
+      lifecycle: 'live',
+      period: 2,
+      clock: '6:20',
+      acquired_at: '2026-10-09T23:39:00.000Z',
+      home: { provider_team_id: '11', abbreviation: 'HOU', name: 'Houston Rockets', score: 40 },
+      visitor: { provider_team_id: '19', abbreviation: 'NOP', name: 'New Orleans Pelicans', score: 36 },
+      box_score: {
+        completeness: 'live_partial',
+        acquired_at: '2026-10-09T23:39:00.000Z',
+        players: [line({ playerId: '401', teamId: '11', name: 'Alperen Sengun', min: '16', pts: 12 })],
+      },
+    }),
+    scoreboardGame({
+      game_id: 'live-tied',
+      lifecycle: 'live',
+      season_type: 'regular',
+      period: 4,
+      clock: 'Q4 2:05',
+      home: { provider_team_id: '9', abbreviation: 'DET', name: 'Detroit Pistons', score: 97 },
+      visitor: { provider_team_id: '21', abbreviation: 'OKC', name: 'Oklahoma City Thunder', score: 97 },
+    }),
+    scoreboardGame({
+      game_id: 'delayed-1',
+      lifecycle: 'unknown',
+      provider_status: 'Delayed',
+      home: { provider_team_id: '23', abbreviation: 'PHI', name: 'Philadelphia 76ers' },
+      visitor: { provider_team_id: '3', abbreviation: 'BKN', name: 'Brooklyn Nets' },
     }),
     scoreboardGame({
       game_id: 'live-partial',
@@ -230,6 +427,7 @@ export function scoreboardPreviewResponse(): ScoreboardResponse {
             oreb: 3,
             dreb: 8,
           }),
+          line({ playerId: '202', teamId: '7', name: 'Luka Doncic', min: '33', pts: 22, reb: 7, ast: 9 }),
         ],
       },
     }),

@@ -3,6 +3,8 @@
  *
  * Gates → per enabled season type: plan from stored state → /v1/games (explicit season_type) →
  * normalize + merge → display store → /v1/box_scores/live only when a game needs player lines.
+ * Then, isolated from the scores path: /v2/odds for scheduled games, about every 15 minutes, only when
+ * SCOREBOARD_COLLECT_ODDS=1. An odds failure never changes the games outcome or any games row.
  * Every BDL request goes through the shared acquiring fetch (rate limiter, ledger, S3 archive,
  * parse of archived bytes). A failed or unarchived request writes nothing from that request.
  * This module never touches analytics tables, raw game tables, or any model path.
@@ -12,8 +14,9 @@ import { randomUUID } from 'node:crypto';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import { shiftEtYmd, etYmd } from '@/lib/games/status-sync-query';
 import type { ScoreboardPlayerLine, ScoreboardSeasonType, StoredScoreboardGame } from './contract';
-import { parseScoreboardTargetSeason, resolveScoreboardCollection } from './flags';
+import { parseScoreboardTargetSeason, resolveScoreboardCollection, resolveScoreboardOddsCollection } from './flags';
 import { boxScoreCompleteness, carriedBoxCompleteness, verifyFinalBoxScore } from './box-verify';
+import { normalizeOddsRows, oddsEligibleGames, SCOREBOARD_ODDS_POLICY } from './market';
 import { matchLiveBoxScores, mergeObservation, normalizeGameRow } from './normalize';
 import { needsLiveBox, nextPollingState, planScoreboardTick } from './planner';
 import type { ScoreboardStore } from './store';
@@ -21,6 +24,7 @@ import type { ScoreboardStore } from './store';
 export const SCOREBOARD_COLLECTOR = { name: 'scoreboard-collector', version: 'scoreboard.v1' } as const;
 export const SCOREBOARD_GAMES_FAMILY = 'scoreboard_games';
 export const SCOREBOARD_LIVE_BOX_FAMILY = 'box_scores_live';
+export const SCOREBOARD_ODDS_FAMILY = 'scoreboard_odds';
 export const SCOREBOARD_WORKER = 'scoreboard-collector';
 export const SCOREBOARD_GAMES_MAX_PAGES = 3;
 const BDL_BASE = 'https://api.balldontlie.io';
@@ -46,6 +50,30 @@ export function scoreboardLiveBoxUrl(seasonType: ScoreboardSeasonType): string {
   return `${BDL_BASE}/v1/box_scores/live?season_type=${encodeURIComponent(seasonType)}`;
 }
 
+/** /v2/odds filters only by game_ids[] or dates[]; there is no season type filter. */
+export function scoreboardOddsUrl(gameIds: string[], cursor?: number | null): string {
+  const p = new URLSearchParams();
+  for (const id of gameIds) p.append('game_ids[]', id);
+  p.set('per_page', '100');
+  if (cursor != null) p.set('cursor', String(cursor));
+  return `${BDL_BASE}/v2/odds?${p.toString()}`;
+}
+
+export type ScoreboardOddsResult = {
+  status: 'disabled' | 'not_due' | 'no_eligible_games' | 'skipped' | 'success' | 'failed';
+  reason: string | null;
+  eligibleGames: number;
+  requestedGames: number;
+  pages: number;
+  truncated: boolean;
+  quotes: number;
+  written: number;
+  withdrawn: number;
+  rejected: number;
+  quarantinedFields: number;
+  vendors: string[];
+};
+
 export type ScoreboardSeasonTypeResult = {
   seasonType: ScoreboardSeasonType;
   plan: string;
@@ -70,13 +98,15 @@ export type ScoreboardCycleResult = {
   bdlRequests: number;
   refused: Array<{ seasonType: ScoreboardSeasonType; reason: string }>;
   seasonTypes: ScoreboardSeasonTypeResult[];
+  /** Separate from `status`: odds never make a scores cycle fail or succeed. */
+  odds?: ScoreboardOddsResult;
   durationMs: number;
 };
 
 type Env = Record<string, string | undefined>;
 
 /** One acquiring fetch per endpoint family, so ledger rows and S3 keys name the right family. */
-export type ScoreboardFetchers = { games: AcquiringBdlFetch; liveBox: AcquiringBdlFetch };
+export type ScoreboardFetchers = { games: AcquiringBdlFetch; liveBox: AcquiringBdlFetch; odds?: AcquiringBdlFetch };
 
 export async function runScoreboardCycle(input: {
   env: Env;
@@ -93,6 +123,7 @@ export async function runScoreboardCycle(input: {
   const decision = resolveScoreboardCollection(input.env);
   const seasonTypes: ScoreboardSeasonTypeResult[] = [];
   let bdlRequests = 0;
+  let odds: ScoreboardOddsResult | undefined;
   const done = (status: ScoreboardCycleResult['status'], reason: string | null): ScoreboardCycleResult => ({
     job: 'scoreboard_collector',
     status,
@@ -100,6 +131,7 @@ export async function runScoreboardCycle(input: {
     bdlRequests,
     refused: decision.refused,
     seasonTypes,
+    ...(odds ? { odds } : {}),
     durationMs: Date.now() - startedMs,
   });
 
@@ -107,9 +139,12 @@ export async function runScoreboardCycle(input: {
   const target = parseScoreboardTargetSeason(input.env);
   if (!target.ok) return done('failed', target.reason);
   if (!input.fetch) return done('failed', 'no acquiring fetch configured');
+  const fetchers = input.fetch;
 
   const today = etYmd(now);
-  for (const seasonType of decision.seasonTypes) {
+  // A games failure stops the scores loop exactly as before; the odds step runs after it.
+  let gamesFailure: string | null = null;
+  games: for (const seasonType of decision.seasonTypes) {
     const stored = await input.store.loadGames(seasonType, shiftEtYmd(today, -1), shiftEtYmd(today, 1));
     const plan = planScoreboardTick({
       now,
@@ -142,7 +177,7 @@ export async function runScoreboardCycle(input: {
         endDate: plan.gamesRequest.endDate,
         cursor,
       });
-      const page = await input.fetch.games(url, {
+      const page = await fetchers.games(url, {
         plan: {
           targetSeason: target.season,
           seasonTypeRequested: seasonType,
@@ -156,10 +191,12 @@ export async function runScoreboardCycle(input: {
       bdlRequests += page.acquisition?.requestIds.length ?? 1;
       const requestId = page.acquisition?.requestIds.at(-1);
       if (!page.acquisition || page.acquisition.blockedReason || !requestId) {
-        return done('failed', `games acquisition blocked: ${page.acquisition?.blockedReason ?? 'no evidence'}`);
+        gamesFailure = `games acquisition blocked: ${page.acquisition?.blockedReason ?? 'no evidence'}`;
+        break games;
       }
       if (!page.ok || page.parseError || !page.json) {
-        return done('failed', `games request failed: ${page.parseError ?? page.error ?? `HTTP ${page.status}`}`);
+        gamesFailure = `games request failed: ${page.parseError ?? page.error ?? `HTTP ${page.status}`}`;
+        break games;
       }
       pages.push({ rows: page.json.data ?? [], requestId });
       cursor = page.json.meta?.next_cursor ?? null;
@@ -205,7 +242,7 @@ export async function runScoreboardCycle(input: {
     const boxGames = [...current.values()].filter(needsLiveBox);
     if (boxGames.length === 0) continue;
     result.box.requested = true;
-    const boxPage = await input.fetch.liveBox(scoreboardLiveBoxUrl(seasonType), {
+    const boxPage = await fetchers.liveBox(scoreboardLiveBoxUrl(seasonType), {
       plan: { targetSeason: target.season, seasonTypeRequested: seasonType, startDate: null, endDate: null },
       pageIndex: 0,
       cursor: null,
@@ -214,10 +251,12 @@ export async function runScoreboardCycle(input: {
     bdlRequests += boxPage.acquisition?.requestIds.length ?? 1;
     const boxRequestId = boxPage.acquisition?.requestIds.at(-1);
     if (!boxPage.acquisition || boxPage.acquisition.blockedReason || !boxRequestId) {
-      return done('failed', `live box acquisition blocked: ${boxPage.acquisition?.blockedReason ?? 'no evidence'}`);
+      gamesFailure = `live box acquisition blocked: ${boxPage.acquisition?.blockedReason ?? 'no evidence'}`;
+      break games;
     }
     if (!boxPage.ok || boxPage.parseError || !boxPage.json) {
-      return done('failed', `live box request failed: ${boxPage.parseError ?? boxPage.error ?? `HTTP ${boxPage.status}`}`);
+      gamesFailure = `live box request failed: ${boxPage.parseError ?? boxPage.error ?? `HTTP ${boxPage.status}`}`;
+      break games;
     }
     const boxObservedAt = clock().toISOString();
     const match = matchLiveBoxScores(boxPage.json.data ?? [], [...current.values()]);
@@ -247,5 +286,146 @@ export async function runScoreboardCycle(input: {
       if (!accepted) result.rejected.push({ gameId: g.gameId, reason: 'stale_observation' });
     }
   }
-  return done('success', null);
+
+  const oddsDecision = resolveScoreboardOddsCollection(input.env, decision);
+  if (oddsDecision.enabled) {
+    if (gamesFailure) {
+      // Same limiter, same provider: do not add an odds request to a tick whose scores request failed.
+      odds = emptyOddsResult('skipped', 'games step failed this tick');
+    } else if (!fetchers.odds) {
+      odds = emptyOddsResult('failed', 'no odds fetch configured');
+    } else {
+      const oddsFetch = fetchers.odds;
+      try {
+        odds = await collectOdds({
+          store: input.store,
+          fetch: oddsFetch,
+          seasonTypes: oddsDecision.seasonTypes,
+          targetSeason: target.season,
+          now,
+          clock,
+          newId,
+          countRequests: (n) => {
+            bdlRequests += n;
+          },
+        });
+      } catch (err) {
+        const reason = `odds step error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 300);
+        odds = emptyOddsResult('failed', reason);
+        try {
+          await input.store.recordOddsOutcome(now.toISOString(), { status: 'failed', error: reason });
+        } catch {
+          /* odds state is advisory; the scores outcome stands */
+        }
+      }
+    }
+  }
+  return gamesFailure ? done('failed', gamesFailure) : done('success', null);
+}
+
+function emptyOddsResult(status: ScoreboardOddsResult['status'], reason: string | null): ScoreboardOddsResult {
+  return {
+    status,
+    reason,
+    eligibleGames: 0,
+    requestedGames: 0,
+    pages: 0,
+    truncated: false,
+    quotes: 0,
+    written: 0,
+    withdrawn: 0,
+    rejected: 0,
+    quarantinedFields: 0,
+    vendors: [],
+  };
+}
+
+/**
+ * Current pre-game odds for scheduled games of season types already collecting. Requests only when an
+ * eligible game exists and the separate odds interval is due (atomic claim). Any failed, blocked or
+ * unparseable page: no odds writes this attempt; the games rows are never touched here.
+ */
+async function collectOdds(args: {
+  store: ScoreboardStore;
+  fetch: AcquiringBdlFetch;
+  seasonTypes: ScoreboardSeasonType[];
+  targetSeason: number;
+  now: Date;
+  clock: () => Date;
+  newId: () => string;
+  countRequests: (n: number) => void;
+}): Promise<ScoreboardOddsResult> {
+  const { store, now } = args;
+  const today = etYmd(now);
+  const tomorrow = shiftEtYmd(today, 1);
+  const stored: StoredScoreboardGame[] = [];
+  for (const seasonType of args.seasonTypes) stored.push(...(await store.loadGames(seasonType, today, tomorrow)));
+  const eligible = oddsEligibleGames(stored, now);
+  if (eligible.length === 0) return emptyOddsResult('no_eligible_games', null);
+  const requested = eligible.slice(0, SCOREBOARD_ODDS_POLICY.MAX_GAMES_PER_REQUEST);
+  const result: ScoreboardOddsResult = {
+    ...emptyOddsResult('not_due', null),
+    eligibleGames: eligible.length,
+    requestedGames: requested.length,
+  };
+
+  const attemptAt = now.toISOString();
+  if (!(await store.claimOddsAttempt(attemptAt))) return result;
+
+  const fail = async (reason: string): Promise<ScoreboardOddsResult> => {
+    await store.recordOddsOutcome(attemptAt, { status: 'failed', error: reason });
+    return { ...result, status: 'failed', reason };
+  };
+
+  const gameIds = requested.map((g) => g.gameId);
+  const pullRunId = args.newId();
+  const pages: Array<{ rows: unknown[]; requestId: string }> = [];
+  let cursor: number | null = null;
+  for (let pageIndex = 0; pageIndex < SCOREBOARD_ODDS_POLICY.MAX_PAGES; pageIndex += 1) {
+    const page = await args.fetch(scoreboardOddsUrl(gameIds, cursor), {
+      plan: {
+        targetSeason: args.targetSeason,
+        seasonTypeRequested: null,
+        startDate: requested[0].etDate,
+        endDate: requested[requested.length - 1].etDate,
+      },
+      pageIndex,
+      cursor,
+      pullRunId,
+    });
+    args.countRequests(page.acquisition?.requestIds.length ?? 1);
+    result.pages += 1;
+    const requestId = page.acquisition?.requestIds.at(-1);
+    if (!page.acquisition || page.acquisition.blockedReason || !requestId) {
+      return fail(`odds acquisition blocked: ${page.acquisition?.blockedReason ?? 'no evidence'}`);
+    }
+    if (!page.ok || page.parseError || !page.json) {
+      return fail(`odds request failed: ${page.parseError ?? page.error ?? `HTTP ${page.status}`}`);
+    }
+    const rows = page.json.data;
+    if (rows != null && !Array.isArray(rows)) return fail('odds response data is not an array');
+    pages.push({ rows: rows ?? [], requestId });
+    cursor = page.json.meta?.next_cursor ?? null;
+    if (cursor == null) break;
+  }
+  result.truncated = cursor != null;
+
+  const observedAt = args.clock().toISOString();
+  const normalized = normalizeOddsRows(pages, { eligibleGameIds: new Set(gameIds), observedAt });
+  result.quotes = normalized.quotes.length;
+  result.rejected = normalized.rejected.length;
+  result.quarantinedFields = normalized.quarantinedFields;
+  result.vendors = [...new Set(normalized.quotes.map((q) => q.vendor))].sort();
+  const lastRequestId = pages.at(-1)!.requestId;
+  const write = await store.applyOddsAcquisition({
+    quotes: normalized.quotes,
+    observedAt,
+    requestId: lastRequestId,
+    // A truncated read cannot prove a vendor is gone, so it withdraws nothing.
+    withdrawGameIds: result.truncated ? [] : gameIds,
+  });
+  result.written = write.written;
+  result.withdrawn = write.withdrawn;
+  await store.recordOddsOutcome(attemptAt, { status: 'success', requestId: lastRequestId });
+  return { ...result, status: 'success', reason: result.truncated ? 'odds pages truncated' : null };
 }

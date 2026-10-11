@@ -586,7 +586,13 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
   });
 
   it('the website path never calls BDL: the route and serve logic import no provider or collector code', () => {
-    for (const f of ['app/api/scoreboard/route.ts', 'lib/scoreboard/serve.ts', 'lib/scoreboard/response.ts', 'lib/scoreboard/store.ts']) {
+    for (const f of [
+      'app/api/scoreboard/route.ts',
+      'lib/scoreboard/serve.ts',
+      'lib/scoreboard/response.ts',
+      'lib/scoreboard/store.ts',
+      'lib/scoreboard/market.ts',
+    ]) {
       const src = read(f);
       expect(src, f).not.toMatch(/balldontlie|status-sync-acquisition|live-rate-limit|\.\/collector|\.\/lambda|fetch\(/);
     }
@@ -598,6 +604,25 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
     expect(sql).not.toMatch(/\banalytics\./);
     expect(sql).toMatch(/season_type_source\s+text not null check \(season_type_source = 'request_season_type'\)/);
     for (const m of sql.matchAll(/create table if not exists ([a-z_]+)\./g)) expect(m[1]).toBe('display');
+  });
+
+  it('the prepared odds migration is display-only, ungranted, and not line history', () => {
+    const sql = read('db/schemas/MIGRATION_display_scoreboard_odds.sql');
+    const code = sql.replace(/--.*$/gm, '');
+    expect(sql).toMatch(/PREPARED ONLY \/ NOT APPLIED/);
+    expect(code).not.toMatch(/\banalytics\.|\bgrant\b/i);
+    expect(code).toMatch(/revoke all on display\.scoreboard_game_odds from public, anon, authenticated/);
+    expect(code).toMatch(/revoke all on display\.scoreboard_odds_state from public, anon, authenticated/);
+    expect(code).toMatch(/primary key \(game_id, vendor, quote_kind\)/);
+    expect(code).toMatch(/references display\.scoreboard_games\(game_id\)/);
+    for (const m of code.matchAll(/create table if not exists ([a-z_]+)\./g)) expect(m[1]).toBe('display');
+    expect(sql).toMatch(/This is not line history/);
+  });
+
+  it('the frozen odds pipeline is not wired into the scoreboard', () => {
+    for (const f of scoreboardSources) {
+      expect(read(f), f).not.toMatch(/odds-pre-game-snapshot|odds_pre_game|game_odds_snapshots|raw\.odds_/);
+    }
   });
 
   it('game-status-sync cannot request preseason (boundary in the planner)', () => {

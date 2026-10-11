@@ -32,7 +32,14 @@ export type ScoreboardRefreshGame = {
   lifecycle?: string;
   scheduled_tip?: string | null;
   stale?: boolean;
+  market?: unknown;
 };
+
+/**
+ * While a card shows a sportsbook quote, re-read at least this often so the quote and its
+ * "synced" caption are replaced or dropped well inside the 20-minute fresh window.
+ */
+export const SCOREBOARD_MARKET_REFRESH_MS = 5 * 60_000;
 
 const IN_PROGRESS = new Set(['live', 'halftime', 'overtime']);
 
@@ -78,7 +85,10 @@ export function scoreboardPollDelayMs(
     const at = tip - SCOREBOARD_REFRESH_LEAD_MS;
     if (at > now.getTime() && (wake == null || at < wake)) wake = at;
   }
-  return wake == null ? null : wake - now.getTime();
+  const delay = wake == null ? null : wake - now.getTime();
+  const showsMarket = games.some((game) => !confirmedTerminal(game) && game.lifecycle === 'scheduled' && game.market != null);
+  if (showsMarket) return delay == null ? SCOREBOARD_MARKET_REFRESH_MS : Math.min(delay, SCOREBOARD_MARKET_REFRESH_MS);
+  return delay;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

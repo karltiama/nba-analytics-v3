@@ -11,6 +11,7 @@ import {
   SCOREBOARD_COLLECTOR,
   SCOREBOARD_GAMES_FAMILY,
   SCOREBOARD_LIVE_BOX_FAMILY,
+  SCOREBOARD_ODDS_FAMILY,
   SCOREBOARD_WORKER,
   type ScoreboardCycleResult,
   type ScoreboardFetchers,
@@ -100,6 +101,7 @@ export async function runLambdaScoreboard(deps: ScoreboardLambdaDeps = {}): Prom
       fetch = {
         games: createAcquiringBdlFetch(acqDeps, identity(SCOREBOARD_GAMES_FAMILY)),
         liveBox: createAcquiringBdlFetch(acqDeps, identity(SCOREBOARD_LIVE_BOX_FAMILY)),
+        odds: createAcquiringBdlFetch(acqDeps, identity(SCOREBOARD_ODDS_FAMILY)),
       };
     }
     return log(await runScoreboardCycle({ env, now: deps.now, store, fetch }));
@@ -117,6 +119,10 @@ const NO_STORE: ScoreboardStore = {
   applyObservation: async () => false,
   replacePlayerLines: async () => undefined,
   loadPlayerLines: async () => [],
+  claimOddsAttempt: async () => false,
+  recordOddsOutcome: async () => undefined,
+  applyOddsAcquisition: async () => ({ written: 0, withdrawn: 0 }),
+  loadCurrentOdds: async () => [],
 };
 
 export async function handler(): Promise<ScoreboardCycleResult> {

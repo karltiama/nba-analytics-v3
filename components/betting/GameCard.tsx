@@ -7,6 +7,7 @@ import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MarketProbability } from '@/components/betting/MarketProbability';
 import type { PresentedGame } from '@/lib/scoreboard/present';
+import type { StatLeader } from '@/lib/scoreboard/game-pulse';
 
 interface TeamInfo {
   id: string;
@@ -56,9 +57,16 @@ export interface Game {
   homeScore?: number | null;
   awayScore?: number | null;
   hasOdds?: boolean;
+  /** Scoreboard cards only: "DraftKings · BDL synced 3m ago" for the one sportsbook quote shown. */
+  marketCaption?: string | null;
   season?: string;
   /** Display-only scoreboard overlay. Absent on a normal regular-season card. */
   scoreboard?: PresentedGame;
+  /**
+   * Scoreboard cards only: true when this game id exists in analytics.games, so the matchup and
+   * props pages can load it. Scoreboard-only games (all preseason today) leave it unset.
+   */
+  researchAvailable?: boolean;
 }
 
 interface GameCardProps {
@@ -70,8 +78,8 @@ interface GameCardProps {
   /** Marketing sample cards must not deep-link to fake game ids. */
   samplePreview?: boolean;
   /**
-   * Today's Games uses scoreboard. Market cards keep odds, projections, and research links.
-   * Default remains market so other views are unchanged.
+   * Today's Games uses scoreboard: the same card, with market slots before tip and live/final
+   * basketball facts after. Default remains market so other views are unchanged.
    */
   presentation?: 'market' | 'scoreboard';
 }
@@ -141,16 +149,28 @@ function TeamMatchupSide({
   team,
   isFav,
   showRecord,
-  center = false,
+  stacked = false,
 }: {
   team: TeamInfo;
   isFav: boolean;
   showRecord: boolean;
-  center?: boolean;
+  /** Logo above the name so a centered score fits between the teams. */
+  stacked?: boolean;
 }) {
   const { city, nickname } = splitTeamDisplayName(team.name);
+  if (stacked) {
+    return (
+      <div className="flex flex-col items-center gap-1 min-w-0 flex-1 text-center" title={team.name}>
+        <TeamLogo team={team.abbreviation} size="md" decorative />
+        <div className="min-w-0 max-w-full leading-none">
+          <div className="type-card-data truncate text-[#063F46]">{nickname || team.name}</div>
+          {showRecord ? <div className="type-secondary mt-0.5 truncate">{team.record ?? '—'}</div> : null}
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className={`flex items-center gap-2 min-w-0 flex-1${center ? ' justify-center' : ''}`}>
+    <div className="flex items-center gap-2 min-w-0 flex-1">
       <TeamLogo
         team={team.abbreviation}
         size="md"
@@ -158,9 +178,9 @@ function TeamMatchupSide({
       />
       <div className="min-w-0 leading-none">
         {city ? (
-          <div className="type-secondary">{city}</div>
+          <div className="type-secondary truncate">{city}</div>
         ) : null}
-        <div className={`type-card-data text-[#063F46] ${city ? 'mt-0.5' : ''}`}>
+        <div className={`type-card-data truncate text-[#063F46] ${city ? 'mt-0.5' : ''}`}>
           {nickname || team.name}
         </div>
         {showRecord ? (
@@ -174,45 +194,69 @@ function TeamMatchupSide({
   );
 }
 
-function ScoreboardLines({ board }: { board: PresentedGame }) {
-  if (!board.box.showPlayers) return null;
+const PRIMARY_ACTION =
+  'sm:flex-[1.22] min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#075B5C] hover:bg-[#064D4E] transition-colors group whitespace-nowrap';
+const SECONDARY_ACTION =
+  'sm:flex-1 min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] hover:bg-[#EAF3F3] transition-colors whitespace-nowrap';
+const UNAVAILABLE = 'Not available for this game yet';
+
+/** Same shape as the footer link, shown when the destination cannot load this game. */
+function UnavailableAction({ primary, label }: { primary: boolean; label: string }) {
+  const base = primary ? PRIMARY_ACTION : SECONDARY_ACTION;
   return (
-    <div className="mt-2 space-y-3">
-      {board.box.teams.map((team) => (
-        <div key={team.teamId}>
-          <div className="mb-1 flex items-center gap-2">
-            <TeamLogo team={team.label} size="xs" decorative />
-            <h4 className="type-secondary text-[#063f46]">{team.label}</h4>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[32rem] text-left">
-              <thead>
-                <tr className="type-metadata border-b border-[#DCE9EA]">
-                  <th className="py-1 pr-3 font-medium">Player</th>
-                  <th className="py-1 px-2 text-right font-medium">MIN</th>
-                  <th className="py-1 px-2 text-right font-medium">PTS</th>
-                  <th className="py-1 px-2 text-right font-medium">REB</th>
-                  <th className="py-1 px-2 text-right font-medium">AST</th>
-                </tr>
-              </thead>
-              <tbody>
-                {team.players.map((player) => (
-                  <tr key={player.playerId} className="border-b border-[#DCE9EA]/70" data-player-id={player.playerId}>
-                    <td className="type-table-data py-1.5 pr-3 text-[#063f46]">{player.name}</td>
-                    <td className="type-table-data py-1.5 px-2 text-right tabular-nums text-[#063f46]">{player.min}</td>
-                    <td className="type-table-data py-1.5 px-2 text-right tabular-nums text-[#063f46]">{player.pts}</td>
-                    <td className="type-table-data py-1.5 px-2 text-right tabular-nums text-[#063f46]">{player.reb}</td>
-                    <td className="type-table-data py-1.5 px-2 text-right tabular-nums text-[#063f46]">{player.ast}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ))}
+    <span
+      className={`${base.replace(/hover:\S+/g, '')} opacity-50 cursor-not-allowed`}
+      aria-disabled="true"
+      title={UNAVAILABLE}
+      data-action-unavailable
+    >
+      {primary ? <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" /> : <ListFilter className="w-3.5 h-3.5 shrink-0" />}
+      <span className={`type-interactive${primary ? ' text-white' : ''}`}>{label}</span>
+    </span>
+  );
+}
+
+/** One column of the three-column panel holding a live or final stat leader. */
+function LeaderTile({
+  label,
+  unit,
+  leader,
+  teamAbbr,
+  last = false,
+}: {
+  label: string;
+  unit: string;
+  leader: StatLeader | null;
+  teamAbbr: (teamId: string) => string;
+  last?: boolean;
+}) {
+  const names = leader?.players.map((player) => player.name) ?? [];
+  const who = names.length === 0 ? '—' : names.length === 1 ? names[0] : `${names.length} tied`;
+  const team = leader && leader.players.length === 1 ? teamAbbr(leader.players[0].teamId) : null;
+  return (
+    <div className={`px-2 py-3 text-center min-w-0${last ? '' : ' border-r border-[#DCE9EA]'}`} data-leader={leader?.stat ?? 'none'}>
+      <div className="type-secondary mb-1.5">{label}</div>
+      <div className="type-card-data truncate text-[#063F46]" title={names.join(', ') || undefined}>
+        {who}
+      </div>
+      <div className="type-card-data truncate tabular-nums text-[#063F46]">
+        {leader ? (
+          <>
+            {leader.value} <span className="type-secondary">{team ? `${unit} · ${team}` : unit}</span>
+          </>
+        ) : (
+          '\u00a0'
+        )}
+      </div>
     </div>
   );
 }
+
+const CONTEXT_HEADING: Record<'pregame' | 'live' | 'final', [string, string]> = {
+  pregame: ['Matchup ', 'Context'],
+  live: ['Game ', 'Pulse'],
+  final: ['Game ', 'Recap'],
+};
 
 export function GameCard({
   game,
@@ -236,52 +280,103 @@ export function GameCard({
       game.awayOdds.spread != null ||
       game.overUnder != null);
   const marketDisplay = twoWayMarketDisplay(game.awayOdds.moneyline, game.homeOdds.moneyline);
-  const awayIsFav = (marketDisplay?.favorite ?? game.isFavorite) === 'away';
-  const homeIsFav = (marketDisplay?.favorite ?? game.isFavorite) === 'home';
-  const isCloseMarket = marketDisplay?.isClose ?? game.isClose;
   const board = game.scoreboard;
+  const scoreboardPresentation = presentation === 'scoreboard';
+  const phase = scoreboardPresentation ? (board?.phase ?? 'other') : null;
+  const inPlay = phase === 'live' || phase === 'final';
+  const contextKind: 'pregame' | 'live' | 'final' = phase === 'live' ? 'live' : phase === 'final' ? 'final' : 'pregame';
+  const awayIsFav = !inPlay && (marketDisplay?.favorite ?? game.isFavorite) === 'away';
+  const homeIsFav = !inPlay && (marketDisplay?.favorite ?? game.isFavorite) === 'home';
+  const isCloseMarket = marketDisplay?.isClose ?? game.isClose;
   const isFinal = board
     ? board.isFinal && game.homeScore != null && game.awayScore != null
     : game.status === 'Final' && game.homeScore != null && game.awayScore != null;
   const showScoreline = isFinal || (board?.showScores === true && game.homeScore != null && game.awayScore != null);
   const statusBadge = getStatusBadge(game.status);
-  const preseason = board?.preseason === true;
-  const scoreboardPresentation = presentation === 'scoreboard';
   const favoredValue = (isFav: boolean) => (isFav ? 'text-[#20B95A]' : 'text-[#063F46]');
+
+  const winnerId = phase === 'final' && board?.pulse?.kind === 'won' ? board.pulse.teamId : null;
+  const scoreTone = (teamId: string) => (winnerId != null && winnerId !== teamId ? 'text-cc-secondary' : undefined);
+  const teamAbbr = (teamId: string) =>
+    teamId === game.homeTeam.id ? game.homeTeam.abbreviation : teamId === game.awayTeam.id ? game.awayTeam.abbreviation : '';
+  const leaders = board?.leaders?.kind === 'leaders' ? board.leaders : null;
+  const playerStatus = board?.leaders?.kind === 'status' ? board.leaders.text : null;
+  const freshness = phase === 'live' && board && !board.stale ? (board.freshnessAge ?? board.freshnessLabel) : null;
+  const marketCaption = scoreboardPresentation && !inPlay && hasOdds ? (game.marketCaption ?? null) : null;
+  const inPlayContext = scoreboardPresentation && inPlay ? board?.context ?? null : null;
+  const contextText = !scoreboardPresentation || !inPlay ? game.matchupContext : inPlayContext?.kind === 'insight' ? inPlayContext.text : undefined;
+  const contextFallback =
+    scoreboardPresentation && inPlay
+      ? (inPlayContext && inPlayContext.kind !== 'insight' ? inPlayContext.text : 'More game context will appear as stats develop.')
+      : 'No verified matchup context for this game yet.';
+  const research = scoreboardPresentation ? game.researchAvailable === true && !samplePreview : true;
 
   return (
     <div
-      className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden"
+      className={`bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden${scoreboardPresentation ? ' h-full' : ''}`}
       data-game-id={game.id}
       data-presentation={presentation}
-      data-betting={scoreboardPresentation ? 'hidden' : 'visible'}
+      data-betting={inPlay ? 'hidden' : 'visible'}
       data-final={board ? (board.isFinal ? 'true' : 'false') : undefined}
       data-season-type={board?.seasonType ?? undefined}
       data-stale={board ? (board.stale ? 'true' : 'false') : undefined}
+      data-phase={phase ?? undefined}
     >
       <div className="px-5 sm:px-6 py-2 flex items-center justify-between border-b border-[#DCE9EA] gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <Clock className="w-4 h-4 text-[#075B5C] shrink-0" />
-          <div className="min-w-0">
-            <div className="type-metadata">{game.startTime}</div>
-            {board ? (
-              <div className="type-metadata" data-freshness>
-                {board.freshnessLabel}
+          {phase === 'live' ? (
+            <>
+              <span
+                className="type-badge inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap px-2 py-0.5 bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold"
+                data-lifecycle-label
+              >
+                {board && !board.stale ? (
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#20B95A] motion-safe:animate-pulse" aria-hidden />
+                ) : null}
+                LIVE
+              </span>
+              <div className="type-metadata truncate tabular-nums" data-status-text>
+                {board?.lifecycle === 'halftime' ? 'Halftime' : (board?.periodClock ?? '')}
               </div>
-            ) : null}
-          </div>
+            </>
+          ) : phase === 'final' ? (
+            <>
+              <span
+                className="type-badge whitespace-nowrap px-2 py-0.5 bg-[#063F46]/10 text-[#063F46] rounded-full font-semibold"
+                data-lifecycle-label
+              >
+                FINAL
+              </span>
+              {board?.periodClock ? (
+                <div className="type-metadata truncate" data-status-text>
+                  {board.periodClock}
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <Clock className="w-4 h-4 text-[#075B5C] shrink-0" />
+              <div className="min-w-0">
+                <div className="type-metadata truncate">{game.startTime}</div>
+              </div>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          {board ? (
+          {phase === 'other' && board ? (
             <span
-              className={`type-badge rounded-full px-2 py-0.5 ${board.preseason ? 'bg-[#075B5C] text-white' : 'bg-[#F3F8F8] text-[#063f46]'}`}
-              data-season-label
+              className={`type-badge whitespace-nowrap px-2 py-0.5 ${getStatusBadge(board.statusLabel)?.className ?? ''}`}
+              data-lifecycle-label
             >
-              {board.seasonLabel}
+              {board.statusLabel}
             </span>
-          ) : null}
-          {statusBadge ? (
-            <span className={`type-badge px-2 py-0.5 ${statusBadge.className}`} data-lifecycle-label>
+          ) : scoreboardPresentation ? (
+            <span className="type-secondary inline-flex items-center gap-0.5 whitespace-nowrap" data-season-label>
+              {board ? `NBA · ${board.seasonLabel}` : 'NBA'}
+              <ChevronRight className="w-4 h-4" />
+            </span>
+          ) : statusBadge ? (
+            <span className={`type-badge whitespace-nowrap px-2 py-0.5 ${statusBadge.className}`} data-lifecycle-label>
               {statusBadge.label}
             </span>
           ) : isCloseMarket ? (
@@ -297,7 +392,7 @@ export function GameCard({
         </div>
       </div>
 
-      {showScoreline && (
+      {showScoreline && !scoreboardPresentation && (
         <div className="px-5 sm:px-6 pt-4">
           <div className="text-center py-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA]">
             <div className="text-2xl font-bold text-[#063F46] tabular-nums">
@@ -311,65 +406,98 @@ export function GameCard({
         </div>
       )}
 
-      <div className="px-5 sm:px-6 py-2">
+      <div className="px-5 sm:px-6 pt-3 pb-2">
         <div className="flex items-center gap-2 sm:gap-3">
-          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} showRecord={!scoreboardPresentation} center={scoreboardPresentation} />
-          <span className="type-secondary shrink-0">
-            VS
-          </span>
-          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} showRecord={!scoreboardPresentation} center={scoreboardPresentation} />
+          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} showRecord stacked={scoreboardPresentation && showScoreline} />
+          {scoreboardPresentation && showScoreline ? (
+            <span
+              className="shrink-0 text-2xl font-bold text-[#063F46] tabular-nums whitespace-nowrap"
+              data-scoreline
+              aria-label={`${game.awayTeam.abbreviation} ${game.awayScore}, ${game.homeTeam.abbreviation} ${game.homeScore}`}
+            >
+              <span className={scoreTone(game.awayTeam.id)}>{game.awayScore}</span>
+              <span className="font-normal text-cc-secondary"> – </span>
+              <span className={scoreTone(game.homeTeam.id)}>{game.homeScore}</span>
+            </span>
+          ) : (
+            <span className="type-secondary shrink-0">
+              VS
+            </span>
+          )}
+          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} showRecord stacked={scoreboardPresentation && showScoreline} />
         </div>
       </div>
 
-      {scoreboardPresentation ? null : preseason ? null : hasOdds ? (
-        <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
-          <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
-            <div className="type-secondary mb-1.5">Market spread</div>
-            <div className={`type-card-data ${favoredValue(awayIsFav)}`}>
-              {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
-            </div>
-            <div className={`type-card-data ${favoredValue(homeIsFav)}`}>
-              {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
-            </div>
-          </div>
-          <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
-            <div className="type-secondary mb-1.5">Market total</div>
-            <div className="type-card-data text-[#168DD8]">
-              {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
-            </div>
-            <div className="type-secondary mt-0.5">
-              {game.overUnder != null
-                ? `O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`
-                : ''}
-            </div>
-          </div>
-          <div className="px-2 py-3 text-center">
-            <div className="type-secondary mb-1.5">Market ML</div>
-            <div className={`type-card-data ${favoredValue(awayIsFav)}`}>
-              {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
-            </div>
-            <div className={`type-card-data ${favoredValue(homeIsFav)}`}>
-              {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
-            </div>
-          </div>
+      {inPlay ? (
+        <div
+          className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]"
+          data-leaders-panel
+        >
+          <LeaderTile label="Points" unit="PTS" leader={leaders?.pts ?? null} teamAbbr={teamAbbr} />
+          <LeaderTile label="Rebounds" unit="REB" leader={leaders?.reb ?? null} teamAbbr={teamAbbr} />
+          <LeaderTile label="Assists" unit="AST" leader={leaders?.ast ?? null} teamAbbr={teamAbbr} last />
         </div>
       ) : (
-        <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-3 text-center">
-          <div className="type-secondary">No odds yet</div>
-        </div>
-      )}
-
-      {scoreboardPresentation || preseason || !game.matchupContext ? null : (
-        <div className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2">
-          <div className="type-metadata text-center">
-            <span>Matchup </span>
-            <span className="text-[#55ddb1]">Context</span>
+      <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
+        <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
+          <div className="type-secondary mb-1.5">Market spread</div>
+          <div className={`type-card-data ${favoredValue(awayIsFav)}`}>
+            {game.awayTeam.abbreviation} {formatSpread(game.awayOdds.spread)}
           </div>
-          <p className="type-body mt-1 text-pretty text-[#063F46]">{game.matchupContext}</p>
+          <div className={`type-card-data ${favoredValue(homeIsFav)}`}>
+            {game.homeTeam.abbreviation} {formatSpread(game.homeOdds.spread)}
+          </div>
+        </div>
+        <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
+          <div className="type-secondary mb-1.5">Market total</div>
+          <div className="type-card-data text-[#168DD8]">
+            {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
+          </div>
+          <div className="type-secondary mt-0.5">
+            {`O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`}
+          </div>
+        </div>
+        <div className="px-2 py-3 text-center">
+          <div className="type-secondary mb-1.5">Market ML</div>
+          <div className={`type-card-data ${favoredValue(awayIsFav)}`}>
+            {game.awayTeam.abbreviation} {formatOdds(game.awayOdds.moneyline)}
+          </div>
+          <div className={`type-card-data ${favoredValue(homeIsFav)}`}>
+            {game.homeTeam.abbreviation} {formatOdds(game.homeOdds.moneyline)}
+          </div>
+        </div>
+      </div>
+      )}
+
+      {!contextText && !scoreboardPresentation ? null : (
+        <div
+          className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2"
+          data-context-panel={scoreboardPresentation ? contextKind : undefined}
+        >
+          <div className="type-metadata text-center">
+            <span>{CONTEXT_HEADING[contextKind][0]}</span>
+            <span className="text-[#55ddb1]">{CONTEXT_HEADING[contextKind][1]}</span>
+          </div>
+          {contextText ? (
+            <p
+              className="type-body mt-1 text-pretty text-[#063F46]"
+              data-game-pulse={inPlayContext?.kind === 'insight' ? inPlayContext.insight.id : undefined}
+            >
+              {contextText}
+            </p>
+          ) : (
+            <p
+              className="type-secondary mt-1 text-center"
+              data-context-unavailable
+              data-game-pulse={inPlay && scoreboardPresentation ? (inPlayContext?.kind ?? 'none') : undefined}
+            >
+              {contextFallback}
+            </p>
+          )}
         </div>
       )}
 
-      {!scoreboardPresentation && !preseason && hasOdds && marketDisplay ? (
+      {!inPlay && hasOdds && marketDisplay ? (
         <div className="px-5 sm:px-6 pb-5">
           <MarketProbability
             awayAbbr={game.awayTeam.abbreviation}
@@ -380,7 +508,7 @@ export function GameCard({
         </div>
       ) : null}
 
-      {scoreboardPresentation || preseason || !game.paceSignal ? null : (
+      {!game.paceSignal || scoreboardPresentation ? null : (
         <div className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
           <p className="type-metadata text-center">Pace context</p>
           <p className="type-secondary mt-0.5 text-center tabular-nums">
@@ -400,27 +528,22 @@ export function GameCard({
         </p>
       ) : null}
 
-      {board ? (
-        <details className="mx-5 sm:mx-6 mb-4" data-box-completeness={board.box.completeness}>
-          <summary className="type-interactive cursor-pointer text-[#075B5C]" data-box-label>
-            {board.box.label}
-          </summary>
-          <ScoreboardLines board={board} />
-        </details>
+      {scoreboardPresentation && (playerStatus || freshness || marketCaption) ? (
+        <p className="type-metadata mx-5 sm:mx-6 mb-3 text-center">
+          {playerStatus ? <span data-player-status>{playerStatus}</span> : null}
+          {playerStatus && freshness ? ' · ' : null}
+          {freshness ? <span data-freshness>{freshness}</span> : null}
+          {marketCaption ? <span data-market-source>{marketCaption}</span> : null}
+        </p>
       ) : null}
 
-      {scoreboardPresentation ? null : (
       <div className="px-5 sm:px-6 pb-5 flex flex-col sm:flex-row gap-2.5">
-        {preseason ? (
-          <p className="type-secondary" data-preseason-betting="disabled">
-            {board?.preseasonBettingNote}
-          </p>
-        ) : (
+        {!scoreboardPresentation ? (
           <>
         <Link
           href={gameHref}
           onClick={() => onViewDetails?.(game.id)}
-          className="sm:flex-[1.22] min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#075B5C] hover:bg-[#064D4E] transition-colors group whitespace-nowrap"
+          className={PRIMARY_ACTION}
         >
           <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
           <span className="type-interactive text-white">View matchup</span>
@@ -428,15 +551,36 @@ export function GameCard({
         </Link>
         <Link
           href={propsHref}
-          className="sm:flex-1 min-w-0 px-3 py-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#F3F8F8] border border-[#DCE9EA] text-[#063F46] hover:bg-[#EAF3F3] transition-colors whitespace-nowrap"
+          className={SECONDARY_ACTION}
         >
           <ListFilter className="w-3.5 h-3.5 shrink-0" />
           <span className="type-interactive">View props</span>
         </Link>
           </>
+        ) : (
+          <>
+            {research ? (
+              <Link href={gameHref} onClick={() => onViewDetails?.(game.id)} className={PRIMARY_ACTION}>
+                <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
+                <span className="type-interactive text-white">
+                  {phase === 'live' ? 'Follow live' : phase === 'final' ? 'Game recap' : 'View matchup'}
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            ) : (
+              <UnavailableAction primary label={phase === 'live' ? 'Follow live' : phase === 'final' ? 'Game recap' : 'View matchup'} />
+            )}
+            {research && !inPlay ? (
+              <Link href={propsHref} className={SECONDARY_ACTION}>
+                <ListFilter className="w-3.5 h-3.5 shrink-0" />
+                <span className="type-interactive">View props</span>
+              </Link>
+            ) : (
+              <UnavailableAction primary={false} label={inPlay ? 'Box score' : 'View props'} />
+            )}
+          </>
         )}
       </div>
-      )}
     </div>
   );
 }

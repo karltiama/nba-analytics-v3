@@ -9,8 +9,21 @@ import {
   isScoreboardSeasonType,
   type BoxScoreCompleteness,
   type ScoreboardGame,
+  type ScoreboardMarket,
   type ScoreboardSeasonType,
 } from './contract';
+import { checkMarkets, MARKET_VENDOR_ORDER, marketSourceCaption } from './market';
+import {
+  freshnessAgeLabel,
+  gameContext,
+  gamePhase,
+  gamePulse,
+  statLeaders,
+  type GameContext,
+  type GamePhase,
+  type GamePulse,
+  type StatLeaders,
+} from './game-pulse';
 
 const ET = 'America/New_York';
 
@@ -72,10 +85,23 @@ export type PresentedGame = {
   tipoffLabel: string | null;
   periodClock: string | null;
   freshnessLabel: string;
+  /** "Updated 2m ago": acquired_at measured against the response generated_at. Null when unknown or over an hour. */
+  freshnessAge: string | null;
+  phase: GamePhase;
+  /** lifecycleLabel, or Delayed / Suspended from provider_status when the lifecycle is unknown. */
+  statusLabel: string;
+  /** Score leader or winner. Drives final-score emphasis; not shown as panel text. */
+  pulse: GamePulse | null;
+  /** Game Pulse / Game Recap panel text: a team-stat insight or a quiet fallback. Null before tip. */
+  context: GameContext | null;
+  /** Points / rebounds / assists leaders, or a player-data status. Null before tip and when stale. */
+  leaders: StatLeaders | null;
   stale: boolean;
   staleLabel: string | null;
   /** Preseason projection and EV stay off. Null when this game is not preseason. */
   preseasonBettingNote: string | null;
+  /** One sportsbook's verified current quote. Null unless the game is scheduled and the payload carries one. */
+  market: PresentedMarket | null;
   box: {
     completeness: BoxScoreCompleteness;
     label: string;
@@ -84,6 +110,53 @@ export type PresentedGame = {
     teams: PresentedBoxTeam[];
   };
 };
+
+export type PresentedMarket = {
+  vendorLabel: string;
+  moneyline: ScoreboardMarket['moneyline'];
+  spread: ScoreboardMarket['spread'];
+  total: ScoreboardMarket['total'];
+  /** "DraftKings · BDL synced 3m ago", measured against the response generated_at. */
+  caption: string;
+};
+
+/**
+ * Re-checks the payload's market with the same per-market rules the server used, so a malformed or
+ * hand-edited payload cannot put an unverified price on a card.
+ */
+export function presentMarket(game: ScoreboardGame, generatedAt?: string | null): PresentedMarket | null {
+  const m = game.market;
+  if (!m || typeof m !== 'object') return null;
+  if (game.lifecycle !== 'scheduled' || game.stale === true) return null;
+  if (m.kind !== 'current_pregame' || (m.freshness !== 'fresh' && m.freshness !== 'delayed')) return null;
+  if (!(MARKET_VENDOR_ORDER as readonly string[]).includes(m.vendor)) return null;
+  const checked = checkMarkets({
+    gameId: game.game_id,
+    vendor: m.vendor,
+    quoteKind: 'current',
+    moneylineHome: m.moneyline?.home ?? null,
+    moneylineAway: m.moneyline?.away ?? null,
+    spreadHome: m.spread?.home ?? null,
+    spreadHomeOdds: m.spread?.home_odds ?? null,
+    spreadAway: m.spread?.away ?? null,
+    spreadAwayOdds: m.spread?.away_odds ?? null,
+    total: m.total?.line ?? null,
+    totalOverOdds: m.total?.over_odds ?? null,
+    totalUnderOdds: m.total?.under_odds ?? null,
+    providerUpdatedAt: m.provider_updated_at,
+    vendorSyncedAt: null,
+    openedAt: null,
+    firstObservedAt: m.observed_at,
+    observedAt: m.observed_at,
+    requestId: '',
+    withdrawnAt: null,
+    withdrawnRequestId: null,
+  });
+  if (!checked.moneyline && !checked.spread && !checked.total) return null;
+  const nowMs = generatedAt ? Date.parse(generatedAt) : NaN;
+  const caption = marketSourceCaption(m, nowMs) ?? m.vendor_label;
+  return { vendorLabel: m.vendor_label, ...checked, caption };
+}
 
 function isLifecycle(value: unknown): value is GameLifecycleState {
   return typeof value === 'string' && (GAME_LIFECYCLE_STATES as readonly string[]).includes(value);
@@ -126,6 +199,19 @@ export function lifecycleLabel(lifecycle: GameLifecycleState | null): string {
   return LIFECYCLE_LABEL[lifecycle];
 }
 
+/**
+ * Card status. Same as lifecycleLabel, except an unknown lifecycle whose provider status says
+ * delayed or suspended shows that word. It never promotes a game to Live or Final.
+ */
+export function cardStatusLabel(lifecycle: GameLifecycleState | null, providerStatus: string | null | undefined): string {
+  if (lifecycle == null || lifecycle === 'unknown') {
+    const status = providerStatus?.toLowerCase() ?? '';
+    if (status.includes('delay')) return 'Delayed';
+    if (status.includes('suspend')) return 'Suspended';
+  }
+  return lifecycleLabel(lifecycle);
+}
+
 const NOT_STARTED: ReadonlySet<GameLifecycleState> = new Set(['scheduled', 'postponed', 'canceled']);
 
 export function staleWarning(game: Pick<ScoreboardGame, 'stale' | 'stale_reason' | 'lifecycle'>): string | null {
@@ -135,25 +221,52 @@ export function staleWarning(game: Pick<ScoreboardGame, 'stale' | 'stale_reason'
   return 'Score may be out of date';
 }
 
+const PERIOD_PREFIX = /^(?:Q(\d+)|(\d+)OT|OT(\d*))\b\s*/i;
+const CLOCK_TIME = /^\d{1,2}(?::\d{2})?(?:\.\d+)?$/;
+
+function otLabel(count: number): string {
+  return count <= 1 ? 'OT' : `${count}OT`;
+}
+
+/**
+ * Splits a provider clock such as "Q1 4:35", "2OT 0:48", "OT2 0:48", or "4:35" into its own
+ * period label (if any) and the time. Text that is not a game clock is dropped.
+ */
+function splitProviderClock(raw: string | null | undefined): { label: string | null; time: string | null } {
+  let rest = raw?.trim() ?? '';
+  let label: string | null = null;
+  const prefix = rest.match(PERIOD_PREFIX);
+  if (prefix) {
+    if (prefix[1]) label = `Q${Number(prefix[1])}`;
+    else if (prefix[2]) label = otLabel(Number(prefix[2]));
+    else label = otLabel(prefix[3] ? Number(prefix[3]) : 1);
+    rest = rest.slice(prefix[0].length).trim();
+  }
+  return { label, time: CLOCK_TIME.test(rest) ? rest : null };
+}
+
 /**
  * Period and clock for in-progress games, plus an OT mark on a final overtime game.
+ * The period label comes from the normalized period; the provider clock contributes only its time,
+ * so a clock that already reads "Q1 4:35" is not prefixed twice.
  * Halftime, postponed, canceled, and scheduled keep the lifecycle badge as the status.
  */
 export function formatPeriodClock(game: Pick<ScoreboardGame, 'lifecycle' | 'period' | 'clock' | 'overtime_periods'>): string | null {
-  const clock = game.clock?.trim() || null;
+  const provider = splitProviderClock(game.clock);
   if (game.lifecycle === 'live') {
-    const quarter = game.period != null && game.period > 0 && game.period <= 4 ? `Q${game.period}` : 'Live';
-    return clock ? `${quarter} ${clock}` : quarter;
+    const quarter =
+      game.period != null && game.period > 0 && game.period <= 4 ? `Q${game.period}` : provider.label ?? 'Live';
+    return provider.time ? `${quarter} ${provider.time}` : quarter;
   }
   if (game.lifecycle === 'overtime') {
-    const ot =
+    const count =
       game.overtime_periods > 0
         ? game.overtime_periods
         : game.period != null && game.period > 4
           ? game.period - 4
-          : 1;
-    const label = ot <= 1 ? 'OT' : `${ot}OT`;
-    return clock ? `${label} ${clock}` : label;
+          : null;
+    const label = count != null ? otLabel(count) : provider.label?.includes('OT') ? provider.label : 'OT';
+    return provider.time ? `${label} ${provider.time}` : label;
   }
   if (game.lifecycle === 'final' && game.overtime_periods > 0) {
     return game.overtime_periods === 1 ? 'OT' : `${game.overtime_periods}OT`;
@@ -227,7 +340,7 @@ function presentBox(game: ScoreboardGame, visitorLabel: string, homeLabel: strin
   };
 }
 
-export function presentScoreboardGame(game: ScoreboardGame): PresentedGame | null {
+export function presentScoreboardGame(game: ScoreboardGame, generatedAt?: string | null): PresentedGame | null {
   if (!game || typeof game.game_id !== 'string' || !game.game_id) return null;
   const lifecycle = isLifecycle(game.lifecycle) ? game.lifecycle : null;
   const seasonType = isScoreboardSeasonType(game.season_type) ? game.season_type : null;
@@ -259,11 +372,18 @@ export function presentScoreboardGame(game: ScoreboardGame): PresentedGame | nul
     tipoffLabel: lifecycle === 'scheduled' ? formatTipoffEt(game.scheduled_tip) || null : null,
     periodClock: lifecycle ? formatPeriodClock({ ...game, lifecycle }) : null,
     freshnessLabel: formatObservedAt(game.acquired_at),
+    freshnessAge: generatedAt ? freshnessAgeLabel(game.acquired_at, Date.parse(generatedAt)) : null,
+    phase: gamePhase(lifecycle),
+    statusLabel: cardStatusLabel(lifecycle, game.provider_status),
+    pulse: lifecycle ? gamePulse({ ...game, lifecycle }) : null,
+    context: lifecycle ? gameContext({ ...game, lifecycle }) : null,
+    leaders: lifecycle ? statLeaders({ ...game, lifecycle }) : null,
     stale: game.stale === true,
     staleLabel: staleWarning(game),
     preseasonBettingNote: preseason
       ? 'Projections and expected value are unavailable for preseason.'
       : null,
+    market: presentMarket(game, generatedAt),
     box: presentBox(game, visitorAbbr, homeAbbr),
   };
 }

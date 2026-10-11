@@ -7,7 +7,9 @@
 #   only this family: every other family keeps its own *_execution_enabled gate.
 # Preseason is the only season type Terraform can switch on; regular, play-in and playoffs are
 #   pinned to "0" in the last merge and also refused in code (ACTIVATABLE_SCOREBOARD_SEASON_TYPES).
-# Writes: display.* (Postgres), raw.acquisition_requests (ledger) and two S3 archive prefixes.
+# Writes: display.* (Postgres), raw.acquisition_requests (ledger) and three S3 archive prefixes.
+# Display-only pre-game odds (/v2/odds, about every 15 minutes) need scoreboard_odds_enabled on top of
+#   the family gate; they never enable a season type (SCOREBOARD_COLLECT_ODDS rides on the games gate).
 #
 # Package before apply when create=true:
 #   npm run build:scoreboard-lambda
@@ -19,7 +21,7 @@ variable "scoreboard_lambda_function_name" {
 }
 
 variable "scoreboard_lambda_timeout" {
-  description = "Seconds. One tick makes at most 3 /v1/games pages plus 1 live box request under the shared limiter; below the 1-minute schedule so ticks do not overlap."
+  description = "Seconds. One tick makes at most 3 /v1/games pages, 1 live box request and (when odds are due) 3 /v2/odds pages under the shared limiter; below the 1-minute schedule so ticks do not overlap."
   type        = number
   default     = 55
 }
@@ -42,6 +44,12 @@ variable "scoreboard_schedule_expression" {
   default     = "rate(1 minute)"
 }
 
+variable "scoreboard_odds_enabled" {
+  description = "Display-only pre-game odds for scheduled games of season types already collecting. Effective only while the scoreboard family is live. Requires db/schemas/MIGRATION_display_scoreboard_odds.sql."
+  type        = bool
+  default     = false
+}
+
 variable "scoreboard_lambda_env" {
   description = "Optional extra env. Freeze defaults merge first and the family-gated values merge last, so this map cannot thaw the Lambda or enable a season type."
   type        = map(string)
@@ -55,6 +63,7 @@ locals {
   scoreboard_archive_prefixes = [
     "${local.scoreboard_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_scoreboard_games",
     "${local.scoreboard_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_box_scores_live",
+    "${local.scoreboard_raw_prefix}/source=balldontlie/league=nba/season=2026/entity=acq_scoreboard_odds",
   ]
   scoreboard_schedule_name  = "nba-scoreboard-schedule"
   scoreboard_schedule_group = "default"
@@ -106,7 +115,7 @@ resource "aws_iam_role_policy" "scoreboard_bdl_rate_limit" {
 }
 
 # Archive-before-write (lib/acquisition/s3-store.ts): conditional PutObject then HeadObject readback.
-# Only the two scoreboard entity prefixes; no other S3 path.
+# Only the three scoreboard entity prefixes; no other S3 path.
 resource "aws_iam_role_policy" "scoreboard_s3_archive" {
   count = var.scoreboard_create && var.nba_data_bucket_name != "" ? 1 : 0
   name  = "${var.scoreboard_lambda_function_name}-s3-archive"
@@ -159,6 +168,7 @@ resource "aws_lambda_function" "scoreboard" {
         SCOREBOARD_COLLECT_REGULAR        = "0"
         SCOREBOARD_COLLECT_PLAYIN         = "0"
         SCOREBOARD_COLLECT_PLAYOFFS       = "0"
+        SCOREBOARD_COLLECT_ODDS           = local.family_schedule_enabled.scoreboard && var.scoreboard_odds_enabled ? "1" : "0"
         SCOREBOARD_TARGET_SEASON          = "2026"
         NBA_DATA_BUCKET                   = var.nba_data_bucket_name
         NBA_RAW_PREFIX                    = local.scoreboard_raw_prefix
@@ -287,6 +297,21 @@ resource "aws_cloudwatch_log_metric_filter" "scoreboard_run_failed" {
 
   metric_transformation {
     name      = "RunFailed-scoreboard"
+    namespace = local.ingestion_metric_ns
+    value     = "1"
+  }
+}
+
+# Odds failures never fail the scores cycle, so they are counted separately. No alarm: a missing
+# quote only hides the card's market tiles.
+resource "aws_cloudwatch_log_metric_filter" "scoreboard_odds_failed" {
+  count          = var.scoreboard_create ? 1 : 0
+  name           = "court-context-scoreboard-odds-failed"
+  log_group_name = aws_cloudwatch_log_group.scoreboard[0].name
+  pattern        = "{ $.event = \"scoreboard_cycle\" && $.odds.status = \"failed\" }"
+
+  metric_transformation {
+    name      = "OddsFailed-scoreboard"
     namespace = local.ingestion_metric_ns
     value     = "1"
   }

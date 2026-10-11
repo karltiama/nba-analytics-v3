@@ -111,6 +111,54 @@ export type LiveBoxObservation = {
   lines: ScoreboardPlayerLine[];
 };
 
+export const ODDS_QUOTE_KINDS = ['current', 'opening'] as const;
+export type OddsQuoteKind = (typeof ODDS_QUOTE_KINDS)[number];
+
+/** Flat row persisted in display.scoreboard_game_odds: one vendor's latest accepted quote for one game. */
+export type StoredOddsQuote = {
+  gameId: string;
+  vendor: string;
+  quoteKind: OddsQuoteKind;
+  moneylineHome: number | null;
+  moneylineAway: number | null;
+  spreadHome: number | null;
+  spreadHomeOdds: number | null;
+  spreadAway: number | null;
+  spreadAwayOdds: number | null;
+  total: number | null;
+  totalOverOdds: number | null;
+  totalUnderOdds: number | null;
+  /** Provider sync time (BDL updated_at). Not a line-change time. */
+  providerUpdatedAt: string | null;
+  /** Newest provider sync time for this vendor in the same acquisition. */
+  vendorSyncedAt: string | null;
+  openedAt: string | null;
+  firstObservedAt: string;
+  /** Collection time of the acquisition that last contained this row. */
+  observedAt: string;
+  requestId: string;
+  withdrawnAt: string | null;
+  withdrawnRequestId: string | null;
+};
+
+/**
+ * One sportsbook's current pre-game quote for a scheduled game. Present only when a single vendor
+ * passed identity, freshness and price checks; never a blend of books, never an opening quote.
+ */
+export type ScoreboardMarket = {
+  kind: 'current_pregame';
+  vendor: string;
+  vendor_label: string;
+  /** fresh: collected within the refresh window; delayed: one refresh late. Stale quotes are omitted. */
+  freshness: 'fresh' | 'delayed';
+  /** Provider sync time. Not a line-change time. */
+  provider_updated_at: string | null;
+  observed_at: string;
+  moneyline: { home: number; away: number } | null;
+  spread: { home: number; away: number; home_odds: number | null; away_odds: number | null } | null;
+  total: { line: number; over_odds: number | null; under_odds: number | null } | null;
+};
+
 export type ScoreboardTeam = {
   provider_team_id: string;
   abbreviation: string | null;
@@ -145,6 +193,8 @@ export type ScoreboardGame = {
     acquired_at: string | null;
     players: Array<Omit<ScoreboardPlayerLine, 'gameId'>>;
   };
+  /** Optional, additive: absent when the game is not scheduled or no verified current quote exists. */
+  market?: ScoreboardMarket;
 };
 
 export type ScoreboardResponse = {

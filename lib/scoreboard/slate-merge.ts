@@ -5,16 +5,27 @@
  */
 
 import type { Game } from '@/components/betting/GameCard';
+import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import type { ScoreboardGame, ScoreboardResponse } from './contract';
 import { presentScoreboardGame, type PresentedGame } from './present';
 
 const EMPTY_ODDS = { moneyline: null, spread: null, spreadOdds: null };
 
-export function scoreboardToSlateGame(game: ScoreboardGame): (Game & { scoreboard: PresentedGame }) | null {
-  const presented = presentScoreboardGame(game);
+export function scoreboardToSlateGame(
+  game: ScoreboardGame,
+  generatedAt?: string | null
+): (Game & { scoreboard: PresentedGame }) | null {
+  const presented = presentScoreboardGame(game, generatedAt);
   if (!presented) return null;
   const homeScore = presented.showScores && presented.homeScore != null ? Number(presented.homeScore) : undefined;
   const awayScore = presented.showScores && presented.visitorScore != null ? Number(presented.visitorScore) : undefined;
+  // One vendor's verified current quote, scheduled games only. Otherwise every odds field stays empty.
+  const market = presented.lifecycle === 'scheduled' ? presented.market : null;
+  const ml = market?.moneyline ?? null;
+  const spread = market?.spread ?? null;
+  const total = market?.total ?? null;
+  const noVig = ml ? twoWayMarketDisplay(ml.away, ml.home) : null;
   return {
     id: presented.gameId,
     gameDate: game.et_date,
@@ -30,18 +41,24 @@ export function scoreboardToSlateGame(game: ScoreboardGame): (Game & { scoreboar
       abbreviation: presented.visitorAbbr,
       record: null,
     },
-    startTime: presented.periodClock || presented.tipoffLabel || '',
-    homeOdds: EMPTY_ODDS,
-    awayOdds: EMPTY_ODDS,
-    overUnder: null,
-    overOdds: null,
-    underOdds: null,
-    homeImpliedProb: null,
-    awayImpliedProb: null,
-    isFavorite: null,
-    isClose: false,
-    hasOdds: false,
-    status: presented.lifecycleLabel,
+    startTime: formatTipoffEt(game.scheduled_tip),
+    homeOdds: market
+      ? { moneyline: ml?.home ?? null, spread: spread?.home ?? null, spreadOdds: spread?.home_odds ?? null }
+      : EMPTY_ODDS,
+    awayOdds: market
+      ? { moneyline: ml?.away ?? null, spread: spread?.away ?? null, spreadOdds: spread?.away_odds ?? null }
+      : EMPTY_ODDS,
+    overUnder: total?.line ?? null,
+    overOdds: total?.over_odds ?? null,
+    underOdds: total?.under_odds ?? null,
+    homeImpliedProb: noVig?.homePct ?? null,
+    awayImpliedProb: noVig?.awayPct ?? null,
+    isFavorite: noVig?.favorite ?? null,
+    isClose: noVig?.isClose ?? false,
+    hasOdds: market != null,
+    marketCaption: market?.caption ?? null,
+    researchAvailable: false,
+    status: undefined,
     homeScore,
     awayScore,
     scoreboard: presented,
@@ -65,7 +82,7 @@ export function mergeTodaysGames(scoreboard: ScoreboardResponse | null | undefin
   const byId = new Map<string, Game>();
   for (const raw of scoreboard.games) {
     if (raw.et_date !== scoreboard.date) continue;
-    const card = scoreboardToSlateGame(raw);
+    const card = scoreboardToSlateGame(raw, scoreboard.generated_at);
     if (!card) continue;
     byId.set(card.id, card);
   }
