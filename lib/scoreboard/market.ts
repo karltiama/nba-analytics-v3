@@ -11,21 +11,30 @@ import { etYmd, shiftEtYmd } from '@/lib/games/status-sync-query';
 import type { ScoreboardMarket, StoredOddsQuote, StoredScoreboardGame } from './contract';
 
 /**
- * Collection runs about every 15 minutes, and the scheduler ticks every minute, so a healthy quote is
- * at most ~16 minutes old when it is replaced. FRESH_MS leaves margin for that; one failed attempt is
- * retried after 5 minutes and shows as delayed; anything older is stale and is not shown.
+ * Collection runs every 15th scheduler tick (1-minute ticks). Intervals are 30 s short of the nominal
+ * value so invocation start jitter cannot push a due attempt to the following tick. A healthy quote is
+ * about 15 minutes old when replaced; FRESH_MS leaves margin for that. One failed attempt is retried
+ * after 5 minutes and may show as delayed; anything older is stale and is not shown.
  */
 export const SCOREBOARD_ODDS_POLICY = {
-  INTERVAL_MS: 15 * 60_000,
-  RETRY_AFTER_FAILURE_MS: 5 * 60_000,
+  INTERVAL_MS: 15 * 60_000 - 30_000,
+  RETRY_AFTER_FAILURE_MS: 5 * 60_000 - 30_000,
   FRESH_MS: 20 * 60_000,
   DELAYED_MS: 35 * 60_000,
   /** A vendor row this far behind the same vendor's newest sync in one acquisition is not current. */
   VENDOR_LAG_MS: 10 * 60_000,
-  MAX_GAMES_PER_REQUEST: 25,
+  /** Two full NBA slates (15 + 15): today and tomorrow are covered in one request. */
+  MAX_GAMES_PER_REQUEST: 30,
   MAX_PAGES: 3,
-  /** Two-way book (sum of raw implied probabilities) must be above 1 and at most this. */
+  /**
+   * A page starts only this soon after the tick began. A page costs at most 20 s limiter wait plus
+   * 15 s HTTP timeout, so the step ends before the 55 s Lambda timeout instead of being killed by it.
+   */
+  PAGE_START_DEADLINE_MS: 15_000,
+  /** Two-way book (sum of raw implied probabilities): at least a fair book (1.0) and at most this. */
   MAX_BOOK: 1.25,
+  /** A dead-even moneyline cannot sit beside a spread this large; the moneyline is the suspect field. */
+  EVEN_MONEYLINE_MAX_SPREAD: 3,
 } as const;
 
 /** Sportsbooks shown, in preference order. Prediction markets and unlisted books are never shown. */
@@ -41,19 +50,23 @@ const VENDOR_LABEL: Record<string, string> = {
 
 const VENDOR_TOKEN = /^[a-z0-9_]{1,40}$/;
 
+/** Plain decimal strings only ("-4", "+4.5", "220.0"); no hex, exponent or empty-string coercion. */
+const DECIMAL_STRING = /^[+-]?\d+(\.\d+)?$/;
+
 function toNumber(v: unknown): number | null {
-  if (v == null || v === '') return null;
-  const n = typeof v === 'number' ? v : typeof v === 'string' ? Number(v.trim()) : NaN;
-  return Number.isFinite(n) ? n : null;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  if (typeof v !== 'string' || !DECIMAL_STRING.test(v.trim())) return null;
+  return Number(v.trim());
 }
 
-/** American price: integer with |price| ≥ 100. */
+/** American price: integer with |price| ≥ 100. +100 and −100 are both valid even-money prices. */
 export function americanPrice(v: unknown): number | null {
   const n = toNumber(v);
   if (n == null || !Number.isInteger(n) || Math.abs(n) < 100 || Math.abs(n) > 100_000) return null;
   return n;
 }
 
+/** Whole- or half-point line within [min, max]: −4, 4.5, 220 and 220.5 pass; 220.25 does not. */
 function halfPointLine(v: unknown, min: number, max: number): number | null {
   const n = toNumber(v);
   if (n == null || n < min || n > max || !Number.isInteger(n * 2)) return null;
@@ -210,22 +223,39 @@ export function oddsDue(state: OddsAttemptState, now: Date): boolean {
   return since >= wait;
 }
 
-/** Raw implied probabilities of a two-way price pair sum above 1 (the book's margin) and not absurdly. */
+const BOOK_EPSILON = 1e-9;
+
+/**
+ * Both sides of one book's two-way market. Fair (sum 1.0, e.g. +100/−100) up to MAX_BOOK. Below 1.0
+ * one book would be offering an arbitrage against itself, which no sportsbook quotes.
+ */
 function validPair(a: number | null, b: number | null): boolean {
   const pa = rawImpliedProbFromMoneyline(a);
   const pb = rawImpliedProbFromMoneyline(b);
   if (pa == null || pb == null) return false;
   const book = pa + pb;
-  return book > 1 && book <= SCOREBOARD_ODDS_POLICY.MAX_BOOK;
+  return book >= 1 - BOOK_EPSILON && book <= SCOREBOARD_ODDS_POLICY.MAX_BOOK;
+}
+
+/** Favorite by implied probability, not by the raw American number (−100 and +100 are the same price). */
+function moneylineFavorite(home: number, away: number): 'home' | 'away' | null {
+  const ph = rawImpliedProbFromMoneyline(home)!;
+  const pa = rawImpliedProbFromMoneyline(away)!;
+  if (Math.abs(ph - pa) < BOOK_EPSILON) return null;
+  return ph > pa ? 'home' : 'away';
 }
 
 type CheckedMarkets = Pick<ScoreboardMarket, 'moneyline' | 'spread' | 'total'>;
 
 /**
- * Each market is validated on its own; a bad field blanks only that market.
- * Moneyline: both sides, a real two-way book (rejects +100/+100 and −100/−100 placeholders).
+ * Each market is validated on its own; a bad field blanks only that market. Prices are never
+ * rejected for their value alone (+100 is a valid even-money price); only the pair and its
+ * agreement with the other markets of the same row are judged. Prediction-market vendors, the only
+ * placeholder source seen, are excluded by vendor identity in selectMarket.
+ * Moneyline: both sides, a book in [1.0, MAX_BOOK]. A dead-even moneyline next to a spread of
+ * EVEN_MONEYLINE_MAX_SPREAD points or more contradicts its own row and is dropped.
  * Spread: both sides, mirrored, and not favoring the moneyline underdog. Prices kept only as a valid pair.
- * Total: a half-point line in range. Over/under prices kept only as a valid pair.
+ * Total: a whole- or half-point line in range. Over/under prices kept only as a valid pair.
  */
 export function checkMarkets(input: StoredOddsQuote): CheckedMarkets {
   const q = {
@@ -239,15 +269,19 @@ export function checkMarkets(input: StoredOddsQuote): CheckedMarkets {
     totalOverOdds: americanPrice(input.totalOverOdds),
     totalUnderOdds: americanPrice(input.totalUnderOdds),
   };
-  const moneyline =
+  let moneyline =
     q.moneylineHome != null && q.moneylineAway != null && validPair(q.moneylineHome, q.moneylineAway)
       ? { home: q.moneylineHome, away: q.moneylineAway }
       : null;
+  const mirrored = q.spreadHome != null && q.spreadAway != null && q.spreadHome === -q.spreadAway;
+  const mlFav = moneyline ? moneylineFavorite(moneyline.home, moneyline.away) : null;
+  if (moneyline && mlFav == null && mirrored && Math.abs(q.spreadHome!) >= SCOREBOARD_ODDS_POLICY.EVEN_MONEYLINE_MAX_SPREAD) {
+    moneyline = null;
+  }
   let spread: CheckedMarkets['spread'] = null;
-  if (q.spreadHome != null && q.spreadAway != null && q.spreadHome === -q.spreadAway) {
+  if (mirrored && q.spreadHome != null && q.spreadAway != null) {
     const spreadFav = q.spreadHome < 0 ? 'home' : q.spreadHome > 0 ? 'away' : null;
-    const mlFav = moneyline ? (moneyline.home < moneyline.away ? 'home' : moneyline.away < moneyline.home ? 'away' : null) : null;
-    if (!(spreadFav && mlFav && spreadFav !== mlFav)) {
+    if (!(spreadFav && mlFav && moneyline && spreadFav !== mlFav)) {
       const pricesOk = validPair(q.spreadHomeOdds, q.spreadAwayOdds);
       spread = {
         home: q.spreadHome,
@@ -345,7 +379,8 @@ export function selectMarket(input: {
 /** "DraftKings · BDL synced 3m ago". Sync time, measured against the response time; never a line-move time. */
 export function marketSourceCaption(market: ScoreboardMarket | null | undefined, nowMs: number): string | null {
   if (!market) return null;
-  const at = Date.parse(market.provider_updated_at ?? market.observed_at);
+  // Without a provider sync time there is no BDL sync age to state; collection time is not one.
+  const at = market.provider_updated_at ? Date.parse(market.provider_updated_at) : NaN;
   if (!Number.isFinite(at) || !Number.isFinite(nowMs)) return market.vendor_label;
   const minutes = Math.max(0, Math.floor((nowMs - at) / 60_000));
   return `${market.vendor_label} · BDL synced ${minutes < 1 ? 'just now' : `${minutes}m ago`}`;

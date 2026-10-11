@@ -1,11 +1,12 @@
 /**
  * GET /api/scoreboard handler logic. Reads the display store only; never calls BDL.
- * Serving is gated by SCOREBOARD_SERVING_ENABLED (only '1' serves).
+ * Serving is gated by SCOREBOARD_SERVING_ENABLED (only '1' serves). The optional per-game `market`
+ * is gated separately by SCOREBOARD_MARKETS_SERVING_ENABLED (only '1' attaches markets).
  */
 
 import { etYmd } from '@/lib/games/status-sync-query';
 import { isScoreboardSeasonType, type ScoreboardSeasonType, type StoredOddsQuote } from './contract';
-import { isScoreboardServingEnabled } from './flags';
+import { isScoreboardMarketServingEnabled, isScoreboardServingEnabled } from './flags';
 import { buildScoreboardResponse } from './response';
 import type { ScoreboardStore } from './store';
 
@@ -49,13 +50,15 @@ export async function serveScoreboard(input: {
     const store = input.store();
     const games = await store.loadGamesForDate(date, seasonType);
     const lines = await store.loadPlayerLines(games.map((g) => g.gameId));
-    // Quotes are optional: an odds read failure (or an unapplied odds migration) keeps the games.
+    // Quotes are optional: markets off, an odds read failure, or an unapplied odds migration keeps the games.
     let odds: StoredOddsQuote[] | undefined;
     const pregameIds = games.filter((g) => g.lifecycle === 'scheduled').map((g) => g.gameId);
-    try {
-      odds = pregameIds.length > 0 ? await store.loadCurrentOdds(pregameIds) : [];
-    } catch {
-      odds = undefined;
+    if (isScoreboardMarketServingEnabled(input.env)) {
+      try {
+        odds = pregameIds.length > 0 ? await store.loadCurrentOdds(pregameIds) : [];
+      } catch {
+        odds = undefined;
+      }
     }
     return {
       status: 200,

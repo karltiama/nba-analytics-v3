@@ -62,7 +62,14 @@ revoke all on display.scoreboard_odds_state from public, anon, authenticated;
 
 commit;
 
--- Rollback (display odds only; scoreboard games, raw.acquisition_requests and S3 archives are untouched):
+-- Containment first (no SQL, records preserved):
+--   1. Stop acquisition: Terraform scoreboard_odds_enabled = false (SCOREBOARD_COLLECT_ODDS = "0").
+--   2. Hide markets: unset SCOREBOARD_MARKETS_SERVING_ENABLED on the web app. Games keep serving and
+--      the odds tables are no longer read. Without step 2, quotes still disappear once 35 minutes old.
+-- Dropping the tables is a last resort, only after both steps, and loses the collected display rows
+-- (the S3 archive and raw.acquisition_requests remain the evidence).
+--
+-- Rollback (last resort; display odds only; scoreboard games, raw.acquisition_requests and S3 archives are untouched):
 -- begin;
 -- drop table if exists display.scoreboard_odds_state;
 -- drop table if exists display.scoreboard_game_odds;

@@ -236,20 +236,42 @@ describeDb('display odds on Postgres: guarded writes, no public access, rollback
     expect(n.rows[0].n).toBe(0);
   });
 
-  it('the odds attempt claim is atomic and follows the 15-minute / 5-minute cadence', async () => {
+  it('the odds attempt claim is atomic and follows the 14.5-minute / 4.5-minute cadence', async () => {
     const store = createPgScoreboardStore(pool);
     const claims = await Promise.all([store.claimOddsAttempt(T0), store.claimOddsAttempt(T0), store.claimOddsAttempt(T0)]);
     expect(claims.filter(Boolean)).toHaveLength(1);
-    expect(await store.claimOddsAttempt('2026-10-09T21:14:59.000Z')).toBe(false);
+    expect(await store.claimOddsAttempt('2026-10-09T21:01:00.000Z')).toBe(false);
+    expect(await store.claimOddsAttempt('2026-10-09T21:14:29.000Z')).toBe(false);
     await store.recordOddsOutcome(T0, { status: 'failed', error: 'HTTP 429' });
-    expect(await store.claimOddsAttempt('2026-10-09T21:04:59.000Z')).toBe(false);
-    expect(await store.claimOddsAttempt('2026-10-09T21:05:00.000Z')).toBe(true);
+    expect(await store.claimOddsAttempt('2026-10-09T21:01:00.000Z')).toBe(false);
+    expect(await store.claimOddsAttempt('2026-10-09T21:04:29.000Z')).toBe(false);
+    const retry = '2026-10-09T21:04:30.000Z';
+    expect(await store.claimOddsAttempt(retry)).toBe(true);
     await store.recordOddsOutcome(T0, { status: 'success', requestId: 'r1' });
-    await store.recordOddsOutcome('2026-10-09T21:05:00.000Z', { status: 'success', requestId: 'r2' });
+    await store.recordOddsOutcome(retry, { status: 'success', requestId: 'r2' });
     const s = await pool.query('select last_outcome, last_success_request_id, last_error from display.scoreboard_odds_state');
     expect(s.rows).toEqual([{ last_outcome: 'success', last_success_request_id: 'r2', last_error: null }]);
-    expect(await store.claimOddsAttempt('2026-10-09T21:19:59.000Z')).toBe(false);
-    expect(await store.claimOddsAttempt('2026-10-09T21:20:00.000Z')).toBe(true);
+    expect(await store.claimOddsAttempt('2026-10-09T21:18:59.000Z')).toBe(false);
+    expect(await store.claimOddsAttempt('2026-10-09T21:19:00.000Z')).toBe(true);
+  });
+
+  it('accepts whole- and half-point spreads and totals at the database level', async () => {
+    const store = createPgScoreboardStore(pool);
+    const cases: Array<Partial<StoredOddsQuote>> = [
+      { vendor: 'draftkings', spreadHome: -4, spreadAway: 4, total: 220 },
+      { vendor: 'fanduel', spreadHome: -4.5, spreadAway: 4.5, total: 220.5 },
+      { vendor: 'caesars', spreadHome: 0, spreadAway: 0, total: 100 },
+      { vendor: 'betmgm', moneylineHome: 100, moneylineAway: -100, spreadHome: 1, spreadAway: -1, total: 400 },
+    ];
+    await store.applyOddsAcquisition({ quotes: cases.map((c) => quote(T0, 'r1', c)), observedAt: T0, requestId: 'r1', withdrawGameIds: [] });
+    const rows = await store.loadCurrentOdds(['21826163']);
+    const byVendor = Object.fromEntries(rows.map((r) => [r.vendor, [r.spreadHome, r.spreadAway, r.total, r.moneylineHome]]));
+    expect(byVendor).toEqual({
+      betmgm: [1, -1, 400, 100],
+      caesars: [0, 0, 100, 200],
+      draftkings: [-4, 4, 220, 200],
+      fanduel: [-4.5, 4.5, 220.5, 200],
+    });
   });
 
   it('the documented rollback removes only the odds tables', async () => {

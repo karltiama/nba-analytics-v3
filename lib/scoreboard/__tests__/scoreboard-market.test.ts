@@ -223,29 +223,116 @@ describe('odds parsing: exact identity, field-level quarantine', () => {
   });
 });
 
-describe('per-market validation', () => {
-  it('rejects placeholder moneylines (+100/+100, -100/-100) and absurd books, independently of spread and total', () => {
-    for (const [home, away] of [
-      [100, 100],
-      [-100, -100],
-      [-500, -500],
-    ]) {
-      const m = checkMarkets(quote({ moneylineHome: home, moneylineAway: away }));
-      expect(m.moneyline, `${home}/${away}`).toBeNull();
-      expect(m.spread).not.toBeNull();
-      expect(m.total).not.toBeNull();
-    }
-    expect(checkMarkets(quote({ moneylineHome: -110, moneylineAway: -110 })).moneyline).toEqual({ home: -110, away: -110 });
+describe('American odds validation', () => {
+  const ml = (home: unknown, away: unknown, over: Partial<StoredOddsQuote> = {}) =>
+    checkMarkets(quote({ moneylineHome: home as number, moneylineAway: away as number, ...over })).moneyline;
+
+  it('accepts valid +100 sportsbook prices: +100 against a favorite, and a fair even-money pair', () => {
+    expect(ml(100, -120)).toEqual({ home: 100, away: -120 });
+    expect(ml(-120, 100)).toEqual({ home: -120, away: 100 });
+    expect(ml(100, -100, { spreadHome: -1, spreadAway: 1 })).toEqual({ home: 100, away: -100 });
+    expect(ml(100, 100, { spreadHome: 1.5, spreadAway: -1.5 })).toEqual({ home: 100, away: 100 });
+    const m = checkMarkets(quote({ spreadHomeOdds: 100, spreadAwayOdds: -120, totalOverOdds: -100, totalUnderOdds: 100 }));
+    expect(m.spread).toMatchObject({ home_odds: 100, away_odds: -120 });
+    expect(m.total).toMatchObject({ over_odds: -100, under_odds: 100 });
   });
 
-  it('a spread must be mirrored and must not favor the moneyline underdog', () => {
-    expect(checkMarkets(quote({ spreadHome: -2.5, spreadAway: 3.5 })).spread).toBeNull();
-    expect(checkMarkets(quote({ spreadHome: 2.5, spreadAway: -2.5 })).spread).toBeNull();
+  it('accepts valid opposing pairs from the audited capture', () => {
+    expect(ml(-135, 114)).toEqual({ home: -135, away: 114 });
+    expect(ml(200, -245, { spreadHome: 7.5, spreadAway: -7.5 })).toEqual({ home: 200, away: -245 });
+    expect(ml(-110, -110, { spreadHome: -1, spreadAway: 1 })).toEqual({ home: -110, away: -110 });
+  });
+
+  it('-100 and +100 are the same price: neither side is the favorite, so either spread side is allowed', () => {
+    for (const [sh, sa] of [
+      [-1.5, 1.5],
+      [1.5, -1.5],
+    ]) {
+      const m = checkMarkets(quote({ moneylineHome: -100, moneylineAway: 100, spreadHome: sh, spreadAway: sa }));
+      expect(m.moneyline, `${sh}`).not.toBeNull();
+      expect(m.spread, `${sh}`).not.toBeNull();
+    }
+  });
+
+  it('a dead-even moneyline that contradicts a large spread in its own row is dropped; the spread stays', () => {
+    const m = checkMarkets(quote({ moneylineHome: 100, moneylineAway: 100, spreadHome: -7.5, spreadAway: 7.5 }));
+    expect(m.moneyline).toBeNull();
+    expect(m.spread).toMatchObject({ home: -7.5, away: 7.5 });
+  });
+
+  it('prediction-market placeholder records never reach a card, whatever their prices', () => {
+    const game = { gameId: '5001', lifecycle: 'scheduled' as const, scheduledTip: TIP };
+    for (const vendor of ['kalshi', 'polymarket']) {
+      const placeholder = quote({ vendor, moneylineHome: 100, moneylineAway: 100, spreadHome: null, spreadAway: null, total: null });
+      const plausible = quote({ vendor });
+      expect(selectMarket({ game, now: NOW, quotes: [placeholder, plausible] })).toMatchObject({ status: 'unavailable', market: null });
+    }
+  });
+
+  it('missing one side blanks that market only', () => {
+    expect(ml(-135, null)).toBeNull();
+    expect(ml(null, 114)).toBeNull();
+    const m = checkMarkets(quote({ spreadAway: null, totalUnderOdds: null }));
+    expect(m.spread).toBeNull();
+    expect(m.total).toEqual({ line: 230.5, over_odds: null, under_odds: null });
+    expect(m.moneyline).not.toBeNull();
+  });
+
+  it('rejects an impossible or absurd overround', () => {
+    expect(ml(110, 110)).toBeNull();
+    expect(ml(105, -102)).toBeNull();
+    expect(ml(-500, -500)).toBeNull();
+    expect(ml(-300, -110)).toBeNull();
+  });
+
+  it('rejects null and malformed prices', () => {
+    for (const bad of [null, undefined, '', 'abc', '0x64', '1e2', 99, -99, 0, 110.5, '110.5', NaN, Infinity, 200_000, {}, []]) {
+      expect(ml(bad, 114), String(bad)).toBeNull();
+    }
+    expect(ml('-135', '+114')).toEqual({ home: -135, away: 114 });
+  });
+});
+
+describe('spread and total precision', () => {
+  const ctx = { eligibleGameIds: new Set(['5001']), observedAt: NOW.toISOString() };
+  const parse = (over: Record<string, unknown>) => normalizeOddsRows([{ rows: [oddsRow(over)], requestId: 'r' }], ctx).quotes[0];
+
+  it('accepts whole- and half-point spreads and totals, from numbers or numeric strings', () => {
+    for (const [home, away] of [
+      ['-4', '4'],
+      ['-4.5', '+4.5'],
+      [-4, 4],
+      [-4.5, 4.5],
+      ['-4.0', '4.0'],
+    ] as const) {
+      const q = parse({ spread_home_value: home, spread_away_value: away });
+      expect([q.spreadHome, q.spreadAway], `${home}/${away}`).toEqual([Number(home), Number(away)]);
+      expect(checkMarkets(q).spread, `${home}/${away}`).toMatchObject({ home: Number(home), away: Number(away) });
+    }
+    for (const total of ['220', '220.5', 220, 220.5, ' 220 ']) {
+      const q = parse({ total_value: total });
+      expect(checkMarkets(q).total?.line, String(total)).toBe(Number(String(total).trim()));
+    }
+  });
+
+  it('rejects an invalid spread orientation', () => {
+    expect(checkMarkets(quote({ spreadHome: -4, spreadAway: -4 })).spread).toBeNull();
+    expect(checkMarkets(quote({ spreadHome: -4, spreadAway: 4.5 })).spread).toBeNull();
+    expect(checkMarkets(quote({ spreadHome: 4, spreadAway: -4 })).spread).toBeNull();
     expect(checkMarkets(quote({ spreadHome: 0, spreadAway: 0 })).spread).toMatchObject({ home: 0, away: 0 });
   });
 
+  it('rejects non-numeric and off-grid lines', () => {
+    for (const bad of ['abc', '-4.25', '4,5', '0x4', '1e1', 'NaN', '', true]) {
+      expect(parse({ spread_home_value: bad }).spreadHome, String(bad)).toBeNull();
+    }
+    for (const bad of ['220.25', '99.5', '400.5', 'two-twenty']) {
+      expect(parse({ total_value: bad }).total, bad).toBeNull();
+    }
+  });
+
   it('a line survives without a valid price pair; the prices are dropped, not guessed', () => {
-    const m = checkMarkets(quote({ totalOverOdds: null, spreadHomeOdds: 100, spreadAwayOdds: 100 }));
+    const m = checkMarkets(quote({ totalOverOdds: null, spreadHomeOdds: 110, spreadAwayOdds: 110 }));
     expect(m.total).toEqual({ line: 230.5, over_odds: null, under_odds: null });
     expect(m.spread).toEqual({ home: -2.5, away: 2.5, home_odds: null, away_odds: null });
   });
@@ -317,8 +404,9 @@ describe('selectMarket: one vendor, freshness, identity', () => {
     expect(selectMarket({ game, now: NOW, quotes: [quote()], gameStale: true }).status).toBe('not_pregame');
   });
 
-  it('caption names the book and the provider sync age', () => {
+  it('caption names the book and the BDL sync age; without a sync time it states no age', () => {
     expect(marketSourceCaption(auditPregameMarket(), Date.parse('2026-10-09T23:41:00.000Z'))).toBe('DraftKings · BDL synced 3m ago');
+    expect(marketSourceCaption(auditPregameMarket({ provider_updated_at: null }), Date.parse('2026-10-09T23:41:00.000Z'))).toBe('DraftKings');
     expect(marketSourceCaption(null, 0)).toBeNull();
   });
 });
@@ -338,14 +426,15 @@ describe('odds gates and cadence', () => {
     }
   });
 
-  it('due every 15 minutes, 5 minutes after a failure', () => {
+  it('due on the 15th tick (14.5 min), 5th tick after a failure (4.5 min); never on consecutive ticks', () => {
     const s = (m: number, lastOutcome: 'success' | 'failed' | 'started') => ({ lastAttemptAt: new Date(NOW.getTime() - m * MIN).toISOString(), lastOutcome });
     expect(oddsDue(null, NOW)).toBe(true);
     expect(oddsDue(s(14, 'success'), NOW)).toBe(false);
-    expect(oddsDue(s(15, 'success'), NOW)).toBe(true);
+    expect(oddsDue(s(14.5, 'success'), NOW)).toBe(true);
     expect(oddsDue(s(4, 'failed'), NOW)).toBe(false);
-    expect(oddsDue(s(5, 'failed'), NOW)).toBe(true);
-    expect(oddsDue(s(10, 'started'), NOW)).toBe(false);
+    expect(oddsDue(s(4.5, 'failed'), NOW)).toBe(true);
+    expect(oddsDue(s(1, 'failed'), NOW)).toBe(false);
+    expect(oddsDue(s(14, 'started'), NOW)).toBe(false);
   });
 
   it('eligible: scheduled, before tip, today or tomorrow ET', () => {
@@ -491,6 +580,91 @@ describe('collector odds step', () => {
     expect((await store.loadCurrentOdds(['5001'])).map((q) => q.vendor)).toEqual(['fanduel']);
   });
 
+  it('two full slates (15 today + 15 tomorrow) are covered in one request; coverage is complete', async () => {
+    const games = [
+      ...Array.from({ length: 15 }, (_, i) => stored({ gameId: String(7000 + i), scheduledTip: at(i * MIN).toISOString() })),
+      ...Array.from({ length: 15 }, (_, i) =>
+        stored({ gameId: String(8000 + i), etDate: '2026-10-10', scheduledTip: at(24 * 60 * MIN + i * MIN).toISOString() })
+      ),
+    ];
+    const store = seededStore(games);
+    const f = fakeFetchers(() => ({ data: [] }));
+    const r = await runScoreboardCycle({ env: ODDS_ENV, store, fetch: f.fetch, now: NOW });
+    expect(r.odds).toMatchObject({ eligibleGames: 30, requestedGames: 30, skippedGames: [], coverage: 'complete' });
+    const url = oddsCalls(f.calls)[0];
+    for (const g of games) expect(url).toContain(`game_ids%5B%5D=${g.gameId}`);
+  });
+
+  it('over the cap: deterministic earliest-tip coverage, skipped ids and dates reported, coverage partial', async () => {
+    const games = Array.from({ length: 32 }, (_, i) =>
+      stored({
+        gameId: String(9000 + i),
+        etDate: i < 16 ? '2026-10-09' : '2026-10-10',
+        scheduledTip: at((i < 16 ? 0 : 24 * 60) * MIN + i * MIN).toISOString(),
+      })
+    );
+    const store = seededStore(games.slice().reverse());
+    const f = fakeFetchers(() => ({ data: [] }));
+    const r = await runScoreboardCycle({ env: ODDS_ENV, store, fetch: f.fetch, now: NOW });
+    expect(r.odds).toMatchObject({
+      status: 'success',
+      requestedGames: 30,
+      coverage: 'partial',
+      skippedGames: [
+        { gameId: '9030', etDate: '2026-10-10' },
+        { gameId: '9031', etDate: '2026-10-10' },
+      ],
+    });
+    expect(r.odds?.reason).toMatch(/2 eligible games over the per-request cap/);
+  });
+
+  it('a slow scores step leaves no time: odds are skipped before claiming, so the next tick may try', async () => {
+    const store = seededStore();
+    const f = fakeFetchers(() => ({ data: [oddsRow()] }));
+    let t = NOW.getTime();
+    const clock = () => {
+      const d = new Date(t);
+      t += 16_000;
+      return d;
+    };
+    const r = await runScoreboardCycle({ env: ODDS_ENV, store, fetch: f.fetch, now: NOW, clock });
+    expect(r.odds).toMatchObject({ status: 'skipped', reason: 'tick time budget spent by the scores step' });
+    expect(oddsCalls(f.calls)).toEqual([]);
+    expect(store.oddsState.current).toBeNull();
+  });
+
+  it('later pages stop at the page deadline: quotes read so far are kept, nothing is withdrawn, coverage partial', async () => {
+    const store = seededStore();
+    let t = NOW.getTime();
+    const clock = () => new Date(t);
+    const f = fakeFetchers(() => {
+      t += 16_000;
+      return { data: [oddsRow()], next_cursor: 5 };
+    });
+    const r = await runScoreboardCycle({ env: ODDS_ENV, store, fetch: f.fetch, now: NOW, clock });
+    expect(oddsCalls(f.calls)).toHaveLength(1);
+    expect(r.odds).toMatchObject({ status: 'success', truncated: true, coverage: 'partial', withdrawn: 0, written: 1 });
+    expect(r.odds?.reason).toMatch(/page deadline reached/);
+  });
+
+  it('normal scheduler timing never ages a healthy quote out of fresh (3 hours of 1-minute ticks with start jitter)', async () => {
+    const store = seededStore([stored({ scheduledTip: at(10 * MIN).toISOString() })]);
+    const base = at(-190 * MIN).getTime();
+    let nowMs = base;
+    const f = fakeFetchers(() => ({ data: [oddsRow({ updated_at: new Date(nowMs - 40_000).toISOString() })] }));
+    let requests = 0;
+    for (let tick = 0; tick < 180; tick += 1) {
+      const jitter = [4_000, 0, 2_500, 900, 3_200, 300, 1_700][tick % 7];
+      nowMs = base + tick * MIN + jitter;
+      const now = new Date(nowMs);
+      const r = await runScoreboardCycle({ env: ODDS_ENV, store, fetch: f.fetch, now, clock: () => now });
+      if (r.odds?.status === 'success') requests += 1;
+      const served = selectMarket({ game: stored({ scheduledTip: at(10 * MIN).toISOString() }), quotes: await store.loadCurrentOdds(['5001']), now });
+      expect(served.status, `tick ${tick}`).toBe('fresh');
+    }
+    expect(requests).toBe(12);
+  });
+
   it('a concurrent duplicate invocation makes no second odds request', async () => {
     const store = seededStore();
     const f = fakeFetchers(() => ({ data: [oddsRow()] }));
@@ -521,8 +695,58 @@ describe('memory store ordering mirrors the Postgres guard', () => {
 });
 
 describe('serving: optional market, graceful failure', () => {
-  const env = { SCOREBOARD_SERVING_ENABLED: '1' };
+  const env = { SCOREBOARD_SERVING_ENABLED: '1', SCOREBOARD_MARKETS_SERVING_ENABLED: '1' };
   const params = new URLSearchParams({ date: '2026-10-09' });
+
+  it('markets off (unset or not exactly "1"): games serve unchanged and the odds tables are not read', async () => {
+    const base = createMemoryScoreboardStore();
+    base.games.set('5001', stored());
+    await base.applyOddsAcquisition({ quotes: [quote()], observedAt: quote().observedAt, requestId: 'r', withdrawGameIds: [] });
+    let oddsReads = 0;
+    const store: ScoreboardStore = {
+      ...base,
+      loadCurrentOdds: async (ids) => {
+        oddsReads += 1;
+        return base.loadCurrentOdds(ids);
+      },
+    };
+    for (const flag of [undefined, '', '0', 'false', 'FALSE', 'true', ' yes ', '01', '1.0', 'enabled']) {
+      const res = await serveScoreboard({
+        env: { SCOREBOARD_SERVING_ENABLED: '1', SCOREBOARD_MARKETS_SERVING_ENABLED: flag },
+        params,
+        now: NOW,
+        store: () => store,
+      });
+      const body = res.body as { games: Array<Record<string, unknown>> };
+      expect(res.status, String(flag)).toBe(200);
+      expect(body.games).toHaveLength(1);
+      expect('market' in body.games[0], String(flag)).toBe(false);
+    }
+    expect(oddsReads).toBe(0);
+  });
+
+  it('a page visit only reads: no odds claim, write or provider call', async () => {
+    const base = createMemoryScoreboardStore();
+    base.games.set('5001', stored());
+    const writes: string[] = [];
+    const store: ScoreboardStore = {
+      ...base,
+      claimOddsAttempt: async (at) => {
+        writes.push('claim');
+        return base.claimOddsAttempt(at);
+      },
+      recordOddsOutcome: async () => {
+        writes.push('outcome');
+      },
+      applyOddsAcquisition: async () => {
+        writes.push('apply');
+        return { written: 0, withdrawn: 0 };
+      },
+    };
+    const res = await serveScoreboard({ env, params, now: NOW, store: () => store });
+    expect(res.status).toBe(200);
+    expect(writes).toEqual([]);
+  });
 
   it('attaches one verified market to a scheduled game and nothing to a live game', async () => {
     const store = createMemoryScoreboardStore();
@@ -537,6 +761,38 @@ describe('serving: optional market, graceful failure', () => {
     expect(sched.model_eligible).toBe(false);
     expect(body.games.find((g) => g.game_id === '6001')!.market).toBeUndefined();
     expect(res.headers['Cache-Control']).toBe('public, s-maxage=15, stale-while-revalidate=15');
+  });
+
+  it('final and postponed games never carry a stored pregame quote', async () => {
+    const store = createMemoryScoreboardStore();
+    store.games.set('5001', stored());
+    store.games.set('7001', stored({ gameId: '7001', lifecycle: 'final', pollingState: 'complete' }));
+    store.games.set('7002', stored({ gameId: '7002', lifecycle: 'postponed', pollingState: 'active' }));
+    await store.applyOddsAcquisition({
+      quotes: [quote(), quote({ gameId: '7001' }), quote({ gameId: '7002' })],
+      observedAt: quote().observedAt,
+      requestId: 'r',
+      withdrawGameIds: [],
+    });
+    const res = await serveScoreboard({ env, params, now: NOW, store: () => store });
+    const body = res.body as { games: Array<{ game_id: string; market?: unknown }> };
+    expect(body.games.find((g) => g.game_id === '5001')!.market).toBeDefined();
+    expect('market' in body.games.find((g) => g.game_id === '7001')!).toBe(false);
+    expect('market' in body.games.find((g) => g.game_id === '7002')!).toBe(false);
+  });
+
+  it('lifecycle freshness gates the quote: a healthy 2 h-old discovery shows it; a missed discovery hides it', async () => {
+    const serveWith = async (observedAgoMin: number) => {
+      const store = createMemoryScoreboardStore();
+      store.games.set('5001', stored({ lastObservedAt: new Date(NOW.getTime() - observedAgoMin * MIN).toISOString() }));
+      await store.applyOddsAcquisition({ quotes: [quote()], observedAt: quote().observedAt, requestId: 'r', withdrawGameIds: [] });
+      const res = await serveScoreboard({ env, params, now: NOW, store: () => store });
+      return (res.body as { games: Array<{ stale: boolean; market?: unknown }> }).games[0];
+    };
+    expect(await serveWith(120)).toMatchObject({ stale: false, market: { vendor: 'draftkings', freshness: 'fresh' } });
+    const missed = await serveWith(3 * 60 + 11);
+    expect(missed.stale).toBe(true);
+    expect('market' in missed).toBe(false);
   });
 
   it('an odds read failure (for example an unapplied migration) keeps the games and omits markets', async () => {
@@ -608,7 +864,8 @@ describe('card data and rendering', () => {
       auditPregameMarket({ vendor: 'kalshi', vendor_label: 'Kalshi' }),
       auditPregameMarket({ kind: 'opening' as never }),
       auditPregameMarket({ freshness: 'stale' as never }),
-      auditPregameMarket({ moneyline: { home: 100, away: 100 }, spread: { home: 7, away: 7, home_odds: null, away_odds: null }, total: null }),
+      auditPregameMarket({ moneyline: { home: 110, away: 110 }, spread: { home: 7, away: 7, home_odds: null, away_odds: null }, total: null }),
+      auditPregameMarket({ moneyline: { home: '-245x' as never, away: 200 }, spread: null, total: { line: 223.25, over_odds: null, under_odds: null } }),
     ];
     for (const market of bad) expect(presentMarket(auditPregameGame({ market }), GENERATED)).toBeNull();
     expect(presentMarket(auditPregameGame({ stale: true, stale_reason: 'no_recent_observation' }), GENERATED)).toBeNull();

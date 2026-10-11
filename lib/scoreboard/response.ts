@@ -11,20 +11,41 @@ import {
 } from './contract';
 import { selectMarket } from './market';
 import { IN_GAME } from './normalize';
+import { SCOREBOARD_POLICY } from './planner';
 
 /** In-game observation older than this is stale (collector targets 60 s). */
 export const SCOREBOARD_LIVE_STALE_MS = 120_000;
-/** Any not-yet-complete game not observed for this long is stale. */
+/** Any not-yet-complete game not observed for this long is stale, unless a rule below applies. */
 export const SCOREBOARD_IDLE_STALE_MS = 30 * 60_000;
+/**
+ * A scheduled game before its tip window is only rediscovered every DISCOVERY_INTERVAL_MS (a failed
+ * games request retries on the next tick). Older than that plus this slack means a missed discovery.
+ */
+export const SCOREBOARD_DISCOVERY_STALE_SLACK_MS = 10 * 60_000;
+/** Once the tip window opens the collector observes the game on its next tick; allow this long. */
+export const SCOREBOARD_TIP_WINDOW_GRACE_MS = 5 * 60_000;
+
+const NO_RECENT = { stale: true, reason: 'no_recent_observation' } as const;
 
 export function staleness(g: StoredScoreboardGame, now: Date): { stale: boolean; reason: string | null } {
   if (g.pollingState === 'safety_stopped') return { stale: true, reason: 'polling_safety_stopped' };
   if (g.pollingState === 'complete') return { stale: false, reason: null };
-  const age = now.getTime() - Date.parse(g.lastObservedAt);
-  if ((IN_GAME.has(g.lifecycle) || g.lifecycle === 'unknown') && age > SCOREBOARD_LIVE_STALE_MS) {
-    return { stale: true, reason: 'no_recent_observation' };
+  const t = now.getTime();
+  const observed = Date.parse(g.lastObservedAt);
+  if (!Number.isFinite(observed)) return NO_RECENT;
+  const age = t - observed;
+  if ((IN_GAME.has(g.lifecycle) || g.lifecycle === 'unknown') && age > SCOREBOARD_LIVE_STALE_MS) return NO_RECENT;
+  const tip = g.scheduledTip ? Date.parse(g.scheduledTip) : NaN;
+  if (g.lifecycle === 'scheduled' && Number.isFinite(tip)) {
+    const windowOpens = tip - SCOREBOARD_POLICY.PRE_TIP_WINDOW_MS;
+    if (observed < windowOpens) {
+      if (t >= windowOpens + SCOREBOARD_TIP_WINDOW_GRACE_MS) return NO_RECENT;
+      return age > SCOREBOARD_POLICY.DISCOVERY_INTERVAL_MS + SCOREBOARD_DISCOVERY_STALE_SLACK_MS
+        ? NO_RECENT
+        : { stale: false, reason: null };
+    }
   }
-  if (age > SCOREBOARD_IDLE_STALE_MS) return { stale: true, reason: 'no_recent_observation' };
+  if (age > SCOREBOARD_IDLE_STALE_MS) return NO_RECENT;
   return { stale: false, reason: null };
 }
 

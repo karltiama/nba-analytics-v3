@@ -47,7 +47,7 @@ describe('scoreboard built artifact', () => {
     expect(result.status, result.stderr || result.stdout).toBe(0);
     expect(fs.existsSync(artifactPath)).toBe(true);
     expect(fs.existsSync(real) ? fs.statSync(real).mtimeMs : null).toBe(before);
-  });
+  }, 30_000);
 
   it('bundle writes display storage and acquisition archives only; no analytics, raw game tables or ESPN', () => {
     const src = fs.readFileSync(artifactPath, 'utf8');

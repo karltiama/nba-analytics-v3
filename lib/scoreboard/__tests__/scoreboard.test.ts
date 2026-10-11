@@ -19,6 +19,12 @@ import {
   planScoreboardTick,
   SCOREBOARD_POLICY,
 } from '@/lib/scoreboard/planner';
+import {
+  SCOREBOARD_DISCOVERY_STALE_SLACK_MS,
+  SCOREBOARD_LIVE_STALE_MS,
+  SCOREBOARD_TIP_WINDOW_GRACE_MS,
+  staleness,
+} from '@/lib/scoreboard/response';
 import { serveScoreboard } from '@/lib/scoreboard/serve';
 import { createMemoryScoreboardStore, createPgScoreboardStore } from '@/lib/scoreboard/store';
 
@@ -629,5 +635,102 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
     const src = read('lib/games/status-sync-query.ts');
     expect(src).toContain("new Set(['regular', 'playin', 'playoffs'])");
     expect(src).not.toMatch(/PRESEASON_DISCOVERY/);
+  });
+});
+
+describe('staleness follows the collector policy (scheduled, live, terminal)', () => {
+  const H = 60 * MIN;
+  const DISCOVERY = SCOREBOARD_POLICY.DISCOVERY_INTERVAL_MS;
+  const WINDOW = SCOREBOARD_POLICY.PRE_TIP_WINDOW_MS;
+  const sched = (nowMs: number, observedAgoMs: number, over: Partial<StoredScoreboardGame> = {}) =>
+    staleness(stored({ lastObservedAt: at(nowMs - observedAgoMs).toISOString(), ...over }), at(nowMs));
+
+  it('scheduled before the tip window: fresh for the whole 3 h discovery interval plus slack', () => {
+    const now = -5 * H;
+    for (const ago of [0, 30 * MIN, 60 * MIN, 2 * H, DISCOVERY, DISCOVERY + SCOREBOARD_DISCOVERY_STALE_SLACK_MS]) {
+      expect(sched(now, ago), `${ago / MIN} min`).toEqual({ stale: false, reason: null });
+    }
+    expect(sched(now, DISCOVERY + SCOREBOARD_DISCOVERY_STALE_SLACK_MS + 1)).toEqual({ stale: true, reason: 'no_recent_observation' });
+    expect(sched(now, 5 * H).stale).toBe(true);
+  });
+
+  it('tip window: a pre-window observation is held for the grace period, then must be replaced', () => {
+    const opened = -WINDOW;
+    expect(sched(opened, 2 * H).stale).toBe(false);
+    expect(sched(opened + SCOREBOARD_TIP_WINDOW_GRACE_MS - 1, 2 * H).stale).toBe(false);
+    expect(sched(opened + SCOREBOARD_TIP_WINDOW_GRACE_MS, 2 * H).stale).toBe(true);
+    expect(sched(opened + SCOREBOARD_TIP_WINDOW_GRACE_MS, SCOREBOARD_TIP_WINDOW_GRACE_MS - MIN).stale).toBe(false);
+    expect(sched(-MIN, 4 * MIN, { pollingState: 'active' }).stale).toBe(false);
+  });
+
+  it('listed tip passed but the provider still says scheduled: fresh while delayed polling continues, stale when it stops', () => {
+    expect(sched(20 * MIN, 2 * MIN, { pollingState: 'active' }).stale).toBe(false);
+    expect(sched(3 * H, 5 * MIN, { pollingState: 'active' }).stale).toBe(false);
+    expect(sched(3 * H, 31 * MIN, { pollingState: 'active' }).stale).toBe(true);
+    expect(sched(3 * MIN, 1 * MIN, { pollingState: 'active' })).toEqual({ stale: false, reason: null });
+  });
+
+  it('a scheduled game with no tip time keeps the 30-minute rule', () => {
+    expect(sched(0, 29 * MIN, { scheduledTip: null }).stale).toBe(false);
+    expect(sched(0, 31 * MIN, { scheduledTip: null }).stale).toBe(true);
+  });
+
+  it('live, halftime and overtime keep the 2-minute rule, whether or not the score changed', () => {
+    for (const lifecycle of ['live', 'halftime', 'overtime'] as const) {
+      const unchanged = { lifecycle, pollingState: 'active' as const, lastChangedAt: at(10 * MIN).toISOString() };
+      expect(sched(60 * MIN, MIN, unchanged).stale, lifecycle).toBe(false);
+      expect(sched(60 * MIN, SCOREBOARD_LIVE_STALE_MS, unchanged).stale, lifecycle).toBe(false);
+      expect(sched(60 * MIN, SCOREBOARD_LIVE_STALE_MS + 1, unchanged), lifecycle).toEqual({ stale: true, reason: 'no_recent_observation' });
+    }
+    expect(sched(10 * MIN, 3 * MIN, { lifecycle: 'unknown', pollingState: 'active' }).stale).toBe(true);
+  });
+
+  it('safety-stopped is always stale; complete is never stale; unconfirmed terminal states keep the 30-minute rule', () => {
+    expect(sched(0, 0, { lifecycle: 'live', pollingState: 'safety_stopped' })).toEqual({ stale: true, reason: 'polling_safety_stopped' });
+    expect(sched(-5 * H, 0, { pollingState: 'safety_stopped' }).stale).toBe(true);
+    expect(sched(20 * H, 10 * H, { lifecycle: 'final', pollingState: 'complete' }).stale).toBe(false);
+    expect(sched(3 * H, 10 * MIN, { lifecycle: 'final', pollingState: 'active' }).stale).toBe(false);
+    expect(sched(3 * H, 31 * MIN, { lifecycle: 'postponed', pollingState: 'active' }).stale).toBe(true);
+  });
+
+  it('an unreadable observation time is stale', () => {
+    expect(sched(-5 * H, 0, { lastObservedAt: 'not-a-time' }).stale).toBe(true);
+  });
+
+  it('timestamps are absolute: a pregame interval across the DST change (2026-11-01 ET) is judged in elapsed time', () => {
+    const tip = '2026-11-02T00:00:00.000Z';
+    const g = stored({ etDate: '2026-11-01', scheduledTip: tip, lastObservedAt: '2026-11-01T04:30:00.000Z' });
+    expect(staleness(g, new Date('2026-11-01T07:30:00.000Z')).stale).toBe(false);
+    expect(staleness(g, new Date('2026-11-01T07:40:00.000Z')).stale).toBe(false);
+    expect(staleness(g, new Date('2026-11-01T07:40:00.001Z')).stale).toBe(true);
+  });
+
+  it('driving the real planner minute by minute, a healthy pending game is never shown stale before tip', () => {
+    let game = stored({ lastObservedAt: at(-8 * H).toISOString(), pollingState: 'pending' });
+    let lastGamesRequestAt = at(-8 * H).toISOString();
+    let requests = 0;
+    for (let m = -8 * 60 + 1; m < 0; m += 1) {
+      const now = at(m * MIN);
+      const plan = planScoreboardTick({ now, games: [game], lastGamesRequestAt });
+      if (plan.gamesRequest) {
+        requests += 1;
+        game = { ...game, lastObservedAt: now.toISOString() };
+        game = { ...game, pollingState: nextPollingState(game, now) };
+        lastGamesRequestAt = now.toISOString();
+      }
+      for (const offset of [0, 30_000, 59_999]) {
+        const s = staleness(game, new Date(now.getTime() + offset));
+        expect(s.stale, `T${m} min +${offset} ms (${plan.reason})`).toBe(false);
+      }
+    }
+    // 2 discoveries before the window, then about one request per minute for the last 15 minutes.
+    expect(requests).toBeGreaterThanOrEqual(2 + 14);
+    expect(requests).toBeLessThanOrEqual(2 + 16);
+  });
+
+  it('the same game whose discovery fails is shown stale only after the interval plus slack', () => {
+    const game = stored({ lastObservedAt: at(-8 * H).toISOString(), pollingState: 'pending' });
+    const firstStale = [...Array(8 * 60).keys()].map((i) => -8 * H + i * MIN).find((ms) => staleness(game, at(ms)).stale);
+    expect(firstStale).toBe(-8 * H + DISCOVERY + SCOREBOARD_DISCOVERY_STALE_SLACK_MS + MIN);
   });
 });

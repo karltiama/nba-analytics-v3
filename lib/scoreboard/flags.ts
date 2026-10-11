@@ -83,6 +83,16 @@ export function resolveScoreboardOddsCollection(
   return { enabled: true, seasonTypes: [...collection.seasonTypes], reason: null };
 }
 
+export const SCOREBOARD_MARKETS_SERVING_ENV = 'SCOREBOARD_MARKETS_SERVING_ENABLED';
+
+/**
+ * Optional `market` on served games. Off (unset or not '1') serves games exactly as before and does
+ * not read the odds tables, so markets can be hidden without touching collected records.
+ */
+export function isScoreboardMarketServingEnabled(env: Env): boolean {
+  return (env[SCOREBOARD_MARKETS_SERVING_ENV] ?? '').trim() === '1';
+}
+
 export function isScoreboardServingEnabled(env: Env): { enabled: boolean; reason: string | null } {
   const raw = env[SCOREBOARD_SERVING_ENV];
   if (raw === undefined || raw.trim() === '') return { enabled: false, reason: 'serving_disabled' };

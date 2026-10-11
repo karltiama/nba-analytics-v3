@@ -72,6 +72,10 @@ export type ScoreboardOddsResult = {
   rejected: number;
   quarantinedFields: number;
   vendors: string[];
+  /** complete: every eligible game requested and every page read. Otherwise partial; never claimed complete. */
+  coverage: 'none' | 'complete' | 'partial';
+  /** Eligible games left out by the per-request cap (latest tips first to go). */
+  skippedGames: Array<{ gameId: string; etDate: string }>;
 };
 
 export type ScoreboardSeasonTypeResult = {
@@ -120,6 +124,7 @@ export async function runScoreboardCycle(input: {
   const now = input.now ?? new Date();
   const clock = input.clock ?? (() => new Date());
   const newId = input.newId ?? randomUUID;
+  const tickStartMs = clock().getTime();
   const decision = resolveScoreboardCollection(input.env);
   const seasonTypes: ScoreboardSeasonTypeResult[] = [];
   let bdlRequests = 0;
@@ -305,6 +310,7 @@ export async function runScoreboardCycle(input: {
           now,
           clock,
           newId,
+          tickStartMs,
           countRequests: (n) => {
             bdlRequests += n;
           },
@@ -337,6 +343,8 @@ function emptyOddsResult(status: ScoreboardOddsResult['status'], reason: string 
     rejected: 0,
     quarantinedFields: 0,
     vendors: [],
+    coverage: 'none',
+    skippedGames: [],
   };
 }
 
@@ -353,6 +361,7 @@ async function collectOdds(args: {
   now: Date;
   clock: () => Date;
   newId: () => string;
+  tickStartMs: number;
   countRequests: (n: number) => void;
 }): Promise<ScoreboardOddsResult> {
   const { store, now } = args;
@@ -367,7 +376,11 @@ async function collectOdds(args: {
     ...emptyOddsResult('not_due', null),
     eligibleGames: eligible.length,
     requestedGames: requested.length,
+    skippedGames: eligible.slice(requested.length).map((g) => ({ gameId: g.gameId, etDate: g.etDate })),
   };
+  if (args.clock().getTime() - args.tickStartMs > SCOREBOARD_ODDS_POLICY.PAGE_START_DEADLINE_MS) {
+    return { ...result, status: 'skipped', reason: 'tick time budget spent by the scores step' };
+  }
 
   const attemptAt = now.toISOString();
   if (!(await store.claimOddsAttempt(attemptAt))) return result;
@@ -381,7 +394,12 @@ async function collectOdds(args: {
   const pullRunId = args.newId();
   const pages: Array<{ rows: unknown[]; requestId: string }> = [];
   let cursor: number | null = null;
+  let deadlineHit = false;
   for (let pageIndex = 0; pageIndex < SCOREBOARD_ODDS_POLICY.MAX_PAGES; pageIndex += 1) {
+    if (pageIndex > 0 && args.clock().getTime() - args.tickStartMs > SCOREBOARD_ODDS_POLICY.PAGE_START_DEADLINE_MS) {
+      deadlineHit = true;
+      break;
+    }
     const page = await args.fetch(scoreboardOddsUrl(gameIds, cursor), {
       plan: {
         targetSeason: args.targetSeason,
@@ -427,5 +445,14 @@ async function collectOdds(args: {
   result.written = write.written;
   result.withdrawn = write.withdrawn;
   await store.recordOddsOutcome(attemptAt, { status: 'success', requestId: lastRequestId });
-  return { ...result, status: 'success', reason: result.truncated ? 'odds pages truncated' : null };
+  const partialReasons = [
+    result.skippedGames.length > 0 ? `${result.skippedGames.length} eligible games over the per-request cap` : null,
+    deadlineHit ? 'page deadline reached' : result.truncated ? 'odds pages truncated' : null,
+  ].filter((r): r is string => r != null);
+  return {
+    ...result,
+    status: 'success',
+    coverage: partialReasons.length > 0 ? 'partial' : 'complete',
+    reason: partialReasons.length > 0 ? partialReasons.join('; ') : null,
+  };
 }
