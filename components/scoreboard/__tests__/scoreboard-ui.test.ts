@@ -144,11 +144,21 @@ describe('Pre-game card keeps the original market layout', () => {
       expect(html).not.toContain('FAV');
       expect(html.match(/<span class="type-secondary">—<\/span>/g)).toHaveLength(2);
       expect(html).toContain('No verified matchup context for this game yet.');
-      expectUnavailableFooter(html, ['View matchup', 'View props']);
+      expect(html).toContain(`href="/scoreboard/games/${game.id}?date=2026-10-09"`);
+      expect(html).toContain('data-scoreboard-matchup');
+      expect(html).toContain('>View matchup</span>');
+      expect(html.match(/aria-disabled="true"/g)).toHaveLength(1);
+      expect(html).toContain('>View props</span>');
+      expect(html).not.toContain('props-explorer');
+      expect(html).not.toContain('/betting/games/');
     }
     expect(cardHtml(merged[0]!, 'scoreboard')).toContain('>NBA · Preseason<');
     expect(cardHtml(merged[1]!, 'scoreboard')).toContain('>NBA · Regular season<');
-    const strip = (html: string) => html.replace(/data-(game-id|season-type)="[^"]*"/g, '').replace(/NBA · (Preseason|Regular season)/, '');
+    const strip = (html: string) =>
+      html
+        .replace(/data-(game-id|season-type)="[^"]*"/g, '')
+        .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
+        .replace(/NBA · (Preseason|Regular season)/, '');
     expect(strip(cardHtml(merged[0]!, 'scoreboard'))).toBe(strip(cardHtml(merged[1]!, 'scoreboard')));
   });
 
@@ -433,9 +443,17 @@ describe('Lifecycle parity', () => {
 
   it('uses the same structure for every season type in every lifecycle', () => {
     const shell = (html: string) =>
-      html.replace(/data-game-id="[^"]*"/g, '').replace(/data-season-type="[^"]*"/g, '').replace(/>([^<]*)</g, '><');
+      html
+        .replace(/data-game-id="[^"]*"/g, '')
+        .replace(/data-season-type="[^"]*"/g, '')
+        .replace(/href="[^"]*"/g, '')
+        .replace(/>([^<]*)</g, '><');
     const label = (html: string) =>
-      html.replace(/data-game-id="[^"]*"/g, '').replace(/data-season-type="[^"]*"/g, '').replace(/NBA · (Preseason|Regular season|Play-in|Playoffs)/g, '');
+      html
+        .replace(/data-game-id="[^"]*"/g, '')
+        .replace(/data-season-type="[^"]*"/g, '')
+        .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
+        .replace(/NBA · (Preseason|Regular season|Play-in|Playoffs)/g, '');
     const players = [
       line({ playerId: '1', teamId: '28', name: 'RJ Barrett', pts: 21, reb: 4, ast: 3 }),
       line({ playerId: '2', teamId: '13', name: 'James Harden', pts: 19, reb: 5, ast: 9 }),

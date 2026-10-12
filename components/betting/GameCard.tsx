@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Clock, TrendingUp, ChevronRight, ListFilter } from 'lucide-react';
 import { gameDetailHref, propsExplorerHref } from '@/lib/betting/research-journey';
+import { scoreboardMatchupHref } from '@/lib/pregame-matchup/href';
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MarketProbability } from '@/components/betting/MarketProbability';
@@ -310,6 +311,10 @@ export function GameCard({
       ? (inPlayContext && inPlayContext.kind !== 'insight' ? inPlayContext.text : 'More game context will appear as stats develop.')
       : 'No verified matchup context for this game yet.';
   const research = scoreboardPresentation ? game.researchAvailable === true && !samplePreview : true;
+  const pregameMatchupHref =
+    scoreboardPresentation && !samplePreview && !research && phase === 'pregame'
+      ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
+      : null;
 
   return (
     <div
@@ -565,6 +570,12 @@ export function GameCard({
                 <span className="type-interactive text-white">
                   {phase === 'live' ? 'Follow live' : phase === 'final' ? 'Game recap' : 'View matchup'}
                 </span>
+                <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            ) : pregameMatchupHref ? (
+              <Link href={pregameMatchupHref} className={PRIMARY_ACTION} data-scoreboard-matchup>
+                <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
+                <span className="type-interactive text-white">View matchup</span>
                 <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             ) : (

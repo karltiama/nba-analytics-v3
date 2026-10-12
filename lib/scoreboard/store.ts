@@ -28,6 +28,8 @@ export type OddsAcquisitionWrite = {
 export type ScoreboardStore = {
   loadGames(seasonType: ScoreboardSeasonType, startDate: string, endDate: string): Promise<StoredScoreboardGame[]>;
   loadGamesForDate(etDate: string, seasonType?: ScoreboardSeasonType): Promise<StoredScoreboardGame[]>;
+  /** One display.scoreboard_games row by provider game id, or null. */
+  loadGameById(gameId: string): Promise<StoredScoreboardGame | null>;
   loadLastGamesRequestAt(seasonType: ScoreboardSeasonType): Promise<string | null>;
   recordGamesRequest(seasonType: ScoreboardSeasonType, at: string, requestId: string): Promise<void>;
   /** Writes each row only when its collection time is at least the stored one. Returns how many applied. */
@@ -138,6 +140,9 @@ export function createMemoryScoreboardStore(): ScoreboardStore & {
     },
     async loadGamesForDate(etDate, seasonType) {
       return [...games.values()].filter((g) => g.etDate === etDate && (!seasonType || g.seasonType === seasonType));
+    },
+    async loadGameById(gameId) {
+      return games.get(gameId) ?? null;
     },
     async loadLastGamesRequestAt(seasonType) {
       return gamesRequests.get(seasonType)?.at ?? null;
@@ -458,6 +463,10 @@ export function createPgScoreboardStore(db: Queryable): ScoreboardStore {
           ])
         : await db.query(`${SELECT_GAMES} WHERE et_date = $1::date ORDER BY scheduled_tip, game_id`, [etDate]);
       return res.rows.map(rowToGame);
+    },
+    async loadGameById(gameId) {
+      const res = await db.query(`${SELECT_GAMES} WHERE game_id = $1`, [gameId]);
+      return res.rows[0] ? rowToGame(res.rows[0]) : null;
     },
     async loadLastGamesRequestAt(seasonType) {
       const res = await db.query(

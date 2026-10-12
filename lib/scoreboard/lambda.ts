@@ -113,6 +113,7 @@ export async function runLambdaScoreboard(deps: ScoreboardLambdaDeps = {}): Prom
 const NO_STORE: ScoreboardStore = {
   loadGames: async () => [],
   loadGamesForDate: async () => [],
+  loadGameById: async () => null,
   loadLastGamesRequestAt: async () => null,
   recordGamesRequest: async () => undefined,
   upsertGames: async () => 0,

@@ -580,6 +580,13 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
     for (const f of others) {
       const src = read(f);
       expect(src, f).not.toMatch(/display\.scoreboard_/);
+      if (f === 'lib/pregame-matchup/load.ts' || f === 'lib/pregame-matchup/quote.ts') {
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|lambda|normalize|planner)\b/);
+        expect(src, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center)/);
+        continue;
+      }
       if (f === 'app/dashboard/page.tsx') {
         for (const imp of src.matchAll(/@\/lib\/scoreboard\/[A-Za-z0-9_-]+/g)) {
           expect(imp[0], f).toMatch(presentationImport);

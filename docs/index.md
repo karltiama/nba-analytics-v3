@@ -19,6 +19,7 @@ Agent entrypoint: [../AGENTS.md](../AGENTS.md). Map of code and schemas: [archit
 - [Free / Pro entitlement policy](./product/free-pro-entitlement-policy.md)
 - [Roster canonical identity](./roster-canonical-identity-design.md)
 - [Roster snapshot semantics](./roster-snapshot-semantics.md)
+- [BallDontLie roster observations](./roster-bdl-observations.md)
 - [Projection ledger activation runbook](./projection-ledger-activation-runbook.md)
 - [Player-prop observation clock recovery](./player-prop-observation-clock-runbook.md)
 - [Game-status-sync activation runbook](./status-sync-activation-runbook.md)
