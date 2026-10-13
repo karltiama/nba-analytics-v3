@@ -37,6 +37,8 @@ import {
   isHistoricalFinalView,
 } from '@/lib/betting/historical-final';
 import { displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
+import { ResearchMatchupOverview } from '@/components/matchup/ResearchMatchupOverview';
+import type { ResearchHistoricalOverview } from '@/lib/pregame-matchup/research-overview';
 import { formatNbaSeasonLabel } from '@/lib/season';
 import { playerResearchHref, propsExplorerHref, slateHref } from '@/lib/betting/research-journey';
 import { FoundingProUpgradeLink } from '@/components/betting/FoundingProUpgradeLink';
@@ -572,11 +574,13 @@ function MarketSentimentPanel({
   );
 }
 
-const SECTION_IDS = ['section-ai-projection', 'section-odds', 'section-matchup', 'section-players', 'section-injuries'] as const;
+const SECTION_IDS = ['section-overview', 'section-matchup', 'section-odds', 'section-injuries'] as const;
 const SECTION_LABELS: Record<string, string> = {
+  'section-overview': 'Overview',
+  'section-historical-overview': 'Overview',
   'section-ai-projection': 'AI Matchup Summary',
-  'section-odds': 'Odds & sentiment',
-  'section-matchup': 'Matchup',
+  'section-odds': 'Markets & Props',
+  'section-matchup': 'Teams & Players',
   'section-players': 'Players',
   'section-injuries': 'Injuries',
   'section-box': 'Box score',
@@ -585,7 +589,13 @@ const SECTION_LABELS: Record<string, string> = {
   'section-timeline': 'Timeline',
 };
 
-export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
+export function MatchupPageLayout({
+  data,
+  historicalOverview = null,
+}: {
+  data: GameDetailsData;
+  historicalOverview?: ResearchHistoricalOverview | null;
+}) {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<string>(SECTION_IDS[0]);
   const [aiSummaryText, setAiSummaryText] = useState<string | null>(null);
@@ -981,7 +991,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
       </div>
 
       <div className="mt-4 flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
-        <div className="flex-1 min-w-0 space-y-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-4">
         {isFinalView ? (
         <>
         {showStartingFive && starters ? (
@@ -1022,6 +1032,10 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
         </>
         ) : null}
         {!isFinalView ? (
+        <section id="section-overview" className="order-1 scroll-mt-[10rem] space-y-4">
+        {!isFinalView && historicalOverview ? (
+          <ResearchMatchupOverview overview={historicalOverview} />
+        ) : null}
         <section id="section-ai-projection" className="scroll-mt-[10rem]">
           <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-1.5">
@@ -1079,76 +1093,6 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             {aiSummaryStatus === 'error' && (
               <p className="type-body mt-3 text-amber-800">Could not load AI summary. Try again later.</p>
             )}
-            {injuryMatchupContext?.entries?.length ? (
-              <div className="mt-4 pt-4 border-t border-[#DCE9EA] space-y-3">
-                <p className="type-secondary">
-                  Out / doubtful — players to watch (splits)
-                </p>
-                <p className="type-body text-cc-secondary">
-                  From season box scores: teammate PTS when listed players had minutes vs no minutes. Descriptive only—not a projection; tiny samples can mislead.
-                </p>
-                <details className="group rounded-lg border border-[#DCE9EA] bg-[#F8FBFA]">
-                  <summary className="type-interactive flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-cc-secondary hover:text-[#063f46] [&::-webkit-details-marker]:hidden">
-                    <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform group-open:rotate-180" />
-                    Underlying numbers
-                  </summary>
-                  <div className="px-3 pb-3 pt-0 space-y-3 border-t border-[#DCE9EA]">
-                    {injuryMatchupContext?.entries.map((entry) => {
-                      const teamLabel =
-                        entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
-                      return (
-                        <div key={entry.player_id} className="border border-[#DCE9EA] rounded-lg p-2.5 bg-[#F8FBFA]">
-                          <div className="flex flex-wrap items-baseline gap-2 mb-2">
-                            <span className="type-secondary text-[#063f46]">{entry.full_name}</span>
-                            <span className="type-metadata">{teamLabel}</span>
-                            <span className="type-metadata">
-                              With minutes {entry.games_played_sample} · No minutes {entry.games_missed_sample} team games
-                            </span>
-                            {entry.low_sample && (
-                              <span className="type-badge text-amber-800">Low sample</span>
-                            )}
-                          </div>
-                          {entry.teammates.length === 0 ? (
-                            <p className="type-secondary">No teammate split data.</p>
-                          ) : (
-                            <div className="overflow-x-auto">
-                              <table className="w-full text-left">
-                                <thead className="type-metadata">
-                                  <tr className="text-[#4a6366] border-b border-[#DCE9EA]">
-                                    <th className="py-1 pr-2 font-normal">Teammate</th>
-                                    <th className="py-1 px-1 font-normal">PTS (with)</th>
-                                    <th className="py-1 px-1 font-normal">PTS (out)</th>
-                                    <th className="py-1 px-1 font-normal">Δ</th>
-                                    <th className="py-1 pl-1 font-normal text-right">n</th>
-                                  </tr>
-                                </thead>
-                                <tbody className="type-table-data">
-                                  {entry.teammates.map((t) => (
-                                    <tr key={t.player_id} className="border-b border-[#DCE9EA] text-[#063f46]">
-                                      <td className="py-1 pr-2 truncate max-w-[140px]" title={t.full_name}>
-                                        {t.full_name}
-                                      </td>
-                                      <td className="py-1 px-1">{t.avg_pts_with ?? '—'}</td>
-                                      <td className="py-1 px-1">{t.avg_pts_without ?? '—'}</td>
-                                      <td className={`whitespace-nowrap py-1 px-1 ${(t.pts_delta ?? 0) > 0 ? 'text-[#20B95A]' : (t.pts_delta ?? 0) < 0 ? 'text-[#c2410c]' : ''}`}>
-                                        {t.pts_delta != null ? (t.pts_delta > 0 ? `+${t.pts_delta}` : String(t.pts_delta)) : '—'}
-                                      </td>
-                                      <td className="py-1 pl-1 text-right text-[#4a6366]">
-                                        {t.n_games_played_with}/{t.n_games_missed}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </details>
-              </div>
-            ) : null}
             <p className="type-metadata mt-3">
               {aiSummaryStatus === 'success' && aiSummaryText
                 ? 'AI-written matchup briefing from on-page signals. It is not a numerical projection and not betting advice.'
@@ -1157,10 +1101,11 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             </div>
           </div>
         </section>
+        </section>
         ) : null}
 
         {(!isFinalView || navIds.includes('section-odds')) ? (
-        <section id="section-odds" className="scroll-mt-[10rem]">
+        <section id="section-odds" className={`scroll-mt-[10rem] space-y-4 ${isFinalView ? '' : 'order-3'}`}>
           <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
               <h2 className="type-section-heading text-[#063f46]">
@@ -1264,6 +1209,34 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               </div>
             </div>
           </div>
+          {!isFinalView ? (
+          <section id="section-players" className="scroll-mt-[10rem]">
+            {playerProps.length > 0 ? (
+              <PlayerPropsFilterableList
+                props={playerProps}
+                gameId={game.id}
+                date={typeof game.gameDate === 'string' ? game.gameDate : undefined}
+              />
+            ) : (
+              <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4 space-y-2">
+                <h2 className="type-section-heading text-[#063f46]">Player props</h2>
+                <p className="type-body text-cc-secondary">
+                  Prop research for this game is in Props Explorer. This page does not keep a separate
+                  live-only prop board.
+                </p>
+                <Link
+                  href={propsExplorerHref({
+                    gameId: game.id,
+                    date: typeof game.gameDate === 'string' ? game.gameDate : undefined,
+                  })}
+                  className="type-interactive inline-flex text-[#075B5C] hover:underline"
+                >
+                  Open Props Explorer
+                </Link>
+              </div>
+            )}
+          </section>
+          ) : null}
         </section>
         ) : null}
 
@@ -1283,7 +1256,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
 
         {!isFinalView ? (
         <>
-        <section id="section-matchup" className="space-y-4 scroll-mt-[10rem]">
+        <section id="section-matchup" className="order-2 space-y-4 scroll-mt-[10rem]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Column 1: Projected starters */}
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
@@ -1309,6 +1282,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
               <h2 className="type-section-heading text-[#063f46]">Team comparison</h2>
+              <p className="type-metadata mt-0.5">Current research-season ratings and recent form.</p>
             </div>
             <div className="p-3">
             {(() => {
@@ -1449,34 +1423,8 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
           </div>
         </section>
 
-        <section id="section-players" className="space-y-4 scroll-mt-[10rem]">
-          {playerProps.length > 0 ? (
-            <PlayerPropsFilterableList
-              props={playerProps}
-              gameId={game.id}
-              date={typeof game.gameDate === 'string' ? game.gameDate : undefined}
-            />
-          ) : (
-            <div className="bg-white rounded-2xl border border-[#DCE9EA] shadow-sm p-4 space-y-2">
-              <h2 className="type-section-heading text-[#063f46]">Player props</h2>
-              <p className="type-body text-cc-secondary">
-                Prop research for this game is in Props Explorer. This page does not keep a separate
-                live-only prop board.
-              </p>
-              <Link
-                href={propsExplorerHref({
-                  gameId: game.id,
-                  date: typeof game.gameDate === 'string' ? game.gameDate : undefined,
-                })}
-                className="type-interactive inline-flex text-[#075B5C] hover:underline"
-              >
-                Open Props Explorer
-              </Link>
-            </div>
-          )}
-        </section>
-
-        <section id="section-injuries" className="scroll-mt-[10rem]">
+        <section id="section-injuries" className="order-5 scroll-mt-[10rem] space-y-4">
+          <p className="type-metadata">Research injury report. Roster continuity in the overview is a historical listing.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
               <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-2">
@@ -1507,6 +1455,76 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
               </div>
             </div>
           </div>
+          {injuryMatchupContext?.entries?.length ? (
+            <div className="rounded-2xl border border-[#DCE9EA] bg-white p-3 shadow-sm">
+              <p className="type-secondary">
+                Out / doubtful — players to watch (splits)
+              </p>
+              <p className="type-body mt-2 text-cc-secondary">
+                From season box scores: teammate PTS when listed players had minutes vs no minutes. Descriptive only—not a projection; tiny samples can mislead.
+              </p>
+              <details className="group mt-3 rounded-lg border border-[#DCE9EA] bg-[#F8FBFA]">
+                <summary className="type-interactive flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-cc-secondary hover:text-[#063f46] [&::-webkit-details-marker]:hidden">
+                  <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform group-open:rotate-180" />
+                  Underlying numbers
+                </summary>
+                <div className="space-y-3 border-t border-[#DCE9EA] px-3 pb-3 pt-0">
+                  {injuryMatchupContext.entries.map((entry) => {
+                    const teamLabel =
+                      entry.team_id === game.homeTeam.id ? game.homeTeam.name : game.awayTeam.name;
+                    return (
+                      <div key={entry.player_id} className="rounded-lg border border-[#DCE9EA] bg-[#F8FBFA] p-2.5">
+                        <div className="mb-2 flex flex-wrap items-baseline gap-2">
+                          <span className="type-secondary text-[#063f46]">{entry.full_name}</span>
+                          <span className="type-metadata">{teamLabel}</span>
+                          <span className="type-metadata">
+                            With minutes {entry.games_played_sample} · No minutes {entry.games_missed_sample} team games
+                          </span>
+                          {entry.low_sample && (
+                            <span className="type-badge text-amber-800">Low sample</span>
+                          )}
+                        </div>
+                        {entry.teammates.length === 0 ? (
+                          <p className="type-secondary">No teammate split data.</p>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead className="type-metadata">
+                                <tr className="border-b border-[#DCE9EA] text-[#4a6366]">
+                                  <th className="py-1 pr-2 font-normal">Teammate</th>
+                                  <th className="px-1 py-1 font-normal">PTS (with)</th>
+                                  <th className="px-1 py-1 font-normal">PTS (out)</th>
+                                  <th className="px-1 py-1 font-normal">Δ</th>
+                                  <th className="py-1 pl-1 text-right font-normal">n</th>
+                                </tr>
+                              </thead>
+                              <tbody className="type-table-data">
+                                {entry.teammates.map((t) => (
+                                  <tr key={t.player_id} className="border-b border-[#DCE9EA] text-[#063f46]">
+                                    <td className="max-w-[140px] truncate py-1 pr-2" title={t.full_name}>
+                                      {t.full_name}
+                                    </td>
+                                    <td className="px-1 py-1">{t.avg_pts_with ?? '—'}</td>
+                                    <td className="px-1 py-1">{t.avg_pts_without ?? '—'}</td>
+                                    <td className={`whitespace-nowrap px-1 py-1 ${(t.pts_delta ?? 0) > 0 ? 'text-[#20B95A]' : (t.pts_delta ?? 0) < 0 ? 'text-[#c2410c]' : ''}`}>
+                                      {t.pts_delta != null ? (t.pts_delta > 0 ? `+${t.pts_delta}` : String(t.pts_delta)) : '—'}
+                                    </td>
+                                    <td className="py-1 pl-1 text-right text-[#4a6366]">
+                                      {t.n_games_played_with}/{t.n_games_missed}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </details>
+            </div>
+          ) : null}
         </section>
         </>
         ) : null}
@@ -1538,7 +1556,7 @@ export function MatchupPageLayout({ data }: { data: GameDetailsData }) {
                     : (game.homeTeam.record ?? '—')}
                 </span>
               </div>
-              {(!isFinalView || hasStoredOdds) ? (
+              {isFinalView && hasStoredOdds ? (
               <div className="border-t border-[#DCE9EA] pt-3 space-y-2">
                 <p className="type-metadata">Lines</p>
                 <div className="type-table-data flex justify-between gap-2">

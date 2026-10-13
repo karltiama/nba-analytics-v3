@@ -208,7 +208,7 @@ export function rosterOtherTeamQuery(window: HistoricalWindow, teamIds: [string,
 
 export function teamIdentityQuery(teamIds: [string, string]): { text: string; params: [string[]] } {
   return {
-    text: `SELECT team_id, abbreviation, full_name
+    text: `SELECT team_id, abbreviation, full_name, conference
      FROM analytics.teams
      WHERE team_id = ANY($1::text[])`,
     params: [teamIds],

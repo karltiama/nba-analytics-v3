@@ -568,7 +568,9 @@ describe('pregame matchup layout', () => {
     expect(html).toContain('grid-cols-1');
     expect(html).toContain('sm:grid-cols-2');
     expect(html).toContain('sm:grid-cols-3');
+    expect(html).toContain('max-w-[1800px]');
     expect(html).toContain('max-w-3xl');
+    expect(html.match(/CLE -5\.5/g)).toHaveLength(1);
     expect(html).toContain('Example Guard');
   });
 });

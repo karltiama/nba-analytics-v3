@@ -6,8 +6,15 @@ import { MatchupPageLayout } from '@/components/betting/MatchupPageLayout';
 import { BettingGameDetailsPageSkeleton } from './components/BettingGameDetailsPageSkeleton';
 import { slateHref } from '@/lib/betting/research-journey';
 import { shouldFetchLiveMatchupAnalysis } from '@/lib/betting/historical-final';
+import type { ResearchHistoricalOverview } from '@/lib/pregame-matchup/research-overview';
 
-export function GameDetailsPageClient({ gameId }: { gameId: string }) {
+export function GameDetailsPageClient({
+  gameId,
+  historicalOverview = null,
+}: {
+  gameId: string;
+  historicalOverview?: ResearchHistoricalOverview | null;
+}) {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,5 +82,5 @@ export function GameDetailsPageClient({ gameId }: { gameId: string }) {
     );
   }
 
-  return <MatchupPageLayout data={data} />;
+  return <MatchupPageLayout data={data} historicalOverview={historicalOverview} />;
 }
