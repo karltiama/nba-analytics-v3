@@ -71,6 +71,7 @@ export function MatchupHeader({
   market,
   links = [],
 }: MatchupHeaderProps) {
+  const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
   return (
     <div id="matchup-overview" className="sticky top-16 z-10 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white/95 shadow-sm">
       <div className="flex min-w-0 flex-col gap-3 bg-[#F8FBFA] px-3 py-3 sm:flex-row sm:items-center sm:gap-6 sm:px-5 sm:py-4">
@@ -105,7 +106,7 @@ export function MatchupHeader({
 
       {market ? (
         <div className="bg-[#F8FBFA] px-3 pb-3 sm:px-5" data-market-strip>
-          {market.caption ? <p className="type-metadata mb-2 text-center">{market.caption}</p> : null}
+          {sourceLine ? <p className="type-metadata mb-2 text-center">{sourceLine}</p> : null}
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-[#DCE9EA] bg-[#DCE9EA] sm:grid-cols-3">
             <MarketCell label="Market spread" primary={market.spreadAway} secondary={market.spreadHome} />
             <MarketCell label="Market total" primary={market.total} secondary={market.totalPrices} />
@@ -115,7 +116,7 @@ export function MatchupHeader({
         </div>
       ) : null}
 
-      {updatedLabel ? <p className="type-metadata bg-[#F8FBFA] px-3 pb-2 text-center sm:px-5">{updatedLabel}</p> : null}
+      {!market && updatedLabel ? <p className="type-metadata bg-[#F8FBFA] px-3 pb-2 text-center sm:px-5">{updatedLabel}</p> : null}
 
       {links.length > 0 ? (
         <nav className="flex flex-wrap items-center justify-center gap-1.5 border-t border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2 sm:px-5" aria-label="Matchup sections">

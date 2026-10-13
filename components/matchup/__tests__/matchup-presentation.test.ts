@@ -84,6 +84,8 @@ describe('shared matchup presentation', () => {
     expect(html).toContain('7:00 PM EDT');
     expect(html).toContain('Orlando Magic');
     expect(html).toContain('data-market-strip');
+    expect(html).toContain('DraftKings · BDL synced 2m ago · Scoreboard Updated 1:59 PM EDT');
+    expect(html.match(/Scoreboard Updated 1:59 PM EDT/g)).toHaveLength(1);
     expect(html.match(/CLE -5\.5/g)).toHaveLength(1);
     expect(html).toContain('No-vig implied probability');
     expect(html).toContain('href="#section-comparison"');

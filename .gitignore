@@ -24,6 +24,8 @@
 # misc
 .DS_Store
 *.pem
+__pycache__/
+*.pyc
 
 # local reference notes (not part of shipped code)
 /notes/

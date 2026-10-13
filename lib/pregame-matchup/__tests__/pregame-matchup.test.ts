@@ -562,6 +562,8 @@ describe('pregame matchup layout', () => {
     expect(html).toContain('not official NBA pace');
     expect(html).toContain('2025–26 historical production — not a confirmed current roster');
     expect(html).not.toMatch(/tonight's starters|confirmed departure|vacated/i);
+    expect(html).toContain('DraftKings · BDL synced 2m ago · Scoreboard Updated 1:59 PM EDT');
+    expect(html.match(/Scoreboard Updated 1:59 PM EDT/g)).toHaveLength(1);
     expect(html).toContain('CLE -5.5');
     expect(html).toContain('No-vig implied probability');
     expect(html).toContain('href="/dashboard?date=2026-10-11"');
