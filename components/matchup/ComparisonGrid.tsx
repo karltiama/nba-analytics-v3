@@ -22,7 +22,7 @@ export function ComparisonGrid({
   historyNote,
 }: ComparisonGridProps) {
   return (
-    <section id="section-comparison" className="scroll-mt-36 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" aria-labelledby="team-identity">
+    <section id="section-comparison" className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} aria-labelledby="team-identity">
       <div className="border-b border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
         <h2 id="team-identity" className="type-section-heading text-[#063f46]">
           2025–26 Team Identity

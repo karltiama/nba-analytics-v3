@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { TeamLogo } from '@/components/nba/TeamLogo';
+import { MatchupScrollOffset } from '@/components/matchup/MatchupScrollOffset';
 
 export type MatchupHeaderSide = {
   abbr: string;
@@ -73,7 +74,8 @@ export function MatchupHeader({
 }: MatchupHeaderProps) {
   const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
   return (
-    <div id="matchup-overview" className="sticky top-16 z-10 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white/95 shadow-sm">
+    <div id="matchup-overview" className="sticky top-16 z-10 scroll-mt-16 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white/95 shadow-sm">
+      <MatchupScrollOffset />
       <div className="flex min-w-0 flex-col gap-3 bg-[#F8FBFA] px-3 py-3 sm:flex-row sm:items-center sm:gap-6 sm:px-5 sm:py-4">
         <div className="flex min-w-0 shrink-0 items-center gap-2 sm:w-64 lg:w-80">
           <Link

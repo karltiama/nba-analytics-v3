@@ -55,7 +55,7 @@ export function PlayerContributors({
   home: HistoricalContributor[];
 }) {
   return (
-    <section id="section-contributors" className="scroll-mt-36 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" aria-labelledby="contributors">
+    <section id="section-contributors" className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} aria-labelledby="contributors">
       <div className="border-b border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
         <h2 id="contributors" className="type-section-heading text-[#063f46]">
           Last Season&apos;s Key Contributors

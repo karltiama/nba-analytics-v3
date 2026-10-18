@@ -49,7 +49,8 @@ export function RosterContinuity({ roster }: { roster: RosterPresentation }) {
   return (
     <section
       id="section-roster"
-      className="scroll-mt-36 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm"
+      className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm"
+      style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }}
       aria-labelledby="roster-continuity"
       data-continuity={roster.status}
     >

@@ -3,7 +3,7 @@ import type { MatchupInsight } from '@/lib/pregame-matchup/signals';
 export function ContextSignals({ insights }: { insights: MatchupInsight[] }) {
   if (insights.length === 0) return null;
   return (
-    <section id="section-signals" className="scroll-mt-36 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" aria-labelledby="matchup-context">
+    <section id="section-signals" className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} aria-labelledby="matchup-context">
       <div className="border-b border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
         <h2 id="matchup-context" className="type-section-heading text-[#063f46]">
           What Matters in This Matchup
