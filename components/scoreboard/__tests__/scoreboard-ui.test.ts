@@ -121,7 +121,7 @@ describe('Today\'s Games scoreboard merge', () => {
     const nextDay = scoreboardGame({ game_id: 'next', lifecycle: 'scheduled', et_date: '2026-10-10', scheduled_tip: '2026-10-10T16:00:00.000Z' });
     const merged = mergeTodaysGames(scoreboardResponse([lateWest, nextDay], { date: '2026-10-09' }));
     expect(merged.map((game) => game.id)).toEqual(['late']);
-    expect(cardHtml(merged[0]!, 'scoreboard')).toContain('10:00 PM EDT');
+    expect(cardHtml(merged[0]!, 'scoreboard')).toContain('10:00 PM EDT · Scheduled');
   });
 });
 
@@ -135,7 +135,7 @@ describe('Pre-game card keeps the original market layout', () => {
       const html = cardHtml(game, 'scoreboard');
       expectPregameShell(html);
       expect(html).toContain('data-phase="pregame"');
-      expect(html).toContain('7:00 PM EDT');
+      expect(html).toContain('7:00 PM EDT · Live score unavailable');
       expect(html).toContain('>VS<');
       expect(textOf(html)).toContain('MEM —');
       expect(textOf(html)).toContain('CHI —');

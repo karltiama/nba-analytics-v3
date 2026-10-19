@@ -199,15 +199,27 @@ export function lifecycleLabel(lifecycle: GameLifecycleState | null): string {
   return LIFECYCLE_LABEL[lifecycle];
 }
 
+/** Shown when tip has passed and the provider has not verified a live or final state. */
+export const LIVE_SCORE_UNAVAILABLE = 'Live score unavailable';
+
 /**
  * Card status. Same as lifecycleLabel, except an unknown lifecycle whose provider status says
- * delayed or suspended shows that word. It never promotes a game to Live or Final.
+ * delayed or suspended shows that word. A scheduled game whose tip instant has passed says the
+ * live score is unavailable. It never promotes a game to Live or Final from the clock.
  */
-export function cardStatusLabel(lifecycle: GameLifecycleState | null, providerStatus: string | null | undefined): string {
+export function cardStatusLabel(
+  lifecycle: GameLifecycleState | null,
+  providerStatus: string | null | undefined,
+  clock?: { scheduledTip?: string | null; nowMs?: number | null }
+): string {
   if (lifecycle == null || lifecycle === 'unknown') {
     const status = providerStatus?.toLowerCase() ?? '';
     if (status.includes('delay')) return 'Delayed';
     if (status.includes('suspend')) return 'Suspended';
+  }
+  if (lifecycle === 'scheduled' && clock?.nowMs != null && clock.scheduledTip) {
+    const tip = Date.parse(clock.scheduledTip);
+    if (Number.isFinite(tip) && clock.nowMs >= tip) return LIVE_SCORE_UNAVAILABLE;
   }
   return lifecycleLabel(lifecycle);
 }
@@ -354,6 +366,7 @@ export function presentScoreboardGame(game: ScoreboardGame, generatedAt?: string
     Number.isFinite(game.visitor.score) &&
     Number.isFinite(game.home.score);
   const preseason = seasonType === 'preseason';
+  const generatedMs = generatedAt ? Date.parse(generatedAt) : NaN;
   return {
     gameId: game.game_id,
     seasonType,
@@ -374,7 +387,10 @@ export function presentScoreboardGame(game: ScoreboardGame, generatedAt?: string
     freshnessLabel: formatObservedAt(game.acquired_at),
     freshnessAge: generatedAt ? freshnessAgeLabel(game.acquired_at, Date.parse(generatedAt)) : null,
     phase: gamePhase(lifecycle),
-    statusLabel: cardStatusLabel(lifecycle, game.provider_status),
+    statusLabel: cardStatusLabel(lifecycle, game.provider_status, {
+      scheduledTip: game.scheduled_tip,
+      nowMs: Number.isFinite(generatedMs) ? generatedMs : null,
+    }),
     pulse: lifecycle ? gamePulse({ ...game, lifecycle }) : null,
     context: lifecycle ? gameContext({ ...game, lifecycle }) : null,
     leaders: lifecycle ? statLeaders({ ...game, lifecycle }) : null,

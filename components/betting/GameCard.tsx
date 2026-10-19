@@ -386,7 +386,12 @@ export function GameCard({
             <>
               <Clock className="w-4 h-4 text-[#075B5C] shrink-0" />
               <div className="min-w-0">
-                <div className="type-metadata truncate">{game.startTime}</div>
+                <div className="type-metadata truncate" data-pregame-status={scoreboardPresentation && board?.lifecycle === 'scheduled' ? board.statusLabel : undefined}>
+                  {game.startTime}
+                  {scoreboardPresentation && board?.lifecycle === 'scheduled' && board.statusLabel
+                    ? ` · ${board.statusLabel}`
+                    : ''}
+                </div>
               </div>
             </>
           )}
