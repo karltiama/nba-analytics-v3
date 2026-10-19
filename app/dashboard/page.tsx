@@ -12,6 +12,7 @@ import {
   getDateLabel,
   TrendingPlayerStrip,
   UnauthorizedPanel,
+  type Game,
   type Insight,
   type SortOption,
 } from '@/components/betting';
@@ -35,6 +36,15 @@ import {
   todaysGamesUnavailableCopy,
   type ScoreboardSlateAvailability,
 } from '@/lib/scoreboard/slate-merge';
+import {
+  OPENING_NIGHT_DATE_LABEL,
+  OPENING_NIGHT_EMPTY_COPY,
+  OPENING_NIGHT_ERROR_COPY,
+  OPENING_NIGHT_HEADING,
+  OPENING_NIGHT_SECTION_NOTICE,
+  decideOpeningNightPreview,
+  isRenderableOpeningNightCard,
+} from '@/lib/dashboard/opening-night-preview';
 
 // ================================
 // DATA FETCHING
@@ -84,6 +94,9 @@ export default function BettingDashboard(props: PageProps) {
   const [loadingInsights, setLoadingInsights] = useState(true);
   const [slateSummaryLoading, setSlateSummaryLoading] = useState(true);
   const [unauthorized, setUnauthorized] = useState(false);
+  const [todayEt, setTodayEt] = useState(() => getTodayET());
+  const [previewGames, setPreviewGames] = useState<Game[] | null>(null);
+  const [previewState, setPreviewState] = useState<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle');
 
   if (scoreboardDate !== selectedDate) {
     setScoreboardDate(selectedDate);
@@ -261,11 +274,61 @@ export default function BettingDashboard(props: PageProps) {
     return () => ac.abort();
   }, [selectedDate]);
 
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') setTodayEt(getTodayET());
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
+
   const slateGames = useMemo(() => mergeTodaysGames(scoreboard), [scoreboard]);
+  const previewGate = decideOpeningNightPreview({
+    todayEt,
+    selectedDate,
+    availability: scoreboardAvailability,
+    presentableScoreboardGames: slateGames.length,
+  });
+
+  useEffect(() => {
+    if (previewGate.kind !== 'preview') {
+      setPreviewGames(null);
+      setPreviewState('idle');
+      return;
+    }
+    const ac = new AbortController();
+    setPreviewState('loading');
+    (async () => {
+      try {
+        const res = await fetch('/api/dashboard/opening-night-preview', { signal: ac.signal });
+        const body: unknown = await res.json().catch(() => null);
+        if (ac.signal.aborted) return;
+        const games = body && typeof body === 'object' && Array.isArray((body as { games?: unknown }).games)
+          ? ((body as { games: Game[] }).games.filter(isRenderableOpeningNightCard))
+          : null;
+        if (!res.ok || games == null) {
+          setPreviewGames(null);
+          setPreviewState('error');
+          return;
+        }
+        setPreviewGames(games);
+        setPreviewState(games.length === 0 ? 'empty' : 'ready');
+      } catch (err) {
+        if (ac.signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
+        setPreviewGames(null);
+        setPreviewState('error');
+      }
+    })();
+    return () => ac.abort();
+  }, [previewGate.kind, selectedDate, todayEt]);
+
+  const previewActive = previewGate.kind === 'preview';
+  const previewPending = previewActive && (previewState === 'idle' || previewState === 'loading');
+  const listGames = previewActive && previewState === 'ready' ? previewGames ?? [] : slateGames;
 
   // Filter games
   const filteredGames = filterSlateGames({
-    games: slateGames,
+    games: listGames,
     searchValue,
     showCloseMatchups,
     isClose: (game) => game.isClose,
@@ -291,8 +354,9 @@ export default function BettingDashboard(props: PageProps) {
   });
 
   const dateLabel = getDateLabel(selectedDate);
-  const gamesSectionTitle =
-    dateLabel === 'Today'
+  const gamesSectionTitle = previewActive
+    ? OPENING_NIGHT_HEADING
+    : dateLabel === 'Today'
       ? "Today's Games"
       : dateLabel === 'Yesterday'
         ? "Yesterday's Games"
@@ -336,11 +400,27 @@ export default function BettingDashboard(props: PageProps) {
             {/* Games for selected date */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="type-section-heading text-[#063f46]">{gamesSectionTitle}</h2>
+                <div>
+                  <h2 className="type-section-heading text-[#063f46]">{gamesSectionTitle}</h2>
+                  {previewActive ? (
+                    <p className="type-body text-cc-secondary mt-1" data-opening-night-date>
+                      {OPENING_NIGHT_DATE_LABEL}
+                    </p>
+                  ) : null}
+                </div>
                 <span className="type-metadata">
-                  {scoreboardAvailability === 'loading' ? 'Loading...' : `${sortedGames.length} games`}
+                  {scoreboardAvailability === 'loading' || previewPending
+                    ? 'Loading...'
+                    : previewActive && previewState === 'error'
+                      ? 'Unavailable'
+                      : `${sortedGames.length} games`}
                 </span>
               </div>
+              {previewActive && !previewPending && previewState !== 'error' ? (
+                <p className="type-secondary mb-3 text-cc-secondary" data-opening-night-notice>
+                  {OPENING_NIGHT_SECTION_NOTICE}
+                </p>
+              ) : null}
 
               {scoreboardAvailability === 'error' && sortedGames.length > 0 ? (
                 <p className="type-secondary mb-3 text-amber-700" data-scoreboard-refresh="failed">
@@ -348,11 +428,23 @@ export default function BettingDashboard(props: PageProps) {
                 </p>
               ) : null}
               
-              {scoreboardAvailability === 'loading' ? (
+              {scoreboardAvailability === 'loading' || previewPending ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[...Array(6)].map((_, i) => (
                     <GameCardSkeleton key={i} />
                   ))}
+                </div>
+              ) : previewActive && previewState === 'error' ? (
+                <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
+                  <p className="type-section-heading text-[#063f46]" data-opening-night-error>
+                    {OPENING_NIGHT_ERROR_COPY}
+                  </p>
+                </div>
+              ) : previewActive && previewState === 'empty' ? (
+                <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
+                  <p className="type-section-heading text-[#063f46]" data-opening-night-empty>
+                    {OPENING_NIGHT_EMPTY_COPY}
+                  </p>
                 </div>
               ) : sortedGames.length === 0 ? (
                 <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">

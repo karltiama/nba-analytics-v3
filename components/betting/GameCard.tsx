@@ -64,6 +64,13 @@ export interface Game {
   /** Display-only scoreboard overlay. Absent on a normal regular-season card. */
   scoreboard?: PresentedGame;
   /**
+   * Schedule-only opening-night card. The tip time is a fact from the schedule.
+   * `tipPassed` means that instant is already here, so the card must not look pregame or live.
+   */
+  schedulePreview?: {
+    tipPassed: boolean;
+  };
+  /**
    * Scoreboard cards only: true when this game id exists in analytics.games, so the matchup and
    * props pages can load it. Scoreboard-only games (all preseason today) leave it unset.
    */
@@ -282,8 +289,9 @@ export function GameCard({
       game.overUnder != null);
   const marketDisplay = twoWayMarketDisplay(game.awayOdds.moneyline, game.homeOdds.moneyline);
   const board = game.scoreboard;
+  const schedulePreview = game.schedulePreview ?? null;
   const scoreboardPresentation = presentation === 'scoreboard';
-  const phase = scoreboardPresentation ? (board?.phase ?? 'other') : null;
+  const phase = schedulePreview ? null : scoreboardPresentation ? (board?.phase ?? 'other') : null;
   const inPlay = phase === 'live' || phase === 'final';
   const contextKind: 'pregame' | 'live' | 'final' = phase === 'live' ? 'live' : phase === 'final' ? 'final' : 'pregame';
   const awayIsFav = !inPlay && (marketDisplay?.favorite ?? game.isFavorite) === 'away';
@@ -292,7 +300,9 @@ export function GameCard({
   const isFinal = board
     ? board.isFinal && game.homeScore != null && game.awayScore != null
     : game.status === 'Final' && game.homeScore != null && game.awayScore != null;
-  const showScoreline = isFinal || (board?.showScores === true && game.homeScore != null && game.awayScore != null);
+  const showScoreline =
+    !schedulePreview &&
+    (isFinal || (board?.showScores === true && game.homeScore != null && game.awayScore != null));
   const statusBadge = getStatusBadge(game.status);
   const favoredValue = (isFav: boolean) => (isFav ? 'text-[#20B95A]' : 'text-[#063F46]');
 
@@ -310,26 +320,40 @@ export function GameCard({
     scoreboardPresentation && inPlay
       ? (inPlayContext && inPlayContext.kind !== 'insight' ? inPlayContext.text : 'More game context will appear as stats develop.')
       : 'No verified matchup context for this game yet.';
-  const research = scoreboardPresentation ? game.researchAvailable === true && !samplePreview : true;
+  const research = schedulePreview
+    ? false
+    : scoreboardPresentation
+      ? game.researchAvailable === true && !samplePreview
+      : true;
   const pregameMatchupHref =
-    scoreboardPresentation && !samplePreview && !research && phase === 'pregame'
-      ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
-      : null;
+    schedulePreview
+      ? null
+      : scoreboardPresentation && !samplePreview && !research && phase === 'pregame'
+        ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
+        : null;
 
   return (
     <div
       className={`bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden${scoreboardPresentation ? ' h-full' : ''}`}
       data-game-id={game.id}
       data-presentation={presentation}
-      data-betting={inPlay ? 'hidden' : 'visible'}
+      data-betting={schedulePreview || inPlay ? 'hidden' : 'visible'}
       data-final={board ? (board.isFinal ? 'true' : 'false') : undefined}
       data-season-type={board?.seasonType ?? undefined}
       data-stale={board ? (board.stale ? 'true' : 'false') : undefined}
       data-phase={phase ?? undefined}
+      data-schedule-preview={schedulePreview ? (schedulePreview.tipPassed ? 'tip-passed' : 'upcoming') : undefined}
     >
       <div className="px-5 sm:px-6 py-2 flex items-center justify-between border-b border-[#DCE9EA] gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          {phase === 'live' ? (
+          {schedulePreview ? (
+            <>
+              <Clock className="w-4 h-4 text-[#075B5C] shrink-0" />
+              <div className="min-w-0">
+                <div className="type-metadata truncate">{game.startTime}</div>
+              </div>
+            </>
+          ) : phase === 'live' ? (
             <>
               <span
                 className="type-badge inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap px-2 py-0.5 bg-[#56D6A3]/25 text-[#075B5C] rounded-full font-semibold"
@@ -368,7 +392,14 @@ export function GameCard({
           )}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          {phase === 'other' && board ? (
+          {schedulePreview ? (
+            <span
+              className="type-badge whitespace-nowrap px-2 py-0.5 bg-[#F3F8F8] text-cc-secondary rounded-full"
+              data-lifecycle-label
+            >
+              {schedulePreview.tipPassed ? 'Live score unavailable' : 'Schedule preview'}
+            </span>
+          ) : phase === 'other' && board ? (
             <span
               className={`type-badge whitespace-nowrap px-2 py-0.5 ${getStatusBadge(board.statusLabel)?.className ?? ''}`}
               data-lifecycle-label
@@ -413,7 +444,12 @@ export function GameCard({
 
       <div className="px-5 sm:px-6 pt-3 pb-2">
         <div className="flex items-center gap-2 sm:gap-3">
-          <TeamMatchupSide team={game.awayTeam} isFav={awayIsFav} showRecord stacked={scoreboardPresentation && showScoreline} />
+          <TeamMatchupSide
+            team={game.awayTeam}
+            isFav={awayIsFav}
+            showRecord={!schedulePreview}
+            stacked={scoreboardPresentation && showScoreline}
+          />
           {scoreboardPresentation && showScoreline ? (
             <span
               className="shrink-0 text-2xl font-bold text-[#063F46] tabular-nums whitespace-nowrap"
@@ -429,11 +465,28 @@ export function GameCard({
               VS
             </span>
           )}
-          <TeamMatchupSide team={game.homeTeam} isFav={homeIsFav} showRecord stacked={scoreboardPresentation && showScoreline} />
+          <TeamMatchupSide
+            team={game.homeTeam}
+            isFav={homeIsFav}
+            showRecord={!schedulePreview}
+            stacked={scoreboardPresentation && showScoreline}
+          />
         </div>
       </div>
 
-      {inPlay ? (
+      {schedulePreview ? (
+        <div
+          className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-3 text-center"
+          data-schedule-preview-notice
+        >
+          <p className="type-metadata">Schedule preview</p>
+          <p className="type-secondary mt-1">
+            {schedulePreview.tipPassed
+              ? 'This game has tipped off. A live score is not available.'
+              : 'Tip time only. Live scores, betting lines, and player stats are not shown.'}
+          </p>
+        </div>
+      ) : inPlay ? (
         <div
           className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]"
           data-leaders-panel
@@ -474,7 +527,7 @@ export function GameCard({
       </div>
       )}
 
-      {!contextText && !scoreboardPresentation ? null : (
+      {schedulePreview || (!contextText && !scoreboardPresentation) ? null : (
         <div
           className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#F8FBFA] border border-[#DCE9EA] px-3 py-2"
           data-context-panel={scoreboardPresentation ? contextKind : undefined}
