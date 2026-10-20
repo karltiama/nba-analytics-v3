@@ -14,7 +14,13 @@ import { randomUUID } from 'node:crypto';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import { shiftEtYmd, etYmd } from '@/lib/games/status-sync-query';
 import type { ScoreboardPlayerLine, ScoreboardSeasonType, StoredScoreboardGame } from './contract';
-import { parseScoreboardTargetSeason, resolveScoreboardCollection, resolveScoreboardOddsCollection } from './flags';
+import {
+  parseScoreboardCanaryEtDate,
+  parseScoreboardTargetSeason,
+  resolveScoreboardCollection,
+  resolveScoreboardOddsCollection,
+  SCOREBOARD_COLLECT_BOX_ENV,
+} from './flags';
 import { boxScoreCompleteness, carriedBoxCompleteness, verifyFinalBoxScore } from './box-verify';
 import { normalizeOddsRows, oddsEligibleGames, SCOREBOARD_ODDS_POLICY } from './market';
 import { matchLiveBoxScores, mergeObservation, normalizeGameRow } from './normalize';
@@ -143,6 +149,8 @@ export async function runScoreboardCycle(input: {
   if (decision.seasonTypes.length === 0) return done('skipped', decision.reason);
   const target = parseScoreboardTargetSeason(input.env);
   if (!target.ok) return done('failed', target.reason);
+  const canary = parseScoreboardCanaryEtDate(input.env);
+  if (!canary.ok) return done('failed', canary.reason);
   if (!input.fetch) return done('failed', 'no acquiring fetch configured');
   const fetchers = input.fetch;
 
@@ -168,6 +176,11 @@ export async function runScoreboardCycle(input: {
     seasonTypes.push(result);
     if (!plan.gamesRequest) continue;
 
+    // A regular-season canary requests one ET date and does not follow the today/tomorrow window.
+    const pinned = seasonType === 'regular' && canary.date != null;
+    const startDate = pinned ? canary.date! : plan.gamesRequest.startDate;
+    const endDate = pinned ? canary.date! : plan.gamesRequest.endDate;
+
     // 1. /v1/games pages. Any failed, blocked or unparseable page: no writes for this season type.
     const pullRunId = newId();
     const pages: Array<{ rows: unknown[]; requestId: string }> = [];
@@ -178,16 +191,16 @@ export async function runScoreboardCycle(input: {
       const url = scoreboardGamesUrl({
         season: target.season,
         seasonType,
-        startDate: plan.gamesRequest.startDate,
-        endDate: plan.gamesRequest.endDate,
+        startDate,
+        endDate,
         cursor,
       });
       const page = await fetchers.games(url, {
         plan: {
           targetSeason: target.season,
           seasonTypeRequested: seasonType,
-          startDate: plan.gamesRequest.startDate,
-          endDate: plan.gamesRequest.endDate,
+          startDate,
+          endDate,
         },
         pageIndex,
         cursor,
@@ -225,6 +238,10 @@ export async function runScoreboardCycle(input: {
           continue;
         }
         const prev = touched.get(n.game.gameId) ?? byId.get(n.game.gameId) ?? null;
+        if (pinned && n.game.etDate !== canary.date) {
+          result.rejected.push({ gameId: n.game.gameId, reason: 'outside_canary_date' });
+          continue;
+        }
         if (prev && prev.seasonType !== seasonType) {
           result.rejected.push({ gameId: n.game.gameId, reason: `provenance_conflict: stored as ${prev.seasonType}` });
           continue;
@@ -245,7 +262,10 @@ export async function runScoreboardCycle(input: {
     const current = new Map(stored.map((g) => [g.gameId, g]));
     for (const g of touched.values()) current.set(g.gameId, g);
     const boxGames = [...current.values()].filter(needsLiveBox);
-    if (boxGames.length === 0) continue;
+    // Regular-season box scores stay off until SCOREBOARD_COLLECT_BOX=1. The canary pin also
+    // skips the live box endpoint because that endpoint is not date-scoped. Preseason is unchanged.
+    const regularBoxAllowed = (input.env[SCOREBOARD_COLLECT_BOX_ENV] ?? '').trim() === '1';
+    if (pinned || (seasonType === 'regular' && !regularBoxAllowed) || boxGames.length === 0) continue;
     result.box.requested = true;
     const boxPage = await fetchers.liveBox(scoreboardLiveBoxUrl(seasonType), {
       plan: { targetSeason: target.season, seasonTypeRequested: seasonType, startDate: null, endDate: null },

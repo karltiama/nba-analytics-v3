@@ -16,7 +16,7 @@ import {
   type ScoreboardCycleResult,
   type ScoreboardFetchers,
 } from './collector';
-import { parseScoreboardTargetSeason, resolveScoreboardCollection } from './flags';
+import { parseScoreboardTargetSeason, resolveScoreboardCollection, scoreboardInvocationEnv } from './flags';
 import type { ScoreboardStore } from './store';
 
 export type ScoreboardLambdaDeps = {
@@ -126,6 +126,6 @@ const NO_STORE: ScoreboardStore = {
   loadCurrentOdds: async () => [],
 };
 
-export async function handler(): Promise<ScoreboardCycleResult> {
-  return runLambdaScoreboard();
+export async function handler(event?: unknown): Promise<ScoreboardCycleResult> {
+  return runLambdaScoreboard({ env: scoreboardInvocationEnv(event, process.env) });
 }

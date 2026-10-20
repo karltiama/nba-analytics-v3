@@ -421,9 +421,25 @@ describe('odds gates and cadence', () => {
       { ...ODDS_ENV, DATA_MODE: undefined },
       { ...ODDS_ENV, SCOREBOARD_COLLECT_PRESEASON: '0' },
       { ...ODDS_ENV, SCOREBOARD_COLLECT_PRESEASON: '0', SCOREBOARD_COLLECT_REGULAR: '1' },
+      {
+        ...ODDS_ENV,
+        SCOREBOARD_COLLECT_PRESEASON: '0',
+        SCOREBOARD_COLLECT_REGULAR: '1',
+        SCOREBOARD_AUTHORIZE_REGULAR: '1',
+      },
     ]) {
       expect(resolveScoreboardOddsCollection(env, resolveScoreboardCollection(env)).enabled).toBe(false);
     }
+    const both = {
+      ...ODDS_ENV,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      SCOREBOARD_AUTHORIZE_REGULAR: '1',
+    };
+    expect(resolveScoreboardOddsCollection(both, resolveScoreboardCollection(both))).toEqual({
+      enabled: true,
+      seasonTypes: ['preseason'],
+      reason: null,
+    });
   });
 
   it('due on the 15th tick (14.5 min), 5th tick after a failure (4.5 min); never on consecutive ticks', () => {

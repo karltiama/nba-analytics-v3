@@ -4,7 +4,12 @@ import { describe, expect, it } from 'vitest';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { runScoreboardCycle, scoreboardGamesUrl, scoreboardLiveBoxUrl } from '@/lib/scoreboard/collector';
-import { isScoreboardServingEnabled, resolveScoreboardCollection } from '@/lib/scoreboard/flags';
+import {
+  isScoreboardServingEnabled,
+  parseScoreboardCanaryEtDate,
+  resolveScoreboardCollection,
+  scoreboardInvocationEnv,
+} from '@/lib/scoreboard/flags';
 import {
   boxScoreCompleteness,
   carriedBoxCompleteness,
@@ -161,7 +166,7 @@ describe('scoreboard gates fail closed', () => {
     }
   });
 
-  it('regular season, play-in and playoffs cannot be enabled by flag', () => {
+  it('regular season, play-in and playoffs cannot be enabled by the collect flag alone', () => {
     const d = resolveScoreboardCollection({
       ...LIVE_ENV,
       SCOREBOARD_COLLECT_PRESEASON: undefined,
@@ -172,6 +177,49 @@ describe('scoreboard gates fail closed', () => {
     expect(d.seasonTypes).toEqual([]);
     expect(d.refused.map((r) => r.seasonType)).toEqual(['regular', 'playin', 'playoffs']);
     expect(d.refused.every((r) => /separate approval/.test(r.reason))).toBe(true);
+  });
+
+  it('regular season collects only when the authorization flag is exactly 1', () => {
+    const base = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      SCOREBOARD_COLLECT_PLAYIN: '1',
+      SCOREBOARD_COLLECT_PLAYOFFS: '1',
+    };
+    expect(resolveScoreboardCollection({ ...base, SCOREBOARD_AUTHORIZE_REGULAR: 'true' }).seasonTypes).toEqual([]);
+    const d = resolveScoreboardCollection({ ...base, SCOREBOARD_AUTHORIZE_REGULAR: '1' });
+    expect(d.seasonTypes).toEqual(['regular']);
+    expect(d.refused.map((r) => r.seasonType)).toEqual(['playin', 'playoffs']);
+  });
+
+  it('only the exact canary event overrides the deployed env, and it does not mutate that env', () => {
+    const deployed = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_ODDS: '1',
+      BDL_RATE_LIMIT_INTERVAL_MS: '500',
+      DATA_MODE: 'live_api',
+    };
+    expect(scoreboardInvocationEnv({}, deployed)).toBe(deployed);
+    expect(scoreboardInvocationEnv({ canary: 'opening-night-2026-10-20', extra: true }, deployed)).toBe(deployed);
+    const canary = scoreboardInvocationEnv({ canary: 'opening-night-2026-10-20' }, deployed);
+    expect(canary).not.toBe(deployed);
+    expect(deployed.SCOREBOARD_COLLECT_ODDS).toBe('1');
+    expect(resolveScoreboardCollection(canary).seasonTypes).toEqual(['regular']);
+    expect(canary.SCOREBOARD_CANARY_ET_DATE).toBe('2026-10-20');
+    expect(canary.SCOREBOARD_COLLECT_ODDS).toBe('0');
+    expect(canary.BDL_RATE_LIMIT_INTERVAL_MS).toBe('13000');
+    const frozen = scoreboardInvocationEnv({ canary: 'opening-night-2026-10-20' }, { ...deployed, DATA_MODE: 'replay' });
+    expect(resolveScoreboardCollection(frozen).seasonTypes).toEqual([]);
+    expect(frozen.DATA_MODE).toBe('replay');
+  });
+
+  it('canary date is empty or an exact calendar date', () => {
+    const empty = parseScoreboardCanaryEtDate({});
+    expect(empty.ok && empty.date).toBeNull();
+    const pinned = parseScoreboardCanaryEtDate({ SCOREBOARD_CANARY_ET_DATE: '2026-10-20' });
+    expect(pinned.ok && pinned.date).toBe('2026-10-20');
+    expect(parseScoreboardCanaryEtDate({ SCOREBOARD_CANARY_ET_DATE: '2026-02-31' }).ok).toBe(false);
   });
 
   it('serving: only "1" serves, independent of collection', () => {
@@ -366,6 +414,64 @@ describe('collector cycle (fake fetch, memory store)', () => {
     }
   });
 
+  it('an authorized regular canary requests only the pinned date and drops every other date', async () => {
+    const env = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      SCOREBOARD_AUTHORIZE_REGULAR: '1',
+      SCOREBOARD_CANARY_ET_DATE: '2026-10-20',
+    };
+    const opening = bdlGame({ id: 21717855, date: '2026-10-20', datetime: '2026-10-20T19:00:00.000Z' });
+    const nextDay = bdlGame({ id: 21717899, date: '2026-10-21', datetime: '2026-10-21T23:00:00.000Z' });
+    const f = fakeFetchers({ games: () => [opening, nextDay], box: () => [] });
+    const store = createMemoryScoreboardStore();
+    const r = await runScoreboardCycle({ env, store, fetch: f.fetch, now: at(0) });
+    expect(r.status).toBe('success');
+    expect(f.calls).toEqual([
+      scoreboardGamesUrl({ season: 2026, seasonType: 'regular', startDate: '2026-10-20', endDate: '2026-10-20' }),
+    ]);
+    expect(store.games.has('21717855')).toBe(true);
+    expect(store.games.has('21717899')).toBe(false);
+    expect(r.seasonTypes[0]?.rejected).toEqual([{ gameId: '21717899', reason: 'outside_canary_date' }]);
+  });
+
+  it('an authorized regular {} tick uses today through tomorrow ET and does not call box or odds', async () => {
+    const now = new Date('2026-10-19T16:00:00.000Z');
+    const env = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: '0',
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      SCOREBOARD_AUTHORIZE_REGULAR: '1',
+      SCOREBOARD_COLLECT_ODDS: '1',
+    };
+    const f = fakeFetchers({
+      games: () => [bdlGame({ id: 21717855, date: '2026-10-20', datetime: '2026-10-20T19:00:00.000Z', status: '2026-10-20T19:00:00Z' })],
+      box: () => {
+        throw new Error('live box must stay disabled');
+      },
+    });
+    const r = await runScoreboardCycle({ env, store: createMemoryScoreboardStore(), fetch: f.fetch, now });
+    expect(r.status).toBe('success');
+    expect(r.odds).toBeUndefined();
+    expect(f.calls).toEqual([
+      scoreboardGamesUrl({ season: 2026, seasonType: 'regular', startDate: '2026-10-19', endDate: '2026-10-20' }),
+    ]);
+    expect(r.seasonTypes[0]).toMatchObject({ gamesFetched: 1, box: { requested: false } });
+  });
+
+  it('a malformed canary date fails before any request', async () => {
+    const f = fakeFetchers({ games: () => [bdlGame()], box: () => [] });
+    const r = await runScoreboardCycle({
+      env: { ...LIVE_ENV, SCOREBOARD_CANARY_ET_DATE: 'October 20' },
+      store: createMemoryScoreboardStore(),
+      fetch: f.fetch,
+      now: at(0),
+    });
+    expect(r.status).toBe('failed');
+    expect(f.calls).toEqual([]);
+  });
+
   it('missing target season fails closed before any request', async () => {
     const f = fakeFetchers({ games: () => [bdlGame()], box: () => [] });
     const r = await runScoreboardCycle({ env: { ...LIVE_ENV, SCOREBOARD_TARGET_SEASON: '' }, store: createMemoryScoreboardStore(), fetch: f.fetch, now: at(0) });
@@ -424,8 +530,14 @@ describe('collector cycle (fake fetch, memory store)', () => {
     expect(f.calls.every((u) => u.includes('season_type=preseason'))).toBe(true);
   });
 
-  it('a failed or unarchived games request writes nothing', async () => {
-    for (const games of [() => ({ status: 500 }), () => ({ blocked: 'ARCHIVE_FAILED (put)' })] as Respond[]) {
+  it('a failed, unauthorized, throttled, or unarchived games request writes nothing', async () => {
+    for (const games of [
+      () => ({ status: 500 }),
+      () => ({ status: 401 }),
+      () => ({ status: 403 }),
+      () => ({ status: 429 }),
+      () => ({ blocked: 'ARCHIVE_FAILED (put)' }),
+    ] as Respond[]) {
       const store = createMemoryScoreboardStore();
       const f = fakeFetchers({ games, box: () => [] });
       const r = await runScoreboardCycle({ env: LIVE_ENV, store, fetch: f.fetch, now: at(0) });
@@ -733,6 +845,72 @@ describe('staleness follows the collector policy (scheduled, live, terminal)', (
     // 2 discoveries before the window, then about one request per minute for the last 15 minutes.
     expect(requests).toBeGreaterThanOrEqual(2 + 14);
     expect(requests).toBeLessThanOrEqual(2 + 16);
+  });
+
+  it('opening night polls the slate on one shared cadence and stops a confirmed final', () => {
+    const noonOct19 = new Date('2026-10-19T16:00:00.000Z');
+    expect(planScoreboardTick({ now: noonOct19, games: [], lastGamesRequestAt: null }).gamesRequest).toMatchObject({
+      startDate: '2026-10-19',
+      endDate: '2026-10-20',
+      reason: 'first_discovery',
+    });
+    expect(
+      planScoreboardTick({ now: noonOct19, games: [], lastGamesRequestAt: '2026-10-19T13:10:57.036Z' }).gamesRequest
+    ).toBeNull();
+
+    const observed = '2026-10-20T16:00:00.000Z';
+    const slate = [
+      stored({ gameId: '21717855', seasonType: 'regular', etDate: '2026-10-20', scheduledTip: '2026-10-20T19:00:00.000Z', pollingState: 'pending', lastObservedAt: observed }),
+      stored({ gameId: '21717856', seasonType: 'regular', etDate: '2026-10-20', scheduledTip: '2026-10-20T23:00:00.000Z', pollingState: 'pending', lastObservedAt: observed }),
+      stored({ gameId: '21717857', seasonType: 'regular', etDate: '2026-10-20', scheduledTip: '2026-10-21T01:30:00.000Z', pollingState: 'pending', lastObservedAt: observed }),
+    ];
+    expect(
+      planScoreboardTick({ now: new Date('2026-10-20T18:44:00.000Z'), games: slate, lastGamesRequestAt: observed }).gamesRequest
+    ).toBeNull();
+    const window = planScoreboardTick({
+      now: new Date('2026-10-20T18:45:00.000Z'),
+      games: slate,
+      lastGamesRequestAt: '2026-10-20T18:44:00.000Z',
+    });
+    expect(window.gamesRequest).toMatchObject({ startDate: '2026-10-20', endDate: '2026-10-21', reason: 'active_game_due' });
+
+    const live = {
+      ...slate[0],
+      lifecycle: 'live' as const,
+      pollingState: 'active' as const,
+      lastObservedAt: '2026-10-20T19:05:00.000Z',
+      lastChangedAt: '2026-10-20T19:05:00.000Z',
+    };
+    expect(
+      planScoreboardTick({
+        now: new Date('2026-10-20T19:05:30.000Z'),
+        games: [live, slate[1], slate[2]],
+        lastGamesRequestAt: '2026-10-20T19:05:00.000Z',
+      }).gamesRequest
+    ).toBeNull();
+    expect(
+      planScoreboardTick({
+        now: new Date('2026-10-20T19:06:00.000Z'),
+        games: [live, slate[1], slate[2]],
+        lastGamesRequestAt: '2026-10-20T19:05:00.000Z',
+      }).gamesRequest?.reason
+    ).toBe('active_game_due');
+
+    const bosFinal = { ...live, lifecycle: 'final' as const, pollingState: 'complete' as const, terminalConfirmations: 2 };
+    expect(
+      planScoreboardTick({
+        now: new Date('2026-10-20T22:44:00.000Z'),
+        games: [bosFinal, slate[1], slate[2]],
+        lastGamesRequestAt: '2026-10-20T22:40:00.000Z',
+      }).gamesRequest
+    ).toBeNull();
+    expect(
+      planScoreboardTick({
+        now: new Date('2026-10-20T22:45:00.000Z'),
+        games: [bosFinal, slate[1], slate[2]],
+        lastGamesRequestAt: '2026-10-20T22:40:00.000Z',
+      }).gamesRequest?.reason
+    ).toBe('active_game_due');
   });
 
   it('the same game whose discovery fails is shown stale only after the interval plus slack', () => {
