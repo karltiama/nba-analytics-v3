@@ -34,7 +34,10 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
 
   it('schedule state follows the scoreboard family flag and is never hardcoded ENABLED', () => {
     expect(read('infra/lambda.tf')).toMatch(/scoreboard\s*=\s*var\.live_ingestion_enabled\s*&&\s*var\.scoreboard_execution_enabled/);
-    expect(src).toMatch(/state\s*=\s*local\.scoreboard_schedule_state/);
+    expect(src).toMatch(/variable "scoreboard_suspend_schedule"[\s\S]*?default\s*=\s*false/);
+    expect(src).toMatch(
+      /state\s*=\s*var\.scoreboard_suspend_schedule \? "DISABLED" : local\.scoreboard_schedule_state/
+    );
     expect(src).not.toMatch(/state\s*=\s*"ENABLED"/);
     expect(src).toMatch(/count\s*=\s*var\.scoreboard_create && var\.scoreboard_enable_schedule \? 1 : 0/);
   });

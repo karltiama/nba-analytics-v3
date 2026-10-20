@@ -5,8 +5,9 @@
 #   the Lambda env is frozen (replay, dry run, no season type collected) and no schedule runs.
 # Activation needs live_ingestion_enabled AND scoreboard_execution_enabled. That pair turns on
 #   only this family: every other family keeps its own *_execution_enabled gate.
-# Preseason is the only season type Terraform can switch on; regular, play-in and playoffs are
-#   pinned to "0" in the last merge and also refused in code (ACTIVATABLE_SCOREBOARD_SEASON_TYPES).
+# Preseason is the only season type Terraform can switch on. Regular, play-in and playoffs stay "0"
+#   in the last merge. A regular canary is one Lambda payload, not an env change. Play-in and playoffs
+#   stay refused. scoreboard_suspend_schedule disables the minute rule without freezing the Lambda.
 # Writes: display.* (Postgres), raw.acquisition_requests (ledger) and three S3 archive prefixes.
 # Display-only pre-game odds (/v2/odds, about every 15 minutes) need scoreboard_odds_enabled on top of
 #   the family gate; they never enable a season type (SCOREBOARD_COLLECT_ODDS rides on the games gate).
@@ -34,6 +35,12 @@ variable "scoreboard_lambda_memory_size" {
 
 variable "scoreboard_enable_schedule" {
   description = "When true and scoreboard_create is true, create the Scheduler rule. State still requires live_ingestion_enabled AND scoreboard_execution_enabled."
+  type        = bool
+  default     = false
+}
+
+variable "scoreboard_suspend_schedule" {
+  description = "Set the minute schedule to DISABLED without changing the Lambda env. Default false. The October 20 canary is a one-time invoke payload, not an env change."
   type        = bool
   default     = false
 }
@@ -165,7 +172,11 @@ resource "aws_lambda_function" "scoreboard" {
         OFFSEASON_MODE                    = local.family_schedule_enabled.scoreboard ? "0" : "1"
         CRON_DRY_RUN                      = local.family_schedule_enabled.scoreboard ? "0" : "1"
         SCOREBOARD_COLLECT_PRESEASON      = local.family_schedule_enabled.scoreboard ? "1" : "0"
+        # Regular season needs this authorization and SCOREBOARD_COLLECT_REGULAR, both forced off here.
+        # Deploying collector code cannot start regular collection. A canary is a separate approved env change.
         SCOREBOARD_COLLECT_REGULAR        = "0"
+        SCOREBOARD_AUTHORIZE_REGULAR      = "0"
+        SCOREBOARD_CANARY_ET_DATE         = ""
         SCOREBOARD_COLLECT_PLAYIN         = "0"
         SCOREBOARD_COLLECT_PLAYOFFS       = "0"
         SCOREBOARD_COLLECT_ODDS           = local.family_schedule_enabled.scoreboard && var.scoreboard_odds_enabled ? "1" : "0"
@@ -238,7 +249,7 @@ resource "aws_scheduler_schedule" "scoreboard" {
   name        = local.scoreboard_schedule_name
   group_name  = local.scoreboard_schedule_group
   description = "Display-only scoreboard tick. Disabled unless live_ingestion_enabled AND scoreboard_execution_enabled."
-  state       = local.scoreboard_schedule_state
+  state       = var.scoreboard_suspend_schedule ? "DISABLED" : local.scoreboard_schedule_state
 
   flexible_time_window {
     mode = "OFF"
