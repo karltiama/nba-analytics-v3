@@ -45,7 +45,11 @@ import {
   decideOpeningNightPreview,
   isRenderableOpeningNightCard,
 } from '@/lib/dashboard/opening-night-preview';
-import { applyStoredOdds, parseStoredOddsPayload, type StoredOddsPatch } from '@/lib/dashboard/stored-odds';
+import { acceptsStoredOdds, applyStoredOdds, type StoredOddsPatch } from '@/lib/dashboard/stored-odds';
+import {
+  createStoredOddsRefreshSession,
+  STORED_ODDS_MIN_REFRESH_MS,
+} from '@/lib/dashboard/stored-odds-refresh';
 
 // ================================
 // DATA FETCHING
@@ -326,30 +330,50 @@ export default function BettingDashboard(props: PageProps) {
 
   const previewActive = previewGate.kind === 'preview';
   const previewPending = previewActive && (previewState === 'idle' || previewState === 'loading');
-  const slateIds = slateGames.map((game) => game.id).join(',');
+  const slateIds = useMemo(() => slateGames.map((game) => game.id).sort().join(','), [slateGames]);
+  const applicablePregameIds = useMemo(
+    () => slateGames.filter((game) => acceptsStoredOdds(game)).map((game) => game.id).sort().join(','),
+    [slateGames]
+  );
 
   useEffect(() => {
-    if (previewActive || slateIds.length === 0) {
+    if (previewActive || applicablePregameIds.length === 0) {
       setStoredOdds({});
       return;
     }
-    const ac = new AbortController();
-    (async () => {
-      try {
-        const res = await fetch(`/api/dashboard/stored-odds?date=${selectedDate}`, { signal: ac.signal });
+    const requestKey = `${selectedDate}|${slateIds}|${applicablePregameIds}`;
+    let closed = false;
+    let timer = 0;
+    setStoredOdds({});
+    const session = createStoredOddsRefreshSession({
+      requestKey,
+      isClosed: () => closed,
+      nowMs: () => Date.now(),
+      isVisible: () => document.visibilityState !== 'hidden',
+      fetchOdds: async (signal) => {
+        const res = await fetch(`/api/dashboard/stored-odds?date=${encodeURIComponent(selectedDate)}`, {
+          signal,
+          cache: 'no-store',
+        });
         const body: unknown = await res.json().catch(() => null);
-        if (ac.signal.aborted) return;
-        if (!res.ok || !body || typeof body !== 'object') {
-          setStoredOdds({});
-          return;
-        }
-        setStoredOdds(parseStoredOddsPayload(body));
-      } catch (err) {
-        if (ac.signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
-      }
-    })();
-    return () => ac.abort();
-  }, [previewActive, selectedDate, slateIds]);
+        return { ok: res.ok, body };
+      },
+      setOverlay: setStoredOdds,
+      armTimer: (delayMs, onFire) => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(onFire, Math.max(delayMs, STORED_ODDS_MIN_REFRESH_MS));
+      },
+      clearTimer: () => window.clearTimeout(timer),
+    });
+    session.start();
+    const onVisibility = () => session.onVisible();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      closed = true;
+      document.removeEventListener('visibilitychange', onVisibility);
+      session.stop();
+    };
+  }, [previewActive, selectedDate, slateIds, applicablePregameIds]);
 
   const previewList = previewActive && previewState === 'ready' ? previewGames ?? [] : slateGames;
   const listGames = previewList.map((game) => applyStoredOdds(game, storedOdds[game.id]));

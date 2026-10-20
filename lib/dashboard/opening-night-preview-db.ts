@@ -17,6 +17,6 @@ export async function loadOpeningNightPreview(now: Date): Promise<Game[]> {
   const rows = await query<OpeningNightSourceRow>(OPENING_NIGHT_GAMES_SQL);
   const games = presentOpeningNightGames(rows, now);
   const upcoming = games.filter((game) => !game.schedulePreview?.tipPassed).map((game) => game.id);
-  const odds = await loadStoredOdds(upcoming, now);
-  return games.map((game) => applyStoredOdds(game, odds[game.id]));
+  const loaded = await loadStoredOdds(upcoming, now);
+  return games.map((game) => applyStoredOdds(game, loaded.odds[game.id]));
 }

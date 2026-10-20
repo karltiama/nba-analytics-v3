@@ -582,7 +582,17 @@ describe('Market card and wiring regressions', () => {
     expect(dash).not.toContain('/api/betting/games');
     expect(dash).toContain('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
     expect(dash.match(/setInterval/g)).toBeNull();
-    expect(dash.match(/setTimeout/g)).toHaveLength(3);
+    expect(dash.match(/setTimeout/g)).toHaveLength(4);
+    const pollStart = dash.indexOf('const scoreboardPollDelay');
+    const pollEnd = dash.indexOf('const previewActive');
+    const storedStart = dash.indexOf('const applicablePregameIds');
+    expect(dash.slice(0, pollStart).match(/setTimeout/g)).toHaveLength(1);
+    expect(dash.slice(pollStart, pollEnd).match(/setTimeout/g)).toHaveLength(2);
+    expect(dash.slice(pollStart, pollEnd)).not.toContain('stored-odds');
+    expect(dash.slice(storedStart).match(/setTimeout/g)).toHaveLength(1);
+    expect(dash.slice(storedStart)).toContain('STORED_ODDS_MIN_REFRESH_MS');
+    expect(dash.slice(storedStart)).toContain('createStoredOddsRefreshSession');
+    expect(dash.slice(storedStart)).not.toContain('setInterval');
     expect(card).not.toMatch(/\bfetch\(|setInterval|setTimeout|useEffect/);
     expect(card).not.toContain('ScoreboardBody');
     expect(merge).not.toMatch(/\b(INSERT|UPDATE|DELETE)\b/);

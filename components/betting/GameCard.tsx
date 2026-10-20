@@ -58,8 +58,13 @@ export interface Game {
   homeScore?: number | null;
   awayScore?: number | null;
   hasOdds?: boolean;
-  /** Scoreboard cards only: "DraftKings · BDL synced 3m ago" for the one sportsbook quote shown. */
+  /**
+   * Scoreboard cards: the one sportsbook line shown.
+   * Stored DraftKings captions name the last database write. They are not live quotes.
+   */
   marketCaption?: string | null;
+  /** Stored DraftKings write age. Absent on a scoreboard quote. */
+  oddsFreshness?: 'fresh' | 'stale';
   season?: string;
   /** Display-only scoreboard overlay. Absent on a normal regular-season card. */
   scoreboard?: PresentedGame;
@@ -343,6 +348,7 @@ export function GameCard({
       data-season-type={board?.seasonType ?? undefined}
       data-stale={board ? (board.stale ? 'true' : 'false') : undefined}
       data-phase={phase ?? undefined}
+      data-odds-freshness={!inPlay && hasOdds && game.oddsFreshness ? game.oddsFreshness : undefined}
       data-schedule-preview={schedulePreview ? (schedulePreview.tipPassed ? 'tip-passed' : 'upcoming') : undefined}
     >
       <div className="px-5 sm:px-6 py-2 flex items-center justify-between border-b border-[#DCE9EA] gap-2">
@@ -601,7 +607,14 @@ export function GameCard({
           {playerStatus ? <span data-player-status>{playerStatus}</span> : null}
           {playerStatus && freshness ? ' · ' : null}
           {freshness ? <span data-freshness>{freshness}</span> : null}
-          {marketCaption ? <span data-market-source>{marketCaption}</span> : null}
+          {marketCaption ? (
+            <span
+              data-market-source
+              className={game.oddsFreshness === 'stale' ? 'text-amber-800' : undefined}
+            >
+              {marketCaption}
+            </span>
+          ) : null}
         </p>
       ) : null}
 

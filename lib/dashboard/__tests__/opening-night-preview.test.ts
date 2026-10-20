@@ -245,6 +245,7 @@ describe('opening night card', () => {
           game_id: later.id,
           vendor: 'draftkings',
           snapshot_at: '2026-10-20T17:41:01.317Z',
+          updated_at: '2026-10-20T18:20:00.000Z',
           home_moneyline: -112,
           away_moneyline: -108,
           home_spread: -1.5,
@@ -264,7 +265,8 @@ describe('opening night card', () => {
     expect(quotedHtml).toContain('OKC +1.5');
     expect(quotedHtml).toContain('O -108 / U -112');
     expect(quotedHtml).not.toContain('-110');
-    expect(quotedHtml).toContain('DraftKings · observed 1:41 PM ET');
+    expect(quotedHtml).toContain('DraftKings · stored 2:20 PM ET · Recently saved');
+    expect(quotedHtml).not.toContain('>LIVE<');
     expect(isRenderableOpeningNightCard({ ...later, hasOdds: true, marketCaption: 'DraftKings · BDL synced 3m ago' })).toBe(false);
   });
 });

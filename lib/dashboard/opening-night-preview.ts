@@ -5,6 +5,7 @@
  */
 
 import type { Game } from '@/components/betting/GameCard';
+import { isStoredOddsCaption } from '@/lib/dashboard/stored-odds';
 
 export const OPENING_NIGHT_ET = '2026-10-20';
 export const OPENING_NIGHT_PREVIEW_DATES = ['2026-10-18', '2026-10-19', '2026-10-20'] as const;
@@ -191,7 +192,7 @@ export function isRenderableOpeningNightCard(game: Game): boolean {
   if (game.status) return false;
   if (game.hasOdds) {
     if (game.schedulePreview.tipPassed) return false;
-    if (!game.marketCaption?.startsWith('DraftKings · observed ')) return false;
+    if (!game.marketCaption || !isStoredOddsCaption(game.marketCaption)) return false;
   }
   if (game.scoreboard) return false;
   if (!game.startTime || !game.awayTeam?.abbreviation || !game.homeTeam?.abbreviation) return false;

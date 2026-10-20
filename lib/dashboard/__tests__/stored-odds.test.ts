@@ -1,29 +1,41 @@
+import { readFileSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { GameCard, type Game } from '@/components/betting/GameCard';
 import {
+  STORED_ODDS_CACHE_CONTROL,
   STORED_ODDS_DATE,
+  STORED_ODDS_FRESH_MS,
+  STORED_ODDS_FUTURE_SKEW_MS,
   STORED_ODDS_SQL,
   applyStoredOdds,
+  classifyStoredOddsRow,
+  collectStoredOdds,
   draftKingsPatch,
-  formatObservedEt,
+  formatStoredEt,
+  isStoredOddsCaption,
   mergeDashboardStoredOdds,
-  observedCaption,
   parseStoredOddsPayload,
+  storedOddsCaption,
   storedOddsFailureLog,
+  storedOddsMapFromResponse,
+  storedOddsResponseBody,
   type StoredOddsPatch,
   type StoredOddsSourceRow,
 } from '@/lib/dashboard/stored-odds';
 
 const NOW = new Date('2026-10-20T18:30:00.000Z');
 const OBSERVED = '2026-10-20T17:41:01.317Z';
+const STORED = '2026-10-20T18:20:00.000Z';
+const FRESH_CAPTION = 'DraftKings · stored 2:20 PM ET · Recently saved';
 
 function row(over: Partial<StoredOddsSourceRow> = {}): StoredOddsSourceRow {
   return {
     game_id: '21717856',
     vendor: 'draftkings',
     snapshot_at: OBSERVED,
+    updated_at: STORED,
     home_moneyline: -180,
     away_moneyline: 150,
     home_spread: -4.5,
@@ -61,24 +73,36 @@ function pregame(over: Partial<Game> = {}): Game {
 describe('stored DraftKings dashboard odds', () => {
   it('reads only current DraftKings rows and does not write', () => {
     expect(STORED_ODDS_SQL).toContain('analytics.game_odds_current');
+    expect(STORED_ODDS_SQL).toContain('c.snapshot_at');
+    expect(STORED_ODDS_SQL).toContain('c.updated_at');
+    expect(STORED_ODDS_SQL).not.toContain('provider_updated_at');
     expect(STORED_ODDS_SQL).toContain("lower(c.vendor) = 'draftkings'");
     expect(STORED_ODDS_SQL).toMatch(/start_time > \$2/);
     expect(STORED_ODDS_SQL).not.toMatch(/\b(insert|update|delete)\b/i);
+    expect(STORED_ODDS_CACHE_CONTROL).toBe('no-store');
   });
 
   it('keeps home and away prices on their own teams and labels the observation', () => {
-    expect(formatObservedEt(OBSERVED)).toBe('1:41 PM ET');
+    expect(formatStoredEt(STORED)).toBe('2:20 PM ET');
+    expect(formatStoredEt(OBSERVED)).toBe('1:41 PM ET');
     const patch = draftKingsPatch(row(), NOW);
+    expect(applyStoredOdds(pregame(), patch).status).toBeUndefined();
     expect(patch).toMatchObject({
+      status: 'fresh',
+      storedAt: STORED,
+      snapshotAt: new Date(OBSERVED).toISOString(),
+      providerUpdatedAt: null,
+      incomplete: false,
+      oddsFreshness: 'fresh',
       homeOdds: { moneyline: -180, spread: -4.5, spreadOdds: -110 },
       awayOdds: { moneyline: 150, spread: 4.5, spreadOdds: -110 },
       overUnder: 231.5,
       overOdds: -112,
       underOdds: -108,
       hasOdds: true,
-      marketCaption: 'DraftKings · observed 1:41 PM ET',
+      marketCaption: FRESH_CAPTION,
     });
-    expect(patch?.marketCaption).not.toMatch(/live|synced/i);
+    expect(patch?.marketCaption).not.toMatch(/live|synced|provider updated|guaranteed/i);
     const html = renderToStaticMarkup(createElement(GameCard, { game: applyStoredOdds(pregame(), patch), presentation: 'scoreboard' }));
     expect(html).toContain('NYK -4.5');
     expect(html).toContain('PHI +4.5');
@@ -86,8 +110,10 @@ describe('stored DraftKings dashboard odds', () => {
     expect(html).toContain('PHI +150');
     expect(html).toContain('O/U 231.5');
     expect(html).toContain('O -112 / U -108');
-    expect(html).toContain('DraftKings · observed 1:41 PM ET');
+    expect(html).toContain(FRESH_CAPTION);
+    expect(html).toContain('data-odds-freshness="fresh"');
     expect(html).not.toContain('>LIVE<');
+    expect(html).not.toContain('text-amber-800');
   });
 
   it('prints the stored Boston prices and does not fill a different price with -110', () => {
@@ -138,15 +164,65 @@ describe('stored DraftKings dashboard odds', () => {
     expect(patch?.overUnder).toBe(231.5);
     expect(patch?.overOdds).toBeNull();
     expect(patch?.underOdds).toBeNull();
+    expect(patch?.incomplete).toBe(true);
     const html = renderToStaticMarkup(createElement(GameCard, { game: applyStoredOdds(pregame(), patch), presentation: 'scoreboard' }));
     expect(html).toContain('O — / U —');
     expect(html).not.toContain('-110');
   });
 
-  it('keeps an older observation dated when it is no longer the same Eastern day', () => {
-    const nextDay = new Date('2026-10-21T16:00:00.000Z');
-    expect(observedCaption(OBSERVED, nextDay)).toBe('DraftKings · observed Oct 20, 1:41 PM ET');
-    expect(draftKingsPatch(row(), nextDay)?.marketCaption).toBe('DraftKings · observed Oct 20, 1:41 PM ET');
+  it('labels a two-hour-old row stale and keeps the prices', () => {
+    const storedAt = new Date(NOW.getTime() - 2 * 60 * 60 * 1000).toISOString();
+    const patch = draftKingsPatch(row({ updated_at: storedAt, snapshot_at: storedAt }), NOW);
+    expect(patch?.status).toBe('stale');
+    expect(patch?.incomplete).toBe(false);
+    expect(patch?.homeOdds.spread).toBe(-4.5);
+    expect(patch?.marketCaption).toBe('DraftKings · Stale · stored Oct 20, 12:30 PM ET');
+    const html = renderToStaticMarkup(createElement(GameCard, { game: applyStoredOdds(pregame(), patch), presentation: 'scoreboard' }));
+    expect(html).toContain('data-odds-freshness="stale"');
+    expect(html).toContain('text-amber-800');
+    expect(html).toContain('Stale');
+    expect(html).toContain('Oct 20, 12:30 PM ET');
+    expect(html).toContain('NYK -4.5');
+    expect(html).not.toContain('Recently saved');
+    expect(html).not.toContain('>LIVE<');
+  });
+
+  it('treats a storedAt exactly 45 minutes old as fresh and one millisecond older as stale', () => {
+    const onBoundary = new Date(NOW.getTime() - STORED_ODDS_FRESH_MS).toISOString();
+    const pastBoundary = new Date(NOW.getTime() - STORED_ODDS_FRESH_MS - 1).toISOString();
+    expect(draftKingsPatch(row({ updated_at: onBoundary, snapshot_at: onBoundary }), NOW)?.status).toBe('fresh');
+    expect(draftKingsPatch(row({ updated_at: pastBoundary, snapshot_at: pastBoundary }), NOW)?.status).toBe('stale');
+    expect(storedOddsCaption('stale', pastBoundary, NOW)).toContain('Oct 20,');
+  });
+
+  it('withholds missing, malformed, and future clocks and does not invent a provider time', () => {
+    const ahead = new Date(NOW.getTime() + STORED_ODDS_FUTURE_SKEW_MS + 1).toISOString();
+    const withinSkew = new Date(NOW.getTime() + 60_000).toISOString();
+    expect(classifyStoredOddsRow(row({ updated_at: null }), NOW).outcome).toBe('withheld');
+    expect(classifyStoredOddsRow(row({ snapshot_at: null }), NOW).outcome).toBe('withheld');
+    expect(classifyStoredOddsRow(row({ updated_at: 'not-a-time' }), NOW).outcome).toBe('withheld');
+    expect(classifyStoredOddsRow(row({ snapshot_at: ahead }), NOW).outcome).toBe('withheld');
+    expect(classifyStoredOddsRow(row({ updated_at: ahead }), NOW).outcome).toBe('withheld');
+    expect(draftKingsPatch(row({ updated_at: null }), NOW)).toBeNull();
+    expect(draftKingsPatch(row({ snapshot_at: ahead, updated_at: STORED }), NOW)).toBeNull();
+    expect(draftKingsPatch(row({ updated_at: withinSkew, snapshot_at: withinSkew }), NOW)?.status).toBe('fresh');
+    const collected = collectStoredOdds(
+      [row({ game_id: 'bad-clock', updated_at: null }), row({ game_id: 'other-book', vendor: 'fanduel' })],
+      NOW
+    );
+    expect(collected.withheld).toEqual({ 'bad-clock': 'unknown' });
+    expect(collected.odds['other-book']).toBeUndefined();
+    expect(collected.withheld['other-book']).toBeUndefined();
+  });
+
+  it('leaves a game with no DraftKings row unavailable', () => {
+    const collected = collectStoredOdds([row()], NOW);
+    const slate = [pregame(), pregame({ id: 'missing-game' })];
+    const merged = mergeDashboardStoredOdds(slate, storedOddsResponseBody(NOW, collected));
+    expect(merged[0].hasOdds).toBe(true);
+    expect(merged[1].hasOdds).toBe(false);
+    expect(merged[1].marketCaption).toBeUndefined();
+    expect(collected.withheld[slate[1].id]).toBeUndefined();
   });
 
   it('logs a database failure as a code and omits the connection string', () => {
@@ -182,7 +258,8 @@ describe('stored DraftKings dashboard odds', () => {
       expect(patch?.homeOdds, home).toMatchObject({ spread: homeSpread, moneyline: homeMl });
       expect(patch?.awayOdds, away).toMatchObject({ spread: awaySpread, moneyline: awayMl });
       expect(patch?.overUnder).toBe(total);
-      expect(patch?.marketCaption).toBe('DraftKings · observed 1:41 PM ET');
+      expect(patch?.marketCaption).toBe(FRESH_CAPTION);
+      expect(patch?.providerUpdatedAt).toBeNull();
     }
   });
 
@@ -192,6 +269,8 @@ describe('stored DraftKings dashboard odds', () => {
     expect(patch?.homeOdds.moneyline).toBeNull();
     expect(patch?.homeOdds.spread).toBe(-4.5);
     expect(patch?.awayOdds.spread).toBe(4.5);
+    expect(patch?.incomplete).toBe(true);
+    expect(patch?.status).toBe('fresh');
   });
 
   it('returns nothing when the book, the time, or every market is unusable', () => {
@@ -207,6 +286,15 @@ describe('stored DraftKings dashboard odds', () => {
     expect(applyStoredOdds(pregame({ scoreboard: { ...pregame().scoreboard!, phase: 'live' } }), patch).hasOdds).toBe(false);
     expect(applyStoredOdds(pregame({ scoreboard: { ...pregame().scoreboard!, phase: 'final' } }), patch).hasOdds).toBe(false);
     expect(applyStoredOdds(pregame({ scoreboard: undefined, schedulePreview: { tipPassed: true } }), patch).hasOdds).toBe(false);
+    for (const phase of ['live', 'final'] as const) {
+      const card = applyStoredOdds(pregame({ scoreboard: { ...pregame().scoreboard!, phase } }), patch);
+      const html = renderToStaticMarkup(createElement(GameCard, { game: card, presentation: 'scoreboard' }));
+      expect(html).not.toContain('data-odds-freshness');
+      expect(html).not.toContain('Recently saved');
+      expect(html).not.toContain('Stale');
+      expect(html).not.toContain('Market spread');
+      expect(html).toContain(phase === 'live' ? '>LIVE<' : '>FINAL<');
+    }
   });
 
   it('shows the market panel on an upcoming preview card and keeps the tipped notice', () => {
@@ -278,7 +366,8 @@ describe('dashboard stored-odds merge', () => {
     const html = renderToStaticMarkup(createElement(GameCard, { game: merged[1], presentation: 'scoreboard' }));
     expect(html).toContain('PHI +4.5');
     expect(html).toContain('NYK -4.5');
-    expect(html).toContain('DraftKings · observed 1:41 PM ET');
+    expect(html).toContain(FRESH_CAPTION);
+    expect(html).toContain('data-odds-freshness="fresh"');
   });
 
   it('switches to the October 21 slate, including the home underdog', () => {
@@ -307,5 +396,45 @@ describe('dashboard stored-odds merge', () => {
     expect(parseStoredOddsPayload({ odds: { '21717856': { hasOdds: true, marketCaption: 'DraftKings · BDL synced 1m ago' } } })).toEqual({});
     const quoted = pregame({ hasOdds: true, overUnder: 200, marketCaption: 'DraftKings · BDL synced 3m ago' });
     expect(mergeDashboardStoredOdds([quoted], { odds: { '21717856': patchFor('21717856', -4.5, 4.5, 231.5) } })[0].overUnder).toBe(200);
+    const patch = patchFor('21717856', -4.5, 4.5, 231.5);
+    expect(parseStoredOddsPayload({ odds: { '21717856': { ...patch, providerUpdatedAt: STORED } } })).toEqual({});
+    expect(parseStoredOddsPayload({ odds: { '21717856': { ...patch, marketCaption: 'DraftKings · live 2:20 PM ET · Recently saved' } } })).toEqual({});
+    expect(isStoredOddsCaption('DraftKings · stored 2:20 PM ET · Recently saved', 'fresh')).toBe(true);
+    expect(isStoredOddsCaption('Open DraftKings · stored 2:20 PM ET · Recently saved', 'fresh')).toBe(false);
+  });
+
+  it('clears an overlay from the base slate after a non-OK response', () => {
+    const base = [pregame()];
+    const patch = patchFor('21717856', -4.5, 4.5, 231.5);
+    const shown = mergeDashboardStoredOdds(base, { asOf: NOW.toISOString(), odds: { '21717856': patch }, withheld: {} });
+    expect(shown[0].hasOdds).toBe(true);
+    expect(shown[0]).not.toBe(base[0]);
+    expect(base[0].hasOdds).toBe(false);
+    expect(storedOddsMapFromResponse(false, { odds: { '21717856': patch } })).toEqual({});
+    const cleared = mergeDashboardStoredOdds(base, { odds: storedOddsMapFromResponse(false, { odds: { '21717856': patch } }) });
+    expect(cleared[0].hasOdds).toBe(false);
+    expect(cleared[0].marketCaption).toBeUndefined();
+    expect(cleared[0].oddsFreshness).toBeUndefined();
+  });
+
+  it('returns one asOf with null provider clocks and keeps no-store on the route', () => {
+    const collected = collectStoredOdds([row(), row({ game_id: 'bad', updated_at: null })], NOW);
+    const body = storedOddsResponseBody(NOW, collected);
+    expect(body.asOf).toBe(NOW.toISOString());
+    expect(body.odds['21717856'].providerUpdatedAt).toBeNull();
+    expect(body.odds['21717856'].storedAt).toBe(STORED);
+    expect(body.withheld).toEqual({ bad: 'unknown' });
+    const route = readFileSync('app/api/dashboard/stored-odds/route.ts', 'utf8');
+    const page = readFileSync('app/dashboard/page.tsx', 'utf8');
+    const card = readFileSync('components/betting/GameCard.tsx', 'utf8');
+    expect(route).toContain('STORED_ODDS_CACHE_CONTROL');
+    expect(route).not.toMatch(/balldontlie|\binsert\b|\bupdate\b|\bdelete\b/i);
+    expect(route).not.toContain('sportsbook-handoff');
+    expect(page).toContain('STORED_ODDS_MIN_REFRESH_MS');
+    expect(page).not.toContain('sportsbook-handoff');
+    expect(card).not.toContain('sportsbook-handoff');
+    const pollStart = page.indexOf('const scoreboardPollDelay');
+    const pollEnd = page.indexOf('const previewActive');
+    expect(page.slice(pollStart, pollEnd)).not.toContain('stored-odds');
   });
 });

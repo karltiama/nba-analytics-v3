@@ -1,7 +1,12 @@
 /**
- * Dashboard-only view of one stored DraftKings row.
+ * Dashboard read of one stored DraftKings row in analytics.game_odds_current.
  * The scoreboard payload is a different store and is left unchanged.
- * A shown price is labeled with its observation time. It is not a live quote.
+ *
+ * fresh means the current row was written recently. It is not a live quote,
+ * not a sportsbook handoff, and not proof that DraftKings has verified the price.
+ * storedAt is updated_at, the last database write. snapshotAt is the pipeline
+ * snapshot clock (provider time when the writer had one, otherwise transform time).
+ * providerUpdatedAt stays null: this table does not keep a separate provider clock.
  */
 
 import type { Game } from '@/components/betting/GameCard';
@@ -9,15 +14,24 @@ import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import { checkMarkets } from '@/lib/scoreboard/market';
 import type { StoredOddsQuote } from '@/lib/scoreboard/contract';
 
-export const STORED_ODDS_CAPTION_PREFIX = 'DraftKings · observed ';
-
 export const STORED_ODDS_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** A recently written row. Not a provider refresh interval. */
+export const STORED_ODDS_FRESH_MS = 45 * 60 * 1000;
+
+/** Clocks this far ahead of the read are invalid. */
+export const STORED_ODDS_FUTURE_SKEW_MS = 2 * 60 * 1000;
+
+export const STORED_ODDS_CACHE_CONTROL = 'no-store';
+
+export const STORED_ODDS_FRESH_MARK = 'Recently saved';
 
 export const STORED_ODDS_SQL = `
 SELECT
   c.game_id::text AS game_id,
   c.vendor,
   c.snapshot_at,
+  c.updated_at,
   c.home_moneyline,
   c.away_moneyline,
   c.home_spread,
@@ -38,6 +52,7 @@ export type StoredOddsSourceRow = {
   game_id: string;
   vendor: string | null;
   snapshot_at: string | Date | null;
+  updated_at: string | Date | null;
   home_moneyline: unknown;
   away_moneyline: unknown;
   home_spread: unknown;
@@ -48,6 +63,8 @@ export type StoredOddsSourceRow = {
   over_odds: unknown;
   under_odds: unknown;
 };
+
+export type StoredOddsStatus = 'fresh' | 'stale';
 
 export type StoredOddsPatch = Pick<
   Game,
@@ -62,10 +79,22 @@ export type StoredOddsPatch = Pick<
   | 'isClose'
   | 'hasOdds'
   | 'marketCaption'
->;
+  | 'oddsFreshness'
+> & {
+  status: StoredOddsStatus;
+  storedAt: string;
+  snapshotAt: string;
+  providerUpdatedAt: null;
+  incomplete: boolean;
+};
+
+export type StoredOddsClassification =
+  | { outcome: 'quote'; patch: StoredOddsPatch }
+  | { outcome: 'withheld' }
+  | { outcome: 'unavailable' };
 
 const EMPTY_ODDS = { moneyline: null, spread: null, spreadOdds: null };
-const FUTURE_SKEW_MS = 2 * 60 * 1000;
+const FALSE_FRESHNESS_CLAIM = /live|synced|provider updated|guaranteed/i;
 
 function instantMs(value: string | Date | null | undefined): number | null {
   if (value == null) return null;
@@ -113,7 +142,7 @@ function etParts(ms: number): EtParts {
 }
 
 /** Eastern clock time. Independent of the host zone. */
-export function formatObservedEt(value: string | Date): string {
+export function formatStoredEt(value: string | Date): string {
   const ms = instantMs(value);
   if (ms == null) return '';
   const parts = etParts(ms);
@@ -121,17 +150,39 @@ export function formatObservedEt(value: string | Date): string {
   return `${parts.hour}:${parts.minute} ${parts.dayPeriod} ET`;
 }
 
-/** Same-day observations use the clock. An older Eastern date keeps that date so the age stays readable. */
-export function observedCaption(snapshotAt: string | Date, now: Date): string {
-  const observedMs = instantMs(snapshotAt);
-  if (observedMs == null) return '';
-  const clock = formatObservedEt(snapshotAt);
+function storedWhen(storedAt: string, now: Date, alwaysDate: boolean): string {
+  const storedMs = instantMs(storedAt);
+  if (storedMs == null) return '';
+  const clock = formatStoredEt(storedAt);
   if (!clock) return '';
-  const observed = etParts(observedMs);
+  const stored = etParts(storedMs);
   const current = etParts(now.getTime());
-  const sameDay = observed.year === current.year && observed.month === current.month && observed.day === current.day;
-  const when = sameDay ? clock : `${observed.month} ${observed.day}, ${clock}`;
-  return `${STORED_ODDS_CAPTION_PREFIX}${when}`;
+  const sameDay = stored.year === current.year && stored.month === current.month && stored.day === current.day;
+  if (!alwaysDate && sameDay) return clock;
+  return `${stored.month} ${stored.day}, ${clock}`;
+}
+
+/**
+ * Fresh captions name the write time and say the row was recently saved.
+ * Stale captions always include the Eastern date and the word Stale.
+ */
+export function storedOddsCaption(status: StoredOddsStatus, storedAt: string, now: Date): string {
+  const when = storedWhen(storedAt, now, status === 'stale');
+  if (!when) return '';
+  if (status === 'stale') return `DraftKings · Stale · stored ${when}`;
+  return `DraftKings · stored ${when} · ${STORED_ODDS_FRESH_MARK}`;
+}
+
+export function isStoredOddsCaption(caption: string, status?: StoredOddsStatus): boolean {
+  if (!caption || FALSE_FRESHNESS_CLAIM.test(caption)) return false;
+  if (status === 'stale') return caption.startsWith('DraftKings · Stale · stored ');
+  if (status === 'fresh') {
+    return caption.startsWith('DraftKings · stored ') && caption.endsWith(` · ${STORED_ODDS_FRESH_MARK}`);
+  }
+  return (
+    (caption.startsWith('DraftKings · stored ') && caption.endsWith(` · ${STORED_ODDS_FRESH_MARK}`)) ||
+    caption.startsWith('DraftKings · Stale · stored ')
+  );
 }
 
 /** Code only. Query text and connection strings stay out of the log. */
@@ -143,15 +194,36 @@ export function storedOddsFailureLog(err: unknown): { code: string } {
   return { code: 'unknown' };
 }
 
-export function draftKingsPatch(row: StoredOddsSourceRow, now: Date): StoredOddsPatch | null {
-  if ((row.vendor ?? '').trim().toLowerCase() !== 'draftkings') return null;
-  const observedMs = instantMs(row.snapshot_at);
-  if (observedMs == null || observedMs > now.getTime() + FUTURE_SKEW_MS) return null;
-  const observedAt = new Date(observedMs).toISOString();
-  const caption = observedCaption(observedAt, now);
-  if (!caption) return null;
+function clockStatus(storedMs: number | null, snapshotMs: number | null, nowMs: number): StoredOddsStatus | 'unknown' {
+  if (storedMs == null || snapshotMs == null) return 'unknown';
+  if (storedMs > nowMs + STORED_ODDS_FUTURE_SKEW_MS) return 'unknown';
+  if (snapshotMs > nowMs + STORED_ODDS_FUTURE_SKEW_MS) return 'unknown';
+  const age = Math.max(0, nowMs - storedMs);
+  return age <= STORED_ODDS_FRESH_MS ? 'fresh' : 'stale';
+}
+
+/** A pregame card may receive a stored quote. Live, final, and tipped preview cards may not. */
+export function acceptsStoredOdds(game: Pick<Game, 'schedulePreview' | 'scoreboard'>): boolean {
+  if (game.schedulePreview?.tipPassed) return false;
+  const phase = game.scoreboard?.phase;
+  return phase !== 'live' && phase !== 'final';
+}
+
+export function classifyStoredOddsRow(row: StoredOddsSourceRow, now: Date): StoredOddsClassification {
+  if ((row.vendor ?? '').trim().toLowerCase() !== 'draftkings') return { outcome: 'unavailable' };
+  const gameId = String(row.game_id ?? '').trim();
+  if (!gameId) return { outcome: 'unavailable' };
+  const nowMs = now.getTime();
+  const status = clockStatus(instantMs(row.updated_at), instantMs(row.snapshot_at), nowMs);
+  if (status === 'unknown') return { outcome: 'withheld' };
+  const storedMs = instantMs(row.updated_at)!;
+  const snapshotMs = instantMs(row.snapshot_at)!;
+  const storedAt = new Date(storedMs).toISOString();
+  const snapshotAt = new Date(snapshotMs).toISOString();
+  const caption = storedOddsCaption(status, storedAt, now);
+  if (!isStoredOddsCaption(caption, status)) return { outcome: 'withheld' };
   const quote: StoredOddsQuote = {
-    gameId: String(row.game_id),
+    gameId,
     vendor: 'draftkings',
     quoteKind: 'current',
     moneylineHome: num(row.home_moneyline),
@@ -163,48 +235,109 @@ export function draftKingsPatch(row: StoredOddsSourceRow, now: Date): StoredOdds
     total: num(row.total),
     totalOverOdds: num(row.over_odds),
     totalUnderOdds: num(row.under_odds),
-    providerUpdatedAt: observedAt,
+    providerUpdatedAt: null,
     vendorSyncedAt: null,
     openedAt: null,
-    firstObservedAt: observedAt,
-    observedAt,
+    firstObservedAt: storedAt,
+    observedAt: storedAt,
     requestId: '',
     withdrawnAt: null,
     withdrawnRequestId: null,
   };
   const checked = checkMarkets(quote);
-  if (!checked.moneyline && !checked.spread && !checked.total) return null;
+  if (!checked.moneyline && !checked.spread && !checked.total) return { outcome: 'unavailable' };
   const display = checked.moneyline ? twoWayMarketDisplay(checked.moneyline.away, checked.moneyline.home) : null;
+  const incomplete = !(
+    checked.moneyline &&
+    checked.spread &&
+    checked.spread.home_odds != null &&
+    checked.spread.away_odds != null &&
+    checked.total &&
+    checked.total.over_odds != null &&
+    checked.total.under_odds != null
+  );
   return {
-    homeOdds: {
-      moneyline: checked.moneyline?.home ?? null,
-      spread: checked.spread?.home ?? null,
-      spreadOdds: checked.spread?.home_odds ?? null,
+    outcome: 'quote',
+    patch: {
+      status,
+      storedAt,
+      snapshotAt,
+      providerUpdatedAt: null,
+      incomplete,
+      oddsFreshness: status,
+      homeOdds: {
+        moneyline: checked.moneyline?.home ?? null,
+        spread: checked.spread?.home ?? null,
+        spreadOdds: checked.spread?.home_odds ?? null,
+      },
+      awayOdds: {
+        moneyline: checked.moneyline?.away ?? null,
+        spread: checked.spread?.away ?? null,
+        spreadOdds: checked.spread?.away_odds ?? null,
+      },
+      overUnder: checked.total?.line ?? null,
+      overOdds: checked.total?.over_odds ?? null,
+      underOdds: checked.total?.under_odds ?? null,
+      homeImpliedProb: display?.homePct ?? null,
+      awayImpliedProb: display?.awayPct ?? null,
+      isFavorite: display?.favorite ?? null,
+      isClose: display?.isClose ?? false,
+      hasOdds: true,
+      marketCaption: caption,
     },
-    awayOdds: {
-      moneyline: checked.moneyline?.away ?? null,
-      spread: checked.spread?.away ?? null,
-      spreadOdds: checked.spread?.away_odds ?? null,
-    },
-    overUnder: checked.total?.line ?? null,
-    overOdds: checked.total?.over_odds ?? null,
-    underOdds: checked.total?.under_odds ?? null,
-    homeImpliedProb: display?.homePct ?? null,
-    awayImpliedProb: display?.awayPct ?? null,
-    isFavorite: display?.favorite ?? null,
-    isClose: display?.isClose ?? false,
-    hasOdds: true,
-    marketCaption: caption,
   };
+}
+
+/** Quote patch only. Withheld and unavailable rows return null. */
+export function draftKingsPatch(row: StoredOddsSourceRow, now: Date): StoredOddsPatch | null {
+  const result = classifyStoredOddsRow(row, now);
+  return result.outcome === 'quote' ? result.patch : null;
+}
+
+export function collectStoredOdds(
+  rows: readonly StoredOddsSourceRow[],
+  now: Date
+): { odds: Record<string, StoredOddsPatch>; withheld: Record<string, 'unknown'> } {
+  const odds: Record<string, StoredOddsPatch> = {};
+  const withheld: Record<string, 'unknown'> = {};
+  for (const row of rows) {
+    const id = String(row.game_id ?? '').trim();
+    const result = classifyStoredOddsRow(row, now);
+    if (!id) continue;
+    if (result.outcome === 'quote') {
+      delete withheld[id];
+      odds[id] = result.patch;
+    } else if (result.outcome === 'withheld') {
+      delete odds[id];
+      withheld[id] = 'unknown';
+    } else {
+      delete odds[id];
+      delete withheld[id];
+    }
+  }
+  return { odds, withheld };
+}
+
+export function storedOddsResponseBody(
+  asOf: Date,
+  collected: { odds: Record<string, StoredOddsPatch>; withheld: Record<string, 'unknown'> }
+): { asOf: string; odds: Record<string, StoredOddsPatch>; withheld: Record<string, 'unknown'> } {
+  return { asOf: asOf.toISOString(), odds: collected.odds, withheld: collected.withheld };
 }
 
 function isStoredOddsPatch(value: unknown): value is StoredOddsPatch {
   if (!value || typeof value !== 'object') return false;
-  const caption = (value as { marketCaption?: unknown }).marketCaption;
-  if (typeof caption !== 'string' || !caption.startsWith(STORED_ODDS_CAPTION_PREFIX)) return false;
-  const home = (value as { homeOdds?: unknown }).homeOdds;
-  const away = (value as { awayOdds?: unknown }).awayOdds;
-  return home != null && typeof home === 'object' && away != null && typeof away === 'object';
+  const row = value as StoredOddsPatch;
+  if (row.status !== 'fresh' && row.status !== 'stale') return false;
+  if (row.oddsFreshness !== row.status) return false;
+  if (row.providerUpdatedAt !== null) return false;
+  if (typeof row.incomplete !== 'boolean') return false;
+  if (typeof row.storedAt !== 'string' || instantMs(row.storedAt) == null) return false;
+  if (typeof row.snapshotAt !== 'string' || instantMs(row.snapshotAt) == null) return false;
+  if (typeof row.marketCaption !== 'string' || !isStoredOddsCaption(row.marketCaption, row.status)) return false;
+  if (row.hasOdds !== true) return false;
+  if (!row.homeOdds || typeof row.homeOdds !== 'object' || !row.awayOdds || typeof row.awayOdds !== 'object') return false;
+  return true;
 }
 
 /** Keep only captioned DraftKings patches from the dashboard response. */
@@ -219,6 +352,12 @@ export function parseStoredOddsPayload(body: unknown): Record<string, StoredOdds
   return next;
 }
 
+/** Non-OK HTTP responses clear the overlay. The refresh session clears genuine network failures separately. */
+export function storedOddsMapFromResponse(ok: boolean, body: unknown): Record<string, StoredOddsPatch> {
+  if (!ok) return {};
+  return parseStoredOddsPayload(body);
+}
+
 /** The dashboard slate merge: parse the stored-odds response, then fill pregame cards only. */
 export function mergeDashboardStoredOdds(games: readonly Game[], body: unknown): Game[] {
   const patches = parseStoredOddsPayload(body);
@@ -229,8 +368,8 @@ export function mergeDashboardStoredOdds(games: readonly Game[], body: unknown):
 export function applyStoredOdds(game: Game, patch: StoredOddsPatch | null | undefined): Game {
   if (!patch?.hasOdds) return game;
   if (game.hasOdds) return game;
-  if (game.schedulePreview?.tipPassed) return game;
-  const phase = game.scoreboard?.phase;
-  if (phase === 'live' || phase === 'final') return game;
-  return { ...game, ...patch, homeOdds: patch.homeOdds ?? EMPTY_ODDS, awayOdds: patch.awayOdds ?? EMPTY_ODDS };
+  if (!acceptsStoredOdds(game)) return game;
+  const { status, ...card } = patch;
+  void status;
+  return { ...game, ...card, homeOdds: card.homeOdds ?? EMPTY_ODDS, awayOdds: card.awayOdds ?? EMPTY_ODDS };
 }
