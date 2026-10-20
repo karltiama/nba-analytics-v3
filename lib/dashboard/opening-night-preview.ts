@@ -184,12 +184,15 @@ export function presentOpeningNightGames(rows: readonly OpeningNightSourceRow[],
     .filter((game): game is Game => game != null);
 }
 
-/** Reject a payload that smuggles a score, a status, or a market onto a preview card. */
+/** Reject a payload that smuggles a score, a status, or an unlabeled market onto a preview card. */
 export function isRenderableOpeningNightCard(game: Game): boolean {
   if (!game || typeof game !== 'object' || !game.schedulePreview) return false;
   if (game.homeScore != null || game.awayScore != null) return false;
   if (game.status) return false;
-  if (game.hasOdds) return false;
+  if (game.hasOdds) {
+    if (game.schedulePreview.tipPassed) return false;
+    if (!game.marketCaption?.startsWith('DraftKings · observed ')) return false;
+  }
   if (game.scoreboard) return false;
   if (!game.startTime || !game.awayTeam?.abbreviation || !game.homeTeam?.abbreviation) return false;
   if (!game.awayTeam.name || !game.homeTeam.name) return false;

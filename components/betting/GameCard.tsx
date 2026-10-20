@@ -313,6 +313,7 @@ export function GameCard({
   const leaders = board?.leaders?.kind === 'leaders' ? board.leaders : null;
   const playerStatus = board?.leaders?.kind === 'status' ? board.leaders.text : null;
   const freshness = phase === 'live' && board && !board.stale ? (board.freshnessAge ?? board.freshnessLabel) : null;
+  const showPreviewMarkets = Boolean(schedulePreview && !schedulePreview.tipPassed && hasOdds);
   const marketCaption = scoreboardPresentation && !inPlay && hasOdds ? (game.marketCaption ?? null) : null;
   const inPlayContext = scoreboardPresentation && inPlay ? board?.context ?? null : null;
   const contextText = !scoreboardPresentation || !inPlay ? game.matchupContext : inPlayContext?.kind === 'insight' ? inPlayContext.text : undefined;
@@ -337,7 +338,7 @@ export function GameCard({
       className={`bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden${scoreboardPresentation ? ' h-full' : ''}`}
       data-game-id={game.id}
       data-presentation={presentation}
-      data-betting={schedulePreview || inPlay ? 'hidden' : 'visible'}
+      data-betting={schedulePreview ? (showPreviewMarkets ? 'visible' : 'hidden') : inPlay ? 'hidden' : 'visible'}
       data-final={board ? (board.isFinal ? 'true' : 'false') : undefined}
       data-season-type={board?.seasonType ?? undefined}
       data-stale={board ? (board.stale ? 'true' : 'false') : undefined}
@@ -479,7 +480,7 @@ export function GameCard({
         </div>
       </div>
 
-      {schedulePreview ? (
+      {schedulePreview && !showPreviewMarkets ? (
         <div
           className="mx-5 sm:mx-6 mb-5 rounded-xl border border-[#DCE9EA] bg-[#F8FBFA] px-3 py-3 text-center"
           data-schedule-preview-notice
@@ -516,8 +517,12 @@ export function GameCard({
           <div className="type-card-data text-[#168DD8]">
             {game.overUnder != null ? `O/U ${game.overUnder}` : '—'}
           </div>
-          <div className="type-secondary mt-0.5">
-            {`O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`}
+          <div className="type-secondary mt-0.5" data-total-price>
+            <span className="block whitespace-nowrap sm:hidden">O {formatOdds(game.overOdds)}</span>
+            <span className="block whitespace-nowrap sm:hidden">U {formatOdds(game.underOdds)}</span>
+            <span className="hidden whitespace-nowrap sm:block">
+              {`O ${formatOdds(game.overOdds)} / U ${formatOdds(game.underOdds)}`}
+            </span>
           </div>
         </div>
         <div className="px-2 py-3 text-center">

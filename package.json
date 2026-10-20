@@ -10,6 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck:app": "tsc -p tsconfig.build.json --noEmit",
+    "typecheck:all": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "lambdas": "tsx scripts/call-all-lambdas.ts",

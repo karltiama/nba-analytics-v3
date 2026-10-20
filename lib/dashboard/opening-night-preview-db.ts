@@ -9,9 +9,14 @@ import {
   presentOpeningNightGames,
   type OpeningNightSourceRow,
 } from '@/lib/dashboard/opening-night-preview';
+import { applyStoredOdds } from '@/lib/dashboard/stored-odds';
+import { loadStoredOdds } from '@/lib/dashboard/stored-odds-db';
 import type { Game } from '@/components/betting/GameCard';
 
 export async function loadOpeningNightPreview(now: Date): Promise<Game[]> {
   const rows = await query<OpeningNightSourceRow>(OPENING_NIGHT_GAMES_SQL);
-  return presentOpeningNightGames(rows, now);
+  const games = presentOpeningNightGames(rows, now);
+  const upcoming = games.filter((game) => !game.schedulePreview?.tipPassed).map((game) => game.id);
+  const odds = await loadStoredOdds(upcoming, now);
+  return games.map((game) => applyStoredOdds(game, odds[game.id]));
 }

@@ -45,6 +45,7 @@ import {
   decideOpeningNightPreview,
   isRenderableOpeningNightCard,
 } from '@/lib/dashboard/opening-night-preview';
+import { applyStoredOdds, parseStoredOddsPayload, type StoredOddsPatch } from '@/lib/dashboard/stored-odds';
 
 // ================================
 // DATA FETCHING
@@ -97,6 +98,7 @@ export default function BettingDashboard(props: PageProps) {
   const [todayEt, setTodayEt] = useState(() => getTodayET());
   const [previewGames, setPreviewGames] = useState<Game[] | null>(null);
   const [previewState, setPreviewState] = useState<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle');
+  const [storedOdds, setStoredOdds] = useState<Record<string, StoredOddsPatch>>({});
 
   if (scoreboardDate !== selectedDate) {
     setScoreboardDate(selectedDate);
@@ -324,7 +326,33 @@ export default function BettingDashboard(props: PageProps) {
 
   const previewActive = previewGate.kind === 'preview';
   const previewPending = previewActive && (previewState === 'idle' || previewState === 'loading');
-  const listGames = previewActive && previewState === 'ready' ? previewGames ?? [] : slateGames;
+  const slateIds = slateGames.map((game) => game.id).join(',');
+
+  useEffect(() => {
+    if (previewActive || slateIds.length === 0) {
+      setStoredOdds({});
+      return;
+    }
+    const ac = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`/api/dashboard/stored-odds?date=${selectedDate}`, { signal: ac.signal });
+        const body: unknown = await res.json().catch(() => null);
+        if (ac.signal.aborted) return;
+        if (!res.ok || !body || typeof body !== 'object') {
+          setStoredOdds({});
+          return;
+        }
+        setStoredOdds(parseStoredOddsPayload(body));
+      } catch (err) {
+        if (ac.signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
+      }
+    })();
+    return () => ac.abort();
+  }, [previewActive, selectedDate, slateIds]);
+
+  const previewList = previewActive && previewState === 'ready' ? previewGames ?? [] : slateGames;
+  const listGames = previewList.map((game) => applyStoredOdds(game, storedOdds[game.id]));
 
   // Filter games
   const filteredGames = filterSlateGames({

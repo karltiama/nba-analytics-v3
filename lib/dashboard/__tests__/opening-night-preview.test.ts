@@ -12,6 +12,7 @@ import {
   presentOpeningNightGames,
   type OpeningNightSourceRow,
 } from '@/lib/dashboard/opening-night-preview';
+import { applyStoredOdds, draftKingsPatch, type StoredOddsSourceRow } from '@/lib/dashboard/stored-odds';
 
 const NOON_OCT_18 = new Date('2026-10-18T16:00:00.000Z');
 const BOS_TIP = new Date('2026-10-20T19:00:00.000Z');
@@ -236,5 +237,34 @@ describe('opening night card', () => {
     expect(after).toContain('Schedule preview');
     expect(after).not.toContain('Live score unavailable');
     expect(after).not.toContain('Scheduled');
+
+    const quoted = applyStoredOdds(
+      later,
+      draftKingsPatch(
+        {
+          game_id: later.id,
+          vendor: 'draftkings',
+          snapshot_at: '2026-10-20T17:41:01.317Z',
+          home_moneyline: -112,
+          away_moneyline: -108,
+          home_spread: -1.5,
+          home_spread_odds: -102,
+          away_spread: 1.5,
+          away_spread_odds: -118,
+          total: 230.5,
+          over_odds: -108,
+          under_odds: -112,
+        } satisfies StoredOddsSourceRow,
+        BOS_TIP
+      )
+    );
+    expect(isRenderableOpeningNightCard(quoted)).toBe(true);
+    const quotedHtml = renderToStaticMarkup(createElement(GameCard, { game: quoted, presentation: 'scoreboard' }));
+    expect(quotedHtml).toContain('SAS -1.5');
+    expect(quotedHtml).toContain('OKC +1.5');
+    expect(quotedHtml).toContain('O -108 / U -112');
+    expect(quotedHtml).not.toContain('-110');
+    expect(quotedHtml).toContain('DraftKings · observed 1:41 PM ET');
+    expect(isRenderableOpeningNightCard({ ...later, hasOdds: true, marketCaption: 'DraftKings · BDL synced 3m ago' })).toBe(false);
   });
 });
