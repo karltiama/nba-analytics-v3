@@ -42,6 +42,8 @@ export const PLAYER_PROPS_MAX_PAGES = 10;
 export type PlayerPropsFetchResult = {
   rows: BdlPlayerPropRow[];
   observation: ProviderObservation;
+  /** True when a cursor remained at the caller page cap. Those rows are not a full snapshot. */
+  incomplete: boolean;
 };
 
 /**
@@ -57,8 +59,11 @@ export async function fetchPlayerPropsForGame(
     limiter?: Omit<FetchBdlLiveOptions, 'fetchImpl' | 'worker'>;
     baseFetch?: typeof fetch;
     now?: () => Date;
+    /** Defaults to PLAYER_PROPS_MAX_PAGES. A lower cap returns incomplete instead of requesting another page. */
+    maxPages?: number;
   } = {}
 ): Promise<PlayerPropsFetchResult> {
+  const maxPages = options.maxPages ?? PLAYER_PROPS_MAX_PAGES;
   const recorder = createAttemptRecorder(options.baseFetch ?? globalThis.fetch, options.now);
   const rows: BdlPlayerPropRow[] = [];
   const seenCursors = new Set<number>();
@@ -66,8 +71,8 @@ export async function fetchPlayerPropsForGame(
   let cursor: number | null = null;
 
   for (let page = 1; ; page += 1) {
-    if (page > PLAYER_PROPS_MAX_PAGES) {
-      throw new Error(`BDL /odds/player_props game ${bdlGameId}: exceeded ${PLAYER_PROPS_MAX_PAGES} pages`);
+    if (page > maxPages) {
+      throw new Error(`BDL /odds/player_props game ${bdlGameId}: exceeded ${maxPages} pages`);
     }
     const url = new URL(`${BDL_BASE}/odds/player_props`);
     url.searchParams.set('game_id', String(bdlGameId));
@@ -98,11 +103,12 @@ export async function fetchPlayerPropsForGame(
     rows.push(...parsed.data.data);
 
     const next = parsed.data.meta?.next_cursor ?? null;
+    const observation = { ...pageObservation, requestStartedAt: firstRequestStartedAt };
     if (next == null) {
-      return {
-        rows,
-        observation: { ...pageObservation, requestStartedAt: firstRequestStartedAt },
-      };
+      return { rows, incomplete: false, observation };
+    }
+    if (page >= maxPages && maxPages < PLAYER_PROPS_MAX_PAGES) {
+      return { rows, incomplete: true, observation };
     }
     if (seenCursors.has(next)) {
       throw new Error(`BDL /odds/player_props game ${bdlGameId}: repeated cursor ${next}`);

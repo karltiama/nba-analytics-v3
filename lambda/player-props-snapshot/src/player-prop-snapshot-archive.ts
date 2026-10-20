@@ -475,13 +475,48 @@ export class InMemoryArchiveStore {
     if (isProtectedHistoricalKey(key)) {
       throw new Error(`Refusing to write protected historical prefix: ${key}`);
     }
+    if (this.objects.has(key)) {
+      throw new S3ConditionalWriteError(412, 'S3 conditional write rejected because the key exists');
+    }
     this.objects.set(key, { body, metadata });
+  }
+}
+
+/** Raised by a conditional PutObject. Status 403 is access denied, not a missing key. */
+export class S3ConditionalWriteError extends Error {
+  readonly statusCode: number;
+
+  constructor(statusCode: number, message: string) {
+    super(message);
+    this.name = 'S3ConditionalWriteError';
+    this.statusCode = statusCode;
+  }
+}
+
+function putStatus(err: unknown): number | null {
+  if (err instanceof S3ConditionalWriteError) return err.statusCode;
+  if (typeof err !== 'object' || err == null || !('$metadata' in err)) return null;
+  const status = (err as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+  return status ?? null;
+}
+
+async function existingMetaAfterPrecondition(
+  store: { get(key: string): Promise<InMemoryS3Object | null> },
+  key: string
+): Promise<{ checksum?: string; rowCount?: number; pullRunId?: number; gameId?: string } | null> {
+  const body = await store.get(key);
+  if (!body) return null;
+  const fromMeta = parseS3UserMetadata(body.metadata);
+  if (fromMeta.checksum) return fromMeta;
+  try {
+    return envelopeToObjectMeta(gunzipEnvelope(body.body));
+  } catch {
+    return fromMeta;
   }
 }
 
 export async function writeArchiveObject(args: {
   store: {
-    head(key: string): Promise<{ metadata: Record<string, string> } | null>;
     get(key: string): Promise<InMemoryS3Object | null>;
     put(key: string, body: Buffer, metadata: Record<string, string>): Promise<void>;
   };
@@ -491,36 +526,6 @@ export async function writeArchiveObject(args: {
   const next = envelopeToObjectMeta(args.envelope);
   if (isProtectedHistoricalKey(args.key)) {
     return { ok: false, error: 'protected_prefix', message: `protected key ${args.key}`, key: args.key };
-  }
-  const existingHead = await args.store.head(args.key);
-  let existing = existingHead ? parseS3UserMetadata(existingHead.metadata) : null;
-  if (existingHead && !existing?.checksum) {
-    const body = await args.store.get(args.key);
-    if (body) {
-      try {
-        const env = gunzipEnvelope(body.body);
-        existing = envelopeToObjectMeta(env);
-      } catch {
-        existing = existing ?? {};
-      }
-    }
-  }
-  const decision = decideIdempotentWrite({
-    key: args.key,
-    existing: existingHead ? existing : null,
-    next,
-  });
-  if (decision.action === 'conflict') {
-    return { ok: false, error: 'conflict', message: decision.message, key: args.key };
-  }
-  if (decision.action === 'skip') {
-    return {
-      ok: true,
-      result: 'already_exists',
-      key: args.key,
-      rowCount: next.rowCount,
-      checksum: next.checksum,
-    };
   }
   try {
     await args.store.put(args.key, gzipEnvelope(args.envelope), s3UserMetadata(next));
@@ -532,11 +537,62 @@ export async function writeArchiveObject(args: {
       checksum: next.checksum,
     };
   } catch (err) {
-    return {
-      ok: false,
-      error: 'write_failed',
-      message: err instanceof Error ? err.message : 'write failed',
-      key: args.key,
-    };
+    const status = putStatus(err);
+    const message = err instanceof Error ? err.message : 'write failed';
+    if (status === 412) {
+      let existing: { checksum?: string; rowCount?: number; pullRunId?: number; gameId?: string } | null;
+      try {
+        existing = await existingMetaAfterPrecondition(args.store, args.key);
+      } catch (readErr) {
+        const readMessage = readErr instanceof Error ? readErr.message : 'read failed';
+        return {
+          ok: false,
+          error: 'write_failed',
+          message: `S3 conditional write returned 412 and the existing object could not be read: ${readMessage}`,
+          key: args.key,
+        };
+      }
+      if (!existing) {
+        return {
+          ok: false,
+          error: 'write_failed',
+          message: 'S3 conditional write returned 412 but the existing object was not readable',
+          key: args.key,
+        };
+      }
+      const decision = decideIdempotentWrite({ key: args.key, existing, next });
+      if (decision.action === 'skip') {
+        return {
+          ok: true,
+          result: 'already_exists',
+          key: args.key,
+          rowCount: next.rowCount,
+          checksum: next.checksum,
+        };
+      }
+      return {
+        ok: false,
+        error: 'conflict',
+        message: decision.action === 'conflict' ? decision.message : 'S3 object exists and does not match this snapshot',
+        key: args.key,
+      };
+    }
+    if (status === 409) {
+      return {
+        ok: false,
+        error: 'conflict',
+        message: 'S3 conditional write conflict (409); not retried',
+        key: args.key,
+      };
+    }
+    if (status === 403) {
+      return {
+        ok: false,
+        error: 'write_failed',
+        message: `S3 PutObject 403: ${message}`,
+        key: args.key,
+      };
+    }
+    return { ok: false, error: 'write_failed', message, key: args.key };
   }
 }

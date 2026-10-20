@@ -199,6 +199,29 @@ export async function getGameRunStartedAt(
   return result.rows[0]?.started_at ?? null;
 }
 
+export async function lookupOpeningNightCanaryGame(
+  pool: Pool,
+  gameId: string
+): Promise<{ gameId: string | null; season: string | null; seasonPhase: string | null }> {
+  const result = await pool.query<{
+    game_id: string | null;
+    season: string | null;
+    season_phase: string | null;
+  }>(
+    `SELECT game_id::text AS game_id, season::text AS season, season_phase
+     FROM analytics.games
+     WHERE game_id::text = $1
+     LIMIT 1`,
+    [gameId]
+  );
+  const row = result.rows[0];
+  return {
+    gameId: row?.game_id ?? null,
+    season: row?.season ?? null,
+    seasonPhase: row?.season_phase ?? null,
+  };
+}
+
 export async function lookupGameArchiveContext(
   pool: Pool,
   gameId: string

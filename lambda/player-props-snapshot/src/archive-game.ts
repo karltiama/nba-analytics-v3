@@ -63,7 +63,8 @@ export async function archiveGameSnapshot(args: {
       skipped: false,
     };
   }
-  if (!args.env.nbaDataBucket && !args.store) {
+  const bucket = args.env.nbaDataBucket;
+  if (!bucket && !args.store) {
     const message = 'PLAYER_PROP_S3_ARCHIVE_ENABLED=true but NBA_DATA_BUCKET is missing';
     return {
       outcome: { ok: false, error: 'write_failed', message, key: '' },
@@ -110,7 +111,7 @@ export async function archiveGameSnapshot(args: {
   const store =
     args.store ??
     new PlayerPropArchiveS3Store({
-      bucket: args.env.nbaDataBucket,
+      bucket: bucket as string,
       region: args.env.awsRegion,
     });
   const outcome = await writeArchiveObject({ store, key, envelope });

@@ -13,6 +13,7 @@ import {
   type ArchiveWriteOutcome,
   type InMemoryS3Object,
   type PlayerPropArchiveEnvelope,
+  S3ConditionalWriteError,
   writeArchiveObject,
 } from './player-prop-snapshot-archive';
 
@@ -54,17 +55,35 @@ export class PlayerPropArchiveS3Store {
   }
 
   async put(key: string, body: Buffer, metadata: Record<string, string>): Promise<void> {
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-        Body: body,
-        ContentType: 'application/json',
-        ContentEncoding: 'gzip',
-        Metadata: metadata,
-      })
-    );
+    try {
+      await this.client.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+          Body: body,
+          ContentType: 'application/json',
+          ContentEncoding: 'gzip',
+          Metadata: metadata,
+          IfNoneMatch: '*',
+        })
+      );
+    } catch (err) {
+      const mapped = mapConditionalPutError(err);
+      if (mapped) throw mapped;
+      throw err;
+    }
   }
+}
+
+export function mapConditionalPutError(err: unknown): S3ConditionalWriteError | null {
+  if (typeof err !== 'object' || err == null) return null;
+  const typed = err as { name?: string; message?: string; $metadata?: { httpStatusCode?: number } };
+  const status = typed.$metadata?.httpStatusCode ?? null;
+  const message = typed.message || typed.name || 'S3 error';
+  if (status === 412 || typed.name === 'PreconditionFailed') return new S3ConditionalWriteError(412, message);
+  if (status === 409) return new S3ConditionalWriteError(409, message);
+  if (status === 403) return new S3ConditionalWriteError(403, `S3 PutObject 403: ${message}`);
+  return null;
 }
 
 export async function putPlayerPropArchiveObject(args: {

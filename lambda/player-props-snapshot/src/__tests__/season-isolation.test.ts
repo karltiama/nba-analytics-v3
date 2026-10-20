@@ -104,6 +104,31 @@ describe('props pagination', () => {
     expect(res.observation.attempts).toHaveLength(3);
   });
 
+  it('a two-page canary cap does not request a third page', async () => {
+    let n = 0;
+    const baseFetch = vi.fn(async () => json({ data: [prop(++n)], meta: { next_cursor: n + 1000 } }));
+    const res = await fetchPlayerPropsForGame('k', 21717855, { limiter: limiter(), baseFetch, maxPages: 2 });
+    expect(baseFetch).toHaveBeenCalledTimes(2);
+    expect(res.incomplete).toBe(true);
+    expect(res.rows).toHaveLength(2);
+  });
+
+  it('stops on HTTP 429 without a retry', async () => {
+    const baseFetch = vi.fn(async () => json({ error: 'slow' }, 429));
+    await expect(fetchPlayerPropsForGame('k', 21717855, { limiter: limiter(), baseFetch, maxPages: 2 })).rejects.toThrow(
+      /429/
+    );
+    expect(baseFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops on HTTP 401 without another page', async () => {
+    const baseFetch = vi.fn(async () => json({ error: 'no' }, 401));
+    await expect(fetchPlayerPropsForGame('k', 21717855, { limiter: limiter(), baseFetch, maxPages: 2 })).rejects.toThrow(
+      /401/
+    );
+    expect(baseFetch).toHaveBeenCalledTimes(1);
+  });
+
   it('exceeding the page cap throws instead of returning a partial snapshot', async () => {
     let n = 0;
     const baseFetch = vi.fn(async () => json({ data: [prop(++n)], meta: { next_cursor: n + 1000 } }));

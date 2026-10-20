@@ -9,12 +9,23 @@ import {
   bulkUpsertCurrent,
   buildPreferredVendorLines,
   completeGameRun,
+  completePullRun,
+  createGameRun,
+  createPullRun,
   finalizePullRunIfComplete,
   getGameRunStartedAt,
   getGameRunStatus,
   lookupGameArchiveContext,
+  lookupOpeningNightCanaryGame,
   refreshPreferredVendorCurrent,
 } from './src/bulk-writers';
+import {
+  CANARY_MAX_PAGES,
+  assertCanaryGameRow,
+  assertCanaryLimiter,
+  assertCanaryRecord,
+  isPlayerPropsCanaryOnly,
+} from './src/canary-limits';
 import { emitCoverageMetric } from './src/metrics';
 import type { WorkerMessage } from './src/types';
 import {
@@ -35,7 +46,232 @@ function parseMessage(body: string): WorkerMessage {
 /** Left for the DB writes, archive and run bookkeeping after the last provider page. */
 const PROVIDER_DEADLINE_MARGIN_MS = 60_000;
 
+async function runOpeningNightCanary(
+  event: SQSEvent,
+  context?: Pick<Context, 'getRemainingTimeInMillis'>
+) {
+  assertCanaryLimiter(process.env);
+  const msg = assertCanaryRecord(event, process.env);
+  const mode = getRuntimeMode();
+  if (mode.shouldSkipMutations) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        skipped: true,
+        reason: 'Player-props canary skipped by runtime mode flags',
+        gameId: msg.gameId,
+      }),
+    };
+  }
+
+  const remainingMs = context?.getRemainingTimeInMillis?.();
+  const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
+  const env = getLambdaEnv();
+  const pool = getDbPool(env.dbUrl);
+  await assertObservationClockSchema(pool);
+  assertCanaryGameRow(await lookupOpeningNightCanaryGame(pool, msg.gameId));
+
+  const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
+    limiter: { deadlineMs },
+    maxPages: CANARY_MAX_PAGES,
+  });
+  const pullRunId = await createPullRun(pool, [msg.gameId]);
+  await createGameRun(pool, pullRunId, msg.gameId, null);
+  const accounted: CanaryAccounting = { rowsStored: 0, finalized: false };
+  try {
+    return await writeOpeningNightCanary(pool, env, msg, pullRunId, fetched, accounted);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    if (!accounted.finalized) {
+      await completeGameRun(pool, pullRunId, msg.gameId, 'error', fetched.rows.length, accounted.rowsStored, message, {
+        rowsArchived: 0,
+        archiveObjectCount: 0,
+        archiveStatus: 'failed',
+        archiveError: message,
+        archiveKey: null,
+      });
+      await completePullRun(pool, pullRunId, 'error', fetched.rows.length, accounted.rowsStored, {
+        canary: true,
+        controllerClaim: false,
+      }, message);
+    }
+    throw error;
+  }
+}
+
+type CanaryAccounting = { rowsStored: number; finalized: boolean };
+
+async function writeOpeningNightCanary(
+  pool: ReturnType<typeof getDbPool>,
+  env: ReturnType<typeof getLambdaEnv>,
+  msg: ReturnType<typeof assertCanaryRecord>,
+  pullRunId: number,
+  fetched: Awaited<ReturnType<typeof fetchPlayerPropsForGame>>,
+  accounted: CanaryAccounting
+) {
+  const clocks = {
+    controllerEnqueuedAt: null,
+    observedAt: fetched.observation.responseReceivedAt,
+  };
+  const snapshotAt = clocks.observedAt;
+  const normalized = normalizePlayerPropRows(fetched.rows);
+
+  if (fetched.incomplete || fetched.rows.length === 0) {
+    const rawV2 = fetched.incomplete
+      ? await bulkInsertRawV2(pool, normalized, snapshotAt, {
+          enabled: env.storePropRawJson,
+          sampleRate: env.propRawJsonSampleRate,
+        }, pullRunId, clocks)
+      : 0;
+    accounted.rowsStored = rawV2;
+    const incomplete = fetched.incomplete;
+    await completeGameRun(
+      pool,
+      pullRunId,
+      msg.gameId,
+      incomplete ? 'error' : 'success',
+      fetched.rows.length,
+      rawV2,
+      incomplete ? 'INCOMPLETE' : undefined,
+      {
+        rowsArchived: 0,
+        archiveObjectCount: 0,
+        archiveStatus: incomplete ? 'failed' : 'pending',
+        archiveError: incomplete ? 'cursor remained after 2 pages; current snapshot not replaced' : null,
+        archiveKey: null,
+      }
+    );
+    await completePullRun(
+      pool,
+      pullRunId,
+      incomplete ? 'error' : 'success',
+      fetched.rows.length,
+      rawV2,
+      {
+        canary: true,
+        controllerClaim: false,
+        incomplete,
+        providerEmpty: !incomplete,
+        pages: CANARY_MAX_PAGES,
+      },
+      incomplete ? 'INCOMPLETE' : undefined
+    );
+    accounted.finalized = true;
+    if (incomplete) {
+      throw new Error(`player props canary INCOMPLETE for game ${msg.gameId} after ${CANARY_MAX_PAGES} pages`);
+    }
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        providerEmpty: true,
+        gameId: msg.gameId,
+        pullRunId,
+        rowsFetched: 0,
+        rowsStored: 0,
+      }),
+    };
+  }
+
+  const rawV2 = await bulkInsertRawV2(
+    pool,
+    normalized,
+    snapshotAt,
+    { enabled: env.storePropRawJson, sampleRate: env.propRawJsonSampleRate },
+    pullRunId,
+    clocks
+  );
+  if (rawV2 !== normalized.length) {
+    await completeGameRun(pool, pullRunId, msg.gameId, 'error', fetched.rows.length, rawV2, 'raw insert incomplete');
+    await completePullRun(pool, pullRunId, 'error', fetched.rows.length, rawV2, {
+      canary: true,
+      controllerClaim: false,
+      incomplete: true,
+    }, 'raw insert incomplete');
+    accounted.finalized = true;
+    throw new Error(`player props canary stored ${rawV2} of ${normalized.length} raw rows`);
+  }
+  accounted.rowsStored = rawV2;
+
+  const identity = await classifyBdlPropPlayerIds(
+    pool,
+    normalized.map((row) => String(row.player_id)),
+    msg.gameId
+  );
+  const servingNormalized = filterRowsByServingProviderId(
+    normalized,
+    (row) => row.player_id,
+    identity.servingIds
+  ).keep;
+  const current = await bulkUpsertCurrent(pool, servingNormalized, snapshotAt, clocks);
+  const preferred = buildPreferredVendorLines(servingNormalized, env.preferredVendor, snapshotAt);
+  const legacyCurrent = preferred.length === 0
+    ? 0
+    : await refreshPreferredVendorCurrent(pool, pullRunId, msg.gameId, preferred);
+  const gameCtx = await lookupGameArchiveContext(pool, msg.gameId);
+  const archive = await archiveGameSnapshot({
+    env,
+    pullRunId,
+    gameId: msg.gameId,
+    bdlGameId: msg.bdlGameId,
+    gameDate: msg.date,
+    snapshotAt,
+    observation: clocks,
+    gameStartTime: gameCtx.startTime,
+    season: gameCtx.season,
+    opponentId: null,
+    normalized,
+    rowsStored: rawV2,
+  });
+  if (env.s3ArchiveEnabled && archive.archiveStatus !== 'archived') {
+    const detail = archive.archiveError ?? 'archive was not verified';
+    await completeGameRun(pool, pullRunId, msg.gameId, 'error', fetched.rows.length, rawV2, detail, {
+      rowsArchived: archive.rowsArchived,
+      archiveObjectCount: archive.archiveObjectCount,
+      archiveStatus: 'failed',
+      archiveError: detail,
+      archiveKey: archive.archiveKey,
+    });
+    await completePullRun(pool, pullRunId, 'error', fetched.rows.length, rawV2, {
+      canary: true,
+      controllerClaim: false,
+      archiveFailed: true,
+    }, detail);
+    accounted.finalized = true;
+    throw new Error(`player props canary archive failed for game ${msg.gameId}: ${detail}`);
+  }
+  await completeGameRun(pool, pullRunId, msg.gameId, 'success', fetched.rows.length, rawV2, undefined, {
+    rowsArchived: archive.rowsArchived,
+    archiveObjectCount: archive.archiveObjectCount,
+    archiveStatus: archive.archiveStatus,
+    archiveError: archive.archiveError,
+    archiveKey: archive.archiveKey,
+  });
+  await finalizePullRunIfComplete(pool, pullRunId);
+  accounted.finalized = true;
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      success: true,
+      providerEmpty: false,
+      incomplete: false,
+      gameId: msg.gameId,
+      pullRunId,
+      rowsFetched: fetched.rows.length,
+      rowsStored: rawV2,
+      rowsCurrent: current,
+      rowsLegacyCurrent: legacyCurrent,
+      identitySkipped: identity.quarantined,
+      controllerClaim: false,
+    }),
+  };
+}
+
 export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemainingTimeInMillis'>) => {
+  if (isPlayerPropsCanaryOnly(process.env)) {
+    return runOpeningNightCanary(event, context);
+  }
   const remainingMs = context?.getRemainingTimeInMillis?.();
   const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
   const mode = getRuntimeMode();
@@ -70,6 +306,8 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
     const msg = parseMessage(record.body);
     let gameRunFinalized = false;
     let providerSettled = false;
+    let fetchedRows = 0;
+    let storedRows = 0;
     if ((await getGameRunStatus(pool, msg.runId, msg.gameId)) === 'success') {
       console.log(
         JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
@@ -80,6 +318,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
     try {
       const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, { limiter: { deadlineMs } });
       const props = fetched.rows;
+      fetchedRows = props.length;
       providerSettled = true;
       logMarketOutcome({
         outcome: outcomeForProviderResult({ threw: false, rowCount: props.length }),
@@ -121,6 +360,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         msg.runId,
         clocks
       );
+      storedRows = rawV2;
       const identity = await classifyBdlPropPlayerIds(
         pool,
         normalized.map((row) => String(row.player_id)),
@@ -153,6 +393,20 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         normalized,
         rowsStored: rawV2,
       });
+      if (env.s3ArchiveEnabled && archive.archiveStatus !== 'archived') {
+        const detail = archive.archiveError ?? 'archive was not verified';
+        archiveFailedCount += 1;
+        await completeGameRun(pool, msg.runId, msg.gameId, 'error', props.length, rawV2, detail, {
+          rowsArchived: archive.rowsArchived,
+          archiveObjectCount: archive.archiveObjectCount,
+          archiveStatus: 'failed',
+          archiveError: detail,
+          archiveKey: archive.archiveKey,
+        });
+        gameRunFinalized = true;
+        await finalizePullRunIfComplete(pool, msg.runId);
+        throw new Error(`player-prop archive failed for game ${msg.gameId} pull ${msg.runId}: ${detail}`);
+      }
 
       await completeGameRun(pool, msg.runId, msg.gameId, 'success', props.length, rawV2, undefined, {
         rowsArchived: archive.rowsArchived,
@@ -196,11 +450,6 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         }
       );
 
-      if (archive.archiveStatus === 'failed') {
-        throw new Error(
-          `player-prop archive failed for game ${msg.gameId} pull ${msg.runId}: ${archive.archiveError}`
-        );
-      }
       successCount++;
     } catch (error: unknown) {
       if (!providerSettled) {
@@ -220,8 +469,8 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
           msg.runId,
           msg.gameId,
           'error',
-          0,
-          0,
+          fetchedRows,
+          storedRows,
           error instanceof Error ? error.message : 'Unknown error',
           {
             rowsArchived: 0,
