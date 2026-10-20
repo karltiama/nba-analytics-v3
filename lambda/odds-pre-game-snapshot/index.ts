@@ -1,10 +1,11 @@
 /**
  * Lambda Function: Pre-Game Odds Snapshot
  *
- * Scheduled: Every 30 min from 10am–12pm ET via EventBridge (or 6am if cron adjusted).
- * Purpose: Fetch today's and tomorrow's NBA game odds from BallDontLie /v2/odds,
- *          store raw snapshots, and transform into analytics tables.
- * Default: fetches both today and tomorrow (ET) so tomorrow's odds appear when BDL has them.
+ * Scheduled: an empty event fetches today and tomorrow in America/New_York.
+ * Purpose: Fetch those NBA odds from BallDontLie /v2/odds,
+ *          store raw snapshots, and transform complete snapshots into analytics tables.
+ * The normal path stops at 3 provider pages per date and 6 pages per invocation.
+ * A truncated date is INCOMPLETE and does not replace current odds or movement.
  *
  * Prerequisite: nightly-bdl-updater must have run so games exist in analytics.games (runs at 03:00 ET).
  *
@@ -34,9 +35,15 @@ try {
   // dotenv not available in Lambda — env vars set via configuration
 }
 
-import { Pool } from 'pg';
+import { Pool, type PoolClient } from 'pg';
 import { z } from 'zod';
-import { fetchBdlLive } from './bdl-live-rate-limit';
+import { acquireOdds, OddsPersistError, type OddsProviderRow } from './acquire';
+import { BdlRateLimitError, fetchBdlLive } from './bdl-live-rate-limit';
+import { isOddsCanaryOnly, isOpeningNightCanaryEvent } from './canary-limits';
+import type { PlannedGame } from './collection-planner';
+import { createDynamoOddsClaim } from './overlap-claim';
+import { parseOddsNumber, providerThrowToPage, shouldReplaceCurrent } from './normal-path';
+import { createDynamoOddsBudget } from './request-budget';
 
 // ============================================
 // CONFIGURATION
@@ -112,9 +119,7 @@ type BdlOddsRow = z.infer<typeof BdlOddsRowSchema>;
 // ============================================
 
 function parseNumeric(val: string | null | undefined): number | null {
-  if (val == null || val === '') return null;
-  const n = parseFloat(val);
-  return isNaN(n) ? null : n;
+  return parseOddsNumber(val);
 }
 
 // ============================================
@@ -124,42 +129,6 @@ function parseNumeric(val: string | null | undefined): number | null {
 /** Reserved after the last provider page for snapshot writes and transform. */
 const DEADLINE_MARGIN_MS = 45_000;
 let runDeadlineMs: number | undefined;
-
-async function fetchOddsForDate(dateStr: string): Promise<BdlOddsRow[]> {
-  const allRows: BdlOddsRow[] = [];
-  let cursor: number | null = null;
-
-  while (true) {
-    const url = new URL(`${BDL_BASE}/odds`);
-    url.searchParams.set('dates[]', dateStr);
-    url.searchParams.set('per_page', '100');
-    if (cursor != null) {
-      url.searchParams.set('cursor', String(cursor));
-    }
-
-    console.log(`Fetching odds: ${url.toString().replace(/Authorization=[^&]+/, 'Authorization=***')}`);
-
-    const res = await fetchBdlLive(
-      url.toString(),
-      { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
-      { worker: 'odds-pre-game-snapshot', deadlineMs: runDeadlineMs }
-    );
-
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      throw new Error(`BDL API error: ${res.status} ${res.statusText} — ${body}`);
-    }
-
-    const json = await res.json();
-    const parsed = BdlOddsResponseSchema.parse(json);
-    allRows.push(...parsed.data);
-
-    cursor = parsed.meta?.next_cursor ?? null;
-    if (cursor == null) break;
-  }
-
-  return allRows;
-}
 
 // ============================================
 // RAW STORAGE
@@ -192,7 +161,7 @@ async function completePullRun(
   );
 }
 
-async function insertRawSnapshot(pullRunId: number, row: BdlOddsRow): Promise<void> {
+async function insertRawSnapshot(pullRunId: number, row: OddsProviderRow): Promise<void> {
   await pool.query(
     `INSERT INTO raw.odds_snapshots (
        pull_run_id, bdl_odds_id, bdl_game_id, game_id, vendor,
@@ -226,102 +195,147 @@ async function insertRawSnapshot(pullRunId: number, row: BdlOddsRow): Promise<vo
 // ANALYTICS TRANSFORM (inline)
 // ============================================
 
+async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const value = await fn(client);
+    await client.query('COMMIT');
+    return value;
+  } catch (err) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // The original persistence error is the one the run records.
+    }
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 async function transformToAnalytics(pullRunId: number): Promise<{ current: number; history: number; movement: number }> {
-  let currentCount = 0;
   let historyCount = 0;
-
-  // Get the latest snapshot per game+vendor from this pull run,
-  // filtering to preferred vendor for current odds.
-  const latestRows = await pool.query(
-    `SELECT DISTINCT ON (game_id)
-       game_id, vendor,
-       spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
-       moneyline_home_odds, moneyline_away_odds,
-       total_value, total_over_odds, total_under_odds,
-       provider_updated_at, pull_run_id
-     FROM raw.odds_snapshots
-     WHERE pull_run_id = $1
-       AND vendor = $2
-       AND game_id IN (SELECT game_id FROM analytics.games)
-     ORDER BY game_id, provider_updated_at DESC NULLS LAST`,
-    [pullRunId, PREFERRED_VENDOR]
-  );
-
-  for (const row of latestRows.rows) {
-    // Upsert current odds
-    const upsertResult = await pool.query(
-      `INSERT INTO analytics.game_odds_current (
-         game_id, home_moneyline, away_moneyline,
-         home_spread, home_spread_odds, away_spread, away_spread_odds,
-         total, over_odds, under_odds,
-         vendor, snapshot_at, pull_run_id, updated_at
-       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,now())
-       ON CONFLICT (game_id) DO UPDATE SET
-         home_moneyline = excluded.home_moneyline,
-         away_moneyline = excluded.away_moneyline,
-         home_spread = excluded.home_spread,
-         home_spread_odds = excluded.home_spread_odds,
-         away_spread = excluded.away_spread,
-         away_spread_odds = excluded.away_spread_odds,
-         total = excluded.total,
-         over_odds = excluded.over_odds,
-         under_odds = excluded.under_odds,
-         vendor = excluded.vendor,
-         snapshot_at = excluded.snapshot_at,
-         pull_run_id = excluded.pull_run_id,
-         updated_at = now()`,
-      [
-        row.game_id,
-        row.moneyline_home_odds, row.moneyline_away_odds,
-        row.spread_home_value, row.spread_home_odds,
-        row.spread_away_value, row.spread_away_odds,
-        row.total_value, row.total_over_odds, row.total_under_odds,
-        row.vendor,
-        row.provider_updated_at || new Date(),
-        row.pull_run_id,
-      ]
-    );
-    currentCount += upsertResult.rowCount ?? 0;
+  try {
+    historyCount = await withTransaction(async (client) => {
+      const allRows = await client.query(
+        `SELECT game_id, vendor,
+           spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
+           moneyline_home_odds, moneyline_away_odds,
+           total_value, total_over_odds, total_under_odds,
+           provider_updated_at, pull_run_id
+         FROM raw.odds_snapshots
+         WHERE pull_run_id = $1
+           AND game_id IN (SELECT game_id FROM analytics.games)`,
+        [pullRunId]
+      );
+      let inserted = 0;
+      for (const row of allRows.rows) {
+        if (row.provider_updated_at == null) continue;
+        const insertResult = await client.query(
+          `INSERT INTO analytics.game_odds_history (
+             game_id, home_moneyline, away_moneyline,
+             home_spread, home_spread_odds, away_spread, away_spread_odds,
+             total, over_odds, under_odds,
+             vendor, snapshot_at, pull_run_id
+           ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+           ON CONFLICT (game_id, vendor, snapshot_at) DO NOTHING`,
+          [
+            row.game_id,
+            row.moneyline_home_odds, row.moneyline_away_odds,
+            row.spread_home_value, row.spread_home_odds,
+            row.spread_away_value, row.spread_away_odds,
+            row.total_value, row.total_over_odds, row.total_under_odds,
+            row.vendor, row.provider_updated_at, row.pull_run_id,
+          ]
+        );
+        inserted += insertResult.rowCount ?? 0;
+      }
+      return inserted;
+    });
+  } catch (err) {
+    throw new OddsPersistError(err instanceof Error ? err.message : 'history persistence failed', 'HISTORY_PERSISTENCE');
   }
 
-  // Append all vendor rows from this run to history (deduped by unique constraint)
-  const allRows = await pool.query(
-    `SELECT game_id, vendor,
-       spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
-       moneyline_home_odds, moneyline_away_odds,
-       total_value, total_over_odds, total_under_odds,
-       provider_updated_at, pull_run_id
-     FROM raw.odds_snapshots
-     WHERE pull_run_id = $1
-       AND game_id IN (SELECT game_id FROM analytics.games)`,
-    [pullRunId]
-  );
-
-  for (const row of allRows.rows) {
-    const snapshotAt = row.provider_updated_at || new Date();
-    const insertResult = await pool.query(
-      `INSERT INTO analytics.game_odds_history (
-         game_id, home_moneyline, away_moneyline,
-         home_spread, home_spread_odds, away_spread, away_spread_odds,
-         total, over_odds, under_odds,
-         vendor, snapshot_at, pull_run_id
-       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-       ON CONFLICT (game_id, vendor, snapshot_at) DO NOTHING`,
-      [
-        row.game_id,
-        row.moneyline_home_odds, row.moneyline_away_odds,
-        row.spread_home_value, row.spread_home_odds,
-        row.spread_away_value, row.spread_away_odds,
-        row.total_value, row.total_over_odds, row.total_under_odds,
-        row.vendor, snapshotAt, row.pull_run_id,
-      ]
-    );
-    historyCount += insertResult.rowCount ?? 0;
+  let currentCount = 0;
+  let affectedGameIds: string[] = [];
+  try {
+    const current = await withTransaction(async (client) => {
+      const latestRows = await client.query(
+        `SELECT DISTINCT ON (game_id)
+           game_id, vendor,
+           spread_home_value, spread_home_odds, spread_away_value, spread_away_odds,
+           moneyline_home_odds, moneyline_away_odds,
+           total_value, total_over_odds, total_under_odds,
+           provider_updated_at, pull_run_id
+         FROM raw.odds_snapshots
+         WHERE pull_run_id = $1
+           AND vendor = $2
+           AND game_id IN (SELECT game_id FROM analytics.games)
+         ORDER BY game_id, provider_updated_at DESC NULLS LAST`,
+        [pullRunId, PREFERRED_VENDOR]
+      );
+      let applied = 0;
+      for (const row of latestRows.rows) {
+        if (row.provider_updated_at == null) continue;
+        const incomingAt = new Date(row.provider_updated_at).toISOString();
+        const existing = await client.query(
+          `SELECT snapshot_at FROM analytics.game_odds_current WHERE game_id = $1`,
+          [row.game_id]
+        );
+        if (!shouldReplaceCurrent(existing.rows[0]?.snapshot_at ?? null, incomingAt)) continue;
+        const upsertResult = await client.query(
+          `INSERT INTO analytics.game_odds_current (
+             game_id, home_moneyline, away_moneyline,
+             home_spread, home_spread_odds, away_spread, away_spread_odds,
+             total, over_odds, under_odds,
+             vendor, snapshot_at, pull_run_id, updated_at
+           ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,now())
+           ON CONFLICT (game_id) DO UPDATE SET
+             home_moneyline = excluded.home_moneyline,
+             away_moneyline = excluded.away_moneyline,
+             home_spread = excluded.home_spread,
+             home_spread_odds = excluded.home_spread_odds,
+             away_spread = excluded.away_spread,
+             away_spread_odds = excluded.away_spread_odds,
+             total = excluded.total,
+             over_odds = excluded.over_odds,
+             under_odds = excluded.under_odds,
+             vendor = excluded.vendor,
+             snapshot_at = excluded.snapshot_at,
+             pull_run_id = excluded.pull_run_id,
+             updated_at = now()
+           WHERE analytics.game_odds_current.snapshot_at < excluded.snapshot_at`,
+          [
+            row.game_id,
+            row.moneyline_home_odds, row.moneyline_away_odds,
+            row.spread_home_value, row.spread_home_odds,
+            row.spread_away_value, row.spread_away_odds,
+            row.total_value, row.total_over_odds, row.total_under_odds,
+            row.vendor,
+            row.provider_updated_at,
+            row.pull_run_id,
+          ]
+        );
+        applied += upsertResult.rowCount ?? 0;
+      }
+      return {
+        applied,
+        gameIds: latestRows.rows.map((row: { game_id: string }) => String(row.game_id)),
+      };
+    });
+    currentCount = current.applied;
+    affectedGameIds = current.gameIds;
+  } catch (err) {
+    throw new OddsPersistError(err instanceof Error ? err.message : 'current persistence failed', 'CURRENT_PERSISTENCE');
   }
 
-  // Refresh line movement summary for affected games
-  const affectedGameIds = [...new Set(allRows.rows.map((r: any) => r.game_id))];
-  const movementCount = await refreshLineMovementSummary(affectedGameIds);
+  let movementCount = 0;
+  try {
+    movementCount = await refreshLineMovementSummary(affectedGameIds);
+  } catch (err) {
+    throw new OddsPersistError(err instanceof Error ? err.message : 'movement persistence failed', 'MOVEMENT_PERSISTENCE');
+  }
 
   return { current: currentCount, history: historyCount, movement: movementCount };
 }
@@ -398,59 +412,93 @@ interface LambdaEvent {
   dates?: string[];  // multiple dates override
 }
 
-/** Default dates to fetch: today and tomorrow (ET). Tomorrow gets odds as soon as BDL has them. */
-function getDefaultDatesET(): string[] {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-  const tomorrow = new Date(Date.now() + 86400000).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-  return [today, tomorrow];
-}
-
-async function processDate(dateStr: string): Promise<{
-  date: string;
-  pullRunId: number;
-  rowsFetched: number;
-  rowsStored: number;
-  uniqueGames: number;
-  uniqueVendors: number;
-  transform: { current: number; history: number; movement: number };
-}> {
-  const pullRunId = await createPullRun(dateStr);
-  console.log(`[${dateStr}] Created pull run: ${pullRunId}`);
-
-  const oddsRows = await fetchOddsForDate(dateStr);
-  console.log(`[${dateStr}] Fetched ${oddsRows.length} odds rows from BDL`);
-
-  if (oddsRows.length === 0) {
-    await completePullRun(pullRunId, 0, 0, 'success', { message: 'No odds returned' });
-    return { date: dateStr, pullRunId, rowsFetched: 0, rowsStored: 0, uniqueGames: 0, uniqueVendors: 0, transform: { current: 0, history: 0, movement: 0 } };
-  }
-
-  let stored = 0;
-  for (const row of oddsRows) {
-    try {
-      await insertRawSnapshot(pullRunId, row);
-      stored++;
-    } catch (err: any) {
-      console.error(`[${dateStr}] Error storing snapshot for game ${row.game_id} vendor ${row.vendor}:`, err.message);
+async function loadPlannedGames(date: string): Promise<PlannedGame[]> {
+  const games = await pool.query(
+    `SELECT g.game_id::text AS game_id, g.season::text AS season,
+            to_jsonb(g)->>'season_phase' AS season_phase, g.start_time
+     FROM analytics.games g
+     WHERE timezone('America/New_York', g.start_time)::date = $1::date`,
+    [date]
+  );
+  const ids = games.rows.map((row: { game_id: string }) => row.game_id);
+  const latest = new Map<string, string>();
+  if (ids.length > 0) {
+    const snaps = await pool.query(
+      `SELECT game_id::text AS game_id, max(snapshot_at) AS snapshot_at
+       FROM analytics.game_odds_current
+       WHERE game_id = ANY($1::text[])
+       GROUP BY game_id`,
+      [ids]
+    );
+    for (const row of snaps.rows as { game_id: string; snapshot_at: Date | string }[]) {
+      latest.set(row.game_id, row.snapshot_at instanceof Date ? row.snapshot_at.toISOString() : row.snapshot_at);
     }
   }
-  console.log(`[${dateStr}] Stored ${stored}/${oddsRows.length} raw snapshots`);
-
-  const transformResult = await transformToAnalytics(pullRunId);
-  console.log(`[${dateStr}] Transform — current: ${transformResult.current}, history: ${transformResult.history}, movement: ${transformResult.movement}`);
-
-  const vendors = [...new Set(oddsRows.map(r => r.vendor))];
-  const games = [...new Set(oddsRows.map(r => r.game_id))];
-  await completePullRun(pullRunId, oddsRows.length, stored, 'success', {
-    vendors,
-    gamesCount: games.length,
-    transform: transformResult,
-  });
-
-  return { date: dateStr, pullRunId, rowsFetched: oddsRows.length, rowsStored: stored, uniqueGames: games.length, uniqueVendors: vendors.length, transform: transformResult };
+  return games.rows.map((row: { game_id: string; season: string | null; season_phase: string | null; start_time: Date | string | null }) => ({
+    gameId: row.game_id,
+    season: row.season,
+    seasonPhase: row.season_phase,
+    startTime: row.start_time instanceof Date ? row.start_time.toISOString() : row.start_time,
+    latestSnapshotAt: latest.get(row.game_id) ?? null,
+  }));
 }
 
-export const handler = async (event: LambdaEvent, context?: { getRemainingTimeInMillis?: () => number }) => {
+async function loadGames(gameIds: string[]) {
+  const result = await pool.query(
+    `SELECT g.game_id::text AS game_id, g.season::text AS season,
+            to_jsonb(g)->>'season_phase' AS season_phase, g.start_time
+     FROM analytics.games g
+     WHERE g.game_id = ANY($1::text[])`,
+    [gameIds]
+  );
+  return result.rows.map((row: { game_id: string; season: string | null; season_phase: string | null; start_time: Date | string | null }) => ({
+    gameId: row.game_id,
+    season: row.season,
+    seasonPhase: row.season_phase,
+    startTime: row.start_time instanceof Date ? row.start_time.toISOString() : row.start_time,
+  }));
+}
+
+async function fetchOddsPage(dateStr: string, cursor: number | null) {
+  const url = new URL(`${BDL_BASE}/odds`);
+  url.searchParams.set('dates[]', dateStr);
+  url.searchParams.set('per_page', '100');
+  if (cursor != null) url.searchParams.set('cursor', String(cursor));
+  console.log(`Fetching odds: ${url.toString()}`);
+
+  try {
+    const res = await fetchBdlLive(
+      url.toString(),
+      { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
+      { worker: 'odds-pre-game-snapshot', deadlineMs: runDeadlineMs }
+    );
+    if (!res.ok) {
+      await res.text().catch(() => '');
+      return { ok: false as const, status: res.status };
+    }
+    const parsed = BdlOddsResponseSchema.parse(await res.json());
+    return {
+      ok: true as const,
+      rows: parsed.data,
+      nextCursor: parsed.meta?.next_cursor ?? null,
+    };
+  } catch (err) {
+    const translated = providerThrowToPage(err);
+    if (translated && 'status' in translated) return translated;
+    if (translated?.timeout) {
+      const timeout = new Error(translated.message);
+      (timeout as Error & { timeout?: boolean }).timeout = true;
+      throw timeout;
+    }
+    if (err instanceof BdlRateLimitError) throw err;
+    throw err;
+  }
+}
+
+export const handler = async (
+  event: LambdaEvent,
+  context?: { getRemainingTimeInMillis?: () => number; awsRequestId?: string }
+) => {
   const remainingMs = context?.getRemainingTimeInMillis?.();
   runDeadlineMs = remainingMs != null ? Date.now() + remainingMs - DEADLINE_MARGIN_MS : undefined;
   try {
@@ -476,30 +524,34 @@ export const handler = async (event: LambdaEvent, context?: { getRemainingTimeIn
       };
     }
 
-    const dates = event.dates
-      || (event.date ? [event.date] : getDefaultDatesET());
-    console.log(`Fetching odds for dates: ${dates.join(', ')}`);
-
-    const results = [];
-    for (const dateStr of dates) {
-      try {
-        const result = await processDate(dateStr);
-        results.push(result);
-      } catch (err: any) {
-        console.error(`Error processing ${dateStr}:`, err.message);
-        results.push({ date: dateStr, error: err.message });
-      }
-    }
-
-    const totalFetched = results.reduce((s, r) => s + ((r as any).rowsFetched || 0), 0);
-    const totalStored = results.reduce((s, r) => s + ((r as any).rowsStored || 0), 0);
-
-    const summary = { dates, results, totalFetched, totalStored, timestamp: new Date().toISOString() };
-    console.log('Summary:', JSON.stringify(summary, null, 2));
-
-    return { statusCode: 200, body: JSON.stringify({ success: true, ...summary }) };
+    const budget = createDynamoOddsBudget({ tableName: process.env.BDL_RATE_LIMIT_TABLE });
+    const claim = createDynamoOddsClaim({ tableName: process.env.BDL_RATE_LIMIT_TABLE });
+    const outcome = await acquireOdds(event, {
+      env: process.env,
+      now: () => new Date(),
+      preferredVendor: PREFERRED_VENDOR,
+      fetchPage: fetchOddsPage,
+      createPullRun,
+      completePullRun,
+      insertRaw: insertRawSnapshot,
+      loadGames,
+      transformComplete: transformToAnalytics,
+      requireSafety: true,
+      slateForDate: loadPlannedGames,
+      reserveAttempt: (input) => budget.reserve(input),
+      recordAttempt: (input) => budget.record(input),
+      claimDate: (input) => claim.claim(input),
+      completeClaim: (input) => claim.complete(input),
+      claimOwner: context?.awsRequestId ?? 'odds-pre-game-snapshot',
+    });
+    console.log('Summary:', JSON.stringify(outcome));
+    return {
+      statusCode: outcome.httpStatus,
+      body: JSON.stringify({ ...outcome, timestamp: new Date().toISOString() }),
+    };
   } catch (error: any) {
     console.error('Error in pre-game odds snapshot:', error);
+    if (isOddsCanaryOnly(process.env) || isOpeningNightCanaryEvent(event)) throw error;
     return {
       statusCode: 500,
       body: JSON.stringify({ success: false, error: error.message || 'Unknown error', timestamp: new Date().toISOString() }),

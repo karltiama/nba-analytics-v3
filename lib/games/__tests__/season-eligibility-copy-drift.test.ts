@@ -10,6 +10,7 @@ function read(rel: string): string {
 
 const COPIES = [
   'lambda/nightly-bdl-updater/season-eligibility.ts',
+  'lambda/odds-pre-game-snapshot/season-eligibility.ts',
   'lambda/player-props-snapshot/src/season-eligibility.ts',
 ];
 
