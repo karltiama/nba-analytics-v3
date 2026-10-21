@@ -27,6 +27,13 @@ export function oddsAcquisitionEvent(input: {
   providerRequests: number;
   classifications: readonly string[];
   budgetRemaining?: number | null;
+  acquiredRows?: number | null;
+  rawRowsPersisted?: number | null;
+  pregameEligibleRows?: number | null;
+  postTipRowsSkipped?: number | null;
+  currentRowsUpdated?: number | null;
+  historyRowsInserted?: number | null;
+  movementRowsInserted?: number | null;
 }): Record<string, unknown> {
   const counts: Record<string, number> = {};
   for (const classification of input.classifications) {
@@ -47,5 +54,12 @@ export function oddsAcquisitionEvent(input: {
     providerTimeout: counts.TIMEOUT ?? 0,
     incomplete: counts.INCOMPLETE ?? 0,
     movementFailed: counts.MOVEMENT_PERSISTENCE ?? 0,
+    acquiredRows: input.acquiredRows ?? null,
+    rawRowsPersisted: input.rawRowsPersisted ?? null,
+    pregameEligibleRows: input.pregameEligibleRows ?? null,
+    postTipRowsSkipped: input.postTipRowsSkipped ?? null,
+    currentRowsUpdated: input.currentRowsUpdated ?? null,
+    historyRowsInserted: input.historyRowsInserted ?? null,
+    movementRowsInserted: input.movementRowsInserted ?? null,
   };
 }
