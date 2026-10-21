@@ -229,7 +229,31 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
           })
         );
       }
-      if (archive.archiveStatus === 'failed') archiveFailedCount += 1;
+      if (archive.archiveStatus === 'failed') {
+        archiveFailedCount += 1;
+        // The raw and serving writes above already committed. Archive is optional:
+        // record the failure, emit ArchiveFailed / ArchiveGap, and return success so
+        // SQS deletes this message instead of redelivering it for another provider fetch.
+        // A later archive-only recovery reads raw.player_prop_snapshots_v2 for this
+        // pull_run_id and game_id, rebuilds the envelope, and calls writeArchiveObject.
+        // That recovery must not call the provider or reserve provider_attempts.
+        // The put is conditional (IfNoneMatch "*"). HTTP 412 compares the existing
+        // object once. HTTP 409 is one compare and no second put. HTTP 403 fails
+        // the archive and does not overwrite.
+        console.error(
+          JSON.stringify({
+            event: 'player_prop_archive_failed',
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            rowsFetched: props.length,
+            rowsStored: rawV2,
+            rowsArchived: archive.rowsArchived,
+            archiveStatus: archive.archiveStatus,
+            archiveError: archive.archiveError,
+            archiveKey: archive.archiveKey,
+          })
+        );
+      }
       emitCoverageMetric(
         'NBA/PlayerProps',
         { Component: 'Worker', GameId: msg.gameId },
@@ -246,11 +270,6 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         }
       );
 
-      if (archive.archiveStatus === 'failed') {
-        throw new Error(
-          `player-prop archive failed for game ${msg.gameId} pull ${msg.runId}: ${archive.archiveError}`
-        );
-      }
       successCount++;
     } catch (error: unknown) {
       if (!providerSettled) {
