@@ -14,9 +14,9 @@ import {
   oddsPageDecision,
   type OddsInvocation,
 } from './canary-limits';
-import { planDate, type PlannedGame } from './collection-planner';
+import { compareDueDates, planDate, type PlannedGame } from './collection-planner';
 import type { ClaimDecision } from './overlap-claim';
-import type { BudgetDecision } from './request-budget';
+import { dailyAttemptCeiling, type BudgetDecision } from './request-budget';
 import { oddsAcquisitionEvent } from './safety-policy';
 import {
   NORMAL_MAX_PAGES_PER_DATE,
@@ -79,7 +79,7 @@ export type AcquireDeps = {
   claimDate?: (input: { day: string; date: string; windowId: string; nowMs: number; owner: string }) => Promise<ClaimDecision>;
   completeClaim?: (input: { day: string; date: string; windowId: string; nowMs: number; owner: string }) => Promise<void>;
   claimOwner?: string;
-  budgetRemaining?: number;
+  budgetRemaining?: number | null;
 };
 
 export type DateAcquisition = {
@@ -103,7 +103,7 @@ export type AcquireResult = {
   totalFetched: number;
   totalStored: number;
   reason?: string;
-  budgetRemaining?: number;
+  budgetRemaining?: number | null;
 };
 
 export class OddsPersistError extends Error {
@@ -410,6 +410,7 @@ export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Pro
       if (plan.due && plan.windowId) due.push({ date, windowId: plan.windowId });
     }
     if (due.length === 0) return quiet('NO_DUE_WORK', 'no odds date is due');
+    due.sort(compareDueDates);
     planned = due;
   }
 
@@ -419,12 +420,15 @@ export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Pro
     : perDate * planned.length);
   const results: DateAcquisition[] = [];
   let providerRequests = 0;
-  let budgetRemaining = deps.budgetRemaining;
+  let budgetRemaining: number | null | undefined = deps.budgetRemaining;
   const claimOwner = deps.claimOwner ?? 'odds-pre-game-snapshot';
 
   async function keep(date: string, windowId: string, result: DateAcquisition): Promise<void> {
     results.push(result);
-    if (result.classification !== 'COMPLETE' && result.classification !== 'PROVIDER_EMPTY') return;
+    const finished = result.classification === 'COMPLETE'
+      || result.classification === 'PROVIDER_EMPTY'
+      || result.classification === 'INCOMPLETE';
+    if (!finished) return;
     try {
       await deps.completeClaim?.({
         day,
@@ -440,7 +444,7 @@ export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Pro
 
   for (const item of planned) {
     const date = item.date;
-    const dateCeiling = perDate;
+    const dateCeiling = dailyAttemptCeiling();
     if (deps.claimDate) {
       const claim = await deps.claimDate({
         day,
@@ -590,7 +594,7 @@ function summarize(
   dates: string[],
   results: DateAcquisition[],
   providerRequests: number,
-  budgetRemaining?: number
+  budgetRemaining?: number | null
 ): AcquireResult {
   const summary = summarizeClassifications(results.map((result) => result.classification));
   const totalFetched = results.reduce((sum, result) => sum + result.rowsFetched, 0);

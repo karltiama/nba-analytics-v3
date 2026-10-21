@@ -4,6 +4,7 @@
  * The provider reset is not a verified daily boundary. The ledger day is America/New_York
  * because that is the game date and it does not split an evening slate at 00:00 UTC.
  * A reservation is consumed even when the later HTTP attempt fails.
+ * remaining is the daily ceiling minus the stored reserved counter.
  */
 
 import { DynamoDBClient, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
@@ -22,7 +23,7 @@ export type BudgetLedger = {
 };
 
 export type BudgetDecision =
-  | { ok: true; reservationId: string; remaining: number; ledger: BudgetLedger }
+  | { ok: true; reservationId: string; remaining: number | null; ledger: BudgetLedger }
   | { ok: false; reason: 'exhausted' | 'unavailable' | 'ambiguous'; ledger: BudgetLedger };
 
 export type ReserveInput = {
@@ -81,6 +82,10 @@ export function applyAttempt(ledger: BudgetLedger, outcome: 'success' | 'failure
 
 export function budgetDay(now: Date): string {
   return etCalendarDate(now);
+}
+
+export function dailyAttemptCeiling(): number {
+  return DAILY_ODDS_REQUEST_CEILING;
 }
 
 export function dateCounterName(date: string): string {
@@ -162,12 +167,15 @@ export function createDynamoOddsBudget(input: {
   let ledger = emptyBudgetLedger();
   const client = input.client ?? new DynamoDBClient({});
 
-  async function sendOnce(command: UpdateItemCommand): Promise<'ok' | StoreError> {
+  async function sendOnce(command: UpdateItemCommand): Promise<
+    | { ok: true; attributes?: Record<string, { N?: string }> }
+    | { ok: false; error: StoreError }
+  > {
     try {
-      await client.send(command);
-      return 'ok';
+      const response = await client.send(command);
+      return { ok: true, attributes: response?.Attributes };
     } catch (err) {
-      return classifyStoreError(err);
+      return { ok: false, error: classifyStoreError(err) };
     }
   }
 
@@ -198,13 +206,13 @@ export function createDynamoOddsBudget(input: {
         },
         ReturnValues: 'UPDATED_NEW',
       }));
-      if (granted === 'ambiguous') {
+      if (!granted.ok && granted.error === 'ambiguous') {
         return { ok: false, reason: 'ambiguous', ledger: { ...ledger } };
       }
-      if (granted === 'unavailable') {
+      if (!granted.ok && granted.error === 'unavailable') {
         return { ok: false, reason: 'unavailable', ledger: { ...ledger } };
       }
-      if (granted === 'conflict') {
+      if (!granted.ok) {
         await sendOnce(new UpdateItemCommand({
           TableName: input.tableName,
           Key: {
@@ -217,15 +225,17 @@ export function createDynamoOddsBudget(input: {
         ledger = { ...ledger, requested: ledger.requested + 1, refused: ledger.refused + 1 };
         return { ok: false, reason: 'exhausted', ledger: { ...ledger } };
       }
+      const storedReserved = Number(granted.attributes?.reserved?.N);
+      const storedKnown = Number.isInteger(storedReserved);
       ledger = {
         ...ledger,
         requested: ledger.requested + 1,
-        reserved: ledger.reserved + 1,
+        reserved: storedKnown ? storedReserved : ledger.reserved,
       };
       return {
         ok: true,
-        reservationId: `${request.day}#${request.date}#${ledger.reserved}`,
-        remaining: ceiling - ledger.reserved,
+        reservationId: `${request.day}#${request.date}#${storedKnown ? storedReserved : ledger.requested}`,
+        remaining: storedKnown ? ceiling - storedReserved : null,
         ledger: { ...ledger },
       };
     },
@@ -241,7 +251,7 @@ export function createDynamoOddsBudget(input: {
         UpdateExpression: `ADD attempted :one, ${field} :one`,
         ExpressionAttributeValues: { ':one': { N: '1' } },
       }));
-      if (result === 'ok') ledger = applyAttempt(ledger, entry.outcome);
+      if (result.ok) ledger = applyAttempt(ledger, entry.outcome);
     },
   };
 }
