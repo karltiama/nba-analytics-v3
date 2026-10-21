@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { propsFullSlateBudget, propsRequestBudget } from '../acquisition-budget';
-import { PLAYER_PROPS_MAX_HTTP_ATTEMPTS } from '../attempt-budget';
+import { PLAYER_PROPS_MAX_HTTP_ATTEMPTS, PROPS_DAILY_HTTP_ATTEMPT_CAP } from '../attempt-budget';
 import { controllerCoverageMetric } from '../market-outcome';
 import { resolveWaveMaxGames, selectGameWave } from '../wave-cap';
 
@@ -55,6 +55,9 @@ describe('props request budget', () => {
     expect(slate.expectedRequests).toBe(225);
     expect(slate.hardRequests).toBe(750);
     expect(slate.hardRequests).toBeGreaterThan(slate.games * slate.collectionsPerGame);
+    expect(PROPS_DAILY_HTTP_ATTEMPT_CAP).toBe(300);
+    expect(PROPS_DAILY_HTTP_ATTEMPT_CAP).toBeGreaterThan(slate.expectedRequests);
+    expect(PROPS_DAILY_HTTP_ATTEMPT_CAP).toBeLessThan(slate.hardRequests);
   });
 });
 

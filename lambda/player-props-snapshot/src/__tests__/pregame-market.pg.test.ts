@@ -83,6 +83,12 @@ CREATE TABLE IF NOT EXISTS raw.player_prop_snapshots_v2 (
 CREATE UNIQUE INDEX IF NOT EXISTS raw_player_prop_snapshots_v2_pull_observation_uidx
   ON raw.player_prop_snapshots_v2 (pull_run_id, game_id, player_id, sportsbook, prop_type, side, line_value)
   WHERE pull_run_id IS NOT NULL;
+CREATE TABLE IF NOT EXISTS raw.player_prop_daily_attempts (
+  et_day date PRIMARY KEY,
+  attempts integer NOT NULL DEFAULT 0,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CHECK (attempts >= 0)
+);
 CREATE TABLE IF NOT EXISTS raw.player_prop_game_runs (
   pull_run_id bigint NOT NULL,
   game_id text NOT NULL,

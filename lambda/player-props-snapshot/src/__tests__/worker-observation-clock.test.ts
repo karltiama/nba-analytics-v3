@@ -62,6 +62,9 @@ function workerPool(
   const query = vi.fn(async (sql: string, values: unknown[] = []) => {
       calls.push({ sql, values });
       if (/^(BEGIN|COMMIT|ROLLBACK)$/.test(sql.trim())) return { rows: [] };
+      if (sql.includes('player_prop_daily_attempts')) {
+        return { rows: [{ attempts: 1 }], rowCount: 1 };
+      }
       if (sql.includes('provider_attempts = provider_attempts + 1')) {
         return { rows: [{ provider_attempts: 1 }], rowCount: 1 };
       }
