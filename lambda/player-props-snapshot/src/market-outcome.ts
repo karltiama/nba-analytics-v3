@@ -33,3 +33,31 @@ export function logMarketOutcome(fields: {
 export function noRequestCoverage(): { GamesTargeted: number; GamesQueued: number } {
   return { GamesTargeted: 0, GamesQueued: 0 };
 }
+
+/**
+ * GamesQueued is emitted only when this wave had eligible games and the queue
+ * result is the coverage signal. An empty window returns null so the low-coverage
+ * alarm, which treats a missing sample as not breaching, stays quiet.
+ * A full dedupe also returns null: those games were already queued.
+ * Eligible games with nothing queued and nothing deduped is unexpected and emits 0.
+ */
+export function controllerCoverageMetric(input: {
+  eligibleGames: number;
+  queuedGames: number;
+  dedupedGames: number;
+}): { GamesTargeted: number; GamesQueued: number; GamesDeduped: number } | null {
+  if (input.eligibleGames <= 0) return null;
+  if (input.queuedGames > 0) {
+    return {
+      GamesTargeted: input.eligibleGames,
+      GamesQueued: input.queuedGames,
+      GamesDeduped: input.dedupedGames,
+    };
+  }
+  if (input.dedupedGames >= input.eligibleGames) return null;
+  return {
+    GamesTargeted: input.eligibleGames,
+    GamesQueued: 0,
+    GamesDeduped: input.dedupedGames,
+  };
+}

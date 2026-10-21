@@ -7,16 +7,12 @@ import {
   nbaSeasonStartYearFromGameDate,
   rowsFromNormalized,
   writeArchiveObject,
+  type ArchivePutStore,
   type ArchiveWriteOutcome,
-  type InMemoryS3Object,
 } from './player-prop-snapshot-archive';
 import { PlayerPropArchiveS3Store } from './s3-archive';
 
-export type ArchiveObjectStore = {
-  head(key: string): Promise<{ metadata: Record<string, string> } | null>;
-  get(key: string): Promise<InMemoryS3Object | null>;
-  put(key: string, body: Buffer, metadata: Record<string, string>): Promise<void>;
-};
+export type ArchiveObjectStore = ArchivePutStore;
 
 export async function archiveGameSnapshot(args: {
   env: LambdaEnv;
