@@ -11,7 +11,7 @@ import {
 } from '../normal-path';
 import { createMemoryOddsClaim } from '../overlap-claim';
 import { createDynamoOddsBudget, createMemoryOddsBudget } from '../request-budget';
-import { SIX_HOUR_REFRESH_MS, oddsClaimSortKey } from '../refresh-slot';
+import { SIX_HOUR_REFRESH_MS, T15_REFRESH_MS, oddsClaimSortKey, oddsRefreshSlot } from '../refresh-slot';
 
 const TICK_MS = 15 * 60 * 1000;
 const limiter = {
@@ -731,5 +731,338 @@ describe('scheduler window', () => {
     expect(etCalendarDate(new Date('2026-11-01T06:30:00.000Z'))).toBe('2026-11-01');
     const ticks = schedulerTicks('2026-11-01');
     expect(new Set(ticks).size).toBe(ticks.length);
+  });
+});
+
+const NEAR_TIP_SLATE = [
+  ['7:00', '2026-10-21T23:00:00.000Z'],
+  ['7:05', '2026-10-21T23:05:00.000Z'],
+  ['7:10', '2026-10-21T23:10:00.000Z'],
+  ['7:30', '2026-10-21T23:30:00.000Z'],
+  ['9:30', '2026-10-22T01:30:00.000Z'],
+] as const;
+
+function nearTipHits(fetches: WalkFetch[], tip: string, gameId: string) {
+  const tipMs = Date.parse(tip);
+  return fetches.filter((fetch) => {
+    const minutes = (tipMs - Date.parse(fetch.at)) / 60_000;
+    return fetch.windowId === 't15' && minutes > 0 && minutes <= 20;
+  }).map((fetch) => ({ at: fetch.at, key: fetch.key, gameId }));
+}
+
+describe('near-tip claim alignment', () => {
+  const today = '2026-10-21';
+  const tomorrow = '2026-10-22';
+
+  function slateGames() {
+    return NEAR_TIP_SLATE.map(([id, tip]) => game(id, tip));
+  }
+
+  it('uses a 15-minute t15 claim bucket and still plans the final 20 minutes', () => {
+    expect(T15_REFRESH_MS).toBe(15 * 60 * 1000);
+    const games = [game('7:05', '2026-10-21T23:05:00.000Z', '2026-10-21T22:45:00.000Z')];
+    const secondTick = planDate({
+      etDate: today,
+      now: new Date('2026-10-21T23:00:00.000Z'),
+      games,
+    });
+    expect(secondTick.due).toBe(false);
+    expect(oddsRefreshSlot('t15', Date.parse('2026-10-21T22:45:00.000Z')))
+      .not.toBe(oddsRefreshSlot('t15', Date.parse('2026-10-21T23:00:00.000Z')));
+  });
+
+  it('gives one near-tip acquisition to a 7:00 PM tip', async () => {
+    const games = [game('7:00', '2026-10-21T23:00:00.000Z')];
+    const summary = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => games,
+      pages: 1,
+    });
+    expect(summary.fetches.filter((fetch) => fetch.windowId === 't15').map((fetch) => fetch.at)).toEqual([
+      '2026-10-21T22:45:00.000Z',
+    ]);
+  });
+
+  it('does not duplicate a successful 7:05 PM near-tip acquisition', async () => {
+    const games = [game('7:05', '2026-10-21T23:05:00.000Z')];
+    const summary = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => games,
+      pages: 1,
+    });
+    const nearTip = summary.fetches.filter((fetch) => fetch.windowId === 't15');
+    expect(nearTip.map((fetch) => fetch.at)).toEqual(['2026-10-21T22:45:00.000Z']);
+    expect(summary.fetches.some((fetch) => fetch.at === '2026-10-21T23:00:00.000Z')).toBe(false);
+    expect(planDate({
+      etDate: today,
+      now: new Date('2026-10-21T23:00:00.000Z'),
+      games,
+    }).due).toBe(false);
+  });
+
+  it('acquires the 7:10 PM near-tip fetch at 7:00 PM', async () => {
+    const games = [game('7:10', '2026-10-21T23:10:00.000Z')];
+    const summary = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => games,
+      pages: 1,
+    });
+    expect(summary.fetches.filter((fetch) => fetch.windowId === 't15').map((fetch) => fetch.at)).toEqual([
+      '2026-10-21T23:00:00.000Z',
+    ]);
+  });
+
+  it('acquires the 7:30 PM near-tip fetch after the 7:00 PM claim is complete', async () => {
+    const games = [game('7:10', '2026-10-21T23:10:00.000Z'), game('7:30', '2026-10-21T23:30:00.000Z')];
+    const summary = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => games,
+      pages: 1,
+    });
+    const nearTip = summary.fetches.filter((fetch) => fetch.windowId === 't15');
+    expect(nearTip.map((fetch) => fetch.at)).toEqual([
+      '2026-10-21T23:00:00.000Z',
+      '2026-10-21T23:15:00.000Z',
+    ]);
+    expect(nearTip[0]?.key).not.toBe(nearTip[1]?.key);
+    expect(nearTipHits(nearTip, '2026-10-21T23:30:00.000Z', '7:30').map((hit) => hit.at)).toEqual([
+      '2026-10-21T23:15:00.000Z',
+    ]);
+  });
+
+  it('acquires the 9:30 PM near-tip fetch at 9:15 PM', async () => {
+    const games = [game('9:30', '2026-10-22T01:30:00.000Z')];
+    const summary = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => games,
+      pages: 1,
+    });
+    expect(summary.fetches.filter((fetch) => fetch.windowId === 't15').map((fetch) => fetch.at)).toEqual([
+      '2026-10-22T01:15:00.000Z',
+    ]);
+  });
+
+  it('covers every staggered tip with one date acquisition per due tick', async () => {
+    const games = slateGames();
+    const summary = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => games,
+      pages: 1,
+    });
+    expect(summary.fetches.map((fetch) => `${fetch.at} ${fetch.windowId}`)).toEqual([
+      '2026-10-21T13:00:00.000Z six_hour',
+      '2026-10-21T16:00:00.000Z six_hour',
+      '2026-10-21T17:00:00.000Z two_hour',
+      '2026-10-21T18:00:00.000Z two_hour',
+      '2026-10-21T19:00:00.000Z two_hour',
+      '2026-10-21T20:00:00.000Z two_hour',
+      '2026-10-21T21:00:00.000Z two_hour',
+      '2026-10-21T21:45:00.000Z t60',
+      '2026-10-21T22:15:00.000Z t60',
+      '2026-10-21T22:45:00.000Z t15',
+      '2026-10-21T23:00:00.000Z t15',
+      '2026-10-21T23:15:00.000Z t15',
+      '2026-10-22T00:15:00.000Z t60',
+      '2026-10-22T00:45:00.000Z t60',
+      '2026-10-22T01:15:00.000Z t15',
+    ]);
+    expect(new Set(summary.fetches.map((fetch) => fetch.at)).size).toBe(summary.fetches.length);
+    const afterFirstNearTip = slateGames();
+    for (const entry of afterFirstNearTip) entry.latestSnapshotAt = '2026-10-21T22:45:00.000Z';
+    const atSeven = planDate({ etDate: today, now: new Date('2026-10-21T23:00:00.000Z'), games: afterFirstNearTip });
+    expect(atSeven.dueGameIds).toEqual(['7:10']);
+    expect(summary.attempts).toBe(15);
+    expect(summary.attempts).toBeLessThanOrEqual(DAILY_ODDS_REQUEST_CEILING);
+    expect(nearTipHits(summary.fetches, '2026-10-21T23:30:00.000Z', '7:30').map((hit) => hit.at)).toEqual([
+      '2026-10-21T23:15:00.000Z',
+    ]);
+    expect(nearTipHits(summary.fetches, '2026-10-22T01:30:00.000Z', '9:30').map((hit) => hit.at)).toEqual([
+      '2026-10-22T01:15:00.000Z',
+    ]);
+  });
+
+  it('stores one date snapshot for games with different tip times', async () => {
+    const now = new Date('2026-10-21T22:45:00.000Z');
+    let transformed = 0;
+    const result = await acquireOdds({ date: today }, deps(async () => ({
+      ok: true,
+      rows: [row(700), row(705)],
+      nextCursor: null,
+    }), {
+      now: () => now,
+      slateForDate: async () => [
+        game('700', '2026-10-21T23:00:00.000Z'),
+        game('705', '2026-10-21T23:05:00.000Z'),
+      ],
+      loadGames: async (ids) => ids.map((id) => ({
+        gameId: id,
+        season: '2026',
+        seasonPhase: 'REGULAR',
+        startTime: id === '700' ? '2026-10-21T23:00:00.000Z' : '2026-10-21T23:05:00.000Z',
+      })),
+      transformComplete: async () => {
+        transformed += 1;
+        return { current: 2, history: 2, movement: 2 };
+      },
+    }));
+    expect(result.results.map((item) => item.classification)).toEqual(['COMPLETE']);
+    expect(result.providerRequests).toBe(1);
+    expect(transformed).toBe(1);
+  });
+
+  it('lets one delivery own a t15 slot', async () => {
+    const claim = createMemoryOddsClaim();
+    const now = new Date('2026-10-21T23:15:00.000Z');
+    let calls = 0;
+    const extra: Partial<AcquireDeps> = {
+      now: () => now,
+      slateForDate: async () => [game('730', '2026-10-21T23:30:00.000Z')],
+      loadGames: async () => [game('730', '2026-10-21T23:30:00.000Z')],
+      claimDate: (input) => claim.claim(input),
+      completeClaim: (input) => claim.complete(input),
+    };
+    const first = await acquireOdds({ date: today }, deps(async () => {
+      calls += 1;
+      return { ok: true, rows: [row(730)], nextCursor: null };
+    }, extra));
+    const second = await acquireOdds({ date: today }, deps(async () => {
+      calls += 1;
+      return { ok: true, rows: [row(730)], nextCursor: null };
+    }, extra));
+    expect(first.results[0]?.classification).toBe('COMPLETE');
+    expect(second.results[0]?.classification).toBe('SKIPPED');
+    expect(calls).toBe(1);
+    expect([...claim.held().keys()]).toHaveLength(1);
+  });
+
+  it('rejects a stale delivery without taking the next t15 slot', async () => {
+    const claim = createMemoryOddsClaim();
+    let calls = 0;
+    const fetchPage: AcquireDeps['fetchPage'] = async () => {
+      calls += 1;
+      return { ok: true, rows: [row(730)], nextCursor: null };
+    };
+    const extra: Partial<AcquireDeps> = {
+      slateForDate: async () => [game('730', '2026-10-21T23:30:00.000Z')],
+      loadGames: async () => [game('730', '2026-10-21T23:30:00.000Z')],
+      claimDate: (input) => claim.claim(input),
+      completeClaim: (input) => claim.complete(input),
+    };
+    const delayed = await acquireOdds({
+      date: today,
+      time: '2026-10-21T23:00:00.000Z',
+    }, deps(fetchPage, { ...extra, now: () => new Date('2026-10-21T23:14:00.000Z') }));
+    const next = await acquireOdds({
+      date: today,
+      time: '2026-10-21T23:15:00.000Z',
+    }, deps(fetchPage, { ...extra, now: () => new Date('2026-10-21T23:15:00.000Z') }));
+    const stale = await acquireOdds({
+      date: today,
+      time: '2026-10-21T23:00:00.000Z',
+    }, deps(fetchPage, { ...extra, now: () => new Date('2026-10-21T23:16:00.000Z') }));
+    const originalSlot = oddsClaimSortKey({
+      day: today,
+      date: today,
+      windowId: 't15',
+      nowMs: Date.parse('2026-10-21T23:00:00.000Z'),
+    });
+    const nextSlot = oddsClaimSortKey({
+      day: today,
+      date: today,
+      windowId: 't15',
+      nowMs: Date.parse('2026-10-21T23:15:00.000Z'),
+    });
+    expect(delayed.results[0]?.classification).toBe('COMPLETE');
+    expect(next.results[0]?.classification).toBe('COMPLETE');
+    expect(stale.status).toBe('STALE');
+    expect(calls).toBe(2);
+    expect(originalSlot).not.toBe(nextSlot);
+    expect([...claim.held().keys()].sort()).toEqual([originalSlot, nextSlot].sort());
+  });
+
+  it('keeps an incomplete t15 from replacing current odds and retries on the next slot', async () => {
+    const claim = createMemoryOddsClaim();
+    const budget = createMemoryOddsBudget();
+    let nowMs = Date.parse('2026-10-21T22:45:00.000Z');
+    let calls = 0;
+    let transformed = 0;
+    const slate = [game('705', '2026-10-21T23:05:00.000Z')];
+    const extra: Partial<AcquireDeps> = {
+      now: () => new Date(nowMs),
+      slateForDate: async () => slate,
+      loadGames: async () => slate,
+      claimDate: (input) => claim.claim(input),
+      completeClaim: (input) => claim.complete(input),
+      reserveAttempt: (input) => budget.reserve(input),
+      recordAttempt: (input) => budget.record(input),
+      transformComplete: async () => {
+        transformed += 1;
+        return { current: 1, history: 1, movement: 1 };
+      },
+    };
+    const fetchPage: AcquireDeps['fetchPage'] = async () => {
+      calls += 1;
+      return { ok: true, rows: [row(705)], nextCursor: 2 };
+    };
+    const first = await acquireOdds({ date: today }, deps(fetchPage, extra));
+    nowMs += 14 * 60 * 1000;
+    const sameSlot = await acquireOdds({ date: today }, deps(fetchPage, extra));
+    nowMs = Date.parse('2026-10-21T23:00:00.000Z');
+    const nextSlot = await acquireOdds({ date: today }, deps(fetchPage, extra));
+    expect(first.results[0]?.classification).toBe('INCOMPLETE');
+    expect(sameSlot.results[0]?.classification).toBe('SKIPPED');
+    expect(nextSlot.results[0]?.classification).toBe('INCOMPLETE');
+    expect(transformed).toBe(0);
+    expect(calls).toBe(6);
+    expect(budget.ledger().reserved).toBe(6);
+    expect(slate[0]?.latestSnapshotAt).toBeNull();
+  });
+
+  it('keeps t15 slots deterministic across Eastern midnight and the fallback hour', () => {
+    const beforeMidnight = Date.parse('2026-10-22T03:59:00.000Z');
+    const midnight = Date.parse('2026-10-22T04:00:00.000Z');
+    const beforeKey = oddsClaimSortKey({ day: '2026-10-21', date: today, windowId: 't15', nowMs: beforeMidnight });
+    const afterKey = oddsClaimSortKey({ day: '2026-10-22', date: today, windowId: 't15', nowMs: midnight });
+    expect(beforeKey).toBe(oddsClaimSortKey({ day: '2026-10-21', date: today, windowId: 't15', nowMs: beforeMidnight }));
+    expect(afterKey.startsWith('2026-10-22#')).toBe(true);
+    expect(beforeKey).not.toBe(afterKey);
+    expect(oddsRefreshSlot('t15', midnight)).toBe((oddsRefreshSlot('t15', beforeMidnight) ?? 0) + 1);
+    const firstFallback = Date.parse('2026-11-01T05:30:00.000Z');
+    const secondFallback = Date.parse('2026-11-01T06:30:00.000Z');
+    expect(oddsRefreshSlot('t15', secondFallback)).toBe((oddsRefreshSlot('t15', firstFallback) ?? 0) + 4);
+    expect(etCalendarDate(new Date(firstFallback))).toBe('2026-11-01');
+    expect(etCalendarDate(new Date(secondFallback))).toBe('2026-11-01');
+    const spring = Date.parse('2026-03-08T06:30:00.000Z');
+    const afterSpring = Date.parse('2026-03-08T07:30:00.000Z');
+    expect(oddsRefreshSlot('t15', afterSpring)).toBe((oddsRefreshSlot('t15', spring) ?? 0) + 4);
+  });
+
+  it('keeps the staggered slate inside the shared daily ceiling', async () => {
+    const cappedGames = slateGames();
+    const capped = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today],
+      slate: () => cappedGames,
+      pages: 3,
+    });
+    const bothToday = slateGames();
+    const bothTomorrow = slate(tomorrow, '2026-10-22T23:00:00.000Z', 3);
+    const bothDates = await walkDay({
+      ticks: schedulerTicks(today),
+      dates: [today, tomorrow],
+      slate: (date) => (date === today ? bothToday : bothTomorrow),
+      pages: 3,
+    });
+    expect(capped.attempts).toBe(45);
+    expect(capped.reserved).toBe(45);
+    expect(bothDates.attempts).toBe(54);
+    expect(bothDates.attempts).toBeLessThanOrEqual(DAILY_ODDS_REQUEST_CEILING);
+    expect(bothDates.byDay['2026-10-21'] + (bothDates.byDay['2026-10-22'] ?? 0)).toBe(bothDates.attempts);
   });
 });
