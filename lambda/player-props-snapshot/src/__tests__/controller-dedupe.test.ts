@@ -105,11 +105,7 @@ describe('player-props controller idempotency (mocked SQS + DB, no network)', ()
     vi.spyOn(console, 'log').mockImplementation(() => {});
     db = fakePool();
     mocks.pool = db.pool;
-    mocks.targets = [
-      { gameId: 'g1', bdlGameId: 1 },
-      { gameId: 'g2', bdlGameId: 2 },
-      { gameId: 'g3', bdlGameId: 3 },
-    ];
+    mocks.targets = [{ gameId: '101', bdlGameId: 101 }];
     sent = [];
     mocks.send = async (cmd) => {
       sent.push(cmd);
@@ -120,38 +116,38 @@ describe('player-props controller idempotency (mocked SQS + DB, no network)', ()
   it('a duplicate controller wave inside the window enqueues nothing', async () => {
     const { handler } = await import('../../controller');
     const first = JSON.parse((await handler({ universe: 'near_tip' })).body);
-    expect(first.queuedGames).toBe(3);
+    expect(first.queuedGames).toBe(1);
 
     db.advance(60);
     const second = JSON.parse((await handler({ universe: 'near_tip' })).body);
-    expect(second).toMatchObject({ skipped: true, reason: 'already_claimed', queuedGames: 0, skippedGames: 3 });
-    expect(queuedGameIds(sent)).toEqual(['g1', 'g2', 'g3']);
-    expect(db.runs).toHaveLength(3);
+    expect(second).toMatchObject({ skipped: true, reason: 'already_claimed', queuedGames: 0, skippedGames: 1 });
+    expect(queuedGameIds(sent)).toEqual(['101']);
+    expect(db.runs).toHaveLength(1);
   });
 
   it('the next scheduled wave (outside the window) enqueues again; other universe is independent', async () => {
     const { handler } = await import('../../controller');
     await handler({ universe: 'near_tip' });
     const broad = JSON.parse((await handler({ universe: 'broad' })).body);
-    expect(broad.queuedGames).toBe(3);
+    expect(broad.queuedGames).toBe(1);
     db.advance(15 * 60);
     const next = JSON.parse((await handler({ universe: 'near_tip' })).body);
-    expect(next.queuedGames).toBe(3);
-    expect(queuedGameIds(sent)).toHaveLength(9);
+    expect(next.queuedGames).toBe(1);
+    expect(queuedGameIds(sent)).toHaveLength(3);
   });
 
   it('partial SQS failure marks only failed games re-claimable; the async retry enqueues just those', async () => {
     mocks.send = async (cmd) => {
       sent.push(cmd);
-      const failed = cmd.input.Entries.filter((e) => JSON.parse(e.MessageBody).gameId === 'g2');
+      const failed = cmd.input.Entries.filter((e) => JSON.parse(e.MessageBody).gameId === '101');
       return {
         Successful: cmd.input.Entries.filter((e) => !failed.includes(e)).map((e) => ({ Id: e.Id })),
         Failed: failed.map((e) => ({ Id: e.Id, Code: 'InternalError', SenderFault: false })),
       };
     };
     const { handler } = await import('../../controller');
-    await expect(handler({ universe: 'near_tip' })).rejects.toThrow(/SQS enqueue failed for 1 game\(s\): g2/);
-    expect(db.runs.find((r) => r.game_id === 'g2')).toMatchObject({ status: 'error', error_message: ENQUEUE_FAILED });
+    await expect(handler({ universe: 'near_tip' })).rejects.toThrow(/SQS enqueue failed for 1 game\(s\): 101/);
+    expect(db.runs.find((r) => r.game_id === '101')).toMatchObject({ status: 'error', error_message: ENQUEUE_FAILED });
 
     mocks.send = async (cmd) => {
       sent.push(cmd);
@@ -159,8 +155,8 @@ describe('player-props controller idempotency (mocked SQS + DB, no network)', ()
     };
     db.advance(60);
     const retry = JSON.parse((await handler({ universe: 'near_tip' })).body);
-    expect(retry).toMatchObject({ queuedGames: 1, dedupedGames: 2 });
-    expect(queuedGameIds(sent)).toEqual(['g1', 'g2', 'g3', 'g2']);
+    expect(retry).toMatchObject({ queuedGames: 1, dedupedGames: 0 });
+    expect(queuedGameIds(sent)).toEqual(['101', '101']);
   });
 
   it('a thrown SendMessageBatch marks the whole batch re-claimable', async () => {
@@ -168,7 +164,57 @@ describe('player-props controller idempotency (mocked SQS + DB, no network)', ()
       throw new Error('network down');
     };
     const { handler } = await import('../../controller');
-    await expect(handler({ universe: 'broad' })).rejects.toThrow(/SQS enqueue failed for 3/);
+    await expect(handler({ universe: 'broad' })).rejects.toThrow(/SQS enqueue failed for 1/);
     expect(db.runs.every((r) => r.error_message === ENQUEUE_FAILED)).toBe(true);
+  });
+
+  it('refuses a slate larger than one game and does not claim or enqueue', async () => {
+    mocks.targets = [
+      { gameId: '101', bdlGameId: 101 },
+      { gameId: '102', bdlGameId: 102 },
+      { gameId: '103', bdlGameId: 103 },
+    ];
+    const { handler } = await import('../../controller');
+    const result = JSON.parse((await handler({ universe: 'broad' })).body);
+    expect(result).toMatchObject({ skipped: true, reason: 'wave_cap', queuedGames: 0, eligibleGames: 3 });
+    expect(sent).toHaveLength(0);
+    expect(db.runs).toHaveLength(0);
+  });
+
+  it('enqueues only the explicit eligible gameId', async () => {
+    mocks.targets = [
+      { gameId: '101', bdlGameId: 101 },
+      { gameId: '102', bdlGameId: 102 },
+    ];
+    const { handler } = await import('../../controller');
+    const result = JSON.parse((await handler({ universe: 'near_tip', gameId: '102' })).body);
+    expect(result.queuedGames).toBe(1);
+    expect(queuedGameIds(sent)).toEqual(['102']);
+    expect(db.runs.map((r) => r.game_id)).toEqual(['102']);
+    const body = JSON.parse(sent[0].input.Entries[0].MessageBody);
+    expect(body).toMatchObject({ gameId: '102', bdlGameId: 102, universe: 'near_tip' });
+  });
+
+  it('rejects a past or unknown game id and a non-canonical id without claiming', async () => {
+    mocks.targets = [{ gameId: '101', bdlGameId: 101 }];
+    const { handler } = await import('../../controller');
+    const missing = JSON.parse((await handler({ universe: 'near_tip', gameId: '999' })).body);
+    expect(missing).toMatchObject({ skipped: true, reason: 'game_not_eligible', queuedGames: 0 });
+    const bad = JSON.parse((await handler({ universe: 'near_tip', gameId: '01' })).body);
+    expect(bad).toMatchObject({ skipped: true, reason: 'invalid_game_id', queuedGames: 0 });
+    const numeric = JSON.parse((await handler({ universe: 'near_tip', gameId: 101 })).body);
+    expect(numeric).toMatchObject({ skipped: true, reason: 'invalid_game_id', queuedGames: 0 });
+    expect(sent).toHaveLength(0);
+    expect(db.runs).toHaveLength(0);
+  });
+
+  it('a frozen controller does not enqueue', async () => {
+    vi.stubEnv('DATA_MODE', 'replay');
+    vi.stubEnv('OFFSEASON_MODE', '1');
+    vi.stubEnv('CRON_DRY_RUN', '1');
+    const { handler } = await import('../../controller');
+    const result = JSON.parse((await handler({ universe: 'near_tip', gameId: '101' })).body);
+    expect(result).toMatchObject({ skipped: true, reason: 'runtime_skip', queuedGames: 0 });
+    expect(sent).toHaveLength(0);
   });
 });

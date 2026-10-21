@@ -4,16 +4,18 @@ import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
 import { normalizePlayerPropRows } from './src/normalize';
 import { assertObservationClockSchema, describeObservation } from './src/observation-clock';
+import { reserveProviderAttempt, AttemptBudgetError } from './src/attempt-budget';
+import { assertPropsLiveLimiter, PropsLimiterError } from './src/limiter-guard';
 import {
   bulkInsertRawV2,
-  bulkUpsertCurrent,
   buildPreferredVendorLines,
   completeGameRun,
   finalizePullRunIfComplete,
   getGameRunStartedAt,
   getGameRunStatus,
   lookupGameArchiveContext,
-  refreshPreferredVendorCurrent,
+  promoteServingProps,
+  readPregameGate,
 } from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
 import type { WorkerMessage } from './src/types';
@@ -49,6 +51,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         success: true,
         skipped: true,
         reason: 'Player-props worker skipped by runtime mode flags',
+        ingested: false,
         dataMode: mode.dataMode,
         offseasonMode: mode.offseason,
         cronDryRun: mode.cronDryRun,
@@ -61,6 +64,8 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
   const pool = getDbPool(env.dbUrl);
   let successCount = 0;
   let failCount = 0;
+  let promotedCount = 0;
+  let postTipSkipped = 0;
   let archiveGapCount = 0;
   let archiveFailedCount = 0;
 
@@ -78,7 +83,36 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
       continue;
     }
     try {
-      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, { limiter: { deadlineMs } });
+      assertPropsLiveLimiter(process.env);
+      const gate = await readPregameGate(pool, msg.gameId);
+      if (gate === 'missing') {
+        await completeGameRun(pool, msg.runId, msg.gameId, 'error', 0, 0, 'game_metadata_missing');
+        await finalizePullRunIfComplete(pool, msg.runId);
+        failCount++;
+        continue;
+      }
+      if (gate === 'ineligible') {
+        console.log(
+          JSON.stringify({
+            event: 'player_prop_post_tip_skip',
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            providerCalled: false,
+            servingPromoted: false,
+          })
+        );
+        await completeGameRun(pool, msg.runId, msg.gameId, 'success', 0, 0);
+        await finalizePullRunIfComplete(pool, msg.runId);
+        postTipSkipped++;
+        successCount++;
+        continue;
+      }
+      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
+        limiter: { deadlineMs },
+        onBeforeRequest: async () => {
+          await reserveProviderAttempt(pool, msg.runId, msg.gameId);
+        },
+      });
       const props = fetched.rows;
       providerSettled = true;
       logMarketOutcome({
@@ -131,13 +165,29 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         (row) => row.player_id,
         identity.servingIds
       ).keep;
-      const current = await bulkUpsertCurrent(pool, servingNormalized, snapshotAt, clocks);
       const preferred = buildPreferredVendorLines(
         servingNormalized,
         env.preferredVendor,
         snapshotAt
       );
-      const legacyCurrent = await refreshPreferredVendorCurrent(pool, msg.runId, msg.gameId, preferred);
+      const promotion = await promoteServingProps(pool, {
+        gameId: msg.gameId,
+        pullRunId: msg.runId,
+        rows: servingNormalized,
+        preferred,
+        snapshotAt,
+        clocks,
+      });
+      if (promotion.outcome === 'missing_game') {
+        await completeGameRun(pool, msg.runId, msg.gameId, 'error', props.length, rawV2, 'game_metadata_missing');
+        await finalizePullRunIfComplete(pool, msg.runId);
+        failCount++;
+        continue;
+      }
+      const current = promotion.current;
+      const legacyCurrent = promotion.legacyCurrent;
+      if (promotion.outcome === 'post_tip') postTipSkipped++;
+      if (promotion.outcome === 'promoted') promotedCount++;
 
       const archive = await archiveGameSnapshot({
         env,
@@ -206,9 +256,18 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
       if (!providerSettled) {
         const message = error instanceof Error ? error.message : '';
         const http = message.match(/player_props (\d+)/);
+        const reason = error instanceof PropsLimiterError
+          ? 'limiter_refused'
+          : error instanceof AttemptBudgetError
+            ? 'attempt_budget_exhausted'
+            : /429/.test(message)
+              ? 'provider_429'
+              : http
+                ? `provider_http_${http[1]}`
+                : 'provider_request_failed';
         logMarketOutcome({
           outcome: outcomeForProviderResult({ threw: true, rowCount: 0 }),
-          reason: http ? `provider_http_${http[1]}` : 'provider_request_failed',
+          reason,
           universe: msg.universe ?? null,
           gameId: msg.gameId,
           pullRunId: msg.runId,
@@ -240,6 +299,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         {
           GamesSucceeded: successCount,
           GamesFailed: failCount,
+          PostTipSkipped: postTipSkipped,
           ArchiveGap: archiveGapCount,
           ArchiveFailed: archiveFailedCount,
         }
@@ -254,9 +314,20 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
     {
       GamesSucceeded: successCount,
       GamesFailed: failCount,
+      PostTipSkipped: postTipSkipped,
       ArchiveGap: archiveGapCount,
       ArchiveFailed: archiveFailedCount,
     }
   );
-  return { statusCode: 200, body: JSON.stringify({ success: true, successCount, failCount }) };
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      success: failCount === 0,
+      ingested: promotedCount > 0 && failCount === 0,
+      successCount,
+      failCount,
+      promotedCount,
+      postTipSkipped,
+    }),
+  };
 };
