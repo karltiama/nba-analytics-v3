@@ -57,6 +57,8 @@ export async function fetchPlayerPropsForGame(
     limiter?: Omit<FetchBdlLiveOptions, 'fetchImpl' | 'worker'>;
     baseFetch?: typeof fetch;
     now?: () => Date;
+    /** Called before each HTTP page. Throw to refuse the request. */
+    onBeforeRequest?: () => Promise<void>;
   } = {}
 ): Promise<PlayerPropsFetchResult> {
   const recorder = createAttemptRecorder(options.baseFetch ?? globalThis.fetch, options.now);
@@ -69,6 +71,7 @@ export async function fetchPlayerPropsForGame(
     if (page > PLAYER_PROPS_MAX_PAGES) {
       throw new Error(`BDL /odds/player_props game ${bdlGameId}: exceeded ${PLAYER_PROPS_MAX_PAGES} pages`);
     }
+    if (options.onBeforeRequest) await options.onBeforeRequest();
     const url = new URL(`${BDL_BASE}/odds/player_props`);
     url.searchParams.set('game_id', String(bdlGameId));
     if (cursor != null) url.searchParams.set('cursor', String(cursor));

@@ -29,9 +29,10 @@ vi.mock('../../src/prop-identity-boundary', () => ({
   filterRowsByServingProviderId: <T>(rows: T[]) => ({ keep: rows, skipped: [] }),
 }));
 vi.mock('../../src/fetch', () => ({
-  fetchPlayerPropsForGame: async (_key: string, _game: number, options: unknown) => {
+  fetchPlayerPropsForGame: async (_key: string, _game: number, options: { onBeforeRequest?: () => Promise<void> }) => {
     mocks.fetchCalls += 1;
     mocks.fetchOptions.push(options);
+    if (options.onBeforeRequest) await options.onBeforeRequest();
     if (mocks.fetchError) throw mocks.fetchError;
     return mocks.fetchResult;
   },
@@ -52,11 +53,23 @@ const PROVIDER_ROWS = [
 
 const COLS = ['observed_at', 'controller_enqueued_at', 'provider_updated_at', 'observation_clock'];
 
-function workerPool(schemaPresent: boolean, gameRunStatus: string | null = null) {
+function workerPool(
+  schemaPresent: boolean,
+  gameRunStatus: string | null = null,
+  gate: 'eligible' | 'race' | 'missing' = 'eligible'
+) {
   const calls: Array<{ sql: string; values: unknown[] }> = [];
-  const pool = {
-    query: vi.fn(async (sql: string, values: unknown[] = []) => {
+  const query = vi.fn(async (sql: string, values: unknown[] = []) => {
       calls.push({ sql, values });
+      if (/^(BEGIN|COMMIT|ROLLBACK)$/.test(sql.trim())) return { rows: [] };
+      if (sql.includes('provider_attempts = provider_attempts + 1')) {
+        return { rows: [{ provider_attempts: 1 }], rowCount: 1 };
+      }
+      if (sql.includes('AS eligible')) {
+        if (gate === 'missing') return { rows: [] };
+        if (gate === 'race') return { rows: [{ eligible: !sql.includes('FOR UPDATE') }] };
+        return { rows: [{ eligible: true }] };
+      }
       if (sql.includes('SELECT status FROM raw.player_prop_game_runs')) {
         return { rows: gameRunStatus ? [{ status: gameRunStatus }] : [] };
       }
@@ -75,8 +88,9 @@ function workerPool(schemaPresent: boolean, gameRunStatus: string | null = null)
         return { rows: [{ season: '2026', start_time: TIP, home_team_id: '1', away_team_id: '2' }] };
       }
       return { rows: [], rowCount: 1 };
-    }),
-  } as unknown as Pool;
+  });
+  const client = { query, release: () => {} };
+  const pool = { query, connect: async () => client } as unknown as Pool;
   return { pool, calls };
 }
 
@@ -99,11 +113,15 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     vi.stubEnv('SUPABASE_DB_URL', 'postgres://nobody@127.0.0.1:1/none');
     vi.stubEnv('BALLDONTLIE_API_KEY', 'test-key');
     vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'false');
+    vi.stubEnv('BDL_RATE_LIMIT_INTERVAL_MS', '13000');
+    vi.stubEnv('BDL_RATE_LIMIT_MAX_REQUESTS', '1');
+    vi.stubEnv('BDL_RATE_LIMIT_BURST', '1');
+    vi.stubEnv('BDL_RATE_LIMIT_MAX_RETRIES', '0');
   });
   afterEach(() => vi.unstubAllEnvs());
 
-  it('queued T-10, observed T+2: controller time stays in legacy columns, observed_at is post-tip', async () => {
-    const { pool, calls } = workerPool(true);
+  it('queued T-10, observed T+2: raw keeps the post-tip clock and serving tables are not written', async () => {
+    const { pool, calls } = workerPool(true, null, 'race');
     mocks.pool = pool;
     mocks.fetchResult = {
       rows: PROVIDER_ROWS,
@@ -122,9 +140,8 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     expect(raw!.values[16]).toEqual(at(10));
     expect(raw!.values[17]).toEqual(at(120));
     expect(raw!.values[18]).toBe('RESPONSE_RECEIVED');
-    const current = calls.find((c) => c.sql.includes('INSERT INTO analytics.player_props_current'));
-    expect(current!.values[12]).toEqual(at(10));
-    expect(current!.values[13]).toEqual(at(-2));
+    expect(calls.some((c) => c.sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
+    expect(calls.some((c) => c.sql.includes('DELETE FROM analytics.player_prop_current'))).toBe(false);
 
     const observation = logs
       .map((l) => {

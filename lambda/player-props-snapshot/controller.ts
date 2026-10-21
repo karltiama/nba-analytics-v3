@@ -2,6 +2,7 @@ import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
 import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { getGameTargets, getTodayET, parsePropUniverse, type PropUniverse } from './src/game-discovery';
+import { selectOneGameAcquisition } from './src/wave-cap';
 import {
   CONTROLLER_DEDUPE_WINDOW_SECONDS,
   claimGameRunsForWave,
@@ -15,6 +16,7 @@ import type { WorkerMessage } from './src/types';
 interface ControllerEvent {
   date?: string;
   universe?: string;
+  gameId?: unknown;
 }
 
 const sqs = new SQSClient({});
@@ -66,11 +68,15 @@ export const handler = async (event: ControllerEvent) => {
   const pool = getDbPool(env.dbUrl);
   const date = event.date || getTodayET();
   const targets = await getGameTargets({ pool, universe, date });
-  if (targets.length === 0) {
-    return skip('no_eligible_games', { universe, date });
+  const picked = selectOneGameAcquisition(targets, event.gameId);
+  if (!picked.ok) {
+    return skip(picked.reason, { universe, date, eligibleGames: targets.length });
+  }
+  if (picked.games.length === 0) {
+    return skip('no_eligible_games', { universe, date, eligibleGames: 0 });
   }
 
-  const claim = await claimGameRunsForWave(pool, universe, targets);
+  const claim = await claimGameRunsForWave(pool, universe, picked.games);
   if (claim.skipped.length > 0) {
     console.log(
       JSON.stringify({

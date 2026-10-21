@@ -42,6 +42,25 @@ function row(): NormalizedPropRow {
 }
 
 describe('archiveGameSnapshot', () => {
+  it('fails closed when archival is on and the bucket is missing', async () => {
+    const out = await archiveGameSnapshot({
+      env: env({ nbaDataBucket: null }),
+      pullRunId: 99,
+      gameId: '12345',
+      bdlGameId: 12345,
+      gameDate: '2026-10-21',
+      snapshotAt: new Date('2026-10-21T18:00:00.000Z'),
+      gameStartTime: new Date('2026-10-21T23:30:00.000Z'),
+      season: '2026',
+      opponentId: null,
+      normalized: [row()],
+      rowsStored: 1,
+    });
+    expect(out.archiveStatus).toBe('failed');
+    expect(out.skipped).toBe(false);
+    expect(out.archiveError).toMatch(/NBA_DATA_BUCKET is missing/);
+  });
+
   it('stays pending when the archive flag is off', async () => {
     const out = await archiveGameSnapshot({
       env: env({ s3ArchiveEnabled: false }),
