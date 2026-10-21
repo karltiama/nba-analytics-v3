@@ -26,7 +26,7 @@ export function oddsAcquisitionEvent(input: {
   status: string;
   providerRequests: number;
   classifications: readonly string[];
-  budgetRemaining?: number;
+  budgetRemaining?: number | null;
 }): Record<string, unknown> {
   const counts: Record<string, number> = {};
   for (const classification of input.classifications) {

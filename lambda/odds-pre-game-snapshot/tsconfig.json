@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["index.ts", "acquire.ts", "normal-path.ts", "season-eligibility.ts", "canary-limits.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "request-budget.ts", "overlap-claim.ts", "collection-planner.ts", "safety-policy.ts"],
+  "include": ["index.ts", "acquire.ts", "normal-path.ts", "season-eligibility.ts", "canary-limits.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "request-budget.ts", "overlap-claim.ts", "collection-planner.ts", "refresh-slot.ts", "safety-policy.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

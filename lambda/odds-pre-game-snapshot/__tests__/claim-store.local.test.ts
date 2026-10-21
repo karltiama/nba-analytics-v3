@@ -1,6 +1,7 @@
 import { CreateTableCommand, DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDynamoOddsClaim, ODDS_CLAIM_LEASE_MS, ODDS_CLAIM_PK } from '../overlap-claim';
+import { SIX_HOUR_REFRESH_MS, oddsClaimSortKey } from '../refresh-slot';
 
 const endpoint = process.env.DYNAMODB_LOCAL_ENDPOINT ?? '';
 const localEndpoint = /^http:\/\/(127\.0.0.1|localhost):\d+$/.test(endpoint);
@@ -52,7 +53,7 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
 
   it('creates the first claim when the item is absent', async () => {
     const nowMs = Date.parse('2026-10-20T14:22:59.555Z');
-    const sk = '2026-10-20#2026-10-20#two_hour';
+    const sk = oddsClaimSortKey({ day: '2026-10-20', date: '2026-10-20', windowId: 'two_hour', nowMs });
     const decision = await claim.claim({
       day: '2026-10-20',
       date: '2026-10-20',
@@ -76,7 +77,12 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
       nowMs: nowMs + 1_000,
       owner: 'second',
     });
-    const stored = await item('2026-10-20#2026-10-20#two_hour');
+    const stored = await item(oddsClaimSortKey({
+      day: '2026-10-20',
+      date: '2026-10-20',
+      windowId: 'two_hour',
+      nowMs: Date.parse('2026-10-20T14:22:59.555Z'),
+    }));
     expect(during).toEqual({ ok: false, reason: 'skipped' });
     expect(stored?.owner).toEqual({ S: 'first' });
   });
@@ -87,7 +93,7 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
     expect((await claim.claim(request)).ok).toBe(true);
     await claim.complete(request);
     const again = await claim.claim({ ...request, nowMs: nowMs + ODDS_CLAIM_LEASE_MS + 1, owner: 'later' });
-    const stored = await item('2026-10-20#2026-10-20#t60');
+    const stored = await item(oddsClaimSortKey({ day: '2026-10-20', date: '2026-10-20', windowId: 't60', nowMs }));
     expect(again).toEqual({ ok: false, reason: 'skipped' });
     expect(stored?.completed_at).toEqual({ N: String(nowMs) });
     expect(stored?.owner).toEqual({ S: 'closer' });
@@ -98,9 +104,24 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
     const nowMs = 50_000;
     expect((await short.claim({ day: '2026-10-20', date: '2026-10-20', windowId: 't15', nowMs, owner: 'crashed' })).ok).toBe(true);
     const recovered = await short.claim({ day: '2026-10-20', date: '2026-10-20', windowId: 't15', nowMs: nowMs + 1_001, owner: 'recovered' });
-    const stored = await item('2026-10-20#2026-10-20#t15');
+    const stored = await item(oddsClaimSortKey({ day: '2026-10-20', date: '2026-10-20', windowId: 't15', nowMs }));
     expect(recovered).toEqual({ ok: true });
     expect(stored?.owner).toEqual({ S: 'recovered' });
+    expect(stored?.completed_at).toBeUndefined();
+  });
+
+  it('acquires the next refresh slot after the completed slot', async () => {
+    const nowMs = Date.parse('2026-10-21T13:00:00.000Z');
+    const request = { day: '2026-10-21', date: '2026-10-21', windowId: 'six_hour', nowMs, owner: 'first' };
+    expect((await claim.claim(request)).ok).toBe(true);
+    await claim.complete(request);
+    const same = await claim.claim({ ...request, nowMs: nowMs + 15 * 60 * 1000, owner: 'second' });
+    const nextMs = nowMs + SIX_HOUR_REFRESH_MS;
+    const next = await claim.claim({ ...request, nowMs: nextMs, owner: 'third' });
+    const stored = await item(oddsClaimSortKey({ ...request, nowMs: nextMs }));
+    expect(same).toEqual({ ok: false, reason: 'skipped' });
+    expect(next).toEqual({ ok: true });
+    expect(stored?.owner).toEqual({ S: 'third' });
     expect(stored?.completed_at).toBeUndefined();
   });
 
@@ -112,7 +133,7 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
     ]);
     expect(results.filter((result) => result.ok)).toHaveLength(1);
     expect(results.filter((result) => !result.ok && result.reason === 'skipped')).toHaveLength(1);
-    const stored = await item('2026-10-20#2026-10-20#six_hour');
+    const stored = await item(oddsClaimSortKey({ day: '2026-10-20', date: '2026-10-20', windowId: 'six_hour', nowMs }));
     expect(['a', 'b']).toContain(stored?.owner?.S);
   });
 });

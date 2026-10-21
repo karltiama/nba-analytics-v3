@@ -2,10 +2,13 @@
  * Date-level pregame schedule. One due game makes the Eastern date due.
  * The provider call is date-scoped, so the planner does not fetch once per game.
  * Windows are candidates. They are not a production schedule by themselves.
+ * Discovery refreshes once a day, six_hour every 3 hours, two_hour every 60 minutes,
+ * t60 every 30 minutes, and t15 once inside each game's final 20 minutes.
  */
 
 import { SERVING_SEASON_PHASES, etDateOfInstant, servingDateDecision } from './season-eligibility';
 import { etCalendarDate, seasonContainingEtDate } from './normal-path';
+import { DISCOVERY_REFRESH_MS, SIX_HOUR_REFRESH_MS, T60_REFRESH_MS, TWO_HOUR_REFRESH_MS } from './refresh-slot';
 
 export const STALE_EVENT_MS = 15 * 60 * 1000;
 
@@ -89,14 +92,26 @@ function gameDecision(game: PlannedGame, etDate: string, nowMs: number): { due: 
     const due = !snapshotInWindow(game.latestSnapshotAt, tipMs, 20 * 60_000, 0);
     return { due, windowId, reason: due ? 'due' : 'already_snapshotted' };
   }
-  if (windowId === 't60') {
-    const due = !snapshotInWindow(game.latestSnapshotAt, tipMs, 75 * 60_000, 20 * 60_000);
-    return { due, windowId, reason: due ? 'due' : 'already_snapshotted' };
-  }
-  const maxAge = windowId === 'two_hour' ? 120 * 60_000 : windowId === 'six_hour' ? 360 * 60_000 : 1440 * 60_000;
   const age = snapshotAgeMs(game.latestSnapshotAt, nowMs);
+  const maxAge = windowId === 't60'
+    ? T60_REFRESH_MS
+    : windowId === 'two_hour'
+      ? TWO_HOUR_REFRESH_MS
+      : windowId === 'six_hour'
+        ? SIX_HOUR_REFRESH_MS
+        : DISCOVERY_REFRESH_MS;
   const due = age == null || age >= maxAge;
   return { due, windowId, reason: due ? 'due' : 'already_snapshotted' };
+}
+
+export function compareDueDates(
+  a: { date: string; windowId: string },
+  b: { date: string; windowId: string }
+): number {
+  const rankA = RANK[a.windowId as OddsWindowId] ?? 9;
+  const rankB = RANK[b.windowId as OddsWindowId] ?? 9;
+  if (rankA !== rankB) return rankA - rankB;
+  return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
 }
 
 export function planDate(input: {

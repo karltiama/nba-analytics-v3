@@ -1,10 +1,12 @@
 /**
- * One in-flight odds snapshot per Eastern date and collection window.
- * The lease is only the crash bound. A completed window stays skipped after the lease expires.
+ * One in-flight odds snapshot per Eastern day, date, window, and refresh slot.
+ * Discovery has one slot per Eastern day. The near-tip window uses a 20-minute bucket so a later game can refresh.
+ * A completed slot stays skipped. The next bucket is a new key. The lease is only the crash bound.
  * Process memory is not the lock.
  */
 
 import { DynamoDBClient, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
+import { oddsClaimSortKey } from './refresh-slot';
 
 export const ODDS_CLAIM_PK = 'odds-snapshot-claim';
 /** Longer than the 300s Lambda timeout, short enough that a killed run can be replaced. */
@@ -87,7 +89,7 @@ export function createMemoryOddsClaim(input: { leaseMs?: number } = {}): OddsCla
   return {
     held: () => claims,
     async claim(request) {
-      const key = `${request.day}#${request.date}#${request.windowId}`;
+      const key = oddsClaimSortKey(request);
       const current = claims.get(key);
       if (current?.completed) return { ok: false, reason: 'skipped' };
       if (current && current.leaseUntilMs >= request.nowMs) {
@@ -97,7 +99,7 @@ export function createMemoryOddsClaim(input: { leaseMs?: number } = {}): OddsCla
       return { ok: true };
     },
     async complete(request) {
-      const key = `${request.day}#${request.date}#${request.windowId}`;
+      const key = oddsClaimSortKey(request);
       const current = claims.get(key);
       claims.set(key, {
         owner: request.owner,
@@ -124,7 +126,7 @@ export function createDynamoOddsClaim(input: {
           TableName: input.tableName,
           Key: {
             pk: { S: ODDS_CLAIM_PK },
-            sk: { S: `${request.day}#${request.date}#${request.windowId}` },
+            sk: { S: oddsClaimSortKey(request) },
           },
           UpdateExpression: 'SET #owner = :owner, lease_until_ms = :until, claimed_at = :now, window_id = :window, et_date = :date, expires_at = :exp',
           ConditionExpression: '(attribute_not_exists(lease_until_ms) OR lease_until_ms < :now) AND attribute_not_exists(completed_at)',
@@ -154,7 +156,7 @@ export function createDynamoOddsClaim(input: {
           TableName: input.tableName,
           Key: {
             pk: { S: ODDS_CLAIM_PK },
-            sk: { S: `${request.day}#${request.date}#${request.windowId}` },
+            sk: { S: oddsClaimSortKey(request) },
           },
           UpdateExpression: 'SET completed_at = :now',
           ConditionExpression: 'attribute_not_exists(completed_at)',
