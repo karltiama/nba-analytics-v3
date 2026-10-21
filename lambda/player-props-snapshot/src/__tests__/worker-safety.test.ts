@@ -67,6 +67,9 @@ function scriptedPool(attemptsLeft = PLAYER_PROPS_MAX_HTTP_ATTEMPTS, initialStat
     if (sql.includes('SELECT status FROM raw.player_prop_game_runs')) {
       return { rows: status ? [{ status }] : [] };
     }
+    if (sql.includes('player_prop_daily_attempts')) {
+      return { rows: [{ attempts: 1 }], rowCount: 1 };
+    }
     if (sql.includes('provider_attempts = provider_attempts + 1')) {
       if (attempts >= PLAYER_PROPS_MAX_HTTP_ATTEMPTS) return { rows: [], rowCount: 0 };
       attempts += 1;
