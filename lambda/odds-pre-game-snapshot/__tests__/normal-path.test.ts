@@ -185,6 +185,31 @@ describe('normal acquisition bounds', () => {
     expect(transformed).toEqual([]);
   });
 
+  it('stays complete when a finished page skips tipped games', async () => {
+    const { deps, raw } = harness({
+      pages: { '2026-10-21': [page([row(21717922), row(21717923)], null)] },
+      games: [
+        { gameId: '21717922', season: '2026', seasonPhase: 'REGULAR', startTime: '2026-10-21T23:00:00.000Z' },
+        { gameId: '21717923', season: '2026', seasonPhase: 'REGULAR', startTime: '2026-10-21T23:30:00.000Z' },
+      ],
+    });
+    deps.transformComplete = async () => ({
+      current: 1,
+      history: 1,
+      movement: 1,
+      acquiredRows: 2,
+      pregameEligibleRows: 1,
+      postTipRowsSkipped: 1,
+      currentRowsUpdated: 1,
+      historyRowsInserted: 1,
+      movementRowsInserted: 1,
+    });
+    const result = await acquireOdds({ date: '2026-10-21' }, deps);
+    expect(result.success).toBe(true);
+    expect(result.results[0]?.classification).toBe('COMPLETE');
+    expect(raw).toHaveLength(2);
+  });
+
   it('does not replace current odds when the cursor is still open at the cap', async () => {
     const { deps, current, transformed } = harness({
       pages: { '2026-10-21': [page([row(21717856)], 9), page([row(21717856)], 10), page([row(21717856)], 11)] },
@@ -438,14 +463,20 @@ describe('opening-night canary remains separate', () => {
 
 describe('packaged handler source', () => {
   const src = fs.readFileSync(path.join(root, 'lambda/odds-pre-game-snapshot/index.ts'), 'utf8');
+  const market = fs.readFileSync(path.join(root, 'lambda/odds-pre-game-snapshot/pregame-market.ts'), 'utf8');
 
   it('keeps the current-row guard, history conflict, and DraftKings movement open', () => {
-    expect(src).toContain('shouldReplaceCurrent');
-    expect(src).toContain('analytics.game_odds_current.snapshot_at < excluded.snapshot_at');
-    expect(src).toContain('ON CONFLICT (game_id, vendor, snapshot_at) DO NOTHING');
-    expect(src).toContain('AND vendor = $2');
-    expect(src).toContain('open_total = COALESCE(analytics.game_line_movement_summary.open_total, excluded.open_total)');
-    expect(src).not.toMatch(/open_total = excluded\.open_total/);
+    expect(src).toContain('promotePullOdds');
+    expect(src).not.toContain('INSERT INTO analytics.game_odds_current');
+    expect(src).not.toContain('INSERT INTO analytics.game_odds_history');
+    expect(src).not.toContain('INSERT INTO analytics.game_line_movement_summary');
+    expect(market).toContain('analytics.game_odds_current.snapshot_at < excluded.snapshot_at');
+    expect(market).toContain('ON CONFLICT (game_id, vendor, snapshot_at) DO NOTHING');
+    expect(market).toContain('AND vendor = $2');
+    expect(market).toContain('clock_timestamp()');
+    expect(market).toContain('start_time > clock_timestamp()');
+    expect(market).toContain('open_total = COALESCE(analytics.game_line_movement_summary.open_total, excluded.open_total)');
+    expect(market).not.toMatch(/open_total = excluded\.open_total/);
     expect(src).toContain('providerThrowToPage');
     expect(src).toContain('acquireOdds');
     expect(src).not.toContain('success: true, ...summary');

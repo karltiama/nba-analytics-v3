@@ -69,7 +69,17 @@ export type AcquireDeps = {
   ) => Promise<void>;
   insertRaw: (pullRunId: number, row: OddsProviderRow) => Promise<void>;
   loadGames: (gameIds: string[]) => Promise<StoredOddsGame[]>;
-  transformComplete: (pullRunId: number) => Promise<{ current: number; history: number; movement: number }>;
+  transformComplete: (pullRunId: number) => Promise<{
+    current: number;
+    history: number;
+    movement: number;
+    acquiredRows?: number;
+    pregameEligibleRows?: number;
+    postTipRowsSkipped?: number;
+    currentRowsUpdated?: number;
+    historyRowsInserted?: number;
+    movementRowsInserted?: number;
+  }>;
   maxPagesPerDate?: number;
   maxPagesPerInvocation?: number;
   requireSafety?: boolean;
@@ -90,7 +100,17 @@ export type DateAcquisition = {
   rowsStored: number;
   providerRequests: number;
   reason?: string;
-  transform?: { current: number; history: number; movement: number };
+  transform?: {
+    current: number;
+    history: number;
+    movement: number;
+    acquiredRows?: number;
+    pregameEligibleRows?: number;
+    postTipRowsSkipped?: number;
+    currentRowsUpdated?: number;
+    historyRowsInserted?: number;
+    movementRowsInserted?: number;
+  };
 };
 
 export type AcquireResult = {
@@ -611,12 +631,24 @@ function summarize(
     totalStored,
     budgetRemaining,
   };
+  const pregameEligibleRows = results.reduce((sum, result) => sum + (result.transform?.pregameEligibleRows ?? 0), 0);
+  const postTipRowsSkipped = results.reduce((sum, result) => sum + (result.transform?.postTipRowsSkipped ?? 0), 0);
+  const currentRowsUpdated = results.reduce((sum, result) => sum + (result.transform?.currentRowsUpdated ?? result.transform?.current ?? 0), 0);
+  const historyRowsInserted = results.reduce((sum, result) => sum + (result.transform?.historyRowsInserted ?? result.transform?.history ?? 0), 0);
+  const movementRowsInserted = results.reduce((sum, result) => sum + (result.transform?.movementRowsInserted ?? result.transform?.movement ?? 0), 0);
   console.log(JSON.stringify(oddsAcquisitionEvent({
     success: result.success,
     status: result.status,
     providerRequests,
     classifications: results.map((item) => item.classification),
     budgetRemaining,
+    acquiredRows: totalFetched,
+    rawRowsPersisted: totalStored,
+    pregameEligibleRows,
+    postTipRowsSkipped,
+    currentRowsUpdated,
+    historyRowsInserted,
+    movementRowsInserted,
   })));
   return result;
 }
