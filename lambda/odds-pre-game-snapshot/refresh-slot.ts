@@ -2,7 +2,8 @@ export const DISCOVERY_REFRESH_MS = 24 * 60 * 60 * 1000;
 export const SIX_HOUR_REFRESH_MS = 3 * 60 * 60 * 1000;
 export const TWO_HOUR_REFRESH_MS = 60 * 60 * 1000;
 export const T60_REFRESH_MS = 30 * 60 * 1000;
-export const T15_REFRESH_MS = 20 * 60 * 1000;
+/** Claim bucket only. The planner still requires a snapshot inside the game's final 20 minutes. */
+export const T15_REFRESH_MS = 15 * 60 * 1000;
 
 const SLOT_MS: Record<string, number> = {
   six_hour: SIX_HOUR_REFRESH_MS,

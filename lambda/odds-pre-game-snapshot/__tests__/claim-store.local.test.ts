@@ -1,7 +1,7 @@
 import { CreateTableCommand, DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDynamoOddsClaim, ODDS_CLAIM_LEASE_MS, ODDS_CLAIM_PK } from '../overlap-claim';
-import { SIX_HOUR_REFRESH_MS, oddsClaimSortKey } from '../refresh-slot';
+import { SIX_HOUR_REFRESH_MS, T15_REFRESH_MS, oddsClaimSortKey } from '../refresh-slot';
 
 const endpoint = process.env.DYNAMODB_LOCAL_ENDPOINT ?? '';
 const localEndpoint = /^http:\/\/(127\.0.0.1|localhost):\d+$/.test(endpoint);
@@ -123,6 +123,22 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
     expect(next).toEqual({ ok: true });
     expect(stored?.owner).toEqual({ S: 'third' });
     expect(stored?.completed_at).toBeUndefined();
+  });
+
+  it('opens the next t15 slot on the following scheduler tick', async () => {
+    const nowMs = Date.parse('2026-10-21T23:00:00.000Z');
+    const request = { day: '2026-10-21', date: '2026-10-21', windowId: 't15', nowMs, owner: 'early' };
+    expect((await claim.claim(request)).ok).toBe(true);
+    await claim.complete(request);
+    const inside = await claim.claim({ ...request, nowMs: nowMs + T15_REFRESH_MS - 60_000, owner: 'late' });
+    const nextMs = nowMs + T15_REFRESH_MS;
+    const next = await claim.claim({ ...request, nowMs: nextMs, owner: 'later-tip' });
+    const stored = await item(oddsClaimSortKey({ ...request, nowMs: nextMs }));
+    expect(T15_REFRESH_MS).toBe(15 * 60 * 1000);
+    expect(inside).toEqual({ ok: false, reason: 'skipped' });
+    expect(next).toEqual({ ok: true });
+    expect(stored?.owner).toEqual({ S: 'later-tip' });
+    expect(oddsClaimSortKey(request)).not.toBe(oddsClaimSortKey({ ...request, nowMs: nextMs }));
   });
 
   it('lets only one of two concurrent claims own the window', async () => {

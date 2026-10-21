@@ -1,6 +1,6 @@
 /**
  * One in-flight odds snapshot per Eastern day, date, window, and refresh slot.
- * Discovery has one slot per Eastern day. The near-tip window uses a 20-minute bucket so a later game can refresh.
+ * Discovery has one slot per Eastern day. The near-tip window uses a 15-minute bucket so the next scheduler tick can refresh a later game.
  * A completed slot stays skipped. The next bucket is a new key. The lease is only the crash bound.
  * Process memory is not the lock.
  */
