@@ -1,6 +1,7 @@
 export interface GameTarget {
   gameId: string;
   bdlGameId: number;
+  startTime?: string | null;
 }
 
 export type MarketType = 'over_under' | 'milestone';

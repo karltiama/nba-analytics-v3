@@ -119,9 +119,13 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
       local.bdl_rate_limit_env,
       var.odds_lambda_env,
       {
-        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND = "dynamodb"
-        BDL_RATE_LIMIT_WORKER  = "odds-pre-game-snapshot"
+        BDL_RATE_LIMIT_TABLE        = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND      = "dynamodb"
+        BDL_RATE_LIMIT_WORKER       = "odds-pre-game-snapshot"
+        BDL_RATE_LIMIT_INTERVAL_MS  = "13000"
+        BDL_RATE_LIMIT_MAX_REQUESTS = "1"
+        BDL_RATE_LIMIT_BURST        = "1"
+        BDL_RATE_LIMIT_MAX_RETRIES  = "0"
       }
     )
   }
@@ -282,6 +286,12 @@ resource "aws_lambda_function" "player_props_worker" {
         BDL_RATE_LIMIT_TABLE             = aws_dynamodb_table.bdl_rate_limit.name
         BDL_RATE_LIMIT_BACKEND           = "dynamodb"
         BDL_RATE_LIMIT_WORKER            = "player-props-worker"
+        # Props worker only. Overrides the shared 500ms limiter after merge.
+        # Do not move these into local.bdl_rate_limit_env: that map is also applied to odds.
+        BDL_RATE_LIMIT_INTERVAL_MS       = "13000"
+        BDL_RATE_LIMIT_MAX_REQUESTS      = "1"
+        BDL_RATE_LIMIT_BURST             = "1"
+        BDL_RATE_LIMIT_MAX_RETRIES       = "0"
         PLAYER_PROP_S3_ARCHIVE_ENABLED   = var.player_prop_s3_archive_enabled ? "true" : "false"
         NBA_DATA_BUCKET                  = var.nba_data_bucket_name
         NBA_RAW_PREFIX                   = var.nba_raw_prefix

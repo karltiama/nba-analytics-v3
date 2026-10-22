@@ -18,7 +18,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_worker_failures" {
 
 resource "aws_cloudwatch_metric_alarm" "player_props_controller_low_coverage" {
   alarm_name          = "nba-player-props-controller-low-coverage"
-  alarm_description   = "Alerts when scheduled run targets fewer than expected games."
+  alarm_description   = "Alerts when a controller wave had eligible games and queued none. An empty eligible window does not emit GamesQueued, and missing data does not breach."
   namespace           = "NBA/PlayerProps"
   metric_name         = "GamesQueued"
   statistic           = "Minimum"

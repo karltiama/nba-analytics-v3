@@ -1,6 +1,9 @@
 import type { Pool, PoolClient } from 'pg';
 import type { NormalizedPropRow } from './types';
 import { OBSERVATION_CLOCK_RESPONSE_RECEIVED, type PropObservationClocks } from './observation-clock';
+import { pregamePropsMarketEligibleSql } from './pregame-market';
+
+type Queryable = Pool | PoolClient;
 
 const CHUNK_SIZE = 500;
 
@@ -321,7 +324,7 @@ export async function bulkInsertRawV2(
  * so a late SQS retry cannot roll the current line backwards.
  */
 export async function bulkUpsertCurrent(
-  pool: Pool,
+  pool: Queryable,
   rows: NormalizedPropRow[],
   snapshotAt: Date,
   clocks: PropObservationClocks
@@ -351,15 +354,32 @@ export async function bulkUpsertCurrent(
         r.provider_updated_at,
         OBSERVATION_CLOCK_RESPONSE_RECEIVED
       );
-      return `(${Array.from({ length: 17 }, (_, k) => `$${base + k + 1}`).join(',')})`;
+      const cast = [
+        'integer', 'integer', 'text', 'integer', 'text', 'text', 'text', 'text',
+        'numeric', 'integer', 'numeric', 'numeric', 'timestamptz',
+        'timestamptz', 'timestamptz', 'timestamptz', 'text',
+      ];
+      return `(${cast.map((type, k) => `$${base + k + 1}::${type}`).join(',')})`;
     });
 
+    const eligible = pregamePropsMarketEligibleSql('g');
     const result = await pool.query(
       `INSERT INTO analytics.player_props_current (
          game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
          line_value, odds_american, odds_decimal, implied_probability, snapshot_at,
          observed_at, controller_enqueued_at, provider_updated_at, observation_clock
-       ) VALUES ${tuples.join(',')}
+       )
+       SELECT
+         v.game_id, v.player_id, v.player_name, v.team_id, v.sportsbook, v.prop_type, v.market_type, v.side,
+         v.line_value, v.odds_american, v.odds_decimal, v.implied_probability, v.snapshot_at,
+         v.observed_at, v.controller_enqueued_at, v.provider_updated_at, v.observation_clock
+       FROM (VALUES ${tuples.join(',')}) AS v(
+         game_id, player_id, player_name, team_id, sportsbook, prop_type, market_type, side,
+         line_value, odds_american, odds_decimal, implied_probability, snapshot_at,
+         observed_at, controller_enqueued_at, provider_updated_at, observation_clock
+       )
+       JOIN analytics.games g ON g.game_id = v.game_id::text
+       WHERE ${eligible}
        ON CONFLICT (game_id, player_id, sportsbook, prop_type, side, line_value)
        DO UPDATE SET
          player_name = excluded.player_name,
@@ -372,8 +392,13 @@ export async function bulkUpsertCurrent(
          controller_enqueued_at = excluded.controller_enqueued_at,
          provider_updated_at = excluded.provider_updated_at,
          observation_clock = excluded.observation_clock
-       WHERE analytics.player_props_current.observed_at IS NULL
-          OR excluded.observed_at >= analytics.player_props_current.observed_at`,
+       WHERE (analytics.player_props_current.observed_at IS NULL
+          OR excluded.observed_at >= analytics.player_props_current.observed_at)
+         AND EXISTS (
+           SELECT 1 FROM analytics.games g
+           WHERE g.game_id = analytics.player_props_current.game_id::text
+             AND ${eligible}
+         )`,
       values
     );
     upserted += result.rowCount ?? 0;
@@ -428,12 +453,28 @@ export function buildPreferredVendorLines(
 }
 
 export async function refreshPreferredVendorCurrent(
-  pool: Pool,
+  pool: Queryable,
   pullRunId: number,
   gameId: string,
-  preferredLines: PreferredLine[]
+  preferredLines: PreferredLine[],
+  snapshotAt: Date
 ): Promise<number> {
-  await pool.query(`DELETE FROM analytics.player_prop_current WHERE game_id = $1`, [gameId]);
+  const eligible = pregamePropsMarketEligibleSql('g');
+  await pool.query(
+    `DELETE FROM analytics.player_prop_current AS c
+      WHERE c.game_id = $1
+        AND EXISTS (
+          SELECT 1 FROM analytics.games g
+          WHERE g.game_id = c.game_id
+            AND ${eligible}
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM analytics.player_prop_current newer
+          WHERE newer.game_id = c.game_id
+            AND newer.snapshot_at > $2::timestamptz
+        )`,
+    [gameId, snapshotAt]
+  );
   if (preferredLines.length === 0) return 0;
 
   let inserted = 0;
@@ -453,16 +494,101 @@ export async function refreshPreferredVendorCurrent(
         r.snapshot_at,
         pullRunId
       );
-      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base + 9},$${base + 10})`;
+      return `($${base + 1}::text,$${base + 2}::text,$${base + 3}::text,$${base + 4}::text,$${base + 5}::numeric,$${base + 6}::text,$${base + 7}::integer,$${base + 8}::integer,$${base + 9}::timestamptz,$${base + 10}::bigint)`;
     });
     const result = await pool.query(
       `INSERT INTO analytics.player_prop_current (
          game_id, player_id, vendor, prop_type, line_value, market_type,
          over_odds, under_odds, snapshot_at, pull_run_id
-       ) VALUES ${tuples.join(',')}`,
+       )
+       SELECT
+         v.game_id, v.player_id, v.vendor, v.prop_type, v.line_value, v.market_type,
+         v.over_odds, v.under_odds, v.snapshot_at, v.pull_run_id
+       FROM (VALUES ${tuples.join(',')}) AS v(
+         game_id, player_id, vendor, prop_type, line_value, market_type,
+         over_odds, under_odds, snapshot_at, pull_run_id
+       )
+       JOIN analytics.games g ON g.game_id = v.game_id
+       WHERE ${eligible}
+         AND NOT EXISTS (
+           SELECT 1 FROM analytics.player_prop_current newer
+           WHERE newer.game_id = v.game_id
+             AND newer.snapshot_at > v.snapshot_at
+         )`,
       values
     );
     inserted += result.rowCount ?? 0;
   }
   return inserted;
+}
+
+export type PregameGate = 'eligible' | 'ineligible' | 'missing';
+
+export type ServingPromotion = {
+  outcome: 'promoted' | 'post_tip' | 'missing_game';
+  current: number;
+  legacyCurrent: number;
+};
+
+/** Read-only eligibility. The write path locks the game row and checks again. */
+export async function readPregameGate(pool: Queryable, gameId: string): Promise<PregameGate> {
+  const result = await pool.query<{ eligible: boolean }>(
+    `SELECT ${pregamePropsMarketEligibleSql('g')} AS eligible
+       FROM analytics.games g
+      WHERE g.game_id = $1`,
+    [gameId]
+  );
+  if (result.rows.length === 0) return 'missing';
+  return result.rows[0]?.eligible === true ? 'eligible' : 'ineligible';
+}
+
+/**
+ * Serving-table promotion. Raw v2 is written by the caller and stays append-only.
+ * Both current tables change only while the locked game is still pregame.
+ */
+export async function promoteServingProps(
+  pool: Pool,
+  args: {
+    gameId: string;
+    pullRunId: number;
+    rows: NormalizedPropRow[];
+    preferred: PreferredLine[];
+    snapshotAt: Date;
+    clocks: PropObservationClocks;
+  }
+): Promise<ServingPromotion> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const locked = await client.query<{ eligible: boolean }>(
+      `SELECT ${pregamePropsMarketEligibleSql('g')} AS eligible
+         FROM analytics.games g
+        WHERE g.game_id = $1
+        FOR UPDATE`,
+      [args.gameId]
+    );
+    if (locked.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return { outcome: 'missing_game', current: 0, legacyCurrent: 0 };
+    }
+    if (locked.rows[0]?.eligible !== true) {
+      await client.query('COMMIT');
+      return { outcome: 'post_tip', current: 0, legacyCurrent: 0 };
+    }
+    const current = await bulkUpsertCurrent(client, args.rows, args.snapshotAt, args.clocks);
+    const legacyCurrent = await refreshPreferredVendorCurrent(
+      client,
+      args.pullRunId,
+      args.gameId,
+      args.preferred,
+      args.snapshotAt
+    );
+    await client.query('COMMIT');
+    return { outcome: 'promoted', current, legacyCurrent };
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
 }

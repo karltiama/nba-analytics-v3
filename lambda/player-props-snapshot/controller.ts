@@ -2,6 +2,8 @@ import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
 import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { getGameTargets, getTodayET, parsePropUniverse, type PropUniverse } from './src/game-discovery';
+import { propsRequestBudget } from './src/acquisition-budget';
+import { resolveWaveMaxGames, selectGameWave } from './src/wave-cap';
 import {
   CONTROLLER_DEDUPE_WINDOW_SECONDS,
   claimGameRunsForWave,
@@ -9,17 +11,24 @@ import {
   markGameRunsEnqueueFailed,
 } from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
-import { logMarketOutcome, noRequestCoverage } from './src/market-outcome';
+import { controllerCoverageMetric, logMarketOutcome } from './src/market-outcome';
 import type { WorkerMessage } from './src/types';
 
 interface ControllerEvent {
   date?: string;
   universe?: string;
+  gameId?: unknown;
 }
 
 const sqs = new SQSClient({});
 const queueUrl = process.env.PLAYER_PROPS_QUEUE_URL;
 if (!queueUrl) throw new Error('Missing PLAYER_PROPS_QUEUE_URL');
+
+function emitControllerCoverage(eligibleGames: number, queuedGames: number, dedupedGames: number): void {
+  const metric = controllerCoverageMetric({ eligibleGames, queuedGames, dedupedGames });
+  if (!metric) return;
+  emitCoverageMetric('NBA/PlayerProps', { Component: 'Controller' }, metric);
+}
 
 function toBatches<T>(items: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -29,8 +38,6 @@ function toBatches<T>(items: T[], size: number): T[][] {
 
 function skip(reason: string, extra: Record<string, unknown> = {}) {
   logMarketOutcome({ outcome: 'NO_REQUEST', reason, universe: (extra.universe as string) ?? null });
-  const coverage = noRequestCoverage();
-  emitCoverageMetric('NBA/PlayerProps', { Component: 'Controller' }, coverage);
   return {
     statusCode: 200,
     body: JSON.stringify({
@@ -62,15 +69,41 @@ export const handler = async (event: ControllerEvent) => {
     return skip('invalid_universe', { universe: event.universe ?? null });
   }
 
+  let maxGames: number;
+  try {
+    maxGames = resolveWaveMaxGames(process.env.PLAYER_PROPS_WAVE_MAX_GAMES);
+  } catch (error: unknown) {
+    emitCoverageMetric('NBA/PlayerProps', { Component: 'Controller' }, { GamesQueued: 0 });
+    return skip('wave_config', {
+      universe,
+      message: error instanceof Error ? error.message : 'invalid wave cap',
+    });
+  }
+
   const env = getLambdaEnv();
   const pool = getDbPool(env.dbUrl);
   const date = event.date || getTodayET();
   const targets = await getGameTargets({ pool, universe, date });
-  if (targets.length === 0) {
-    return skip('no_eligible_games', { universe, date });
+  const picked = selectGameWave(targets, event.gameId, maxGames);
+  if (!picked.ok) {
+    return skip(picked.reason, { universe, date, eligibleGames: targets.length });
+  }
+  if (picked.games.length === 0) {
+    return skip('no_eligible_games', { universe, date, eligibleGames: 0 });
+  }
+  if (picked.deferred.length > 0) {
+    console.log(
+      JSON.stringify({
+        event: 'player_props_wave_deferred',
+        universe,
+        date,
+        deferredGameIds: picked.deferred.map((game) => game.gameId),
+        maxGames,
+      })
+    );
   }
 
-  const claim = await claimGameRunsForWave(pool, universe, targets);
+  const claim = await claimGameRunsForWave(pool, universe, picked.games);
   if (claim.skipped.length > 0) {
     console.log(
       JSON.stringify({
@@ -118,13 +151,17 @@ export const handler = async (event: ControllerEvent) => {
     }
     if (failedGameIds.length > 0) {
       await markGameRunsEnqueueFailed(pool, pullRunId, failedGameIds);
+      emitControllerCoverage(targets.length, messages.length - failedGameIds.length, claim.skipped.length);
       throw new Error(`SQS enqueue failed for ${failedGameIds.length} game(s): ${failedGameIds.join(',')}`);
     }
 
-    emitCoverageMetric(
-      'NBA/PlayerProps',
-      { Component: 'Controller' },
-      { GamesTargeted: targets.length, GamesQueued: messages.length, GamesDeduped: claim.skipped.length }
+    emitControllerCoverage(targets.length, messages.length, claim.skipped.length);
+    console.log(
+      JSON.stringify({
+        event: 'player_props_request_budget',
+        universe,
+        ...propsRequestBudget(messages.length),
+      })
     );
 
     return {
