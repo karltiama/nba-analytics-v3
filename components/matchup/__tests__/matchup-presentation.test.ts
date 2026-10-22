@@ -10,6 +10,7 @@ import { PlayerContributors } from '@/components/matchup/PlayerContributors';
 import { RosterContinuity } from '@/components/matchup/RosterContinuity';
 import { PregameMatchupView } from '@/components/scoreboard/PregameMatchupView';
 import type { HistoricalContributor } from '@/lib/pregame-matchup/aggregate';
+import type { MatchupContributors } from '@/lib/pregame-matchup/membership';
 import { buildPregameMatchup } from '@/lib/pregame-matchup/compose';
 import { presentBdlRoster, teamContinuity, type RosterMember, type ProductionRow } from '@/lib/pregame-matchup/roster';
 import { ROSTER_LIMITATION, type MatchupInsight } from '@/lib/pregame-matchup/signals';
@@ -156,12 +157,26 @@ describe('shared matchup presentation', () => {
 
   it('keeps every contributor and leads with three per side', () => {
     const players = ['One', 'Two', 'Three', 'Four', 'Five'].map((name, index) => contributor(name, String(index)));
+    const contributors: MatchupContributors = {
+      membership: 'unavailable',
+      observationDate: null,
+      collectedAt: null,
+      currentLabel: '2026–27 membership from the eligible roster observation. A listing is not a starting assignment or a minutes projection.',
+      historicalLabel: '2025–26 historical production — not a confirmed current roster',
+      unavailableNote: 'Current roster continuity is unavailable.',
+      awayCurrent: [],
+      homeCurrent: [],
+      awayUnidentified: 0,
+      homeUnidentified: 0,
+      awayHistorical: players,
+      homeHistorical: [],
+      awayHistoricalEmpty: 'No positive-minute games in the 2025–26 regular season.',
+      homeHistoricalEmpty: 'No positive-minute games in the 2025–26 regular season.',
+    };
     const html = renderToStaticMarkup(createElement(PlayerContributors, {
       awayAbbr: 'ORL',
       homeAbbr: 'CLE',
-      label: '2025–26 historical production — not a confirmed current roster',
-      away: players,
-      home: [],
+      contributors,
     }));
     expect(html).toContain('not a confirmed current roster');
     expect(html).toContain('32.4 mpg');

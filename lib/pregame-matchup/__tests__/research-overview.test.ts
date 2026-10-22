@@ -223,7 +223,12 @@ describe('loadResearchOverview', () => {
     expect(overview?.history).toEqual(direct.history);
     expect(overview?.historyNote).toEqual(direct.historyNote);
     expect(overview?.insights).toEqual(direct.insights);
-    expect(overview?.contributors).toEqual(direct.contributors);
+    expect(overview?.contributors?.membership).toBe('unavailable');
+    expect(overview?.contributors?.unavailableNote).toBe(overview?.roster.note);
+    expect(overview?.contributors?.awayCurrent).toEqual([]);
+    expect(overview?.contributors?.homeCurrent).toEqual([]);
+    expect(overview?.contributors?.awayHistorical).toEqual(direct.contributors?.awayHistorical);
+    expect(overview?.contributors?.homeHistorical).toEqual(direct.contributors?.homeHistorical);
     expect(overview?.roster.status).toBe('hidden');
     expect(overview?.roster.teams).toBeNull();
     expect(overview?.history?.rows).toHaveLength(9);
@@ -404,7 +409,7 @@ describe('research overview presentation and boundaries', () => {
     expect(html).toContain('not official NBA pace');
     expect(html).toContain('Current rosters are not verified');
     expect(html).toContain('Jayson Tatum');
-    expect(html).toContain('Current research-season ratings stay in the matchup section.');
+    expect(html).toContain('Ratings in the matchup section use that same 2025–26 research season.');
     expect(html).not.toContain('data-market-strip');
     expect(html).not.toContain('DraftKings');
     expect(html).toContain('grid-cols-1');

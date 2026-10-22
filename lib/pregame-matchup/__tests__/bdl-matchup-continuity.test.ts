@@ -129,6 +129,10 @@ describe('BallDontLie matchup continuity', () => {
     expect(bos?.minutesNumerator).toBe(100);
     expect(bos?.minutesDenominator).toBe(400);
     expect(sql.calls.some((text) => text.includes('nba_roster_snapshots'))).toBe(false);
+    expect(sql.calls).toHaveLength(6);
+    const boston = roster.listedPlayers?.filter((player) => player.teamId === '2');
+    expect(boston?.map((player) => player.name)).toEqual(['Player 10', null]);
+    expect(boston?.every((player) => player.identityStatus === 'resolved')).toBe(true);
   });
 
   it('rejects the October 12 observation for an October 11 tipoff', async () => {

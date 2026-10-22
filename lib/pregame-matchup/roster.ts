@@ -108,6 +108,15 @@ export type TeamContinuity = {
   concentration: string | null;
 };
 
+/** A player listed on the observation already loaded for continuity. Not a starter and not a minutes projection. */
+export type ListedRosterPlayer = {
+  teamId: string;
+  nbaPlayerId: string;
+  playerId: string | null;
+  name: string | null;
+  identityStatus: RosterIdentityStatus;
+};
+
 export type RosterPresentation = {
   status: 'shown' | 'hidden';
   observationDate: string | null;
@@ -116,7 +125,26 @@ export type RosterPresentation = {
   teams: TeamContinuity[] | null;
   source?: 'balldontlie';
   collectedAt?: string | null;
+  /**
+   * Named only when this observation is eligible to describe membership.
+   * Null means the names were withheld. An empty array means the observation listed nobody.
+   */
+  listedPlayers?: ListedRosterPlayer[] | null;
 };
+
+export function listedPlayersFromMembers(members: RosterMember[]): ListedRosterPlayer[] {
+  return dedupeMembers(members).map((member) => {
+    const identityStatus = member.identityStatus ?? (member.analyticsPlayerId ? 'resolved' : 'unresolved_no_bridge');
+    const name = member.name?.trim() ? member.name.trim() : null;
+    return {
+      teamId: member.teamId,
+      nbaPlayerId: member.nbaPlayerId,
+      playerId: identityStatus === 'resolved' ? member.analyticsPlayerId : null,
+      name,
+      identityStatus,
+    };
+  });
+}
 
 const YMD = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -299,6 +327,7 @@ export function presentRoster(input: {
       freshness: 'missing',
       note: 'Current roster continuity is unavailable.',
       teams: null,
+      listedPlayers: null,
     };
   }
   const age = calendarDaysBetween(input.day.snapshotDate, input.gameDate);
@@ -309,6 +338,7 @@ export function presentRoster(input: {
       freshness: 'incomplete',
       note: 'Current roster continuity is unavailable. The stored roster observation is incomplete.',
       teams: null,
+      listedPlayers: null,
     };
   }
   const freshness = rosterFreshness(age);
@@ -319,6 +349,7 @@ export function presentRoster(input: {
       freshness,
       note: `Current roster continuity is unavailable. The latest complete observation (${input.day.snapshotDate}) is too old to describe the roster for this game.`,
       teams: null,
+      listedPlayers: null,
     };
   }
   const distorted = input.teams.filter(identityDistorts);
@@ -329,6 +360,7 @@ export function presentRoster(input: {
       freshness: 'unresolved',
       note: `Current roster continuity is unavailable. The ${input.day.snapshotDate} observation has unresolved player identities, so a continuity percentage would not be reliable.`,
       teams: null,
+      listedPlayers: null,
     };
   }
   const ageNote = freshness === 'informative' ? ' This observation is older than a week, so it describes that date, not tonight.' : '';
@@ -357,6 +389,8 @@ export function presentBdlRoster(input: {
   reason: 'eligible' | 'missing' | 'incomplete' | 'after_tipoff' | 'invalid_time';
   freshness: RosterFreshness | null;
   teams: TeamContinuity[];
+  /** Members already read for the continuity shares. Omitted when that read did not run. */
+  members?: RosterMember[];
 }): RosterPresentation {
   const label = input.observationEtDate ? formatRosterObservationLabel(input.observationEtDate) : null;
   const base = {
@@ -371,6 +405,7 @@ export function presentBdlRoster(input: {
       freshness: 'incomplete',
       note: 'Current roster continuity is unavailable. The stored roster observation was collected after this game tipped off, so it is not pregame evidence.',
       teams: null,
+      listedPlayers: null,
     };
   }
   if (input.reason === 'incomplete') {
@@ -381,6 +416,7 @@ export function presentBdlRoster(input: {
       freshness: 'incomplete',
       note: 'Current roster continuity is unavailable. The stored roster observation is incomplete.',
       teams: null,
+      listedPlayers: null,
     };
   }
   if (input.reason !== 'eligible' || !input.observationEtDate || !input.freshness || !label) {
@@ -391,6 +427,7 @@ export function presentBdlRoster(input: {
       freshness: 'missing',
       note: 'Current roster continuity is unavailable. No eligible BallDontLie roster observation was stored before tipoff.',
       teams: null,
+      listedPlayers: null,
     };
   }
   if (input.freshness === 'stale') {
@@ -401,6 +438,7 @@ export function presentBdlRoster(input: {
       freshness: 'stale',
       note: `Current roster continuity is unavailable. The latest complete observation (${label}) is too old to describe the roster for this game.`,
       teams: null,
+      listedPlayers: null,
     };
   }
   const distorted = input.teams.filter(identityDistorts);
@@ -412,6 +450,7 @@ export function presentBdlRoster(input: {
       freshness: 'unresolved',
       note: `Current roster continuity is unavailable. The ${label} observation has unresolved player identities, so a continuity percentage would not be reliable.`,
       teams: null,
+      listedPlayers: null,
     };
   }
   const ageNote = input.freshness === 'informative'
@@ -424,6 +463,7 @@ export function presentBdlRoster(input: {
     freshness: input.freshness,
     note: `Roster observation: ${label}. Players listed by BALLDONTLIE in the most recent eligible observation. Returning minutes share based on 2025–26 regular-season production. A listing is not confirmation that a player is available, active, or starting.${ageNote}`,
     teams: input.teams,
+    listedPlayers: input.members ? listedPlayersFromMembers(input.members) : null,
   };
 }
 
@@ -434,5 +474,6 @@ export function hiddenRosterForUnconfirmedTeam(): RosterPresentation {
     freshness: 'missing',
     note: 'Current roster continuity is unavailable.',
     teams: null,
+      listedPlayers: null,
   };
 }

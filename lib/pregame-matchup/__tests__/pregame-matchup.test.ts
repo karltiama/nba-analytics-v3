@@ -405,9 +405,11 @@ describe('pregame page model', () => {
     expect(model?.history?.label).toBe(SAMPLE_LABEL);
     expect(model?.history?.possessionNote).toBe(POSSESSION_NOTE);
     expect(model?.history?.rows.find((row) => row.label === 'Estimated possessions / game')?.away).toBe('100.0');
-    expect(model?.contributors?.label).toBe('2025–26 historical production — not a confirmed current roster');
-    expect(model?.contributors?.away[0]?.name).toBe('Example Guard');
-    expect(model?.contributors?.label).not.toMatch(/starter|current roster confirmed|departure/i);
+    expect(model?.contributors?.historicalLabel).toBe('2025–26 historical production — not a confirmed current roster');
+    expect(model?.contributors?.membership).toBe('unavailable');
+    expect(model?.contributors?.awayCurrent).toEqual([]);
+    expect(model?.contributors?.awayHistorical[0]?.name).toBe('Example Guard');
+    expect(model?.contributors?.historicalLabel).not.toMatch(/starter|current roster confirmed|departure/i);
     expect(model?.returnHref).toBe('/dashboard?date=2026-10-11');
     expect(model?.quote).toBeNull();
     expect(model?.roster.status).toBe('hidden');

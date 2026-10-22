@@ -438,7 +438,7 @@ function RecentFormRow({ game, teamAbbr }: { game: RecentGameResult; teamAbbr: s
         }`}>
           {game.result}
         </span>
-        <span className="type-secondary">vs {game.opponent}</span>
+        <span className="type-secondary">vs {game.opponent}{game.game_date ? ` · ${game.game_date}` : ''}</span>
       </div>
       <div className="flex items-center gap-3">
         <span className="type-table-data whitespace-nowrap font-mono text-[#063f46]">{game.score}</span>
@@ -1258,10 +1258,12 @@ export function MatchupPageLayout({
         <>
         <section id="section-matchup" className="order-2 space-y-4 scroll-mt-[10rem]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {/* Column 1: Projected starters */}
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
               <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-                <h2 className="type-section-heading text-[#063f46]">Projected starters</h2>
+                <h2 className="type-section-heading text-[#063f46]">2025–26 minutes sample</h2>
+                <p className="type-metadata mt-0.5">
+                  Last 10 completed games in the 2025–26 research season for each franchise. Not a 2026–27 roster or a starting lineup.
+                </p>
               </div>
               <div className="p-3">
               {matchupAnalysis?.starting_lineups && (matchupAnalysis.starting_lineups.home || matchupAnalysis.starting_lineups.away) ? (
@@ -1282,7 +1284,7 @@ export function MatchupPageLayout({
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
               <h2 className="type-section-heading text-[#063f46]">Team comparison</h2>
-              <p className="type-metadata mt-0.5">Current research-season ratings and recent form.</p>
+              <p className="type-metadata mt-0.5">2025–26 research-season ratings and recent results.</p>
             </div>
             <div className="p-3">
             {(() => {
@@ -1342,7 +1344,7 @@ export function MatchupPageLayout({
                         <p className="type-secondary mb-2">Not enough season data</p>
                       )}
                       <div className="border-t border-[#DCE9EA] pt-2">
-                        <h4 className="type-secondary mb-1">L5</h4>
+                        <h4 className="type-secondary mb-1">2025–26 results</h4>
                         {awayTeamStats.recentForm.slice(0, 3).map((g, i) => (
                           <RecentFormRow key={i} game={g} teamAbbr={game.awayTeam.abbreviation} />
                         ))}
@@ -1380,7 +1382,7 @@ export function MatchupPageLayout({
                         <p className="type-secondary mb-2">Not enough season data</p>
                       )}
                       <div className="border-t border-[#DCE9EA] pt-2">
-                        <h4 className="type-secondary mb-1">L5</h4>
+                        <h4 className="type-secondary mb-1">2025–26 results</h4>
                         {homeTeamStats.recentForm.slice(0, 3).map((g, i) => (
                           <RecentFormRow key={i} game={g} teamAbbr={game.homeTeam.abbreviation} />
                         ))}

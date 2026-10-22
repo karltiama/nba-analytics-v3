@@ -370,7 +370,7 @@ export function PaceAnalysisCard({ paceAnalysis }: { paceAnalysis: PaceAnalysis 
         
         <div className="border-t border-[#DCE9EA] pt-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="type-metadata">Projected pace</span>
+            <span className="type-metadata">2025–26 pace average</span>
             <span className={`type-card-data ${paceColor}`}>{projected_pace.toFixed(1)}</span>
           </div>
           <p className="type-secondary mb-2">
@@ -552,7 +552,7 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Users className="w-4 h-4 text-[#bf5af2]" />
-            <h4 className="type-section-heading text-[#063f46]">Projected Starting Lineups</h4>
+            <h4 className="type-section-heading text-[#063f46]">2025–26 minutes sample</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {data.starting_lineups.away ? (
@@ -566,10 +566,10 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
                   <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
                     <span className="type-metadata text-[#063f46]">{awayTeamAbbr}</span>
                   </div>
-                  <h5 className="type-secondary text-[#063f46]">{awayTeamAbbr} Starting 5</h5>
+                  <h5 className="type-secondary text-[#063f46]">{awayTeamAbbr} 2025–26 minutes</h5>
                 </div>
                 <p className="type-secondary py-4 text-center">
-                  Not enough current-season data
+                  No 2025–26 minutes sample
                 </p>
               </div>
             )}
@@ -584,10 +584,10 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
                   <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
                     <span className="type-metadata text-[#063f46]">{homeTeamAbbr}</span>
                   </div>
-                  <h5 className="type-secondary text-[#063f46]">{homeTeamAbbr} Starting 5</h5>
+                  <h5 className="type-secondary text-[#063f46]">{homeTeamAbbr} 2025–26 minutes</h5>
                 </div>
                 <p className="type-secondary py-4 text-center">
-                  Not enough current-season data
+                  No 2025–26 minutes sample
                 </p>
               </div>
             )}
@@ -605,20 +605,20 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
         <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
           <span className="type-metadata text-[#063f46]">{teamAbbr}</span>
         </div>
-        <h5 className="type-secondary text-[#063f46]">{teamAbbr} Starting 5</h5>
+        <div>
+          <h5 className="type-secondary text-[#063f46]">{teamAbbr} 2025–26 minutes</h5>
+          <p className="type-metadata">Minutes logged for {teamAbbr} in that sample.</p>
+        </div>
       </div>
       
       <div className="space-y-2">
-        {lineup.players.map((player, index) => (
+        {lineup.players.map((player) => (
           <Link
             key={player.player_id}
             href={`/betting/players/${player.player_id}`}
             className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-[#f7f9f7] transition-colors border-b border-[#DCE9EA] last:border-0"
           >
             <div className="flex items-center gap-2 flex-1">
-              <div className="w-6 h-6 rounded bg-[#F8FBFA] flex items-center justify-center">
-                <span className="type-metadata text-[#063f46]">{index + 1}</span>
-              </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="type-table-data text-[#063f46]">{player.full_name}</span>
@@ -628,7 +628,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="type-metadata">
-                    {player.games_started} starts
+                    {player.games_started} games
                   </span>
                   <span className="type-metadata">•</span>
                   <span className="type-metadata">
@@ -647,7 +647,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
       
       {lineup.players.length === 0 && (
         <p className="type-secondary py-4 text-center">
-          Not enough current-season data
+          No 2025–26 minutes sample
         </p>
       )}
     </>

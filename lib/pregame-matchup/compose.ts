@@ -1,5 +1,6 @@
-import type { HistoricalContributor, PlayerSumRow, TeamProfile, TeamSumRow } from './aggregate';
-import { historicalContributors, regularSeasonSample } from './aggregate';
+import type { PlayerSumRow, TeamProfile, TeamSumRow } from './aggregate';
+import { regularSeasonSample } from './aggregate';
+import { attributeMatchupPlayers, type MatchupContributors } from './membership';
 import type { MatchupQuoteResult } from './quote';
 import { hiddenRosterForUnconfirmedTeam, type RosterPresentation } from './roster';
 import { selectMatchupInsights, type MatchupInsight } from './signals';
@@ -8,7 +9,7 @@ import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
 export const POSSESSION_NOTE =
   'Estimated possessions are a box-score estimate, not official NBA pace, and are not adjusted for overtime.';
 
-export const CONTRIBUTOR_LABEL = '2025–26 historical production — not a confirmed current roster';
+export type { MatchupContributors };
 
 export const SAMPLE_LABEL = `${HISTORICAL_SEASON_LABEL} · ${EXPECTED_TEAM_GAMES} games`;
 
@@ -28,7 +29,7 @@ export type PregameMatchupModel = {
   history: { label: string; possessionNote: string; rows: ComparisonRow[] } | null;
   historyNote: string | null;
   insights: MatchupInsight[];
-  contributors: { label: string; away: HistoricalContributor[]; home: HistoricalContributor[] } | null;
+  contributors: MatchupContributors | null;
   roster: RosterPresentation;
   quote: MatchupQuoteResult['quote'];
   quoteNote: string | null;
@@ -137,10 +138,11 @@ export function buildPregameMatchup(input: {
       home: { abbr: input.homeAbbr, profile: home },
       league: [...sample.values()],
     }),
-    contributors: {
-      label: CONTRIBUTOR_LABEL,
-      away: historicalContributors(input.playerRows, input.awayTeamId),
-      home: historicalContributors(input.playerRows, input.homeTeamId),
-    },
+    contributors: attributeMatchupPlayers({
+      awayTeamId: input.awayTeamId,
+      homeTeamId: input.homeTeamId,
+      playerRows: input.playerRows,
+      roster: input.roster,
+    }),
   };
 }

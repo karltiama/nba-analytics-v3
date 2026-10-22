@@ -223,6 +223,7 @@ export async function loadRosterContinuity(
     collectedAt: eligibility.batch.collectedAt,
     reason: eligibility.reason,
     freshness: eligibility.freshness,
+    members,
     teams: sides.map((side) =>
       teamContinuity({
         teamId: side.teamId,

@@ -14,7 +14,7 @@ function sectionLinks(model: PregameMatchupModel): MatchupNavLink[] {
     { href: '#section-roster', label: 'Roster' },
   ];
   if (model.insights.length > 0) links.splice(2, 0, { href: '#section-signals', label: 'Signals' });
-  if (model.contributors) links.push({ href: '#section-contributors', label: 'Contributors' });
+  if (model.contributors) links.push({ href: '#section-contributors', label: 'Players' });
   return links;
 }
 
@@ -55,9 +55,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           <PlayerContributors
             awayAbbr={model.awayAbbr}
             homeAbbr={model.homeAbbr}
-            label={model.contributors.label}
-            away={model.contributors.away}
-            home={model.contributors.home}
+            contributors={model.contributors}
           />
         ) : null}
         {!model.quote && model.quoteNote ? (

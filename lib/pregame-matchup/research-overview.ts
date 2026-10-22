@@ -6,8 +6,7 @@
 
 import type { GameLifecycleState } from '@/lib/betting/normalize-game-status';
 import { POSTSEASON_START_ET } from '@/lib/games/season-eligibility';
-import type { HistoricalContributor } from './aggregate';
-import type { ComparisonRow, PregameMatchupModel } from './compose';
+import type { ComparisonRow, MatchupContributors, PregameMatchupModel } from './compose';
 import type { RosterPresentation } from './roster';
 import type { MatchupInsight } from './signals';
 import { HISTORICAL_SEASON } from './window';
@@ -23,7 +22,7 @@ export type ResearchHistoricalOverview = {
   history: { label: string; possessionNote: string; rows: ComparisonRow[] } | null;
   historyNote: string | null;
   insights: MatchupInsight[];
-  contributors: { label: string; away: HistoricalContributor[]; home: HistoricalContributor[] } | null;
+  contributors: MatchupContributors | null;
   roster: RosterPresentation;
 };
 
