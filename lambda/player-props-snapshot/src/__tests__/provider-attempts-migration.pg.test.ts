@@ -17,6 +17,10 @@ const migrationPath = path.resolve(
   __dirname,
   '../../../../db/schemas/MIGRATION_player_prop_provider_attempts.sql'
 );
+const dailyMigrationPath = path.resolve(
+  __dirname,
+  '../../../../db/schemas/MIGRATION_player_prop_daily_attempts.sql'
+);
 
 const PRE_MIGRATION = `
 CREATE SCHEMA IF NOT EXISTS raw;
@@ -54,8 +58,8 @@ CREATE TABLE IF NOT EXISTS raw.player_prop_snapshots_v2 (
 const admin = new Pool({ connectionString: adminUrl, connectionTimeoutMillis: 5_000 });
 const pool = new Pool({ connectionString: databaseUrl, connectionTimeoutMillis: 5_000 });
 
-function applyMigrationFile(): void {
-  const sql = fs.readFileSync(migrationPath);
+function applySqlFile(filePath: string): void {
+  const sql = fs.readFileSync(filePath);
   const result = spawnSync(
     'docker',
     ['exec', '-i', 'props-p2-pg', 'psql', '-U', 'postgres', '-d', 'propsmig', '-v', 'ON_ERROR_STOP=1'],
@@ -65,6 +69,10 @@ function applyMigrationFile(): void {
     const detail = Buffer.concat([result.stdout ?? Buffer.alloc(0), result.stderr ?? Buffer.alloc(0)]).toString('utf8');
     throw new Error(detail || 'migration psql failed');
   }
+}
+
+function applyMigrationFile(): void {
+  applySqlFile(migrationPath);
 }
 
 beforeAll(async () => {
@@ -92,6 +100,7 @@ beforeAll(async () => {
     ON CONFLICT DO NOTHING
   `);
   applyMigrationFile();
+  applySqlFile(dailyMigrationPath);
 });
 
 afterAll(async () => {

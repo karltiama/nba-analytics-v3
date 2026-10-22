@@ -119,9 +119,13 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
       local.bdl_rate_limit_env,
       var.odds_lambda_env,
       {
-        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND = "dynamodb"
-        BDL_RATE_LIMIT_WORKER  = "odds-pre-game-snapshot"
+        BDL_RATE_LIMIT_TABLE        = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND      = "dynamodb"
+        BDL_RATE_LIMIT_WORKER       = "odds-pre-game-snapshot"
+        BDL_RATE_LIMIT_INTERVAL_MS  = "13000"
+        BDL_RATE_LIMIT_MAX_REQUESTS = "1"
+        BDL_RATE_LIMIT_BURST        = "1"
+        BDL_RATE_LIMIT_MAX_RETRIES  = "0"
       }
     )
   }

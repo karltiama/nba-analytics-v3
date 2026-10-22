@@ -15,7 +15,7 @@ function resource(src: string, header: string): string {
   return src.slice(start, next === -1 ? undefined : next);
 }
 
-describe('props worker limiter pin stays off the live odds function', () => {
+describe('collector limiter pins stay off the shared default', () => {
   const lambda = read('infra/lambda.tf');
   const worker = resource(lambda, 'resource "aws_lambda_function" "player_props_worker"');
   const odds = resource(lambda, 'resource "aws_lambda_function" "odds_pre_game_snapshot"');
@@ -31,10 +31,15 @@ describe('props worker limiter pin stays off the live odds function', () => {
     expect(intervalAt).toBeGreaterThan(sharedAt);
   });
 
-  it('does not put that pin on the odds Lambda or the shared default', () => {
-    expect(odds).not.toContain('BDL_RATE_LIMIT_INTERVAL_MS');
-    expect(odds).not.toContain('"13000"');
+  it('pins the odds function the same way and leaves the shared default unchanged', () => {
     expect(odds).toContain('local.bdl_rate_limit_env');
+    expect(odds).toContain('BDL_RATE_LIMIT_INTERVAL_MS  = "13000"');
+    expect(odds).toContain('BDL_RATE_LIMIT_MAX_REQUESTS = "1"');
+    expect(odds).toContain('BDL_RATE_LIMIT_BURST        = "1"');
+    expect(odds).toContain('BDL_RATE_LIMIT_MAX_RETRIES  = "0"');
+    const oddsIntervalAt = odds.indexOf('BDL_RATE_LIMIT_INTERVAL_MS');
+    const oddsSharedAt = odds.lastIndexOf('local.bdl_rate_limit_env');
+    expect(oddsIntervalAt).toBeGreaterThan(oddsSharedAt);
     const limiter = read('infra/bdl-rate-limit.tf');
     expect(limiter.match(/variable "bdl_rate_limit_interval_ms"[\s\S]*?default\s*=\s*(\d+)/)?.[1]).toBe('500');
     expect(limiter.match(/variable "bdl_rate_limit_burst"[\s\S]*?default\s*=\s*(\d+)/)?.[1]).toBe('5');
