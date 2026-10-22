@@ -412,8 +412,12 @@ describe('research overview presentation and boundaries', () => {
     expect(html).toContain('Ratings in the matchup section use that same 2025–26 research season.');
     expect(html).not.toContain('data-market-strip');
     expect(html).not.toContain('DraftKings');
+    expect(html).toContain('data-matchup-story');
+    expect(html).toContain('The clearest 2025–26 contrast is');
+    expect(html).toContain('Key findings');
+    expect(html).not.toContain('AI Matchup Summary');
     expect(html).toContain('grid-cols-1');
-    expect(html).toContain('xl:grid-cols-[minmax(0,1.9fr)_minmax(16rem,1fr)]');
+    expect(html).not.toContain('xl:grid-cols-[minmax(0,1.9fr)_minmax(16rem,1fr)]');
   });
 
   it('keeps the research route authenticated and the public route free of the research adapter', () => {
@@ -444,6 +448,9 @@ describe('research overview presentation and boundaries', () => {
     expect(layout).toContain('section-box');
     expect(layout.indexOf('id="section-box"')).toBeLessThan(layout.indexOf('<ResearchMatchupOverview'));
     expect(layout).toContain('!isFinalView && historicalOverview');
+    expect(layout).toContain('betting-matchup-header');
+    expect(layout).toContain('--matchup-scroll-offset');
+    expect(layout).not.toContain('const stickyOffset = 160');
     expect(layout).toContain('isFinalView && hasStoredOdds');
     expect(layout).toContain('historicalFinalNavIds');
     expect(layout).not.toContain('loadPregameMatchup');

@@ -2,18 +2,32 @@
 
 import { useLayoutEffect } from 'react';
 
-const HEADER_ID = 'matchup-overview';
 const OFFSET_VAR = '--matchup-scroll-offset';
 /** Space between the sticky card and the section title after a nav jump. */
 const GAP_PX = 12;
+
+const DEFAULT_HASHES = [
+  'section-story',
+  'section-comparison',
+  'section-signals',
+  'section-personnel',
+  'section-roster',
+  'section-contributors',
+];
 
 /**
  * Publishes the stuck matchup header's viewport height as a scroll offset.
  * Section anchors use it so their title bars stay below the sticky card.
  */
-export function MatchupScrollOffset() {
+export function MatchupScrollOffset({
+  headerId = 'matchup-overview',
+  hashIds = DEFAULT_HASHES,
+}: {
+  headerId?: string;
+  hashIds?: readonly string[];
+}) {
   useLayoutEffect(() => {
-    const header = document.getElementById(HEADER_ID);
+    const header = document.getElementById(headerId);
     if (!header) return;
 
     const apply = () => {
@@ -25,12 +39,7 @@ export function MatchupScrollOffset() {
 
     apply();
     const hashId = window.location.hash.replace(/^#/, '');
-    if (
-      hashId === 'section-comparison' ||
-      hashId === 'section-signals' ||
-      hashId === 'section-roster' ||
-      hashId === 'section-contributors'
-    ) {
+    if (hashIds.includes(hashId)) {
       document.getElementById(hashId)?.scrollIntoView();
     }
     const observer = new ResizeObserver(apply);
@@ -41,7 +50,7 @@ export function MatchupScrollOffset() {
       window.removeEventListener('resize', apply);
       document.documentElement.style.removeProperty(OFFSET_VAR);
     };
-  }, []);
+  }, [headerId, hashIds]);
 
   return null;
 }

@@ -332,6 +332,11 @@
   display: none;
 }
 
+/* Clears the measured sticky matchup header. Fallback matches the previous 10rem jump. */
+.scroll-mt-matchup {
+  scroll-margin-top: var(--matchup-scroll-offset, 10rem);
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;

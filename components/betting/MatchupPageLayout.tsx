@@ -37,6 +37,7 @@ import {
   isHistoricalFinalView,
 } from '@/lib/betting/historical-final';
 import { displayGameStatusLabel } from '@/lib/betting/normalize-game-status';
+import { MatchupScrollOffset } from '@/components/matchup/MatchupScrollOffset';
 import { ResearchMatchupOverview } from '@/components/matchup/ResearchMatchupOverview';
 import type { ResearchHistoricalOverview } from '@/lib/pregame-matchup/research-overview';
 import { formatNbaSeasonLabel } from '@/lib/season';
@@ -574,6 +575,27 @@ function MarketSentimentPanel({
   );
 }
 
+const BETTING_MATCHUP_HASHES = [
+  'section-overview',
+  'section-historical-overview',
+  'section-story',
+  'section-signals',
+  'section-compact-comparison',
+  'section-personnel',
+  'section-comparison',
+  'section-roster',
+  'section-contributors',
+  'section-ai-projection',
+  'section-odds',
+  'section-matchup',
+  'section-players',
+  'section-injuries',
+  'section-box',
+  'section-starters',
+  'section-context',
+  'section-timeline',
+] as const;
+
 const SECTION_IDS = ['section-overview', 'section-matchup', 'section-odds', 'section-injuries'] as const;
 const SECTION_LABELS: Record<string, string> = {
   'section-overview': 'Overview',
@@ -706,9 +728,17 @@ export function MatchupPageLayout({
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (!el) return;
+    const raw = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--matchup-scroll-offset')
+    );
+    const header = document.getElementById('betting-matchup-header');
+    const headerTop = header ? Number.parseFloat(getComputedStyle(header).top) : 0;
+    const measured = header
+      ? Math.ceil((Number.isFinite(headerTop) ? headerTop : 0) + header.offsetHeight + 12)
+      : 0;
+    const stickyOffset = Number.isFinite(raw) && raw > 0 ? raw : measured;
     const y = el.getBoundingClientRect().top + window.scrollY;
-    const stickyOffset = 160;
-    window.scrollTo({ top: y - stickyOffset, behavior: 'smooth' });
+    window.scrollTo({ top: Math.max(0, y - stickyOffset), behavior: 'smooth' });
     setActiveSection(sectionId);
   };
 
@@ -882,7 +912,8 @@ export function MatchupPageLayout({
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
       {/* Sticky header: matchup + horizontal section nav (scroll-to-section everywhere) */}
-      <div className="sticky top-16 z-10 bg-white/95 rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm backdrop-blur-sm">
+      <div id="betting-matchup-header" className="sticky top-16 z-10 bg-white/95 rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm backdrop-blur-sm">
+        <MatchupScrollOffset headerId="betting-matchup-header" hashIds={BETTING_MATCHUP_HASHES} />
         <div className="px-3 sm:px-5 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6 min-w-0 bg-[#F8FBFA]">
           <div className="flex items-center gap-2 min-w-0 sm:w-64 lg:w-80 shrink-0">
             <button
@@ -1006,7 +1037,7 @@ export function MatchupPageLayout({
             season={gameSeason || game.season}
           />
         ) : null}
-        <section id="section-box" className="scroll-mt-[10rem]">
+        <section id="section-box" className="scroll-mt-matchup">
           <HistoricalFinalBoxScore
             awayName={game.awayTeam.name}
             awayTeamId={game.awayTeam.id}
@@ -1032,11 +1063,11 @@ export function MatchupPageLayout({
         </>
         ) : null}
         {!isFinalView ? (
-        <section id="section-overview" className="order-1 scroll-mt-[10rem] space-y-4">
+        <section id="section-overview" className="order-1 scroll-mt-matchup space-y-4">
         {!isFinalView && historicalOverview ? (
           <ResearchMatchupOverview overview={historicalOverview} />
         ) : null}
-        <section id="section-ai-projection" className="scroll-mt-[10rem]">
+        <section id="section-ai-projection" className="scroll-mt-matchup">
           <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA] flex items-center gap-1.5">
               <div className="flex items-center justify-center p-1 rounded-md bg-[#55ddb1]/30 shrink-0"><Zap className="w-3 h-3 text-[#075B5C]" /></div>
@@ -1105,7 +1136,7 @@ export function MatchupPageLayout({
         ) : null}
 
         {(!isFinalView || navIds.includes('section-odds')) ? (
-        <section id="section-odds" className={`scroll-mt-[10rem] space-y-4 ${isFinalView ? '' : 'order-3'}`}>
+        <section id="section-odds" className={`scroll-mt-matchup space-y-4 ${isFinalView ? '' : 'order-3'}`}>
           <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
               <h2 className="type-section-heading text-[#063f46]">
@@ -1210,7 +1241,7 @@ export function MatchupPageLayout({
             </div>
           </div>
           {!isFinalView ? (
-          <section id="section-players" className="scroll-mt-[10rem]">
+          <section id="section-players" className="scroll-mt-matchup">
             {playerProps.length > 0 ? (
               <PlayerPropsFilterableList
                 props={playerProps}
@@ -1256,7 +1287,7 @@ export function MatchupPageLayout({
 
         {!isFinalView ? (
         <>
-        <section id="section-matchup" className="order-2 space-y-4 scroll-mt-[10rem]">
+        <section id="section-matchup" className="order-2 space-y-4 scroll-mt-matchup">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
               <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
@@ -1425,7 +1456,7 @@ export function MatchupPageLayout({
           </div>
         </section>
 
-        <section id="section-injuries" className="order-5 scroll-mt-[10rem] space-y-4">
+        <section id="section-injuries" className="order-5 scroll-mt-matchup space-y-4">
           <p className="type-metadata">Research injury report. Roster continuity in the overview is a historical listing.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm">

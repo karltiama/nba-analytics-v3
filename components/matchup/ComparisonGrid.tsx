@@ -33,20 +33,20 @@ export function ComparisonGrid({
           <>
             {label ? <p className="type-metadata">{label}</p> : null}
             {possessionNote ? <p className="type-secondary mt-2">{possessionNote}</p> : null}
-            <div className="mt-4 border-y border-[#DCE9EA]">
-              <div className="grid grid-cols-[minmax(0,1fr)_minmax(6.5rem,9.5rem)_minmax(0,1fr)] gap-2 py-2">
-                <div className="type-metadata text-right">{awayAbbr}</div>
+            <div className="mt-4 min-w-0 border-y border-[#DCE9EA]">
+              <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_minmax(0,1fr)] gap-2 py-2">
+                <div className="type-metadata min-w-0 truncate text-right">{awayAbbr}</div>
                 <div />
-                <div className="type-metadata">{homeAbbr}</div>
+                <div className="type-metadata min-w-0 truncate">{homeAbbr}</div>
               </div>
               {rows.map((row) => (
                 <div
                   key={row.label}
-                  className="grid grid-cols-[minmax(0,1fr)_minmax(6.5rem,9.5rem)_minmax(0,1fr)] gap-2 border-t border-[#DCE9EA] py-2.5"
+                  className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_minmax(0,1fr)] gap-2 border-t border-[#DCE9EA] py-2.5"
                 >
-                  <div className="type-card-data text-right tabular-nums text-[#063f46]">{row.away}</div>
-                  <div className="type-secondary text-center">{row.label}</div>
-                  <div className="type-card-data tabular-nums text-[#063f46]">{row.home}</div>
+                  <div className="type-card-data min-w-0 break-words text-right tabular-nums text-[#063f46]">{row.away}</div>
+                  <div className="type-secondary min-w-0 break-words text-center">{row.label}</div>
+                  <div className="type-card-data min-w-0 break-words tabular-nums text-[#063f46]">{row.home}</div>
                 </div>
               ))}
             </div>
