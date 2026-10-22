@@ -482,7 +482,6 @@ describe('Lifecycle parity', () => {
         .replace(/data-game-id="[^"]*"/g, '')
         .replace(/data-season-type="[^"]*"/g, '')
         .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
-        .replace(/href="\/betting\/games\/[^"]*"/g, 'href="/betting/games/id"')
         .replace(/href="\/betting\/props-explorer\?[^"]*"/g, 'href="/betting/props-explorer"')
         .replace(/NBA · (Preseason|Regular season|Play-in|Playoffs)/g, '');
     const players = [

@@ -4,7 +4,6 @@
  */
 
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
-import type { StoredOddsPatch } from '@/lib/dashboard/stored-odds';
 import type { StoredOddsQuote, StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { isScoreboardMarketServingEnabled } from '@/lib/scoreboard/flags';
 import { marketSourceCaption, selectMarket, type MarketSelection } from '@/lib/scoreboard/market';
@@ -38,31 +37,6 @@ function signedLine(value: number | null): string {
 function american(value: number | null): string {
   if (value == null || !Number.isFinite(value)) return '—';
   return value > 0 ? `+${value}` : String(value);
-}
-
-/** The dashboard's stored DraftKings row, with its stored caption. Not a live price. */
-export function matchupQuoteFromStoredPatch(
-  patch: StoredOddsPatch,
-  awayAbbr: string,
-  homeAbbr: string
-): MatchupQuote {
-  const implied =
-    patch.awayImpliedProb != null && patch.homeImpliedProb != null
-      ? `No-vig implied probability: ${awayAbbr} ${patch.awayImpliedProb}%, ${homeAbbr} ${patch.homeImpliedProb}%`
-      : null;
-  return {
-    vendorLabel: 'DraftKings',
-    caption: patch.marketCaption ?? null,
-    awayAbbr,
-    homeAbbr,
-    spreadAway: `${awayAbbr} ${signedLine(patch.awayOdds.spread)}`,
-    spreadHome: `${homeAbbr} ${signedLine(patch.homeOdds.spread)}`,
-    total: patch.overUnder != null ? `O/U ${patch.overUnder}` : '—',
-    totalPrices: `O ${american(patch.overOdds)} / U ${american(patch.underOdds)}`,
-    moneylineAway: `${awayAbbr} ${american(patch.awayOdds.moneyline)}`,
-    moneylineHome: `${homeAbbr} ${american(patch.homeOdds.moneyline)}`,
-    implied,
-  };
 }
 
 function noteFor(selection: MarketSelection, enabled: boolean): string {

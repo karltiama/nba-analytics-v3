@@ -605,7 +605,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
         <div className="w-8 h-8 rounded-lg bg-[#F8FBFA] flex items-center justify-center">
           <span className="type-metadata text-[#063f46]">{teamAbbr}</span>
         </div>
-        <h5 className="type-secondary text-[#063f46]">{teamAbbr} minutes sample</h5>
+        <h5 className="type-secondary text-[#063f46]">{teamAbbr} Starting 5</h5>
       </div>
       
       <div className="space-y-2">
@@ -628,7 +628,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="type-metadata">
-                    {player.games_started} games
+                    {player.games_started} starts
                   </span>
                   <span className="type-metadata">•</span>
                   <span className="type-metadata">

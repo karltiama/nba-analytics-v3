@@ -57,7 +57,7 @@ interface RecentGameResult {
   opponent: string;
   result: 'W' | 'L';
   score: string;
-  spread: number | null;
+  spread: number;
   covered: boolean;
   /** YYYY-MM-DD for B2B detection */
   game_date?: string | null;
@@ -134,8 +134,6 @@ export interface GameDetailsData {
   game: Game;
   viewMode?: HistoricalViewMode;
   gameSeason?: string;
-  /** Season key used for team ratings and recent form. */
-  analyticsSeason?: string;
   availability?: HistoricalModuleAvailability;
   boxScore?: HistoricalBoxScore;
   starters?: HistoricalStarters;
@@ -440,20 +438,15 @@ function RecentFormRow({ game, teamAbbr }: { game: RecentGameResult; teamAbbr: s
         }`}>
           {game.result}
         </span>
-        <span className="type-secondary">
-          vs {game.opponent}
-          {game.game_date ? ` · ${game.game_date}` : ''}
-        </span>
+        <span className="type-secondary">vs {game.opponent}</span>
       </div>
       <div className="flex items-center gap-3">
         <span className="type-table-data whitespace-nowrap font-mono text-[#063f46]">{game.score}</span>
-        {game.spread == null ? null : (
         <span className={`type-badge whitespace-nowrap rounded px-1.5 py-0.5 ${
           game.covered ? 'bg-[#20B95A]/15 text-[#20B95A]' : 'bg-[#c2410c]/15 text-[#c2410c]'
         }`}>
           {game.spread > 0 ? '+' : ''}{game.spread} {game.covered ? '✓' : '✗'}
         </span>
-        )}
       </div>
     </div>
   );
@@ -626,7 +619,6 @@ export function MatchupPageLayout({
     marketSentiment,
     viewMode,
     gameSeason,
-    analyticsSeason,
     boxScore,
     starters,
     availability,
@@ -634,10 +626,6 @@ export function MatchupPageLayout({
 
   const isFinalView =
     viewMode === 'final' || isHistoricalFinalView(game.status);
-  const ratingsArePriorSeason = Boolean(
-    analyticsSeason && gameSeason && analyticsSeason !== gameSeason
-  );
-  const ratingsSeasonLabel = analyticsSeason ? formatNbaSeasonLabel(analyticsSeason) : '';
 
   const showStartingFive = shouldShowStartingFive(starters);
   const showHistoricalAdvanced = shouldShowHistoricalAdvanced(availability);
@@ -700,7 +688,6 @@ export function MatchupPageLayout({
     awayTeamStats: data.awayTeamStats,
     spreadMovement: data.spreadMovement,
     injuries: data.injuries,
-    injuryFeed,
   });
 
   const injuryNarrative = useMemo(
@@ -942,9 +929,6 @@ export function MatchupPageLayout({
                   {isFinalView
                     ? (game.awayScore != null ? String(game.awayScore) : '—')
                     : (game.awayTeam.record ?? '—')}
-                  {!isFinalView && ratingsArePriorSeason && game.awayTeam.record ? (
-                    <span className="ml-1 text-xs font-medium text-[#4a6366]">{ratingsSeasonLabel}</span>
-                  ) : null}
                 </span>
               </span>
             </Link>
@@ -962,9 +946,6 @@ export function MatchupPageLayout({
                   {isFinalView
                     ? (game.homeScore != null ? String(game.homeScore) : '—')
                     : (game.homeTeam.record ?? '—')}
-                  {!isFinalView && ratingsArePriorSeason && game.homeTeam.record ? (
-                    <span className="ml-1 text-xs font-medium text-[#4a6366]">{ratingsSeasonLabel}</span>
-                  ) : null}
                 </span>
               </span>
             </Link>
@@ -1201,7 +1182,7 @@ export function MatchupPageLayout({
                           width={520}
                           embedded
                           referenceCaption={isFinalView ? 'First stored' : 'Open'}
-                          comparisonCaption={isFinalView ? 'Stored close' : 'Latest stored'}
+                          comparisonCaption={isFinalView ? 'Stored close' : 'Current'}
                         />
                       </TabsContent>
                       <TabsContent value="total" className="mt-0 outline-none min-w-0 overflow-hidden">
@@ -1213,7 +1194,7 @@ export function MatchupPageLayout({
                           width={520}
                           embedded
                           referenceCaption={isFinalView ? 'First stored' : 'Open'}
-                          comparisonCaption={isFinalView ? 'Stored close' : 'Latest stored'}
+                          comparisonCaption={isFinalView ? 'Stored close' : 'Current'}
                         />
                       </TabsContent>
                     </Tabs>
@@ -1280,10 +1261,7 @@ export function MatchupPageLayout({
             {/* Column 1: Projected starters */}
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
               <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-                <h2 className="type-section-heading text-[#063f46]">Recent rotation sample</h2>
-                <p className="type-metadata mt-0.5">
-                  Last 10 completed games in the research season, ranked by minutes. Not a confirmed starting lineup.
-                </p>
+                <h2 className="type-section-heading text-[#063f46]">Projected starters</h2>
               </div>
               <div className="p-3">
               {matchupAnalysis?.starting_lineups && (matchupAnalysis.starting_lineups.home || matchupAnalysis.starting_lineups.away) ? (
@@ -1304,11 +1282,7 @@ export function MatchupPageLayout({
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
               <h2 className="type-section-heading text-[#063f46]">Team comparison</h2>
-              <p className="type-metadata mt-0.5">
-                {ratingsArePriorSeason
-                  ? `${ratingsSeasonLabel} ratings and recent results. Current-season samples are not available.`
-                  : 'Current research-season ratings and recent form.'}
-              </p>
+              <p className="type-metadata mt-0.5">Current research-season ratings and recent form.</p>
             </div>
             <div className="p-3">
             {(() => {
@@ -1614,18 +1588,14 @@ export function MatchupPageLayout({
               <div className="border-t border-[#DCE9EA] pt-3">
                 <p className="type-metadata mb-1">Injuries</p>
                 <p className="type-secondary text-[#063f46]">
-                  {injuryFeed === 'not_current' && totalListedInjuries === 0
-                    ? injuryAbsenceCopy(injuryFeed)
-                    : totalListedInjuries === 0
-                      ? injuryAbsenceCopy('authoritative_empty')
-                      : `${totalListedInjuries} player${totalListedInjuries === 1 ? '' : 's'} on report`}
+                  {totalListedInjuries === 0
+                    ? 'None listed'
+                    : `${totalListedInjuries} player${totalListedInjuries === 1 ? '' : 's'} on report`}
                 </p>
-                {injuryFeed === 'not_current' && totalListedInjuries === 0 ? null : (
                 <p className="type-metadata mt-1">
                   {game.awayTeam.abbreviation} {injuries?.away?.length ?? 0} · {game.homeTeam.abbreviation}{' '}
                   {injuries?.home?.length ?? 0}
                 </p>
-                )}
               </div>
               ) : null}
             </div>

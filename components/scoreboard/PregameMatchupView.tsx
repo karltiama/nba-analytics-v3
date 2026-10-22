@@ -32,7 +32,6 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         backLabel="Today's Games"
         market={model.quote}
         links={sectionLinks(model)}
-        propsHref={model.propsHref}
       />
 
       <div className="mx-auto grid w-full max-w-[65rem] grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(16rem,1fr)]">
