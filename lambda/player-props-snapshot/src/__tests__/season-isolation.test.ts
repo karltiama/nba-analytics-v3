@@ -67,7 +67,7 @@ describe('props target eligibility', () => {
       now: new Date('2026-10-21T01:20:00.000Z'),
     });
     warn.mockRestore();
-    expect(targets).toEqual([{ gameId: '101', bdlGameId: 101 }]);
+    expect(targets).toEqual([{ gameId: '101', bdlGameId: 101, startTime: '2026-10-21T02:30:00.000Z' }]);
   });
 });
 
