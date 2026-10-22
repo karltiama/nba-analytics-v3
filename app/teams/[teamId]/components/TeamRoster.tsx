@@ -9,13 +9,16 @@ import {
   mergeRosterAvailability,
   type RosterPlayerWithAvailability,
 } from '@/lib/teams/roster-availability';
-import { getLiveAvailabilitySeason } from '@/lib/season';
+import { formatNbaSeasonLabel, getLiveAvailabilitySeason } from '@/lib/season';
+import { rosterObservationNote, rosterStatsDistinction } from '@/lib/teams/team-page-season';
 import { cn } from '@/lib/utils';
 
 interface TeamRosterProps {
   teamId: string;
-  /** Required analytics start-year from the team page season context. */
+  /** Membership season. Queries filter analytics.team_roster_current to this year. */
   season: string;
+  /** Statistical season shown elsewhere on the page. May differ from membership. */
+  statsSeason: string;
 }
 
 function availabilityClass(priority: 'high' | 'moderate' | 'low'): string {
@@ -86,13 +89,23 @@ function RosterRow({ player }: { player: RosterPlayerWithAvailability }) {
   );
 }
 
-export async function TeamRoster({ teamId, season }: TeamRosterProps) {
+export async function TeamRoster({ teamId, season, statsSeason }: TeamRosterProps) {
   const roster = await getTeamCanonicalRoster(teamId, season);
+  const statsNote = rosterStatsDistinction(season, statsSeason);
+  const observationNote = rosterObservationNote(season);
 
   if (!roster || roster.length === 0) {
     return (
-      <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 text-center">
-        <p className="type-secondary">Roster not available yet</p>
+      <div
+        className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-4 text-center"
+        data-roster-season={season}
+        data-stats-season={statsSeason}
+      >
+        <p className="type-section-heading text-[#063f46]">Roster</p>
+        <p className="type-metadata mt-1">{formatNbaSeasonLabel(season)}</p>
+        {observationNote ? <p className="type-metadata mt-1">{observationNote}</p> : null}
+        {statsNote ? <p className="type-metadata mt-1">{statsNote}</p> : null}
+        <p className="type-secondary mt-2">Roster not available yet</p>
       </div>
     );
   }
@@ -128,14 +141,21 @@ export async function TeamRoster({ teamId, season }: TeamRosterProps) {
   const positionGroups = groupRosterByPosition(playersWithAvailability);
 
   return (
-    <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]">
-      <div className="px-4 py-2.5 border-b border-[#DCE9EA] flex items-center justify-between bg-[#F8FBFA] shrink-0">
-        <h3 className="type-section-heading text-[#063f46]">
-          Roster
-        </h3>
-        <span className="type-badge px-2 py-0.5 bg-[#55ddb1]/30 text-[#063f46] rounded-full">
-          {playersWithAvailability.length}
-        </span>
+    <div
+      className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-0 xl:min-h-[calc(100vh-10rem)]"
+      data-roster-season={season}
+      data-stats-season={statsSeason}
+    >
+      <div className="px-4 py-2.5 border-b border-[#DCE9EA] bg-[#F8FBFA] shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="type-section-heading text-[#063f46]">Roster</h3>
+          <span className="type-badge px-2 py-0.5 bg-[#55ddb1]/30 text-[#063f46] rounded-full">
+            {playersWithAvailability.length}
+          </span>
+        </div>
+        <p className="type-metadata mt-0.5">{formatNbaSeasonLabel(season)}</p>
+        {observationNote ? <p className="type-metadata mt-0.5">{observationNote}</p> : null}
+        {statsNote ? <p className="type-metadata mt-0.5">{statsNote}</p> : null}
       </div>
       <div className="flex-1 min-h-0">
         {positionGroups.map((group) => (

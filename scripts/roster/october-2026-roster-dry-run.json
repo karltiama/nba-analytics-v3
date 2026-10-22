@@ -1,0 +1,667 @@
+{
+  "batchId": "65912e16-9343-51b0-8e29-9cbb99ada16b",
+  "snapshotDate": "2026-10-12",
+  "seasonLabel": "2026-27",
+  "batchPlayers": 624,
+  "open2026Stints": 578,
+  "unchanged": 446,
+  "teamChanges": [
+    {
+      "fullName": "Tony Bradley",
+      "providerPlayerId": "60",
+      "playerEntityId": "e867684f-93e6-5d6a-b835-550f925f29cd",
+      "from": "ATL",
+      "to": "NYK",
+      "closeStintId": 893,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Bruce Brown",
+      "providerPlayerId": "69",
+      "playerEntityId": "c62743b0-6b15-51be-b5f6-8e8cea7990c0",
+      "from": "DEN",
+      "to": "NYK",
+      "closeStintId": 1022,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Dorian Finney-Smith",
+      "providerPlayerId": "158",
+      "playerEntityId": "42972e0f-05f9-59ab-b1c9-45a8e53f7fa7",
+      "from": "CHA",
+      "to": "ATL",
+      "closeStintId": 943,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Buddy Hield",
+      "providerPlayerId": "210",
+      "playerEntityId": "f6c8088a-842d-5b8a-a2ab-ff9ff0865dfa",
+      "from": "ATL",
+      "to": "CHI",
+      "closeStintId": 890,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Brandon Ingram",
+      "providerPlayerId": "227",
+      "playerEntityId": "708a2dd4-d053-5e79-8b4f-064738b1afe1",
+      "from": "TOR",
+      "to": "LAC",
+      "closeStintId": 1403,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kawhi Leonard",
+      "providerPlayerId": "274",
+      "playerEntityId": "8f03f1e2-fa7d-5775-9f19-597959f5dfbe",
+      "from": "LAC",
+      "to": "TOR",
+      "closeStintId": 1117,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Bennedict Mathurin",
+      "providerPlayerId": "38017686",
+      "playerEntityId": "5227c08d-998e-5844-868f-54bfab3404b0",
+      "from": "LAC",
+      "to": "NOP",
+      "closeStintId": 1123,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Blake Wesley",
+      "providerPlayerId": "38017693",
+      "playerEntityId": "2c8d4a65-65d5-506d-ae2f-bea50a4b5f93",
+      "from": "POR",
+      "to": "LAC",
+      "closeStintId": 1351,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Trevor Keels",
+      "providerPlayerId": "38017720",
+      "playerEntityId": "6b390834-4d75-5bf6-8b2c-916269a7a72b",
+      "from": "MIA",
+      "to": "WAS",
+      "closeStintId": 1180,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Gradey Dick",
+      "providerPlayerId": "56677828",
+      "playerEntityId": "3c739fc1-d887-581a-b417-7922b7307ccb",
+      "from": "TOR",
+      "to": "LAC",
+      "closeStintId": 1402,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jordan Hawkins",
+      "providerPlayerId": "56677837",
+      "playerEntityId": "1e86b555-e158-5786-ac57-20decdc3759a",
+      "from": "NOP",
+      "to": "CHI",
+      "closeStintId": 1249,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Devin Carter",
+      "providerPlayerId": "1028025242",
+      "playerEntityId": "eb866094-7b37-5c64-9fcf-171abe257dbe",
+      "from": "ATL",
+      "to": "BOS",
+      "closeStintId": 900,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "AJ Johnson",
+      "providerPlayerId": "1028026717",
+      "playerEntityId": "d44311c4-2577-5add-b71d-fcb790e6d96d",
+      "from": "MEM",
+      "to": "NOP",
+      "closeStintId": 1162,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Dillon Jones",
+      "providerPlayerId": "1028026812",
+      "playerEntityId": "61fd9ffd-e943-5c55-921a-b1f4d94ebff6",
+      "from": "NYK",
+      "to": "PHI",
+      "closeStintId": 1256,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Antonio Reeves",
+      "providerPlayerId": "1028038100",
+      "playerEntityId": "66a0e2bd-0bb8-5b48-9678-4bacb3c7a252",
+      "from": "CHA",
+      "to": "MIN",
+      "closeStintId": 953,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Johni Broome",
+      "providerPlayerId": "1057382509",
+      "playerEntityId": "5e9928d6-9982-5250-af1d-961e5271e3e2",
+      "from": "LAC",
+      "to": "MIL",
+      "closeStintId": 1129,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Micah Peavy",
+      "providerPlayerId": "1057390538",
+      "playerEntityId": "4315307c-28fa-50c1-9dbb-ac90209445ff",
+      "from": "NOP",
+      "to": "MEM",
+      "closeStintId": 1245,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Curtis Jones",
+      "providerPlayerId": "1057846921",
+      "playerEntityId": "1b291745-6e3c-5c17-b33a-dc4969611d9b",
+      "from": "DEN",
+      "to": "CLE",
+      "closeStintId": 1019,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Ryan Nembhard",
+      "providerPlayerId": "1057847894",
+      "playerEntityId": "3a2be9e9-1360-5fa8-9c15-c20bd48522ba",
+      "from": "ATL",
+      "to": "DEN",
+      "closeStintId": 891,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Norchad Omier",
+      "providerPlayerId": "1057848025",
+      "playerEntityId": "05f1299a-b3df-57f7-8ae1-616940999d7a",
+      "from": "LAC",
+      "to": "MIN",
+      "closeStintId": 1111,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Bez Mbeng",
+      "providerPlayerId": "1059992972",
+      "playerEntityId": "7d3bfed6-b422-5b0d-b2c7-79d3bdb62ab7",
+      "from": "UTA",
+      "to": "MIA",
+      "closeStintId": 1433,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Hayden Gray",
+      "providerPlayerId": "1081266162",
+      "playerEntityId": "d3e08928-bfcd-52bc-b04a-8859b23631cc",
+      "from": "UTA",
+      "to": "BOS",
+      "closeStintId": 1420,
+      "closeObservedTo": "2026-10-12",
+      "openObservedFrom": "2026-10-12"
+    }
+  ],
+  "opens": [
+    {
+      "fullName": "DeMar DeRozan",
+      "providerPlayerId": "125",
+      "playerEntityId": "044acd8b-ee90-5fe3-a954-ce176b908048",
+      "team": "DEN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Drew Eubanks",
+      "providerPlayerId": "147",
+      "playerEntityId": "815ec96c-cc8a-549c-8f91-c2c9017577f9",
+      "team": "NYK",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "James Johnson",
+      "providerPlayerId": "242",
+      "playerEntityId": "ead56a7a-5239-56c8-b44f-c49a06e9aa64",
+      "team": "IND",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kevin Knox",
+      "providerPlayerId": "259",
+      "playerEntityId": "5cef61af-11e6-55a2-bfce-f9c8e95cd8e0",
+      "team": "ORL",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Skal Labissiere",
+      "providerPlayerId": "266",
+      "playerEntityId": "e11ed2e1-0201-5e69-afff-2707ad572735",
+      "team": "WAS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Elfrid Payton",
+      "providerPlayerId": "369",
+      "playerEntityId": "65b83475-d106-586c-902c-bba8bcf7de84",
+      "team": "SAC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Ben Simmons",
+      "providerPlayerId": "417",
+      "playerEntityId": "41a9d692-caf8-56e0-8055-17506ff646a3",
+      "team": "SAC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Dennis Smith Jr.",
+      "providerPlayerId": "421",
+      "playerEntityId": "6321caf3-c87d-5117-940e-95fbe28dc823",
+      "team": "MIA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Zhaire Smith",
+      "providerPlayerId": "425",
+      "playerEntityId": "aa594b50-16fd-55eb-9228-0f377036e8c9",
+      "team": "OKC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Lonnie Walker IV",
+      "providerPlayerId": "464",
+      "playerEntityId": "78902190-e582-55f1-b11e-7a93a2335ab0",
+      "team": "DEN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Gary Trent Jr.",
+      "providerPlayerId": "3089",
+      "playerEntityId": "8ec68ebb-109a-5fe3-baba-7900e6890f64",
+      "team": "MIL",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "James Wiseman",
+      "providerPlayerId": "3547240",
+      "playerEntityId": "73883e02-3ed9-561e-99db-2d4db3defea2",
+      "team": "NYK",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kenyon Martin Jr.",
+      "providerPlayerId": "3547294",
+      "playerEntityId": "6d78d174-2b0e-599e-8594-0937e66fdd83",
+      "team": "MIN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Brandon Boston Jr.",
+      "providerPlayerId": "17896022",
+      "playerEntityId": "97250b00-ba1d-5569-b3a7-54b23aa5c51c",
+      "team": "CHI",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Micah Potter",
+      "providerPlayerId": "19465584",
+      "playerEntityId": "3f862dde-d720-5dd3-b28f-ad3b62b6de70",
+      "team": "POR",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Dru Smith",
+      "providerPlayerId": "19465585",
+      "playerEntityId": "336b3af6-8dac-5f50-96d7-7a53152bfa27",
+      "team": "MIA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Brandon Williams",
+      "providerPlayerId": "24489167",
+      "playerEntityId": "11860ff7-f610-5901-b7a2-efce6263d0a4",
+      "team": "GSW",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Ochai Agbaji",
+      "providerPlayerId": "38017620",
+      "playerEntityId": "60c58420-0a8f-5441-9cfa-f6af567b21ec",
+      "team": "NYK",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kennedy Chandler",
+      "providerPlayerId": "38017702",
+      "playerEntityId": "210687a3-a2c9-5a1e-a258-d01f51f7d29d",
+      "team": "PHX",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jaylin Williams",
+      "providerPlayerId": "38017706",
+      "playerEntityId": "716894f1-debe-5b89-9ad0-a4ab17e75094",
+      "team": "OKC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Cole Swider",
+      "providerPlayerId": "38017736",
+      "playerEntityId": "67496925-be50-5558-b93b-3eb704b595b8",
+      "team": "LAL",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Orlando Robinson",
+      "providerPlayerId": "39398582",
+      "playerEntityId": "ae80b2f1-e51b-502c-b318-c3fc2428d8f5",
+      "team": "CHI",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Lester Quinones",
+      "providerPlayerId": "45658838",
+      "playerEntityId": "e57a5001-f62f-57c4-9132-5947d48e0e29",
+      "team": "MIA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Cam Whitmore",
+      "providerPlayerId": "56677831",
+      "playerEntityId": "1d385fce-4a6a-5ce2-9183-f33487e4b7f2",
+      "team": "DEN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Chris Livingston",
+      "providerPlayerId": "56677854",
+      "playerEntityId": "4579e953-9d58-55db-8b47-83cd99322784",
+      "team": "WAS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Seth Lundy",
+      "providerPlayerId": "56677855",
+      "playerEntityId": "709fe2cb-2633-518c-85f4-7b8a7b1c02f5",
+      "team": "DAL",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Leaky Black",
+      "providerPlayerId": "56677866",
+      "playerEntityId": "ea7728fa-8f4b-543b-8aa8-9ed382b3e849",
+      "team": "SAC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Duop Reath",
+      "providerPlayerId": "56783340",
+      "playerEntityId": "fabaa333-e31a-5603-a3ba-149172c69eec",
+      "team": "PHX",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Drew Peterson",
+      "providerPlayerId": "64270311",
+      "playerEntityId": "7fdc63d7-1c2d-5541-82ae-d3545faaebf0",
+      "team": "CHI",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Malik Williams",
+      "providerPlayerId": "1018685894",
+      "playerEntityId": "6aae325b-81fd-53e6-9c81-ea97c0bfcbfb",
+      "team": "SAS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Tristen Newton",
+      "providerPlayerId": "1028047609",
+      "playerEntityId": "dd68ad0c-8fa8-5a49-9825-d6d7810b104c",
+      "team": "SAC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jalen Bridges",
+      "providerPlayerId": "1028178629",
+      "playerEntityId": "65d4a3be-1125-582a-a972-d3366d7f6b32",
+      "team": "CHI",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Reece Beekman",
+      "providerPlayerId": "1028203324",
+      "playerEntityId": "f8696c73-0078-506b-b807-3ad37874c62b",
+      "team": "WAS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "David Jones",
+      "providerPlayerId": "1028245237",
+      "playerEntityId": "6872b0bc-ac71-5366-8208-f80e0d783f1b",
+      "team": "SAS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Emanuel Miller",
+      "providerPlayerId": "1028245974",
+      "playerEntityId": "5dbb82a6-8cfb-58fc-b90c-beef1a0ad343",
+      "team": "DEN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kylor Kelley",
+      "providerPlayerId": "1028255346",
+      "playerEntityId": "5223006f-f919-5830-9552-5a3bda2e13b9",
+      "team": "MIA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Gabe McGlothan",
+      "providerPlayerId": "1028255881",
+      "playerEntityId": "43bbabb2-9add-54c6-a40e-2d56774efabb",
+      "team": "BOS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Taylor Funk",
+      "providerPlayerId": "1028269491",
+      "playerEntityId": "3ced7eaf-7b6a-561f-9e48-cdf6df134b60",
+      "team": "UTA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Phillip Wheeler",
+      "providerPlayerId": "1046471967",
+      "playerEntityId": "0807394b-2327-57b4-b60a-e3749c2f8283",
+      "team": "PHX",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Drew Timme",
+      "providerPlayerId": "1046672580",
+      "playerEntityId": "932dcb5b-7336-5f97-8d79-20cd0e6fdfd4",
+      "team": "MIN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Alex Toohey",
+      "providerPlayerId": "1057396605",
+      "playerEntityId": "1b94f991-822d-561e-a439-088c3f36a317",
+      "team": "GSW",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Zack Austin",
+      "providerPlayerId": "1057844738",
+      "playerEntityId": "555ebb03-1186-5a58-a5a1-992fb79f2628",
+      "team": "CLE",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Dain Dainja",
+      "providerPlayerId": "1057845569",
+      "playerEntityId": "b139dfdc-f801-52f7-b22b-931f61a5a329",
+      "team": "BKN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "R.J. Davis",
+      "providerPlayerId": "1057845629",
+      "playerEntityId": "9d4f8494-5a09-541b-b639-9959ca5ad624",
+      "team": "SAS",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kobe Johnson",
+      "providerPlayerId": "1057846878",
+      "playerEntityId": "a903b51e-fec8-537a-b95c-387c446709a3",
+      "team": "ATL",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Miles Kelly",
+      "providerPlayerId": "1057847026",
+      "playerEntityId": "8f11b6a9-6a78-50b1-a436-eacfa19c6bb6",
+      "team": "GSW",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jameer Nelson Jr.",
+      "providerPlayerId": "1057847891",
+      "playerEntityId": "77baaf02-d47a-5d8e-b502-8934ad9bd83c",
+      "team": "PHI",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jahmyl Telfort",
+      "providerPlayerId": "1057849029",
+      "playerEntityId": "a0c18218-9bf3-531e-b044-6c90f443103d",
+      "team": "LAC",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Brice Williams",
+      "providerPlayerId": "1057849497",
+      "playerEntityId": "cfd51528-96c1-522c-b6bf-77336c74c6ed",
+      "team": "DET",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Coleman Hawkins",
+      "providerPlayerId": "1059021996",
+      "playerEntityId": "dc557b58-7fc7-5859-9a37-d64f5d85618b",
+      "team": "DEN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Gabe Madsen",
+      "providerPlayerId": "1059253855",
+      "playerEntityId": "033563cf-a812-5642-a130-e91e2adc39b8",
+      "team": "MIA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jaden Akins",
+      "providerPlayerId": "1059276748",
+      "playerEntityId": "b05a6263-24ca-5d27-a405-43becbdb5411",
+      "team": "NYK",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Kadary Richmond",
+      "providerPlayerId": "1059542426",
+      "playerEntityId": "6e4cd294-a218-56b5-b34a-0e524b006746",
+      "team": "CLE",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Jonas Aidoo",
+      "providerPlayerId": "1059872205",
+      "playerEntityId": "f7de3682-9d5d-55fc-8828-35bd7c72cb0e",
+      "team": "UTA",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Grant Nelson",
+      "providerPlayerId": "1059875475",
+      "playerEntityId": "ad0218f1-8bac-5633-a5f2-b84074a3577a",
+      "team": "BKN",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Julian Reese",
+      "providerPlayerId": "1060111739",
+      "playerEntityId": "73514b0b-8208-5627-ba9e-06dd2b602021",
+      "team": "NOP",
+      "observedFrom": "2026-10-12"
+    },
+    {
+      "fullName": "Tyreke Key",
+      "providerPlayerId": "1080636470",
+      "playerEntityId": "f93e0656-a62e-58e9-a8cc-305cf59bc72e",
+      "team": "TOR",
+      "observedFrom": "2026-10-12"
+    }
+  ],
+  "exclusionCounts": {
+    "unresolved": 99,
+    "missing_from_batch": 110
+  },
+  "preparedAbsenceCloses": 0,
+  "massCloseIfAbsenceWereApplied": {
+    "ok": false,
+    "openCount": 578,
+    "proposedCloses": 110,
+    "proposedCloseRatio": 0.1903114186851211,
+    "maxCloseAbs": 30,
+    "maxCloseRatio": 0.05,
+    "reason": "Proposed closes 110 (19.0%) exceed maxAbs=30 or maxRatio=5.0%"
+  },
+  "treyAlexander": {
+    "fullName": "Trey Alexander",
+    "playerId": "1028203085",
+    "open2026Team": "UTA",
+    "includedInPreparedWrites": false
+  },
+  "writes": {
+    "season": "2026",
+    "source": "balldontlie",
+    "closes": 22,
+    "inserts": 79,
+    "tables": [
+      "analytics.player_team_stints"
+    ],
+    "forbiddenTables": [
+      "analytics.players",
+      "analytics.player_game_logs",
+      "analytics.player_season_averages",
+      "analytics.player_props_current",
+      "raw.player_prop_snapshots_v2"
+    ]
+  }
+}

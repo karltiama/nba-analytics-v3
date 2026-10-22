@@ -9,6 +9,7 @@
 import {
   formatNbaSeasonLabel,
   getAnalyticsSeason,
+  getRosterSeason,
   parseSeasonStartYear,
 } from '@/lib/season';
 
@@ -54,6 +55,48 @@ export function resolveTeamPageSeason(args?: {
     season,
     seasonLabel: formatNbaSeasonLabel(season),
   };
+}
+
+export type RosterSeasonContext = {
+  /** Analytics start-year for membership rows (e.g. "2026"). */
+  season: string;
+  seasonLabel: string;
+};
+
+/**
+ * Roster membership season for a team page.
+ * An explicit ?season= keeps that year, including historic pages.
+ * The default stats page has no ?season= and still uses the 2025 pin for
+ * averages; its roster uses getRosterSeason() (2026 in October 2026).
+ */
+export function resolveRosterSeason(args?: {
+  selectedSeason?: string | null;
+  env?: NodeJS.ProcessEnv;
+  now?: Date;
+}): RosterSeasonContext {
+  const env = args?.env;
+  const now = args?.now ?? new Date();
+  const explicit = parseSeasonStartYear(args?.selectedSeason ?? null);
+  const season = explicit ?? getRosterSeason(env, now);
+  return { season, seasonLabel: formatNbaSeasonLabel(season) };
+}
+
+/**
+ * Shown on the roster card when membership and the page's stat season differ.
+ * Returns null when both seasons are the same.
+ */
+export function rosterStatsDistinction(
+  rosterSeason: string,
+  statsSeason: string
+): string | null {
+  if (rosterSeason === statsSeason) return null;
+  return `Season stats on this page are ${formatNbaSeasonLabel(statsSeason)}.`;
+}
+
+/** Labels the 2026–27 card as a stored observation, including later gaps. */
+export function rosterObservationNote(season: string): string | null {
+  if (season !== '2026') return null;
+  return 'Observed 2026–27 membership. Later moves may still be missing.';
 }
 
 /** Build team page href with season query (omits param when matching default pin). */

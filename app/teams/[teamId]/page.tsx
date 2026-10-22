@@ -19,6 +19,7 @@ import {
 } from '@/lib/teams/team-previous-season-baseline-queries';
 import {
   listTeamPageSeasonChoices,
+  resolveRosterSeason,
   resolveTeamPageSeason,
 } from '@/lib/teams/team-page-season';
 import { getAnalyticsSeason } from '@/lib/season';
@@ -115,6 +116,7 @@ export default async function TeamPage({
 }) {
   const { teamId } = await params;
   const { season: seasonParam } = await searchParams;
+  const rosterSeason = resolveRosterSeason({ selectedSeason: seasonParam ?? null });
   const {
     team,
     seasonAverages,
@@ -166,7 +168,13 @@ export default async function TeamPage({
           seasonChoices={seasonChoices}
           defaultSeason={defaultSeason}
           routeTeamId={teamId}
-          roster={<TeamRoster teamId={team.team_id} season={season} />}
+          roster={
+            <TeamRoster
+              teamId={team.team_id}
+              season={rosterSeason.season}
+              statsSeason={season}
+            />
+          }
         />
       </div>
     </main>

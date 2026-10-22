@@ -4,6 +4,7 @@ import {
   formatNbaSeasonLabel,
   getAnalyticsSeason,
   getLiveAvailabilitySeason,
+  getRosterSeason,
   getNbaStatsSeason,
   PINNED_ANALYTICS_SEASON,
   shouldShowCurrentAvailability,
@@ -59,6 +60,21 @@ describe('calendarSeasonStartYear', () => {
     expect(calendarSeasonStartYear(new Date('2026-01-15T12:00:00.000Z'))).toBe(2025);
     expect(calendarSeasonStartYear(new Date('2026-06-30T12:00:00.000Z'))).toBe(2025);
     expect(calendarSeasonStartYear(new Date('2026-07-01T12:00:00.000Z'))).toBe(2026);
+  });
+});
+
+describe('roster season', () => {
+  it('uses the calendar season and leaves the stats pin on 2025', () => {
+    const oct2026 = new Date('2026-10-21T12:00:00.000Z');
+    expect(getRosterSeason({} as NodeJS.ProcessEnv, oct2026)).toBe('2026');
+    expect(getAnalyticsSeason({} as NodeJS.ProcessEnv, oct2026)).toBe('2025');
+    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
+  });
+
+  it('accepts CURRENT_ROSTER_SEASON without moving the analytics pin', () => {
+    const env = { CURRENT_ROSTER_SEASON: '2026-27' } as NodeJS.ProcessEnv;
+    expect(getRosterSeason(env, new Date('2026-01-15T12:00:00.000Z'))).toBe('2026');
+    expect(getAnalyticsSeason(env)).toBe('2025');
   });
 });
 

@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { formatNbaSeasonLabel, PINNED_ANALYTICS_SEASON } from '@/lib/season';
 import {
   listTeamPageSeasonChoices,
+  resolveRosterSeason,
   resolveTeamPageSeason,
+  rosterObservationNote,
+  rosterStatsDistinction,
   teamPageSeasonHref,
 } from '../team-page-season';
 
@@ -15,7 +18,7 @@ describe('team-page-season (Phase 2.T.3A.1)', () => {
     expect(formatNbaSeasonLabel('2026')).toBe('2026–27');
   });
 
-  it('3. TeamRoster receives top-level page season (context.season)', () => {
+  it('3. stats context follows the selected analytics season', () => {
     const ctx = resolveTeamPageSeason({
       env: { CURRENT_ANALYTICS_SEASON: '2026' } as NodeJS.ProcessEnv,
     });
@@ -93,6 +96,32 @@ describe('team-page-season (Phase 2.T.3A.1)', () => {
     } as NodeJS.ProcessEnv);
     expect(choices.map((c) => c.season)).toEqual(['2025', '2026']);
     expect(choices[1]!.seasonLabel).toBe('2026–27');
+  });
+
+  it('default team page keeps 2025 stats and uses the 2026 roster', () => {
+    const oct2026 = new Date('2026-10-21T16:00:00.000Z');
+    const env = {} as NodeJS.ProcessEnv;
+    const stats = resolveTeamPageSeason({ env });
+    const roster = resolveRosterSeason({ env, now: oct2026 });
+    expect(stats.season).toBe('2025');
+    expect(roster.season).toBe('2026');
+    expect(rosterStatsDistinction(roster.season, stats.season)).toBe(
+      'Season stats on this page are 2025–26.'
+    );
+    expect(rosterObservationNote(roster.season)).toBe(
+      'Observed 2026–27 membership. Later moves may still be missing.'
+    );
+    expect(rosterObservationNote('2025')).toBeNull();
+  });
+
+  it('explicit historic season selects that roster year', () => {
+    const roster = resolveRosterSeason({
+      selectedSeason: '2024',
+      now: new Date('2026-10-21T16:00:00.000Z'),
+    });
+    expect(roster.season).toBe('2024');
+    expect(roster.seasonLabel).toBe('2024–25');
+    expect(rosterStatsDistinction('2024', '2024')).toBeNull();
   });
 
   it('teamPageSeasonHref omits query for default pin season', () => {

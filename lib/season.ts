@@ -94,6 +94,25 @@ export function getNbaStatsSeason(
  */
 export const LIVE_AVAILABILITY_SEASON_ENV = 'LIVE_AVAILABILITY_SEASON';
 
+/**
+ * Membership season for the current team roster.
+ * Independent of PINNED_ANALYTICS_SEASON so player and team stats stay on 2025
+ * while the live roster is 2026–27.
+ *
+ * Override: CURRENT_ROSTER_SEASON=2026 (or 2026-27).
+ * Fallback matches the injury clock: Oct 2026 → "2026".
+ */
+export const ROSTER_SEASON_ENV = 'CURRENT_ROSTER_SEASON';
+
+export function getRosterSeason(
+  env: NodeJS.ProcessEnv = process.env,
+  now: Date = new Date()
+): string {
+  const fromEnv = parseSeasonStartYear(env[ROSTER_SEASON_ENV]);
+  if (fromEnv) return fromEnv;
+  return String(calendarSeasonStartYear(now));
+}
+
 export function getLiveAvailabilitySeason(
   env: NodeJS.ProcessEnv = process.env,
   now: Date = new Date()
