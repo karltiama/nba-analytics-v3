@@ -107,6 +107,7 @@ type ExplorerMeta = {
   sort: string;
   dir: string;
   ingestionFrozen?: boolean;
+  collectorPaused?: boolean;
   marketContext?: 'live' | 'historical';
   sourceTable?: string;
   lineLabel?: string;
@@ -1037,7 +1038,7 @@ export default function PropsExplorerPage(props: PageProps) {
           <div className="py-8 text-center">
             {(() => {
               const copy = propsExplorerEmptyCopy({
-                frozen: Boolean(meta?.ingestionFrozen),
+                collectorPaused: Boolean(meta?.collectorPaused),
                 dateLabel: getDateLabel(date),
                 marketContext,
                 gameSelected: Boolean(gameId.trim()),
@@ -1124,11 +1125,11 @@ export default function PropsExplorerPage(props: PageProps) {
                   <td colSpan={showAdvancedMetrics ? 15 : 10} className="py-8 text-center text-[#4a6366]">
                     {(() => {
                       const copy = propsExplorerEmptyCopy({
-                        frozen: Boolean(meta?.ingestionFrozen),
+                        collectorPaused: Boolean(meta?.collectorPaused),
                         dateLabel: getDateLabel(date),
                         marketContext,
                         gameSelected: Boolean(gameId.trim()),
-                gameUnknown,
+                        gameUnknown,
                       });
                       return (
                         <div className="space-y-2 px-4">

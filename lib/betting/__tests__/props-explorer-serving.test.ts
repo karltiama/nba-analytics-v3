@@ -51,6 +51,7 @@ describe('getPlayerPropsForExplorer serving contract', () => {
   });
 
   it('uses research.prop_decision_lines for a historical date and does not compute EV', async () => {
+    mockQueryOne.mockResolvedValueOnce({ n: '1' });
     mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([HISTORICAL_ROW]);
 
     const result = await getPlayerPropsForExplorer({
@@ -90,7 +91,8 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(row.calibrationVersion).toBeUndefined();
   });
 
-  it('keeps May 6 empty when the historical source has no rows and does not fall back', async () => {
+  it('keeps an empty historical date empty when neither source has rows', async () => {
+    mockQueryOne.mockResolvedValueOnce({ n: '0' });
     mockQuery.mockResolvedValueOnce([{ count: '0' }]).mockResolvedValueOnce([]);
 
     const result = await getPlayerPropsForExplorer({
@@ -103,8 +105,9 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(result.marketContext).toBe('historical');
     expect(result.rows).toEqual([]);
     expect(result.totalMatching).toBe(0);
-    expect(sqlOf(0)).toMatch(/research\.prop_decision_lines/);
-    expect(sqlOf(0)).not.toMatch(/player_props_current/);
+    expect(result.lineLabel).toBe('Pregame line');
+    expect(result.sourceTable).toBe('analytics.player_props_current');
+    expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
     expect(paramsOf(0)).toEqual(expect.arrayContaining(['2026-05-06']));
     expect(paramsOf(0)).not.toContain('2026-05-01');
     expect(mockInputs).not.toHaveBeenCalled();
@@ -151,6 +154,7 @@ describe('getPlayerPropsForExplorer serving contract', () => {
   });
 
   it('does not apply min_ev filtering on historical rows with unavailable EV', async () => {
+    mockQueryOne.mockResolvedValueOnce({ n: '1' });
     mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([HISTORICAL_ROW]);
 
     const result = await getPlayerPropsForExplorer({
@@ -292,6 +296,43 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(result.lineLabel).toBe('Pregame line');
     expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
     expect(sqlOf(0)).not.toMatch(/research\.prop_decision_lines/);
+    expect(result.rows[0].lineLabel).toBe('Pregame line');
+    expect(result.rows[0].ev).toBeNull();
+    expect(result.rows[0].paperBetAllowed).toBe(false);
+    expect(mockInputs).not.toHaveBeenCalled();
+  });
+
+  it('serves stored current rows for a past date that has no decision lines', async () => {
+    mockQueryOne.mockResolvedValueOnce({ n: '0' });
+    const stored = {
+      ...HISTORICAL_ROW,
+      game_id: '21717922',
+      snapshot_at: '2026-10-21T22:00:00.000Z',
+      game_start_time: '2026-10-21T23:00:00.000Z',
+    };
+    mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([stored]);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-10-21',
+      todayEt: '2026-10-22',
+      now: new Date('2026-10-22T14:00:00.000Z'),
+      propType: 'points',
+      sportsbook: 'draftkings',
+      limit: 100,
+      offset: 0,
+    });
+
+    expect(result.marketContext).toBe('historical');
+    expect(result.sourceTable).toBe('analytics.player_props_current');
+    expect(result.lineLabel).toBe('Pregame line');
+    expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
+    expect(sqlOf(0)).not.toMatch(/research\.prop_decision_lines/);
+    expect(sqlOf(0)).toMatch(/prop_type ILIKE/);
+    expect(sqlOf(0)).toMatch(/sportsbook/);
+    expect(paramsOf(0)).toContain('2026-10-21');
+    expect(paramsOf(0)).toContain('points%');
+    expect(paramsOf(0)).toEqual(expect.arrayContaining([['draftkings']]));
+    expect(paramsOf(0).some((value) => value === '21717922')).toBe(false);
     expect(result.rows[0].lineLabel).toBe('Pregame line');
     expect(result.rows[0].ev).toBeNull();
     expect(result.rows[0].paperBetAllowed).toBe(false);

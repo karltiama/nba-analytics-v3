@@ -336,6 +336,20 @@ export async function getPlayerPropsForExplorer(
       lineLabel = PREGAME_LINE_LABEL;
     }
   }
+  if (marketContext === 'historical' && !gameId) {
+    const decisionOnDate = await queryOne<{ n: string }>(
+      `SELECT count(*)::text AS n
+       FROM research.prop_decision_lines p
+       INNER JOIN analytics.games g ON g.game_id = p.game_id
+       WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
+         AND g.start_time < (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')`,
+      [dateEt]
+    );
+    if (Number(decisionOnDate?.n ?? 0) === 0) {
+      readCurrent = true;
+      lineLabel = PREGAME_LINE_LABEL;
+    }
+  }
   if (readCurrent && marketContext === 'live' && selectedGame?.found) {
     lineLabel = gameHasStarted(gameStart, now) ? PREGAME_LINE_LABEL : LATEST_OBSERVED_LINE_LABEL;
   }

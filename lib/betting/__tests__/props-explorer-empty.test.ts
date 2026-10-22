@@ -1,60 +1,72 @@
 import { describe, expect, it } from 'vitest';
-import { propsExplorerEmptyCopy } from '../props-explorer-empty';
+import { isPropsCollectionPaused, propsExplorerEmptyCopy } from '../props-explorer-empty';
 
 describe('propsExplorerEmptyCopy', () => {
-  it('explains missing props for the selected date under freeze', () => {
-    const copy = propsExplorerEmptyCopy({ frozen: true, dateLabel: 'Today' });
-    expect(copy.title).toMatch(/No prop data is available for Today/);
-    expect(copy.detail).toMatch(/not currently being refreshed/i);
-    expect(copy.detail).not.toMatch(/failed to load/i);
-    expect(copy.detail).not.toMatch(/Adjust filters/i);
+  it('names a pause only when the offseason flag is set', () => {
+    expect(isPropsCollectionPaused({ OFFSEASON_MODE: '1' })).toBe(true);
+    expect(isPropsCollectionPaused({})).toBe(false);
+    expect(isPropsCollectionPaused({ DATA_MODE: 'replay', CRON_DRY_RUN: '1' })).toBe(false);
+
+    const paused = propsExplorerEmptyCopy({
+      collectorPaused: true,
+      dateLabel: 'Today',
+      marketContext: 'live',
+    });
+    expect(paused.title).toBe('No stored prop observations for this date yet.');
+    expect(paused.detail).toMatch(/paused by the offseason freeze/i);
+    expect(paused.detail).not.toMatch(/failed to load/i);
   });
 
-  it('does not imply a load failure when simply empty', () => {
-    const copy = propsExplorerEmptyCopy({ frozen: false, dateLabel: 'Sep 6' });
-    expect(copy.title).toMatch(/No prop data is available for Sep 6/);
-    expect(copy.detail).toMatch(/no player-prop rows/i);
-  });
-
-  it('labels a historical empty date as missing archived closing lines, not a live board', () => {
+  it('does not call an empty regular-season date a freeze', () => {
     const copy = propsExplorerEmptyCopy({
-      frozen: true,
+      collectorPaused: false,
+      dateLabel: 'Oct 22',
+      marketContext: 'live',
+    });
+    expect(copy.title).toBe('No stored prop observations for this date yet.');
+    expect(copy.detail).toMatch(/Oct 22/);
+    expect(copy.detail).not.toMatch(/offseason freeze/i);
+    expect(copy.detail).not.toMatch(/failed to load/i);
+  });
+
+  it('labels a historical empty date as stored observations, not a live board', () => {
+    const copy = propsExplorerEmptyCopy({
+      collectorPaused: true,
       dateLabel: 'May 6',
       marketContext: 'historical',
     });
-    expect(copy.title).toMatch(/No prop data is available for May 6/);
-    expect(copy.detail).toMatch(/archived closing lines/i);
+    expect(copy.title).toBe('No stored prop observations for this date yet.');
+    expect(copy.detail).toMatch(/May 6/);
     expect(copy.detail).toMatch(/not a live sportsbook board/i);
-    expect(copy.detail).toMatch(/do not pull lines from another date/i);
-    expect(copy.detail).not.toMatch(/currently being refreshed/i);
+    expect(copy.detail).not.toMatch(/offseason freeze/i);
   });
 
   it('explains a selected game with no stored observations without implying a load failure', () => {
     const live = propsExplorerEmptyCopy({
-      frozen: false,
+      collectorPaused: false,
       dateLabel: 'Oct 21',
       marketContext: 'live',
       gameSelected: true,
     });
-    expect(live.title).toBe('No stored prop observations for this game.');
+    expect(live.title).toBe('No stored prop observations for this game yet.');
     expect(live.detail).toMatch(/already collected/i);
     expect(live.detail).toMatch(/does not request a new price/i);
     expect(live.detail).not.toMatch(/failed to load/i);
+    expect(live.detail).not.toMatch(/offseason freeze/i);
 
     const past = propsExplorerEmptyCopy({
-      frozen: false,
+      collectorPaused: false,
       dateLabel: 'Oct 20',
       marketContext: 'historical',
       gameSelected: true,
     });
-    expect(past.title).toBe('No stored prop observations for this game.');
-    expect(past.detail).toMatch(/archived closing lines/i);
+    expect(past.title).toBe('No stored prop observations for this game yet.');
     expect(past.detail).toMatch(/not a live sportsbook board/i);
   });
 
   it('names an unknown game id instead of borrowing another game', () => {
     const copy = propsExplorerEmptyCopy({
-      frozen: false,
+      collectorPaused: false,
       dateLabel: 'Oct 21',
       marketContext: 'live',
       gameSelected: true,

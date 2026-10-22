@@ -1,5 +1,12 @@
+/** True only when the app explicitly marks collection paused. A missing DATA_MODE is not this flag. */
+export function isPropsCollectionPaused(
+  env: Record<string, string | undefined> = process.env
+): boolean {
+  return env.OFFSEASON_MODE === '1';
+}
+
 export function propsExplorerEmptyCopy(input: {
-  frozen: boolean;
+  collectorPaused?: boolean;
   dateLabel: string;
   marketContext?: 'live' | 'historical';
   gameSelected?: boolean;
@@ -13,23 +20,28 @@ export function propsExplorerEmptyCopy(input: {
   }
   if (input.gameSelected) {
     return {
-      title: 'No stored prop observations for this game.',
+      title: 'No stored prop observations for this game yet.',
       detail:
         input.marketContext === 'historical'
-          ? 'No archived closing lines were materialized for this game. This is not a live sportsbook board.'
+          ? 'No stored prop observations were found for this game. This is not a live sportsbook board.'
           : 'Props Explorer only shows lines already collected for this game. It does not request a new price.',
     };
   }
-  const title = `No prop data is available for ${input.dateLabel}.`;
+  const title = 'No stored prop observations for this date yet.';
   if (input.marketContext === 'historical') {
     return {
       title,
-      detail:
-        'No archived closing lines were materialized for this date. This is not a live sportsbook board, and filters do not pull lines from another date.',
+      detail: `No stored prop observations were found for ${input.dateLabel}. This is not a live sportsbook board.`,
     };
   }
-  const detail = input.frozen
-    ? 'Live markets are not currently being refreshed during the offseason freeze. Filters and EV controls do not imply that rows exist for this date.'
-    : 'There are no player-prop rows for this date. Adjust the date if you are looking for a different slate.';
-  return { title, detail };
+  if (input.collectorPaused) {
+    return {
+      title,
+      detail: 'Player-props collection is paused by the offseason freeze.',
+    };
+  }
+  return {
+    title,
+    detail: `No stored prop observations were found for ${input.dateLabel} yet.`,
+  };
 }
