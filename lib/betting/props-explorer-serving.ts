@@ -13,6 +13,7 @@ import {
   etCalendarDateFromInstant,
   gameHasStarted,
   isActivePaperBetAllowed,
+  LATEST_OBSERVED_LINE_LABEL,
   PREGAME_LINE_LABEL,
   propsLineLabel,
   propsServingSource,
@@ -242,6 +243,18 @@ export type GetPlayerPropsForExplorerInput = {
   now?: Date;
 };
 
+export type SelectedExplorerGame = {
+  gameId: string;
+  awayAbbr: string | null;
+  homeAbbr: string | null;
+  found: boolean;
+};
+
+function teamAbbr(value: string | null | undefined): string | null {
+  const text = value?.trim();
+  return text ? text : null;
+}
+
 export async function getPlayerPropsForExplorer(
   input: GetPlayerPropsForExplorerInput
 ): Promise<{
@@ -255,19 +268,55 @@ export async function getPlayerPropsForExplorer(
   calibrationVersion: string | null;
   evFetchCap: number | null;
   sort: string;
+  selectedGame: SelectedExplorerGame | null;
 }> {
   const now = input.now ?? new Date();
   const todayEt = input.todayEt ?? etCalendarDate(now);
   let dateEt = input.dateEt;
   const gameId = (input.gameId ?? '').trim();
   let gameStart: string | Date | null = null;
+  let selectedGame: SelectedExplorerGame | null = null;
 
   if (gameId) {
-    const game = await queryOne<{ start_time: string | Date }>(
-      `SELECT start_time FROM analytics.games WHERE game_id = $1`,
+    const game = await queryOne<{
+      start_time: string | Date | null;
+      away_abbr: string | null;
+      home_abbr: string | null;
+    }>(
+      `SELECT g.start_time,
+              t_away.abbreviation AS away_abbr,
+              t_home.abbreviation AS home_abbr
+       FROM analytics.games g
+       LEFT JOIN analytics.teams t_away ON t_away.team_id = g.away_team_id
+       LEFT JOIN analytics.teams t_home ON t_home.team_id = g.home_team_id
+       WHERE g.game_id = $1`,
       [gameId]
     );
-    gameStart = game?.start_time ?? null;
+    if (!game) {
+      const marketContext = resolvePropsMarketContext({ dateEt, todayEt });
+      const sortRaw = (input.sort || 'snapshot_at').toLowerCase();
+      return {
+        rows: [],
+        totalMatching: 0,
+        marketContext,
+        sourceTable: propsServingSource(marketContext),
+        lineLabel:
+          marketContext === 'historical' ? propsLineLabel('historical') : LATEST_OBSERVED_LINE_LABEL,
+        dateEt,
+        evSelectedTrack: resolveEvTrack(),
+        calibrationVersion: null,
+        evFetchCap: null,
+        sort: sortRaw === 'edge' ? 'snapshot_at' : sortRaw,
+        selectedGame: { gameId, awayAbbr: null, homeAbbr: null, found: false },
+      };
+    }
+    gameStart = game.start_time ?? null;
+    selectedGame = {
+      gameId,
+      awayAbbr: teamAbbr(game.away_abbr),
+      homeAbbr: teamAbbr(game.home_abbr),
+      found: true,
+    };
     const fromGame = etCalendarDateFromInstant(gameStart);
     if (fromGame) dateEt = fromGame;
   }
@@ -287,8 +336,8 @@ export async function getPlayerPropsForExplorer(
       lineLabel = PREGAME_LINE_LABEL;
     }
   }
-  if (readCurrent && marketContext === 'live' && gameHasStarted(gameStart, now)) {
-    lineLabel = PREGAME_LINE_LABEL;
+  if (readCurrent && marketContext === 'live' && selectedGame?.found) {
+    lineLabel = gameHasStarted(gameStart, now) ? PREGAME_LINE_LABEL : LATEST_OBSERVED_LINE_LABEL;
   }
   const sqlContext: PropsMarketContext = readCurrent ? 'live' : 'historical';
   const sourceTable = propsServingSource(sqlContext);
@@ -450,5 +499,6 @@ export async function getPlayerPropsForExplorer(
     calibrationVersion: cal,
     evFetchCap: useComputedSort ? PROPS_EXPLORER_EV_FETCH_CAP : null,
     sort,
+    selectedGame,
   };
 }

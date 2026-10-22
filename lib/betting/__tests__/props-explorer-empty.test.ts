@@ -51,4 +51,17 @@ describe('propsExplorerEmptyCopy', () => {
     expect(past.detail).toMatch(/archived closing lines/i);
     expect(past.detail).toMatch(/not a live sportsbook board/i);
   });
+
+  it('names an unknown game id instead of borrowing another game', () => {
+    const copy = propsExplorerEmptyCopy({
+      frozen: false,
+      dateLabel: 'Oct 21',
+      marketContext: 'live',
+      gameSelected: true,
+      gameUnknown: true,
+    });
+    expect(copy.title).toBe('This game was not found.');
+    expect(copy.detail).toMatch(/not on the schedule/i);
+    expect(copy.detail).toMatch(/other games are not shown/i);
+  });
 });

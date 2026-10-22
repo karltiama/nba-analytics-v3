@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
         sourceTable: result.sourceTable,
         lineLabel: result.lineLabel,
         dateEt: result.dateEt,
+        selectedGame: result.selectedGame,
       },
     });
   } catch (error: unknown) {

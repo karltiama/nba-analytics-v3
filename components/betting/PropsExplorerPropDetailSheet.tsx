@@ -11,7 +11,7 @@ import {
   explorerValueToneClass,
   formatExplorerOdds,
 } from '@/lib/betting/props-explorer-row-display';
-import { PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
+import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
 
 export type PropsExplorerDetailRow = {
   gameId: number;
@@ -151,7 +151,7 @@ export function PropsExplorerPropDetailSheet({
                 <Fact label="Confidence" value={formatConfidence(row.confidenceTier)} />
                 <Fact
                   label={
-                    row.lineLabel === PREGAME_LINE_LABEL
+                    row.lineLabel === PREGAME_LINE_LABEL || row.lineLabel === LATEST_OBSERVED_LINE_LABEL
                       ? 'Observed'
                       : historical
                         ? 'Closing Time'

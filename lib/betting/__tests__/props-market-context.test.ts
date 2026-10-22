@@ -3,6 +3,7 @@ import {
   etCalendarDateFromInstant,
   gameHasStarted,
   PREGAME_LINE_LABEL,
+  LATEST_OBSERVED_LINE_LABEL,
   propsLineLabel,
   propsServingSource,
   resolvePropsMarketContext,
@@ -24,6 +25,7 @@ describe('resolvePropsMarketContext', () => {
     expect(resolvePropsMarketContext({ dateEt: '2026-09-07', todayEt: '2026-09-06' })).toBe('live');
     expect(propsServingSource('live')).toBe('analytics.player_props_current');
     expect(propsLineLabel('live')).toBe('Current market');
+    expect(LATEST_OBSERVED_LINE_LABEL).toBe('Latest observed line');
   });
 });
 

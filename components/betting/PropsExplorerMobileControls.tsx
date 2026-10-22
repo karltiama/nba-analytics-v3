@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Dialog } from 'radix-ui';
 import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { addDaysET, getTodayET } from '@/components/betting/DateNav';
-import { PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
+import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
+import { SelectedGameFilter } from '@/components/betting/SelectedGameFilter';
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
 import {
   EXPLORER_BOOKS,
@@ -42,6 +43,8 @@ export function PropsExplorerMobileControls({
   dir,
   marketContext,
   lineLabel,
+  selectedGameLabel,
+  onClearGame,
   showAdvancedMetrics,
   onToggleAdvanced,
   onUpdate,
@@ -66,6 +69,8 @@ export function PropsExplorerMobileControls({
   dir: 'asc' | 'desc';
   marketContext: 'live' | 'historical';
   lineLabel: string;
+  selectedGameLabel: string | null;
+  onClearGame: () => void;
   showAdvancedMetrics: boolean;
   onToggleAdvanced: () => void;
   onUpdate: (updates: Record<string, string | null>) => void;
@@ -87,8 +92,7 @@ export function PropsExplorerMobileControls({
     minEv,
     sportsbook,
   });
-  const selectedGame = games.find((game) => game.id === gameId.trim());
-  const gameContext = gameId.trim() ? selectedGame?.label ?? 'Selected game' : 'All games';
+  const gameContext = gameId.trim() ? selectedGameLabel ?? 'Selected game' : 'All games';
   const historical = marketContext === 'historical';
   const sortOptions = EXPLORER_SORT_OPTIONS.filter((option) =>
     historical ? option.value === 'snapshot_at' || option.value === 'odds_american' : true
@@ -101,6 +105,9 @@ export function PropsExplorerMobileControls({
         data-mobile-toolbar
         className="sticky top-16 z-30 -mx-4 mb-2 min-w-0 space-y-1.5 border-b border-[#DCE9EA] bg-[#f7f9f7]/95 px-4 py-2 backdrop-blur-md lg:hidden"
       >
+        {selectedGameLabel ? (
+          <SelectedGameFilter matchup={selectedGameLabel} date={date} onClear={onClearGame} />
+        ) : null}
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <Search className="h-4 w-4 text-cc-secondary" aria-hidden />
@@ -144,11 +151,12 @@ export function PropsExplorerMobileControls({
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {option.value === 'snapshot_at' && historical
-                    ? lineLabel === PREGAME_LINE_LABEL
-                      ? 'Observed'
-                      : 'Closing time'
-                    : option.label}
+                  {option.value === 'snapshot_at' &&
+                  (lineLabel === PREGAME_LINE_LABEL || lineLabel === LATEST_OBSERVED_LINE_LABEL)
+                    ? 'Observed'
+                    : option.value === 'snapshot_at' && historical
+                      ? 'Closing time'
+                      : option.label}
                 </option>
               ))}
             </select>
@@ -321,7 +329,7 @@ export function PropsExplorerMobileControls({
                   </option>
                 ))}
                 {gameId.trim() && !games.some((game) => game.id === gameId.trim()) ? (
-                  <option value={gameId.trim()}>Selected game</option>
+                  <option value={gameId.trim()}>{selectedGameLabel ?? 'Selected game'}</option>
                 ) : null}
               </select>
             </label>

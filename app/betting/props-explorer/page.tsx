@@ -22,9 +22,11 @@ import { PropsExplorerPropList } from '@/components/betting/PropsExplorerPropLis
 import { PropsExplorerPropDetailSheet } from '@/components/betting/PropsExplorerPropDetailSheet';
 import { PropsExplorerDesktopActions } from '@/components/betting/PropsExplorerDesktopActions';
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
+import { SelectedGameFilter } from '@/components/betting/SelectedGameFilter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
-import { PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
+import { LATEST_OBSERVED_LINE_LABEL, PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
+import { clearSelectedGameUpdates } from '@/lib/betting/selected-game-filter';
 import {
   EXPLORER_BOOKS,
   EXPLORER_SORT_OPTIONS,
@@ -109,6 +111,12 @@ type ExplorerMeta = {
   sourceTable?: string;
   lineLabel?: string;
   dateEt?: string;
+  selectedGame?: {
+    gameId: string;
+    awayAbbr: string | null;
+    homeAbbr: string | null;
+    found: boolean;
+  } | null;
 };
 
 type SavedProp = {
@@ -223,7 +231,24 @@ export default function PropsExplorerPage(props: PageProps) {
     meta?.marketContext ?? (date < getTodayET() ? 'historical' : 'live');
   const lineLabel =
     meta?.lineLabel ??
-    (marketContext === 'historical' ? 'Historical closing line' : 'Current market');
+    (gameId.trim()
+      ? ''
+      : marketContext === 'historical'
+        ? 'Historical closing line'
+        : 'Current market');
+  const gameUnknown = Boolean(gameId.trim() && meta?.selectedGame && meta.selectedGame.found === false);
+  const selectedGameLabel = useMemo(() => {
+    const id = gameId.trim();
+    if (!id) return null;
+    const listed = games.find((game) => game.id === id)?.label;
+    if (listed) return listed;
+    const selected = meta?.selectedGame;
+    if (selected?.found && selected.awayAbbr && selected.homeAbbr) {
+      return `${selected.awayAbbr} @ ${selected.homeAbbr}`;
+    }
+    if (selected && selected.found === false) return 'Unknown game';
+    return 'Selected game';
+  }, [gameId, games, meta?.selectedGame]);
 
   const effectiveGameId = useMemo(() => {
     const fromFilter = gameId.trim();
@@ -270,10 +295,19 @@ export default function PropsExplorerPage(props: PageProps) {
         if (v === null || v === '') next.delete(k);
         else next.set(k, v);
       }
-      router.replace(`/betting/props-explorer?${next.toString()}`, { scroll: false });
+      const href = `/betting/props-explorer?${next.toString()}`;
+      if (Object.prototype.hasOwnProperty.call(updates, 'game_id')) {
+        router.push(href, { scroll: false });
+      } else {
+        router.replace(href, { scroll: false });
+      }
     },
     [router, searchParams]
   );
+
+  const clearGameFilter = useCallback(() => {
+    updateParams(clearSelectedGameUpdates());
+  }, [updateParams]);
 
   const updateParamsRef = useRef(updateParams);
   updateParamsRef.current = updateParams;
@@ -641,20 +675,26 @@ export default function PropsExplorerPage(props: PageProps) {
       <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mb-6">
         <div>
           <h1 className="type-page-title text-[#063f46]">Props Explorer</h1>
+          {lineLabel ? (
           <p
             className={`type-body mt-1 text-cc-secondary ${
-              lineLabel === PREGAME_LINE_LABEL ? '' : 'hidden lg:block'
+              lineLabel === PREGAME_LINE_LABEL || lineLabel === LATEST_OBSERVED_LINE_LABEL ? '' : 'hidden lg:block'
             }`}
           >
             {lineLabel === PREGAME_LINE_LABEL
               ? 'Stored pregame lines. Not a live betting board. The time on each row is when that price was observed.'
-              : marketContext === 'historical'
-                ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Estimated EV is not computed for historical dates.'
-                : 'Simple mode grades Good/Fair/Bad from estimated EV (market-anchored). That is not the same as the projection gap.'}
+              : lineLabel === LATEST_OBSERVED_LINE_LABEL
+                ? 'Latest stored observation for this game. This is not a guarantee the price is still offered.'
+                : marketContext === 'historical'
+                  ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Estimated EV is not computed for historical dates.'
+                  : 'Simple mode grades Good/Fair/Bad from estimated EV (market-anchored). That is not the same as the projection gap.'}
           </p>
+          ) : null}
+          {lineLabel ? (
           <p className="type-badge mt-1.5 hidden items-center rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[#063f46] lg:inline-flex">
             {lineLabel}
           </p>
+          ) : null}
           <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
             <Link href={dashboardReturnHref(date)} className="type-interactive text-[#075B5C] hover:underline">
               Dashboard
@@ -665,6 +705,11 @@ export default function PropsExplorerPage(props: PageProps) {
               </Link>
             ) : null}
           </p>
+          {selectedGameLabel ? (
+            <div className="mt-3 hidden lg:block">
+              <SelectedGameFilter matchup={selectedGameLabel} date={date} onClear={clearGameFilter} />
+            </div>
+          ) : null}
         </div>
         {showAdvancedMetrics && meta ? (
           <p className="type-metadata font-mono">
@@ -688,6 +733,8 @@ export default function PropsExplorerPage(props: PageProps) {
         dir={dir}
         marketContext={marketContext}
         lineLabel={lineLabel}
+        selectedGameLabel={selectedGameLabel}
+        onClearGame={clearGameFilter}
         showAdvancedMetrics={showAdvancedMetrics}
         onToggleAdvanced={() => setShowAdvancedMetrics((prev) => !prev)}
         onUpdate={updateParams}
@@ -756,7 +803,7 @@ export default function PropsExplorerPage(props: PageProps) {
               </option>
             ))}
             {gameId.trim() && !games.some((g) => g.id === gameId.trim()) ? (
-              <option value={gameId.trim()}>Selected game</option>
+              <option value={gameId.trim()}>{selectedGameLabel ?? 'Selected game'}</option>
             ) : null}
           </select>
         </div>
@@ -986,7 +1033,7 @@ export default function PropsExplorerPage(props: PageProps) {
       ) : (
       <>
       <div className="lg:hidden min-w-0">
-        {rows.length === 0 ? (
+        {rows.length === 0 || gameUnknown ? (
           <div className="py-8 text-center">
             {(() => {
               const copy = propsExplorerEmptyCopy({
@@ -994,6 +1041,7 @@ export default function PropsExplorerPage(props: PageProps) {
                 dateLabel: getDateLabel(date),
                 marketContext,
                 gameSelected: Boolean(gameId.trim()),
+                gameUnknown,
               });
               return (
                 <div className="space-y-2 px-2">
@@ -1061,7 +1109,7 @@ export default function PropsExplorerPage(props: PageProps) {
                   </>
                 ) : null}
                 <th className="py-2 px-2 font-medium">
-                  {lineLabel === PREGAME_LINE_LABEL
+                  {lineLabel === PREGAME_LINE_LABEL || lineLabel === LATEST_OBSERVED_LINE_LABEL
                     ? 'Observed'
                     : marketContext === 'historical'
                       ? 'Closed'
@@ -1071,7 +1119,7 @@ export default function PropsExplorerPage(props: PageProps) {
               </tr>
             </thead>
             <tbody className="type-table-data text-[#063f46]">
-              {rows.length === 0 ? (
+              {rows.length === 0 || gameUnknown ? (
                 <tr>
                   <td colSpan={showAdvancedMetrics ? 15 : 10} className="py-8 text-center text-[#4a6366]">
                     {(() => {
@@ -1080,6 +1128,7 @@ export default function PropsExplorerPage(props: PageProps) {
                         dateLabel: getDateLabel(date),
                         marketContext,
                         gameSelected: Boolean(gameId.trim()),
+                gameUnknown,
                       });
                       return (
                         <div className="space-y-2 px-4">

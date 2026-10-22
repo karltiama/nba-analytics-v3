@@ -46,6 +46,9 @@ export function propsLineLabel(context: PropsMarketContext): string {
 /** Stored pre-tip price. Not a live betting offer. */
 export const PREGAME_LINE_LABEL = 'Pregame line';
 
+/** Newest stored price for a game that has not tipped. Not a live board. */
+export const LATEST_OBSERVED_LINE_LABEL = 'Latest observed line';
+
 export function gameHasStarted(
   gameStartTime: string | Date | null | undefined,
   now: Date

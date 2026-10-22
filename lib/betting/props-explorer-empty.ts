@@ -3,7 +3,14 @@ export function propsExplorerEmptyCopy(input: {
   dateLabel: string;
   marketContext?: 'live' | 'historical';
   gameSelected?: boolean;
+  gameUnknown?: boolean;
 }): { title: string; detail: string } {
+  if (input.gameUnknown) {
+    return {
+      title: 'This game was not found.',
+      detail: 'That game id is not on the schedule. Props from other games are not shown.',
+    };
+  }
   if (input.gameSelected) {
     return {
       title: 'No stored prop observations for this game.',

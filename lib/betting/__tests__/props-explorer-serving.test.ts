@@ -210,9 +210,12 @@ describe('getPlayerPropsForExplorer serving contract', () => {
 
     expect(result.marketContext).toBe('live');
     expect(result.sourceTable).toBe('analytics.player_props_current');
-    expect(result.lineLabel).toBe('Current market');
+    expect(result.lineLabel).toBe('Latest observed line');
+    expect(result.selectedGame).toMatchObject({ gameId: '401700001', found: true });
     expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
-    expect(result.rows[0].lineLabel).toBe('Current market');
+    expect(sqlOf(0)).toMatch(/p\.game_id::text = \$1/);
+    expect(paramsOf(0)[0]).toBe('401700001');
+    expect(result.rows[0].lineLabel).toBe('Latest observed line');
     expect(result.rows[0].paperBetAllowed).toBe(true);
   });
 
@@ -243,6 +246,29 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(result.rows[0].lineLabel).toBe('Pregame line');
     expect(result.rows[0].paperBetAllowed).toBe(false);
     expect(mockInputs).toHaveBeenCalledWith('1629027');
+  });
+
+  it('does not serve another game when the requested game id is unknown', async () => {
+    mockQueryOne.mockResolvedValueOnce(null);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-10-21',
+      gameId: 'not-a-game',
+      todayEt: '2026-10-21',
+      now: new Date('2026-10-21T20:00:00.000Z'),
+      limit: 100,
+      offset: 0,
+    });
+
+    expect(result.selectedGame).toEqual({
+      gameId: 'not-a-game',
+      awayAbbr: null,
+      homeAbbr: null,
+      found: false,
+    });
+    expect(result.rows).toEqual([]);
+    expect(result.totalMatching).toBe(0);
+    expect(mockQuery).not.toHaveBeenCalled();
   });
 
   it('serves stored current rows as pregame lines when a past game has no decision lines', async () => {
