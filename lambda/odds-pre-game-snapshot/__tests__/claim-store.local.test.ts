@@ -1,4 +1,4 @@
-import { CreateTableCommand, DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb';
+import { CreateTableCommand, DeleteTableCommand, DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDynamoOddsClaim, ODDS_CLAIM_LEASE_MS, ODDS_CLAIM_PK } from '../overlap-claim';
 import { SIX_HOUR_REFRESH_MS, T15_REFRESH_MS, oddsClaimSortKey } from '../refresh-slot';
@@ -30,20 +30,29 @@ describe.skipIf(!localEndpoint)('DynamoDB Local claim store', () => {
 
   beforeAll(async () => {
     try {
-      await client.send(new CreateTableCommand({
-        TableName: tableName,
-        AttributeDefinitions: [
-          { AttributeName: 'pk', AttributeType: 'S' },
-          { AttributeName: 'sk', AttributeType: 'S' },
-        ],
-        KeySchema: [
-          { AttributeName: 'pk', KeyType: 'HASH' },
-          { AttributeName: 'sk', KeyType: 'RANGE' },
-        ],
-        BillingMode: 'PAY_PER_REQUEST',
-      }));
+      await client.send(new DeleteTableCommand({ TableName: tableName }));
     } catch (err) {
-      if ((err as { name?: string }).name !== 'ResourceInUseException') throw err;
+      if ((err as { name?: string }).name !== 'ResourceNotFoundException') throw err;
+    }
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      try {
+        await client.send(new CreateTableCommand({
+          TableName: tableName,
+          AttributeDefinitions: [
+            { AttributeName: 'pk', AttributeType: 'S' },
+            { AttributeName: 'sk', AttributeType: 'S' },
+          ],
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+            { AttributeName: 'sk', KeyType: 'RANGE' },
+          ],
+          BillingMode: 'PAY_PER_REQUEST',
+        }));
+        return;
+      } catch (err) {
+        if ((err as { name?: string }).name !== 'ResourceInUseException' || attempt === 9) throw err;
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
     }
   });
 

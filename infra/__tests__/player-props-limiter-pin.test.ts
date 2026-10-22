@@ -22,10 +22,10 @@ describe('collector limiter pins stay off the shared default', () => {
 
   it('pins the props worker after the shared limiter merge', () => {
     expect(worker).toContain('local.bdl_rate_limit_env');
-    expect(worker).toContain('BDL_RATE_LIMIT_INTERVAL_MS       = "13000"');
-    expect(worker).toContain('BDL_RATE_LIMIT_MAX_REQUESTS      = "1"');
-    expect(worker).toContain('BDL_RATE_LIMIT_BURST             = "1"');
-    expect(worker).toContain('BDL_RATE_LIMIT_MAX_RETRIES       = "0"');
+    expect(worker).toContain('BDL_RATE_LIMIT_INTERVAL_MS     = "13000"');
+    expect(worker).toContain('BDL_RATE_LIMIT_MAX_REQUESTS    = "1"');
+    expect(worker).toContain('BDL_RATE_LIMIT_BURST           = "1"');
+    expect(worker).toContain('BDL_RATE_LIMIT_MAX_RETRIES     = "0"');
     const intervalAt = worker.indexOf('BDL_RATE_LIMIT_INTERVAL_MS');
     const sharedAt = worker.lastIndexOf('local.bdl_rate_limit_env');
     expect(intervalAt).toBeGreaterThan(sharedAt);
@@ -46,10 +46,27 @@ describe('collector limiter pins stay off the shared default', () => {
     expect(read('infra/scoreboard.tf')).not.toContain('BDL_RATE_LIMIT_INTERVAL_MS       = "13000"');
   });
 
+  it('pins live runtime on odds and props after the variable env maps', () => {
+    const controller = resource(lambda, 'resource "aws_lambda_function" "player_props_controller"');
+    const nightly = resource(lambda, 'resource "aws_lambda_function" "nightly_bdl_updater"');
+    expect(lambda).toContain('DATA_MODE      = "live_api"');
+    expect(lambda).toContain('DATA_MODE      = "replay"');
+    for (const block of [odds, worker, controller]) {
+      const pinAt = block.indexOf('local.collector_live_runtime');
+      const envAt = block.lastIndexOf('_lambda_env');
+      expect(pinAt).toBeGreaterThan(envAt);
+    }
+    expect(nightly).not.toContain('collector_live_runtime');
+    expect(read('infra/scoreboard.tf')).not.toContain('collector_live_runtime');
+    expect(lambda).toContain('odds-pre-game-snapshot-15m is not a Terraform resource');
+    expect(lambda).not.toMatch(/resource\s+"aws_scheduler_schedule"\s+"odds_pre_game/);
+  });
+
   it('does not retarget odds schedules', () => {
     const oddsRule = resource(lambda, 'resource "aws_cloudwatch_event_rule" "odds_schedule"');
     expect(oddsRule).toContain('local.odds_schedule_state');
     expect(oddsRule).not.toContain('player_props');
+    expect(oddsRule).not.toContain('state               = "ENABLED"');
   });
 
   it('packages both props functions from one zip and leaves the mapping disabled by default', () => {

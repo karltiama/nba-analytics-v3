@@ -1,10 +1,19 @@
-# Fail-closed freeze defaults. Explicit tfvars values always win (merge last).
-# Missing DATA_MODE / OFFSEASON_MODE / CRON_DRY_RUN must not become live_api / 0 / 0.
+# Fail-closed freeze defaults. A missing env map stays replay / offseason / dry-run.
+# Other families still let an explicit tfvars value override these defaults.
+# Odds and both props functions pin collector_live_runtime after var.*_env so a stale
+# replay value cannot freeze the collectors that are already live. That pin does not
+# enable any schedule.
 locals {
   ingestion_freeze_defaults = {
     DATA_MODE      = "replay"
     OFFSEASON_MODE = "1"
     CRON_DRY_RUN   = "1"
+  }
+
+  collector_live_runtime = {
+    DATA_MODE      = "live_api"
+    OFFSEASON_MODE = "0"
+    CRON_DRY_RUN   = "0"
   }
 
   # Per-family activation. Global live alone cannot ENABLED-thaw any family.
@@ -126,14 +135,18 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
         BDL_RATE_LIMIT_MAX_REQUESTS = "1"
         BDL_RATE_LIMIT_BURST        = "1"
         BDL_RATE_LIMIT_MAX_RETRIES  = "0"
-      }
+      },
+      local.collector_live_runtime
     )
   }
 }
 
 # -----------------------------------------------------------------------------
-# EventBridge schedule for odds (optional; set odds_enable_schedule = true to use)
-# When odds_schedule_crons is non-empty, one rule per cron (e.g. every 30 min 10am-12pm ET).
+# Legacy EventBridge rules for odds. State follows odds_execution_enabled and stays
+# DISABLED while that flag is false. The live 15-minute scheduler
+# odds-pre-game-snapshot-15m is not a Terraform resource. Do not enable these rules
+# to represent that scheduler.
+# When odds_schedule_crons is non-empty, one rule per cron.
 # -----------------------------------------------------------------------------
 locals {
   odds_crons = length(var.odds_schedule_crons) > 0 ? var.odds_schedule_crons : (var.odds_enable_schedule ? [var.odds_schedule_cron] : [])
@@ -282,20 +295,21 @@ resource "aws_lambda_function" "player_props_worker" {
       local.bdl_rate_limit_env,
       var.player_props_lambda_env,
       {
-        PLAYER_PROPS_QUEUE_URL           = aws_sqs_queue.player_props_game_queue.id
-        BDL_RATE_LIMIT_TABLE             = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND           = "dynamodb"
-        BDL_RATE_LIMIT_WORKER            = "player-props-worker"
+        PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND = "dynamodb"
+        BDL_RATE_LIMIT_WORKER  = "player-props-worker"
         # Props worker only. Overrides the shared 500ms limiter after merge.
         # Do not move these into local.bdl_rate_limit_env: that map is also applied to odds.
-        BDL_RATE_LIMIT_INTERVAL_MS       = "13000"
-        BDL_RATE_LIMIT_MAX_REQUESTS      = "1"
-        BDL_RATE_LIMIT_BURST             = "1"
-        BDL_RATE_LIMIT_MAX_RETRIES       = "0"
-        PLAYER_PROP_S3_ARCHIVE_ENABLED   = var.player_prop_s3_archive_enabled ? "true" : "false"
-        NBA_DATA_BUCKET                  = var.nba_data_bucket_name
-        NBA_RAW_PREFIX                   = var.nba_raw_prefix
-      }
+        BDL_RATE_LIMIT_INTERVAL_MS     = "13000"
+        BDL_RATE_LIMIT_MAX_REQUESTS    = "1"
+        BDL_RATE_LIMIT_BURST           = "1"
+        BDL_RATE_LIMIT_MAX_RETRIES     = "0"
+        PLAYER_PROP_S3_ARCHIVE_ENABLED = var.player_prop_s3_archive_enabled ? "true" : "false"
+        NBA_DATA_BUCKET                = var.nba_data_bucket_name
+        NBA_RAW_PREFIX                 = var.nba_raw_prefix
+      },
+      local.collector_live_runtime
     )
   }
 }
@@ -338,7 +352,8 @@ resource "aws_lambda_function" "player_props_controller" {
         BALLDONTLIE_API_KEY    = lookup(var.player_props_lambda_env, "BALLDONTLIE_API_KEY", lookup(var.player_props_controller_env, "BALLDONTLIE_API_KEY", ""))
         PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
         PREFERRED_VENDOR       = lookup(var.player_props_lambda_env, "PREFERRED_VENDOR", "draftkings")
-      }
+      },
+      local.collector_live_runtime
     )
   }
 }

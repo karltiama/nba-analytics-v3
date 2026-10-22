@@ -139,6 +139,15 @@ async function seedGame(status: string, startSql: string): Promise<void> {
 
 describe('props serving writes on local Postgres', () => {
   beforeAll(async () => {
+    let host = '';
+    try {
+      host = new URL(databaseUrl).hostname;
+    } catch {
+      throw new Error('props test database url is not a postgres URL');
+    }
+    if (!/^(127\.0\.0\.1|localhost)$/i.test(host) || /supabase\.co|amazonaws\.com/i.test(databaseUrl)) {
+      throw new Error('refusing a non-local props test database');
+    }
     await pool.query(SCHEMA);
   });
 

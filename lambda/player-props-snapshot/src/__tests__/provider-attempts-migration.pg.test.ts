@@ -55,6 +55,21 @@ CREATE TABLE IF NOT EXISTS raw.player_prop_snapshots_v2 (
 );
 `;
 
+function assertLocalPostgres(url: string, label: string): void {
+  let host = '';
+  try {
+    host = new URL(url).hostname;
+  } catch {
+    throw new Error(`${label} is not a postgres URL`);
+  }
+  if (!/^(127\.0\.0\.1|localhost)$/i.test(host) || /supabase\.co|amazonaws\.com/i.test(url)) {
+    throw new Error(`refusing a non-local ${label}`);
+  }
+}
+
+assertLocalPostgres(adminUrl, 'props migration admin url');
+assertLocalPostgres(databaseUrl, 'props migration database url');
+
 const admin = new Pool({ connectionString: adminUrl, connectionTimeoutMillis: 5_000 });
 const pool = new Pool({ connectionString: databaseUrl, connectionTimeoutMillis: 5_000 });
 
@@ -76,10 +91,13 @@ function applyMigrationFile(): void {
 }
 
 beforeAll(async () => {
-  const existing = await admin.query(`SELECT 1 FROM pg_database WHERE datname = 'propsmig'`);
-  if (existing.rowCount === 0) {
-    await admin.query('CREATE DATABASE propsmig');
-  }
+  await admin.query(`
+    SELECT pg_terminate_backend(pid)
+    FROM pg_stat_activity
+    WHERE datname = 'propsmig' AND pid <> pg_backend_pid()
+  `);
+  await admin.query('DROP DATABASE IF EXISTS propsmig');
+  await admin.query('CREATE DATABASE propsmig');
   await pool.query(PRE_MIGRATION);
   await pool.query(`
     INSERT INTO raw.player_prop_pull_runs (pull_run_id) VALUES (1), (2), (3)
