@@ -207,7 +207,7 @@ describe('topScorer', () => {
     const oneTeam = topScorer(
       game({ game_id: 'one', lifecycle: 'live', box_score: box([line({ playerId: '1', teamId: '2', name: 'Solo', pts: 20 })]) })
     );
-    expect(oneTeam).toEqual({ kind: 'status', text: 'Player stats updating' });
+    expect(oneTeam).toEqual({ kind: 'status', text: 'Awaiting live player stats' });
     const pointsMissing = topScorer(
       game({
         game_id: 'nopts',
@@ -218,11 +218,11 @@ describe('topScorer', () => {
         ]),
       })
     );
-    expect(pointsMissing).toEqual({ kind: 'status', text: 'Player stats updating' });
+    expect(pointsMissing).toEqual({ kind: 'status', text: 'Awaiting live player stats' });
   });
 
   it('shows a status, not a leader, when the box score is missing', () => {
-    expect(topScorer(game({ game_id: 'none', lifecycle: 'live' }))).toEqual({ kind: 'status', text: 'Player stats updating' });
+    expect(topScorer(game({ game_id: 'none', lifecycle: 'live' }))).toEqual({ kind: 'status', text: 'Awaiting live player stats' });
     expect(topScorer(game({ game_id: 'fnone', lifecycle: 'final' }))).toEqual({ kind: 'status', text: 'Player stats pending' });
   });
 
@@ -247,7 +247,10 @@ describe('topScorer', () => {
   });
 
   it('hides player stats on a stale in-game snapshot and before tip', () => {
-    expect(topScorer(auditLiveGame({ stale: true, stale_reason: 'no_recent_observation' }))).toBeNull();
+    expect(topScorer(auditLiveGame({ stale: true, stale_reason: 'no_recent_observation' }))).toEqual({
+      kind: 'status',
+      text: 'Player stats delayed',
+    });
     expect(topScorer(game({ game_id: 'pre', lifecycle: 'scheduled' }))).toBeNull();
     expect(topScorer(game({ game_id: 'pp', lifecycle: 'postponed' }))).toBeNull();
   });
@@ -319,8 +322,8 @@ describe('statLeaders', () => {
   });
 
   it('returns a status for missing, partial, and unverified boxes', () => {
-    expect(statLeaders(game({ game_id: 'none', lifecycle: 'live' }))).toEqual({ kind: 'status', text: 'Player stats updating' });
-    expect(statLeaders(game({ game_id: 'half', lifecycle: 'halftime' }))).toEqual({ kind: 'status', text: 'Player stats updating' });
+    expect(statLeaders(game({ game_id: 'none', lifecycle: 'live' }))).toEqual({ kind: 'status', text: 'Awaiting live player stats' });
+    expect(statLeaders(game({ game_id: 'half', lifecycle: 'halftime' }))).toEqual({ kind: 'status', text: 'Awaiting live player stats' });
     expect(statLeaders(game({ game_id: 'fnone', lifecycle: 'final' }))).toEqual({ kind: 'status', text: 'Player stats pending' });
     const players = [line({ playerId: '1', teamId: '2', name: 'A', pts: 20 }), line({ playerId: '2', teamId: '20', name: 'B', pts: 18 })];
     expect(statLeaders(game({ game_id: 'fu', lifecycle: 'final', box_score: box(players, 'final_unverified') }))).toEqual({
@@ -333,7 +336,10 @@ describe('statLeaders', () => {
   it('shows nothing before tip, on postponed games, or on a stale in-game snapshot', () => {
     expect(statLeaders(game({ game_id: 'pre', lifecycle: 'scheduled' }))).toBeNull();
     expect(statLeaders(game({ game_id: 'pp', lifecycle: 'postponed' }))).toBeNull();
-    expect(statLeaders(auditLiveGame({ stale: true, stale_reason: 'no_recent_observation' }))).toBeNull();
+    expect(statLeaders(auditLiveGame({ stale: true, stale_reason: 'no_recent_observation' }))).toEqual({
+      kind: 'status',
+      text: 'Player stats delayed',
+    });
   });
 });
 
@@ -376,7 +382,7 @@ describe('freshness and status', () => {
     expect(gamePhase('scheduled')).toBe('pregame');
   });
 
-  it('says the live score is unavailable only after a scheduled tip, without calling the game live or final', () => {
+  it('says the game is waiting for tip after the listed tip, without calling it live or final', () => {
     const tip = '2026-10-20T19:00:00.000Z';
     const before = Date.parse('2026-10-20T18:59:59.000Z');
     const atTip = Date.parse(tip);

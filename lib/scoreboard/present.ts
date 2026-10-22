@@ -87,6 +87,8 @@ export type PresentedGame = {
   freshnessLabel: string;
   /** "Updated 2m ago": acquired_at measured against the response generated_at. Null when unknown or over an hour. */
   freshnessAge: string | null;
+  /** Same clock for the box-score observation. Null when the box has no timestamp or the age is over an hour. */
+  statsFreshnessAge: string | null;
   phase: GamePhase;
   /** lifecycleLabel, or Delayed / Suspended from provider_status when the lifecycle is unknown. */
   statusLabel: string;
@@ -386,6 +388,7 @@ export function presentScoreboardGame(game: ScoreboardGame, generatedAt?: string
     periodClock: lifecycle ? formatPeriodClock({ ...game, lifecycle }) : null,
     freshnessLabel: formatObservedAt(game.acquired_at),
     freshnessAge: generatedAt ? freshnessAgeLabel(game.acquired_at, Date.parse(generatedAt)) : null,
+    statsFreshnessAge: generatedAt ? freshnessAgeLabel(game.box_score?.acquired_at, Date.parse(generatedAt)) : null,
     phase: gamePhase(lifecycle),
     statusLabel: cardStatusLabel(lifecycle, game.provider_status, {
       scheduledTip: game.scheduled_tip,

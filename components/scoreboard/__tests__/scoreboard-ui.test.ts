@@ -70,6 +70,8 @@ function expectInPlayShell(html: string) {
   expect(html).toContain('data-betting="hidden"');
   for (const copy of PRICE_COPY) expect(html).not.toContain(copy);
   expect(html).toContain('data-leaders-panel');
+  expect(html).not.toContain('data-pregame-lines');
+  expect(html).not.toContain('Pregame Lines');
   expect(html).not.toContain('/betting/games/');
   expect(html).not.toContain('props-explorer');
 }
@@ -135,6 +137,7 @@ describe('Pre-game card keeps the original market layout', () => {
       const html = cardHtml(game, 'scoreboard');
       expectPregameShell(html);
       expect(html).toContain('data-phase="pregame"');
+      expect(html).not.toContain('data-pregame-lines');
       expect(html).toContain('7:00 PM EDT · Live score unavailable');
       expect(html).toContain('>VS<');
       expect(textOf(html)).toContain('MEM —');
@@ -177,8 +180,11 @@ describe('Pre-game card keeps the original market layout', () => {
       const enriched: Game = { ...bettingGame(), scoreboard: base.scoreboard, researchAvailable: true };
       const html = cardHtml(enriched, 'scoreboard');
       expectPregameShell(html);
+      expect(html).toContain('data-pregame-lines');
+      expect(textOf(html)).toContain('Pregame Lines');
       expect(marketGrid(html)).toBe(marketGrid(market));
-      expect(teamRow(html)).toBe(teamRow(market));
+      const withoutLinesLabel = html.replace(/<p[^>]*data-pregame-lines[\s\S]*?<\/p>/, '');
+      expect(teamRow(withoutLinesLabel)).toBe(teamRow(market));
       expect(textOf(html)).toContain('O/U 224.5');
       expect(textOf(html)).toContain('O -110 / U -110');
       expect(textOf(html)).toContain('50-32');
@@ -202,6 +208,7 @@ describe('Pre-game card keeps the original market layout', () => {
     };
     const html = cardHtml(oneSided, 'scoreboard');
     expectPregameShell(html);
+    expect(html).toContain('data-pregame-lines');
     expect(textOf(html)).toContain('O/U 221.5');
     expect(textOf(html)).toContain('CHI -140');
     expect(html).not.toContain('Market implied probability');
@@ -254,11 +261,25 @@ describe('Live card swaps market slots for live facts', () => {
     expectUnavailableFooter(html, ['Follow live', 'Box score']);
   });
 
+  it('shows the box-score observation time when it is older than the score', () => {
+    const live = auditLiveGame();
+    const html = boardHtml(
+      auditLiveGame({
+        box_score: { ...live.box_score, acquired_at: '2026-10-09T23:31:00.000Z' },
+      }),
+      '2026-10-09T23:41:00.000Z'
+    );
+    expect(textOf(html)).toContain('Updated 2m ago');
+    expect(html).toContain('data-stats-freshness');
+    expect(textOf(html)).toContain('Player stats updated 10m ago');
+    expect(html).not.toContain('Pregame Lines');
+  });
+
   it('shows a status and empty tiles when the live box score is missing or covers one team', () => {
     const missing = boardHtml(scoreboardGame({ game_id: 'nobox', lifecycle: 'live', period: 2, clock: '6:00', home: { score: 40 }, visitor: { score: 36 } }));
     expectInPlayShell(missing);
     expect(missing).toContain('data-player-status');
-    expect(missing).toContain('Player stats updating');
+    expect(missing).toContain('Awaiting live player stats');
     expect(missing.match(/data-leader="none"/g)).toHaveLength(3);
     expect(textOf(missing)).toContain('More game context will appear as stats develop.');
     expect(textOf(missing)).not.toContain('leads by');
@@ -274,7 +295,7 @@ describe('Live card swaps market slots for live facts', () => {
         box_score: { completeness: 'live_partial', acquired_at: null, players: [line({ playerId: '101', teamId: '2', name: 'Jayson Tatum', pts: 22, reb: 6, ast: 4 })] },
       })
     );
-    expect(oneTeam).toContain('Player stats updating');
+    expect(oneTeam).toContain('Awaiting live player stats');
     expect(oneTeam).not.toContain('Jayson Tatum');
   });
 
@@ -338,6 +359,7 @@ describe('Live card swaps market slots for live facts', () => {
     expect(stale).toContain('data-stale-warning');
     expect(stale).toContain('Score may be out of date');
     expect(stale).toContain('data-game-pulse="stale"');
+    expect(stale).toContain('Player stats delayed');
     expect(stale).toContain('Game context resumes when fresh stats arrive.');
     expect(stale).not.toMatch(/led by|leads by/);
     expect(stale).not.toContain('Jayson Tatum');
@@ -437,7 +459,7 @@ describe('Lifecycle parity', () => {
     expect(textOf(html)).toContain('Assists Luka Doncic 9 AST · DAL');
     expect(html).toContain('Box score being verified');
     expect(html).toContain('Player stats pending');
-    expect(html).toContain('Player stats updating');
+    expect(html).toContain('Awaiting live player stats');
     expect(html).not.toContain('<table');
   });
 

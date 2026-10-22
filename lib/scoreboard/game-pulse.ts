@@ -146,18 +146,18 @@ function leaderFor(game: LeaderGame, stat: LeaderStat): StatLeader | null | 'inc
 
 /**
  * Points, rebounds, and assists leaders while in progress or final.
- * A stale in-game snapshot has no leaders. Final games use only a verified_final box score.
+ * A stale in-game snapshot says the stats are delayed and does not name leaders.
  * Returns a status when the box is missing, unverified, or covers one team.
  */
 export function statLeaders(game: LeaderGame): StatLeaders | null {
   const phase = gamePhase(game.lifecycle ?? null);
   if (phase !== 'live' && phase !== 'final') return null;
-  if (phase === 'live' && game.stale) return null;
+  if (phase === 'live' && game.stale) return { kind: 'status', text: 'Player stats delayed' };
   const completeness = game.box_score?.completeness ?? 'none';
   const pending: StatLeaders =
     phase === 'final'
       ? { kind: 'status', text: completeness === 'none' ? 'Player stats pending' : 'Box score being verified' }
-      : { kind: 'status', text: 'Player stats updating' };
+      : { kind: 'status', text: 'Awaiting live player stats' };
   if (completeness === 'none') return pending;
   if (phase === 'final' && completeness !== 'verified_final') return pending;
   const pts = leaderFor(game, 'pts');
@@ -207,6 +207,11 @@ export const PULSE_THRESHOLDS = {
   /** eFG% gap in percentage points. */
   efgMinGap: 12,
   offensiveReboundMinGap: 5,
+  /** Total-rebound gap. Both teams also need the field-goal attempt floor. */
+  reboundMinGap: 8,
+  /** Unique points leader, and that player has at least this many field-goal attempts. */
+  leadingPlayerMinPoints: 12,
+  leadingPlayerMinFga: 8,
   freeThrowAttemptMinGap: 8,
   /** A lower-priority candidate must beat the top-priority one by this much (gap / threshold) to be shown. */
   switchMargin: 0.25,
@@ -225,6 +230,8 @@ export type TeamTotals = {
   fta: number;
   /** Null when any line lacks oreb or contradicts reb = oreb + dreb. */
   oreb: number | null;
+  /** Null when any line lacks reb. Never filled in as zero. */
+  reb: number | null;
 };
 
 type TotalsGame = Pick<ScoreboardGame, 'home' | 'visitor' | 'box_score'>;
@@ -234,11 +241,12 @@ function count(value: unknown): value is number {
 }
 
 /**
- * Team totals from one box snapshot, or null when they cannot be trusted as complete.
+ * Team totals from one box snapshot, or null when the box itself cannot be trusted.
  * Every player id appears once and belongs to the home or visitor team; every line has whole,
  * non-negative shooting counts with makes <= attempts, 3PM <= FGM, 3PA <= FGA, and
- * pts = 2*FGM + 3PM + FTM; each team has enough lines and its player points equal its score.
- * Missing values are never zero. Zero-minute lines count only through the values they carry.
+ * pts = 2*FGM + 3PM + FTM; each team has enough lines. Missing values are never zero.
+ * The scoreboard score is a separate observation and is not required to match.
+ * Zero-minute lines count only through the values they carry.
  */
 export function teamTotals(game: TotalsGame): { home: TeamTotals; visitor: TeamTotals } | null {
   const homeId = game.home?.provider_team_id;
@@ -247,7 +255,7 @@ export function teamTotals(game: TotalsGame): { home: TeamTotals; visitor: TeamT
   const seen = new Set<string>();
   const totals = new Map<string, TeamTotals & { lines: number }>();
   for (const id of [homeId, visitorId]) {
-    totals.set(id, { teamId: id, pts: 0, fgm: 0, fga: 0, fg3m: 0, fg3a: 0, ftm: 0, fta: 0, oreb: 0, lines: 0 });
+    totals.set(id, { teamId: id, pts: 0, fgm: 0, fga: 0, fg3m: 0, fg3a: 0, ftm: 0, fta: 0, oreb: 0, reb: 0, lines: 0 });
   }
   for (const line of (game.box_score?.players ?? []) as Line[]) {
     const id = typeof line?.playerId === 'string' ? line.playerId.trim() : '';
@@ -269,23 +277,40 @@ export function teamTotals(game: TotalsGame): { home: TeamTotals; visitor: TeamT
     team.fta += fta;
     const orebKnown = count(line.oreb) && !(count(line.reb) && count(line.dreb) && line.reb !== line.oreb + line.dreb);
     team.oreb = team.oreb != null && orebKnown ? team.oreb + (line.oreb as number) : null;
+    team.reb = team.reb != null && count(line.reb) ? team.reb + line.reb : null;
   }
   const home = totals.get(homeId)!;
   const visitor = totals.get(visitorId)!;
-  for (const [team, score] of [
-    [home, game.home.score],
-    [visitor, game.visitor.score],
-  ] as const) {
-    if (team.lines < PULSE_THRESHOLDS.minLinesPerTeam) return null;
-    if (!validScore(score) || team.pts !== score) return null;
-  }
+  if (home.lines < PULSE_THRESHOLDS.minLinesPerTeam || visitor.lines < PULSE_THRESHOLDS.minLinesPerTeam) return null;
   const strip = (t: TeamTotals): TeamTotals => ({
-    teamId: t.teamId, pts: t.pts, fgm: t.fgm, fga: t.fga, fg3m: t.fg3m, fg3a: t.fg3a, ftm: t.ftm, fta: t.fta, oreb: t.oreb,
+    teamId: t.teamId, pts: t.pts, fgm: t.fgm, fga: t.fga, fg3m: t.fg3m, fg3a: t.fg3a, ftm: t.ftm, fta: t.fta, oreb: t.oreb, reb: t.reb,
   });
   return { home: strip(home), visitor: strip(visitor) };
 }
 
-export type PulseInsightId = 'three_point_pct' | 'efg_pct' | 'offensive_rebounds' | 'free_throw_attempts';
+/**
+ * True when both team scores are known and equal the box's own player-point sums.
+ * Claims that mention the scoreboard score require this. Box-only insights do not.
+ */
+export function boxScoreAligned(
+  game: TotalsGame,
+  totals: { home: TeamTotals; visitor: TeamTotals }
+): boolean {
+  return (
+    validScore(game.home?.score) &&
+    validScore(game.visitor?.score) &&
+    totals.home.pts === game.home.score &&
+    totals.visitor.pts === game.visitor.score
+  );
+}
+
+export type PulseInsightId =
+  | 'three_point_pct'
+  | 'efg_pct'
+  | 'rebounds'
+  | 'offensive_rebounds'
+  | 'free_throw_attempts'
+  | 'leading_player';
 
 export type PulseInsight = {
   id: PulseInsightId;
@@ -301,7 +326,13 @@ export type PulseInsight = {
 };
 
 /** Cross-family order used for ties and the switch margin. Shooting first, then rebounding, then FTA. */
-const INSIGHT_PRIORITY: readonly PulseInsightId[] = ['three_point_pct', 'efg_pct', 'offensive_rebounds', 'free_throw_attempts'];
+const INSIGHT_PRIORITY: readonly PulseInsightId[] = [
+  'three_point_pct',
+  'efg_pct',
+  'rebounds',
+  'offensive_rebounds',
+  'free_throw_attempts',
+];
 
 /** Multiply first so whole-percent results (8/25 = 32) are exact at the threshold. */
 function pct(made: number, attempts: number): number {
@@ -364,6 +395,16 @@ export function insightCandidates(
         push('offensive_rebounds', lead, a, b, T.offensiveReboundMinGap, `${lead.name} ${verb} ${article(a)} ${a}–${b} advantage in offensive rebounds.`);
       }
     }
+    const hr = home.totals.reb;
+    const vr = visitor.totals.reb;
+    if (hr != null && vr != null) {
+      const oReb = order(hr, vr);
+      if (oReb && oReb[2] - oReb[3] >= T.reboundMinGap) {
+        const [lead, trail, a, b] = oReb;
+        const verb = final ? 'finished with' : 'has';
+        push('rebounds', lead, a, b, T.reboundMinGap, `${lead.name} ${verb} ${a} rebounds, compared with ${b} for ${trail.name}.`);
+      }
+    }
     const o3 = order(home.totals.fta, visitor.totals.fta);
     if (o3 && o3[2] - o3[3] >= T.freeThrowAttemptMinGap) {
       const [lead, trail, a, b] = o3;
@@ -385,7 +426,13 @@ export function selectInsight(candidates: PulseInsight[]): PulseInsight | null {
   const three = candidates.find((c) => c.id === 'three_point_pct');
   const eff = candidates.find((c) => c.id === 'efg_pct');
   const dropShooting: PulseInsightId | null = three && eff ? (eff.score > three.score ? 'three_point_pct' : 'efg_pct') : null;
-  const pool = candidates.filter((c) => c.id !== dropShooting).sort((a, b) => rank(a.id) - rank(b.id));
+  const totalReb = candidates.find((c) => c.id === 'rebounds');
+  const offensive = candidates.find((c) => c.id === 'offensive_rebounds');
+  const dropRebounds: PulseInsightId | null =
+    totalReb && offensive ? (offensive.score > totalReb.score ? 'rebounds' : 'offensive_rebounds') : null;
+  const pool = candidates
+    .filter((c) => c.id !== dropShooting && c.id !== dropRebounds && c.id !== 'leading_player')
+    .sort((a, b) => rank(a.id) - rank(b.id));
   if (pool.length === 0) return null;
   let chosen = pool[0];
   for (const candidate of pool.slice(1)) {
@@ -395,8 +442,53 @@ export function selectInsight(candidates: PulseInsight[]): PulseInsight | null {
 }
 
 export type GameContext =
-  | { kind: 'insight'; text: string; insight: PulseInsight }
+  | { kind: 'insight'; text: string; insight: PulseInsight; support: PulseInsight | null }
   | { kind: 'developing' | 'no_standout' | 'pending' | 'unavailable' | 'stale'; text: string };
+
+function countLabel(n: number, singular: string, plural: string): string {
+  return `${n} ${n === 1 ? singular : plural}`;
+}
+
+function joinCounts(parts: string[]): string {
+  if (parts.length <= 1) return parts[0] ?? '';
+  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+  return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`;
+}
+
+/**
+ * One player's observed line, only after teamTotals has accepted the box.
+ * A tie is not a leader. Turnovers and fouls are not on the stored line, so they are not described.
+ */
+export function leadingPlayerInsight(
+  game: Pick<ScoreboardGame, 'lifecycle' | 'home' | 'visitor' | 'stale' | 'box_score'>,
+  trusted: boolean,
+  final: boolean,
+  observedAt: string | null
+): PulseInsight | null {
+  if (!trusted) return null;
+  const leaders = statLeaders(game);
+  if (!leaders || leaders.kind !== 'leaders' || !leaders.pts || leaders.pts.players.length !== 1) return null;
+  const top = leaders.pts;
+  if (top.value < PULSE_THRESHOLDS.leadingPlayerMinPoints) return null;
+  const player = top.players[0];
+  const line = ((game.box_score?.players ?? []) as Line[]).find((row) => row.playerId === player.id);
+  if (!line || !count(line.fga) || line.fga < PULSE_THRESHOLDS.leadingPlayerMinFga) return null;
+  const parts = [countLabel(top.value, 'point', 'points')];
+  if (count(line.reb) && line.reb > 0) parts.push(countLabel(line.reb, 'rebound', 'rebounds'));
+  if (count(line.ast) && line.ast > 0) parts.push(countLabel(line.ast, 'assist', 'assists'));
+  const verb = final ? 'finished with' : 'has';
+  const second = ((game.box_score?.players ?? []) as Line[])
+    .filter((row) => row.playerId !== player.id && count(row.pts))
+    .reduce((best, row) => Math.max(best, row.pts as number), 0);
+  return {
+    id: 'leading_player',
+    text: `${player.name} ${verb} ${joinCounts(parts)}.`,
+    teamId: player.teamId,
+    values: { leader: top.value, trailer: second, gap: top.value - second },
+    score: top.value / PULSE_THRESHOLDS.leadingPlayerMinPoints,
+    observedAt,
+  };
+}
 
 export const GAME_CONTEXT_COPY = {
   developing: 'More game context will appear as stats develop.',
@@ -424,9 +516,14 @@ export function gameContext(
   if (phase === 'live' && completeness !== 'live_partial') return fallback;
   const totals = teamTotals(game);
   if (!totals) return phase === 'final' ? { kind: 'unavailable', text: GAME_CONTEXT_COPY.unavailable } : fallback;
+  if (!game.box_score?.acquired_at) return fallback;
+  const observedAt = game.box_score?.acquired_at ?? null;
   const names = pulseTeamNames(game);
-  const insight = selectInsight(insightCandidates(totals, names, phase === 'final', game.box_score?.acquired_at ?? null));
-  return insight ? { kind: 'insight', text: insight.text, insight } : fallback;
+  const insight = selectInsight(insightCandidates(totals, names, phase === 'final', observedAt));
+  const player = leadingPlayerInsight(game, true, phase === 'final', observedAt);
+  if (insight) return { kind: 'insight', text: insight.text, insight, support: player };
+  if (player) return { kind: 'insight', text: player.text, insight: player, support: null };
+  return fallback;
 }
 
 /**

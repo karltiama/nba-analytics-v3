@@ -579,6 +579,14 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
       .filter((f) => !f.startsWith('lib/scoreboard/') && !f.startsWith('lambda/scoreboard/') && f !== 'app/api/scoreboard/route.ts');
     for (const f of others) {
       const src = read(f);
+      if (f === 'lib/season/schedule-window.ts') {
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect(src, f).toMatch(/FROM display\.scoreboard_games/);
+        expect(src, f).toMatch(/FROM analytics\.games/);
+        expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
+        continue;
+      }
       expect(src, f).not.toMatch(/display\.scoreboard_/);
       if (f === 'lib/pregame-matchup/load.ts' || f === 'lib/pregame-matchup/quote.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
