@@ -24,6 +24,7 @@ import { PropsExplorerDesktopActions } from '@/components/betting/PropsExplorerD
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
+import { PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
 import {
   EXPLORER_BOOKS,
   EXPLORER_SORT_OPTIONS,
@@ -42,6 +43,7 @@ import {
   gameDetailHref,
   playerResearchHref,
 } from '@/lib/betting/research-journey';
+import { dashboardReturnHref } from '@/lib/pregame-matchup/href';
 import { savedResearchHref } from '@/lib/betting/saved-research';
 import type { PropsExplorerOfferInput } from '@/lib/parlay/adapt-props-explorer-offer';
 import {
@@ -639,13 +641,29 @@ export default function PropsExplorerPage(props: PageProps) {
       <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mb-6">
         <div>
           <h1 className="type-page-title text-[#063f46]">Props Explorer</h1>
-          <p className="type-body mt-1 hidden text-cc-secondary lg:block">
-            {marketContext === 'historical'
-              ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Estimated EV is not computed for historical dates.'
-              : 'Simple mode grades Good/Fair/Bad from estimated EV (market-anchored). That is not the same as the projection gap.'}
+          <p
+            className={`type-body mt-1 text-cc-secondary ${
+              lineLabel === PREGAME_LINE_LABEL ? '' : 'hidden lg:block'
+            }`}
+          >
+            {lineLabel === PREGAME_LINE_LABEL
+              ? 'Stored pregame lines. Not a live betting board. The time on each row is when that price was observed.'
+              : marketContext === 'historical'
+                ? 'Last pre-tip closing lines for this date. Not a live sportsbook board. Estimated EV is not computed for historical dates.'
+                : 'Simple mode grades Good/Fair/Bad from estimated EV (market-anchored). That is not the same as the projection gap.'}
           </p>
           <p className="type-badge mt-1.5 hidden items-center rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[#063f46] lg:inline-flex">
             {lineLabel}
+          </p>
+          <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+            <Link href={dashboardReturnHref(date)} className="type-interactive text-[#075B5C] hover:underline">
+              Dashboard
+            </Link>
+            {gameId.trim() ? (
+              <Link href={gameDetailHref(gameId.trim())} className="type-interactive text-[#075B5C] hover:underline">
+                Back to game
+              </Link>
+            ) : null}
           </p>
         </div>
         {showAdvancedMetrics && meta ? (
@@ -799,9 +817,11 @@ export default function PropsExplorerPage(props: PageProps) {
                 aria-label="Minimum EV"
                 disabled={marketContext === 'historical'}
                 title={
-                  marketContext === 'historical'
-                    ? 'EV filters do not apply to historical closing lines'
-                    : undefined
+                  lineLabel === PREGAME_LINE_LABEL
+                    ? 'EV is not computed for stored pregame lines'
+                    : marketContext === 'historical'
+                      ? 'EV filters do not apply to historical closing lines'
+                      : undefined
                 }
               />
               <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
@@ -822,9 +842,11 @@ export default function PropsExplorerPage(props: PageProps) {
                     : true
                 ).map((o) => (
                   <option key={o.value} value={o.value}>
-                    {o.value === 'snapshot_at' && marketContext === 'historical'
-                      ? 'Closing time'
-                      : o.label}
+                    {o.value === 'snapshot_at' && lineLabel === PREGAME_LINE_LABEL
+                      ? 'Observed'
+                      : o.value === 'snapshot_at' && marketContext === 'historical'
+                        ? 'Closing time'
+                        : o.label}
                   </option>
                 ))}
               </select>
@@ -971,18 +993,22 @@ export default function PropsExplorerPage(props: PageProps) {
                 frozen: Boolean(meta?.ingestionFrozen),
                 dateLabel: getDateLabel(date),
                 marketContext,
+                gameSelected: Boolean(gameId.trim()),
               });
               return (
                 <div className="space-y-2 px-2">
                   <p className="type-body text-[#063f46]">{copy.title}</p>
                   <p className="type-metadata">{copy.detail}</p>
-                  {gameId.trim() ? (
-                    <p>
-                      <Link href={gameDetailHref(gameId.trim())} className="type-interactive text-[#075B5C]">
+                  <p className="type-interactive flex flex-wrap justify-center gap-4">
+                    <Link href={dashboardReturnHref(date)} className="text-[#075B5C]">
+                      Dashboard
+                    </Link>
+                    {gameId.trim() ? (
+                      <Link href={gameDetailHref(gameId.trim())} className="text-[#075B5C]">
                         Back to game
                       </Link>
-                    </p>
-                  ) : null}
+                    ) : null}
+                  </p>
                 </div>
               );
             })()}
@@ -1035,7 +1061,11 @@ export default function PropsExplorerPage(props: PageProps) {
                   </>
                 ) : null}
                 <th className="py-2 px-2 font-medium">
-                  {marketContext === 'historical' ? 'Closed' : 'Updated'}
+                  {lineLabel === PREGAME_LINE_LABEL
+                    ? 'Observed'
+                    : marketContext === 'historical'
+                      ? 'Closed'
+                      : 'Updated'}
                 </th>
                 <th className="py-2 px-2 text-right font-medium w-[168px]">Actions</th>
               </tr>
@@ -1049,21 +1079,25 @@ export default function PropsExplorerPage(props: PageProps) {
                         frozen: Boolean(meta?.ingestionFrozen),
                         dateLabel: getDateLabel(date),
                         marketContext,
+                        gameSelected: Boolean(gameId.trim()),
                       });
                       return (
                         <div className="space-y-2 px-4">
                           <p className="type-body text-[#063f46]">{copy.title}</p>
                           <p className="type-secondary">{copy.detail}</p>
-                          {gameId.trim() ? (
-                            <p className="type-interactive">
+                          <p className="type-interactive flex flex-wrap justify-center gap-4">
+                            <Link href={dashboardReturnHref(date)} className="text-[#075B5C] hover:underline">
+                              Dashboard
+                            </Link>
+                            {gameId.trim() ? (
                               <Link
                                 href={gameDetailHref(gameId.trim())}
                                 className="text-[#075B5C] hover:underline"
                               >
                                 Back to game
                               </Link>
-                            </p>
-                          ) : null}
+                            ) : null}
+                          </p>
                         </div>
                       );
                     })()}

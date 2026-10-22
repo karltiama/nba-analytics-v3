@@ -188,4 +188,109 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(result.rows[0].paperBetAllowed).toBe(true);
     expect(result.rows[0].lineLabel).toBe('Current market');
   });
+
+  it('keeps Current market when the selected game has not tipped', async () => {
+    mockQueryOne.mockResolvedValueOnce({ start_time: '2026-09-06T23:30:00.000Z' });
+    const liveRow = {
+      ...HISTORICAL_ROW,
+      game_id: '401700001',
+      snapshot_at: '2026-09-06T18:00:00.000Z',
+      game_start_time: '2026-09-06T23:30:00.000Z',
+    };
+    mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([liveRow]);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-09-06',
+      gameId: '401700001',
+      todayEt: '2026-09-06',
+      now: new Date('2026-09-06T16:00:00.000Z'),
+      limit: 100,
+      offset: 0,
+    });
+
+    expect(result.marketContext).toBe('live');
+    expect(result.sourceTable).toBe('analytics.player_props_current');
+    expect(result.lineLabel).toBe('Current market');
+    expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
+    expect(result.rows[0].lineLabel).toBe('Current market');
+    expect(result.rows[0].paperBetAllowed).toBe(true);
+  });
+
+  it('labels a started same-day game as a stored pregame line and blocks paper', async () => {
+    mockQueryOne.mockResolvedValueOnce({ start_time: '2026-09-06T18:00:00.000Z' });
+    const liveRow = {
+      ...HISTORICAL_ROW,
+      game_id: '401700002',
+      snapshot_at: '2026-09-06T17:30:00.000Z',
+      game_start_time: '2026-09-06T18:00:00.000Z',
+    };
+    mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([liveRow]);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-09-06',
+      gameId: '401700002',
+      todayEt: '2026-09-06',
+      now: new Date('2026-09-06T20:00:00.000Z'),
+      limit: 100,
+      offset: 0,
+    });
+
+    expect(result.marketContext).toBe('live');
+    expect(result.sourceTable).toBe('analytics.player_props_current');
+    expect(result.lineLabel).toBe('Pregame line');
+    expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
+    expect(sqlOf(0)).not.toMatch(/prop_decision_lines/);
+    expect(result.rows[0].lineLabel).toBe('Pregame line');
+    expect(result.rows[0].paperBetAllowed).toBe(false);
+    expect(mockInputs).toHaveBeenCalledWith('1629027');
+  });
+
+  it('serves stored current rows as pregame lines when a past game has no decision lines', async () => {
+    mockQueryOne
+      .mockResolvedValueOnce({ start_time: '2026-10-20T23:00:00.000Z' })
+      .mockResolvedValueOnce({ decision_n: '0', current_n: '12' });
+    mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([HISTORICAL_ROW]);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-10-21',
+      gameId: '21717922',
+      todayEt: '2026-10-21',
+      now: new Date('2026-10-21T20:00:00.000Z'),
+      limit: 100,
+      offset: 0,
+    });
+
+    expect(result.marketContext).toBe('historical');
+    expect(result.dateEt).toBe('2026-10-20');
+    expect(result.sourceTable).toBe('analytics.player_props_current');
+    expect(result.lineLabel).toBe('Pregame line');
+    expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
+    expect(sqlOf(0)).not.toMatch(/research\.prop_decision_lines/);
+    expect(result.rows[0].lineLabel).toBe('Pregame line');
+    expect(result.rows[0].ev).toBeNull();
+    expect(result.rows[0].paperBetAllowed).toBe(false);
+    expect(mockInputs).not.toHaveBeenCalled();
+  });
+
+  it('keeps decision lines when a past game already has them', async () => {
+    mockQueryOne
+      .mockResolvedValueOnce({ start_time: '2026-05-01T23:30:00.000Z' })
+      .mockResolvedValueOnce({ decision_n: '4', current_n: '9' });
+    mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([HISTORICAL_ROW]);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-09-06',
+      gameId: '401585000',
+      todayEt: '2026-09-06',
+      limit: 100,
+      offset: 0,
+    });
+
+    expect(result.marketContext).toBe('historical');
+    expect(result.sourceTable).toBe('research.prop_decision_lines');
+    expect(result.lineLabel).toBe('Historical closing line');
+    expect(sqlOf(0)).toMatch(/research\.prop_decision_lines/);
+    expect(result.rows[0].ev).toBeNull();
+    expect(mockInputs).not.toHaveBeenCalled();
+  });
 });

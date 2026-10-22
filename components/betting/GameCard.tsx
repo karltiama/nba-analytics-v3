@@ -678,13 +678,13 @@ export function GameCard({
             ) : (
               <UnavailableAction primary label={phase === 'live' ? 'Follow live' : phase === 'final' ? 'Game recap' : 'View matchup'} />
             )}
-            {research && !inPlay ? (
-              <Link href={propsHref} className={SECONDARY_ACTION}>
+            {schedulePreview ? (
+              <UnavailableAction primary={false} label="View props" />
+            ) : (
+              <Link href={propsHref} className={SECONDARY_ACTION} data-view-props>
                 <ListFilter className="w-3.5 h-3.5 shrink-0" />
                 <span className="type-interactive">View props</span>
               </Link>
-            ) : (
-              <UnavailableAction primary={false} label={inPlay ? 'Box score' : 'View props'} />
             )}
           </>
         )}

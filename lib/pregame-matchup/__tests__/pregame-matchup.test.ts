@@ -454,16 +454,17 @@ describe('pregame page model', () => {
 });
 
 describe('pregame navigation', () => {
-  it('enables View Matchup for a scoreboard pregame card and leaves View Props disabled', () => {
+  it('enables View Matchup and View Props for a scoreboard pregame card', () => {
     const slate = mergeTodaysGames(scoreboardResponse([scoreboardGame({ game_id: '21826166', lifecycle: 'scheduled' })]))[0]!;
     const html = renderToStaticMarkup(
       createElement(GameCard, { game: slate, presentation: 'scoreboard', researchDate: '2026-10-11' })
     );
     expect(html).toContain('href="/scoreboard/games/21826166?date=2026-10-11"');
     expect(html).toContain('data-scoreboard-matchup');
-    expect(html.match(/aria-disabled="true"/g)).toHaveLength(1);
+    expect(html).not.toContain('aria-disabled');
+    expect(html).toContain('data-view-props');
+    expect(html).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=21826166"');
     expect(html).toContain('>View props</span>');
-    expect(html).not.toContain('props-explorer');
     expect(html).not.toContain('/betting/games/');
   });
 
@@ -472,9 +473,11 @@ describe('pregame navigation', () => {
       scoreboardResponse([scoreboardGame({ game_id: '9001', lifecycle: 'live', period: 1, clock: '4:00', home: { score: 10 }, visitor: { score: 8 } })])
     )[0]!;
     const liveHtml = renderToStaticMarkup(createElement(GameCard, { game: live, presentation: 'scoreboard' }));
-    expect(liveHtml.match(/aria-disabled="true"/g)).toHaveLength(2);
+    expect(liveHtml.match(/aria-disabled="true"/g)).toHaveLength(1);
     expect(liveHtml).toContain('>Follow live</span>');
+    expect(liveHtml).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=9001"');
     expect(liveHtml).not.toContain('/scoreboard/games/');
+    expect(liveHtml).not.toContain('/betting/games/');
 
     const finalGame = mergeTodaysGames(
       scoreboardResponse([
@@ -488,9 +491,11 @@ describe('pregame navigation', () => {
       ])
     )[0]!;
     const finalHtml = renderToStaticMarkup(createElement(GameCard, { game: finalGame, presentation: 'scoreboard' }));
-    expect(finalHtml.match(/aria-disabled="true"/g)).toHaveLength(2);
+    expect(finalHtml.match(/aria-disabled="true"/g)).toHaveLength(1);
     expect(finalHtml).toContain('>Game recap</span>');
+    expect(finalHtml).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=9002"');
     expect(finalHtml).not.toContain('/scoreboard/games/');
+    expect(finalHtml).not.toContain('/betting/games/');
 
     const researchHtml = renderToStaticMarkup(
       createElement(GameCard, {

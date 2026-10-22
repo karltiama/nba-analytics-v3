@@ -73,15 +73,18 @@ function expectInPlayShell(html: string) {
   expect(html).not.toContain('data-pregame-lines');
   expect(html).not.toContain('Pregame Lines');
   expect(html).not.toContain('/betting/games/');
-  expect(html).not.toContain('props-explorer');
+  expect(html).toContain('data-view-props');
+  expect(html).toContain('props-explorer');
 }
 
-/** Same footer row, but neither control links anywhere. */
-function expectUnavailableFooter(html: string, labels: [string, string]) {
-  expect(html.match(/aria-disabled="true"/g)).toHaveLength(2);
-  for (const label of labels) expect(html).toContain(`>${label}</span>`);
+/** Primary action stays disabled. View props opens the stored lines for this game. */
+function expectUnavailableFooter(html: string, primary: string) {
+  expect(html.match(/aria-disabled="true"/g)).toHaveLength(1);
+  expect(html).toContain(`>${primary}</span>`);
   expect(html).toContain('title="Not available for this game yet"');
-  expect(html).not.toMatch(/<a [^>]*href=/);
+  expect(html).toContain('data-view-props');
+  expect(html).toMatch(/href="\/betting\/props-explorer\?[^"]*game_id=/);
+  expect(html).not.toContain('/betting/games/');
 }
 
 /** Inner market grid, from its container to the end of the Market ML column. */
@@ -150,9 +153,10 @@ describe('Pre-game card keeps the original market layout', () => {
       expect(html).toContain(`href="/scoreboard/games/${game.id}?date=2026-10-09"`);
       expect(html).toContain('data-scoreboard-matchup');
       expect(html).toContain('>View matchup</span>');
-      expect(html.match(/aria-disabled="true"/g)).toHaveLength(1);
+      expect(html).not.toContain('aria-disabled');
+      expect(html).toContain('data-view-props');
+      expect(html).toContain(`href="/betting/props-explorer?date=2026-10-09&amp;game_id=${game.id}"`);
       expect(html).toContain('>View props</span>');
-      expect(html).not.toContain('props-explorer');
       expect(html).not.toContain('/betting/games/');
     }
     expect(cardHtml(merged[0]!, 'scoreboard')).toContain('>NBA · Preseason<');
@@ -161,6 +165,7 @@ describe('Pre-game card keeps the original market layout', () => {
       html
         .replace(/data-(game-id|season-type)="[^"]*"/g, '')
         .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
+        .replace(/href="\/betting\/props-explorer\?[^"]*"/g, 'href="/betting/props-explorer"')
         .replace(/NBA · (Preseason|Regular season)/, '');
     expect(strip(cardHtml(merged[0]!, 'scoreboard'))).toBe(strip(cardHtml(merged[1]!, 'scoreboard')));
   });
@@ -258,7 +263,8 @@ describe('Live card swaps market slots for live facts', () => {
     expect(html).not.toContain('LAC – TOR');
     expect(teamRow(html)).toContain('data-scoreline');
     expect(textOf(teamRow(html))).toMatch(/Clippers — 10 – 17 Raptors —/);
-    expectUnavailableFooter(html, ['Follow live', 'Box score']);
+    expectUnavailableFooter(html, 'Follow live');
+    expect(html).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=21717908"');
   });
 
   it('shows the box-score observation time when it is older than the score', () => {
@@ -397,7 +403,8 @@ describe('Final card', () => {
     expect(html).not.toContain('data-freshness');
     expect(html).not.toContain('animate-pulse');
     expect(html).not.toContain('LIVE');
-    expectUnavailableFooter(html, ['Game recap', 'Box score']);
+    expectUnavailableFooter(html, 'Game recap');
+    expect(html).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=final"');
   });
 
   it('shows a pending or verifying status instead of unverified leaders', () => {
@@ -475,6 +482,7 @@ describe('Lifecycle parity', () => {
         .replace(/data-game-id="[^"]*"/g, '')
         .replace(/data-season-type="[^"]*"/g, '')
         .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
+        .replace(/href="\/betting\/props-explorer\?[^"]*"/g, 'href="/betting/props-explorer"')
         .replace(/NBA · (Preseason|Regular season|Play-in|Playoffs)/g, '');
     const players = [
       line({ playerId: '1', teamId: '28', name: 'RJ Barrett', pts: 21, reb: 4, ast: 3 }),

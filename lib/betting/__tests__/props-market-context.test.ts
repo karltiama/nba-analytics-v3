@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   etCalendarDateFromInstant,
+  gameHasStarted,
+  PREGAME_LINE_LABEL,
   propsLineLabel,
   propsServingSource,
   resolvePropsMarketContext,
@@ -51,6 +53,20 @@ describe('shouldBlockActivePaperBet', () => {
         todayEt: '2026-09-06',
       })
     ).toBe(false);
+  });
+});
+
+describe('gameHasStarted', () => {
+  const now = new Date('2026-10-21T23:00:00.000Z');
+
+  it('treats a tip at or before now as started and leaves a future tip unstarted', () => {
+    expect(PREGAME_LINE_LABEL).toBe('Pregame line');
+    expect(gameHasStarted('2026-10-21T23:00:00.000Z', now)).toBe(true);
+    expect(gameHasStarted('2026-10-21T22:59:00.000Z', now)).toBe(true);
+    expect(gameHasStarted(now, now)).toBe(true);
+    expect(gameHasStarted('2026-10-21T23:00:01.000Z', now)).toBe(false);
+    expect(gameHasStarted(null, now)).toBe(false);
+    expect(gameHasStarted('not-a-date', now)).toBe(false);
   });
 });
 

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Dialog } from 'radix-ui';
 import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { addDaysET, getTodayET } from '@/components/betting/DateNav';
+import { PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
 import {
   EXPLORER_BOOKS,
@@ -143,7 +144,11 @@ export function PropsExplorerMobileControls({
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {option.value === 'snapshot_at' && historical ? 'Closing time' : option.label}
+                  {option.value === 'snapshot_at' && historical
+                    ? lineLabel === PREGAME_LINE_LABEL
+                      ? 'Observed'
+                      : 'Closing time'
+                    : option.label}
                 </option>
               ))}
             </select>
@@ -363,7 +368,13 @@ export function PropsExplorerMobileControls({
                 onChange={(event) => onUpdate({ min_ev: event.target.value || null, offset: '0' })}
                 aria-label="Minimum EV"
                 disabled={historical}
-                title={historical ? 'EV filters do not apply to historical closing lines' : undefined}
+                title={
+                  lineLabel === PREGAME_LINE_LABEL
+                    ? 'EV is not computed for stored pregame lines'
+                    : historical
+                      ? 'EV filters do not apply to historical closing lines'
+                      : undefined
+                }
               />
             </label>
 

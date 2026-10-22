@@ -2,7 +2,17 @@ export function propsExplorerEmptyCopy(input: {
   frozen: boolean;
   dateLabel: string;
   marketContext?: 'live' | 'historical';
+  gameSelected?: boolean;
 }): { title: string; detail: string } {
+  if (input.gameSelected) {
+    return {
+      title: 'No stored prop observations for this game.',
+      detail:
+        input.marketContext === 'historical'
+          ? 'No archived closing lines were materialized for this game. This is not a live sportsbook board.'
+          : 'Props Explorer only shows lines already collected for this game. It does not request a new price.',
+    };
+  }
   const title = `No prop data is available for ${input.dateLabel}.`;
   if (input.marketContext === 'historical') {
     return {

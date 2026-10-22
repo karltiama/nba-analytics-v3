@@ -43,6 +43,19 @@ export function propsLineLabel(context: PropsMarketContext): string {
   return context === 'historical' ? 'Historical closing line' : 'Current market';
 }
 
+/** Stored pre-tip price. Not a live betting offer. */
+export const PREGAME_LINE_LABEL = 'Pregame line';
+
+export function gameHasStarted(
+  gameStartTime: string | Date | null | undefined,
+  now: Date
+): boolean {
+  if (gameStartTime == null) return false;
+  const start = gameStartTime instanceof Date ? gameStartTime : new Date(gameStartTime);
+  if (Number.isNaN(start.getTime())) return false;
+  return start.getTime() <= now.getTime();
+}
+
 export function historicalPaperBetAllowed(): false {
   return false;
 }

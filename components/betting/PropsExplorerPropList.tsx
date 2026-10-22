@@ -18,8 +18,21 @@ export type PropsExplorerScanRow = {
   lineValue: number | null;
   oddsAmerican: number | null;
   ev: number | null;
+  snapshotAt?: string | null;
   marketContext?: 'live' | 'historical';
 };
+
+function formatObserved(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
 
 export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
   rows,
@@ -42,6 +55,7 @@ export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
         const odds = formatExplorerOdds(row.oddsAmerican);
         const onSlip = isOnParlay(row);
         const historical = row.marketContext === 'historical';
+        const observed = formatObserved(row.snapshotAt);
         return (
           <div
             key={getRowKey(row, index)}
@@ -58,7 +72,10 @@ export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
                 <span className="type-table-data block truncate text-[#063f46]">{playerName}</span>
                 <span className="type-secondary mt-0.5 block truncate capitalize">{propLabel}</span>
               </span>
-              <span className="type-metadata max-w-[8rem] truncate text-right">{explorerBookDisplayName(row.sportsbook)}</span>
+              <span className="max-w-[8rem] text-right">
+                <span className="type-metadata block truncate">{explorerBookDisplayName(row.sportsbook)}</span>
+                {observed ? <span className="type-metadata block truncate">{observed}</span> : null}
+              </span>
               <span
                 className={`type-badge inline-flex w-fit items-center whitespace-nowrap rounded-full border px-1.5 py-px ${explorerValueToneClass(historical ? null : row.ev)}`}
               >

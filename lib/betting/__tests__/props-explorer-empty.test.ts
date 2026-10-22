@@ -28,4 +28,27 @@ describe('propsExplorerEmptyCopy', () => {
     expect(copy.detail).toMatch(/do not pull lines from another date/i);
     expect(copy.detail).not.toMatch(/currently being refreshed/i);
   });
+
+  it('explains a selected game with no stored observations without implying a load failure', () => {
+    const live = propsExplorerEmptyCopy({
+      frozen: false,
+      dateLabel: 'Oct 21',
+      marketContext: 'live',
+      gameSelected: true,
+    });
+    expect(live.title).toBe('No stored prop observations for this game.');
+    expect(live.detail).toMatch(/already collected/i);
+    expect(live.detail).toMatch(/does not request a new price/i);
+    expect(live.detail).not.toMatch(/failed to load/i);
+
+    const past = propsExplorerEmptyCopy({
+      frozen: false,
+      dateLabel: 'Oct 20',
+      marketContext: 'historical',
+      gameSelected: true,
+    });
+    expect(past.title).toBe('No stored prop observations for this game.');
+    expect(past.detail).toMatch(/archived closing lines/i);
+    expect(past.detail).toMatch(/not a live sportsbook board/i);
+  });
 });

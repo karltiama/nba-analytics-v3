@@ -11,7 +11,9 @@ import { computePropEvFields, type PropEvFields } from '@/lib/betting/player-pro
 import {
   etCalendarDate,
   etCalendarDateFromInstant,
+  gameHasStarted,
   isActivePaperBetAllowed,
+  PREGAME_LINE_LABEL,
   propsLineLabel,
   propsServingSource,
   resolvePropsMarketContext,
@@ -254,22 +256,42 @@ export async function getPlayerPropsForExplorer(
   evFetchCap: number | null;
   sort: string;
 }> {
-  const todayEt = input.todayEt ?? etCalendarDate(input.now);
+  const now = input.now ?? new Date();
+  const todayEt = input.todayEt ?? etCalendarDate(now);
   let dateEt = input.dateEt;
   const gameId = (input.gameId ?? '').trim();
+  let gameStart: string | Date | null = null;
 
   if (gameId) {
     const game = await queryOne<{ start_time: string | Date }>(
       `SELECT start_time FROM analytics.games WHERE game_id = $1`,
       [gameId]
     );
-    const fromGame = etCalendarDateFromInstant(game?.start_time ?? null);
+    gameStart = game?.start_time ?? null;
+    const fromGame = etCalendarDateFromInstant(gameStart);
     if (fromGame) dateEt = fromGame;
   }
 
   const marketContext = resolvePropsMarketContext({ dateEt, todayEt });
-  const sourceTable = propsServingSource(marketContext);
-  const lineLabel = propsLineLabel(marketContext);
+  let readCurrent = marketContext === 'live';
+  let lineLabel = propsLineLabel(marketContext);
+  if (marketContext === 'historical' && gameId) {
+    const counts = await queryOne<{ decision_n: string; current_n: string }>(
+      `SELECT
+         (SELECT count(*)::text FROM research.prop_decision_lines WHERE game_id = $1) AS decision_n,
+         (SELECT count(*)::text FROM analytics.player_props_current WHERE game_id::text = $1) AS current_n`,
+      [gameId]
+    );
+    if (Number(counts?.decision_n ?? 0) === 0 && Number(counts?.current_n ?? 0) > 0) {
+      readCurrent = true;
+      lineLabel = PREGAME_LINE_LABEL;
+    }
+  }
+  if (readCurrent && marketContext === 'live' && gameHasStarted(gameStart, now)) {
+    lineLabel = PREGAME_LINE_LABEL;
+  }
+  const sqlContext: PropsMarketContext = readCurrent ? 'live' : 'historical';
+  const sourceTable = propsServingSource(sqlContext);
   const selectedTrack = resolveEvTrack();
 
   const { sql: whereSql, params: whereParams } = buildPropsExplorerWhere({
@@ -282,7 +304,7 @@ export async function getPlayerPropsForExplorer(
     marketType: (input.marketType || 'over_under').trim().toLowerCase(),
   });
 
-  const join = fromJoin(marketContext, whereSql);
+  const join = fromJoin(sqlContext, whereSql);
   const countResult = await query<{ count: string }>(
     `SELECT count(*)::text AS count ${join}`,
     whereParams
@@ -292,7 +314,7 @@ export async function getPlayerPropsForExplorer(
   const sortRaw = (input.sort || 'snapshot_at').toLowerCase();
   const sort = sortRaw === 'edge' ? 'snapshot_at' : sortRaw;
   const dirAsc = Boolean(input.dirAsc);
-  const observedCol = marketContext === 'historical' ? 'p.decision_at' : 'p.snapshot_at';
+  const observedCol = sqlContext === 'historical' ? 'p.decision_at' : 'p.snapshot_at';
   const useComputedSort = marketContext === 'live' && COMPUTED_SORTS.has(sort);
   const orderSqlCol =
     sort === 'odds_american'
@@ -309,7 +331,7 @@ export async function getPlayerPropsForExplorer(
     const fetchParams = [...whereParams, PROPS_EXPLORER_EV_FETCH_CAP];
     const limIdx = whereParams.length + 1;
     dbRows = await query<PropsExplorerDbRow>(
-      `${selectList(marketContext)} ${join}
+      `${selectList(sqlContext)} ${join}
        ORDER BY ${observedCol} DESC NULLS LAST
        LIMIT $${limIdx}`,
       fetchParams
@@ -319,7 +341,7 @@ export async function getPlayerPropsForExplorer(
     const limIdx = whereParams.length + 1;
     const offIdx = whereParams.length + 2;
     dbRows = await query<PropsExplorerDbRow>(
-      `${selectList(marketContext)} ${join}
+      `${selectList(sqlContext)} ${join}
        ORDER BY ${orderSqlCol} ${orderDir} NULLS LAST
        LIMIT $${limIdx} OFFSET $${offIdx}`,
       fetchParams
@@ -335,7 +357,6 @@ export async function getPlayerPropsForExplorer(
   }
 
   const cal = marketContext === 'live' ? getCalibrationVersion() : null;
-  const now = input.now ?? new Date();
 
   const rows: PropsExplorerRow[] = dbRows.map((r) => {
     const offerP =
@@ -376,7 +397,10 @@ export async function getPlayerPropsForExplorer(
       impliedProbability: offerP != null && Number.isFinite(offerP) ? offerP : null,
       snapshotAt,
       marketContext,
-      lineLabel,
+      lineLabel:
+        marketContext === 'live' && gameHasStarted(r.game_start_time, now)
+          ? PREGAME_LINE_LABEL
+          : lineLabel,
       paperBetAllowed:
         marketContext === 'live' &&
         isActivePaperBetAllowed({ gameStartTime: r.game_start_time, now }),

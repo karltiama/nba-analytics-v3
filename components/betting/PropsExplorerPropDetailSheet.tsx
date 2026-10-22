@@ -11,6 +11,7 @@ import {
   explorerValueToneClass,
   formatExplorerOdds,
 } from '@/lib/betting/props-explorer-row-display';
+import { PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
 
 export type PropsExplorerDetailRow = {
   gameId: number;
@@ -28,6 +29,7 @@ export type PropsExplorerDetailRow = {
   projection: number | null;
   confidenceTier?: 'high' | 'medium' | 'low' | null;
   marketContext?: 'live' | 'historical';
+  lineLabel?: string;
   paperBetAllowed?: boolean;
 };
 
@@ -148,7 +150,13 @@ export function PropsExplorerPropDetailSheet({
               <dl className="mt-1 divide-y divide-[#DCE9EA] border-b border-[#DCE9EA]">
                 <Fact label="Confidence" value={formatConfidence(row.confidenceTier)} />
                 <Fact
-                  label={historical ? 'Closing Time' : 'Updated'}
+                  label={
+                    row.lineLabel === PREGAME_LINE_LABEL
+                      ? 'Observed'
+                      : historical
+                        ? 'Closing Time'
+                        : 'Updated'
+                  }
                   value={formatClosingTime(row.snapshotAt)}
                 />
               </dl>
