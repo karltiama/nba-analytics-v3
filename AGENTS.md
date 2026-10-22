@@ -13,15 +13,13 @@ Always-on rules only. Open the one doc the task needs. Do not paste runbooks int
 
 ## Dev server
 
-Before `npm run dev`, `next dev`, `next start`, or any other local web server, inspect listeners and reuse the server that belongs to this worktree. Commands and the port check: [docs/dev-server.md](docs/dev-server.md).
+Before `npm run dev`, `next dev`, `next start`, or any other local web server, identify the port 3000 listener and its parent chain. Procedure: [docs/dev-server.md](docs/dev-server.md).
 
-- The main Court Context server is `http://localhost:3000`, started with `npm run dev -- --port 3000`. Bare `npm run dev` is the Next.js 16 path that walks to 3001–3010. Pass `--port 3000`. When 3000 is busy, identify the process and report it.
-- A listener on port 3000 is this worktree only when its command line matches `git rev-parse --show-toplevel`. Leave other worktrees alone.
-- An unavailable port is a stop. Do not switch ports, do not launch a series of servers, and do not kill a process to free 3000.
-- A temporary preview server is one explicit free port, recorded against this worktree, and stopped after the task. Confirm the port is released. Preserve a server that was already running. Never stop an unidentified process.
+- The main Court Context server is `http://localhost:3000`, started with `npm run dev -- --port 3000`. Bare `npm run dev` is the Next.js 16 path that walks to 3001–3010. Pass `--port 3000`.
+- Reuse port 3000 only when that chain positively matches this worktree after path normalization. The port number is not ownership. Leave another worktree's process running. Unknown ownership is reported; do not start a server and do not kill a process.
+- A temporary preview server is one explicit free port in a tracked session, and only when port 3000 is positively another worktree. Stop it through that session. Stop a surviving child only when its PID, creation time, and ancestry still match the tree you started. Otherwise report the remaining PID and do not claim the port was released.
 - Extra Next.js processes open more Supabase Postgres connections (`EMAXCONNSESSION`). Load tests against production Supabase need explicit authorization.
-- Inspect with PowerShell: `Get-NetTCPConnection -State Listen` and `Get-CimInstance Win32_Process`. Do not assume `lsof` or `kill`.
-- When the task ends, report the server reused or started, its port and worktree, and whether a temporary process was stopped.
+- When the task ends, report the server reused or started, its port, worktree, ownership, and whether temporary cleanup was confirmed.
 
 ## Do not treat these as settled
 

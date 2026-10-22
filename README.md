@@ -102,7 +102,7 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000).
 
-Agents reuse a server that already belongs to this worktree. Start with `npm run dev -- --port 3000` only after that check. Bare `npm run dev` lets Next.js move off 3000 when the port is taken. Procedure: [docs/dev-server.md](docs/dev-server.md).
+Agents reuse port 3000 only when [docs/dev-server.md](docs/dev-server.md) positively identifies the listener as this worktree. Start with `npm run dev -- --port 3000` only if that port is free. Bare `npm run dev` lets Next.js move off 3000 when the port is taken.
 
 ### Production Build Check
 
