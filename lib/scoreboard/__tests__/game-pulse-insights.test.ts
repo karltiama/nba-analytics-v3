@@ -6,6 +6,7 @@ import {
   PULSE_THRESHOLDS,
   gameContext,
   insightCandidates,
+  leadingPlayerInsight,
   selectInsight,
   teamTotals,
   type PulseInsight,
@@ -66,9 +67,9 @@ function game(
 
 const NAMES = { home: 'Boston', visitor: 'New York' };
 
-function totals(teamId: string, s: Partial<Shooting>): TeamTotals {
+function totals(teamId: string, s: Partial<Shooting> & { reb?: number }): TeamTotals {
   const v = { ...ZERO, ...s };
-  return { teamId, pts: points(v), ...v };
+  return { teamId, pts: points(v), ...v, reb: s.reb ?? v.oreb };
 }
 
 function candidates(home: Partial<Shooting>, visitor: Partial<Shooting>, final = false) {
@@ -83,14 +84,14 @@ const EVEN: Shooting = { fgm: 16, fga: 36, fg3m: 5, fg3a: 14, ftm: 8, fta: 10, o
 describe('teamTotals', () => {
   it('sums each team by provider team id and maps home and visitor correctly', () => {
     const t = teamTotals(game({ fgm: 20, fga: 40, fg3m: 7, fg3a: 15, ftm: 10, fta: 18, oreb: 9 }, EVEN));
-    expect(t?.home).toEqual({ teamId: HOME, pts: 57, fgm: 20, fga: 40, fg3m: 7, fg3a: 15, ftm: 10, fta: 18, oreb: 9 });
+    expect(t?.home).toEqual({ teamId: HOME, pts: 57, fgm: 20, fga: 40, fg3m: 7, fg3a: 15, ftm: 10, fta: 18, oreb: 9, reb: 9 });
     expect(t?.visitor).toMatchObject({ teamId: VISITOR, pts: points(EVEN), fga: 36 });
   });
 
   it('keeps zero-minute lines that carry real attempts', () => {
     const t = teamTotals(capturedWasDet());
-    expect(t?.visitor).toEqual({ teamId: '9', pts: 40, fgm: 16, fga: 40, fg3m: 4, fg3a: 19, ftm: 4, fta: 6, oreb: 6 });
-    expect(t?.home).toEqual({ teamId: '30', pts: 52, fgm: 17, fga: 31, fg3m: 5, fg3a: 11, ftm: 13, fta: 18, oreb: 4 });
+    expect(t?.visitor).toEqual({ teamId: '9', pts: 40, fgm: 16, fga: 40, fg3m: 4, fg3a: 19, ftm: 4, fta: 6, oreb: 6, reb: 15 });
+    expect(t?.home).toEqual({ teamId: '30', pts: 52, fgm: 17, fga: 31, fg3m: 5, fg3a: 11, ftm: 13, fta: 18, oreb: 4, reb: 21 });
   });
 
   it('rejects missing, negative, non-integer, and impossible shooting values instead of zero-filling', () => {
@@ -191,6 +192,22 @@ describe('offensive rebound and free-throw attempt candidates', () => {
     );
     expect(ids(candidates({ ...EVEN, oreb: 10 }, { ...EVEN, oreb: 6 }))).not.toContain('offensive_rebounds');
     expect(ids(candidates({ ...EVEN, oreb: 6 }, { ...EVEN, oreb: 6 }))).not.toContain('offensive_rebounds');
+  });
+
+  it('qualifies total rebounds at exactly the gap threshold and does not treat a missing rebound as zero', () => {
+    expect(candidates({ ...EVEN, reb: 28 }, { ...EVEN, reb: 20 }).find((c) => c.id === 'rebounds')?.text).toBe(
+      'Boston has 28 rebounds, compared with 20 for New York.'
+    );
+    expect(ids(candidates({ ...EVEN, reb: 27 }, { ...EVEN, reb: 20 }))).not.toContain('rebounds');
+    const base = game({ ...EVEN, reb: 28 }, { ...EVEN, reb: 20 });
+    const players = base.box_score.players.map((line, i) => (i === 0 ? { ...line, reb: null } : line));
+    expect(teamTotals({ ...base, box_score: { ...base.box_score, players } })?.home.reb).toBeNull();
+    expect(insightCandidates(
+      { home: { ...totals(HOME, EVEN), reb: null }, visitor: totals(VISITOR, { ...EVEN, reb: 20 }) },
+      NAMES,
+      false,
+      null
+    ).map((c) => c.id)).not.toContain('rebounds');
   });
 
   it('qualifies free-throw attempts at exactly the gap threshold', () => {
@@ -313,11 +330,31 @@ describe('captured provider snapshots (2026-10-10)', () => {
     });
   });
 
-  it('Indiana vs Atlanta: totals reconcile but no gap qualifies, so nothing is forced', () => {
+  it('Indiana vs Atlanta: no team gap qualifies, so the pulse is the observed scoring line', () => {
     const t = teamTotals(capturedIndAtl())!;
     expect(t.visitor).toMatchObject({ fgm: 17, fga: 37, fg3m: 6, fg3a: 18, fta: 13, oreb: 3 });
     expect(t.home).toMatchObject({ fgm: 14, fga: 28, fg3m: 4, fg3a: 12, fta: 18, oreb: 0 });
-    expect(gameContext(capturedIndAtl())?.kind).toBe('developing');
+    expect(gameContext(capturedIndAtl())).toMatchObject({
+      kind: 'insight',
+      text: 'Aaron Wiggins has 13 points and 1 rebound.',
+      insight: { id: 'leading_player', teamId: '1', values: { leader: 13, trailer: 10, gap: 3 } },
+      support: null,
+    });
+  });
+
+  it('uses a team gap as the primary line and the scoring line as support', () => {
+    const snap = game({ ...EVEN, fg3m: 12, fg3a: 25 }, { ...EVEN, fg3m: 6, fg3a: 25 });
+    snap.box_score.players[0].name = 'Jayson Tatum';
+    const context = gameContext(snap);
+    expect(context).toMatchObject({
+      kind: 'insight',
+      insight: { id: 'three_point_pct' },
+      support: { id: 'leading_player' },
+    });
+    if (context?.kind !== 'insight') return;
+    expect(context.support?.text).toMatch(/^Jayson Tatum has /);
+    expect(context.text).not.toMatch(/\bPTS\b/);
+    expect(leadingPlayerInsight(game(EVEN, EVEN), true, false, null)).toBeNull();
   });
 
   it('Toronto vs LA: the box trails the score by one basket, so no team-stat claim is made', () => {

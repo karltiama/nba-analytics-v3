@@ -1,6 +1,6 @@
 /**
  * The same pregame quote the GameCard shows. selectMarket is the only selector.
- * A missing, stale, withdrawn, disabled, or post-tip quote becomes a sentence, never a price.
+ * A missing, stale, withdrawn, disabled, or started-game quote becomes a sentence, never a price.
  */
 
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
@@ -41,7 +41,7 @@ function american(value: number | null): string {
 
 function noteFor(selection: MarketSelection, enabled: boolean): string {
   if (!enabled) return 'Sportsbook markets are not being shown.';
-  if (selection.status === 'not_pregame') return 'Pregame prices stay off once the game has tipped or is no longer scheduled.';
+  if (selection.status === 'not_pregame') return 'Pregame prices stay off once the provider has started the game or it is no longer scheduled.';
   if (selection.status === 'stale') return 'The stored pregame quote is too old to show.';
   return 'No verified pregame price is available.';
 }

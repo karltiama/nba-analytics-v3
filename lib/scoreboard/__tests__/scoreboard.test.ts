@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { runScoreboardCycle, scoreboardGamesUrl, scoreboardLiveBoxUrl } from '@/lib/scoreboard/collector';
-import { isScoreboardServingEnabled, resolveScoreboardCollection } from '@/lib/scoreboard/flags';
+import { isScoreboardServingEnabled, resolveScoreboardCollection, SCOREBOARD_AUTHORIZE_REGULAR_ENV } from '@/lib/scoreboard/flags';
 import {
   boxScoreCompleteness,
   carriedBoxCompleteness,
@@ -161,17 +161,25 @@ describe('scoreboard gates fail closed', () => {
     }
   });
 
-  it('regular season, play-in and playoffs cannot be enabled by flag', () => {
-    const d = resolveScoreboardCollection({
+  it('regular season needs a second approval flag; play-in and playoffs stay refused', () => {
+    const refused = resolveScoreboardCollection({
       ...LIVE_ENV,
       SCOREBOARD_COLLECT_PRESEASON: undefined,
       SCOREBOARD_COLLECT_REGULAR: '1',
       SCOREBOARD_COLLECT_PLAYIN: '1',
       SCOREBOARD_COLLECT_PLAYOFFS: '1',
     });
-    expect(d.seasonTypes).toEqual([]);
-    expect(d.refused.map((r) => r.seasonType)).toEqual(['regular', 'playin', 'playoffs']);
-    expect(d.refused.every((r) => /separate approval/.test(r.reason))).toBe(true);
+    expect(refused.seasonTypes).toEqual([]);
+    expect(refused.refused.map((r) => r.seasonType)).toEqual(['regular', 'playin', 'playoffs']);
+    expect(refused.refused.every((r) => /separate approval/.test(r.reason))).toBe(true);
+    const authorized = resolveScoreboardCollection({
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      [SCOREBOARD_AUTHORIZE_REGULAR_ENV]: '1',
+    });
+    expect(authorized.seasonTypes).toEqual(['regular']);
+    expect(authorized.refused).toEqual([]);
   });
 
   it('serving: only "1" serves, independent of collection', () => {
@@ -433,6 +441,62 @@ describe('collector cycle (fake fetch, memory store)', () => {
       expect(store.games.size).toBe(0);
       expect(store.gamesRequests.size).toBe(0);
     }
+  });
+
+  it('an authorized regular-season live game requests one live box score and no odds', async () => {
+    const store = createMemoryScoreboardStore();
+    const f = fakeFetchers({
+      games: () => [bdlGame({ status_state: 'in_progress', status: '1st Qtr', period: 1, time: '6:00', home_team_score: 12, visitor_team_score: 10 })],
+      box: () => [liveBox([7, 5], [6, 4])],
+    });
+    const env = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      [SCOREBOARD_AUTHORIZE_REGULAR_ENV]: '1',
+      SCOREBOARD_COLLECT_ODDS: '1',
+    };
+    const r = await runScoreboardCycle({ env, store, fetch: f.fetch, now: at(6 * MIN), clock: () => at(6 * MIN) });
+    expect(r.status).toBe('success');
+    expect(r.odds).toBeUndefined();
+    expect(f.calls).toEqual([
+      scoreboardGamesUrl({ season: 2026, seasonType: 'regular', startDate: '2026-10-09', endDate: '2026-10-10' }),
+      scoreboardLiveBoxUrl('regular'),
+    ]);
+    expect(store.games.get('5001')).toMatchObject({ seasonType: 'regular', lifecycle: 'live', boxCompleteness: 'live_partial' });
+    expect(store.lines.get('5001')?.map((line) => line.pts)).toEqual([7, 5, 6, 4]);
+    expect(f.calls.some((url) => url.includes('/v2/odds'))).toBe(false);
+  });
+
+  it('a failed live box keeps the previous player lines and box timestamp', async () => {
+    const store = createMemoryScoreboardStore();
+    let boxOk = true;
+    const f = fakeFetchers({
+      games: () => [bdlGame({ status_state: 'in_progress', status: '1st Qtr', period: 1, time: '6:00', home_team_score: 12, visitor_team_score: 10 })],
+      box: () => (boxOk ? [liveBox([7, 5], [6, 4])] : { status: 500 }),
+    });
+    const env = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      [SCOREBOARD_AUTHORIZE_REGULAR_ENV]: '1',
+      SCOREBOARD_COLLECT_ODDS: '1',
+    };
+    const firstNow = at(6 * MIN);
+    const first = await runScoreboardCycle({ env, store, fetch: f.fetch, now: firstNow, clock: () => firstNow });
+    expect(first.status).toBe('success');
+    const observedAt = store.games.get('5001')?.boxObservedAt;
+    expect(store.lines.get('5001')).toHaveLength(4);
+
+    boxOk = false;
+    const secondNow = at(7 * MIN);
+    const second = await runScoreboardCycle({ env, store, fetch: f.fetch, now: secondNow, clock: () => secondNow });
+    expect(second.status).toBe('failed');
+    expect(second.reason).toMatch(/live box request failed: HTTP 500/);
+    expect(store.lines.get('5001')?.map((line) => line.pts)).toEqual([7, 5, 6, 4]);
+    expect(store.games.get('5001')).toMatchObject({ boxCompleteness: 'live_partial', boxObservedAt: observedAt, homeScore: 12 });
+    expect(f.calls.filter((url) => url.includes('/v2/odds'))).toEqual([]);
+    expect(f.calls.filter((url) => url.includes('/v1/box_scores/live'))).toHaveLength(2);
   });
 
   it('rows contradicting the preseason request are rejected and never stored', async () => {

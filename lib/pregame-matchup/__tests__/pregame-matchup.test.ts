@@ -247,7 +247,7 @@ describe('pregame context signals', () => {
 describe('pregame quote matches GameCard selection', () => {
   const env = { SCOREBOARD_MARKETS_SERVING_ENABLED: '1' };
 
-  it('shows the single current book and hides a stale, withdrawn, or post-tip price', () => {
+  it('shows the single current book, keeps it while a scheduled game waits past tip, and hides a stale, withdrawn, or started game', () => {
     const fresh = resolveMatchupQuote({
       game: game(),
       quotes: [quote(), quote({ vendor: 'fanduel', spreadHome: -4 })],
@@ -278,16 +278,38 @@ describe('pregame quote matches GameCard selection', () => {
     expect(stale.quote).toBeNull();
     expect(stale.note).toMatch(/too old/);
 
-    const tipped = resolveMatchupQuote({
-      game: game({ scheduledTip: '2026-10-11T17:00:00.000Z' }),
-      quotes: [quote()],
+    const savedBeforeTip = '2026-10-11T17:40:00.000Z';
+    const waiting = resolveMatchupQuote({
+      game: game({ scheduledTip: '2026-10-11T17:50:00.000Z' }),
+      quotes: [quote({
+        observedAt: savedBeforeTip,
+        providerUpdatedAt: savedBeforeTip,
+        vendorSyncedAt: savedBeforeTip,
+        firstObservedAt: savedBeforeTip,
+      })],
       now: NOW,
       env,
       awayAbbr: 'ORL',
       homeAbbr: 'CLE',
     });
-    expect(tipped.quote).toBeNull();
-    expect(tipped.note).toMatch(/tipped/);
+    expect(waiting.quote?.spreadHome).toContain('CLE -5.5');
+    expect(waiting.note).toBeNull();
+
+    const started = resolveMatchupQuote({
+      game: game({ lifecycle: 'live', pollingState: 'active', scheduledTip: '2026-10-11T17:50:00.000Z' }),
+      quotes: [quote({
+        observedAt: savedBeforeTip,
+        providerUpdatedAt: savedBeforeTip,
+        vendorSyncedAt: savedBeforeTip,
+        firstObservedAt: savedBeforeTip,
+      })],
+      now: NOW,
+      env,
+      awayAbbr: 'ORL',
+      homeAbbr: 'CLE',
+    });
+    expect(started.quote).toBeNull();
+    expect(started.note).toMatch(/started/);
 
     const finalGame = resolveMatchupQuote({
       game: game({ lifecycle: 'final', pollingState: 'complete' }),

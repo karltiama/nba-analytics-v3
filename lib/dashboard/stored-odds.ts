@@ -45,7 +45,15 @@ FROM analytics.game_odds_current c
 JOIN analytics.games g ON g.game_id::text = c.game_id::text
 WHERE lower(c.vendor) = 'draftkings'
   AND c.game_id::text = ANY($1::text[])
-  AND g.start_time > $2::timestamptz
+  AND (
+    g.start_time > $2::timestamptz
+    OR EXISTS (
+      SELECT 1
+      FROM display.scoreboard_games s
+      WHERE s.game_id = g.game_id::text
+        AND s.lifecycle = 'scheduled'
+    )
+  )
 `;
 
 export type StoredOddsSourceRow = {
@@ -202,7 +210,7 @@ function clockStatus(storedMs: number | null, snapshotMs: number | null, nowMs: 
   return age <= STORED_ODDS_FRESH_MS ? 'fresh' : 'stale';
 }
 
-/** A pregame card may receive a stored quote. Live, final, and tipped preview cards may not. */
+/** A pregame card may receive a stored quote, including one still scheduled after its listed tip. Live, final, and tipped preview cards may not. */
 export function acceptsStoredOdds(game: Pick<Game, 'schedulePreview' | 'scoreboard'>): boolean {
   if (game.schedulePreview?.tipPassed) return false;
   const phase = game.scoreboard?.phase;

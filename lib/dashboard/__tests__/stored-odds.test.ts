@@ -78,6 +78,8 @@ describe('stored DraftKings dashboard odds', () => {
     expect(STORED_ODDS_SQL).not.toContain('provider_updated_at');
     expect(STORED_ODDS_SQL).toContain("lower(c.vendor) = 'draftkings'");
     expect(STORED_ODDS_SQL).toMatch(/start_time > \$2/);
+    expect(STORED_ODDS_SQL).toContain('display.scoreboard_games');
+    expect(STORED_ODDS_SQL).toContain("s.lifecycle = 'scheduled'");
     expect(STORED_ODDS_SQL).not.toMatch(/\b(insert|update|delete)\b/i);
     expect(STORED_ODDS_CACHE_CONTROL).toBe('no-store');
   });

@@ -396,11 +396,19 @@ describe('selectMarket: one vendor, freshness, identity', () => {
     expect(selectMarket({ game, now: NOW, quotes: [lagging] }).status).toBe('unavailable');
   });
 
-  it('only scheduled games before tip whose status is current get a market', () => {
+  it('only a current scheduled game gets a market, including one still waiting after the listed tip', () => {
     for (const lifecycle of ['live', 'halftime', 'overtime', 'final', 'postponed', 'canceled', 'unknown'] as const) {
       expect(selectMarket({ game: { ...game, lifecycle }, now: NOW, quotes: [quote()] }).status, lifecycle).toBe('not_pregame');
     }
-    expect(selectMarket({ game, now: at(MIN), quotes: [quote()] }).status).toBe('not_pregame');
+    const justBeforeTip = new Date(Date.parse(TIP) - MIN).toISOString();
+    const waiting = selectMarket({
+      game,
+      now: at(MIN),
+      quotes: [quote({ observedAt: justBeforeTip, firstObservedAt: justBeforeTip, providerUpdatedAt: justBeforeTip })],
+    });
+    expect(waiting.status).toBe('fresh');
+    expect(waiting.market?.vendor).toBe('draftkings');
+    expect(selectMarket({ game, now: at(MIN), quotes: [quote()] }).status).toBe('stale');
     expect(selectMarket({ game, now: NOW, quotes: [quote()], gameStale: true }).status).toBe('not_pregame');
   });
 
@@ -421,6 +429,7 @@ describe('odds gates and cadence', () => {
       { ...ODDS_ENV, DATA_MODE: undefined },
       { ...ODDS_ENV, SCOREBOARD_COLLECT_PRESEASON: '0' },
       { ...ODDS_ENV, SCOREBOARD_COLLECT_PRESEASON: '0', SCOREBOARD_COLLECT_REGULAR: '1' },
+      { ...ODDS_ENV, SCOREBOARD_COLLECT_PRESEASON: '0', SCOREBOARD_COLLECT_REGULAR: '1', SCOREBOARD_AUTHORIZE_REGULAR: '1' },
     ]) {
       expect(resolveScoreboardOddsCollection(env, resolveScoreboardCollection(env)).enabled).toBe(false);
     }

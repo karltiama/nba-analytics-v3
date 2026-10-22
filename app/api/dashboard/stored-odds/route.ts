@@ -8,7 +8,8 @@ export const dynamic = 'force-dynamic';
 const NO_STORE = { 'Cache-Control': STORED_ODDS_CACHE_CONTROL };
 
 /**
- * One Eastern date of stored DraftKings quotes for games that have not tipped.
+ * One Eastern date of stored DraftKings quotes for games that have not started.
+ * A listed tip that has passed still qualifies while the scoreboard says scheduled.
  * asOf is the time of this read. storedAt on each quote is the row's last write.
  * Same read contract as the opening-night preview: the dashboard page is session-gated,
  * and this current single-book quote is part of that Free dashboard, not line shopping.
@@ -19,14 +20,22 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'invalid_date' }, { status: 400, headers: NO_STORE });
   }
   try {
+    const asOf = new Date();
     const games = await query<{ game_id: string }>(
       `SELECT g.game_id::text AS game_id
        FROM analytics.games g
        WHERE (g.start_time AT TIME ZONE 'America/New_York')::date = $1::date
-         AND g.start_time > now()`,
-      [date]
+         AND (
+           g.start_time > $2::timestamptz
+           OR EXISTS (
+             SELECT 1
+             FROM display.scoreboard_games s
+             WHERE s.game_id = g.game_id::text
+               AND s.lifecycle = 'scheduled'
+           )
+         )`,
+      [date, asOf.toISOString()]
     );
-    const asOf = new Date();
     const collected = await loadStoredOdds(
       games.map((row) => row.game_id),
       asOf

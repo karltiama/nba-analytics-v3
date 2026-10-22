@@ -318,10 +318,15 @@ export function GameCard({
   const leaders = board?.leaders?.kind === 'leaders' ? board.leaders : null;
   const playerStatus = board?.leaders?.kind === 'status' ? board.leaders.text : null;
   const freshness = phase === 'live' && board && !board.stale ? (board.freshnessAge ?? board.freshnessLabel) : null;
+  const statsFreshness =
+    phase === 'live' && board && !board.stale && leaders && board.statsFreshnessAge && board.statsFreshnessAge !== board.freshnessAge
+      ? board.statsFreshnessAge.replace(/^Updated /, 'Player stats updated ')
+      : null;
   const showPreviewMarkets = Boolean(schedulePreview && !schedulePreview.tipPassed && hasOdds);
   const marketCaption = scoreboardPresentation && !inPlay && hasOdds ? (game.marketCaption ?? null) : null;
   const inPlayContext = scoreboardPresentation && inPlay ? board?.context ?? null : null;
   const contextText = !scoreboardPresentation || !inPlay ? game.matchupContext : inPlayContext?.kind === 'insight' ? inPlayContext.text : undefined;
+  const supportText = inPlayContext?.kind === 'insight' ? inPlayContext.support?.text ?? null : null;
   const contextFallback =
     scoreboardPresentation && inPlay
       ? (inPlayContext && inPlayContext.kind !== 'insight' ? inPlayContext.text : 'More game context will appear as stats develop.')
@@ -508,6 +513,12 @@ export function GameCard({
           <LeaderTile label="Assists" unit="AST" leader={leaders?.ast ?? null} teamAbbr={teamAbbr} last />
         </div>
       ) : (
+      <>
+      {scoreboardPresentation && hasOdds ? (
+        <p className="type-metadata mx-5 sm:mx-6 mb-2 text-center" data-pregame-lines>
+          Pregame Lines
+        </p>
+      ) : null}
       <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">
         <div className="px-2 py-3 text-center border-r border-[#DCE9EA]">
           <div className="type-secondary mb-1.5">Market spread</div>
@@ -541,6 +552,7 @@ export function GameCard({
           </div>
         </div>
       </div>
+      </>
       )}
 
       {schedulePreview || (!contextText && !scoreboardPresentation) ? null : (
@@ -568,6 +580,14 @@ export function GameCard({
               {contextFallback}
             </p>
           )}
+          {supportText ? (
+            <p
+              className="type-secondary mt-1 text-pretty text-[#063F46]"
+              data-pulse-support={inPlayContext?.kind === 'insight' ? inPlayContext.support?.id : undefined}
+            >
+              {supportText}
+            </p>
+          ) : null}
         </div>
       )}
 
@@ -607,6 +627,7 @@ export function GameCard({
           {playerStatus ? <span data-player-status>{playerStatus}</span> : null}
           {playerStatus && freshness ? ' · ' : null}
           {freshness ? <span data-freshness>{freshness}</span> : null}
+          {statsFreshness ? <span data-stats-freshness>{` · ${statsFreshness}`}</span> : null}
           {marketCaption ? (
             <span
               data-market-source

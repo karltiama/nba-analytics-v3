@@ -19,6 +19,8 @@ export const SCOREBOARD_COLLECT_ENV: Readonly<Record<ScoreboardSeasonType, strin
   playin: 'SCOREBOARD_COLLECT_PLAYIN',
   playoffs: 'SCOREBOARD_COLLECT_PLAYOFFS',
 };
+/** Second gate for regular season. SCOREBOARD_COLLECT_REGULAR=1 alone never collects. */
+export const SCOREBOARD_AUTHORIZE_REGULAR_ENV = 'SCOREBOARD_AUTHORIZE_REGULAR';
 export const SCOREBOARD_SERVING_ENV = 'SCOREBOARD_SERVING_ENABLED';
 export const SCOREBOARD_TARGET_SEASON_ENV = 'SCOREBOARD_TARGET_SEASON';
 
@@ -45,7 +47,12 @@ export function resolveScoreboardCollection(env: Env): ScoreboardCollectionDecis
       refused.push({ seasonType, reason: `invalid ${SCOREBOARD_COLLECT_ENV[seasonType]}` });
       continue;
     }
-    if (!ACTIVATABLE_SCOREBOARD_SEASON_TYPES.has(seasonType)) {
+    if (seasonType === 'regular') {
+      if ((env[SCOREBOARD_AUTHORIZE_REGULAR_ENV] ?? '').trim() !== '1') {
+        refused.push({ seasonType, reason: 'regular live acquisition requires separate approval' });
+        continue;
+      }
+    } else if (!ACTIVATABLE_SCOREBOARD_SEASON_TYPES.has(seasonType)) {
       refused.push({ seasonType, reason: `${seasonType} live acquisition requires separate approval` });
       continue;
     }
@@ -80,7 +87,13 @@ export function resolveScoreboardOddsCollection(
   if (collection.frozen || collection.seasonTypes.length === 0) {
     return { enabled: false, seasonTypes: [], reason: collection.reason ?? 'no season type enabled for collection' };
   }
-  return { enabled: true, seasonTypes: [...collection.seasonTypes], reason: null };
+  // Regular-season markets stay on the dedicated odds writer. This collector must not add /v2/odds
+  // calls when regular collection is on.
+  const seasonTypes = collection.seasonTypes.filter((seasonType) => seasonType !== 'regular');
+  if (seasonTypes.length === 0) {
+    return { enabled: false, seasonTypes: [], reason: 'scoreboard odds are not collected for regular season' };
+  }
+  return { enabled: true, seasonTypes, reason: null };
 }
 
 export const SCOREBOARD_MARKETS_SERVING_ENV = 'SCOREBOARD_MARKETS_SERVING_ENABLED';
