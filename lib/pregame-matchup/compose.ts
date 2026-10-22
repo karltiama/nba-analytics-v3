@@ -3,6 +3,7 @@ import { historicalContributors, regularSeasonSample } from './aggregate';
 import type { MatchupQuoteResult } from './quote';
 import { hiddenRosterForUnconfirmedTeam, type RosterPresentation } from './roster';
 import { selectMatchupInsights, type MatchupInsight } from './signals';
+import { propsExplorerHref } from '@/lib/betting/research-journey';
 import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
 
 export const POSSESSION_NOTE =
@@ -25,6 +26,7 @@ export type PregameMatchupModel = {
   statusLabel: string;
   updatedLabel: string;
   returnHref: string;
+  propsHref: string;
   history: { label: string; possessionNote: string; rows: ComparisonRow[] } | null;
   historyNote: string | null;
   insights: MatchupInsight[];
@@ -99,6 +101,10 @@ export function buildPregameMatchup(input: {
     statusLabel: input.statusLabel,
     updatedLabel: input.updatedLabel,
     returnHref: input.returnHref,
+    propsHref: propsExplorerHref({
+      gameId: input.gameId,
+      date: /[?&]date=(\d{4}-\d{2}-\d{2})/.exec(input.returnHref)?.[1] ?? null,
+    }),
     quote: input.quote.quote,
     quoteNote: input.quote.note,
     roster: input.identityConfirmed ? input.roster : hiddenRosterForUnconfirmedTeam(),

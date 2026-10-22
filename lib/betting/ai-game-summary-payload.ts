@@ -1,4 +1,5 @@
 import type { InjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
+import { injuryAbsenceCopy, type InjuryFeedAvailability } from '@/lib/injuries/freshness';
 
 type InjuryReportLine = { player: string; status: string; injury: string };
 
@@ -34,18 +35,19 @@ export type AiSummaryBulletsInput = {
   awayTeamStats: AiSummaryTeamStats;
   spreadMovement: AiSummarySpreadPoint[];
   injuries?: { home: InjuryReportLine[]; away: InjuryReportLine[] };
+  injuryFeed?: InjuryFeedAvailability;
 };
 
 /** 2–4 high-signal summary bullets from game details (same logic as matchup AI card). */
 export function getGameSummaryBulletsForAi(input: AiSummaryBulletsInput): string[] {
   const bullets: string[] = [];
-  const { matchupAnalysis, homeTeamStats, awayTeamStats, spreadMovement, injuries } = input;
+  const { matchupAnalysis, homeTeamStats, awayTeamStats, spreadMovement, injuries, injuryFeed } = input;
 
   if (matchupAnalysis?.pace_analysis) {
     const { projected_pace, pace_impact } = matchupAnalysis.pace_analysis;
     const impact = (pace_impact ?? '').trim();
     bullets.push(
-      `${impact ? impact.charAt(0).toUpperCase() + impact.slice(1) : 'Mixed'} pace (projected ${projected_pace?.toFixed(0) ?? '—'})`
+      `${impact ? impact.charAt(0).toUpperCase() + impact.slice(1) : 'Mixed'} research-season pace (${projected_pace?.toFixed(0) ?? '—'})`
     );
   } else if (homeTeamStats?.pace != null && awayTeamStats?.pace != null) {
     const avg = (homeTeamStats.pace + awayTeamStats.pace) / 2;
@@ -62,9 +64,9 @@ export function getGameSummaryBulletsForAi(input: AiSummaryBulletsInput): string
     const awayD = awayTeamStats.defensiveRating;
     const awayO = awayTeamStats.offensiveRating;
     const homeD = homeTeamStats.defensiveRating;
-    if (homeO > awayD && awayO <= homeD) bullets.push('Home offense vs Away defense: advantage Home');
-    else if (awayO > homeD && homeO <= awayD) bullets.push('Away offense vs Home defense: advantage Away');
-    else bullets.push('Offense vs defense: mixed');
+    if (homeO > awayD && awayO <= homeD) bullets.push('Research-season ratings: home offense against away defense');
+    else if (awayO > homeD && homeO <= awayD) bullets.push('Research-season ratings: away offense against home defense');
+    else bullets.push('Research-season offense and defense: mixed');
   }
 
   if (spreadMovement?.length >= 2) {
@@ -77,8 +79,10 @@ export function getGameSummaryBulletsForAi(input: AiSummaryBulletsInput): string
   }
 
   const totalInjuries = (injuries?.home?.length ?? 0) + (injuries?.away?.length ?? 0);
-  if (totalInjuries === 0) bullets.push('No major injuries reported');
-  else bullets.push(`Key injury context: ${totalInjuries} listed`);
+  if (totalInjuries > 0) bullets.push(`Key injury context: ${totalInjuries} listed`);
+  else if (injuryFeed === 'authoritative_empty') bullets.push(injuryAbsenceCopy(injuryFeed));
+  else if (injuryFeed === 'not_current') bullets.push(injuryAbsenceCopy(injuryFeed));
+  else if (injuryFeed == null) bullets.push('No major injuries reported');
 
   let out = bullets.slice(0, 4);
   if (out.length === 0) out = ['Matchup loaded; limited structured signals for this slate.'];

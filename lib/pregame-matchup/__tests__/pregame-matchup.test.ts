@@ -12,7 +12,8 @@ import { buildPregameMatchup, POSSESSION_NOTE, SAMPLE_LABEL } from '@/lib/pregam
 import { dashboardReturnHref, isScoreboardGameId, parseSlateDate, scoreboardMatchupHref } from '@/lib/pregame-matchup/href';
 import { loadPregameMatchup } from '@/lib/pregame-matchup/load';
 import { historicalPlayerQuery, historicalTeamQuery } from '@/lib/pregame-matchup/queries';
-import { resolveMatchupQuote } from '@/lib/pregame-matchup/quote';
+import { draftKingsPatch, type StoredOddsSourceRow } from '@/lib/dashboard/stored-odds';
+import { matchupQuoteFromStoredPatch, resolveMatchupQuote } from '@/lib/pregame-matchup/quote';
 import { presentRoster } from '@/lib/pregame-matchup/roster';
 import { selectMatchupInsights } from '@/lib/pregame-matchup/signals';
 import { historicalWindow } from '@/lib/pregame-matchup/window';
@@ -310,6 +311,33 @@ describe('pregame quote matches GameCard selection', () => {
     expect(withdrawn.quote).toBeNull();
   });
 
+  it('labels a stored DraftKings row as stored, including when it is stale', () => {
+    const storedAt = new Date(NOW.getTime() - 2 * 60 * 60 * 1000).toISOString();
+    const source: StoredOddsSourceRow = {
+      game_id: '21826166',
+      vendor: 'draftkings',
+      snapshot_at: storedAt,
+      updated_at: storedAt,
+      home_moneyline: -148,
+      away_moneyline: 124,
+      home_spread: -3.5,
+      home_spread_odds: -110,
+      away_spread: 3.5,
+      away_spread_odds: -110,
+      total: 235.5,
+      over_odds: -112,
+      under_odds: -108,
+    };
+    const patch = draftKingsPatch(source, NOW);
+    expect(patch?.status).toBe('stale');
+    const quote = matchupQuoteFromStoredPatch(patch!, 'CLE', 'PHI');
+    expect(quote.caption).toMatch(/^DraftKings · Stale · stored /);
+    expect(quote.caption).not.toMatch(/live|synced/i);
+    expect(quote.spreadHome).toBe('PHI -3.5');
+    expect(quote.moneylineAway).toBe('CLE +124');
+    expect(quote.total).toBe('O/U 235.5');
+  });
+
   it('does not show prices when market serving is off', () => {
     const hidden = resolveMatchupQuote({
       game: game(),
@@ -346,7 +374,7 @@ describe('pregame page model', () => {
       store: guarded,
       query: async (text, params) => {
         calls.push(text);
-        expect(text).not.toMatch(/analytics\.games/);
+        if (!text.includes('game_odds_current')) expect(text).not.toMatch(/analytics\.games/);
         if (text.includes('team_game_stats')) {
           expect(params).toEqual(['2025', '2025-10-21', '2026-04-14', '2025-12-16']);
           return rows.map((row) => ({
@@ -389,6 +417,7 @@ describe('pregame page model', () => {
           ];
         }
         if (text.includes('roster_observation')) return [];
+        if (text.includes('game_odds_current')) return [];
         if (text.includes('analytics.teams')) {
           return [
             { team_id: '22', abbreviation: 'ORL', full_name: 'Orlando Magic' },
@@ -410,9 +439,65 @@ describe('pregame page model', () => {
     expect(model?.contributors?.label).not.toMatch(/starter|current roster confirmed|departure/i);
     expect(model?.returnHref).toBe('/dashboard?date=2026-10-11');
     expect(model?.quote).toBeNull();
+    expect(model?.propsHref).toBe('/betting/props-explorer?date=2026-10-11&game_id=21826166');
     expect(model?.roster.status).toBe('hidden');
     expect(model?.roster.note).toMatch(/No eligible BallDontLie/);
     expect(calls.some((text) => text.includes('nba_roster_snapshots'))).toBe(false);
+    expect(calls.some((text) => text.includes('game_odds_current'))).toBe(false);
+  });
+
+  it('uses the stored DraftKings row only when the visitor is signed in', async () => {
+    const store = createMemoryScoreboardStore();
+    store.games.set('21826166', game());
+    const storedAt = new Date(NOW.getTime() - 2 * 60 * 60 * 1000).toISOString();
+    const query = async (text: string) => {
+      if (text.includes('game_odds_current')) {
+        return [{
+          game_id: '21826166',
+          vendor: 'draftkings',
+          snapshot_at: storedAt,
+          updated_at: storedAt,
+          home_moneyline: -148,
+          away_moneyline: 124,
+          home_spread: -3.5,
+          home_spread_odds: -110,
+          away_spread: 3.5,
+          away_spread_odds: -110,
+          total: 235.5,
+          over_odds: -112,
+          under_odds: -108,
+        }];
+      }
+      if (text.includes('analytics.teams')) {
+        return [
+          { team_id: '22', abbreviation: 'ORL', full_name: 'Orlando Magic' },
+          { team_id: '6', abbreviation: 'CLE', full_name: 'Cleveland Cavaliers' },
+        ];
+      }
+      return [];
+    };
+    const hidden = await loadPregameMatchup({
+      gameId: '21826166',
+      slateDate: '2026-10-11',
+      now: NOW,
+      env: {},
+      store,
+      query,
+    });
+    expect(hidden?.quote).toBeNull();
+    expect(hidden?.quoteNote).toMatch(/not being shown|No verified/);
+    const shown = await loadPregameMatchup({
+      gameId: '21826166',
+      slateDate: '2026-10-11',
+      now: NOW,
+      env: {},
+      store,
+      query,
+      includeStoredOdds: true,
+    });
+    expect(shown?.quote?.caption).toMatch(/^DraftKings · Stale · stored /);
+    expect(shown?.quote?.caption).not.toMatch(/live|synced/i);
+    expect(shown?.quote?.spreadHome).toBe('CLE -3.5');
   });
 
   it('hides history when the sample is contaminated or the team abbreviation does not match', () => {
@@ -572,6 +657,8 @@ describe('pregame matchup layout', () => {
     expect(html).toContain('CLE -5.5');
     expect(html).toContain('No-vig implied probability');
     expect(html).toContain('href="/dashboard?date=2026-10-11"');
+    expect(html).toContain('href="/betting/props-explorer?date=2026-10-11&amp;game_id=21826166"');
+    expect(html).toContain('>View props</');
     expect(html).toContain('grid-cols-1');
     expect(html).toContain('sm:grid-cols-2');
     expect(html).toContain('sm:grid-cols-3');

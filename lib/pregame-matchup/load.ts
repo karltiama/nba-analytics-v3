@@ -3,6 +3,7 @@
  * Does not write, and does not call a provider.
  */
 
+import { STORED_ODDS_SQL, draftKingsPatch, type StoredOddsSourceRow } from '@/lib/dashboard/stored-odds';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { isScoreboardMarketServingEnabled } from '@/lib/scoreboard/flags';
@@ -13,7 +14,7 @@ import { buildPregameMatchup, type PregameMatchupModel } from './compose';
 import { playerRow, teamRow } from './rows';
 import { dashboardReturnHref, parseSlateDate } from './href';
 import { historicalPlayerQuery, historicalTeamQuery, teamIdentityQuery } from './queries';
-import { resolveMatchupQuote } from './quote';
+import { matchupQuoteFromStoredPatch, resolveMatchupQuote } from './quote';
 import { presentRoster } from './roster';
 import { loadRosterContinuity } from './roster-load';
 import { historicalWindow } from './window';
@@ -37,6 +38,8 @@ export async function loadPregameMatchup(input: {
   env?: Record<string, string | undefined>;
   store?: ScoreboardStore;
   query?: Sql;
+  /** Dashboard stored odds stay off this public page unless the visitor is signed in. */
+  includeStoredOdds?: boolean;
 }): Promise<PregameMatchupModel | null> {
   const now = input.now ?? new Date();
   const env = input.env ?? process.env;
@@ -58,7 +61,18 @@ export async function loadPregameMatchup(input: {
       quotes = [];
     }
   }
-  const quote = resolveMatchupQuote({ game, quotes, now, env, awayAbbr, homeAbbr });
+  let quote = resolveMatchupQuote({ game, quotes, now, env, awayAbbr, homeAbbr });
+  const tipMs = Date.parse(game.scheduledTip ?? '');
+  const stillPregame = game.lifecycle === 'scheduled' && (!Number.isFinite(tipMs) || tipMs > now.getTime());
+  if (!quote.quote && stillPregame && input.includeStoredOdds) {
+    try {
+      const storedRows = await run(STORED_ODDS_SQL, [[game.gameId], now.toISOString()]);
+      const patch = storedRows[0] ? draftKingsPatch(storedRows[0] as StoredOddsSourceRow, now) : null;
+      if (patch) quote = { quote: matchupQuoteFromStoredPatch(patch, awayAbbr, homeAbbr), note: null };
+    } catch {
+      // Keep the sentence from the scoreboard quote. Do not invent a price.
+    }
+  }
 
   const window = historicalWindow();
   const teamQuery = historicalTeamQuery(window);

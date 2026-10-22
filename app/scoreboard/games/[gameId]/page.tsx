@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { PregameMatchupView } from '@/components/scoreboard/PregameMatchupView';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isScoreboardGameId, parseSlateDate } from '@/lib/pregame-matchup/href';
 import { loadPregameMatchup } from '@/lib/pregame-matchup/load';
 
@@ -17,7 +18,15 @@ export default async function ScoreboardMatchupPage({
   const rawDate = Array.isArray(query.date) ? query.date[0] : query.date;
   const slateDate = parseSlateDate(rawDate);
   if (!isScoreboardGameId(gameId)) notFound();
-  const model = await loadPregameMatchup({ gameId, slateDate });
+  let includeStoredOdds = false;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    includeStoredOdds = Boolean(data.user);
+  } catch {
+    includeStoredOdds = false;
+  }
+  const model = await loadPregameMatchup({ gameId, slateDate, includeStoredOdds });
   if (!model) notFound();
   return <PregameMatchupView model={model} />;
 }

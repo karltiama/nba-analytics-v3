@@ -14,7 +14,7 @@ export function ResearchMatchupOverview({ overview }: { overview: ResearchHistor
           Matchup Overview
         </h2>
         <p className="type-metadata mt-1">
-          2025–26 regular-season team identity. Current research-season ratings stay in the matchup section.
+          2025–26 regular-season team identity. Ratings in the matchup section use the labeled research season.
         </p>
       </div>
       <div

@@ -35,6 +35,7 @@ export type MatchupHeaderProps = {
   backLabel: string;
   market?: MatchupHeaderMarket | null;
   links?: MatchupNavLink[];
+  propsHref?: string | null;
 };
 
 function TeamSide({ team }: { team: MatchupHeaderSide }) {
@@ -71,6 +72,7 @@ export function MatchupHeader({
   backLabel,
   market,
   links = [],
+  propsHref,
 }: MatchupHeaderProps) {
   const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
   return (
@@ -131,6 +133,14 @@ export function MatchupHeader({
               {link.label}
             </a>
           ))}
+          {propsHref ? (
+            <Link
+              href={propsHref}
+              className="type-interactive rounded-lg border border-[#55ddb1] bg-[#55ddb1] px-3 py-1.5 text-[#063f46] hover:bg-[#3dcc9f]"
+            >
+              View props
+            </Link>
+          ) : null}
         </nav>
       ) : null}
     </div>

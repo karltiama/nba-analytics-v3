@@ -24,6 +24,7 @@ import {
   HISTORICAL_VIEW_MODE_LIVE,
   isHistoricalFinalView,
 } from '@/lib/betting/historical-final';
+import { getAnalyticsSeason } from '@/lib/season';
 
 /** Normalize provider injury fields to UI-friendly status for injury badges. */
 function normalizeInjuryStatus(
@@ -140,6 +141,7 @@ export async function GET(
       return NextResponse.json({
         viewMode: HISTORICAL_VIEW_MODE_FINAL,
         gameSeason,
+        analyticsSeason: getAnalyticsSeason(),
         availability: historical.availability,
         boxScore: historical.boxScore,
         starters: historical.starters,
@@ -219,7 +221,7 @@ export async function GET(
         opponent: f.opponent_abbr || 'OPP',
         result: f.result || 'L',
         score: `${f.team_score || 0}-${f.opponent_score || 0}`,
-        spread: 0,
+        spread: null,
         covered: false,
         game_date: f.game_date ? String(f.game_date).slice(0, 10) : null,
       })).filter((f) => f.score !== '0-0');
@@ -315,6 +317,7 @@ export async function GET(
     const response = {
       viewMode: HISTORICAL_VIEW_MODE_LIVE,
       gameSeason,
+      analyticsSeason: getAnalyticsSeason(),
       availability: {
         starters: false,
         advanced: false,
