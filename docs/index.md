@@ -10,6 +10,7 @@ Agent entrypoint: [../AGENTS.md](../AGENTS.md). Map of code and schemas: [archit
 
 - [Architecture map](./architecture.md)
 - [Testing](./testing.md)
+- [Local dev server](./dev-server.md) — reuse port 3000 for this worktree
 - [Coding standards](./coding-standards.md)
 - [Deployment checklist](./deployment-checklist.md)
 - [Production security](./production-security.md) — auth, cron, prune, freeze flags

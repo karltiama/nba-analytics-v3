@@ -11,6 +11,18 @@ Always-on rules only. Open the one doc the task needs. Do not paste runbooks int
 - Missing `DATA_MODE` is not live. Destructive prune also needs cron auth and `PRUNE_ENABLED=1`, with `DATA_MODE=live_api`, `OFFSEASON_MODE=0`, and `CRON_DRY_RUN=0`. Full checks: [docs/production-security.md](docs/production-security.md).
 - Provider key name is `BALLDONTLIE_API_KEY`. `BALDONTLIE_API_KEY` is a typo alias fallback only.
 
+## Dev server
+
+Before `npm run dev`, `next dev`, `next start`, or any other local web server, inspect listeners and reuse the server that belongs to this worktree. Commands and the port check: [docs/dev-server.md](docs/dev-server.md).
+
+- The main Court Context server is `http://localhost:3000`, started with `npm run dev -- --port 3000`. Bare `npm run dev` is the Next.js 16 path that walks to 3001–3010. Pass `--port 3000`. When 3000 is busy, identify the process and report it.
+- A listener on port 3000 is this worktree only when its command line matches `git rev-parse --show-toplevel`. Leave other worktrees alone.
+- An unavailable port is a stop. Do not switch ports, do not launch a series of servers, and do not kill a process to free 3000.
+- A temporary preview server is one explicit free port, recorded against this worktree, and stopped after the task. Confirm the port is released. Preserve a server that was already running. Never stop an unidentified process.
+- Extra Next.js processes open more Supabase Postgres connections (`EMAXCONNSESSION`). Load tests against production Supabase need explicit authorization.
+- Inspect with PowerShell: `Get-NetTCPConnection -State Listen` and `Get-CimInstance Win32_Process`. Do not assume `lsof` or `kill`.
+- When the task ends, report the server reused or started, its port and worktree, and whether a temporary process was stopped.
+
 ## Do not treat these as settled
 
 - **Node.** App pin is `package.json` `engines.node` (`24.x`). Each Lambda `runtime` is on that function in `infra/*.tf`. Ingestion functions in `infra/lambda.tf` are `nodejs22.x`. `projection-ledger` and `context-prospective-shadow` are `nodejs20.x`. Shadow projection also has `python3.11`. README text that says Node 20, and CLI docs that pass `--runtime nodejs20.x`, are not the app pin. "Node 22" in `infra/README.md` is the build note for the functions that file lists.
@@ -24,6 +36,7 @@ Start at [docs/index.md](docs/index.md). Open one row.
 |---|---|
 | Layout, schemas, which jobs exist | [docs/architecture.md](docs/architecture.md) |
 | Tests | [docs/testing.md](docs/testing.md) |
+| Local dev server | [docs/dev-server.md](docs/dev-server.md) |
 | Project style deltas | [docs/coding-standards.md](docs/coding-standards.md) |
 | Deploy and secrets | [docs/deployment-checklist.md](docs/deployment-checklist.md) |
 | Auth, cron, prune, freeze | [docs/production-security.md](docs/production-security.md) |
