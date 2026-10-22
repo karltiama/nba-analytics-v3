@@ -1,12 +1,4 @@
-/** True only when the app explicitly marks collection paused. A missing DATA_MODE is not this flag. */
-export function isPropsCollectionPaused(
-  env: Record<string, string | undefined> = process.env
-): boolean {
-  return env.OFFSEASON_MODE === '1';
-}
-
 export function propsExplorerEmptyCopy(input: {
-  collectorPaused?: boolean;
   dateLabel: string;
   marketContext?: 'live' | 'historical';
   gameSelected?: boolean;
@@ -32,12 +24,6 @@ export function propsExplorerEmptyCopy(input: {
     return {
       title,
       detail: `No stored prop observations were found for ${input.dateLabel}. This is not a live sportsbook board.`,
-    };
-  }
-  if (input.collectorPaused) {
-    return {
-      title,
-      detail: 'Player-props collection is paused by the offseason freeze.',
     };
   }
   return {

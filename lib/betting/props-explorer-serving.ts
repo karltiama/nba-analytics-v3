@@ -39,6 +39,7 @@ export type PropsExplorerDbRow = {
   nba_player_id: string | null;
   away_team_abbr: string | null;
   home_team_abbr: string | null;
+  row_source?: string | null;
 };
 
 const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
@@ -146,6 +147,36 @@ function fromJoin(context: PropsMarketContext, whereSql: string): string {
       ${mediaJoins}
       ${whereSql}
     `;
+}
+
+function excludeGamesWithDecisionLines(whereSql: string): string {
+  const exclusion = `NOT EXISTS (
+         SELECT 1 FROM research.prop_decision_lines d
+         WHERE d.game_id = p.game_id::text
+       )`;
+  return whereSql ? `${whereSql} AND ${exclusion}` : `WHERE ${exclusion}`;
+}
+
+/** Same columns as selectList, with text ids so the two tables can be combined. */
+function mixedSelect(context: PropsMarketContext, rowSource: 'decision' | 'current'): string {
+  const observed = context === 'historical' ? 'p.decision_at' : 'p.snapshot_at';
+  return `SELECT p.game_id::text AS game_id, p.player_id::text AS player_id,
+                COALESCE(p.player_name, pl.full_name) AS player_name, p.sportsbook, p.prop_type,
+                p.market_type, p.side, p.line_value, p.odds_american, p.odds_decimal,
+                p.implied_probability, ${observed} AS snapshot_at,
+                g.start_time AS game_start_time,
+                nba.provider_player_id AS nba_player_id,
+                t_away.abbreviation AS away_team_abbr,
+                t_home.abbreviation AS home_team_abbr,
+                '${rowSource}'::text AS row_source`;
+}
+
+function mixedDateBody(whereSql: string): string {
+  return `${mixedSelect('historical', 'decision')}
+      ${fromJoin('historical', whereSql)}
+      UNION ALL
+      ${mixedSelect('live', 'current')}
+      ${fromJoin('live', excludeGamesWithDecisionLines(whereSql))}`;
 }
 
 function selectList(context: PropsMarketContext): string {
@@ -336,16 +367,33 @@ export async function getPlayerPropsForExplorer(
       lineLabel = PREGAME_LINE_LABEL;
     }
   }
+  let mixDateSources = false;
   if (marketContext === 'historical' && !gameId) {
-    const decisionOnDate = await queryOne<{ n: string }>(
-      `SELECT count(*)::text AS n
-       FROM research.prop_decision_lines p
-       INNER JOIN analytics.games g ON g.game_id = p.game_id
-       WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
-         AND g.start_time < (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')`,
+    const mix = await queryOne<{ decision_games: string; current_only_games: string }>(
+      `SELECT
+         (SELECT count(DISTINCT d.game_id)::text
+            FROM research.prop_decision_lines d
+            INNER JOIN analytics.games g ON g.game_id = d.game_id
+           WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
+             AND g.start_time < (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')
+         ) AS decision_games,
+         (SELECT count(DISTINCT c.game_id)::text
+            FROM analytics.player_props_current c
+            INNER JOIN analytics.games g ON g.game_id = c.game_id::text
+           WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
+             AND g.start_time < (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')
+             AND NOT EXISTS (
+               SELECT 1 FROM research.prop_decision_lines d WHERE d.game_id = c.game_id::text
+             )
+         ) AS current_only_games`,
       [dateEt]
     );
-    if (Number(decisionOnDate?.n ?? 0) === 0) {
+    const decisionGames = Number(mix?.decision_games ?? 0);
+    const currentOnlyGames = Number(mix?.current_only_games ?? 0);
+    if (decisionGames > 0 && currentOnlyGames > 0) {
+      mixDateSources = true;
+      lineLabel = PREGAME_LINE_LABEL;
+    } else if (decisionGames === 0) {
       readCurrent = true;
       lineLabel = PREGAME_LINE_LABEL;
     }
@@ -367,9 +415,12 @@ export async function getPlayerPropsForExplorer(
     marketType: (input.marketType || 'over_under').trim().toLowerCase(),
   });
 
-  const join = fromJoin(sqlContext, whereSql);
+  const mixedBody = mixDateSources ? mixedDateBody(whereSql) : '';
+  const join = mixDateSources ? '' : fromJoin(sqlContext, whereSql);
   const countResult = await query<{ count: string }>(
-    `SELECT count(*)::text AS count ${join}`,
+    mixDateSources
+      ? `SELECT count(*)::text AS count FROM (${mixedBody}) mixed_rows`
+      : `SELECT count(*)::text AS count ${join}`,
     whereParams
   );
   const totalMatching = parseInt(countResult[0]?.count ?? '0', 10) || 0;
@@ -390,7 +441,18 @@ export async function getPlayerPropsForExplorer(
   const orderDir = dirAsc ? 'ASC' : 'DESC';
 
   let dbRows: PropsExplorerDbRow[];
-  if (useComputedSort) {
+  if (mixDateSources) {
+    const fetchParams = [...whereParams, input.limit, input.offset];
+    const limIdx = whereParams.length + 1;
+    const offIdx = whereParams.length + 2;
+    const mixedOrder = sort === 'odds_american' ? 'odds_american' : 'snapshot_at';
+    dbRows = await query<PropsExplorerDbRow>(
+      `SELECT * FROM (${mixedBody}) mixed_rows
+       ORDER BY ${mixedOrder} ${orderDir} NULLS LAST
+       LIMIT $${limIdx} OFFSET $${offIdx}`,
+      fetchParams
+    );
+  } else if (useComputedSort) {
     const fetchParams = [...whereParams, PROPS_EXPLORER_EV_FETCH_CAP];
     const limIdx = whereParams.length + 1;
     dbRows = await query<PropsExplorerDbRow>(
@@ -461,13 +523,22 @@ export async function getPlayerPropsForExplorer(
       snapshotAt,
       marketContext,
       lineLabel:
-        marketContext === 'live' && gameHasStarted(r.game_start_time, now)
+        r.row_source === 'current'
           ? PREGAME_LINE_LABEL
-          : lineLabel,
+          : r.row_source === 'decision'
+            ? propsLineLabel('historical')
+            : marketContext === 'live' && gameHasStarted(r.game_start_time, now)
+              ? PREGAME_LINE_LABEL
+              : lineLabel,
       paperBetAllowed:
         marketContext === 'live' &&
         isActivePaperBetAllowed({ gameStartTime: r.game_start_time, now }),
-      sourceTable,
+      sourceTable:
+        r.row_source === 'current'
+          ? 'analytics.player_props_current'
+          : r.row_source === 'decision'
+            ? 'research.prop_decision_lines'
+            : sourceTable,
       nbaPlayerId:
         r.nba_player_id != null && String(r.nba_player_id).trim() !== ''
           ? String(r.nba_player_id).trim()

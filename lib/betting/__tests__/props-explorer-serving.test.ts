@@ -51,7 +51,7 @@ describe('getPlayerPropsForExplorer serving contract', () => {
   });
 
   it('uses research.prop_decision_lines for a historical date and does not compute EV', async () => {
-    mockQueryOne.mockResolvedValueOnce({ n: '1' });
+    mockQueryOne.mockResolvedValueOnce({ decision_games: '1', current_only_games: '0' });
     mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([HISTORICAL_ROW]);
 
     const result = await getPlayerPropsForExplorer({
@@ -92,7 +92,7 @@ describe('getPlayerPropsForExplorer serving contract', () => {
   });
 
   it('keeps an empty historical date empty when neither source has rows', async () => {
-    mockQueryOne.mockResolvedValueOnce({ n: '0' });
+    mockQueryOne.mockResolvedValueOnce({ decision_games: '0', current_only_games: '0' });
     mockQuery.mockResolvedValueOnce([{ count: '0' }]).mockResolvedValueOnce([]);
 
     const result = await getPlayerPropsForExplorer({
@@ -154,7 +154,7 @@ describe('getPlayerPropsForExplorer serving contract', () => {
   });
 
   it('does not apply min_ev filtering on historical rows with unavailable EV', async () => {
-    mockQueryOne.mockResolvedValueOnce({ n: '1' });
+    mockQueryOne.mockResolvedValueOnce({ decision_games: '1', current_only_games: '0' });
     mockQuery.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([HISTORICAL_ROW]);
 
     const result = await getPlayerPropsForExplorer({
@@ -303,7 +303,7 @@ describe('getPlayerPropsForExplorer serving contract', () => {
   });
 
   it('serves stored current rows for a past date that has no decision lines', async () => {
-    mockQueryOne.mockResolvedValueOnce({ n: '0' });
+    mockQueryOne.mockResolvedValueOnce({ decision_games: '0', current_only_games: '1' });
     const stored = {
       ...HISTORICAL_ROW,
       game_id: '21717922',
@@ -336,6 +336,55 @@ describe('getPlayerPropsForExplorer serving contract', () => {
     expect(result.rows[0].lineLabel).toBe('Pregame line');
     expect(result.rows[0].ev).toBeNull();
     expect(result.rows[0].paperBetAllowed).toBe(false);
+    expect(mockInputs).not.toHaveBeenCalled();
+  });
+
+  it('shows decision lines and current-only games together on one date', async () => {
+    mockQueryOne.mockResolvedValueOnce({ decision_games: '1', current_only_games: '1' });
+    const decisionRow = {
+      ...HISTORICAL_ROW,
+      game_id: 'game-a',
+      player_id: '101',
+      player_name: 'Decision Player',
+      snapshot_at: '2026-10-20T22:00:00.000Z',
+      row_source: 'decision',
+    };
+    const currentRow = {
+      ...HISTORICAL_ROW,
+      game_id: 'game-b',
+      player_id: '202',
+      player_name: 'Current Player',
+      snapshot_at: '2026-10-20T23:00:00.000Z',
+      row_source: 'current',
+    };
+    mockQuery.mockResolvedValueOnce([{ count: '2' }]).mockResolvedValueOnce([decisionRow, currentRow]);
+
+    const result = await getPlayerPropsForExplorer({
+      dateEt: '2026-10-20',
+      todayEt: '2026-10-22',
+      propType: 'rebounds',
+      sportsbook: 'fanduel',
+      limit: 50,
+      offset: 0,
+    });
+
+    expect(result.marketContext).toBe('historical');
+    expect(result.lineLabel).toBe('Pregame line');
+    expect(result.totalMatching).toBe(2);
+    expect(sqlOf(0)).toMatch(/research\.prop_decision_lines/);
+    expect(sqlOf(0)).toMatch(/analytics\.player_props_current/);
+    expect(sqlOf(0)).toMatch(/NOT EXISTS/);
+    expect(sqlOf(1)).toMatch(/LIMIT/);
+    expect(sqlOf(1)).toMatch(/OFFSET/);
+    expect(paramsOf(0)).toContain('2026-10-20');
+    expect(paramsOf(0)).toContain('rebounds%');
+    expect(paramsOf(0)).toEqual(expect.arrayContaining([['fanduel']]));
+    expect(result.rows.map((row) => String(row.gameId))).toEqual(['game-a', 'game-b']);
+    expect(result.rows[0].sourceTable).toBe('research.prop_decision_lines');
+    expect(result.rows[0].lineLabel).toBe('Historical closing line');
+    expect(result.rows[1].sourceTable).toBe('analytics.player_props_current');
+    expect(result.rows[1].lineLabel).toBe('Pregame line');
+    expect(result.rows.every((row) => row.ev == null && row.paperBetAllowed === false)).toBe(true);
     expect(mockInputs).not.toHaveBeenCalled();
   });
 

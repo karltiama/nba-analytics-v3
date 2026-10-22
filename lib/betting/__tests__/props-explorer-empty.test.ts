@@ -1,49 +1,33 @@
 import { describe, expect, it } from 'vitest';
-import { isPropsCollectionPaused, propsExplorerEmptyCopy } from '../props-explorer-empty';
+import { propsExplorerEmptyCopy } from '../props-explorer-empty';
 
 describe('propsExplorerEmptyCopy', () => {
-  it('names a pause only when the offseason flag is set', () => {
-    expect(isPropsCollectionPaused({ OFFSEASON_MODE: '1' })).toBe(true);
-    expect(isPropsCollectionPaused({})).toBe(false);
-    expect(isPropsCollectionPaused({ DATA_MODE: 'replay', CRON_DRY_RUN: '1' })).toBe(false);
-
-    const paused = propsExplorerEmptyCopy({
-      collectorPaused: true,
-      dateLabel: 'Today',
-      marketContext: 'live',
-    });
-    expect(paused.title).toBe('No stored prop observations for this date yet.');
-    expect(paused.detail).toMatch(/paused by the offseason freeze/i);
-    expect(paused.detail).not.toMatch(/failed to load/i);
-  });
-
-  it('does not call an empty regular-season date a freeze', () => {
+  it('does not call an empty date an offseason freeze', () => {
     const copy = propsExplorerEmptyCopy({
-      collectorPaused: false,
       dateLabel: 'Oct 22',
       marketContext: 'live',
     });
     expect(copy.title).toBe('No stored prop observations for this date yet.');
     expect(copy.detail).toMatch(/Oct 22/);
-    expect(copy.detail).not.toMatch(/offseason freeze/i);
+    expect(copy.detail).not.toMatch(/offseason/i);
+    expect(copy.detail).not.toMatch(/freeze/i);
     expect(copy.detail).not.toMatch(/failed to load/i);
   });
 
   it('labels a historical empty date as stored observations, not a live board', () => {
     const copy = propsExplorerEmptyCopy({
-      collectorPaused: true,
       dateLabel: 'May 6',
       marketContext: 'historical',
     });
     expect(copy.title).toBe('No stored prop observations for this date yet.');
     expect(copy.detail).toMatch(/May 6/);
     expect(copy.detail).toMatch(/not a live sportsbook board/i);
-    expect(copy.detail).not.toMatch(/offseason freeze/i);
+    expect(copy.detail).not.toMatch(/offseason/i);
+    expect(copy.detail).not.toMatch(/freeze/i);
   });
 
   it('explains a selected game with no stored observations without implying a load failure', () => {
     const live = propsExplorerEmptyCopy({
-      collectorPaused: false,
       dateLabel: 'Oct 21',
       marketContext: 'live',
       gameSelected: true,
@@ -52,21 +36,20 @@ describe('propsExplorerEmptyCopy', () => {
     expect(live.detail).toMatch(/already collected/i);
     expect(live.detail).toMatch(/does not request a new price/i);
     expect(live.detail).not.toMatch(/failed to load/i);
-    expect(live.detail).not.toMatch(/offseason freeze/i);
+    expect(live.detail).not.toMatch(/offseason/i);
 
     const past = propsExplorerEmptyCopy({
-      collectorPaused: false,
       dateLabel: 'Oct 20',
       marketContext: 'historical',
       gameSelected: true,
     });
     expect(past.title).toBe('No stored prop observations for this game yet.');
     expect(past.detail).toMatch(/not a live sportsbook board/i);
+    expect(past.detail).not.toMatch(/freeze/i);
   });
 
   it('names an unknown game id instead of borrowing another game', () => {
     const copy = propsExplorerEmptyCopy({
-      collectorPaused: false,
       dateLabel: 'Oct 21',
       marketContext: 'live',
       gameSelected: true,

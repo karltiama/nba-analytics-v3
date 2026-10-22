@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { isIngestionFrozen } from '@/lib/betting/ai-briefing-eligibility';
-import { isPropsCollectionPaused } from '@/lib/betting/props-explorer-empty';
 import {
   getPlayerPropsForExplorer,
   PROPS_EXPLORER_MAX_LIMIT,
@@ -63,7 +62,6 @@ export async function GET(request: NextRequest) {
         sort: result.sort,
         dir: sp.get('dir') === 'asc' ? 'asc' : 'desc',
         ingestionFrozen: isIngestionFrozen(),
-        collectorPaused: isPropsCollectionPaused(),
         marketContext: result.marketContext,
         sourceTable: result.sourceTable,
         lineLabel: result.lineLabel,
