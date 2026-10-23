@@ -18,6 +18,9 @@
  * - BDL_SCHEDULE_SYNC_DAYS_FORWARD (optional, default: 14) — ET calendar days after today to
  *   upsert scheduled/final games into raw + analytics (playoffs & slate discovery).
  * - DISABLE_BDL_SCHEDULE_SYNC (optional, set to "1" to skip that step)
+ *
+ * Recovery is a separate explicit payload. It does not run for a scheduled event,
+ * and it does not bypass DATA_MODE / OFFSEASON_MODE / CRON_DRY_RUN.
  */
 
 try {
@@ -39,6 +42,8 @@ try {
 import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
+import { executeRecovery } from './recovery-execute';
+import { isExplicitRecoveryEvent, recoveryOnlyEnabled } from './recovery-plan';
 import {
   partitionServingGames,
   providerSeasonTypesForWindow,
@@ -105,12 +110,19 @@ function sid(id: number | null | undefined): string {
 // BDL API
 // ============================================
 
-async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
+async function fetchWithRetry(
+  url: string,
+  retries = MAX_RETRIES,
+  onAttempt?: () => void,
+  onHttpAttempt?: (event: { status: number | 'error' }) => void,
+  beforeHttpAttempt?: () => void
+): Promise<Response> {
   for (let attempt = 0; attempt <= retries; attempt++) {
+    onAttempt?.();
     const res = await fetchBdlLive(
       url,
       { headers: { Authorization: BALLDONTLIE_API_KEY as string } },
-      { worker: 'nightly-bdl-updater', deadlineMs: runDeadlineMs }
+      { worker: 'nightly-bdl-updater', deadlineMs: runDeadlineMs, onHttpAttempt, beforeHttpAttempt }
     );
     if (res.status >= 500 && attempt < retries) {
       const capped = Math.min(RETRY_MAX_DELAY_MS, RETRY_BASE_DELAY_MS * Math.pow(2, attempt));
@@ -511,6 +523,16 @@ const upsertPlayerSeasonAverages = `
     ft_pct = excluded.ft_pct,
     updated_at = now();
 `;
+
+export const nightlyRecoveryUpserts = {
+  rawGame: upsertRawGame,
+  rawStat: upsertRawStat,
+  analyticsGame: upsertAnalyticsGame,
+  analyticsLog: upsertAnalyticsPlayerGameLog,
+  teamGame: upsertTeamGameStats,
+  teamSeason: upsertTeamSeasonAverages,
+  playerSeason: upsertPlayerSeasonAverages,
+};
 
 // ============================================
 // TEAM ID MAPPING (dedup by abbreviation)
@@ -1146,6 +1168,23 @@ async function runPipeline(): Promise<PipelineResult> {
   return result;
 }
 
+async function runRecovery(event: unknown) {
+  return executeRecovery({
+    event,
+    env: process.env,
+    maxRetries: MAX_RETRIES,
+    requestDelayMs: REQUEST_DELAY_MS,
+    baseUrl: BDL_BASE,
+    fetchPage: (url, retries, onAttempt, onHttpAttempt, beforeHttpAttempt) =>
+      fetchWithRetry(url, retries, onAttempt, onHttpAttempt, beforeHttpAttempt),
+    sleep: async (ms: number) => {
+      await sleep(ms);
+    },
+    connect: () => pool.connect(),
+    upserts: nightlyRecoveryUpserts,
+  });
+}
+
 // ============================================
 // LAMBDA HANDLER
 // ============================================
@@ -1161,11 +1200,30 @@ export async function handler(
   console.log(`Timestamp: ${new Date().toISOString()}`);
 
   try {
-    const result = await runPipeline();
+    // Freeze wins for every event, including an explicit recovery payload.
+    // RECOVERY_ONLY is read per call and cannot override that freeze.
+    const recoveryOnlyBlock = SHOULD_CALL_LIVE_API && recoveryOnlyEnabled() && !isExplicitRecoveryEvent(event);
+    const result = recoveryOnlyBlock
+      ? {
+          recoveryOnly: true,
+          recoveryStatus: 'rejected' as const,
+          skippedProviderCalls: true,
+          scheduleGamesSynced: 0,
+          scheduleSyncSkipped: true,
+          finalGames: 0,
+          writesCommitted: false,
+        }
+      : SHOULD_CALL_LIVE_API && isExplicitRecoveryEvent(event)
+        ? await runRecovery(event)
+        : await runPipeline();
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    const recoveryStatus =
+      result != null && typeof result === 'object' && 'recoveryStatus' in result
+        ? result.recoveryStatus
+        : null;
 
     const summary = {
-      status: 'success',
+      status: recoveryStatus === 'rejected' ? 'rejected' : 'success',
       elapsed_seconds: elapsed,
       ...result,
     };
@@ -1175,7 +1233,7 @@ export async function handler(
     console.log('=== Nightly BDL Updater: COMPLETE ===');
 
     return {
-      statusCode: 200,
+      statusCode: recoveryStatus === 'rejected' ? 500 : 200,
       body: JSON.stringify(summary),
     };
   } catch (err: any) {

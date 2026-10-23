@@ -330,6 +330,16 @@ export type FetchBdlLiveOptions = {
   /** Absolute epoch ms the caller must finish by (e.g. Lambda remaining time minus a margin). */
   deadlineMs?: number;
   randomFn?: () => number;
+  /**
+   * Called immediately before each HTTP send, including a 429 retry.
+   * Optional. Throwing aborts before the request. Does not change retry limits.
+   */
+  beforeHttpAttempt?: () => void;
+  /**
+   * One call per HTTP attempt that returned or threw, including a 429 retry.
+   * Optional. Throwing aborts the retry loop. Does not change retry limits.
+   */
+  onHttpAttempt?: (event: { status: number | 'error' }) => void;
 };
 
 let defaultMemoryStore: ReturnType<typeof createMemoryLiveRateLimitStore> | null = null;
@@ -435,10 +445,12 @@ export async function fetchBdlLive(
     const attemptInit: RequestInit = init?.signal
       ? init
       : { ...init, signal: AbortSignal.timeout(config.httpTimeoutMs) };
+    options.beforeHttpAttempt?.();
     let res: Response;
     try {
       res = await fetchImpl(url, attemptInit);
     } catch (err) {
+      options.onHttpAttempt?.({ status: 'error' });
       logBdlThrottle({
         worker: config.worker,
         decision: 'http_error',
@@ -447,6 +459,7 @@ export async function fetchBdlLive(
       });
       throw err;
     }
+    options.onHttpAttempt?.({ status: res.status });
     if (res.status !== 429) return res;
 
     const retryAfter = parseRetryAfterMs(res.headers.get('retry-after'));

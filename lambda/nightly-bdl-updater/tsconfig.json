@@ -12,6 +12,17 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["index.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "ingestion-season.ts", "season-eligibility.ts"],
+  "include": [
+    "index.ts",
+    "bdl-live-rate-limit.ts",
+    "bdl-live-rate-limit-dynamo.ts",
+    "ingestion-season.ts",
+    "season-eligibility.ts",
+    "recovery-plan.ts",
+    "recovery-select.ts",
+    "recovery-fetch.ts",
+    "box-completeness.ts",
+    "recovery-execute.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }
