@@ -4,6 +4,7 @@
  * Sample slates are not loaded here.
  */
 
+import type { ScoreboardCoverage } from './coverage';
 import { SCOREBOARD_SCHEMA_VERSION, type ScoreboardResponse } from './contract';
 
 /**
@@ -12,10 +13,12 @@ import { SCOREBOARD_SCHEMA_VERSION, type ScoreboardResponse } from './contract';
  */
 export const SCOREBOARD_CLIENT_REFRESH_MS = 60_000;
 
+export type ScoreboardErrorReason = 'store_unavailable' | 'http' | 'network' | 'invalid_payload';
+
 export type ScoreboardFetchOutcome =
-  | { status: 'ready'; response: ScoreboardResponse }
+  | { status: 'ready'; response: ScoreboardResponse; coverage: ScoreboardCoverage }
   | { status: 'disabled' }
-  | { status: 'error'; message: string };
+  | { status: 'error'; message: string; reason: ScoreboardErrorReason };
 
 export function scoreboardApiUrl(date: string): string {
   return `/api/scoreboard?date=${encodeURIComponent(date)}`;
@@ -104,15 +107,35 @@ export function isScoreboardResponse(body: unknown): body is ScoreboardResponse 
   return body.source.provider === 'balldontlie' && body.source.coverage === 'display_only';
 }
 
+const UNKNOWN_COVERAGE: ScoreboardCoverage = { state: 'unknown', last_games_request_at: null };
+
+/** A missing or unreadable coverage field is an older or partial payload, not a failed scoreboard. */
+export function readScoreboardCoverage(body: unknown): ScoreboardCoverage {
+  if (!isRecord(body) || !isRecord(body.coverage)) return UNKNOWN_COVERAGE;
+  const state = body.coverage.state;
+  const at = body.coverage.last_games_request_at;
+  if (state !== 'covered' && state !== 'not_collected' && state !== 'unknown') return UNKNOWN_COVERAGE;
+  if (at != null && typeof at !== 'string') return UNKNOWN_COVERAGE;
+  return { state, last_games_request_at: at ?? null };
+}
+
 export function interpretScoreboardPayload(httpStatus: number, body: unknown): ScoreboardFetchOutcome {
   if (httpStatus === 503 && isRecord(body) && body.error === 'scoreboard_unavailable') {
     return { status: 'disabled' };
   }
   if (httpStatus === 200 && isScoreboardResponse(body)) {
-    return { status: 'ready', response: body };
+    return { status: 'ready', response: body, coverage: readScoreboardCoverage(body) };
+  }
+  if (httpStatus === 503 && isRecord(body) && body.error === 'scoreboard_store_unavailable') {
+    return { status: 'error', message: 'Scoreboard is temporarily unavailable.', reason: 'store_unavailable' };
   }
   if (httpStatus === 503) {
-    return { status: 'error', message: 'Scoreboard is temporarily unavailable.' };
+    return { status: 'error', message: 'Scoreboard is temporarily unavailable.', reason: 'http' };
   }
-  return { status: 'error', message: 'Could not load the scoreboard.' };
+  if (httpStatus === 200) {
+    return { status: 'error', message: 'Could not load the scoreboard.', reason: 'invalid_payload' };
+  }
+  return { status: 'error', message: 'Could not load the scoreboard.', reason: 'http' };
 }
+
+export type { ScoreboardCoverage } from './coverage';

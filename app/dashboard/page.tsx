@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useEffect, useCallback, useMemo } from 'react';
+import { use, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -32,8 +32,15 @@ import {
 } from '@/lib/scoreboard/client';
 import type { ScoreboardResponse } from '@/lib/scoreboard/contract';
 import {
+  createScoreboardRetrySession,
+  scoreboardRetryDelayMs,
+  todaysGamesCountLabel,
+  todaysGamesEmptyView,
+  type ScoreboardCoverage,
+  type ScoreboardRetryOutcome,
+} from '@/lib/scoreboard/empty-state';
+import {
   mergeTodaysGames,
-  todaysGamesUnavailableCopy,
   type ScoreboardSlateAvailability,
 } from '@/lib/scoreboard/slate-merge';
 import {
@@ -86,8 +93,14 @@ export default function BettingDashboard(props: PageProps) {
 
   // Data states
   const [scoreboard, setScoreboard] = useState<ScoreboardResponse | null>(null);
+  const [scoreboardCoverage, setScoreboardCoverage] = useState<ScoreboardCoverage | null>(null);
   const [scoreboardDate, setScoreboardDate] = useState(selectedDate);
   const [scoreboardAvailability, setScoreboardAvailability] = useState<ScoreboardSlateAvailability>('loading');
+  const retryStartRef = useRef({
+    outcome: 'ready_empty' as ScoreboardRetryOutcome,
+    todayEt: '',
+    coverageState: null as ScoreboardCoverage['state'] | null,
+  });
   const [insights, setInsights] = useState<Insight[]>([]);
   const [widgets, setWidgets] = useState<any[]>([]);
   const [slateSummary, setSlateSummary] = useState<string | null>(null);
@@ -107,6 +120,7 @@ export default function BettingDashboard(props: PageProps) {
   if (scoreboardDate !== selectedDate) {
     setScoreboardDate(selectedDate);
     setScoreboard(null);
+    setScoreboardCoverage(null);
     setScoreboardAvailability('loading');
   }
 
@@ -129,7 +143,7 @@ export default function BettingDashboard(props: PageProps) {
     }
   }, []); // run once on mount
 
-  const loadScoreboard = useCallback(async (date: string, signal: AbortSignal) => {
+  const loadScoreboard = useCallback(async (date: string, signal: AbortSignal): Promise<ScoreboardRetryOutcome | undefined> => {
     try {
       const res = await fetch(scoreboardApiUrl(date), { signal });
       const body: unknown = await res.json().catch(() => null);
@@ -137,18 +151,22 @@ export default function BettingDashboard(props: PageProps) {
       const outcome = interpretScoreboardPayload(res.status, body);
       if (outcome.status === 'ready') {
         setScoreboard(outcome.response);
+        setScoreboardCoverage(outcome.coverage);
         setScoreboardAvailability('ready');
-        return;
+        return outcome.response.games.length > 0 ? 'ready_with_games' : 'ready_empty';
       }
       if (outcome.status === 'disabled') {
         setScoreboard(null);
+        setScoreboardCoverage(null);
         setScoreboardAvailability('disabled');
-        return;
+        return 'disabled';
       }
       setScoreboardAvailability('error');
+      return 'error';
     } catch (err) {
       if (signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
       setScoreboardAvailability('error');
+      return 'error';
     }
   }, []);
 
@@ -330,6 +348,60 @@ export default function BettingDashboard(props: PageProps) {
 
   const previewActive = previewGate.kind === 'preview';
   const previewPending = previewActive && (previewState === 'idle' || previewState === 'loading');
+  retryStartRef.current = {
+    outcome:
+      scoreboardAvailability === 'disabled'
+        ? 'disabled'
+        : scoreboardAvailability === 'error'
+          ? 'error'
+          : slateGames.length > 0
+            ? 'ready_with_games'
+            : 'ready_empty',
+    todayEt,
+    coverageState: scoreboardCoverage?.state ?? null,
+  };
+  const scoreboardRetryNeeded =
+    scoreboardAvailability !== 'loading' &&
+    scoreboardPollDelay == null &&
+    scoreboardRetryDelayMs({
+      availability:
+        scoreboardAvailability === 'disabled' ? 'disabled' : scoreboardAvailability === 'error' ? 'error' : 'ready',
+      unfilteredCount: slateGames.length,
+      coverageState: scoreboardCoverage?.state ?? null,
+      selectedDate,
+      todayEt,
+      consecutiveFailures: 1,
+    }) != null;
+
+  useEffect(() => {
+    if (!scoreboardRetryNeeded) return;
+    let timer = 0;
+    const session = createScoreboardRetrySession({
+      load: async (signal) => {
+        const outcome = await loadScoreboard(selectedDate, signal);
+        if (signal.aborted || outcome == null) return 'error';
+        return outcome;
+      },
+      delayFor: (outcome, consecutiveFailures) =>
+        scoreboardRetryDelayMs({
+          availability: outcome === 'disabled' ? 'disabled' : outcome === 'error' ? 'error' : 'ready',
+          unfilteredCount: outcome === 'ready_with_games' ? 1 : 0,
+          coverageState: retryStartRef.current.coverageState,
+          selectedDate,
+          todayEt: retryStartRef.current.todayEt,
+          consecutiveFailures,
+        }),
+      isVisible: () => document.visibilityState !== 'hidden',
+      armTimer: (ms, fire) => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(fire, ms);
+      },
+      clearTimer: () => window.clearTimeout(timer),
+    });
+    session.start(retryStartRef.current.outcome);
+    return () => session.stop();
+  }, [scoreboardRetryNeeded, selectedDate, loadScoreboard]);
+
   const slateIds = useMemo(() => slateGames.map((game) => game.id).sort().join(','), [slateGames]);
   const applicablePregameIds = useMemo(
     () => slateGames.filter((game) => acceptsStoredOdds(game)).map((game) => game.id).sort().join(','),
@@ -414,12 +486,19 @@ export default function BettingDashboard(props: PageProps) {
         ? "Yesterday's Games"
         : `Games for ${dateLabel}`;
 
-  const emptyGamesMessage =
-    dateLabel === 'Today'
-      ? 'No games scheduled for today'
-      : dateLabel === 'Yesterday'
-        ? 'No games yesterday'
-        : `No games on ${dateLabel}`;
+  const emptyView =
+    scoreboardAvailability === 'loading' || previewActive
+      ? null
+      : todaysGamesEmptyView({
+          availability:
+            scoreboardAvailability === 'disabled' ? 'disabled' : scoreboardAvailability === 'error' ? 'error' : 'ready',
+          unfilteredCount: slateGames.length,
+          filteredCount: sortedGames.length,
+          coverage: scoreboardCoverage,
+          selectedDate,
+          todayEt,
+          dateLabel,
+        });
 
   return (
     <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pb-6">
@@ -465,7 +544,13 @@ export default function BettingDashboard(props: PageProps) {
                     ? 'Loading...'
                     : previewActive && previewState === 'error'
                       ? 'Unavailable'
-                      : `${sortedGames.length} games`}
+                      : previewActive
+                        ? `${sortedGames.length} games`
+                        : todaysGamesCountLabel({
+                            shown: sortedGames.length,
+                            total: slateGames.length,
+                            view: emptyView,
+                          })}
                 </span>
               </div>
               {previewActive && !previewPending && previewState !== 'error' ? (
@@ -501,16 +586,14 @@ export default function BettingDashboard(props: PageProps) {
               ) : sortedGames.length === 0 ? (
                 <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-8 text-center">
                   <p className="type-section-heading text-[#063f46]" data-slate-empty>
-                    {scoreboardAvailability === 'ready'
-                      ? emptyGamesMessage
-                      : todaysGamesUnavailableCopy(scoreboardAvailability === 'disabled' ? 'disabled' : 'error')}
+                    {emptyView?.message}
                   </p>
-                  {scoreboardAvailability === 'ready' ? (
+                  {emptyView?.showResearchLinks ? (
                   <p className="type-body mt-2 text-cc-secondary">
                     You can still research historical props or open a parlay workspace.
                   </p>
                   ) : null}
-                  {scoreboardAvailability === 'ready' ? (
+                  {emptyView?.showResearchLinks ? (
                   <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                     <Link
                       href="/betting/props-explorer"
@@ -525,6 +608,19 @@ export default function BettingDashboard(props: PageProps) {
                       Open Workspace
                     </Link>
                   </div>
+                  ) : null}
+                  {emptyView?.showClearFilters ? (
+                  <button
+                    type="button"
+                    className="type-interactive mt-4 inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[#075B5C] px-4 text-[#075B5C] hover:bg-[#55ddb1]/20"
+                    onClick={() => {
+                      setSearchValue('');
+                      setShowFavoritesOnly(false);
+                      setShowCloseMatchups(false);
+                    }}
+                  >
+                    Clear filters
+                  </button>
                   ) : null}
                 </div>
               ) : (

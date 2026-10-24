@@ -5,10 +5,41 @@
  */
 
 import { etYmd } from '@/lib/games/status-sync-query';
-import { isScoreboardSeasonType, type ScoreboardSeasonType, type StoredOddsQuote } from './contract';
+import {
+  expectedSeasonTypes,
+  scoreboardDateCoverage,
+  type ScoreboardCoverage,
+} from './coverage';
+import {
+  isScoreboardSeasonType,
+  type ScoreboardResponse,
+  type ScoreboardSeasonType,
+  type StoredOddsQuote,
+} from './contract';
 import { isScoreboardMarketServingEnabled, isScoreboardServingEnabled } from './flags';
 import { buildScoreboardResponse } from './response';
 import type { ScoreboardStore } from './store';
+
+/** Local only. `contract.ts` stays unchanged; older clients ignore this field. */
+type ScoreboardResponseWithCoverage = ScoreboardResponse & { coverage?: ScoreboardCoverage };
+
+const UNKNOWN_COVERAGE: ScoreboardCoverage = { state: 'unknown', last_games_request_at: null };
+
+/** Clock reads never fail the games response. A throw, or no calendar, becomes unknown. */
+async function coverageFor(store: ScoreboardStore, date: string, now: Date): Promise<ScoreboardCoverage> {
+  try {
+    const types = expectedSeasonTypes(date);
+    const lastRequestBySeasonType: Partial<Record<ScoreboardSeasonType, string | null>> = {};
+    if (types) {
+      for (const seasonType of types) {
+        lastRequestBySeasonType[seasonType] = await store.loadLastGamesRequestAt(seasonType);
+      }
+    }
+    return scoreboardDateCoverage({ date, now, lastRequestBySeasonType });
+  } catch {
+    return UNKNOWN_COVERAGE;
+  }
+}
 
 const ALLOWED_PARAMS = new Set(['date', 'season_type']);
 const YMD = /^\d{4}-\d{2}-\d{2}$/;
@@ -60,9 +91,14 @@ export async function serveScoreboard(input: {
         odds = undefined;
       }
     }
+    const coverage = await coverageFor(store, date, input.now);
+    const body: ScoreboardResponseWithCoverage = {
+      ...buildScoreboardResponse({ date, now: input.now, games, lines, odds }),
+      coverage,
+    };
     return {
       status: 200,
-      body: buildScoreboardResponse({ date, now: input.now, games, lines, odds }),
+      body,
       headers: { 'Cache-Control': SCOREBOARD_CACHE_CONTROL },
     };
   } catch {
