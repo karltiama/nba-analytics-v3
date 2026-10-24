@@ -25,7 +25,7 @@ import {
   SCOREBOARD_TIP_WINDOW_GRACE_MS,
   staleness,
 } from '@/lib/scoreboard/response';
-import { serveScoreboard } from '@/lib/scoreboard/serve';
+import { SCOREBOARD_CACHE_CONTROL, serveScoreboard } from '@/lib/scoreboard/serve';
 import { createMemoryScoreboardStore, createPgScoreboardStore } from '@/lib/scoreboard/store';
 
 const ROOT = path.resolve(__dirname, '../../..');
@@ -532,6 +532,123 @@ describe('GET /api/scoreboard', () => {
       },
     });
     expect(r.status).toBe(503);
+    expect(r.body).toEqual({ error: 'scoreboard_store_unavailable' });
+    expect(r.headers['Cache-Control']).toBe('no-store');
+  });
+
+  it('a 200 includes coverage computed from the collector clocks', async () => {
+    const store = createMemoryScoreboardStore();
+    const now = new Date('2026-10-23T23:18:00-04:00');
+    const clock = new Date(now.getTime() - 5 * 60_000).toISOString();
+    await store.recordGamesRequest('regular', clock, 'req-clock');
+    await store.upsertGames([stored({ etDate: '2026-10-23', seasonType: 'regular', gameId: '6001' })]);
+    const calls: string[] = [];
+    const r = await serveScoreboard({
+      env: { SCOREBOARD_SERVING_ENABLED: '1' },
+      params: params('date=2026-10-23'),
+      now,
+      store: () => ({
+        ...store,
+        loadLastGamesRequestAt: async (seasonType) => {
+          calls.push(seasonType);
+          return store.loadLastGamesRequestAt(seasonType);
+        },
+      }),
+    });
+    expect(r.status).toBe(200);
+    expect(r.headers['Cache-Control']).toBe(SCOREBOARD_CACHE_CONTROL);
+    expect(calls).toEqual(['regular']);
+    const body = r.body as {
+      schema_version: string;
+      games: Array<{ game_id: string }>;
+      coverage: { state: string; last_games_request_at: string | null };
+    };
+    expect(body.schema_version).toBe('scoreboard.v1');
+    expect(body.games.map((g) => g.game_id)).toEqual(['6001']);
+    expect(body.coverage).toEqual({ state: 'covered', last_games_request_at: clock });
+  });
+
+  it('asks for both postseason clocks and reports the older one', async () => {
+    const store = createMemoryScoreboardStore();
+    const now = new Date('2026-04-14T18:00:00-04:00');
+    const older = '2026-04-14T15:00:00-04:00';
+    const newer = '2026-04-14T17:30:00-04:00';
+    await store.recordGamesRequest('playoffs', older, 'req-po');
+    await store.recordGamesRequest('playin', newer, 'req-pi');
+    const calls: string[] = [];
+    const r = await serveScoreboard({
+      env: { SCOREBOARD_SERVING_ENABLED: '1' },
+      params: params('date=2026-04-14'),
+      now,
+      store: () => ({
+        ...store,
+        loadLastGamesRequestAt: async (seasonType) => {
+          calls.push(seasonType);
+          return store.loadLastGamesRequestAt(seasonType);
+        },
+      }),
+    });
+    expect(r.status).toBe(200);
+    expect(calls).toEqual(['playin', 'playoffs']);
+    expect((r.body as { coverage: { state: string; last_games_request_at: string } }).coverage).toEqual({
+      state: 'covered',
+      last_games_request_at: older,
+    });
+  });
+
+  it('a coverage read failure is still 200 with games and unknown coverage', async () => {
+    const store = createMemoryScoreboardStore();
+    await store.upsertGames([stored({ etDate: '2026-10-23', seasonType: 'regular', gameId: '6002' })]);
+    const r = await serveScoreboard({
+      env: { SCOREBOARD_SERVING_ENABLED: '1' },
+      params: params('date=2026-10-23'),
+      now: new Date('2026-10-23T23:18:00-04:00'),
+      store: () => ({
+        ...store,
+        loadLastGamesRequestAt: async () => {
+          throw new Error('clock down');
+        },
+      }),
+    });
+    expect(r.status).toBe(200);
+    expect(r.headers['Cache-Control']).toBe(SCOREBOARD_CACHE_CONTROL);
+    const body = r.body as { games: Array<{ game_id: string }>; coverage: { state: string; last_games_request_at: null } };
+    expect(body.games.map((g) => g.game_id)).toEqual(['6002']);
+    expect(body.coverage).toEqual({ state: 'unknown', last_games_request_at: null });
+  });
+
+  it('does not read collector clocks when the calendar cannot name a season type', async () => {
+    const store = createMemoryScoreboardStore();
+    let reads = 0;
+    const r = await serveScoreboard({
+      env: { SCOREBOARD_SERVING_ENABLED: '1' },
+      params: params('date=2030-12-01'),
+      now: new Date('2030-12-01T12:00:00-05:00'),
+      store: () => ({
+        ...store,
+        loadLastGamesRequestAt: async () => {
+          reads += 1;
+          return null;
+        },
+      }),
+    });
+    expect(r.status).toBe(200);
+    expect(reads).toBe(0);
+    expect((r.body as { coverage: { state: string } }).coverage.state).toBe('unknown');
+  });
+
+  it('serving disabled keeps the same 503 body and does not read the store', async () => {
+    const r = await serveScoreboard({
+      env: {},
+      params: params('date=2026-10-23'),
+      now: new Date('2026-10-23T23:18:00-04:00'),
+      store: () => {
+        throw new Error('store should not be opened');
+      },
+    });
+    expect(r.status).toBe(503);
+    expect(r.body).toEqual({ error: 'scoreboard_unavailable', reason: 'serving_disabled' });
+    expect(r.headers['Cache-Control']).toBe('no-store');
   });
 });
 
@@ -572,7 +689,7 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
   });
 
   it('nothing outside the scoreboard reads display tables or imports scoreboard modules', () => {
-    const presentationImport = /@\/lib\/scoreboard\/(client|contract|slate-merge|present)\b/;
+    const presentationImport = /@\/lib\/scoreboard\/(client|contract|slate-merge|present|empty-state)\b/;
     const others = ['lib', 'app', 'lambda', 'scripts']
       .flatMap((d) => walk(d))
       .filter((f) => !f.includes('/__tests__/'))
