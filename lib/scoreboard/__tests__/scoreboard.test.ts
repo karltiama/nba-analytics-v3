@@ -704,6 +704,21 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
         expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
         continue;
       }
+      if (f === 'lib/ops/platform-health.ts') {
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect(code, f).toMatch(/FROM display\.scoreboard_collector_state/);
+        expect(code, f).not.toMatch(/lib\/scoreboard/);
+        continue;
+      }
+      if (f === 'lib/ops/ingestion-observability.ts') {
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect(code, f).not.toMatch(/FROM\s+display\.scoreboard_/i);
+        expect(code, f).toMatch(/display\.scoreboard_collector_state max\(last_games_request_at\)/);
+        expect(code, f).not.toMatch(/lib\/scoreboard/);
+        continue;
+      }
       expect(src, f).not.toMatch(/display\.scoreboard_/);
       if (f === 'lib/pregame-matchup/load.ts' || f === 'lib/pregame-matchup/quote.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');

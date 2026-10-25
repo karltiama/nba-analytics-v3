@@ -60,6 +60,7 @@ export const FEED_SLA_HOURS = {
   market_movement_capture: 12,
   game_status_sync: 1,
   shadow_projection: 6,
+  scoreboard: 4,
 } as const;
 
 export type IngestionFamilyId = keyof typeof FEED_SLA_HOURS;
@@ -201,6 +202,15 @@ export const INGESTION_FAMILY_CATALOG: IngestionFamilyCatalogEntry[] = [
     freshnessSource: 'analytics.shadow_run_records.finished_at',
     pullRunTable: 'analytics.shadow_run_records',
   },
+  {
+    id: 'scoreboard',
+    label: "Display scoreboard (Today's Games)",
+    defaultConfig: 'FROZEN',
+    goatRequired: false,
+    deployedLambda: false,
+    freshnessSource: 'display.scoreboard_collector_state max(last_games_request_at)',
+    pullRunTable: null,
+  },
 ];
 
 export type FreshnessClassification = {
@@ -282,7 +292,7 @@ export function classifyScheduleMismatch(input: {
     return { health: 'FROZEN_EXPECTED', reason: 'intended frozen + actually disabled' };
   }
   if (!input.liveIngestionEnabled && input.observed === 'ENABLED') {
-    return { health: 'DEGRADED', reason: 'intended frozen + accidentally enabled' };
+    return { health: 'DEGRADED', reason: 'intended frozen in web env; AWS schedule enabled' };
   }
   if (input.liveIngestionEnabled && input.observed === 'DISABLED') {
     return { health: 'FAILED', reason: 'intended active + actually disabled' };

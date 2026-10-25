@@ -59,6 +59,27 @@ describe('collectAwsIngestionSnapshot', () => {
     expect(snapshot.queueDepth).toBe(1);
   });
 
+  it('a scoreboard collector read failure is UNKNOWN and leaves other rows queried', async () => {
+    const snapshot = await collectAwsIngestionSnapshot(
+      ports({
+        getFunction: async (name) => {
+          if (name === 'scoreboard-collector') throw new Error('scoreboard aws down');
+          return { exists: true, state: 'Active', reservedConcurrentExecutions: null };
+        },
+      })
+    );
+    const scoreboard = snapshot.lambdas.find((row) => row.id === 'scoreboard');
+    expect(scoreboard).toMatchObject({
+      queried: false,
+      scheduleObserved: 'UNKNOWN',
+      deployState: 'UNKNOWN',
+      exists: null,
+    });
+    const others = snapshot.lambdas.filter((row) => row.id !== 'scoreboard');
+    expect(others.length).toBeGreaterThan(0);
+    expect(others.every((row) => row.queried)).toBe(true);
+  });
+
   it('optional missing Lambda is NOT_DEPLOYED', async () => {
     const snapshot = await collectAwsIngestionSnapshot(
       ports({

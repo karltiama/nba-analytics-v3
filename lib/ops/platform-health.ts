@@ -600,7 +600,7 @@ export async function collectPlatformHealth(opts?: {
   const prune: PlatformHealthReport['prune'] = {
     ...pruneClass,
     note:
-      'Prune audits are console JSON only (not stored in Postgres). A max-delete refusal is a safe skip, not a generic failure. Execute remains gated by freeze/env.',
+      'Prune audits are console JSON only (not stored in Postgres). A deletion-cap refusal is a safe skip, not a generic failure. Execute remains gated by freeze/env.',
   };
 
   const s3Section: PlatformHealthReport['s3'] = {
@@ -649,6 +649,13 @@ export async function collectPlatformHealth(opts?: {
       ),
     null
   );
+  const scoreboardFreshness = await safeSection(
+    () =>
+      loadServingFreshness(
+        'SELECT max(last_games_request_at) AS ts FROM display.scoreboard_collector_state'
+      ),
+    null
+  );
   const awsLambdas = opts?.aws?.lambdas ?? [];
   const awsQueues = opts?.aws?.queues ?? [];
   const families: IngestionFamilyHealth[] = INGESTION_FAMILY_CATALOG.map((family) => {
@@ -665,6 +672,8 @@ export async function collectPlatformHealth(opts?: {
           ? bbrefFreshness
           : family.id === 'shadow_projection'
             ? shadowFreshness
+            : family.id === 'scoreboard'
+              ? scoreboardFreshness
           : family.id === 'injuries'
             ? lastSuccessBySource.get('injuries') ?? injuryServing.latestSnapshotAt
             : family.id === 'game_odds'
