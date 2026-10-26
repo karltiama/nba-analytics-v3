@@ -12,6 +12,7 @@ import {
   classifyScheduleMismatch,
   classifyVolumeAnomaly,
   correlateExecutionAndFreshness,
+  FEED_SLA_HOURS,
   INGESTION_FAMILY_CATALOG,
   resolveFeedConfig,
   rollupScheduleObserved,
@@ -214,17 +215,26 @@ describe('job partial / queues / schedule mismatch', () => {
 
   it('schedule mismatch health is accurate', () => {
     expect(
-      classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'DISABLED' }).health
-    ).toBe('FROZEN_EXPECTED');
+      classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'DISABLED' })
+    ).toEqual({ health: 'FROZEN_EXPECTED', reason: 'intended frozen + actually disabled' });
     expect(
-      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'DISABLED' }).health
-    ).toBe('FAILED');
+      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'DISABLED' })
+    ).toEqual({ health: 'FAILED', reason: 'intended active + actually disabled' });
     expect(
-      classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'ENABLED' }).health
-    ).toBe('DEGRADED');
+      classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'ENABLED' })
+    ).toEqual({ health: 'DEGRADED', reason: 'intended frozen in web env; AWS schedule enabled' });
     expect(
-      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'ENABLED' }).health
-    ).toBe('HEALTHY');
+      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'ENABLED' })
+    ).toEqual({ health: 'HEALTHY', reason: 'intended active + actually enabled' });
+    expect(
+      classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'UNKNOWN' })
+    ).toEqual({
+      health: 'FROZEN_EXPECTED',
+      reason: 'intended frozen; AWS schedule state not queried (assume DISABLED)',
+    });
+    expect(
+      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'UNKNOWN' })
+    ).toEqual({ health: 'UNKNOWN', reason: 'intended active; AWS schedule state not queried' });
   });
 
   it('non-zero DLQ is visible even while frozen', () => {
@@ -401,6 +411,80 @@ describe('activation-aware missed-run', () => {
     });
     expect(r.grade).toBe('PARTIAL');
     expect(r.health).toBe('DEGRADED');
+  });
+
+  it('scoreboard family: 4h clock SLA, unset cadence, frozen missed-run is NOT_EXPECTED', () => {
+    const family = INGESTION_FAMILY_CATALOG.find((f) => f.id === 'scoreboard');
+    expect(family).toMatchObject({
+      id: 'scoreboard',
+      label: "Display scoreboard (Today's Games)",
+      defaultConfig: 'FROZEN',
+      goatRequired: false,
+      deployedLambda: false,
+      freshnessSource: 'display.scoreboard_collector_state max(last_games_request_at)',
+      pullRunTable: null,
+    });
+    expect(FEED_SLA_HOURS.scoreboard).toBe(4);
+    expect(INGESTION_CADENCE.scoreboard.intervalHours).toBeNull();
+    expect(INGESTION_CADENCE.scoreboard.graceHours).toBe(0);
+    const frozen = resolveFeedConfig({
+      family: family!,
+      liveIngestionEnabled: false,
+      freezeSkipsMutations: true,
+      goatSubscriptionActive: false,
+    });
+    expect(frozen).toBe('FROZEN');
+    expect(
+      classifyMissedRun({
+        config: frozen,
+        scheduleObserved: 'ENABLED',
+        ...INGESTION_CADENCE.scoreboard,
+        lastInvocationAt: null,
+        invocationQueried: true,
+        now,
+      }).status
+    ).toBe('NOT_EXPECTED');
+    expect(
+      classifyMissedRun({
+        config: 'ACTIVE',
+        scheduleObserved: 'ENABLED',
+        ...INGESTION_CADENCE.scoreboard,
+        lastInvocationAt: now,
+        invocationQueried: true,
+        now,
+      }).status
+    ).toBe('CADENCE_UNSET');
+    const active = resolveFeedConfig({
+      family: family!,
+      liveIngestionEnabled: true,
+      freezeSkipsMutations: false,
+      goatSubscriptionActive: false,
+    });
+    expect(active).toBe('ACTIVE');
+    expect(
+      classifyFeedFreshness({
+        config: active,
+        lastSuccessAt: new Date(now.getTime() - 60 * 60 * 1000),
+        now,
+        slaHours: FEED_SLA_HOURS.scoreboard,
+      }).state
+    ).toBe('FRESH');
+    expect(
+      classifyFeedFreshness({
+        config: active,
+        lastSuccessAt: new Date(now.getTime() - 5 * 60 * 60 * 1000),
+        now,
+        slaHours: FEED_SLA_HOURS.scoreboard,
+      }).state
+    ).toBe('STALE');
+    expect(
+      classifyFeedFreshness({
+        config: active,
+        lastSuccessAt: null,
+        now,
+        slaHours: FEED_SLA_HOURS.scoreboard,
+      })
+    ).toMatchObject({ state: 'UNAVAILABLE', health: 'UNKNOWN', reason: 'no successful observation' });
   });
 
   it('game_status_sync family: frozen is NOT_EXPECTED; active+recent OK; disabled FAILED; overdue MISSED', () => {

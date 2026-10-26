@@ -27,4 +27,24 @@ describe('ops AWS ingestion resource catalog names', () => {
     expect(sync?.functionName).toBe('game-status-sync');
     expect(sync?.schedulerSchedules).toEqual(['nba-game-status-sync-schedule']);
   });
+
+  it('scoreboard collector defaults to the Terraform names and stays optional', () => {
+    const { lambdas } = ingestionAwsResources();
+    const scoreboard = lambdas.find((row) => row.id === 'scoreboard');
+    expect(scoreboard).toMatchObject({
+      familyId: 'scoreboard',
+      functionName: 'scoreboard-collector',
+      schedulerSchedules: ['nba-scoreboard-schedule'],
+      optional: true,
+    });
+    const overridden = ingestionAwsResources({
+      OPS_LAMBDA_SCOREBOARD: 'custom-scoreboard',
+      OPS_SCOREBOARD_SCHEDULE: 'custom-schedule',
+    });
+    expect(overridden.lambdas.find((row) => row.id === 'scoreboard')).toMatchObject({
+      functionName: 'custom-scoreboard',
+      schedulerSchedules: ['custom-schedule'],
+      optional: true,
+    });
+  });
 });

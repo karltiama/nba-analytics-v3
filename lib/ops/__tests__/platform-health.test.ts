@@ -267,6 +267,57 @@ describe('collectPlatformHealth', () => {
     expect(report.scheduleMismatch.status).toBe('FROZEN_EXPECTED');
   });
 
+  it('scoreboard freshness follows the collector clock', async () => {
+    const scoreboardSql = (sql: string) => sql.includes('display.scoreboard_collector_state');
+    mockQueryOne.mockImplementation(async (sql: string) => {
+      if (scoreboardSql(sql)) return { ts: '2026-09-06T17:00:00.000Z' };
+      return null;
+    });
+    const fresh = await collectPlatformHealth({
+      env: liveEnv,
+      now,
+      s3: null,
+      liveIngestionEnabled: true,
+      goatSubscriptionActive: false,
+    });
+    const freshRow = fresh.families.find((f) => f.id === 'scoreboard')!;
+    expect(freshRow.config).toBe('ACTIVE');
+    expect(freshRow.freshness).toBe('FRESH');
+    expect(freshRow.lastSuccessAt).toBe('2026-09-06T17:00:00.000Z');
+    expect(
+      mockQueryOne.mock.calls.some(
+        ([sql]) =>
+          String(sql).includes('SELECT max(last_games_request_at) AS ts FROM display.scoreboard_collector_state')
+      )
+    ).toBe(true);
+
+    mockQueryOne.mockImplementation(async (sql: string) => {
+      if (scoreboardSql(sql)) return { ts: '2026-09-06T13:00:00.000Z' };
+      return null;
+    });
+    const stale = await collectPlatformHealth({
+      env: liveEnv,
+      now,
+      s3: null,
+      liveIngestionEnabled: true,
+    });
+    expect(stale.families.find((f) => f.id === 'scoreboard')?.freshness).toBe('STALE');
+
+    mockQueryOne.mockImplementation(async () => null);
+    const missing = await collectPlatformHealth({
+      env: liveEnv,
+      now,
+      s3: null,
+      liveIngestionEnabled: true,
+    });
+    const missingRow = missing.families.find((f) => f.id === 'scoreboard')!;
+    expect(missingRow.freshness).toBe('UNAVAILABLE');
+    expect(missingRow.lastSuccessAt).toBeNull();
+
+    const frozen = await collectPlatformHealth({ env: freezeEnv, now, s3: null });
+    expect(frozen.families.find((f) => f.id === 'scoreboard')?.missedRun).toBe('NOT_EXPECTED');
+  });
+
   it('frozen families never emit missed-run', async () => {
     const report = await collectPlatformHealth({ env: freezeEnv, now, s3: null });
     expect(report.families.every((f) => f.missedRun === 'NOT_EXPECTED')).toBe(true);

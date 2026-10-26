@@ -97,6 +97,13 @@ export function ingestionAwsResources(
         eventBridgeRules: [`${env.OPS_LAMBDA_SHADOW ?? 'shadow-projection'}-schedule`],
         optional: true,
       },
+      {
+        id: 'scoreboard',
+        familyId: 'scoreboard',
+        functionName: env.OPS_LAMBDA_SCOREBOARD ?? 'scoreboard-collector',
+        schedulerSchedules: [env.OPS_SCOREBOARD_SCHEDULE ?? 'nba-scoreboard-schedule'],
+        optional: true,
+      },
     ],
     queues: [
       {
