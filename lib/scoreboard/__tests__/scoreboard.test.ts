@@ -698,43 +698,55 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
       const src = read(f);
       if (f === 'lib/season/schedule-window.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
-        expect(src, f).toMatch(/FROM display\.scoreboard_games/);
-        expect(src, f).toMatch(/FROM analytics\.games/);
-        expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
+        expect.soft(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect.soft(src, f).toMatch(/FROM display\.scoreboard_games/);
+        expect.soft(src, f).toMatch(/FROM analytics\.games/);
+        expect.soft(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
+        continue;
+      }
+      if (f === 'lib/dashboard/stored-odds.ts') {
+        // Reads analytics.game_odds_current, not display tables. Uses the pure quote checks and types only.
+        // The write check covers the SQL alone: the file uses the JS `delete` operator on plain objects.
+        const sql = src.match(/STORED_ODDS_SQL = `([\s\S]*?)`/)?.[1] ?? '';
+        expect.soft(sql, f).toMatch(/FROM analytics\.game_odds_current/);
+        expect.soft(sql, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect.soft(src, f).not.toMatch(/display\.scoreboard_/);
+        for (const imp of src.matchAll(/@\/lib\/scoreboard\/[A-Za-z0-9_-]+/g)) {
+          expect.soft(imp[0], f).toMatch(/^@\/lib\/scoreboard\/(market|contract)$/);
+        }
         continue;
       }
       if (f === 'lib/ops/platform-health.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
-        expect(code, f).toMatch(/FROM display\.scoreboard_collector_state/);
-        expect(code, f).not.toMatch(/lib\/scoreboard/);
+        expect.soft(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect.soft(code, f).toMatch(/FROM display\.scoreboard_collector_state/);
+        expect.soft(code, f).not.toMatch(/lib\/scoreboard/);
         continue;
       }
       if (f === 'lib/ops/ingestion-observability.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
-        expect(code, f).not.toMatch(/FROM\s+display\.scoreboard_/i);
-        expect(code, f).toMatch(/display\.scoreboard_collector_state max\(last_games_request_at\)/);
-        expect(code, f).not.toMatch(/lib\/scoreboard/);
+        expect.soft(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect.soft(code, f).not.toMatch(/FROM\s+display\.scoreboard_/i);
+        expect.soft(code, f).toMatch(/display\.scoreboard_collector_state max\(last_games_request_at\)/);
+        expect.soft(code, f).not.toMatch(/lib\/scoreboard/);
         continue;
       }
-      expect(src, f).not.toMatch(/display\.scoreboard_/);
+      expect.soft(src, f).not.toMatch(/display\.scoreboard_/);
       if (f === 'lib/pregame-matchup/load.ts' || f === 'lib/pregame-matchup/quote.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
-        expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|lambda|normalize|planner)\b/);
-        expect(src, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center)/);
+        expect.soft(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect.soft(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|lambda|normalize|planner)\b/);
+        expect.soft(src, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center)/);
         continue;
       }
       if (f === 'app/dashboard/page.tsx') {
         for (const imp of src.matchAll(/@\/lib\/scoreboard\/[A-Za-z0-9_-]+/g)) {
-          expect(imp[0], f).toMatch(presentationImport);
+          expect.soft(imp[0], f).toMatch(presentationImport);
         }
-        expect(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
+        expect.soft(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);
         continue;
       }
-      expect(src, f).not.toMatch(/lib\/scoreboard/);
+      expect.soft(src, f).not.toMatch(/lib\/scoreboard/);
     }
   });
 
