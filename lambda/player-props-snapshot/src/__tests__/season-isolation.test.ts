@@ -67,7 +67,7 @@ describe('props target eligibility', () => {
       now: new Date('2026-10-21T01:20:00.000Z'),
     });
     warn.mockRestore();
-    expect(targets).toEqual([{ gameId: '101', bdlGameId: 101 }]);
+    expect(targets).toEqual([{ gameId: '101', bdlGameId: 101, startTime: '2026-10-21T02:30:00.000Z' }]);
   });
 });
 
@@ -152,6 +152,26 @@ describe('props pagination', () => {
     await expect(fetchPlayerPropsForGame('k', 21717855, { limiter: limiter(), baseFetch })).rejects.toThrow(
       /page 2 returned row for game 21717856/
     );
+  });
+
+  it('a 429 fails on the first response and does not issue another page', async () => {
+    const baseFetch = vi.fn(async () => json({ error: 'slow down' }, 429));
+    await expect(fetchPlayerPropsForGame('k', 21717855, { limiter: limiter(), baseFetch })).rejects.toThrow(/429/);
+    expect(baseFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call the provider when the attempt hook refuses the page', async () => {
+    const baseFetch = vi.fn(async () => json({ data: [prop(1)] }));
+    await expect(
+      fetchPlayerPropsForGame('k', 21717855, {
+        limiter: limiter(),
+        baseFetch,
+        onBeforeRequest: async () => {
+          throw new Error('budget');
+        },
+      })
+    ).rejects.toThrow(/budget/);
+    expect(baseFetch).toHaveBeenCalledTimes(0);
   });
 
   it('a truncated JSON body fails the whole fetch', async () => {

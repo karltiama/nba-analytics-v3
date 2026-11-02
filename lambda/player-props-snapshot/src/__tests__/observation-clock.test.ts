@@ -152,9 +152,12 @@ describe('writers keep clocks separate', () => {
     expect(values[12]).toEqual(at(60));
     expect(values[13]).toEqual(at(48));
     expect(values[15]).toEqual(at(120));
-    expect(sql.replace(/\s+/g, ' ')).toContain(
-      'WHERE analytics.player_props_current.observed_at IS NULL OR excluded.observed_at >= analytics.player_props_current.observed_at'
+    const flat = sql.replace(/\s+/g, ' ');
+    expect(flat).toContain(
+      'WHERE (analytics.player_props_current.observed_at IS NULL OR excluded.observed_at >= analytics.player_props_current.observed_at)'
     );
+    expect(flat).toContain('JOIN analytics.games g ON g.game_id = v.game_id::text');
+    expect(flat).toContain('g.start_time > clock_timestamp()');
   });
 });
 

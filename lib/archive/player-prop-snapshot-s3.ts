@@ -1,6 +1,7 @@
 import { S3Client, GetObjectCommand, HeadObjectCommand, ListObjectsV2Command, PutObjectCommand } from '@aws-sdk/client-s3';
 import {
   type ArchiveWriteOutcome,
+  type ConditionalPutResult,
   type InMemoryS3Object,
   type PlayerPropArchiveEnvelope,
   gunzipEnvelope,
@@ -37,17 +38,25 @@ export class PlayerPropArchiveS3 {
     }
   }
 
-  async put(key: string, body: Buffer, metadata: Record<string, string>): Promise<void> {
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-        Body: body,
-        ContentType: 'application/json',
-        ContentEncoding: 'gzip',
-        Metadata: metadata,
-      })
-    );
+  async putIfAbsent(key: string, body: Buffer, metadata: Record<string, string>): Promise<ConditionalPutResult> {
+    try {
+      await this.client.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+          Body: body,
+          ContentType: 'application/json',
+          ContentEncoding: 'gzip',
+          Metadata: metadata,
+          IfNoneMatch: '*',
+        })
+      );
+      return 'created';
+    } catch (err) {
+      const conditional = classifyConditionalPutError(err);
+      if (conditional) return conditional;
+      throw err;
+    }
   }
 
   async readEnvelope(key: string): Promise<PlayerPropArchiveEnvelope | null> {
@@ -84,6 +93,17 @@ function lowercaseMeta(meta: Record<string, string> | undefined): Record<string,
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(meta ?? {})) out[k.toLowerCase()] = v;
   return out;
+}
+
+function classifyConditionalPutError(err: unknown): Exclude<ConditionalPutResult, 'created'> | null {
+  if (typeof err !== 'object' || err == null) return null;
+  const e = err as { name?: string; Code?: string; $metadata?: { httpStatusCode?: number } };
+  const status = e.$metadata?.httpStatusCode;
+  if (status === 412 || e.name === 'PreconditionFailed' || e.Code === 'PreconditionFailed') return 'precondition_failed';
+  if (status === 409 || e.name === 'ConditionalRequestConflict' || e.Code === 'ConditionalRequestConflict') {
+    return 'conditional_conflict';
+  }
+  return null;
 }
 
 function isNotFound(err: unknown): boolean {

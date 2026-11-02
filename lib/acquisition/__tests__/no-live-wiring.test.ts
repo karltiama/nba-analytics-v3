@@ -6,7 +6,7 @@ const ROOT = path.resolve(__dirname, '../../..');
 const SCAN_DIRS = ['lambda', 'lib', 'app', 'scripts', 'infra'];
 const SKIP = new Set(['node_modules', '.next', 'dist', 'build', '.terraform', '__tests__']);
 const ACQ_DIR = path.join(ROOT, 'lib', 'acquisition');
-const IMPORT_PATTERN = /lib\/acquisition|from ['"]\.{1,2}\/(?:\.\.\/)*acquisition/;
+const IMPORT_PATTERN = /lib\/acquisition(?:['"/]|$)|from ['"](?:\.{1,2}\/)+(?:\.\.\/)*acquisition['"]/;
 
 function walk(dir: string, out: string[]): void {
   let entries: string[];

@@ -14,6 +14,7 @@ create table if not exists raw.player_prop_game_runs (
   archive_error          text,
   archive_key            text,
   error_message          text,
+  provider_attempts      integer not null default 0,
   universe               text,
   started_at             timestamptz not null default now(),
   completed_at           timestamptz,
@@ -21,7 +22,8 @@ create table if not exists raw.player_prop_game_runs (
   primary key (pull_run_id, game_id),
   constraint player_prop_game_runs_status_check check (status in ('started', 'success', 'error')),
   constraint player_prop_game_runs_archive_status_check check (archive_status in ('pending', 'archived', 'failed')),
-  constraint player_prop_game_runs_universe_check check (universe is null or universe in ('broad', 'near_tip'))
+  constraint player_prop_game_runs_universe_check check (universe is null or universe in ('broad', 'near_tip')),
+  constraint player_prop_game_runs_provider_attempts_check check (provider_attempts >= 0)
 );
 
 create index if not exists raw_player_prop_game_runs_game_idx
