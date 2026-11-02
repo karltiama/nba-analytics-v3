@@ -306,8 +306,7 @@ export type MarketSelection =
   | { status: 'unavailable' | 'stale' | 'not_pregame'; market: null; reason: string };
 
 /**
- * One vendor's current pre-game quote for one scheduled game, including a game whose listed
- * tip has passed and that the provider has not started, or a reason there is none.
+ * One vendor's current pre-game quote for one scheduled game, or a reason there is none.
  * Order: fresher class first, then a vendor with all three markets, then more valid markets,
  * then MARKET_VENDOR_ORDER. Markets are never combined across vendors.
  */
@@ -322,6 +321,7 @@ export function selectMarket(input: {
   const t = now.getTime();
   if (game.lifecycle !== 'scheduled') return { status: 'not_pregame', market: null, reason: `lifecycle ${game.lifecycle}` };
   const tip = tipMs(game);
+  if (tip != null && t >= tip) return { status: 'not_pregame', market: null, reason: 'past_scheduled_tip' };
   if (input.gameStale) return { status: 'not_pregame', market: null, reason: 'game_status_stale' };
 
   const candidates: Array<{ q: StoredOddsQuote; checked: CheckedMarkets; count: number; fresh: boolean }> = [];

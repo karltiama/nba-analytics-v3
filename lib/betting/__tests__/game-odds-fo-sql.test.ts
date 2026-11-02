@@ -10,7 +10,7 @@ function read(rel: string): string {
 
 describe('odds live transform First Observed freeze', () => {
   it('does not overwrite open_* on Current refresh', () => {
-    const src = read('lambda/odds-pre-game-snapshot/index.ts');
+    const src = read('lambda/odds-pre-game-snapshot/pregame-market.ts');
     expect(src).toMatch(
       /open_total = COALESCE\(analytics\.game_line_movement_summary\.open_total, excluded\.open_total\)/
     );
