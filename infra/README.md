@@ -1,3 +1,5 @@
+⚠️ Apply freeze — see the 'Terraform apply freeze' section in `/AGENTS.md`.
+
 # Terraform – AWS Lambdas (ingestion jobs)
 
 Terraform setup to manage the **nightly-bdl-updater**, **odds-pre-game-snapshot**, **injuries-snapshot**, **player-props** (controller + worker), and **boxscore-scraper** Lambdas and their optional schedules.
