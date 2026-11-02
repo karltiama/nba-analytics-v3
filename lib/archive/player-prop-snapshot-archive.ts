@@ -459,6 +459,9 @@ export type InMemoryS3Object = {
   metadata: Record<string, string>;
 };
 
+/** Create-only put. `precondition_failed` is HTTP 412. `conditional_conflict` is HTTP 409. */
+export type ConditionalPutResult = 'created' | 'precondition_failed' | 'conditional_conflict';
+
 export class InMemoryArchiveStore {
   readonly objects = new Map<string, InMemoryS3Object>();
 
@@ -471,20 +474,51 @@ export class InMemoryArchiveStore {
     return this.objects.get(key) ?? null;
   }
 
-  async put(key: string, body: Buffer, metadata: Record<string, string>): Promise<void> {
+  async putIfAbsent(
+    key: string,
+    body: Buffer,
+    metadata: Record<string, string>
+  ): Promise<ConditionalPutResult> {
     if (isProtectedHistoricalKey(key)) {
       throw new Error(`Refusing to write protected historical prefix: ${key}`);
     }
+    if (this.objects.has(key)) return 'precondition_failed';
     this.objects.set(key, { body, metadata });
+    return 'created';
   }
 }
 
+/**
+ * Safe text for archive_error and logs. HTTP 403 on the conditional put stays a failure.
+ * It is not evidence that the object is absent, and the caller must not put again.
+ */
+export function describeArchiveStoreError(operation: 'head' | 'get' | 'put', err: unknown): string {
+  const record =
+    typeof err === 'object' && err != null
+      ? (err as { name?: unknown; message?: unknown; $metadata?: { httpStatusCode?: unknown } })
+      : {};
+  const name = typeof record.name === 'string' && record.name ? record.name : 'Error';
+  const message = typeof record.message === 'string' && record.message ? record.message : 'archive store failed';
+  const status = record.$metadata?.httpStatusCode;
+  const http = typeof status === 'number' ? ` http=${status}` : '';
+  return `s3 ${operation} failed: ${name}: ${message.slice(0, 300)}${http}`;
+}
+
+function archiveStoreFailure(operation: 'head' | 'get' | 'put', key: string, err: unknown): ArchiveWriteOutcome {
+  return { ok: false, error: 'write_failed', message: describeArchiveStoreError(operation, err), key };
+}
+
+export type ArchivePutStore = {
+  get(key: string): Promise<InMemoryS3Object | null>;
+  putIfAbsent(key: string, body: Buffer, metadata: Record<string, string>): Promise<ConditionalPutResult>;
+};
+
+/**
+ * Create the object with one conditional put. HTTP 412 or 409 reads the object once
+ * and compares it. Neither status starts a second put.
+ */
 export async function writeArchiveObject(args: {
-  store: {
-    head(key: string): Promise<{ metadata: Record<string, string> } | null>;
-    get(key: string): Promise<InMemoryS3Object | null>;
-    put(key: string, body: Buffer, metadata: Record<string, string>): Promise<void>;
-  };
+  store: ArchivePutStore;
   key: string;
   envelope: PlayerPropArchiveEnvelope;
 }): Promise<ArchiveWriteOutcome> {
@@ -492,38 +526,13 @@ export async function writeArchiveObject(args: {
   if (isProtectedHistoricalKey(args.key)) {
     return { ok: false, error: 'protected_prefix', message: `protected key ${args.key}`, key: args.key };
   }
-  const existingHead = await args.store.head(args.key);
-  let existing = existingHead ? parseS3UserMetadata(existingHead.metadata) : null;
-  if (existingHead && !existing?.checksum) {
-    const body = await args.store.get(args.key);
-    if (body) {
-      try {
-        const env = gunzipEnvelope(body.body);
-        existing = envelopeToObjectMeta(env);
-      } catch {
-        existing = existing ?? {};
-      }
-    }
-  }
-  const decision = decideIdempotentWrite({
-    key: args.key,
-    existing: existingHead ? existing : null,
-    next,
-  });
-  if (decision.action === 'conflict') {
-    return { ok: false, error: 'conflict', message: decision.message, key: args.key };
-  }
-  if (decision.action === 'skip') {
-    return {
-      ok: true,
-      result: 'already_exists',
-      key: args.key,
-      rowCount: next.rowCount,
-      checksum: next.checksum,
-    };
-  }
+  let putResult: ConditionalPutResult;
   try {
-    await args.store.put(args.key, gzipEnvelope(args.envelope), s3UserMetadata(next));
+    putResult = await args.store.putIfAbsent(args.key, gzipEnvelope(args.envelope), s3UserMetadata(next));
+  } catch (err) {
+    return archiveStoreFailure('put', args.key, err);
+  }
+  if (putResult === 'created') {
     return {
       ok: true,
       result: 'written',
@@ -531,12 +540,52 @@ export async function writeArchiveObject(args: {
       rowCount: next.rowCount,
       checksum: next.checksum,
     };
+  }
+  return compareExistingArchive(args.store, args.key, next, putResult);
+}
+
+async function compareExistingArchive(
+  store: ArchivePutStore,
+  key: string,
+  next: ArchiveObjectMeta,
+  putResult: Exclude<ConditionalPutResult, 'created'>
+): Promise<ArchiveWriteOutcome> {
+  const http = putResult === 'precondition_failed' ? 412 : 409;
+  let body: InMemoryS3Object | null;
+  try {
+    body = await store.get(key);
   } catch (err) {
+    return archiveStoreFailure('get', key, err);
+  }
+  if (!body) {
     return {
       ok: false,
-      error: 'write_failed',
-      message: err instanceof Error ? err.message : 'write failed',
-      key: args.key,
+      error: 'conflict',
+      message: `s3 conditional put http=${http} for ${key}; object was not readable, so no overwrite was attempted`,
+      key,
     };
   }
+  let existing = parseS3UserMetadata(body.metadata);
+  if (!existing.checksum) {
+    try {
+      existing = envelopeToObjectMeta(gunzipEnvelope(body.body));
+    } catch {
+      return {
+        ok: false,
+        error: 'conflict',
+        message: `s3 conditional put http=${http} for ${key}; existing object could not be compared`,
+        key,
+      };
+    }
+  }
+  const decision = decideIdempotentWrite({ key, existing, next });
+  if (decision.action === 'skip') {
+    return { ok: true, result: 'already_exists', key, rowCount: next.rowCount, checksum: next.checksum };
+  }
+  return {
+    ok: false,
+    error: 'conflict',
+    message: decision.action === 'conflict' ? decision.message : `s3 conditional put http=${http} blocked overwrite for ${key}`,
+    key,
+  };
 }

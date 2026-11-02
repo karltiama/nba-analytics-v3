@@ -91,6 +91,7 @@ function toTargets(rows: TargetRow[]): GameTarget[] {
     .map((r) => ({
       gameId: r.game_id,
       bdlGameId: Number.parseInt(r.game_id, 10),
+      startTime: r.start_time == null ? null : new Date(r.start_time).toISOString(),
     }))
     .filter((g) => Number.isFinite(g.bdlGameId));
 }
