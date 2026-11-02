@@ -11,6 +11,7 @@ import {
   injuryLastName,
   PRIOR_BASELINE_SEASON,
   type InjuryLine,
+  type InjuryTeamEntry,
   type PlayerInjuryInput,
 } from './injuries';
 import { buildScheduleLine, SCHEDULE_UNAVAILABLE_TEXT, type ScheduleGameRow, type ScheduleLine } from './schedule';
@@ -23,6 +24,8 @@ export type CardContextEntry = {
     status: InjuryLine['status'];
     text: string;
     as_of: string | null;
+    as_of_label: string | null;
+    teams: InjuryTeamEntry[] | null;
   };
 };
 
@@ -106,7 +109,13 @@ async function read(query: Sql, sql: string, params: unknown[]): Promise<Record<
 }
 
 function injuryEntry(line: InjuryLine): CardContextEntry['injuries'] {
-  return { status: line.status, text: line.text, as_of: line.asOf };
+  return {
+    status: line.status,
+    text: line.text,
+    as_of: line.asOf,
+    as_of_label: line.asOfLabel,
+    teams: line.teams,
+  };
 }
 
 function unavailableInjury(env: Env, now: Date, gameEtDate: string): CardContextEntry['injuries'] {
@@ -274,6 +283,7 @@ export async function loadCardContext(input: {
             homeTeamId: game.homeTeamId,
             awayAbbr: text(game.visitorAbbr) || 'Away',
             homeAbbr: text(game.homeAbbr) || 'Home',
+            season,
             games: (priorBySeason.get(season) ?? []).filter(
               (row) =>
                 row.homeTeamId === game.homeTeamId ||

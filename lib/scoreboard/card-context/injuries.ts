@@ -61,10 +61,20 @@ export type SelectedKeyInjury = {
   baselineKind: BaselineKind;
 };
 
+export type InjuryTeamEntry = {
+  abbr: string;
+  players: Array<{ name: string; status: InjuryStatusLabel }>;
+  extra: number;
+};
+
 export type InjuryLine = {
   status: 'listed' | 'none' | 'unavailable';
   text: string;
   asOf: string | null;
+  /** Full caption, dated when the snapshot's ET date is not the game's ET date. */
+  asOfLabel: string | null;
+  /** Per-team names. Null when the line is unavailable. */
+  teams: InjuryTeamEntry[] | null;
 };
 
 type Env = Record<string, string | undefined>;
@@ -114,6 +124,23 @@ export function formatAsOfEt(instant: Date): string | null {
   const dayPeriod = parts.find((part) => part.type === 'dayPeriod')?.value?.toUpperCase();
   if (!hour || !minute || (dayPeriod !== 'AM' && dayPeriod !== 'PM')) return null;
   return `${hour}:${minute} ${dayPeriod} ET`;
+}
+
+/** "as of 5:00 PM ET", or "as of Nov 1, 5:00 PM ET" when the snapshot is not the game's ET date. */
+export function formatAsOfLabel(instant: Date, gameEtDate: string): string | null {
+  const clock = formatAsOfEt(instant);
+  const etDate = etDateFromInstant(instant);
+  if (!clock || !etDate) return null;
+  if (etDate === gameEtDate) return `as of ${clock}`;
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short',
+    day: 'numeric',
+  }).formatToParts(instant);
+  const month = parts.find((part) => part.type === 'month')?.value;
+  const day = parts.find((part) => part.type === 'day')?.value;
+  if (!month || !day) return null;
+  return `as of ${month} ${day}, ${clock}`;
 }
 
 function displayName(player: PlayerInjuryInput): string {
@@ -168,8 +195,17 @@ function teamNames(players: SelectedKeyInjury[]): string {
   return extra > 0 ? `${names} +${extra}` : names;
 }
 
+function teamEntry(abbr: string, players: SelectedKeyInjury[]): InjuryTeamEntry {
+  const shown = players.slice(0, MAX_INJURY_NAMES_PER_TEAM);
+  return {
+    abbr,
+    players: shown.map((player) => ({ name: player.lastName, status: STATUS_LABEL[player.status] })),
+    extra: Math.max(0, players.length - shown.length),
+  };
+}
+
 function unavailable(): InjuryLine {
-  return { status: 'unavailable', text: INJURY_UNAVAILABLE_TEXT, asOf: null };
+  return { status: 'unavailable', text: INJURY_UNAVAILABLE_TEXT, asOf: null, asOfLabel: null, teams: null };
 }
 
 export function buildInjuryLine(input: {
@@ -217,7 +253,7 @@ export function buildInjuryLine(input: {
   }
 
   const asOfDate = parseInjurySnapshotAt(asOfSource);
-  const asOfLabel = asOfDate ? formatAsOfEt(asOfDate) : null;
+  const asOfLabel = asOfDate ? formatAsOfLabel(asOfDate, input.gameEtDate) : null;
   if (!asOfDate || !asOfLabel) return unavailable();
 
   const awayPlayers = selectKeyInjuries({
@@ -235,10 +271,11 @@ export function buildInjuryLine(input: {
     env: input.env,
   });
   const asOf = asOfDate.toISOString();
+  const teams = [teamEntry(input.away.abbr, awayPlayers), teamEntry(input.home.abbr, homePlayers)];
   if (awayPlayers.length === 0 && homePlayers.length === 0) {
-    return { status: 'none', text: `No key injuries listed · as of ${asOfLabel}`, asOf };
+    return { status: 'none', text: `No key injuries listed · ${asOfLabel}`, asOf, asOfLabel, teams };
   }
   const awayText = awayPlayers.length > 0 ? `${input.away.abbr}: ${teamNames(awayPlayers)}` : `${input.away.abbr}: no key injuries listed`;
   const homeText = homePlayers.length > 0 ? `${input.home.abbr}: ${teamNames(homePlayers)}` : `${input.home.abbr}: no key injuries listed`;
-  return { status: 'listed', text: `${awayText} · ${homeText} · as of ${asOfLabel}`, asOf };
+  return { status: 'listed', text: `${awayText} · ${homeText} · ${asOfLabel}`, asOf, asOfLabel, teams };
 }

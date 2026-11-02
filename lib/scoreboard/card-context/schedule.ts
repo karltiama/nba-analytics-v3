@@ -6,11 +6,21 @@
  * Preseason is ignored. Anything else on a more recent date blocks the claim.
  */
 
+import { REGULAR_SEASON_OPEN_ET } from '@/lib/games/season-eligibility';
 import { shiftEtYmd } from '@/lib/games/status-sync-query';
 
 export const SCHEDULE_UNAVAILABLE_TEXT = 'Schedule context unavailable.';
 
 const COUNTED_PHASES = new Set(['REGULAR', 'IST']);
+/** A missing prior row is a season opener only this many ET days after opening night, inclusive. */
+export const OPENER_WINDOW_ET_DAYS = 7;
+
+function withinOpenerWindow(gameEtDate: string, season: string): boolean {
+  const open = REGULAR_SEASON_OPEN_ET[season];
+  if (!open) return false;
+  const days = etDayDiff(gameEtDate, open);
+  return days != null && days >= 0 && days <= OPENER_WINDOW_ET_DAYS;
+}
 
 export type ScheduleGameRow = {
   etDate: string;
@@ -57,6 +67,8 @@ function countedPhase(phase: string | null): boolean {
 export function deriveTeamSchedule(input: {
   teamId: string;
   gameEtDate: string;
+  /** Season start year, used only to decide whether an empty history is opening week. */
+  season: string;
   /** null: this game was not uniquely matched, or the prior-game read failed. */
   games: ScheduleGameRow[] | null;
 }): TeamFact {
@@ -71,7 +83,9 @@ export function deriveTeamSchedule(input: {
     if (isPreseason(game.seasonPhase)) continue;
     earlier.push(game);
   }
-  if (earlier.length === 0) return { kind: 'opener' };
+  if (earlier.length === 0) {
+    return withinOpenerWindow(input.gameEtDate, input.season) ? { kind: 'opener' } : { kind: 'unavailable' };
+  }
 
   let latest = earlier[0].etDate;
   for (const game of earlier) {
@@ -123,6 +137,7 @@ function sharedPhrase(away: TeamFact, home: TeamFact): string | null {
 
 export function buildScheduleLine(input: {
   gameEtDate: string;
+  season: string;
   awayTeamId: string;
   homeTeamId: string;
   awayAbbr: string;
@@ -133,11 +148,13 @@ export function buildScheduleLine(input: {
   const away = deriveTeamSchedule({
     teamId: input.awayTeamId,
     gameEtDate: input.gameEtDate,
+    season: input.season,
     games: input.games,
   });
   const home = deriveTeamSchedule({
     teamId: input.homeTeamId,
     gameEtDate: input.gameEtDate,
+    season: input.season,
     games: input.games,
   });
   if (away.kind === 'unavailable' && home.kind === 'unavailable') {

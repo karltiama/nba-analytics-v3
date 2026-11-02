@@ -104,7 +104,7 @@ describe('card context loader', () => {
 
     expect(result['5001'].schedule).toEqual({
       status: 'ready',
-      text: 'CLE: season opener · OKC on 2nd night of a back-to-back',
+      text: 'CLE: rest unavailable · OKC on 2nd night of a back-to-back',
     });
     expect(result['5001'].injuries.status).toBe('listed');
     expect(result['5001'].injuries.text).toContain('CLE: Allen (Out)');
@@ -127,6 +127,8 @@ describe('card context loader', () => {
       status: 'unavailable',
       text: 'Injury report unavailable',
       as_of: null,
+      as_of_label: null,
+      teams: null,
     });
 
     const emptyFeed = await loadCardContext({

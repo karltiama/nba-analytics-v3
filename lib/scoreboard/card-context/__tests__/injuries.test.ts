@@ -3,6 +3,7 @@ import {
   buildInjuryLine,
   classifyInjuryStatus,
   formatAsOfEt,
+  formatAsOfLabel,
   selectBaseline,
   selectKeyInjuries,
   type PlayerInjuryInput,
@@ -131,7 +132,7 @@ describe('injury freshness and copy', () => {
 
   it('hides an Out once the snapshot is 37 hours old', () => {
     const stale = line([player({ playerId: 'o', teamId: 'cle', lastName: 'Allen', snapshotAt: HOURS_37 })]);
-    expect(stale).toEqual({ status: 'unavailable', text: 'Injury report unavailable', asOf: null });
+    expect(stale).toEqual({ status: 'unavailable', text: 'Injury report unavailable', asOf: null, asOfLabel: null, teams: null });
   });
 
   it('returns unavailable when serving is frozen or one team cannot be resolved', () => {
@@ -144,7 +145,7 @@ describe('injury freshness and copy', () => {
       player({ playerId: 'o', teamId: 'cle', lastName: 'Allen' }),
       player({ playerId: 'old', teamId: 'okc', lastName: 'Williams', snapshotAt: HOURS_37 }),
     ]);
-    expect(oneTeam).toEqual({ status: 'unavailable', text: 'Injury report unavailable', asOf: null });
+    expect(oneTeam).toEqual({ status: 'unavailable', text: 'Injury report unavailable', asOf: null, asOfLabel: null, teams: null });
     expect(line(null).status).toBe('unavailable');
   });
 
@@ -161,6 +162,11 @@ describe('injury freshness and copy', () => {
       status: 'none',
       text: 'No key injuries listed · as of 4:00 PM ET',
       asOf: FRESH,
+      asOfLabel: 'as of 4:00 PM ET',
+      teams: [
+        { abbr: 'CLE', players: [], extra: 0 },
+        { abbr: 'OKC', players: [], extra: 0 },
+      ],
     });
     const listed = line([
       player({ playerId: 'm', teamId: 'cle', lastName: 'Mitchell', status: 'Questionable', currentSeasonAvgMinutes: 35 }),
@@ -169,5 +175,44 @@ describe('injury freshness and copy', () => {
     expect(listed.status).toBe('listed');
     expect(listed.text).toBe('CLE: Allen (Out), Mitchell (Q) · OKC: no key injuries listed · as of 4:00 PM ET');
     expect(listed.asOf).toBe(FRESH);
+    expect(listed.asOfLabel).toBe('as of 4:00 PM ET');
+    expect(listed.teams).toEqual([
+      {
+        abbr: 'CLE',
+        players: [
+          { name: 'Allen', status: 'Out' },
+          { name: 'Mitchell', status: 'Q' },
+        ],
+        extra: 0,
+      },
+      { abbr: 'OKC', players: [], extra: 0 },
+    ]);
+  });
+
+  it('dates the as-of caption when the snapshot is not the game ET date, including across midnight DST', () => {
+    expect(formatAsOfLabel(new Date(FRESH), GAME)).toBe('as of 4:00 PM ET');
+    expect(formatAsOfLabel(new Date('2026-11-01T22:00:00.000Z'), GAME)).toBe('as of Nov 1, 5:00 PM ET');
+
+    // Fall-back night: 11:30 PM ET is still Nov 1, while the UTC date is already Nov 2.
+    expect(formatAsOfLabel(new Date('2026-11-02T04:30:00.000Z'), GAME)).toBe('as of Nov 1, 11:30 PM ET');
+    expect(formatAsOfLabel(new Date('2026-11-02T05:30:00.000Z'), GAME)).toBe('as of 12:30 AM ET');
+    // Spring-forward night: 11:30 PM ET is still Mar 7, while the UTC date is already Mar 8.
+    expect(formatAsOfLabel(new Date('2026-03-08T04:30:00.000Z'), '2026-03-08')).toBe('as of Mar 7, 11:30 PM ET');
+    expect(formatAsOfLabel(new Date('2026-03-08T05:30:00.000Z'), '2026-03-08')).toBe('as of 12:30 AM ET');
+
+    const priorListed = line(
+      [player({ playerId: 'a', teamId: 'cle', lastName: 'Allen', snapshotAt: HOURS_30 })],
+      { feedSnapshotAt: HOURS_30 }
+    );
+    expect(priorListed.status).toBe('listed');
+    expect(priorListed.asOfLabel).toBe('as of Nov 1, 11:00 AM ET');
+    expect(priorListed.text).toContain('as of Nov 1, 11:00 AM ET');
+
+    const priorNone = line([
+      player({ playerId: 'q', teamId: 'cle', lastName: 'Mitchell', status: 'Questionable', snapshotAt: '2026-11-01T21:00:00.000Z' }),
+    ]);
+    expect(priorNone.status).toBe('none');
+    expect(priorNone.asOfLabel).toBe('as of Nov 1, 4:00 PM ET');
+    expect(priorNone.text).toBe('No key injuries listed · as of Nov 1, 4:00 PM ET');
   });
 });

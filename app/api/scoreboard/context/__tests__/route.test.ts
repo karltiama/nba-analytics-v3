@@ -128,7 +128,7 @@ describe('GET /api/scoreboard/context', () => {
     expect(body.date).toBe('2026-11-02');
     expect(body.games['5001']).toEqual({
       schedule: { status: 'unavailable', text: 'Schedule context unavailable.' },
-      injuries: { status: 'unavailable', text: 'Injury report unavailable', as_of: null },
+      injuries: { status: 'unavailable', text: 'Injury report unavailable', as_of: null, as_of_label: null, teams: null },
     });
     expect(loadGamesForDate).toHaveBeenCalledWith('2026-11-02');
   });

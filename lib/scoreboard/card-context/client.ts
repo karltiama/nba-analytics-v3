@@ -6,10 +6,52 @@
 export const CARD_CONTEXT_SCHEMA_VERSION = 'card-context.v1' as const;
 export const CARD_CONTEXT_REFRESH_MS = 5 * 60 * 1000;
 
+export type CardInjuryPlayer = {
+  name: string;
+  status: 'Out' | 'Doubtful' | 'Q';
+};
+
+export type CardInjuryTeam = {
+  abbr: string;
+  players: CardInjuryPlayer[];
+  extra: number;
+};
+
 export type PregameCardContext = {
   schedule: string;
   injuries: string;
+  /** Null on a text-only payload, or when the optional teams field is absent or unusable. */
+  injuryTeams: CardInjuryTeam[] | null;
+  /** Null when the payload has no separate caption. The injuries text still stands alone. */
+  asOfLabel: string | null;
 };
+
+const INJURY_STATUSES = new Set<CardInjuryPlayer['status']>(['Out', 'Doubtful', 'Q']);
+
+function readInjuryTeams(value: unknown): CardInjuryTeam[] | null {
+  if (!Array.isArray(value)) return null;
+  const teams: CardInjuryTeam[] = [];
+  for (const team of value) {
+    if (!team || typeof team !== 'object') return null;
+    const abbr = (team as { abbr?: unknown }).abbr;
+    const players = (team as { players?: unknown }).players;
+    const extra = (team as { extra?: unknown }).extra;
+    if (typeof abbr !== 'string' || abbr.trim() === '') return null;
+    if (!Array.isArray(players)) return null;
+    if (typeof extra !== 'number' || !Number.isInteger(extra) || extra < 0) return null;
+    const parsed: CardInjuryPlayer[] = [];
+    for (const player of players) {
+      if (!player || typeof player !== 'object') return null;
+      const name = (player as { name?: unknown }).name;
+      const status = (player as { status?: unknown }).status;
+      if (typeof name !== 'string' || name.trim() === '') return null;
+      if (typeof status !== 'string' || !INJURY_STATUSES.has(status as CardInjuryPlayer['status'])) return null;
+      parsed.push({ name, status: status as CardInjuryPlayer['status'] });
+    }
+    teams.push({ abbr, players: parsed, extra });
+  }
+  return teams;
+}
 
 export function cardContextApiUrl(date: string): string {
   return `/api/scoreboard/context?date=${encodeURIComponent(date)}`;
@@ -37,10 +79,17 @@ export function readCardContextPayload(body: unknown): Record<string, PregameCar
   for (const [id, value] of Object.entries(record.games as Record<string, unknown>)) {
     if (!id || !value || typeof value !== 'object') return null;
     const schedule = (value as { schedule?: { text?: unknown } }).schedule?.text;
-    const injuries = (value as { injuries?: { text?: unknown } }).injuries?.text;
+    const injuryRecord = (value as { injuries?: { text?: unknown; teams?: unknown; as_of_label?: unknown } }).injuries;
+    const injuries = injuryRecord?.text;
     if (typeof schedule !== 'string' || schedule.trim() === '') return null;
     if (typeof injuries !== 'string' || injuries.trim() === '') return null;
-    out[id] = { schedule, injuries };
+    const asOfRaw = injuryRecord?.as_of_label;
+    out[id] = {
+      schedule,
+      injuries,
+      injuryTeams: readInjuryTeams(injuryRecord?.teams),
+      asOfLabel: typeof asOfRaw === 'string' && asOfRaw.trim() !== '' ? asOfRaw : null,
+    };
   }
   return out;
 }

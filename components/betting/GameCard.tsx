@@ -9,6 +9,7 @@ import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MarketProbability } from '@/components/betting/MarketProbability';
 import type { PresentedGame } from '@/lib/scoreboard/present';
 import type { StatLeader } from '@/lib/scoreboard/game-pulse';
+import type { CardInjuryTeam } from '@/lib/scoreboard/card-context/client';
 
 interface TeamInfo {
   id: string;
@@ -87,6 +88,8 @@ export interface Game {
   pregameContext?: {
     schedule: string | null;
     injuries: string | null;
+    injuryTeams?: CardInjuryTeam[] | null;
+    asOfLabel?: string | null;
   };
 }
 
@@ -273,20 +276,34 @@ function LeaderTile({
   );
 }
 
-function injuryContextNodes(text: string) {
-  const nodes: Array<string | { name: string; key: number }> = [];
-  const pattern = /([A-Za-z][^,·]* \(Q\))/g;
-  let last = 0;
-  let key = 0;
-  for (const match of text.matchAll(pattern)) {
-    const index = match.index ?? 0;
-    if (index > last) nodes.push(text.slice(last, index));
-    nodes.push({ name: match[1], key });
-    key += 1;
-    last = index + match[1].length;
-  }
-  if (last < text.length) nodes.push(text.slice(last));
-  return nodes;
+function InjuryNames({ teams }: { teams: CardInjuryTeam[] }) {
+  const listed = teams.some((team) => team.players.length > 0);
+  if (!listed) return <>No key injuries listed</>;
+  return (
+    <>
+      {teams.map((team, teamIndex) => (
+        <span key={`${team.abbr}-${teamIndex}`}>
+          {teamIndex > 0 ? ' · ' : null}
+          {`${team.abbr}: `}
+          {team.players.length === 0
+            ? 'no key injuries listed'
+            : team.players.map((player, playerIndex) => (
+                <span key={`${team.abbr}-${player.name}-${playerIndex}`}>
+                  {playerIndex > 0 ? ', ' : null}
+                  {player.status === 'Q' ? (
+                    <span className="font-semibold text-[#075B5C]" data-questionable="">
+                      {`${player.name} (Q)`}
+                    </span>
+                  ) : (
+                    `${player.name} (${player.status})`
+                  )}
+                </span>
+              ))}
+          {team.extra > 0 ? ` +${team.extra}` : null}
+        </span>
+      ))}
+    </>
+  );
 }
 
 const CONTEXT_HEADING: Record<'pregame' | 'live' | 'final', [string, string]> = {
@@ -351,7 +368,7 @@ export function GameCard({
   const inPlayContext = scoreboardPresentation && inPlay ? board?.context ?? null : null;
   const pregameLines =
     scoreboardPresentation && contextKind === 'pregame' && game.pregameContext?.schedule && game.pregameContext.injuries
-      ? { schedule: game.pregameContext.schedule, injuries: game.pregameContext.injuries }
+      ? game.pregameContext
       : null;
   const contextText = pregameLines
     ? undefined
@@ -598,23 +615,30 @@ export function GameCard({
             <span>{CONTEXT_HEADING[contextKind][0]}</span>
             <span className="text-[#55ddb1]">{CONTEXT_HEADING[contextKind][1]}</span>
           </div>
-          {pregameLines ? (
-            <>
-              <p className="type-secondary mt-1 truncate text-center text-[#063F46]" data-card-schedule title={pregameLines.schedule}>
-                {pregameLines.schedule}
-              </p>
-              <p className="type-secondary mt-0.5 truncate text-center text-[#063F46]" data-card-injuries title={pregameLines.injuries}>
-                {injuryContextNodes(pregameLines.injuries).map((part) =>
-                  typeof part === 'string' ? (
-                    part
-                  ) : (
-                    <span key={part.key} className="font-semibold text-[#075B5C]" data-questionable="">
-                      {part.name}
-                    </span>
-                  )
-                )}
-              </p>
-            </>
+          {pregameLines || (scoreboardPresentation && contextKind === 'pregame' && !contextText) ? (
+            <div className="mt-1 grid grid-rows-[20px_40px_16px]" data-card-context-body>
+              {pregameLines ? (
+                <>
+                  <p className="type-secondary truncate text-center text-[#063F46]" data-card-schedule title={pregameLines.schedule ?? undefined}>
+                    {pregameLines.schedule}
+                  </p>
+                  <p className="type-secondary line-clamp-2 text-center text-[#063F46]" data-card-injuries>
+                    {pregameLines.injuryTeams && pregameLines.injuryTeams.length > 0 ? (
+                      <InjuryNames teams={pregameLines.injuryTeams} />
+                    ) : (
+                      pregameLines.injuries
+                    )}
+                  </p>
+                  <p className="type-metadata text-center text-[#063F46]" data-card-as-of>
+                    {pregameLines.asOfLabel ?? ''}
+                  </p>
+                </>
+              ) : (
+                <p className="type-secondary row-span-3 text-center text-[#063F46]" data-context-unavailable>
+                  {contextFallback}
+                </p>
+              )}
+            </div>
           ) : contextText ? (
             <p
               className="type-body mt-1 text-pretty text-[#063F46]"

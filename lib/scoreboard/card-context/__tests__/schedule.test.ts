@@ -19,9 +19,10 @@ function row(over: Partial<ScheduleGameRow> & Pick<ScheduleGameRow, 'etDate'>): 
   };
 }
 
-function line(games: ScheduleGameRow[] | null, away = 'okc', home = 'cle') {
+function line(games: ScheduleGameRow[] | null, away = 'okc', home = 'cle', gameEtDate = GAME, season = '2026') {
   return buildScheduleLine({
-    gameEtDate: GAME,
+    gameEtDate,
+    season,
     awayTeamId: away,
     homeTeamId: home,
     awayAbbr: 'OKC',
@@ -32,18 +33,18 @@ function line(games: ScheduleGameRow[] | null, away = 'okc', home = 'cle') {
 
 describe('schedule context', () => {
   it('counts a back-to-back, 1 day, 2 days, and 3 or more days of rest', () => {
-    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, games: [row({ etDate: '2026-11-03' })] })).toEqual({
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, season: '2026', games: [row({ etDate: '2026-11-03' })] })).toEqual({
       kind: 'rest',
       daysRest: 0,
       thirdInFour: false,
     });
-    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, games: [row({ etDate: '2026-11-02' })] })).toMatchObject({
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, season: '2026', games: [row({ etDate: '2026-11-02' })] })).toMatchObject({
       daysRest: 1,
     });
-    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, games: [row({ etDate: '2026-11-01' })] })).toMatchObject({
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, season: '2026', games: [row({ etDate: '2026-11-01' })] })).toMatchObject({
       daysRest: 2,
     });
-    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, games: [row({ etDate: '2026-10-30' })] })).toMatchObject({
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: GAME, season: '2026', games: [row({ etDate: '2026-10-30' })] })).toMatchObject({
       daysRest: 4,
     });
     expect(line([row({ etDate: '2026-11-03' }), row({ etDate: '2026-11-02', homeTeamId: 'cle', awayTeamId: 'other' })])).toEqual({
@@ -65,6 +66,7 @@ describe('schedule context', () => {
     expect(
       buildScheduleLine({
         gameEtDate: GAME,
+        season: '2026',
         awayTeamId: 'det',
         homeTeamId: 'cha',
         awayAbbr: 'DET',
@@ -77,11 +79,36 @@ describe('schedule context', () => {
     });
   });
 
-  it('treats a team with no prior regular-season or IST game as a season opener', () => {
-    expect(line([])).toEqual({ status: 'ready', text: 'Both teams: season openers' });
+  it('does not call a coverage gap a season opener once opening week has passed', () => {
+    expect(line([])).toEqual({ status: 'unavailable', text: 'Schedule context unavailable.' });
     expect(line([row({ etDate: '2026-11-02', homeTeamId: 'cle' })])).toEqual({
       status: 'ready',
-      text: 'OKC: season opener · CLE 1 day rest',
+      text: 'OKC: rest unavailable · CLE 1 day rest',
+    });
+  });
+
+  it('allows a season opener only within 7 ET days of the regular-season open', () => {
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: '2026-10-20', season: '2026', games: [] })).toEqual({
+      kind: 'opener',
+    });
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: '2026-10-25', season: '2026', games: [] })).toEqual({
+      kind: 'opener',
+    });
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: '2026-11-03', season: '2026', games: [] })).toEqual({
+      kind: 'unavailable',
+    });
+    expect(deriveTeamSchedule({ teamId: 'okc', gameEtDate: '2026-10-20', season: '2099', games: [] })).toEqual({
+      kind: 'unavailable',
+    });
+    expect(line([], 'okc', 'cle', '2026-10-20')).toEqual({ status: 'ready', text: 'Both teams: season openers' });
+    expect(line([], 'okc', 'cle', '2026-10-25').text).toBe('Both teams: season openers');
+    expect(line([], 'okc', 'cle', '2026-11-03')).toEqual({
+      status: 'unavailable',
+      text: 'Schedule context unavailable.',
+    });
+    expect(line([], 'okc', 'cle', '2026-10-20', '2099')).toEqual({
+      status: 'unavailable',
+      text: 'Schedule context unavailable.',
     });
   });
 
@@ -92,9 +119,10 @@ describe('schedule context', () => {
         row({ etDate: '2026-11-03', homeTeamId: 'cle', seasonPhase: 'IST' }),
       ]).text
     ).toBe('Both teams on the 2nd night of a back-to-back');
-    expect(line([row({ etDate: '2026-11-03', seasonPhase: 'PLAYOFFS' })]).text).toBe(
-      'OKC: rest unavailable · CLE: season opener'
-    );
+    expect(line([row({ etDate: '2026-11-03', seasonPhase: 'PLAYOFFS' })])).toEqual({
+      status: 'unavailable',
+      text: 'Schedule context unavailable.',
+    });
   });
 
   it('ignores preseason and does not use it as the previous game', () => {
@@ -110,26 +138,28 @@ describe('schedule context', () => {
     expect(line(null)).toEqual({ status: 'unavailable', text: 'Schedule context unavailable.' });
     expect(line([row({ etDate: '2026-11-03', homeTeamId: 'cle' })])).toEqual({
       status: 'ready',
-      text: 'OKC: season opener · CLE on 2nd night of a back-to-back',
+      text: 'OKC: rest unavailable · CLE on 2nd night of a back-to-back',
     });
     const missingAway = line(null);
     expect(missingAway.status).toBe('unavailable');
     expect(
       buildScheduleLine({
         gameEtDate: GAME,
+        season: '2026',
         awayTeamId: 'okc',
         homeTeamId: 'cle',
         awayAbbr: 'OKC',
         homeAbbr: 'CLE',
         games: [row({ etDate: '2026-11-03' }), row({ etDate: '2026-11-03', awayTeamId: 'dup' })],
-      }).text
-    ).toBe('OKC: rest unavailable · CLE: season opener');
+      })
+    ).toEqual({ status: 'unavailable', text: 'Schedule context unavailable.' });
     expect(line([row({ etDate: '2026-11-03', status: 'In Progress' }), row({ etDate: '2026-11-02', homeTeamId: 'cle' })]).text).toBe(
       'OKC: rest unavailable · CLE 1 day rest'
     );
-    expect(line([row({ etDate: '2026-11-03', seasonPhase: 'UNCLASSIFIED' })]).text).toBe(
-      'OKC: rest unavailable · CLE: season opener'
-    );
+    expect(line([row({ etDate: '2026-11-03', seasonPhase: 'UNCLASSIFIED' })])).toEqual({
+      status: 'unavailable',
+      text: 'Schedule context unavailable.',
+    });
   });
 
   it('uses the ET date, so a late West Coast tip is the next basketball day', () => {
@@ -141,6 +171,7 @@ describe('schedule context', () => {
     expect(
       buildScheduleLine({
         gameEtDate: '2026-11-02',
+        season: '2026',
         awayTeamId: 'okc',
         homeTeamId: 'cle',
         awayAbbr: 'OKC',
