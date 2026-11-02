@@ -242,6 +242,8 @@ export async function runScoreboardCycle(input: {
     await input.store.recordGamesRequest(seasonType, observedAt, pages.at(-1)!.requestId);
 
     // 3. Live box scores, only when a game is in progress or still needs final player lines.
+    // Regular season uses this same one /v1/box_scores/live request. Scores alone do not carry
+    // player lines, so skipping it leaves Points, Rebounds, and Assists empty.
     const current = new Map(stored.map((g) => [g.gameId, g]));
     for (const g of touched.values()) current.set(g.gameId, g);
     const boxGames = [...current.values()].filter(needsLiveBox);

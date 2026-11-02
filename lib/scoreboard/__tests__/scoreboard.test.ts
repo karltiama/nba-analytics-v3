@@ -4,7 +4,12 @@ import { describe, expect, it } from 'vitest';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { runScoreboardCycle, scoreboardGamesUrl, scoreboardLiveBoxUrl } from '@/lib/scoreboard/collector';
-import { isScoreboardServingEnabled, resolveScoreboardCollection } from '@/lib/scoreboard/flags';
+import {
+  isScoreboardServingEnabled,
+  resolveScoreboardCollection,
+  resolveScoreboardOddsCollection,
+  SCOREBOARD_AUTHORIZE_REGULAR_ENV,
+} from '@/lib/scoreboard/flags';
 import {
   boxScoreCompleteness,
   carriedBoxCompleteness,
@@ -161,17 +166,55 @@ describe('scoreboard gates fail closed', () => {
     }
   });
 
-  it('regular season, play-in and playoffs cannot be enabled by flag', () => {
-    const d = resolveScoreboardCollection({
+  it('regular season needs SCOREBOARD_AUTHORIZE_REGULAR=1; play-in and playoffs stay refused', () => {
+    const refused = resolveScoreboardCollection({
       ...LIVE_ENV,
       SCOREBOARD_COLLECT_PRESEASON: undefined,
       SCOREBOARD_COLLECT_REGULAR: '1',
       SCOREBOARD_COLLECT_PLAYIN: '1',
       SCOREBOARD_COLLECT_PLAYOFFS: '1',
     });
-    expect(d.seasonTypes).toEqual([]);
-    expect(d.refused.map((r) => r.seasonType)).toEqual(['regular', 'playin', 'playoffs']);
-    expect(d.refused.every((r) => /separate approval/.test(r.reason))).toBe(true);
+    expect(refused.seasonTypes).toEqual([]);
+    expect(refused.refused.map((r) => r.seasonType)).toEqual(['regular', 'playin', 'playoffs']);
+    expect(refused.refused.every((r) => /separate approval/.test(r.reason))).toBe(true);
+    expect(refused.refused.find((r) => r.seasonType === 'regular')?.reason).toBe(
+      'regular live acquisition requires separate approval'
+    );
+
+    const wrongValue = resolveScoreboardCollection({
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      [SCOREBOARD_AUTHORIZE_REGULAR_ENV]: 'true',
+    });
+    expect(wrongValue.seasonTypes).toEqual([]);
+    expect(wrongValue.refused.map((r) => r.reason)).toEqual(['regular live acquisition requires separate approval']);
+
+    const authorized = resolveScoreboardCollection({
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      SCOREBOARD_COLLECT_PLAYIN: '1',
+      SCOREBOARD_COLLECT_PLAYOFFS: '1',
+      [SCOREBOARD_AUTHORIZE_REGULAR_ENV]: '1',
+    });
+    expect(authorized.seasonTypes).toEqual(['regular']);
+    expect(authorized.refused.map((r) => r.seasonType)).toEqual(['playin', 'playoffs']);
+    expect(authorized.refused.every((r) => /separate approval/.test(r.reason))).toBe(true);
+
+    const regularEnv = {
+      ...LIVE_ENV,
+      SCOREBOARD_COLLECT_PRESEASON: undefined,
+      SCOREBOARD_COLLECT_REGULAR: '1',
+      SCOREBOARD_COLLECT_ODDS: '1',
+      [SCOREBOARD_AUTHORIZE_REGULAR_ENV]: '1',
+    };
+    const odds = resolveScoreboardOddsCollection(regularEnv, resolveScoreboardCollection(regularEnv));
+    expect(odds).toEqual({
+      enabled: false,
+      seasonTypes: [],
+      reason: 'scoreboard odds are not collected for regular season',
+    });
   });
 
   it('serving: only "1" serves, independent of collection', () => {
