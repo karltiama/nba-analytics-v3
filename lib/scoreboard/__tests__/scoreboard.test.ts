@@ -719,6 +719,15 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
     for (const f of scoreboardSources) {
       const src = read(f);
       const code = withoutComments(src);
+      if (f === 'lib/scoreboard/card-context/load.ts') {
+        expect(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect(code, f).toMatch(/FROM analytics\.games/);
+        expect(code, f).toMatch(/analytics\.player_injury_status_current/);
+        expect(code, f).toMatch(/analytics\.player_game_logs/);
+        expect(code, f).not.toMatch(/display\.scoreboard_/);
+        expect(code, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center|players|analytics|postgame)/);
+        continue;
+      }
       expect(code, f).not.toMatch(/\banalytics\.[a-z_]+|\braw\.(?:games|players|teams|player_\w+)\b|player_game_logs/);
       expect(code, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center|players|analytics|postgame)/);
       for (const m of src.matchAll(/\b(?:FROM|INTO|UPDATE|JOIN|TABLE)\s+([a-z_]+)\.[a-z_]+/gi)) {
@@ -732,7 +741,7 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
   });
 
   it('nothing outside the scoreboard reads display tables or imports scoreboard modules', () => {
-    const presentationImport = /@\/lib\/scoreboard\/(client|contract|slate-merge|present|empty-state)\b/;
+    const presentationImport = /@\/lib\/scoreboard\/(?:client|contract|slate-merge|present|empty-state|card-context\/client)\b/;
     const others = ['lib', 'app', 'lambda', 'scripts']
       .flatMap((d) => walk(d))
       .filter((f) => !f.includes('/__tests__/'))
@@ -782,8 +791,17 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
         expect.soft(src, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center)/);
         continue;
       }
+      if (f === 'app/api/scoreboard/context/route.ts') {
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+        expect.soft(code, f).not.toMatch(/\b(INSERT|UPDATE|DELETE|MERGE)\b/i);
+        expect.soft(src, f).not.toMatch(/display\.scoreboard_/);
+        expect.soft(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|lambda|normalize|planner)\b/);
+        expect.soft(src, f).toMatch(/@\/lib\/scoreboard\/store/);
+        expect.soft(src, f).toMatch(/@\/lib\/scoreboard\/card-context\/serve/);
+        continue;
+      }
       if (f === 'app/dashboard/page.tsx') {
-        for (const imp of src.matchAll(/@\/lib\/scoreboard\/[A-Za-z0-9_-]+/g)) {
+        for (const imp of src.matchAll(/@\/lib\/scoreboard\/(?:card-context\/client|[A-Za-z0-9_-]+)/g)) {
           expect.soft(imp[0], f).toMatch(presentationImport);
         }
         expect.soft(src, f).not.toMatch(/@\/lib\/scoreboard\/(collector|store|lambda|flags|normalize|planner)\b/);

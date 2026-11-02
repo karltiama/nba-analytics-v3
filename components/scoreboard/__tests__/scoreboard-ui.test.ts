@@ -623,7 +623,10 @@ describe('Market card and wiring regressions', () => {
     expect(dash).not.toContain('/api/betting/games');
     expect(dash).toContain('grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
     expect(dash.match(/setInterval/g)).toBeNull();
-    expect(dash.match(/setTimeout/g)).toHaveLength(5);
+    expect(dash.match(/setTimeout/g)).toHaveLength(7);
+    expect(dash).toContain('cardContextApiUrl');
+    expect(dash).toContain('cardContextPollDelayMs');
+    expect(dash).toContain("res.status === 401 || res.status === 503 || !res.ok");
     const pollStart = dash.indexOf('const scoreboardPollDelay');
     const pollEnd = dash.indexOf('const previewActive');
     const storedStart = dash.indexOf('const applicablePregameIds');

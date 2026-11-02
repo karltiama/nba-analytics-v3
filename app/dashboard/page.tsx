@@ -25,6 +25,12 @@ import {
 } from '@/components/betting/skeletons';
 import { filterSlateGames } from '@/lib/betting/slate-filters';
 import {
+  cardContextApiUrl,
+  cardContextPollDelayMs,
+  readCardContextPayload,
+  type PregameCardContext,
+} from '@/lib/scoreboard/card-context/client';
+import {
   interpretScoreboardPayload,
   SCOREBOARD_CLIENT_REFRESH_MS,
   scoreboardApiUrl,
@@ -116,12 +122,14 @@ export default function BettingDashboard(props: PageProps) {
   const [previewGames, setPreviewGames] = useState<Game[] | null>(null);
   const [previewState, setPreviewState] = useState<'idle' | 'loading' | 'ready' | 'empty' | 'error'>('idle');
   const [storedOdds, setStoredOdds] = useState<Record<string, StoredOddsPatch>>({});
+  const [cardContext, setCardContext] = useState<Record<string, PregameCardContext> | null>(null);
 
   if (scoreboardDate !== selectedDate) {
     setScoreboardDate(selectedDate);
     setScoreboard(null);
     setScoreboardCoverage(null);
     setScoreboardAvailability('loading');
+    setCardContext(null);
   }
 
   // Update URL when date changes (shareable link)
@@ -402,6 +410,41 @@ export default function BettingDashboard(props: PageProps) {
     return () => session.stop();
   }, [scoreboardRetryNeeded, selectedDate, loadScoreboard]);
 
+  const cardContextDelay = cardContextPollDelayMs(
+    scoreboardAvailability === 'ready' && scoreboardDate === selectedDate ? scoreboard?.games : null
+  );
+  useEffect(() => {
+    if (cardContextDelay == null) return;
+    const ac = new AbortController();
+    let timer = 0;
+    const loadContext = async () => {
+      try {
+        const res = await fetch(cardContextApiUrl(selectedDate), { signal: ac.signal, credentials: 'include' });
+        if (ac.signal.aborted) return;
+        if (res.status === 401 || res.status === 503 || !res.ok) {
+          setCardContext(null);
+          return;
+        }
+        const body: unknown = await res.json().catch(() => null);
+        if (ac.signal.aborted) return;
+        setCardContext(readCardContextPayload(body));
+      } catch (err) {
+        if (ac.signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) return;
+        setCardContext(null);
+      }
+    };
+    const tick = () => {
+      if (document.visibilityState !== 'hidden') void loadContext();
+      timer = window.setTimeout(tick, cardContextDelay);
+    };
+    void loadContext();
+    timer = window.setTimeout(tick, cardContextDelay);
+    return () => {
+      window.clearTimeout(timer);
+      ac.abort();
+    };
+  }, [cardContextDelay, selectedDate]);
+
   const slateIds = useMemo(() => slateGames.map((game) => game.id).sort().join(','), [slateGames]);
   const applicablePregameIds = useMemo(
     () => slateGames.filter((game) => acceptsStoredOdds(game)).map((game) => game.id).sort().join(','),
@@ -448,7 +491,12 @@ export default function BettingDashboard(props: PageProps) {
   }, [previewActive, selectedDate, slateIds, applicablePregameIds]);
 
   const previewList = previewActive && previewState === 'ready' ? previewGames ?? [] : slateGames;
-  const listGames = previewList.map((game) => applyStoredOdds(game, storedOdds[game.id]));
+  const listGames = previewList.map((game) => {
+    const withOdds = applyStoredOdds(game, storedOdds[game.id]);
+    if (previewActive || !cardContext) return withOdds;
+    const ctx = cardContext[game.id];
+    return ctx ? { ...withOdds, pregameContext: ctx } : withOdds;
+  });
 
   // Filter games
   const filteredGames = filterSlateGames({

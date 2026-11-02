@@ -80,6 +80,14 @@ export interface Game {
    * props pages can load it. Scoreboard-only games (all preseason today) leave it unset.
    */
   researchAvailable?: boolean;
+  /**
+   * Pregame scoreboard lines. Absent means the card keeps its existing fallback.
+   * Live and final cards ignore this.
+   */
+  pregameContext?: {
+    schedule: string | null;
+    injuries: string | null;
+  };
 }
 
 interface GameCardProps {
@@ -265,6 +273,22 @@ function LeaderTile({
   );
 }
 
+function injuryContextNodes(text: string) {
+  const nodes: Array<string | { name: string; key: number }> = [];
+  const pattern = /([A-Za-z][^,·]* \(Q\))/g;
+  let last = 0;
+  let key = 0;
+  for (const match of text.matchAll(pattern)) {
+    const index = match.index ?? 0;
+    if (index > last) nodes.push(text.slice(last, index));
+    nodes.push({ name: match[1], key });
+    key += 1;
+    last = index + match[1].length;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
+
 const CONTEXT_HEADING: Record<'pregame' | 'live' | 'final', [string, string]> = {
   pregame: ['Matchup ', 'Context'],
   live: ['Game ', 'Pulse'],
@@ -325,7 +349,17 @@ export function GameCard({
   const showPreviewMarkets = Boolean(schedulePreview && !schedulePreview.tipPassed && hasOdds);
   const marketCaption = scoreboardPresentation && !inPlay && hasOdds ? (game.marketCaption ?? null) : null;
   const inPlayContext = scoreboardPresentation && inPlay ? board?.context ?? null : null;
-  const contextText = !scoreboardPresentation || !inPlay ? game.matchupContext : inPlayContext?.kind === 'insight' ? inPlayContext.text : undefined;
+  const pregameLines =
+    scoreboardPresentation && contextKind === 'pregame' && game.pregameContext?.schedule && game.pregameContext.injuries
+      ? { schedule: game.pregameContext.schedule, injuries: game.pregameContext.injuries }
+      : null;
+  const contextText = pregameLines
+    ? undefined
+    : !scoreboardPresentation || !inPlay
+      ? game.matchupContext
+      : inPlayContext?.kind === 'insight'
+        ? inPlayContext.text
+        : undefined;
   const supportText = inPlayContext?.kind === 'insight' ? inPlayContext.support?.text ?? null : null;
   const contextFallback =
     scoreboardPresentation && inPlay
@@ -564,7 +598,24 @@ export function GameCard({
             <span>{CONTEXT_HEADING[contextKind][0]}</span>
             <span className="text-[#55ddb1]">{CONTEXT_HEADING[contextKind][1]}</span>
           </div>
-          {contextText ? (
+          {pregameLines ? (
+            <>
+              <p className="type-secondary mt-1 truncate text-center text-[#063F46]" data-card-schedule title={pregameLines.schedule}>
+                {pregameLines.schedule}
+              </p>
+              <p className="type-secondary mt-0.5 truncate text-center text-[#063F46]" data-card-injuries title={pregameLines.injuries}>
+                {injuryContextNodes(pregameLines.injuries).map((part) =>
+                  typeof part === 'string' ? (
+                    part
+                  ) : (
+                    <span key={part.key} className="font-semibold text-[#075B5C]" data-questionable="">
+                      {part.name}
+                    </span>
+                  )
+                )}
+              </p>
+            </>
+          ) : contextText ? (
             <p
               className="type-body mt-1 text-pretty text-[#063F46]"
               data-game-pulse={inPlayContext?.kind === 'insight' ? inPlayContext.insight.id : undefined}
