@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { AcquiringBdlFetch } from '@/lib/games/status-sync-acquisition';
-import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
+import type { ScoreboardResponse, StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { runScoreboardCycle, scoreboardGamesUrl, scoreboardLiveBoxUrl } from '@/lib/scoreboard/collector';
 import {
   isScoreboardServingEnabled,
@@ -32,6 +32,7 @@ import {
 } from '@/lib/scoreboard/response';
 import { SCOREBOARD_CACHE_CONTROL, serveScoreboard } from '@/lib/scoreboard/serve';
 import { createMemoryScoreboardStore, createPgScoreboardStore } from '@/lib/scoreboard/store';
+import { mergeTodaysGames } from '@/lib/scoreboard/slate-merge';
 
 const ROOT = path.resolve(__dirname, '../../..');
 const TIP = '2026-10-10T00:00:00.000Z';
@@ -563,6 +564,53 @@ describe('GET /api/scoreboard', () => {
     expect(body.games.find((g) => g.game_id === '5001')).toMatchObject({ stale: true, stale_reason: 'no_recent_observation' });
     expect(body.games.find((g) => g.game_id === '5002')).toMatchObject({ stale: false });
     expect(body.stale).toBe(true);
+  });
+
+  it('regular-season teams carry W-L from earlier finals; preseason and later games do not count', async () => {
+    const store = createMemoryScoreboardStore();
+    const final = (over: Partial<StoredScoreboardGame>) =>
+      stored({ seasonType: 'regular', lifecycle: 'final', pollingState: 'complete', ...over });
+    await store.upsertGames([
+      final({ gameId: '7001', etDate: '2026-10-21', homeScore: 110, visitorScore: 100 }), // CHI beats MEM
+      final({ gameId: '7002', etDate: '2026-10-23', homeTeamId: '15', visitorTeamId: '5', homeScore: 99, visitorScore: 101 }), // CHI wins
+      final({ gameId: '7003', etDate: '2026-10-24', homeTeamId: '15', visitorTeamId: '2', homeScore: 120, visitorScore: 90 }), // MEM wins
+      final({ gameId: '7004', etDate: '2026-10-25', homeScore: 90, visitorScore: 95 }), // same day as the slate: excluded
+      stored({ gameId: '7005', etDate: '2026-10-12', lifecycle: 'final', homeScore: 80, visitorScore: 120 }), // preseason
+      stored({ gameId: '7006', etDate: '2026-10-25', seasonType: 'regular', homeTeamId: '5', visitorTeamId: '30' }),
+    ]);
+    const r = await serveScoreboard({
+      env: { SCOREBOARD_SERVING_ENABLED: '1' },
+      params: params('date=2026-10-25'),
+      now: at(0),
+      store: () => store,
+    });
+    const body = r.body as ScoreboardResponse;
+    const game = body.games.find((g) => g.game_id === '7006')!;
+    expect(game.home.record).toEqual({ wins: 2, losses: 0 });
+    expect(game.visitor.record).toEqual({ wins: 0, losses: 0 });
+    const card = mergeTodaysGames(body).find((g) => g.id === '7006')!;
+    expect(card.homeTeam.record).toBe('2-0');
+    expect(card.awayTeam.record).toBe('0-0');
+  });
+
+  it('a records read failure keeps the games without records', async () => {
+    const store = createMemoryScoreboardStore();
+    await store.upsertGames([stored({ etDate: '2026-10-25', seasonType: 'regular', gameId: '7101' })]);
+    const r = await serveScoreboard({
+      env: { SCOREBOARD_SERVING_ENABLED: '1' },
+      params: params('date=2026-10-25'),
+      now: at(0),
+      store: () => ({
+        ...store,
+        loadTeamRecords: async () => {
+          throw new Error('records down');
+        },
+      }),
+    });
+    expect(r.status).toBe(200);
+    const game = (r.body as ScoreboardResponse).games[0];
+    expect(game.home.record).toBeUndefined();
+    expect(mergeTodaysGames(r.body as ScoreboardResponse)[0].homeTeam.record).toBeNull();
   });
 
   it('store failure is 503, not an empty scoreboard', async () => {

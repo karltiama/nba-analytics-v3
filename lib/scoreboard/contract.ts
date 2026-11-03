@@ -159,11 +159,24 @@ export type ScoreboardMarket = {
   total: { line: number; over_odds: number | null; under_odds: number | null } | null;
 };
 
+/** Regular-season wins and losses from stored finals before a date. */
+export type StoredTeamRecord = {
+  season: number;
+  teamId: string;
+  wins: number;
+  losses: number;
+};
+
 export type ScoreboardTeam = {
   provider_team_id: string;
   abbreviation: string | null;
   name: string | null;
   score: number | null;
+  /**
+   * Optional, additive: regular-season record from stored finals before et_date. Absent for
+   * preseason games or when the record read failed.
+   */
+  record?: { wins: number; losses: number };
 };
 
 export type ScoreboardGame = {

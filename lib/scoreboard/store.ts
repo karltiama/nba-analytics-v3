@@ -11,6 +11,7 @@ import type {
   ScoreboardSeasonType,
   StoredOddsQuote,
   StoredScoreboardGame,
+  StoredTeamRecord,
 } from './contract';
 import { oddsDue, SCOREBOARD_ODDS_POLICY, type OddsAttemptState } from './market';
 
@@ -41,6 +42,8 @@ export type ScoreboardStore = {
   applyObservation(game: StoredScoreboardGame, lines: ScoreboardPlayerLine[] | null): Promise<boolean>;
   replacePlayerLines(gameId: string, lines: ScoreboardPlayerLine[]): Promise<void>;
   loadPlayerLines(gameIds: string[]): Promise<ScoreboardPlayerLine[]>;
+  /** Regular-season W-L per team from final games of `season` with et_date before `beforeDate`. */
+  loadTeamRecords(season: number, beforeDate: string): Promise<StoredTeamRecord[]>;
   /**
    * Atomically claims the odds attempt slot when it is due (15 min after the last attempt, 5 min after a
    * failure). A concurrent or early invocation gets false and makes no odds request.
@@ -169,6 +172,23 @@ export function createMemoryScoreboardStore(): ScoreboardStore & {
     },
     async loadPlayerLines(gameIds) {
       return gameIds.flatMap((id) => playerLines.get(id) ?? []);
+    },
+    async loadTeamRecords(season, beforeDate) {
+      const records = new Map<string, StoredTeamRecord>();
+      const add = (teamId: string, won: boolean) => {
+        const r = records.get(teamId) ?? { season, teamId, wins: 0, losses: 0 };
+        if (won) r.wins += 1;
+        else r.losses += 1;
+        records.set(teamId, r);
+      };
+      for (const g of games.values()) {
+        if (g.season !== season || g.seasonType !== 'regular' || g.lifecycle !== 'final') continue;
+        if (g.etDate >= beforeDate || g.homeScore == null || g.visitorScore == null) continue;
+        if (g.homeScore === g.visitorScore) continue;
+        add(g.homeTeamId, g.homeScore > g.visitorScore);
+        add(g.visitorTeamId, g.visitorScore > g.homeScore);
+      }
+      return [...records.values()];
     },
   };
 }
@@ -516,6 +536,28 @@ export function createPgScoreboardStore(db: Queryable): ScoreboardStore {
         }
         return line as ScoreboardPlayerLine;
       });
+    },
+    async loadTeamRecords(season, beforeDate) {
+      const res = await db.query(
+        `WITH finals AS (
+           SELECT home_team_id, visitor_team_id, home_score, visitor_score FROM display.scoreboard_games
+           WHERE season = $1 AND season_type = 'regular' AND lifecycle = 'final' AND et_date < $2::date
+             AND home_score IS NOT NULL AND visitor_score IS NOT NULL AND home_score <> visitor_score
+         ), sides AS (
+           SELECT home_team_id AS team_id, home_score > visitor_score AS won FROM finals
+           UNION ALL
+           SELECT visitor_team_id, visitor_score > home_score FROM finals
+         )
+         SELECT team_id, count(*) FILTER (WHERE won)::int AS wins, count(*) FILTER (WHERE NOT won)::int AS losses
+         FROM sides GROUP BY team_id`,
+        [season, beforeDate]
+      );
+      return res.rows.map((r) => ({
+        season,
+        teamId: String(r.team_id),
+        wins: Number(r.wins),
+        losses: Number(r.losses),
+      }));
     },
   };
 }
