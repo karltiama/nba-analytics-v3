@@ -97,13 +97,13 @@ describe('previous-season baseline (Phase 2.T.3E)', () => {
   });
 
   it('3. previous season never derived from Production pin', () => {
-    // Pin is 2025; viewing 2025 still baselines to 2024 (viewed−1), not "no baseline"
+    // Pin is 2026; viewing 2026 baselines to 2025 (viewed−1), not "no baseline"
     // and not "pin as previous of itself".
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
-    expect(resolveBaselineSeason('2025')).toBe('2024');
-    expect(resolveBaselineSeason('2025')).not.toBe(PINNED_ANALYTICS_SEASON);
-    // Viewing 2026 → 2025 follows viewed season math (coincidentally equals pin).
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
     expect(resolveBaselineSeason('2026')).toBe('2025');
+    expect(resolveBaselineSeason('2026')).not.toBe(PINNED_ANALYTICS_SEASON);
+    // Viewing 2025 → 2024 follows viewed season math, independent of the pin.
+    expect(resolveBaselineSeason('2025')).toBe('2024');
   });
 
   it('4. current and prior metrics stay separately labeled', () => {

@@ -4,9 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { StartingLineupCard } from '@/components/betting/MatchupAnalysis';
 
 describe('historical minutes sample', () => {
-  it('labels the sample as 2025–26 minutes and does not call it a lineup', () => {
+  it('labels the sample with the analytics season and does not call it a lineup', () => {
     const html = renderToStaticMarkup(createElement(StartingLineupCard, {
       teamAbbr: 'CLE',
+      seasonLabel: '2026–27',
       embedded: true,
       lineup: {
         team_id: '6',
@@ -22,7 +23,8 @@ describe('historical minutes sample', () => {
         ],
       },
     }));
-    expect(html).toContain('CLE 2025–26 minutes');
+    expect(html).toContain('CLE 2026–27 minutes');
+    expect(html).not.toContain('2025–26');
     expect(html).toContain('Minutes logged for CLE in that sample.');
     expect(html).toContain('Dean Wade');
     expect(html).toContain('8 games');

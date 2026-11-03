@@ -8,7 +8,7 @@ import {
 describe('resolveTeamScheduleSeason', () => {
   it('defaults to the analytics pin when season is omitted', () => {
     expect(resolveTeamScheduleSeason(undefined, {})).toBe(PINNED_ANALYTICS_SEASON);
-    expect(resolveTeamScheduleSeason(null, {})).toBe('2025');
+    expect(resolveTeamScheduleSeason(null, {})).toBe('2026');
   });
 
   it('honors explicit ?season= using NBA start-year parsing', () => {
@@ -17,9 +17,9 @@ describe('resolveTeamScheduleSeason', () => {
     expect(resolveTeamScheduleSeason('2026-27', {})).toBe('2026');
   });
 
-  it('does not use calendar year when pin is 2025', () => {
-    expect(resolveTeamScheduleSeason(undefined, {})).toBe('2025');
-    expect(resolveTeamScheduleSeason(undefined, {})).not.toBe('2026');
+  it('uses the pin, not the calendar year', () => {
+    expect(resolveTeamScheduleSeason(undefined, { CURRENT_ANALYTICS_SEASON: '2025' })).toBe('2025');
+    expect(resolveTeamScheduleSeason(undefined, {})).toBe('2026');
   });
 });
 

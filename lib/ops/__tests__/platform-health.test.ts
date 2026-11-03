@@ -53,7 +53,7 @@ function successManifest(entity: string, sourceTable: string): EntityManifest {
     exportMode: 'full',
     source: 'existing_ingestion',
     league: 'nba',
-    season: 2025,
+    season: 2026,
     entity,
     sourceTable,
     exportedAt: '2026-09-05T00:00:00.000Z',

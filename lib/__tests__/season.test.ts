@@ -16,11 +16,11 @@ function env(partial: Record<string, string | undefined> = {}): NodeJS.ProcessEn
 }
 
 describe('getAnalyticsSeason', () => {
-  it('pins fallback to 2025 even when calendar July cutoff is 2026', () => {
+  it('pins fallback to 2026 regardless of the calendar', () => {
     const sep2026 = new Date('2026-09-01T12:00:00.000Z');
     expect(calendarSeasonStartYear(sep2026)).toBe(2026);
     expect(getAnalyticsSeason(env(), sep2026)).toBe(PINNED_ANALYTICS_SEASON);
-    expect(getAnalyticsSeason(env(), sep2026)).toBe('2025');
+    expect(getAnalyticsSeason(env(), sep2026)).toBe('2026');
   });
 
   it('uses CURRENT_ANALYTICS_SEASON over the pin', () => {
@@ -33,13 +33,13 @@ describe('getAnalyticsSeason', () => {
   });
 
   it('ignores invalid CURRENT_ANALYTICS_SEASON and keeps pin', () => {
-    expect(getAnalyticsSeason(env({ CURRENT_ANALYTICS_SEASON: 'nope' }))).toBe('2025');
+    expect(getAnalyticsSeason(env({ CURRENT_ANALYTICS_SEASON: 'nope' }))).toBe('2026');
   });
 
-  it('season env override 2026 wins without changing the fallback pin', () => {
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
-    expect(getAnalyticsSeason(env({ CURRENT_ANALYTICS_SEASON: '2026' }))).toBe('2026');
-    expect(getAnalyticsSeason(env())).toBe('2025');
+  it('season env override wins without changing the fallback pin', () => {
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
+    expect(getAnalyticsSeason(env({ CURRENT_ANALYTICS_SEASON: '2025' }))).toBe('2025');
+    expect(getAnalyticsSeason(env())).toBe('2026');
   });
 });
 
@@ -64,17 +64,17 @@ describe('calendarSeasonStartYear', () => {
 });
 
 describe('roster season', () => {
-  it('uses the calendar season and leaves the stats pin on 2025', () => {
+  it('uses the calendar season, independent of the stats pin', () => {
     const oct2026 = new Date('2026-10-21T12:00:00.000Z');
     expect(getRosterSeason({} as NodeJS.ProcessEnv, oct2026)).toBe('2026');
-    expect(getAnalyticsSeason({} as NodeJS.ProcessEnv, oct2026)).toBe('2025');
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
+    expect(getAnalyticsSeason({} as NodeJS.ProcessEnv, oct2026)).toBe('2026');
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
   });
 
   it('accepts CURRENT_ROSTER_SEASON without moving the analytics pin', () => {
-    const env = { CURRENT_ROSTER_SEASON: '2026-27' } as NodeJS.ProcessEnv;
-    expect(getRosterSeason(env, new Date('2026-01-15T12:00:00.000Z'))).toBe('2026');
-    expect(getAnalyticsSeason(env)).toBe('2025');
+    const env = { CURRENT_ROSTER_SEASON: '2027-28' } as NodeJS.ProcessEnv;
+    expect(getRosterSeason(env, new Date('2026-01-15T12:00:00.000Z'))).toBe('2027');
+    expect(getAnalyticsSeason(env)).toBe('2026');
   });
 });
 
@@ -82,7 +82,7 @@ describe('live availability season (injuries)', () => {
   it('uses calendar season, not Production pin', () => {
     const sep2026 = new Date('2026-09-05T12:00:00.000Z');
     expect(getLiveAvailabilitySeason({} as NodeJS.ProcessEnv, sep2026)).toBe('2026');
-    expect(getAnalyticsSeason({} as NodeJS.ProcessEnv, sep2026)).toBe('2025');
+    expect(getAnalyticsSeason({} as NodeJS.ProcessEnv, sep2026)).toBe('2026');
     expect(
       shouldShowCurrentAvailability(
         '2025',

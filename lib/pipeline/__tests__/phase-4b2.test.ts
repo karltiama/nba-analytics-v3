@@ -67,7 +67,7 @@ describe('phase 4b2 nightly season guard', () => {
   it('explicit ingestion season 2026 resolves to 2026 and does not change getAnalyticsSeason', () => {
     expect(requireLiveIngestionSeasonStartYear({ INGESTION_SEASON_START_YEAR: '2026' })).toBe(2026);
     expect(getAnalyticsSeason({ INGESTION_SEASON_START_YEAR: '2026' })).toBe(PINNED_ANALYTICS_SEASON);
-    expect(getAnalyticsSeason({ INGESTION_SEASON_START_YEAR: '2026' })).toBe('2025');
+    expect(getAnalyticsSeason({ INGESTION_SEASON_START_YEAR: '2027', CURRENT_ANALYTICS_SEASON: '2025' })).toBe('2025');
   });
 
   it('rejects a non-four-digit season and keeps replay on the early return', () => {

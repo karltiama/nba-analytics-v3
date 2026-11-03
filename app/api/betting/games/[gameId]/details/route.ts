@@ -8,6 +8,7 @@ import {
   getLineMovement,
 } from '@/lib/betting/queries';
 import { query } from '@/lib/db';
+import { formatNbaSeasonLabel, getAnalyticsSeason } from '@/lib/season';
 import { getInjuryMatchupContext } from '@/lib/betting/injury-matchup-context';
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import { resolveDisplayGameStatus } from '@/lib/betting/normalize-game-status';
@@ -315,6 +316,8 @@ export async function GET(
     const response = {
       viewMode: HISTORICAL_VIEW_MODE_LIVE,
       gameSeason,
+      // Team ratings, recent results and the minutes sample all read the analytics season.
+      analyticsSeasonLabel: formatNbaSeasonLabel(getAnalyticsSeason()),
       availability: {
         starters: false,
         advanced: false,

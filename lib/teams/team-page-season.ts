@@ -27,14 +27,14 @@ export type TeamPageSeasonChoice = {
 
 /**
  * Seasons offered in the team-page switcher.
- * Active pin + next season (e.g. 2025 and 2026) so 2026–27 is reachable
- * without flipping Production CURRENT_ANALYTICS_SEASON.
+ * Active pin + previous season (e.g. 2026 and 2025), active first, so last
+ * season stays reachable without an empty future season.
  */
 export function listTeamPageSeasonChoices(
   env: NodeJS.ProcessEnv = process.env
 ): TeamPageSeasonChoice[] {
   const active = Number(getAnalyticsSeason(env));
-  const years = [active, active + 1];
+  const years = [active, active - 1];
   return years.map((y) => {
     const season = String(y);
     return { season, seasonLabel: formatNbaSeasonLabel(season) };
@@ -66,8 +66,8 @@ export type RosterSeasonContext = {
 /**
  * Roster membership season for a team page.
  * An explicit ?season= keeps that year, including historic pages.
- * The default stats page has no ?season= and still uses the 2025 pin for
- * averages; its roster uses getRosterSeason() (2026 in October 2026).
+ * The default stats page has no ?season= and uses the analytics pin for
+ * averages; its roster uses getRosterSeason() (the calendar season).
  */
 export function resolveRosterSeason(args?: {
   selectedSeason?: string | null;

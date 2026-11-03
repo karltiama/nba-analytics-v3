@@ -8,10 +8,10 @@ import { hasCompletedSeasonStats } from '@/lib/players/season-stats-empty';
  * Queries always receive that start-year so 2026 cannot silently show all-Finals 2025 BBRef.
  */
 describe('player page season isolation', () => {
-  it('defaults to the analytics pin (Production 2025), not all-seasons aggregate', () => {
+  it('defaults to the analytics pin (Production 2026), not all-seasons aggregate', () => {
     const ctx = resolveTeamPageSeason({ env: {} as NodeJS.ProcessEnv });
     expect(ctx.season).toBe(PINNED_ANALYTICS_SEASON);
-    expect(ctx.seasonLabel).toBe('2025–26');
+    expect(ctx.seasonLabel).toBe('2026–27');
   });
 
   it('explicit ?season=2026 does not keep 2025 as the query season', () => {

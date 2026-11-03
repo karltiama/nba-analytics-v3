@@ -10,7 +10,7 @@ export function ResearchMatchupOverview({ overview }: { overview: ResearchHistor
           Matchup Overview
         </h2>
         <p className="type-metadata mt-1 text-pretty">
-          2025–26 regular-season team identity. Ratings in the matchup section use that same 2025–26 research season.
+          2025–26 regular-season team identity, from last season&apos;s full sample. Current-season ratings and results are in Teams &amp; Players.
         </p>
       </div>
       <MatchupResearchSections

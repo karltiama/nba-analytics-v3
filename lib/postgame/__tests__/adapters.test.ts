@@ -32,8 +32,8 @@ describe('13F.3 provider adapters and stage-local guards', () => {
     expect(worker).not.toMatch(/parsed\.stage === 'game_flow'/);
   });
 
-  it('keeps product pin 2025 while postgame target is 2026', () => {
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
+  it('product pin is 2026 and postgame keeps 2023–2025 protected', () => {
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
     expect(GAME_STARTERS_SEASON).toBe('2025');
     expect(POSTGAME_TARGET_SEASON).toBe('2026');
     expect(POSTGAME_PROTECTED_SEASONS).toEqual(['2023', '2024', '2025']);

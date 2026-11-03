@@ -256,7 +256,7 @@ describe('roster availability (Phase 2.T.3B)', () => {
   });
 
   it('12. Production pin is not treated as live injury season', () => {
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
     const live = getLiveAvailabilitySeason(
       {} as NodeJS.ProcessEnv,
       new Date('2026-09-05T12:00:00.000Z')

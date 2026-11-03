@@ -75,10 +75,10 @@ describe('team-page-season (Phase 2.T.3A.1)', () => {
   });
 
   it('10. no Production pin/config mutation required', () => {
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
     const prod = resolveTeamPageSeason({ env: {} as NodeJS.ProcessEnv });
-    expect(prod.season).toBe('2025');
-    expect(prod.seasonLabel).toBe('2025–26');
+    expect(prod.season).toBe('2026');
+    expect(prod.seasonLabel).toBe('2026–27');
   });
 
   it('future selectedSeason override without changing pin', () => {
@@ -90,24 +90,24 @@ describe('team-page-season (Phase 2.T.3A.1)', () => {
     expect(ctx.seasonLabel).toBe('2026–27');
   });
 
-  it('season switcher lists pin and next season', () => {
+  it('season switcher lists pin then previous season', () => {
     const choices = listTeamPageSeasonChoices({
-      CURRENT_ANALYTICS_SEASON: '2025',
+      CURRENT_ANALYTICS_SEASON: '2026',
     } as NodeJS.ProcessEnv);
-    expect(choices.map((c) => c.season)).toEqual(['2025', '2026']);
-    expect(choices[1]!.seasonLabel).toBe('2026–27');
+    expect(choices.map((c) => c.season)).toEqual(['2026', '2025']);
+    expect(choices[0]!.seasonLabel).toBe('2026–27');
+    expect(choices[1]!.seasonLabel).toBe('2025–26');
   });
 
-  it('default team page keeps 2025 stats and uses the 2026 roster', () => {
+  it('default team page shows 2026 stats with the 2026 roster', () => {
     const oct2026 = new Date('2026-10-21T16:00:00.000Z');
     const env = {} as NodeJS.ProcessEnv;
     const stats = resolveTeamPageSeason({ env });
     const roster = resolveRosterSeason({ env, now: oct2026 });
-    expect(stats.season).toBe('2025');
+    expect(stats.season).toBe('2026');
     expect(roster.season).toBe('2026');
-    expect(rosterStatsDistinction(roster.season, stats.season)).toBe(
-      'Season stats on this page are 2025–26.'
-    );
+    expect(rosterStatsDistinction(roster.season, stats.season)).toBeNull();
+    expect(rosterStatsDistinction(roster.season, '2025')).toBe('Season stats on this page are 2025–26.');
     expect(rosterObservationNote(roster.season)).toBe(
       'Observed 2026–27 membership. Later moves may still be missing.'
     );
