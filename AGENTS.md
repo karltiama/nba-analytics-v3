@@ -7,6 +7,8 @@ Always-on rules only. Open the one doc the task needs. Do not paste runbooks int
 ## Terraform source of truth (reconciled 2026-11-03)
 
 Terraform is the source of truth for ingestion infrastructure (reconciled 2026-11-03). No console edits to Lambda env, schedules or rules; change tfvars/.tf and apply through a reviewed plan.
+Saved plans (-out) contain secrets: write them outside the repo and delete after apply.
+status-sync is deployed from 21c5d1b, not master; master has unreviewed status-sync changes, so don't rebuild or redeploy status-sync without a reviewed plan.
 
 ## Safety
 
