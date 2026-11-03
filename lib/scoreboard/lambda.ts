@@ -120,6 +120,7 @@ const NO_STORE: ScoreboardStore = {
   applyObservation: async () => false,
   replacePlayerLines: async () => undefined,
   loadPlayerLines: async () => [],
+  loadTeamRecords: async () => [],
   claimOddsAttempt: async () => false,
   recordOddsOutcome: async () => undefined,
   applyOddsAcquisition: async () => ({ written: 0, withdrawn: 0 }),

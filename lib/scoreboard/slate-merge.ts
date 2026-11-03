@@ -12,6 +12,10 @@ import { presentScoreboardGame, type PresentedGame } from './present';
 
 const EMPTY_ODDS = { moneyline: null, spread: null, spreadOdds: null };
 
+function formatRecord(record: ScoreboardGame['home']['record']): string | null {
+  return record ? `${record.wins}-${record.losses}` : null;
+}
+
 export function scoreboardToSlateGame(
   game: ScoreboardGame,
   generatedAt?: string | null
@@ -33,13 +37,13 @@ export function scoreboardToSlateGame(
       id: game.home.provider_team_id,
       name: presented.homeName,
       abbreviation: presented.homeAbbr,
-      record: null,
+      record: formatRecord(game.home.record),
     },
     awayTeam: {
       id: game.visitor.provider_team_id,
       name: presented.visitorName,
       abbreviation: presented.visitorAbbr,
-      record: null,
+      record: formatRecord(game.visitor.record),
     },
     startTime: formatTipoffEt(game.scheduled_tip),
     homeOdds: market

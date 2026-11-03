@@ -15,6 +15,7 @@ import {
   type ScoreboardResponse,
   type ScoreboardSeasonType,
   type StoredOddsQuote,
+  type StoredTeamRecord,
 } from './contract';
 import { isScoreboardMarketServingEnabled, isScoreboardServingEnabled } from './flags';
 import { buildScoreboardResponse } from './response';
@@ -91,9 +92,19 @@ export async function serveScoreboard(input: {
         odds = undefined;
       }
     }
+    // Records are optional too: a read failure keeps the games without them.
+    let records: StoredTeamRecord[] | undefined;
+    const recordSeasons = [...new Set(games.filter((g) => g.seasonType !== 'preseason').map((g) => g.season))];
+    if (recordSeasons.length > 0) {
+      try {
+        records = (await Promise.all(recordSeasons.map((s) => store.loadTeamRecords(s, date)))).flat();
+      } catch {
+        records = undefined;
+      }
+    }
     const coverage = await coverageFor(store, date, input.now);
     const body: ScoreboardResponseWithCoverage = {
-      ...buildScoreboardResponse({ date, now: input.now, games, lines, odds }),
+      ...buildScoreboardResponse({ date, now: input.now, games, lines, odds, records }),
       coverage,
     };
     return {

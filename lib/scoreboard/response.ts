@@ -8,6 +8,7 @@ import {
   type ScoreboardResponse,
   type StoredOddsQuote,
   type StoredScoreboardGame,
+  type StoredTeamRecord,
 } from './contract';
 import { selectMarket } from './market';
 import { IN_GAME } from './normalize';
@@ -56,7 +57,16 @@ export function buildScoreboardResponse(input: {
   lines: ScoreboardPlayerLine[];
   /** Stored current quotes; omitted when the odds read failed or is not configured. */
   odds?: StoredOddsQuote[];
+  /** Regular-season records before `date`; omitted when the records read failed. */
+  records?: StoredTeamRecord[];
 }): ScoreboardResponse {
+  const recordByTeam = new Map(input.records?.map((r) => [`${r.season}:${r.teamId}`, r]));
+  // A team with no stored final yet is 0-0. Preseason games carry no record.
+  const recordFor = (g: StoredScoreboardGame, teamId: string) => {
+    if (!input.records || g.seasonType === 'preseason') return {};
+    const r = recordByTeam.get(`${g.season}:${teamId}`);
+    return { record: { wins: r?.wins ?? 0, losses: r?.losses ?? 0 } };
+  };
   const games: ScoreboardGame[] = input.games.map((g) => {
     const s = staleness(g, input.now);
     const market = input.odds
@@ -76,12 +86,19 @@ export function buildScoreboardResponse(input: {
       period: g.period,
       clock: g.clock,
       overtime_periods: g.overtimePeriods,
-      home: { provider_team_id: g.homeTeamId, abbreviation: g.homeAbbr, name: g.homeName, score: g.homeScore },
+      home: {
+        provider_team_id: g.homeTeamId,
+        abbreviation: g.homeAbbr,
+        name: g.homeName,
+        score: g.homeScore,
+        ...recordFor(g, g.homeTeamId),
+      },
       visitor: {
         provider_team_id: g.visitorTeamId,
         abbreviation: g.visitorAbbr,
         name: g.visitorName,
         score: g.visitorScore,
+        ...recordFor(g, g.visitorTeamId),
       },
       acquired_at: g.lastObservedAt,
       last_changed_at: g.lastChangedAt,
