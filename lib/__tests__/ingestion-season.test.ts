@@ -23,6 +23,6 @@ describe('resolveIngestionSeasonStartYear', () => {
   it('falls back to pin, not calendar July cutoff', () => {
     const sep2026 = new Date('2026-09-01T12:00:00.000Z');
     expect(resolveIngestionSeasonStartYear(undefined, env(), sep2026)).toBe(Number(PINNED_ANALYTICS_SEASON));
-    expect(getAnalyticsSeason(env(), sep2026)).toBe('2025');
+    expect(getAnalyticsSeason(env(), sep2026)).toBe('2026');
   });
 });

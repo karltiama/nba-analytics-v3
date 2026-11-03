@@ -1,16 +1,16 @@
 /**
  * Single season clock for the app and ops scripts.
  *
- * - Env override: CURRENT_ANALYTICS_SEASON=2025 (or 2025-26).
- * - Fallback is PINNED_ANALYTICS_SEASON ('2025'), not the July calendar.
- *   Calendar would already return 2026 in Sep 2026 and empty the dashboards
- *   until 2026-27 rows exist.
+ * - Env override: CURRENT_ANALYTICS_SEASON=2026 (or 2026-27).
+ * - Fallback is PINNED_ANALYTICS_SEASON, not the July calendar, so a new season's
+ *   dashboards do not go empty before its rows exist.
  * - calendarSeasonStartYear() is the ingestion July cutoff (Jan–Jun → prior year).
- *   Flip the pin (or set env to 2026) after 2026-27 schedule + averages are seeded.
+ * - Pinned to 2026 on 2026-11-03, after BDL nightly ingestion and the Oct 20 – Nov 2
+ *   recovery backfill loaded 2026-27 game logs and season averages.
  */
 
 export const ANALYTICS_SEASON_ENV = 'CURRENT_ANALYTICS_SEASON';
-export const PINNED_ANALYTICS_SEASON = '2025';
+export const PINNED_ANALYTICS_SEASON = '2026';
 
 export function calendarSeasonStartYear(now: Date = new Date()): number {
   const year = now.getFullYear();

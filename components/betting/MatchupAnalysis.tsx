@@ -598,7 +598,18 @@ export function MatchupAnalysis({ data, homeTeamAbbr, awayTeamAbbr }: MatchupAna
   );
 }
 
-export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lineup: StartingLineup; teamAbbr: string; embedded?: boolean }) {
+export function StartingLineupCard({
+  lineup,
+  teamAbbr,
+  seasonLabel,
+  embedded = false,
+}: {
+  lineup: StartingLineup;
+  teamAbbr: string;
+  /** Analytics season label, e.g. "2026–27". Omitted → plain "season". */
+  seasonLabel?: string;
+  embedded?: boolean;
+}) {
   const content = (
     <>
       <div className="flex items-center gap-2 mb-3">
@@ -606,7 +617,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
           <span className="type-metadata text-[#063f46]">{teamAbbr}</span>
         </div>
         <div>
-          <h5 className="type-secondary text-[#063f46]">{teamAbbr} 2025–26 minutes</h5>
+          <h5 className="type-secondary text-[#063f46]">{teamAbbr} {seasonLabel ?? 'season'} minutes</h5>
           <p className="type-metadata">Minutes logged for {teamAbbr} in that sample.</p>
         </div>
       </div>
@@ -647,7 +658,7 @@ export function StartingLineupCard({ lineup, teamAbbr, embedded = false }: { lin
       
       {lineup.players.length === 0 && (
         <p className="type-secondary py-4 text-center">
-          No 2025–26 minutes sample
+          No {seasonLabel ?? 'season'} minutes sample
         </p>
       )}
     </>

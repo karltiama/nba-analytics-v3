@@ -244,7 +244,7 @@ describe('runGameStatusSync', () => {
     expect(fetchPage).not.toHaveBeenCalled();
     expect(upsert).not.toHaveBeenCalled();
     expect(result.productPin).toBe(PINNED_ANALYTICS_SEASON);
-    expect(PINNED_ANALYTICS_SEASON).toBe('2025');
+    expect(PINNED_ANALYTICS_SEASON).toBe('2026');
   });
 
   it('manual canary writes through freeze using the explicit date window', async () => {

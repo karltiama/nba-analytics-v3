@@ -135,6 +135,8 @@ export interface GameDetailsData {
   game: Game;
   viewMode?: HistoricalViewMode;
   gameSeason?: string;
+  /** Label of the analytics season behind team ratings, recent results and minutes (e.g. "2026–27"). */
+  analyticsSeasonLabel?: string;
   availability?: HistoricalModuleAvailability;
   boxScore?: HistoricalBoxScore;
   starters?: HistoricalStarters;
@@ -641,10 +643,12 @@ export function MatchupPageLayout({
     marketSentiment,
     viewMode,
     gameSeason,
+    analyticsSeasonLabel,
     boxScore,
     starters,
     availability,
   } = data;
+  const seasonLabel = analyticsSeasonLabel ?? 'Season';
 
   const isFinalView =
     viewMode === 'final' || isHistoricalFinalView(game.status);
@@ -1291,19 +1295,19 @@ export function MatchupPageLayout({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
               <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
-                <h2 className="type-section-heading text-[#063f46]">2025–26 minutes sample</h2>
+                <h2 className="type-section-heading text-[#063f46]">{seasonLabel} minutes sample</h2>
                 <p className="type-metadata mt-0.5">
-                  Last 10 completed games in the 2025–26 research season for each franchise. Not a 2026–27 roster or a starting lineup.
+                  Last 10 completed games{analyticsSeasonLabel ? ` in the ${analyticsSeasonLabel} season` : ''} for each franchise. Not a projected starting lineup.
                 </p>
               </div>
               <div className="p-3">
               {matchupAnalysis?.starting_lineups && (matchupAnalysis.starting_lineups.home || matchupAnalysis.starting_lineups.away) ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {matchupAnalysis.starting_lineups.away && (
-                    <StartingLineupCard lineup={matchupAnalysis.starting_lineups.away} teamAbbr={game.awayTeam.abbreviation} embedded />
+                    <StartingLineupCard lineup={matchupAnalysis.starting_lineups.away} teamAbbr={game.awayTeam.abbreviation} seasonLabel={analyticsSeasonLabel} embedded />
                   )}
                   {matchupAnalysis.starting_lineups.home && (
-                    <StartingLineupCard lineup={matchupAnalysis.starting_lineups.home} teamAbbr={game.homeTeam.abbreviation} embedded />
+                    <StartingLineupCard lineup={matchupAnalysis.starting_lineups.home} teamAbbr={game.homeTeam.abbreviation} seasonLabel={analyticsSeasonLabel} embedded />
                   )}
                 </div>
               ) : (
@@ -1315,7 +1319,9 @@ export function MatchupPageLayout({
             <div className="bg-white rounded-2xl overflow-hidden border border-[#DCE9EA] shadow-sm min-w-0">
             <div className="px-3 py-2 border-b border-[#DCE9EA] bg-[#F8FBFA]">
               <h2 className="type-section-heading text-[#063f46]">Team comparison</h2>
-              <p className="type-metadata mt-0.5">2025–26 research-season ratings and recent results.</p>
+              <p className="type-metadata mt-0.5">
+                {analyticsSeasonLabel ? `${analyticsSeasonLabel} ratings and recent results.` : 'Season ratings and recent results.'}
+              </p>
             </div>
             <div className="p-3">
             {(() => {
@@ -1375,7 +1381,7 @@ export function MatchupPageLayout({
                         <p className="type-secondary mb-2">Not enough season data</p>
                       )}
                       <div className="border-t border-[#DCE9EA] pt-2">
-                        <h4 className="type-secondary mb-1">2025–26 results</h4>
+                        <h4 className="type-secondary mb-1">{seasonLabel} results</h4>
                         {awayTeamStats.recentForm.slice(0, 3).map((g, i) => (
                           <RecentFormRow key={i} game={g} teamAbbr={game.awayTeam.abbreviation} />
                         ))}
@@ -1413,7 +1419,7 @@ export function MatchupPageLayout({
                         <p className="type-secondary mb-2">Not enough season data</p>
                       )}
                       <div className="border-t border-[#DCE9EA] pt-2">
-                        <h4 className="type-secondary mb-1">2025–26 results</h4>
+                        <h4 className="type-secondary mb-1">{seasonLabel} results</h4>
                         {homeTeamStats.recentForm.slice(0, 3).map((g, i) => (
                           <RecentFormRow key={i} game={g} teamAbbr={game.homeTeam.abbreviation} />
                         ))}

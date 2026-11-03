@@ -409,7 +409,8 @@ describe('research overview presentation and boundaries', () => {
     expect(html).toContain('not official NBA pace');
     expect(html).toContain('Current rosters are not verified');
     expect(html).toContain('Jayson Tatum');
-    expect(html).toContain('Ratings in the matchup section use that same 2025–26 research season.');
+    expect(html).toContain('Current-season ratings and results are in Teams &amp; Players.');
+    expect(html).not.toContain('Ratings in the matchup section use that same 2025–26 research season.');
     expect(html).not.toContain('data-market-strip');
     expect(html).not.toContain('DraftKings');
     expect(html).toContain('data-matchup-story');
