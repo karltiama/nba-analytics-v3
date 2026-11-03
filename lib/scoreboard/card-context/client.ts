@@ -17,9 +17,13 @@ export type CardInjuryTeam = {
   extra: number;
 };
 
+export type CardInjuryLineStatus = 'listed' | 'none' | 'unavailable';
+
 export type PregameCardContext = {
   schedule: string;
   injuries: string;
+  /** Missing or unknown injury status is treated as unavailable so the card can hide the row. */
+  injuryStatus: CardInjuryLineStatus;
   /** Null on a text-only payload, or when the optional teams field is absent or unusable. */
   injuryTeams: CardInjuryTeam[] | null;
   /** Null when the payload has no separate caption. The injuries text still stands alone. */
@@ -27,6 +31,14 @@ export type PregameCardContext = {
 };
 
 const INJURY_STATUSES = new Set<CardInjuryPlayer['status']>(['Out', 'Doubtful', 'Q']);
+const INJURY_LINE_STATUSES = new Set<CardInjuryLineStatus>(['listed', 'none', 'unavailable']);
+
+function readInjuryLineStatus(value: unknown): CardInjuryLineStatus {
+  if (typeof value === 'string' && INJURY_LINE_STATUSES.has(value as CardInjuryLineStatus)) {
+    return value as CardInjuryLineStatus;
+  }
+  return 'unavailable';
+}
 
 function readInjuryTeams(value: unknown): CardInjuryTeam[] | null {
   if (!Array.isArray(value)) return null;
@@ -79,7 +91,9 @@ export function readCardContextPayload(body: unknown): Record<string, PregameCar
   for (const [id, value] of Object.entries(record.games as Record<string, unknown>)) {
     if (!id || !value || typeof value !== 'object') return null;
     const schedule = (value as { schedule?: { text?: unknown } }).schedule?.text;
-    const injuryRecord = (value as { injuries?: { text?: unknown; teams?: unknown; as_of_label?: unknown } }).injuries;
+    const injuryRecord = (value as {
+      injuries?: { text?: unknown; status?: unknown; teams?: unknown; as_of_label?: unknown };
+    }).injuries;
     const injuries = injuryRecord?.text;
     if (typeof schedule !== 'string' || schedule.trim() === '') return null;
     if (typeof injuries !== 'string' || injuries.trim() === '') return null;
@@ -87,6 +101,7 @@ export function readCardContextPayload(body: unknown): Record<string, PregameCar
     out[id] = {
       schedule,
       injuries,
+      injuryStatus: readInjuryLineStatus(injuryRecord?.status),
       injuryTeams: readInjuryTeams(injuryRecord?.teams),
       asOfLabel: typeof asOfRaw === 'string' && asOfRaw.trim() !== '' ? asOfRaw : null,
     };

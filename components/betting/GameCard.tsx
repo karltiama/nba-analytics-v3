@@ -9,7 +9,7 @@ import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MarketProbability } from '@/components/betting/MarketProbability';
 import type { PresentedGame } from '@/lib/scoreboard/present';
 import type { StatLeader } from '@/lib/scoreboard/game-pulse';
-import type { CardInjuryTeam } from '@/lib/scoreboard/card-context/client';
+import type { CardInjuryLineStatus, CardInjuryTeam } from '@/lib/scoreboard/card-context/client';
 
 interface TeamInfo {
   id: string;
@@ -88,6 +88,7 @@ export interface Game {
   pregameContext?: {
     schedule: string | null;
     injuries: string | null;
+    injuryStatus?: CardInjuryLineStatus | null;
     injuryTeams?: CardInjuryTeam[] | null;
     asOfLabel?: string | null;
   };
@@ -622,16 +623,25 @@ export function GameCard({
                   <p className="type-secondary truncate text-center text-[#063F46]" data-card-schedule title={pregameLines.schedule ?? undefined}>
                     {pregameLines.schedule}
                   </p>
-                  <p className="type-secondary line-clamp-2 text-center text-[#063F46]" data-card-injuries>
-                    {pregameLines.injuryTeams && pregameLines.injuryTeams.length > 0 ? (
-                      <InjuryNames teams={pregameLines.injuryTeams} />
-                    ) : (
-                      pregameLines.injuries
-                    )}
-                  </p>
-                  <p className="type-metadata text-center text-[#063F46]" data-card-as-of>
-                    {pregameLines.asOfLabel ?? ''}
-                  </p>
+                  {pregameLines.injuryStatus === 'listed' || pregameLines.injuryStatus === 'none' ? (
+                    <>
+                      <p className="type-secondary line-clamp-2 text-center text-[#063F46]" data-card-injuries>
+                        {pregameLines.injuryTeams && pregameLines.injuryTeams.length > 0 ? (
+                          <InjuryNames teams={pregameLines.injuryTeams} />
+                        ) : (
+                          pregameLines.injuries
+                        )}
+                      </p>
+                      <p className="type-metadata text-center text-[#063F46]" data-card-as-of>
+                        {pregameLines.asOfLabel ?? ''}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="type-secondary line-clamp-2 text-center text-[#063F46]" data-card-injuries />
+                      <p className="type-metadata text-center text-[#063F46]" data-card-as-of />
+                    </>
+                  )}
                 </>
               ) : (
                 <p className="type-secondary row-span-3 text-center text-[#063F46]" data-context-unavailable>

@@ -33,6 +33,7 @@ describe('card context client', () => {
       '5001': {
         schedule: 'Schedule context unavailable.',
         injuries: 'Injury report unavailable',
+        injuryStatus: 'unavailable',
         injuryTeams: null,
         asOfLabel: null,
       },
@@ -45,16 +46,28 @@ describe('card context client', () => {
       games: {
         '5001': {
           schedule: { status: 'ready', text: 'Both teams on 1 day rest' },
-          injuries: { status: 'none', text: 'No key injuries listed · as of 5:00 PM ET', as_of: '2026-11-02T21:00:00.000Z' },
+          injuries: { text: 'No key injuries listed · as of 5:00 PM ET', as_of: '2026-11-02T21:00:00.000Z' },
         },
       },
     });
     expect(textOnly?.['5001']).toEqual({
       schedule: 'Both teams on 1 day rest',
       injuries: 'No key injuries listed · as of 5:00 PM ET',
+      injuryStatus: 'unavailable',
       injuryTeams: null,
       asOfLabel: null,
     });
+
+    const none = readCardContextPayload({
+      schema_version: 'card-context.v1',
+      games: {
+        '5001': {
+          schedule: { status: 'ready', text: 'Both teams on 1 day rest' },
+          injuries: { status: 'none', text: 'No key injuries listed · as of 5:00 PM ET', as_of: '2026-11-02T21:00:00.000Z' },
+        },
+      },
+    });
+    expect(none?.['5001'].injuryStatus).toBe('none');
 
     const structured = readCardContextPayload({
       schema_version: 'card-context.v1',
@@ -74,6 +87,7 @@ describe('card context client', () => {
         },
       },
     });
+    expect(structured?.['5001'].injuryStatus).toBe('listed');
     expect(structured?.['5001'].injuryTeams).toEqual([
       { abbr: 'CLE', players: [{ name: 'Mitchell', status: 'Q' }], extra: 0 },
       { abbr: 'OKC', players: [], extra: 0 },

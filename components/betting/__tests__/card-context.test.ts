@@ -37,10 +37,15 @@ function teams(
   ];
 }
 
-function context(injuryTeams: CardInjuryTeam[], asOfLabel = 'as of 5:00 PM ET') {
+function context(
+  injuryTeams: CardInjuryTeam[],
+  asOfLabel = 'as of 5:00 PM ET',
+  injuryStatus: 'listed' | 'none' | 'unavailable' = 'listed'
+) {
   return {
     schedule: 'OKC on 2nd night of a back-to-back · CLE 2 days rest',
     injuries: 'kept for older clients',
+    injuryStatus,
     injuryTeams,
     asOfLabel,
   };
@@ -153,11 +158,49 @@ describe('GameCard pregame context', () => {
     expect(withoutHighlights).not.toContain('data-questionable');
   });
 
+  it('hides the injury rows when the status is unavailable and keeps the fixed grid', () => {
+    const rendered = html({
+      ...slate('scheduled'),
+      pregameContext: {
+        schedule: 'Both teams on 1 day rest',
+        injuries: 'Injury report unavailable',
+        injuryStatus: 'unavailable',
+        injuryTeams: null,
+        asOfLabel: null,
+      },
+    });
+    expect(rendered).toContain('grid-rows-[20px_40px_16px]');
+    expect(inner(rendered, 'data-card-schedule')).toBe('Both teams on 1 day rest');
+    expect(inner(rendered, 'data-card-injuries')).toBe('');
+    expect(inner(rendered, 'data-card-as-of')).toBe('');
+    expect(rendered).not.toContain('Injury report unavailable');
+
+    const missingStatus = html({
+      ...slate('scheduled'),
+      pregameContext: {
+        schedule: 'Schedule context unavailable.',
+        injuries: 'Injury report unavailable',
+        injuryTeams: null,
+        asOfLabel: null,
+      },
+    });
+    expect(inner(missingStatus, 'data-card-schedule')).toBe('Schedule context unavailable.');
+    expect(inner(missingStatus, 'data-card-injuries')).toBe('');
+    expect(inner(missingStatus, 'data-card-as-of')).toBe('');
+
+    const none = html({
+      ...slate('scheduled'),
+      pregameContext: context(teams({ abbr: 'CLE', players: [] }, { abbr: 'OKC', players: [] }), 'as of 5:00 PM ET', 'none'),
+    });
+    expect(inner(none, 'data-card-injuries')).toContain('No key injuries listed');
+    expect(inner(none, 'data-card-as-of')).toBe('as of 5:00 PM ET');
+  });
+
   it('keeps the fallback when context is missing and leaves live and final cards unchanged', () => {
     expect(html(slate('scheduled'))).toContain('No verified matchup context for this game yet.');
     expect(html(slate('scheduled'))).not.toContain('data-card-schedule');
 
-    const withContext = context(teams({ abbr: 'CLE', players: [] }, { abbr: 'OKC', players: [] }), 'as of 5:00 PM ET');
+    const withContext = context(teams({ abbr: 'CLE', players: [] }, { abbr: 'OKC', players: [] }), 'as of 5:00 PM ET', 'none');
     withContext.schedule = 'Both teams on 1 day rest';
     const live = html({
       ...slate('live', { home: 40, visitor: 38 }),

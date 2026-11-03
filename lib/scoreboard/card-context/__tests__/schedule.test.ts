@@ -57,7 +57,7 @@ describe('schedule context', () => {
     });
   });
 
-  it('prefers 3rd game in 4 nights over a back-to-back on the same team', () => {
+  it('keeps a back-to-back visible when the same team is also 3rd in 4', () => {
     const games = [
       row({ etDate: '2026-11-01', homeTeamId: 'det' }),
       row({ etDate: '2026-11-03', homeTeamId: 'det' }),
@@ -75,8 +75,100 @@ describe('schedule context', () => {
       })
     ).toEqual({
       status: 'ready',
-      text: 'DET: 3rd game in 4 nights · CHA 1 day rest',
+      text: 'DET on 2nd night of a back-to-back (3rd in 4) · CHA 1 day rest',
     });
+  });
+
+  it('states tonight\'s real-slate back-to-backs without dropping the 3rd-in-4 fact', () => {
+    const night = '2026-11-02';
+    expect(
+      buildScheduleLine({
+        gameEtDate: night,
+        season: '2026',
+        awayTeamId: 'atl',
+        homeTeamId: 'ind',
+        awayAbbr: 'ATL',
+        homeAbbr: 'IND',
+        games: [
+          row({ etDate: '2026-10-28', homeTeamId: 'ind' }),
+          row({ etDate: '2026-10-30', homeTeamId: 'ind' }),
+          row({ etDate: '2026-11-01', homeTeamId: 'ind' }),
+          row({ etDate: '2026-11-01', homeTeamId: 'atl' }),
+        ],
+      }).text
+    ).toBe('ATL on 2nd night of a back-to-back · IND on 2nd night of a back-to-back (3rd in 4)');
+
+    expect(
+      buildScheduleLine({
+        gameEtDate: night,
+        season: '2026',
+        awayTeamId: 'tor',
+        homeTeamId: 'lac',
+        awayAbbr: 'TOR',
+        homeAbbr: 'LAC',
+        games: [
+          row({ etDate: '2026-10-28', homeTeamId: 'tor' }),
+          row({ etDate: '2026-10-30', homeTeamId: 'tor' }),
+          row({ etDate: '2026-11-01', homeTeamId: 'tor' }),
+          row({ etDate: '2026-10-28', homeTeamId: 'lac' }),
+          row({ etDate: '2026-10-30', homeTeamId: 'lac' }),
+          row({ etDate: '2026-11-01', homeTeamId: 'lac' }),
+        ],
+      }).text
+    ).toBe('Both teams on a back-to-back (3rd in 4)');
+
+    expect(
+      buildScheduleLine({
+        gameEtDate: night,
+        season: '2026',
+        awayTeamId: 'bos',
+        homeTeamId: 'hou',
+        awayAbbr: 'BOS',
+        homeAbbr: 'HOU',
+        games: [
+          row({ etDate: '2026-10-30', homeTeamId: 'bos' }),
+          row({ etDate: '2026-11-01', homeTeamId: 'bos' }),
+          row({ etDate: '2026-10-28', homeTeamId: 'hou' }),
+          row({ etDate: '2026-10-30', homeTeamId: 'hou' }),
+          row({ etDate: '2026-10-31', homeTeamId: 'hou' }),
+        ],
+      }).text
+    ).toBe('BOS on 2nd night of a back-to-back (3rd in 4) · HOU: 3rd game in 4 nights');
+
+    expect(
+      buildScheduleLine({
+        gameEtDate: night,
+        season: '2026',
+        awayTeamId: 'det',
+        homeTeamId: 'cha',
+        awayAbbr: 'DET',
+        homeAbbr: 'CHA',
+        games: [
+          row({ etDate: '2026-10-28', homeTeamId: 'cha' }),
+          row({ etDate: '2026-10-30', homeTeamId: 'cha' }),
+          row({ etDate: '2026-10-31', homeTeamId: 'cha' }),
+          row({ etDate: '2026-10-30', homeTeamId: 'det' }),
+        ],
+      }).text
+    ).toBe('DET 2 days rest · CHA: 3rd game in 4 nights');
+
+    expect(
+      buildScheduleLine({
+        gameEtDate: night,
+        season: '2026',
+        awayTeamId: 'okc',
+        homeTeamId: 'cle',
+        awayAbbr: 'OKC',
+        homeAbbr: 'CLE',
+        games: [
+          row({ etDate: '2026-10-28', homeTeamId: 'okc' }),
+          row({ etDate: '2026-10-31', homeTeamId: 'okc' }),
+          row({ etDate: '2026-10-28', homeTeamId: 'cle' }),
+          row({ etDate: '2026-10-29', homeTeamId: 'cle' }),
+          row({ etDate: '2026-10-31', homeTeamId: 'cle' }),
+        ],
+      }).text
+    ).toBe('Both teams on 1 day rest');
   });
 
   it('does not call a coverage gap a season opener once opening week has passed', () => {

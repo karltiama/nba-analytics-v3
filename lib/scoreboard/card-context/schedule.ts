@@ -114,8 +114,12 @@ export function deriveTeamSchedule(input: {
 function teamPhrase(abbr: string, fact: TeamFact): string {
   if (fact.kind === 'unavailable') return `${abbr}: rest unavailable`;
   if (fact.kind === 'opener') return `${abbr}: season opener`;
+  if (fact.daysRest === 0) {
+    return fact.thirdInFour
+      ? `${abbr} on 2nd night of a back-to-back (3rd in 4)`
+      : `${abbr} on 2nd night of a back-to-back`;
+  }
   if (fact.thirdInFour) return `${abbr}: 3rd game in 4 nights`;
-  if (fact.daysRest === 0) return `${abbr} on 2nd night of a back-to-back`;
   const unit = fact.daysRest === 1 ? 'day' : 'days';
   return `${abbr} ${fact.daysRest} ${unit} rest`;
 }
@@ -123,11 +127,18 @@ function teamPhrase(abbr: string, fact: TeamFact): string {
 function sharedPhrase(away: TeamFact, home: TeamFact): string | null {
   if (away.kind === 'opener' && home.kind === 'opener') return 'Both teams: season openers';
   if (away.kind !== 'rest' || home.kind !== 'rest') return null;
+
+  const bothB2B = away.daysRest === 0 && home.daysRest === 0;
+  if (bothB2B && away.thirdInFour && home.thirdInFour) {
+    return 'Both teams on a back-to-back (3rd in 4)';
+  }
+  if (bothB2B && (away.thirdInFour || home.thirdInFour)) return null;
+  if (bothB2B) return 'Both teams on the 2nd night of a back-to-back';
+
   if (away.thirdInFour && home.thirdInFour && away.daysRest === home.daysRest) {
     return 'Both teams: 3rd game in 4 nights';
   }
   if (away.thirdInFour || home.thirdInFour) return null;
-  if (away.daysRest === 0 && home.daysRest === 0) return 'Both teams on the 2nd night of a back-to-back';
   if (away.daysRest >= 1 && away.daysRest === home.daysRest) {
     const unit = away.daysRest === 1 ? 'day' : 'days';
     return `Both teams on ${away.daysRest} ${unit} rest`;
