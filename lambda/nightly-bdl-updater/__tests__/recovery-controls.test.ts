@@ -453,12 +453,23 @@ describe('box completeness and selection', () => {
     expect(short.ok).toBe(false);
     if (!short.ok) expect(short.rejection.reason).toBe('short_box');
 
-    const seven = box(21717922).filter((row) => row.team?.id !== 10 || Number(row.player?.id) % 100 !== 8);
-    const homePts = seven.filter((row) => row.team?.id === 10).reduce((sum, row) => sum + Number(row.pts), 0);
-    const awayPts = seven.filter((row) => row.team?.id === 20).reduce((sum, row) => sum + Number(row.pts), 0);
-    const reduced = validateGameBox(game(21717922, { home_team_score: homePts, visitor_team_score: awayPts }), seven);
+    const four = box(21717922).filter((row) => row.team?.id !== 10 || Number(row.player?.id) % 100 <= 4);
+    const homePts = four.filter((row) => row.team?.id === 10).reduce((sum, row) => sum + Number(row.pts), 0);
+    const awayPts = four.filter((row) => row.team?.id === 20).reduce((sum, row) => sum + Number(row.pts), 0);
+    const reduced = validateGameBox(game(21717922, { home_team_score: homePts, visitor_team_score: awayPts }), four);
     expect(reduced.ok).toBe(false);
     if (!reduced.ok) expect(reduced.rejection.reason).toBe('short_box');
+  });
+
+  it('accepts a real short-handed box with six players on one side', () => {
+    const six = box(21717922).filter((row) => row.team?.id !== 10 || Number(row.player?.id) % 100 <= 6);
+    const homePts = six.filter((row) => row.team?.id === 10).reduce((sum, row) => sum + Number(row.pts), 0);
+    const shortHanded = validateGameBox(game(21717922, { home_team_score: homePts }), six);
+    expect(shortHanded.ok).toBe(true);
+
+    const five = box(21717922).filter((row) => row.team?.id !== 10 || Number(row.player?.id) % 100 <= 5);
+    const fivePts = five.filter((row) => row.team?.id === 10).reduce((sum, row) => sum + Number(row.pts), 0);
+    expect(validateGameBox(game(21717922, { home_team_score: fivePts }), five).ok).toBe(true);
   });
 
   it('rejects a scoring or rebound identity break and an unreadable minutes value', () => {
@@ -488,21 +499,22 @@ describe('box completeness and selection', () => {
   });
 
   it('does not treat a zero-minute row as a participant, and cannot see an omitted zero-point rebounder', () => {
+    // Four home players play; four more are listed with 0:00. Only four count.
     const benched = box(21717922);
-    const eighth = benched.find((row) => row.team?.id === 10 && Number(row.player?.id) % 100 === 8);
-    if (!eighth) throw new Error('fixture missing the eighth home player');
-    eighth.min = '0:00';
-    eighth.fgm = 0;
-    eighth.fga = 0;
-    eighth.fg3m = 0;
-    eighth.fg3a = 0;
-    eighth.ftm = 0;
-    eighth.fta = 0;
-    eighth.pts = 0;
-    eighth.oreb = 0;
-    eighth.dreb = 0;
-    eighth.reb = 0;
-    eighth.turnover = 0;
+    for (const bench of benched.filter((row) => row.team?.id === 10 && Number(row.player?.id) % 100 > 4)) {
+      bench.min = '0:00';
+      bench.fgm = 0;
+      bench.fga = 0;
+      bench.fg3m = 0;
+      bench.fg3a = 0;
+      bench.ftm = 0;
+      bench.fta = 0;
+      bench.pts = 0;
+      bench.oreb = 0;
+      bench.dreb = 0;
+      bench.reb = 0;
+      bench.turnover = 0;
+    }
     const homePts = benched.filter((row) => row.team?.id === 10).reduce((sum, row) => sum + Number(row.pts), 0);
     const dnp = validateGameBox(game(21717922, { home_team_score: homePts }), benched);
     expect(dnp.ok).toBe(false);

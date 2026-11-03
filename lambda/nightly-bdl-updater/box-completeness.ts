@@ -8,9 +8,11 @@
  *
  * RECOVERY_MIN_PARTICIPATING_PLAYERS is a safety floor, not proof that the
  * provider sent every player. Minutes of 0, blank, or null do not count.
- * A forfeited or otherwise short official box is rejected rather than padded.
- * An omitted player with zero points and no effect on the returned shot chart
- * cannot be detected once eight participants already reconcile to the score.
+ * The floor is five, the fewest players a team can have on the floor. A real
+ * short-handed box (ATL @ IND, 2026-11-02: IND played six) must load. A box
+ * below five is rejected rather than padded. An omitted player with zero points
+ * and no effect on the returned shot chart cannot be detected once the
+ * participants already reconcile to the score.
  *
  * Possessions match the nightly team-stat SQL:
  * 0.5 * ((FGA + 0.44*FTA - OREB + TOV) + the opponent side).
@@ -20,7 +22,7 @@ import type { ProviderGame } from './recovery-select';
 import type { GameRejection } from './recovery-select';
 
 /** Distinct players with a non-zero minutes value required on each team. */
-export const RECOVERY_MIN_PARTICIPATING_PLAYERS = 8;
+export const RECOVERY_MIN_PARTICIPATING_PLAYERS = 5;
 
 const REQUIRED_COUNTS = ['pts', 'reb', 'oreb', 'dreb', 'fgm', 'fga', 'fg3m', 'fg3a', 'ftm', 'fta', 'turnover'] as const;
 type RequiredCount = (typeof REQUIRED_COUNTS)[number];
