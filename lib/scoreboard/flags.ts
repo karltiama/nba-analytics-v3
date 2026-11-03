@@ -106,6 +106,13 @@ export function isScoreboardMarketServingEnabled(env: Env): boolean {
   return (env[SCOREBOARD_MARKETS_SERVING_ENV] ?? '').trim() === '1';
 }
 
+/** Pregame schedule and injury lines on Today's Games cards. Unset or any value other than '1' is off. */
+export const SCOREBOARD_CARD_CONTEXT_ENV = 'SCOREBOARD_CARD_CONTEXT_ENABLED';
+
+export function isScoreboardCardContextEnabled(env: Env): boolean {
+  return (env[SCOREBOARD_CARD_CONTEXT_ENV] ?? '').trim() === '1';
+}
+
 export function isScoreboardServingEnabled(env: Env): { enabled: boolean; reason: string | null } {
   const raw = env[SCOREBOARD_SERVING_ENV];
   if (raw === undefined || raw.trim() === '') return { enabled: false, reason: 'serving_disabled' };

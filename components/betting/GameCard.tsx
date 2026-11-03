@@ -9,6 +9,7 @@ import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MarketProbability } from '@/components/betting/MarketProbability';
 import type { PresentedGame } from '@/lib/scoreboard/present';
 import type { StatLeader } from '@/lib/scoreboard/game-pulse';
+import type { CardInjuryLineStatus, CardInjuryTeam } from '@/lib/scoreboard/card-context/client';
 
 interface TeamInfo {
   id: string;
@@ -80,6 +81,17 @@ export interface Game {
    * props pages can load it. Scoreboard-only games (all preseason today) leave it unset.
    */
   researchAvailable?: boolean;
+  /**
+   * Pregame scoreboard lines. Absent means the card keeps its existing fallback.
+   * Live and final cards ignore this.
+   */
+  pregameContext?: {
+    schedule: string | null;
+    injuries: string | null;
+    injuryStatus?: CardInjuryLineStatus | null;
+    injuryTeams?: CardInjuryTeam[] | null;
+    asOfLabel?: string | null;
+  };
 }
 
 interface GameCardProps {
@@ -265,6 +277,36 @@ function LeaderTile({
   );
 }
 
+function InjuryNames({ teams }: { teams: CardInjuryTeam[] }) {
+  const listed = teams.some((team) => team.players.length > 0);
+  if (!listed) return <>No key injuries listed</>;
+  return (
+    <>
+      {teams.map((team, teamIndex) => (
+        <span key={`${team.abbr}-${teamIndex}`}>
+          {teamIndex > 0 ? ' · ' : null}
+          {`${team.abbr}: `}
+          {team.players.length === 0
+            ? 'no key injuries listed'
+            : team.players.map((player, playerIndex) => (
+                <span key={`${team.abbr}-${player.name}-${playerIndex}`}>
+                  {playerIndex > 0 ? ', ' : null}
+                  {player.status === 'Q' ? (
+                    <span className="font-semibold text-[#075B5C]" data-questionable="">
+                      {`${player.name} (Q)`}
+                    </span>
+                  ) : (
+                    `${player.name} (${player.status})`
+                  )}
+                </span>
+              ))}
+          {team.extra > 0 ? ` +${team.extra}` : null}
+        </span>
+      ))}
+    </>
+  );
+}
+
 const CONTEXT_HEADING: Record<'pregame' | 'live' | 'final', [string, string]> = {
   pregame: ['Matchup ', 'Context'],
   live: ['Game ', 'Pulse'],
@@ -325,7 +367,17 @@ export function GameCard({
   const showPreviewMarkets = Boolean(schedulePreview && !schedulePreview.tipPassed && hasOdds);
   const marketCaption = scoreboardPresentation && !inPlay && hasOdds ? (game.marketCaption ?? null) : null;
   const inPlayContext = scoreboardPresentation && inPlay ? board?.context ?? null : null;
-  const contextText = !scoreboardPresentation || !inPlay ? game.matchupContext : inPlayContext?.kind === 'insight' ? inPlayContext.text : undefined;
+  const pregameLines =
+    scoreboardPresentation && contextKind === 'pregame' && game.pregameContext?.schedule && game.pregameContext.injuries
+      ? game.pregameContext
+      : null;
+  const contextText = pregameLines
+    ? undefined
+    : !scoreboardPresentation || !inPlay
+      ? game.matchupContext
+      : inPlayContext?.kind === 'insight'
+        ? inPlayContext.text
+        : undefined;
   const supportText = inPlayContext?.kind === 'insight' ? inPlayContext.support?.text ?? null : null;
   const contextFallback =
     scoreboardPresentation && inPlay
@@ -564,7 +616,40 @@ export function GameCard({
             <span>{CONTEXT_HEADING[contextKind][0]}</span>
             <span className="text-[#55ddb1]">{CONTEXT_HEADING[contextKind][1]}</span>
           </div>
-          {contextText ? (
+          {pregameLines || (scoreboardPresentation && contextKind === 'pregame' && !contextText) ? (
+            <div className="mt-1 grid grid-rows-[20px_40px_16px]" data-card-context-body>
+              {pregameLines ? (
+                <>
+                  <p className="type-secondary truncate text-center text-[#063F46]" data-card-schedule title={pregameLines.schedule ?? undefined}>
+                    {pregameLines.schedule}
+                  </p>
+                  {pregameLines.injuryStatus === 'listed' || pregameLines.injuryStatus === 'none' ? (
+                    <>
+                      <p className="type-secondary line-clamp-2 text-center text-[#063F46]" data-card-injuries>
+                        {pregameLines.injuryTeams && pregameLines.injuryTeams.length > 0 ? (
+                          <InjuryNames teams={pregameLines.injuryTeams} />
+                        ) : (
+                          pregameLines.injuries
+                        )}
+                      </p>
+                      <p className="type-metadata text-center text-[#063F46]" data-card-as-of>
+                        {pregameLines.asOfLabel ?? ''}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="type-secondary line-clamp-2 text-center text-[#063F46]" data-card-injuries />
+                      <p className="type-metadata text-center text-[#063F46]" data-card-as-of />
+                    </>
+                  )}
+                </>
+              ) : (
+                <p className="type-secondary row-span-3 text-center text-[#063F46]" data-context-unavailable>
+                  {contextFallback}
+                </p>
+              )}
+            </div>
+          ) : contextText ? (
             <p
               className="type-body mt-1 text-pretty text-[#063F46]"
               data-game-pulse={inPlayContext?.kind === 'insight' ? inPlayContext.insight.id : undefined}
