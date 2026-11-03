@@ -114,9 +114,9 @@ describe('game-status-sync terraform (13I.2 creation boundary)', () => {
   });
 
   it('zips the built .package artifact and hashes the bundle JS', () => {
-    expect(src).toMatch(/source_dir\s*=\s*"\$\{path\.module\}\/\.\.\/lambda\/game-status-sync\/\.package"/);
-    expect(src).toMatch(/handler\s*=\s*"dist\/index\.handler"/);
-    expect(src).toMatch(/filebase64sha256\("\$\{path\.module\}\/\.\.\/lambda\/game-status-sync\/\.package\/dist\/index\.js"\)/);
+    expect(src).toMatch(/source_dir\s*=\s*"\$\{path\.module\}\/\.\.\/lambda\/game-status-sync\/\.package\/dist"/);
+    expect(src).toMatch(/handler\s*=\s*"index\.handler"/);
+    expect(src).toMatch(/source_code_hash\s*=\s*data\.archive_file\.game_status_sync\[0\]\.output_base64sha256/);
     expect(src).not.toMatch(/ignore_changes\s*=\s*\[[^\]]*source_code_hash/);
     expect(src).not.toMatch(/CODE_ONLY_NOT_BUNDLED/);
   });
@@ -165,7 +165,8 @@ describe('game-status-sync terraform (13I.2 creation boundary)', () => {
   it('pins STATUS_SYNC_TARGET_SEASON=2026 and does not use PINNED_ANALYTICS_SEASON', () => {
     expect(src).toMatch(/STATUS_SYNC_TARGET_SEASON\s*=\s*"2026"/);
     expect(src).not.toMatch(/PINNED_ANALYTICS_SEASON/);
-    expect(src).toMatch(/BDL_RATE_LIMIT_MAX_RETRIES\s*=\s*"0"/);
+    expect(src).toMatch(/BDL_RATE_LIMIT_MAX_RETRIES\s*=\s*tostring\(var\.game_status_sync_bdl_rate_limit_max_retries\)/);
+    expect(read('infra/bdl-rate-limit.tf')).toMatch(/variable "game_status_sync_bdl_rate_limit_max_retries"[\s\S]*?default\s*=\s*0/);
   });
 
   it('inherits DB/BDL credentials from lambda_env without a second secret copy', () => {

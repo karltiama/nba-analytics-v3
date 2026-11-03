@@ -48,8 +48,9 @@ variable "game_status_sync_lambda_env" {
 data "archive_file" "game_status_sync" {
   count       = var.game_status_sync_create ? 1 : 0
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/game-status-sync/.package"
+  source_dir  = "${path.module}/../lambda/game-status-sync/.package/dist"
   output_path = "${path.module}/game-status-sync.zip"
+  excludes    = ["*.map", "*.zip"]
 }
 
 resource "aws_iam_role" "lambda_game_status_sync_execution" {
@@ -117,12 +118,12 @@ resource "aws_lambda_function" "game_status_sync" {
   filename         = data.archive_file.game_status_sync[0].output_path
   function_name    = var.game_status_sync_lambda_function_name
   role             = aws_iam_role.lambda_game_status_sync_execution[0].arn
-  handler          = "dist/index.handler"
+  handler          = "index.handler"
   runtime          = "nodejs22.x"
   architectures    = ["x86_64"]
   timeout          = var.game_status_sync_lambda_timeout
   memory_size      = var.game_status_sync_lambda_memory_size
-  source_code_hash = var.game_status_sync_create ? filebase64sha256("${path.module}/../lambda/game-status-sync/.package/dist/index.js") : null
+  source_code_hash = data.archive_file.game_status_sync[0].output_base64sha256
 
   environment {
     variables = merge(
@@ -146,8 +147,11 @@ resource "aws_lambda_function" "game_status_sync" {
         BDL_RATE_LIMIT_TABLE              = aws_dynamodb_table.bdl_rate_limit.name
         BDL_RATE_LIMIT_BACKEND            = "dynamodb"
         BDL_RATE_LIMIT_WORKER             = "game-status-sync"
+        BDL_RATE_LIMIT_INTERVAL_MS        = tostring(var.game_status_sync_bdl_rate_limit_interval_ms)
+        BDL_RATE_LIMIT_MAX_REQUESTS       = tostring(var.game_status_sync_bdl_rate_limit_max_requests)
+        BDL_RATE_LIMIT_BURST              = tostring(var.game_status_sync_bdl_rate_limit_burst)
         BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS = "20000"
-        BDL_RATE_LIMIT_MAX_RETRIES        = "0"
+        BDL_RATE_LIMIT_MAX_RETRIES        = tostring(var.game_status_sync_bdl_rate_limit_max_retries)
       }
     )
   }

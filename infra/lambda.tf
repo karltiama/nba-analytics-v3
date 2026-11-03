@@ -29,10 +29,7 @@ locals {
   shadow_schedule_state           = local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED"
   scoreboard_schedule_state       = local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED"
 
-  player_props_bundle_hash = base64sha256(join("", [
-    filesha256("${path.module}/../lambda/player-props-snapshot/.package/dist/controller.js"),
-    filesha256("${path.module}/../lambda/player-props-snapshot/.package/dist/worker.js"),
-  ]))
+  player_props_bundle_hash = data.archive_file.player_props.output_base64sha256
 }
 
 # Package from deterministic .package bundle (esbuild). Build with:
@@ -41,6 +38,7 @@ data "archive_file" "nightly_bdl" {
   type        = "zip"
   source_dir  = "${path.module}/../lambda/nightly-bdl-updater/.package"
   output_path = "${path.module}/nightly-bdl-updater.zip"
+  excludes    = ["*.zip", "*.map", "rollback", "rollback/**", "node_modules", "node_modules/**"]
 }
 
 resource "aws_lambda_function" "nightly_bdl_updater" {
@@ -99,19 +97,20 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 # -----------------------------------------------------------------------------
 data "archive_file" "odds_pre_game" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/odds-pre-game-snapshot/.package"
+  source_dir  = "${path.module}/../lambda/odds-pre-game-snapshot/.package/dist"
   output_path = "${path.module}/odds-pre-game-snapshot.zip"
+  excludes    = ["*.map", "*.zip"]
 }
 
 resource "aws_lambda_function" "odds_pre_game_snapshot" {
   filename         = data.archive_file.odds_pre_game.output_path
   function_name    = var.odds_lambda_function_name
   role             = aws_iam_role.lambda_odds_execution.arn
-  handler          = "dist/index.handler"
+  handler          = "index.handler"
   runtime          = "nodejs22.x"
   timeout          = var.odds_lambda_timeout
   memory_size      = var.odds_lambda_memory_size
-  source_code_hash = filebase64sha256("${path.module}/../lambda/odds-pre-game-snapshot/.package/dist/index.js")
+  source_code_hash = data.archive_file.odds_pre_game.output_base64sha256
 
   environment {
     variables = merge(
@@ -119,9 +118,13 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
       local.bdl_rate_limit_env,
       var.odds_lambda_env,
       {
-        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND = "dynamodb"
-        BDL_RATE_LIMIT_WORKER  = "odds-pre-game-snapshot"
+        BDL_RATE_LIMIT_TABLE        = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND      = "dynamodb"
+        BDL_RATE_LIMIT_WORKER       = "odds-pre-game-snapshot"
+        BDL_RATE_LIMIT_INTERVAL_MS  = tostring(var.odds_bdl_rate_limit_interval_ms)
+        BDL_RATE_LIMIT_MAX_REQUESTS = tostring(var.odds_bdl_rate_limit_max_requests)
+        BDL_RATE_LIMIT_BURST        = tostring(var.odds_bdl_rate_limit_burst)
+        BDL_RATE_LIMIT_MAX_RETRIES  = tostring(var.odds_bdl_rate_limit_max_retries)
       }
     )
   }
@@ -159,6 +162,65 @@ resource "aws_lambda_permission" "allow_eventbridge_odds" {
   source_arn    = aws_cloudwatch_event_rule.odds_schedule[count.index].arn
 }
 
+# Live 15-minute odds tick. Created outside Terraform. The invoke role and DLQ
+# stay outside this module; the ARNs come from tfvars. Import runs at apply.
+variable "odds_scheduler_15m_enabled" {
+  description = "When true, manage the existing odds-pre-game-snapshot-15m schedule. State is ENABLED only when live_ingestion_enabled and odds_execution_enabled are both true."
+  type        = bool
+  default     = false
+}
+
+variable "odds_scheduler_15m_role_arn" {
+  description = "IAM role ARN already used by the live odds Scheduler target. This module does not create that role."
+  type        = string
+  default     = ""
+}
+
+variable "odds_scheduler_15m_dlq_arn" {
+  description = "SQS DLQ ARN already used by the live odds Scheduler target. Empty omits the dead-letter block."
+  type        = string
+  default     = ""
+}
+
+resource "aws_scheduler_schedule" "odds_15m" {
+  count       = var.odds_scheduler_15m_enabled ? 1 : 0
+  name        = "odds-pre-game-snapshot-15m"
+  group_name  = "default"
+  description = "Disabled odds pre-game snapshot tick. Gate 6D.5B. Do not enable."
+  state       = local.odds_schedule_state
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  schedule_expression          = "cron(0/15 9-23,0 * * ? *)"
+  schedule_expression_timezone = "America/New_York"
+
+  target {
+    arn      = aws_lambda_function.odds_pre_game_snapshot.arn
+    role_arn = var.odds_scheduler_15m_role_arn
+    input    = "{}"
+
+    dynamic "dead_letter_config" {
+      for_each = var.odds_scheduler_15m_dlq_arn == "" ? [] : [var.odds_scheduler_15m_dlq_arn]
+      content {
+        arn = dead_letter_config.value
+      }
+    }
+
+    retry_policy {
+      maximum_event_age_in_seconds = 900
+      maximum_retry_attempts       = 0
+    }
+  }
+}
+
+import {
+  for_each = var.odds_scheduler_15m_enabled ? toset(["default/odds-pre-game-snapshot-15m"]) : toset([])
+  to       = aws_scheduler_schedule.odds_15m[0]
+  id       = each.key
+}
+
 # -----------------------------------------------------------------------------
 # Lambda: injuries-snapshot (run "npm install && npm run build" in lambda/injuries-snapshot first)
 # -----------------------------------------------------------------------------
@@ -166,6 +228,7 @@ data "archive_file" "injuries_snapshot" {
   type        = "zip"
   source_dir  = "${path.module}/../lambda/injuries-snapshot/.package"
   output_path = "${path.module}/injuries-snapshot.zip"
+  excludes    = ["*.zip", "*.map", "rollback", "rollback/**", "node_modules", "node_modules/**"]
 }
 
 resource "aws_lambda_function" "injuries_snapshot" {
@@ -236,8 +299,9 @@ resource "aws_lambda_permission" "allow_eventbridge_injuries" {
 # -----------------------------------------------------------------------------
 data "archive_file" "player_props" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/player-props-snapshot/.package"
+  source_dir  = "${path.module}/../lambda/player-props-snapshot/.package/dist"
   output_path = "${path.module}/player-props-snapshot.zip"
+  excludes    = ["*.map", "*.zip"]
 }
 
 resource "aws_sqs_queue" "player_props_dlq" {
@@ -261,7 +325,7 @@ resource "aws_lambda_function" "player_props_worker" {
   filename                       = data.archive_file.player_props.output_path
   function_name                  = var.player_props_lambda_function_name
   role                           = aws_iam_role.lambda_player_props_execution.arn
-  handler                        = "dist/worker.handler"
+  handler                        = "worker.handler"
   runtime                        = "nodejs22.x"
   timeout                        = var.player_props_lambda_timeout
   memory_size                    = var.player_props_lambda_memory_size
@@ -278,19 +342,19 @@ resource "aws_lambda_function" "player_props_worker" {
       local.bdl_rate_limit_env,
       var.player_props_lambda_env,
       {
-        PLAYER_PROPS_QUEUE_URL           = aws_sqs_queue.player_props_game_queue.id
-        BDL_RATE_LIMIT_TABLE             = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND           = "dynamodb"
-        BDL_RATE_LIMIT_WORKER            = "player-props-worker"
-        # Props worker only. Overrides the shared 500ms limiter after merge.
-        # Do not move these into local.bdl_rate_limit_env: that map is also applied to odds.
-        BDL_RATE_LIMIT_INTERVAL_MS       = "13000"
-        BDL_RATE_LIMIT_MAX_REQUESTS      = "1"
-        BDL_RATE_LIMIT_BURST             = "1"
-        BDL_RATE_LIMIT_MAX_RETRIES       = "0"
-        PLAYER_PROP_S3_ARCHIVE_ENABLED   = var.player_prop_s3_archive_enabled ? "true" : "false"
-        NBA_DATA_BUCKET                  = var.nba_data_bucket_name
-        NBA_RAW_PREFIX                   = var.nba_raw_prefix
+        PLAYER_PROPS_QUEUE_URL = aws_sqs_queue.player_props_game_queue.id
+        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND = "dynamodb"
+        BDL_RATE_LIMIT_WORKER  = "player-props-worker"
+        # Props worker only. Overrides the shared limiter after merge.
+        # Do not move these into local.bdl_rate_limit_env: that map is also applied to odds and nightly.
+        BDL_RATE_LIMIT_INTERVAL_MS     = tostring(var.player_props_bdl_rate_limit_interval_ms)
+        BDL_RATE_LIMIT_MAX_REQUESTS    = tostring(var.player_props_bdl_rate_limit_max_requests)
+        BDL_RATE_LIMIT_BURST           = tostring(var.player_props_bdl_rate_limit_burst)
+        BDL_RATE_LIMIT_MAX_RETRIES     = tostring(var.player_props_bdl_rate_limit_max_retries)
+        PLAYER_PROP_S3_ARCHIVE_ENABLED = var.player_prop_s3_archive_enabled ? "true" : "false"
+        NBA_DATA_BUCKET                = var.nba_data_bucket_name
+        NBA_RAW_PREFIX                 = var.nba_raw_prefix
       }
     )
   }
@@ -314,7 +378,7 @@ resource "aws_lambda_function" "player_props_controller" {
   filename         = data.archive_file.player_props.output_path
   function_name    = var.player_props_controller_function_name
   role             = aws_iam_role.lambda_player_props_controller_execution.arn
-  handler          = "dist/controller.handler"
+  handler          = "controller.handler"
   runtime          = "nodejs22.x"
   timeout          = var.player_props_controller_timeout
   memory_size      = var.player_props_controller_memory_size
@@ -421,6 +485,7 @@ data "archive_file" "boxscore_scraper" {
   type        = "zip"
   source_dir  = "${path.module}/../lambda/boxscore-scraper/.package"
   output_path = "${path.module}/boxscore-scraper.zip"
+  excludes    = ["*.zip", "*.map", "rollback", "rollback/**", "node_modules", "node_modules/**"]
 }
 
 resource "aws_lambda_function" "boxscore_scraper" {

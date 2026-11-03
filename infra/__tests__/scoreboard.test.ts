@@ -39,7 +39,7 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
     expect(src).toMatch(/count\s*=\s*var\.scoreboard_create && var\.scoreboard_enable_schedule \? 1 : 0/);
   });
 
-  it('Lambda env: family-gated thaw, preseason the only season type Terraform can switch on', () => {
+  it('Lambda env: family-gated thaw; regular and authorize default off', () => {
     const env = src.slice(src.indexOf('resource "aws_lambda_function" "scoreboard"'));
     const lastMerge = env.slice(env.indexOf('# Last-merge wins'));
     expect(env.indexOf('var.scoreboard_lambda_env')).toBeLessThan(env.indexOf('# Last-merge wins'));
@@ -48,11 +48,22 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
       ['DATA_MODE', 'live_api', 'replay'],
       ['OFFSEASON_MODE', '0', '1'],
       ['CRON_DRY_RUN', '0', '1'],
-      ['SCOREBOARD_COLLECT_PRESEASON', '1', '0'],
     ]) {
       expect(lastMerge).toMatch(new RegExp(`${k}\\s*=\\s*local\\.family_schedule_enabled\\.scoreboard \\? "${on}" : "${off}"`));
     }
-    for (const k of ['SCOREBOARD_COLLECT_REGULAR', 'SCOREBOARD_COLLECT_PLAYIN', 'SCOREBOARD_COLLECT_PLAYOFFS']) {
+    expect(lastMerge).toMatch(
+      /SCOREBOARD_COLLECT_PRESEASON\s*=\s*local\.family_schedule_enabled\.scoreboard && var\.scoreboard_collect_preseason \? "1" : "0"/
+    );
+    expect(lastMerge).toMatch(
+      /SCOREBOARD_COLLECT_REGULAR\s*=\s*local\.family_schedule_enabled\.scoreboard && var\.scoreboard_collect_regular \? "1" : "0"/
+    );
+    expect(lastMerge).toMatch(
+      /SCOREBOARD_AUTHORIZE_REGULAR\s*=\s*local\.family_schedule_enabled\.scoreboard && var\.scoreboard_authorize_regular \? "1" : "0"/
+    );
+    expect(src).toMatch(/variable "scoreboard_collect_regular"[\s\S]*?default\s*=\s*false/);
+    expect(src).toMatch(/variable "scoreboard_authorize_regular"[\s\S]*?default\s*=\s*false/);
+    expect(src).toMatch(/variable "scoreboard_collect_preseason"[\s\S]*?default\s*=\s*true/);
+    for (const k of ['SCOREBOARD_COLLECT_PLAYIN', 'SCOREBOARD_COLLECT_PLAYOFFS']) {
       expect(lastMerge).toMatch(new RegExp(`${k}\\s*=\\s*"0"`));
     }
     expect(lastMerge).toMatch(
@@ -62,7 +73,8 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
     expect(lastMerge).toMatch(/BDL_RATE_LIMIT_WORKER\s*=\s*"scoreboard-collector"/);
     expect(lastMerge).toMatch(/BDL_RATE_LIMIT_BACKEND\s*=\s*"dynamodb"/);
     expect(lastMerge).toMatch(/BDL_RATE_LIMIT_TABLE\s*=\s*aws_dynamodb_table\.bdl_rate_limit\.name/);
-    expect(lastMerge).toMatch(/BDL_RATE_LIMIT_MAX_RETRIES\s*=\s*"0"/);
+    expect(lastMerge).toMatch(/BDL_RATE_LIMIT_MAX_RETRIES\s*=\s*tostring\(var\.scoreboard_bdl_rate_limit_max_retries\)/);
+    expect(read('infra/bdl-rate-limit.tf')).toMatch(/variable "scoreboard_bdl_rate_limit_max_retries"[\s\S]*?default\s*=\s*0/);
     expect(src).not.toMatch(/SCOREBOARD_SERVING_ENABLED/);
     expect(src).toMatch(/maximum_retry_attempts\s*=\s*0/);
   });
@@ -104,8 +116,9 @@ describe('scoreboard Terraform: created disabled, preseason only', () => {
   });
 
   it('packages from lambda/scoreboard/.package and hashes the bundle', () => {
-    expect(src).toMatch(/source_dir\s*=\s*"\$\{path\.module\}\/\.\.\/lambda\/scoreboard\/\.package"/);
-    expect(src).toMatch(/filebase64sha256\("\$\{path\.module\}\/\.\.\/lambda\/scoreboard\/\.package\/dist\/index\.js"\)/);
+    expect(src).toMatch(/source_dir\s*=\s*"\$\{path\.module\}\/\.\.\/lambda\/scoreboard\/\.package\/dist"/);
+    expect(src).toMatch(/handler\s*=\s*"index\.handler"/);
+    expect(src).toMatch(/source_code_hash\s*=\s*data\.archive_file\.scoreboard\[0\]\.output_base64sha256/);
   });
 });
 

@@ -5,8 +5,9 @@
 #   the Lambda env is frozen (replay, dry run, no season type collected) and no schedule runs.
 # Activation needs live_ingestion_enabled AND scoreboard_execution_enabled. That pair turns on
 #   only this family: every other family keeps its own *_execution_enabled gate.
-# Preseason is the only season type Terraform can switch on; regular, play-in and playoffs are
-#   pinned to "0" in the last merge and also refused in code (ACTIVATABLE_SCOREBOARD_SEASON_TYPES).
+# Preseason stays on when the family is live unless scoreboard_collect_preseason is false.
+# Regular season stays off unless scoreboard_collect_regular and scoreboard_authorize_regular
+# are both set. Play-in and playoffs stay pinned to "0".
 # Writes: display.* (Postgres), raw.acquisition_requests (ledger) and three S3 archive prefixes.
 # Display-only pre-game odds (/v2/odds, about every 15 minutes) need scoreboard_odds_enabled on top of
 #   the family gate; they never enable a season type (SCOREBOARD_COLLECT_ODDS rides on the games gate).
@@ -50,6 +51,24 @@ variable "scoreboard_odds_enabled" {
   default     = false
 }
 
+variable "scoreboard_collect_regular" {
+  description = "When true and the scoreboard family is live, SCOREBOARD_COLLECT_REGULAR=1. Default false keeps regular season off."
+  type        = bool
+  default     = false
+}
+
+variable "scoreboard_authorize_regular" {
+  description = "When true and the scoreboard family is live, SCOREBOARD_AUTHORIZE_REGULAR=1. The collector still refuses regular season unless this value is exactly 1."
+  type        = bool
+  default     = false
+}
+
+variable "scoreboard_collect_preseason" {
+  description = "When true and the scoreboard family is live, SCOREBOARD_COLLECT_PRESEASON=1. Default true keeps today's family-gated preseason behavior."
+  type        = bool
+  default     = true
+}
+
 variable "scoreboard_lambda_env" {
   description = "Optional extra env. Freeze defaults merge first and the family-gated values merge last, so this map cannot thaw the Lambda or enable a season type."
   type        = map(string)
@@ -79,8 +98,9 @@ data "aws_caller_identity" "scoreboard" {
 data "archive_file" "scoreboard" {
   count       = var.scoreboard_create ? 1 : 0
   type        = "zip"
-  source_dir  = "${path.module}/../lambda/scoreboard/.package"
+  source_dir  = "${path.module}/../lambda/scoreboard/.package/dist"
   output_path = "${path.module}/scoreboard.zip"
+  excludes    = ["*.map", "*.zip"]
 }
 
 resource "aws_iam_role" "lambda_scoreboard_execution" {
@@ -142,12 +162,12 @@ resource "aws_lambda_function" "scoreboard" {
   filename         = data.archive_file.scoreboard[0].output_path
   function_name    = var.scoreboard_lambda_function_name
   role             = aws_iam_role.lambda_scoreboard_execution[0].arn
-  handler          = "dist/index.handler"
+  handler          = "index.handler"
   runtime          = "nodejs22.x"
   architectures    = ["x86_64"]
   timeout          = var.scoreboard_lambda_timeout
   memory_size      = var.scoreboard_lambda_memory_size
-  source_code_hash = var.scoreboard_create ? filebase64sha256("${path.module}/../lambda/scoreboard/.package/dist/index.js") : null
+  source_code_hash = data.archive_file.scoreboard[0].output_base64sha256
 
   environment {
     variables = merge(
@@ -164,8 +184,9 @@ resource "aws_lambda_function" "scoreboard" {
         DATA_MODE                         = local.family_schedule_enabled.scoreboard ? "live_api" : "replay"
         OFFSEASON_MODE                    = local.family_schedule_enabled.scoreboard ? "0" : "1"
         CRON_DRY_RUN                      = local.family_schedule_enabled.scoreboard ? "0" : "1"
-        SCOREBOARD_COLLECT_PRESEASON      = local.family_schedule_enabled.scoreboard ? "1" : "0"
-        SCOREBOARD_COLLECT_REGULAR        = "0"
+        SCOREBOARD_COLLECT_PRESEASON      = local.family_schedule_enabled.scoreboard && var.scoreboard_collect_preseason ? "1" : "0"
+        SCOREBOARD_COLLECT_REGULAR        = local.family_schedule_enabled.scoreboard && var.scoreboard_collect_regular ? "1" : "0"
+        SCOREBOARD_AUTHORIZE_REGULAR      = local.family_schedule_enabled.scoreboard && var.scoreboard_authorize_regular ? "1" : "0"
         SCOREBOARD_COLLECT_PLAYIN         = "0"
         SCOREBOARD_COLLECT_PLAYOFFS       = "0"
         SCOREBOARD_COLLECT_ODDS           = local.family_schedule_enabled.scoreboard && var.scoreboard_odds_enabled ? "1" : "0"
@@ -175,8 +196,11 @@ resource "aws_lambda_function" "scoreboard" {
         BDL_RATE_LIMIT_TABLE              = aws_dynamodb_table.bdl_rate_limit.name
         BDL_RATE_LIMIT_BACKEND            = "dynamodb"
         BDL_RATE_LIMIT_WORKER             = "scoreboard-collector"
+        BDL_RATE_LIMIT_INTERVAL_MS        = tostring(var.scoreboard_bdl_rate_limit_interval_ms)
+        BDL_RATE_LIMIT_MAX_REQUESTS       = tostring(var.scoreboard_bdl_rate_limit_max_requests)
+        BDL_RATE_LIMIT_BURST              = tostring(var.scoreboard_bdl_rate_limit_burst)
         BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS = "20000"
-        BDL_RATE_LIMIT_MAX_RETRIES        = "0"
+        BDL_RATE_LIMIT_MAX_RETRIES        = tostring(var.scoreboard_bdl_rate_limit_max_retries)
       }
     )
   }
