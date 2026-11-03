@@ -1,4 +1,4 @@
-⚠️ Apply freeze — see the 'Terraform apply freeze' section in `/AGENTS.md`.
+Terraform is the source of truth for ingestion infrastructure (reconciled 2026-11-03). See `/AGENTS.md`. No console edits to Lambda env, schedules or rules; change tfvars/.tf and apply through a reviewed plan.
 
 # Terraform – AWS Lambdas (ingestion jobs)
 

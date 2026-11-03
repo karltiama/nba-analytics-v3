@@ -4,19 +4,9 @@ Always-on rules only. Open the one doc the task needs. Do not paste runbooks int
 
 `notes/` and `reports/` are local and gitignored. They are not shared authority.
 
-## Terraform apply freeze (since 2026-11-02)
+## Terraform source of truth (reconciled 2026-11-03)
 
-Live AWS intentionally differs from Terraform: odds, player props and the regular-season scoreboard were activated outside Terraform, and the deployed odds/props/scoreboard code is not yet on `master`.
-
-Until Karl approves **Phase 3 of the Terraform reconciliation** (project decision record `TF_RECONCILIATION_DECISION_RECORD.md`), in any session, human or agent:
-
-- Do **not** run `terraform apply`, `destroy`, `import`, `taint`, `state rm|mv|push`, `force-unlock`, or any `-target` apply.
-- Do **not** deploy Lambda code outside Terraform, and do not edit Lambda env, schedules or rules in the console.
-- `terraform plan` is read-only but rewrites local `infra/*.zip` via `archive_file`. Run it only with explicit approval, and never with `-out` (saved plans contain secrets).
-
-A plain `apply` today would refreeze odds and props, disable the props schedules and worker mapping, stop regular-season Today's Games, and redeploy unreviewed local builds.
-
-Remove this section only as part of the approved Phase 3.
+Terraform is the source of truth for ingestion infrastructure (reconciled 2026-11-03). No console edits to Lambda env, schedules or rules; change tfvars/.tf and apply through a reviewed plan.
 
 ## Safety
 

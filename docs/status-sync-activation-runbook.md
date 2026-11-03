@@ -2,6 +2,8 @@
 
 Activates the scheduled `/v1/games` status sync only. It does not activate props, the projection ledger, nightly, odds, injuries, boxscore, or shadow jobs. Every production step below needs its own explicit approval. Terraform mechanics: [../infra/README.md](../infra/README.md).
 
+**Activation status:** Live activation happened on **2026-11-03** via the Terraform reconciliation (Phase 3). Schedule `nba-game-status-sync-schedule` is ENABLED under Terraform; do not re-run this runbook as a first-time activation unless re-freezing and re-enabling under a new approval.
+
 Target window: 2026-10-18 to 2026-10-20. The deadline is 2026-10-21 ET. Status-sync labels only yesterday through tomorrow ET, and games from 2026-10-23 onward are still UNCLASSIFIED, so the 2026-10-22 run must happen live.
 
 ## Preconditions (read-only)
