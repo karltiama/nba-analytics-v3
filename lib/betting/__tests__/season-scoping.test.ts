@@ -26,6 +26,7 @@ import {
   getTeamRecentForm,
   getTrendingPlayersFromAnalytics,
   getTrendingPlayersStrip,
+  getTrendingStripThrough,
 } from '@/lib/betting/queries';
 
 const mockQuery = query as ReturnType<typeof vi.fn>;
@@ -137,5 +138,30 @@ describe('betting season scoping (Phase 2.2)', () => {
     const [sql2, params2] = mockQuery.mock.calls[0];
     expect(String(sql2)).toMatch(/pgl\.season = \$1/);
     expect(params2[0]).toBe('2026');
+  });
+
+  it('trending strip leaves out players whose last game is before the cutoff', async () => {
+    mockQuery.mockResolvedValue([]);
+    await getTrendingPlayersStrip('pts', 5, '2026-10-24');
+    const [sql, params] = mockQuery.mock.calls[0];
+    expect(String(sql)).toMatch(/MAX\(sub\.game_date\)\s+AS last_game_date/);
+    expect(String(sql)).toMatch(/\$3::date IS NULL OR pl5\.last_game_date >= \$3::date/);
+    expect(params).toEqual(['2026', 5, '2026-10-24']);
+
+    mockQuery.mockClear();
+    mockQuery.mockResolvedValue([]);
+    await getTrendingPlayersStrip('pts', 5);
+    expect(mockQuery.mock.calls[0][1]).toEqual(['2026', 5, null]);
+  });
+
+  it('trending strip "through" date is scoped to the active season', async () => {
+    mockQuery.mockResolvedValue([{ through: '2026-11-02' }]);
+    await expect(getTrendingStripThrough()).resolves.toBe('2026-11-02');
+    const [sql, params] = mockQuery.mock.calls[0];
+    expect(String(sql)).toMatch(/FROM analytics\.player_game_logs WHERE season = \$1/);
+    expect(params).toEqual(['2026']);
+
+    mockQuery.mockResolvedValue([{ through: null }]);
+    await expect(getTrendingStripThrough()).resolves.toBeNull();
   });
 });

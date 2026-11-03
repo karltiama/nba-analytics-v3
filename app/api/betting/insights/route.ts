@@ -5,7 +5,9 @@ import {
   getTeamDefensiveRankings,
   getDashboardSummary,
   getTrendingPlayersFromAnalytics,
+  getTrendingStripThrough,
 } from '@/lib/betting/queries';
+import { trendingStripFreshness } from '@/lib/betting/trending-strip-freshness';
 
 /**
  * GET /api/betting/insights
@@ -20,12 +22,16 @@ export async function GET(request: NextRequest) {
 
   try {
     // Fetch all necessary data in parallel
-    const [paceRankings, defenseRankings, summary, trendingPlayers] = await Promise.all([
+    const [paceRankings, defenseRankings, summary, allTrendingPlayers, through] = await Promise.all([
       getTeamPaceRankings(),
       getTeamDefensiveRankings(),
       getDashboardSummary(),
       getTrendingPlayersFromAnalytics(5),
+      getTrendingStripThrough(),
     ]);
+    // Same rule as the Recent form strip: L5 from games older than the cutoff is not recent form.
+    const recentFormStale = trendingStripFreshness(through, new Date()).stale;
+    const trendingPlayers = recentFormStale ? [] : allTrendingPlayers;
 
     const insights = [];
 
@@ -135,7 +141,9 @@ export async function GET(request: NextRequest) {
         value: trendingPlayers[0]?.full_name.split(' ').pop() || '—',
         description: trendingPlayers[0]
           ? `Season L5 vs average, not a tonight slate pick · ${Math.abs(trendingPlayers[0].points_trend_pct).toFixed(0)}%`
-          : 'No recent-form data yet',
+          : recentFormStale
+            ? "Returns once this season's box scores load"
+            : 'No recent-form data yet',
         type: 'props',
         change: trendingPlayers[0] ? `${trendingPlayers[0].trend_direction === 'up' ? '+' : ''}${trendingPlayers[0].points_trend_pct.toFixed(0)}%` : undefined,
         changeDirection: trendingPlayers[0]?.trend_direction,
