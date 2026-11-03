@@ -42,6 +42,20 @@ const STAT_LABELS: Record<TrendingStat, string> = {
   pra: 'PRA',
 };
 
+/** "2026-11-02" → "Nov 2"; adds the year when it is not the current one. Null for anything else. */
+function formatThrough(ymd: string | null): string | null {
+  if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null;
+  const date = new Date(`${ymd}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) return null;
+  const sameYear = date.getUTCFullYear() === new Date().getFullYear();
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    ...(sameYear ? {} : { year: 'numeric' }),
+    timeZone: 'UTC',
+  });
+}
+
 function nbaHeadshotUrl(nbaId: string) {
   return `https://cdn.nba.com/headshots/nba/latest/1040x760/${nbaId}.png`;
 }
@@ -207,6 +221,8 @@ function StripSkeleton() {
 export function TrendingPlayerStrip() {
   const [stat, setStat] = useState<TrendingStat>('pts');
   const [players, setPlayers] = useState<StripPlayer[]>([]);
+  const [through, setThrough] = useState<string | null>(null);
+  const [stale, setStale] = useState(false);
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -222,12 +238,18 @@ export function TrendingPlayerStrip() {
       // 401 is expected when the session is missing; parent page shows UnauthorizedPanel.
       if (!res.ok) {
         setPlayers([]);
+        setThrough(null);
+        setStale(false);
         return;
       }
       const data = await res.json();
       setPlayers(data.players ?? []);
+      setThrough(typeof data.through === 'string' ? data.through : null);
+      setStale(data.stale === true);
     } catch {
       setPlayers([]);
+      setThrough(null);
+      setStale(false);
     } finally {
       setLoading(false);
     }
@@ -257,6 +279,8 @@ export function TrendingPlayerStrip() {
     };
   }, [players, updateScrollButtons]);
 
+  const throughLabel = formatThrough(through);
+
   const scroll = (dir: 'left' | 'right') => {
     const el = scrollRef.current;
     if (!el) return;
@@ -274,6 +298,11 @@ export function TrendingPlayerStrip() {
           <span className="type-badge rounded-full bg-amber-50 px-2 py-0.5 leading-none text-amber-700">
             L5 vs SZN
           </span>
+          {!loading && !stale && throughLabel && (
+            <span className="type-metadata" data-trending-through={through ?? undefined}>
+              Through {throughLabel}
+            </span>
+          )}
         </div>
 
         {/* Scroll arrows (visible on hover of the section) */}
@@ -301,8 +330,8 @@ export function TrendingPlayerStrip() {
         </div>
       </div>
 
-      {/* Stat filter tabs */}
-      <div className="mb-3 flex items-center gap-1 overflow-x-auto">
+      {/* Stat filter tabs (hidden while stale: every stat would show the same message) */}
+      <div className={`mb-3 flex items-center gap-1 overflow-x-auto ${!loading && stale ? 'hidden' : ''}`}>
         {STAT_TABS.map((t) => (
           <button
             key={t.key}
@@ -322,6 +351,16 @@ export function TrendingPlayerStrip() {
       {/* Cards strip */}
       {loading ? (
         <StripSkeleton />
+      ) : stale ? (
+        <div
+          className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6 text-center"
+          data-trending-state="stale"
+        >
+          <p className="type-body text-[#063f46]">Recent form returns once this season&apos;s box scores load.</p>
+          <p className="type-metadata mt-1">
+            {throughLabel ? `Latest stored games are from ${throughLabel}.` : 'No games are stored for this season yet.'}
+          </p>
+        </div>
       ) : players.length === 0 ? (
         <div className="bg-white border border-[#DCE9EA] rounded-2xl shadow-sm p-6 text-center">
           <p className="type-body text-cc-secondary">No trending players found for {STAT_LABELS[stat]}</p>

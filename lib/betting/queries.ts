@@ -571,10 +571,12 @@ export interface TrendingStripPlayer {
  * then sorts by ABS(trend_score) of the requested stat.
  *
  * Only returns players trending UPWARD (positive trend_score) for the selected stat.
+ * With minLastGameDate (YYYY-MM-DD), players whose latest game is older are left out.
  */
 export async function getTrendingPlayersStrip(
   stat: TrendingStat = 'pts',
   limit: number = 15,
+  minLastGameDate: string | null = null,
 ): Promise<TrendingStripPlayer[]> {
   // Map stat param → SQL expressions for L5 and season columns
   const statCol: Record<TrendingStat, { l5: string; season: string }> = {
@@ -603,11 +605,12 @@ export async function getTrendingPlayersStrip(
         AVG(sub.rebounds)::numeric            AS l5_reb,
         AVG(sub.assists)::numeric             AS l5_ast,
         AVG(sub.three_pointers_made)::numeric AS l5_3pm,
-        AVG(sub.pra)::numeric                 AS l5_pra
+        AVG(sub.pra)::numeric                 AS l5_pra,
+        MAX(sub.game_date)                    AS last_game_date
       FROM (
         SELECT
           pgl.player_id, pgl.points, pgl.rebounds, pgl.assists,
-          pgl.three_pointers_made, pgl.pra,
+          pgl.three_pointers_made, pgl.pra, pgl.game_date,
           ROW_NUMBER() OVER (PARTITION BY pgl.player_id ORDER BY pgl.game_date DESC NULLS LAST) AS rn
         FROM analytics.player_game_logs pgl
         JOIN analytics.games g ON pgl.game_id = g.game_id
@@ -686,10 +689,11 @@ export async function getTrendingPlayersStrip(
     WHERE season_src.games_played >= 5
       AND season_src.s_pts >= 10
       AND (${col.l5} - ${col.season}) > 0
+      AND ($3::date IS NULL OR pl5.last_game_date >= $3::date)
     ORDER BY ABS(${col.l5} - ${col.season}) DESC
     LIMIT $2
     `,
-    [getAnalyticsSeason(), limit],
+    [getAnalyticsSeason(), limit, minLastGameDate],
   );
 
   return result.map((row: any) => ({
@@ -712,6 +716,15 @@ export async function getTrendingPlayersStrip(
       pra: parseFloat(row.trend_pra) || 0,
     },
   }));
+}
+
+/** Newest game date (YYYY-MM-DD) in the active season's player game logs, or null when none. */
+export async function getTrendingStripThrough(): Promise<string | null> {
+  const result = await query(
+    `SELECT MAX(game_date)::date::text AS through FROM analytics.player_game_logs WHERE season = $1`,
+    [getAnalyticsSeason()],
+  );
+  return result[0]?.through ?? null;
 }
 
 // ============================================
