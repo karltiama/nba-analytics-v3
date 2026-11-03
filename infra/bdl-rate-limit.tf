@@ -36,6 +36,92 @@ variable "bdl_rate_limit_acquire_timeout_ms" {
   default     = 90000
 }
 
+# Per-family overrides. Defaults match today's Terraform wiring. The shared
+# bdl_rate_limit_* variables above stay on nightly and injuries.
+# Odds, scoreboard and status-sync inherit the shared 500ms / burst 5 bucket.
+# The props worker keeps its existing pin. tfvars raises the four live callers
+# to the interim 13000/1/1/0 values without changing the shared defaults.
+variable "odds_bdl_rate_limit_interval_ms" {
+  type    = number
+  default = 500
+}
+
+variable "odds_bdl_rate_limit_max_requests" {
+  type    = number
+  default = 1
+}
+
+variable "odds_bdl_rate_limit_burst" {
+  type    = number
+  default = 5
+}
+
+variable "odds_bdl_rate_limit_max_retries" {
+  type    = number
+  default = 0
+}
+
+variable "player_props_bdl_rate_limit_interval_ms" {
+  description = "Props worker pin. Not the shared bucket."
+  type        = number
+  default     = 13000
+}
+
+variable "player_props_bdl_rate_limit_max_requests" {
+  type    = number
+  default = 1
+}
+
+variable "player_props_bdl_rate_limit_burst" {
+  type    = number
+  default = 1
+}
+
+variable "player_props_bdl_rate_limit_max_retries" {
+  type    = number
+  default = 0
+}
+
+variable "scoreboard_bdl_rate_limit_interval_ms" {
+  type    = number
+  default = 500
+}
+
+variable "scoreboard_bdl_rate_limit_max_requests" {
+  type    = number
+  default = 1
+}
+
+variable "scoreboard_bdl_rate_limit_burst" {
+  type    = number
+  default = 5
+}
+
+variable "scoreboard_bdl_rate_limit_max_retries" {
+  type    = number
+  default = 0
+}
+
+variable "game_status_sync_bdl_rate_limit_interval_ms" {
+  type    = number
+  default = 500
+}
+
+variable "game_status_sync_bdl_rate_limit_max_requests" {
+  type    = number
+  default = 1
+}
+
+variable "game_status_sync_bdl_rate_limit_burst" {
+  type    = number
+  default = 5
+}
+
+variable "game_status_sync_bdl_rate_limit_max_retries" {
+  type    = number
+  default = 0
+}
+
 resource "aws_dynamodb_table" "bdl_rate_limit" {
   name         = var.bdl_rate_limit_table_name
   billing_mode = "PAY_PER_REQUEST"
