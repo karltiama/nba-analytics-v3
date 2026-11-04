@@ -5,6 +5,7 @@
 
 import { query, queryOne } from '@/lib/db';
 import type { PlayerProfile, SeasonAverages, GameLog, PlayerRecentForm, PlayerVsOpponentHistory } from './types';
+import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 
 /**
  * Resolve a URL playerId to analytics player_id.
@@ -356,7 +357,7 @@ export async function getPlayerRecentForm(
       AVG(rebounds)::numeric as avg_reb,
       AVG(assists)::numeric as avg_ast,
       AVG((COALESCE(points,0) + COALESCE(rebounds,0) + COALESCE(assists,0)))::numeric as avg_pra,
-      AVG(CASE WHEN minutes IS NOT NULL AND minutes ~ '^[0-9]+\.?[0-9]*$' THEN minutes::numeric ELSE NULL END)::numeric as avg_minutes
+      AVG(${minutesDecimalSql('minutes')})::numeric as avg_minutes
     FROM last_n
   `;
   const row = await queryOne(sql, params);
