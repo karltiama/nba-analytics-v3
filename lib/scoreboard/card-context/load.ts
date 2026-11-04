@@ -4,6 +4,7 @@
  * A game counts only when exactly one analytics row matches (ET date, home team, away team, season).
  */
 
+import { NBA_CUP_FINAL_ET, POSTSEASON_START_ET, REGULAR_SEASON_OPEN_ET } from '@/lib/games/season-eligibility';
 import { parseMinutes } from '@/lib/scoreboard/box-verify';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import {
@@ -72,18 +73,39 @@ SELECT max(snapshot_at) AS snapshot_at
 FROM analytics.player_injury_status_current
 `.trim();
 
+/**
+ * Current-season rows are selected by season_phase. Prior-season rows are selected by the
+ * 2025–26 regular-season ET date window instead: games before 2026–27 are stored with
+ * season_phase 'UNCLASSIFIED', so a phase filter would drop every prior baseline.
+ * Params: player ids, current seasons, prior season, prior open (incl.), prior postseason start (excl.), prior Cup Final.
+ */
 export const BASELINE_LOGS_SQL = `
-SELECT pgl.player_id, pgl.team_id, g.season AS season, g.season_phase, pgl.minutes
-FROM analytics.player_game_logs pgl
-JOIN analytics.games g ON g.game_id = pgl.game_id
-WHERE pgl.player_id = ANY($1::text[])
-  AND g.status = 'Final'
-  AND g.season_phase IN ('REGULAR', 'IST')
-  AND (
-    g.season = ANY($2::text[])
-    OR (g.season = $3 AND g.season_phase = 'REGULAR')
-  )
+SELECT player_id, team_id, season, season_phase, minutes, prior_regular
+FROM (
+  SELECT pgl.player_id, pgl.team_id, g.season AS season, g.season_phase, pgl.minutes,
+         (g.season = $3
+           AND (g.start_time AT TIME ZONE 'America/New_York')::date >= $4::date
+           AND (g.start_time AT TIME ZONE 'America/New_York')::date < $5::date
+           AND (g.start_time AT TIME ZONE 'America/New_York')::date <> $6::date) AS prior_regular
+  FROM analytics.player_game_logs pgl
+  JOIN analytics.games g ON g.game_id = pgl.game_id
+  WHERE pgl.player_id = ANY($1::text[])
+    AND g.status = 'Final'
+    AND g.start_time IS NOT NULL
+    AND (g.season = ANY($2::text[]) OR g.season = $3)
+) logs
+WHERE prior_regular OR (season = ANY($2::text[]) AND season_phase IN ('REGULAR', 'IST'))
 `.trim();
+
+/** Prior-season regular-season window, from the canonical season calendar. */
+export function priorBaselineParams(): [string, string, string, string] {
+  const season = PRIOR_BASELINE_SEASON;
+  const open = REGULAR_SEASON_OPEN_ET[season];
+  const postseason = POSTSEASON_START_ET[season];
+  const cupFinal = NBA_CUP_FINAL_ET[season];
+  if (!open || !postseason || !cupFinal) throw new Error(`missing regular-season window for ${season}`);
+  return [season, open, postseason, cupFinal];
+}
 
 const UNAVAILABLE_SCHEDULE: ScheduleLine = { status: 'unavailable', text: SCHEDULE_UNAVAILABLE_TEXT };
 
@@ -206,7 +228,7 @@ export async function loadCardContext(input: {
     : [];
   const logRows =
     injuryRows && playerIds.length > 0
-      ? await read(input.query, BASELINE_LOGS_SQL, [playerIds, seasons, PRIOR_BASELINE_SEASON])
+      ? await read(input.query, BASELINE_LOGS_SQL, [playerIds, seasons, ...priorBaselineParams()])
       : injuryRows
         ? []
         : null;
@@ -220,14 +242,15 @@ export async function loadCardContext(input: {
       const season = text(row.season);
       const phase = text(row.season_phase).toUpperCase();
       if (!playerId || !season) continue;
-      if (phase !== 'REGULAR' && phase !== 'IST') continue;
-      if (seasons.includes(season) && teamId) {
+      const currentPhase = phase === 'REGULAR' || phase === 'IST';
+      if (currentPhase && seasons.includes(season) && teamId) {
         const key = `${playerId}|${teamId}|${season}`;
         const bucket = current.get(key) ?? { games: 0, minutes: 0 };
         addMinutes(bucket, row.minutes);
         current.set(key, bucket);
       }
-      if (season === PRIOR_BASELINE_SEASON && phase === 'REGULAR') {
+      // Prior-season membership comes from the ET date window in SQL, not season_phase.
+      if (season === PRIOR_BASELINE_SEASON && (row.prior_regular === true || row.prior_regular === 't')) {
         const bucket = prior.get(playerId) ?? { games: 0, minutes: 0 };
         addMinutes(bucket, row.minutes);
         prior.set(playerId, bucket);
