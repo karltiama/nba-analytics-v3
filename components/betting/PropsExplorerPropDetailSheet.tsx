@@ -9,7 +9,10 @@ import {
   EXPERIMENTAL_MODEL_NOTE,
   explorerCardPlayerName,
   explorerEvTextClass,
+  bestPriceLabel,
   explorerSampleLabel,
+  formatVsAverage,
+  type ExplorerBestPrice,
   explorerTableValueCopy,
   explorerValueToneClass,
   formatExplorerOdds,
@@ -28,6 +31,7 @@ export type PropsExplorerDetailRow = {
   oddsAmerican: number | null;
   impliedProbability: number | null;
   fairProbability?: number | null;
+  bestPrice?: ExplorerBestPrice | null;
   sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
@@ -137,6 +141,8 @@ export function PropsExplorerPropDetailSheet({
                 <Fact label="Line" value={row.lineValue != null ? String(row.lineValue) : '—'} />
                 <Fact label="Odds" value={formatExplorerOdds(row.oddsAmerican)} emphasize />
                 <Fact label="Sportsbook" value={explorerBookDisplayName(row.sportsbook)} />
+                <Fact label="Best price" value={bestPriceLabel(row.bestPrice, explorerBookDisplayName)} />
+                <Fact label="vs average book" value={formatVsAverage(row.bestPrice?.vsAverage)} />
               </dl>
               <dl className="mt-1 divide-y divide-[#DCE9EA] border-b border-[#DCE9EA]">
                 <Fact label="Fair probability" value={formatFairProbability(row.fairProbability)} />

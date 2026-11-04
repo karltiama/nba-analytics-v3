@@ -2,6 +2,7 @@ export const PLAYER_SEARCH_COMMIT_MS = 300;
 
 export const EXPLORER_SORT_OPTIONS = [
   { value: 'snapshot_at', label: 'Snapshot time' },
+  { value: 'price_gap', label: 'Best price vs average' },
   { value: 'ev', label: 'Model EV (experimental)' },
   { value: 'confidence', label: 'Sample & stability' },
   { value: 'odds_american', label: 'American odds' },
@@ -14,6 +15,7 @@ export const EXPLORER_BOOKS = [
   { id: 'caesars', label: 'Caesars' },
   { id: 'betrivers', label: 'BetRivers' },
   { id: 'fanatics', label: 'Fanatics' },
+  { id: 'betparx', label: 'BetParx' },
 ] as const;
 
 export const EXPLORER_PROP_TYPES = [

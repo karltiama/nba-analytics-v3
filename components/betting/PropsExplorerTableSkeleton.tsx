@@ -34,6 +34,8 @@ export function PropsExplorerTableSkeleton() {
               <th className="py-2 px-2 font-medium text-right">Line</th>
               <th className="py-2 px-2 font-medium">Book</th>
               <th className="py-2 px-2 font-medium text-right">Odds</th>
+              <th className="py-2 px-2 font-medium">Best price</th>
+              <th className="py-2 px-2 font-medium text-right">vs Avg</th>
               <th className="py-2 px-2 font-medium text-right">Fair P</th>
               <th className="py-2 px-2 font-medium text-right">Sample</th>
               <th className="py-2 px-2 font-medium">Observed</th>
@@ -63,6 +65,12 @@ export function PropsExplorerTableSkeleton() {
                 </td>
                 <td className="py-2 px-2 text-right">
                   <Skeleton className="h-3.5 w-9 ml-auto" />
+                </td>
+                <td className="py-2 px-2">
+                  <Skeleton className="h-3.5 w-16" />
+                </td>
+                <td className="py-2 px-2 text-right">
+                  <Skeleton className="h-3.5 w-10 ml-auto" />
                 </td>
                 <td className="py-2 px-2 text-right">
                   <Skeleton className="h-3.5 w-10 ml-auto" />

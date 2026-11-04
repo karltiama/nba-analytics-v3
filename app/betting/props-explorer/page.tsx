@@ -38,7 +38,13 @@ import {
   EXPERIMENTAL_MODEL_HIDE,
   EXPERIMENTAL_MODEL_NOTE,
   EXPERIMENTAL_MODEL_SHOW,
+  BEST_PRICE_TITLE,
   FAIR_PROBABILITY_TITLE,
+  VS_AVERAGE_TITLE,
+  bestPriceLabel,
+  formatVsAverage,
+  vsAverageTextClass,
+  type ExplorerBestPrice,
   SAMPLE_TITLE,
   explorerCardPlayerName,
   explorerCardValueLabel,
@@ -90,6 +96,7 @@ type ExplorerRow = {
   oddsAmerican: number | null;
   impliedProbability: number | null;
   fairProbability?: number | null;
+  bestPrice?: ExplorerBestPrice | null;
   sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
@@ -1091,6 +1098,12 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">Line</th>
                 <th className="py-2 px-2 font-medium">Book</th>
                 <th className="py-2 px-2 font-medium text-right">Odds</th>
+                <th className="py-2 px-2 font-medium" title={BEST_PRICE_TITLE}>
+                  Best price
+                </th>
+                <th className="py-2 px-2 font-medium text-right" title={VS_AVERAGE_TITLE}>
+                  vs Avg
+                </th>
                 <th className="py-2 px-2 font-medium text-right" title={FAIR_PROBABILITY_TITLE}>
                   Fair P
                 </th>
@@ -1132,7 +1145,7 @@ export default function PropsExplorerPage(props: PageProps) {
             <tbody className="type-table-data text-[#063f46]">
               {rows.length === 0 || gameUnknown ? (
                 <tr>
-                  <td colSpan={showAdvancedMetrics ? 15 : 10} className="py-8 text-center text-[#4a6366]">
+                  <td colSpan={showAdvancedMetrics ? 17 : 12} className="py-8 text-center text-[#4a6366]">
                     {(() => {
                       const copy = propsExplorerEmptyCopy({
                         dateLabel: getDateLabel(date),
@@ -1201,6 +1214,18 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="type-table-data whitespace-nowrap py-1.5 px-2 text-right tabular-nums text-[#075B5C]">
                       {formatOdds(r.oddsAmerican)}
+                    </td>
+                    <td
+                      className={`type-metadata whitespace-nowrap py-1.5 px-2 ${r.bestPrice?.isBest && r.bestPrice.bookCount > 1 ? 'font-medium text-[#178A45]' : ''}`}
+                      title={BEST_PRICE_TITLE}
+                    >
+                      {bestPriceLabel(r.bestPrice, explorerBookDisplayName)}
+                    </td>
+                    <td
+                      className={`whitespace-nowrap py-1.5 px-2 text-right font-mono ${vsAverageTextClass(r.bestPrice?.vsAverage)}`}
+                      title={VS_AVERAGE_TITLE}
+                    >
+                      {formatVsAverage(r.bestPrice?.vsAverage)}
                     </td>
                     <td
                       className="py-1.5 px-2 text-right font-mono text-[#063f46]"

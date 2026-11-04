@@ -42,9 +42,16 @@ export type PropsExplorerDbRow = {
   home_team_abbr: string | null;
   row_source?: string | null;
   opposite_implied_probability?: string | number | null;
+  best_odds_american?: number | null;
+  best_odds_decimal?: string | number | null;
+  best_sportsbook?: string | null;
+  avg_odds_decimal?: string | number | null;
+  market_book_count?: string | number | null;
 };
 
 const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
+/** SQL-orderable sort on the price-shopping columns (price_gap is a select alias). */
+export const PRICE_GAP_SORT = 'price_gap';
 export const PROPS_EXPLORER_MAX_LIMIT = 200;
 export const PROPS_EXPLORER_EV_FETCH_CAP = 2500;
 
@@ -76,8 +83,9 @@ export function buildPropsExplorerWhere(sp: {
   side: string;
   sportsbook: string;
   marketType: string;
-}): { sql: string; params: unknown[] } {
+}): { sql: string; params: unknown[]; booksParamIndex: number | null } {
   const conditions: string[] = [];
+  let booksParamIndex: number | null = null;
   const params: unknown[] = [];
   let i = 1;
 
@@ -110,6 +118,7 @@ export function buildPropsExplorerWhere(sp: {
   if (sp.sportsbook) {
     const books = sp.sportsbook.split(',').filter(Boolean).map((b) => b.toLowerCase());
     if (books.length > 0) {
+      booksParamIndex = i;
       conditions.push(`lower(trim(p.sportsbook)) = ANY($${i++})`);
       params.push(books);
     }
@@ -123,10 +132,54 @@ export function buildPropsExplorerWhere(sp: {
   return {
     sql: conditions.length ? `WHERE ${conditions.join(' AND ')}` : '',
     params,
+    booksParamIndex,
   };
 }
 
-function fromJoin(context: PropsMarketContext, whereSql: string): string {
+const decimalOdds = (a: string) =>
+  `COALESCE(${a}.odds_decimal::float8,
+            CASE WHEN ${a}.odds_american < 0 THEN 1 + 100.0 / abs(${a}.odds_american)
+                 WHEN ${a}.odds_american > 0 THEN 1 + ${a}.odds_american / 100.0 END)`;
+
+/**
+ * Best and average price for the same game, player, prop, side and line across books.
+ * With a book filter, only the selected books count ("best price you can get").
+ */
+export function marketPriceLateralSql(context: PropsMarketContext, booksParamIndex: number | null): string {
+  const table =
+    context === 'historical' ? 'research.prop_decision_lines' : 'analytics.player_props_current';
+  const bookFilter =
+    booksParamIndex == null ? '' : `AND lower(trim(m.sportsbook)) = ANY($${booksParamIndex})`;
+  return `
+      LEFT JOIN LATERAL (
+        SELECT (array_agg(m.odds_american ORDER BY ${decimalOdds('m')} DESC NULLS LAST, m.sportsbook))[1] AS best_odds_american,
+               max(${decimalOdds('m')}) AS best_odds_decimal,
+               (array_agg(m.sportsbook ORDER BY ${decimalOdds('m')} DESC NULLS LAST, m.sportsbook))[1] AS best_sportsbook,
+               avg(${decimalOdds('m')}) AS avg_odds_decimal,
+               count(DISTINCT m.sportsbook) AS market_book_count
+          FROM ${table} m
+         WHERE m.game_id = p.game_id
+           AND m.player_id = p.player_id
+           AND m.prop_type = p.prop_type
+           AND m.line_value = p.line_value
+           AND lower(m.side) = lower(p.side)
+           AND lower(m.market_type) = lower(p.market_type)
+           ${bookFilter}
+      ) mk ON true`;
+}
+
+/** Row price over the average book price, as a fraction; null with fewer than two books. */
+const PRICE_GAP_SQL = `CASE WHEN mk.market_book_count >= 2 AND mk.avg_odds_decimal > 0
+             THEN ${decimalOdds('p')} / mk.avg_odds_decimal - 1 END AS price_gap`;
+
+const MARKET_COLUMNS = `mk.best_odds_american, mk.best_odds_decimal, mk.best_sportsbook,
+                mk.avg_odds_decimal, mk.market_book_count, ${PRICE_GAP_SQL}`;
+
+function fromJoin(
+  context: PropsMarketContext,
+  whereSql: string,
+  market: { booksParamIndex: number | null } | null = null
+): string {
   const mediaJoins = `
       LEFT JOIN analytics.player_provider_ids nba
         ON nba.player_entity_id = pl.player_entity_id
@@ -139,6 +192,7 @@ function fromJoin(context: PropsMarketContext, whereSql: string): string {
       INNER JOIN analytics.games g ON g.game_id = p.game_id
       LEFT JOIN analytics.players pl ON pl.player_id = p.player_id
       ${mediaJoins}
+      ${market ? marketPriceLateralSql(context, market.booksParamIndex) : ''}
       ${whereSql}
     `;
   }
@@ -147,6 +201,7 @@ function fromJoin(context: PropsMarketContext, whereSql: string): string {
       INNER JOIN analytics.games g ON g.game_id = p.game_id::text
       LEFT JOIN analytics.players pl ON pl.player_id = p.player_id::text
       ${mediaJoins}
+      ${market ? marketPriceLateralSql(context, market.booksParamIndex) : ''}
       ${whereSql}
     `;
 }
@@ -179,7 +234,11 @@ function oppositeImpliedSql(context: PropsMarketContext): string {
 }
 
 /** Same columns as selectList, with text ids so the two tables can be combined. */
-function mixedSelect(context: PropsMarketContext, rowSource: 'decision' | 'current'): string {
+function mixedSelect(
+  context: PropsMarketContext,
+  rowSource: 'decision' | 'current',
+  withMarket: boolean
+): string {
   const observed = context === 'historical' ? 'p.decision_at' : 'p.snapshot_at';
   return `SELECT p.game_id::text AS game_id, p.player_id::text AS player_id,
                 COALESCE(p.player_name, pl.full_name) AS player_name, p.sportsbook, p.prop_type,
@@ -190,18 +249,27 @@ function mixedSelect(context: PropsMarketContext, rowSource: 'decision' | 'curre
                 t_away.abbreviation AS away_team_abbr,
                 t_home.abbreviation AS home_team_abbr,
                 ${oppositeImpliedSql(context)},
+                ${withMarket ? `${MARKET_COLUMNS},` : ''}
                 '${rowSource}'::text AS row_source`;
 }
 
-function mixedDateBody(whereSql: string): string {
-  return `${mixedSelect('historical', 'decision')}
-      ${fromJoin('historical', whereSql)}
+function mixedDateBody(whereSql: string, booksParamIndex: number | null, withMarket: boolean): string {
+  const market = withMarket ? { booksParamIndex } : null;
+  return `${mixedSelect('historical', 'decision', withMarket)}
+      ${fromJoin('historical', whereSql, market)}
       UNION ALL
-      ${mixedSelect('live', 'current')}
-      ${fromJoin('live', excludeGamesWithDecisionLines(whereSql))}`;
+      ${mixedSelect('live', 'current', withMarket)}
+      ${fromJoin('live', excludeGamesWithDecisionLines(whereSql), market)}`;
 }
 
-function selectList(context: PropsMarketContext): string {
+/** Count body: same rows as mixedDateBody without the per-row market lateral. */
+function mixedDateCountBody(whereSql: string): string {
+  return `SELECT 1 ${fromJoin('historical', whereSql)}
+      UNION ALL
+      SELECT 1 ${fromJoin('live', excludeGamesWithDecisionLines(whereSql))}`;
+}
+
+function selectList(context: PropsMarketContext, withMarket: boolean): string {
   const observed =
     context === 'historical' ? 'p.decision_at AS snapshot_at' : 'p.snapshot_at';
   return `SELECT p.game_id, p.player_id, COALESCE(p.player_name, pl.full_name) AS player_name, p.sportsbook, p.prop_type, p.market_type, p.side,
@@ -210,7 +278,69 @@ function selectList(context: PropsMarketContext): string {
                 nba.provider_player_id AS nba_player_id,
                 t_away.abbreviation AS away_team_abbr,
                 t_home.abbreviation AS home_team_abbr,
-                ${oppositeImpliedSql(context)}`;
+                ${oppositeImpliedSql(context)}${withMarket ? `,
+                ${MARKET_COLUMNS}` : ''}`;
+}
+
+type MarketPriceRow = {
+  game_id: string;
+  player_id: string;
+  prop_type: string;
+  side: string;
+  line_value: string;
+  best_odds_american: number | null;
+  best_odds_decimal: string | number | null;
+  best_sportsbook: string | null;
+  avg_odds_decimal: string | number | null;
+  market_book_count: string | number | null;
+};
+
+const marketKey = (
+  gameId: unknown,
+  playerId: unknown,
+  propType: unknown,
+  side: unknown,
+  line: unknown
+): string =>
+  [String(gameId), String(playerId), String(propType), String(side ?? '').toLowerCase(), Number(line)].join('|');
+
+/**
+ * Same aggregate as marketPriceLateralSql, for an already-fetched page of rows:
+ * one grouped query instead of a lateral per matching row.
+ */
+async function loadMarketPrices(
+  context: PropsMarketContext,
+  rows: PropsExplorerDbRow[],
+  books: string[] | null
+): Promise<Map<string, MarketPriceRow>> {
+  const out = new Map<string, MarketPriceRow>();
+  if (rows.length === 0) return out;
+  const table =
+    context === 'historical' ? 'research.prop_decision_lines' : 'analytics.player_props_current';
+  const gameIds = [...new Set(rows.map((r) => String(r.game_id)))];
+  const playerIds = [...new Set(rows.map((r) => String(r.player_id)))];
+  const params: unknown[] = [gameIds, playerIds];
+  const bookFilter = books && books.length > 0 ? `AND lower(trim(m.sportsbook)) = ANY($3)` : '';
+  if (bookFilter) params.push(books);
+  const found = await query<MarketPriceRow>(
+    `SELECT m.game_id::text AS game_id, m.player_id::text AS player_id, m.prop_type,
+            lower(m.side) AS side, m.line_value::text AS line_value,
+            (array_agg(m.odds_american ORDER BY ${decimalOdds('m')} DESC NULLS LAST, m.sportsbook))[1] AS best_odds_american,
+            max(${decimalOdds('m')}) AS best_odds_decimal,
+            (array_agg(m.sportsbook ORDER BY ${decimalOdds('m')} DESC NULLS LAST, m.sportsbook))[1] AS best_sportsbook,
+            avg(${decimalOdds('m')}) AS avg_odds_decimal,
+            count(DISTINCT m.sportsbook) AS market_book_count
+       FROM ${table} m
+      WHERE m.game_id::text = ANY($1::text[])
+        AND m.player_id::text = ANY($2::text[])
+        AND lower(m.market_type) = 'over_under'
+        AND m.line_value IS NOT NULL
+        ${bookFilter}
+      GROUP BY 1, 2, 3, 4, 5`,
+    params
+  );
+  for (const m of Array.isArray(found) ? found : []) out.set(marketKey(m.game_id, m.player_id, m.prop_type, m.side, m.line_value), m);
+  return out;
 }
 
 async function loadInputsForPlayers(playerIds: number[]): Promise<Map<number, PlayerPropModelInputs | null>> {
@@ -269,6 +399,8 @@ export type PropsExplorerRow = {
   impliedProbability: number | null;
   /** No-vig probability from both sides of the same book and line; null without a matched pair. */
   fairProbability: number | null;
+  /** Price shopping across books for the same player, prop, side and line. */
+  bestPrice: PropsExplorerBestPrice | null;
   snapshotAt: string;
   marketContext: PropsMarketContext;
   lineLabel: string;
@@ -281,6 +413,58 @@ export type PropsExplorerRow = {
     evSelectedTrack?: string;
     calibrationVersion?: string;
   };
+
+export type PropsExplorerBestPrice = {
+  oddsAmerican: number | null;
+  oddsDecimal: number;
+  sportsbook: string | null;
+  /** Books quoting this exact line and side (within the book filter, when set). */
+  bookCount: number;
+  /** This row is the best available price (ties count). */
+  isBest: boolean;
+  /** This row's decimal price over the average book's, minus 1; null with one book. */
+  vsAverage: number | null;
+};
+
+const num = (v: string | number | null | undefined): number | null => {
+  if (v == null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+};
+
+export function toBestPrice(
+  r: Pick<
+    PropsExplorerDbRow,
+    | 'odds_decimal'
+    | 'odds_american'
+    | 'best_odds_american'
+    | 'best_odds_decimal'
+    | 'best_sportsbook'
+    | 'avg_odds_decimal'
+    | 'market_book_count'
+  >
+): PropsExplorerBestPrice | null {
+  const best = num(r.best_odds_decimal);
+  const bookCount = num(r.market_book_count) ?? 0;
+  if (best == null || best <= 1 || bookCount < 1) return null;
+  const american = r.odds_american;
+  const own =
+    num(r.odds_decimal) ??
+    (american == null || american === 0
+      ? null
+      : american < 0
+        ? 1 + 100 / Math.abs(american)
+        : 1 + american / 100);
+  const avg = num(r.avg_odds_decimal);
+  return {
+    oddsAmerican: r.best_odds_american ?? null,
+    oddsDecimal: best,
+    sportsbook: r.best_sportsbook ?? null,
+    bookCount,
+    isBest: own != null && own >= best - 1e-9,
+    vsAverage: bookCount >= 2 && own != null && avg != null && avg > 0 ? own / avg - 1 : null,
+  };
+}
 
 export type GetPlayerPropsForExplorerInput = {
   dateEt: string;
@@ -430,7 +614,7 @@ export async function getPlayerPropsForExplorer(
   const sourceTable = propsServingSource(sqlContext);
   const selectedTrack = resolveEvTrack();
 
-  const { sql: whereSql, params: whereParams } = buildPropsExplorerWhere({
+  const { sql: whereSql, params: whereParams, booksParamIndex } = buildPropsExplorerWhere({
     gameId,
     dateEt,
     playerName: (input.playerName ?? '').trim(),
@@ -440,23 +624,29 @@ export async function getPlayerPropsForExplorer(
     marketType: (input.marketType || 'over_under').trim().toLowerCase(),
   });
 
-  const mixedBody = mixDateSources ? mixedDateBody(whereSql) : '';
-  const join = mixDateSources ? '' : fromJoin(sqlContext, whereSql);
+  const sortRaw = (input.sort || 'snapshot_at').toLowerCase();
+  const sort = sortRaw === 'edge' ? 'snapshot_at' : sortRaw;
+  // Only the price-gap sort needs market prices inside SQL; other sorts look them up per page.
+  const sqlMarket = sort === PRICE_GAP_SORT;
+  const mixedBody = mixDateSources ? mixedDateBody(whereSql, booksParamIndex, sqlMarket) : '';
+  const join = mixDateSources
+    ? ''
+    : fromJoin(sqlContext, whereSql, sqlMarket ? { booksParamIndex } : null);
   const countResult = await query<{ count: string }>(
     mixDateSources
-      ? `SELECT count(*)::text AS count FROM (${mixedBody}) mixed_rows`
-      : `SELECT count(*)::text AS count ${join}`,
+      ? `SELECT count(*)::text AS count FROM (${mixedDateCountBody(whereSql)}) mixed_rows`
+      : `SELECT count(*)::text AS count ${fromJoin(sqlContext, whereSql)}`,
     whereParams
   );
   const totalMatching = parseInt(countResult[0]?.count ?? '0', 10) || 0;
 
-  const sortRaw = (input.sort || 'snapshot_at').toLowerCase();
-  const sort = sortRaw === 'edge' ? 'snapshot_at' : sortRaw;
   const dirAsc = Boolean(input.dirAsc);
   const observedCol = sqlContext === 'historical' ? 'p.decision_at' : 'p.snapshot_at';
   const useComputedSort = marketContext === 'live' && COMPUTED_SORTS.has(sort);
   const orderSqlCol =
-    sort === 'odds_american'
+    sort === PRICE_GAP_SORT
+      ? PRICE_GAP_SORT
+      : sort === 'odds_american'
       ? 'p.odds_american'
       : useComputedSort
         ? observedCol
@@ -470,7 +660,8 @@ export async function getPlayerPropsForExplorer(
     const fetchParams = [...whereParams, input.limit, input.offset];
     const limIdx = whereParams.length + 1;
     const offIdx = whereParams.length + 2;
-    const mixedOrder = sort === 'odds_american' ? 'odds_american' : 'snapshot_at';
+    const mixedOrder =
+      sort === PRICE_GAP_SORT ? PRICE_GAP_SORT : sort === 'odds_american' ? 'odds_american' : 'snapshot_at';
     dbRows = await query<PropsExplorerDbRow>(
       `SELECT * FROM (${mixedBody}) mixed_rows
        ORDER BY ${mixedOrder} ${orderDir} NULLS LAST
@@ -481,7 +672,7 @@ export async function getPlayerPropsForExplorer(
     const fetchParams = [...whereParams, PROPS_EXPLORER_EV_FETCH_CAP];
     const limIdx = whereParams.length + 1;
     dbRows = await query<PropsExplorerDbRow>(
-      `${selectList(sqlContext)} ${join}
+      `${selectList(sqlContext, sqlMarket)} ${join}
        ORDER BY ${observedCol} DESC NULLS LAST
        LIMIT $${limIdx}`,
       fetchParams
@@ -491,11 +682,28 @@ export async function getPlayerPropsForExplorer(
     const limIdx = whereParams.length + 1;
     const offIdx = whereParams.length + 2;
     dbRows = await query<PropsExplorerDbRow>(
-      `${selectList(sqlContext)} ${join}
+      `${selectList(sqlContext, sqlMarket)} ${join}
        ORDER BY ${orderSqlCol} ${orderDir} NULLS LAST
        LIMIT $${limIdx} OFFSET $${offIdx}`,
       fetchParams
     );
+  }
+
+  if (!sqlMarket) {
+    const books = booksParamIndex == null ? null : (whereParams[booksParamIndex - 1] as string[]);
+    const groups: Array<[PropsMarketContext, PropsExplorerDbRow[]]> = mixDateSources
+      ? [
+          ['historical', dbRows.filter((r) => r.row_source === 'decision')],
+          ['live', dbRows.filter((r) => r.row_source === 'current')],
+        ]
+      : [[sqlContext, dbRows]];
+    for (const [ctx, group] of groups) {
+      const prices = await loadMarketPrices(ctx, group, books);
+      for (const r of group) {
+        const m = prices.get(marketKey(r.game_id, r.player_id, r.prop_type, r.side, r.line_value));
+        if (m) Object.assign(r, m, { game_id: r.game_id, player_id: r.player_id, side: r.side, line_value: r.line_value });
+      }
+    }
   }
 
   let inputsByPlayer = new Map<number, PlayerPropModelInputs | null>();
@@ -552,6 +760,7 @@ export async function getPlayerPropsForExplorer(
               r.opposite_implied_probability != null ? Number(r.opposite_implied_probability) : null
             )
           : null,
+      bestPrice: toBestPrice(r),
       snapshotAt,
       marketContext,
       lineLabel:

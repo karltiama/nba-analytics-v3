@@ -79,6 +79,47 @@ export function explorerSampleLabel(games: number | null | undefined): string {
   return `${n} ${n === 1 ? 'game' : 'games'}`;
 }
 
+/** Shape served on each explorer row (see PropsExplorerBestPrice in props-explorer-serving). */
+export type ExplorerBestPrice = {
+  oddsAmerican: number | null;
+  sportsbook: string | null;
+  bookCount: number;
+  isBest: boolean;
+  vsAverage: number | null;
+};
+
+/** Payout difference vs the average book, one decimal; null or single-book markets show a dash. */
+export function formatVsAverage(v: number | null | undefined): string {
+  if (v == null || !Number.isFinite(v)) return '—';
+  const pct = v * 100;
+  if (Math.abs(pct) < 0.05) return '0.0%';
+  return `${pct > 0 ? '+' : '−'}${Math.abs(pct).toFixed(1)}%`;
+}
+
+export function vsAverageTextClass(v: number | null | undefined): string {
+  if (v == null || !Number.isFinite(v) || Math.abs(v) < 0.0005) return 'text-[#4a6366]';
+  return v > 0 ? 'text-[#178A45]' : 'text-[#8A5A00]';
+}
+
+/**
+ * Compact best-price cell: "Best of 4" when this row is the best price, "Only book" when no
+ * other book quotes the line, otherwise the better price and its book.
+ */
+export function bestPriceLabel(
+  bp: ExplorerBestPrice | null | undefined,
+  bookName: (book: string | null) => string
+): string {
+  if (!bp) return '—';
+  if (bp.bookCount <= 1) return 'Only book';
+  if (bp.isBest) return `Best of ${bp.bookCount}`;
+  return `${formatExplorerOdds(bp.oddsAmerican)} ${bookName(bp.sportsbook)}`;
+}
+
+export const BEST_PRICE_TITLE =
+  'Best price for this exact line and side across books, or across the books you selected in the filter.';
+export const VS_AVERAGE_TITLE =
+  'How much more this price pays than the average book for the same line and side. Taking the best price added about 3.5 points of return per bet on 2025-26 closing lines. It is a price comparison, not a prediction.';
+
 export const FAIR_PROBABILITY_TITLE =
   'Sportsbook price with the bookmaker margin removed, using both sides of the same line at the same book.';
 export const SAMPLE_TITLE =
