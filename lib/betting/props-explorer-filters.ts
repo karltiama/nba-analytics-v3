@@ -16,6 +16,8 @@ export const EXPLORER_BOOKS = [
   { id: 'betrivers', label: 'BetRivers' },
   { id: 'fanatics', label: 'Fanatics' },
   { id: 'betparx', label: 'BetParx' },
+  { id: 'ballybet', label: 'Bally Bet' },
+  { id: 'betway', label: 'Betway' },
 ] as const;
 
 export const EXPLORER_PROP_TYPES = [

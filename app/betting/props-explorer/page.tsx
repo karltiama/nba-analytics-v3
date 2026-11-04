@@ -25,6 +25,13 @@ import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTa
 import { SelectedGameFilter } from '@/components/betting/SelectedGameFilter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
+import {
+  ARB_EMPTY_COPY,
+  ARB_TITLE,
+  arbInstructions,
+  formatArbProfit,
+  type PropsExplorerArb,
+} from '@/lib/betting/props-explorer-arb';
 import { LATEST_OBSERVED_LINE_LABEL, PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
 import { clearSelectedGameUpdates } from '@/lib/betting/selected-game-filter';
 import {
@@ -97,6 +104,7 @@ type ExplorerRow = {
   impliedProbability: number | null;
   fairProbability?: number | null;
   bestPrice?: ExplorerBestPrice | null;
+  arb?: PropsExplorerArb | null;
   sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
@@ -199,6 +207,7 @@ export default function PropsExplorerPage(props: PageProps) {
   const sort = searchParams.get('sort') ?? 'snapshot_at';
   const dir = searchParams.get('dir') === 'asc' ? 'asc' : 'desc';
   const minEv = searchParams.get('min_ev') ?? '';
+  const arbOnly = searchParams.get('arb') === '1';
   const limit = Math.min(
     200,
     Math.max(1, parseInt(searchParams.get('limit') || '100', 10) || 100)
@@ -427,6 +436,7 @@ export default function PropsExplorerPage(props: PageProps) {
         if (propType.trim()) u.searchParams.set('prop_type', propType.trim());
         if (side && side !== 'all') u.searchParams.set('side', side);
         if (sportsbook.trim()) u.searchParams.set('sportsbook', sportsbook.trim());
+        if (arbOnly) u.searchParams.set('arb', '1');
         if (
           date >= getTodayET() &&
           minEv.trim() !== '' &&
@@ -446,7 +456,8 @@ export default function PropsExplorerPage(props: PageProps) {
             !propType.trim() &&
             side === 'all' &&
             !sportsbook.trim() &&
-            minEv.trim() === '';
+            minEv.trim() === '' &&
+            !arbOnly;
           // Live mode only: if default "today" has no props yet, fall back once to yesterday.
           if (
             !frozen &&
@@ -490,7 +501,7 @@ export default function PropsExplorerPage(props: PageProps) {
     return () => {
       cancelled = true;
     };
-  }, [date, gameId, playerName, propType, side, sportsbook, sort, dir, minEv, limit, offset, searchParams, updateParams]);
+  }, [date, gameId, playerName, propType, side, sportsbook, sort, dir, minEv, arbOnly, limit, offset, searchParams, updateParams]);
 
   const selectClass =
     'type-interactive rounded-lg border border-[#DCE9EA] bg-white text-[#063f46] py-1.5 px-2 min-w-0 focus:outline-none focus:ring-1 focus:ring-[#55ddb1] focus:border-[#075B5C]';
@@ -742,6 +753,7 @@ export default function PropsExplorerPage(props: PageProps) {
         side={side}
         minEv={minEv}
         sportsbook={sportsbook}
+        arbOnly={arbOnly}
         sort={sort}
         dir={dir}
         marketContext={marketContext}
@@ -954,6 +966,20 @@ export default function PropsExplorerPage(props: PageProps) {
                 );
               })}
             </div>
+
+            <button
+              type="button"
+              aria-pressed={arbOnly}
+              onClick={() => updateParams({ arb: arbOnly ? null : '1', offset: '0' })}
+              title={ARB_TITLE}
+              className={`type-interactive rounded-full border px-2.5 py-1 transition-all duration-200 sm:ml-auto ${
+                arbOnly
+                  ? 'bg-[#178A45] border-[#178A45] text-white'
+                  : 'bg-white border-[#DCE9EA] text-[#4a6366] hover:bg-[#f7f9f7] hover:text-[#063f46]'
+              }`}
+            >
+              Arbs only
+            </button>
           </div>
 
           {evSortActive && meta?.evFetchCap != null && (
@@ -1051,7 +1077,7 @@ export default function PropsExplorerPage(props: PageProps) {
         {rows.length === 0 || gameUnknown ? (
           <div className="py-8 text-center">
             {(() => {
-              const copy = propsExplorerEmptyCopy({
+              const copy = arbOnly ? ARB_EMPTY_COPY : propsExplorerEmptyCopy({
                 dateLabel: getDateLabel(date),
                 marketContext,
                 gameSelected: Boolean(gameId.trim()),
@@ -1147,7 +1173,7 @@ export default function PropsExplorerPage(props: PageProps) {
                 <tr>
                   <td colSpan={showAdvancedMetrics ? 17 : 12} className="py-8 text-center text-[#4a6366]">
                     {(() => {
-                      const copy = propsExplorerEmptyCopy({
+                      const copy = arbOnly ? ARB_EMPTY_COPY : propsExplorerEmptyCopy({
                         dateLabel: getDateLabel(date),
                         marketContext,
                         gameSelected: Boolean(gameId.trim()),
@@ -1222,6 +1248,14 @@ export default function PropsExplorerPage(props: PageProps) {
                       title={BEST_PRICE_TITLE}
                     >
                       {bestPriceLabel(r.bestPrice, explorerBookDisplayName)}
+                      {r.arb ? (
+                        <span
+                          className="ml-1.5 inline-flex rounded-md bg-[#e7f8ef] px-1.5 py-0.5 font-medium text-[#178A45]"
+                          title={`${arbInstructions({ arb: r.arb, side: r.side, sportsbook: r.sportsbook, bookName: explorerBookDisplayName, formatOdds })} ${ARB_TITLE}`}
+                        >
+                          {formatArbProfit(r.arb.profit)}
+                        </span>
+                      ) : null}
                     </td>
                     <td
                       className={`whitespace-nowrap py-1.5 px-2 text-right font-mono ${vsAverageTextClass(r.bestPrice?.vsAverage)}`}
