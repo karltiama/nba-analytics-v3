@@ -1185,19 +1185,21 @@ export default function PropsExplorerPage(props: PageProps) {
                   return (
                   <tr
                     key={`${r.gameId}-${r.playerId}-${r.propType}-${r.side}-${r.lineValue}-${r.sportsbook}-${r.oddsAmerican}-${idx}`}
-                    className="cursor-pointer border-b border-[#DCE9EA] hover:bg-[#F8FBFA]"
-                    onClick={() => setDetailRow(r)}
+                    className={`cursor-pointer border-b border-[#DCE9EA] ${
+                      selectedPlayer?.playerId === r.playerId ? 'bg-[#e7f8ef]' : 'hover:bg-[#F8FBFA]'
+                    }`}
+                    onClick={() => (isXlViewport ? openPlayerContext(r) : setDetailRow(r))}
                   >
                     <td className="py-1.5 px-2">
                       <button
                         type="button"
                         onClick={(event) => {
                           event.stopPropagation();
-                          setDetailRow(r);
+                          openPlayerContext(r);
                         }}
                         className="type-table-data block max-w-[12.5rem] truncate text-left text-[#075B5C] outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#55ddb1]"
                         title={explorerCardPlayerName(r.playerName, r.playerId)}
-                        aria-label={`Open details for ${explorerCardPlayerName(r.playerName, r.playerId)}`}
+                        aria-label={`Show stats for ${explorerCardPlayerName(r.playerName, r.playerId)}`}
                       >
                         {explorerCardPlayerName(r.playerName, r.playerId)}
                       </button>
