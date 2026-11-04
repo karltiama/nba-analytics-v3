@@ -449,6 +449,32 @@ resource "aws_scheduler_schedule" "player_props_near_tip" {
   }
 }
 
+# Closing pull: the last pre-tip snapshot used as the closing line for CLV.
+# Every 5 minutes; each game is in exactly one poll window, so it is collected once at T-10.
+# Same gate as near-tip: DISABLED unless player_props execution is enabled.
+# Requires db/schemas/MIGRATION_player_prop_closing_universe.sql first (game_runs universe check).
+resource "aws_scheduler_schedule" "player_props_closing" {
+  count       = var.player_props_enable_schedule ? 1 : 0
+  name        = "nba-player-props-closing"
+  group_name  = "default"
+  description = "Closing player props for games tipping in [now+10m, now+15m). Disabled unless player_props execution is enabled."
+  state       = local.player_props_schedule_state
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  # Every 5 minutes from 08:00 through 23:55 America/New_York (tips up to 00:10).
+  schedule_expression          = "cron(0/5 8-23 ? * * *)"
+  schedule_expression_timezone = var.player_props_schedule_timezone
+
+  target {
+    arn      = aws_lambda_function.player_props_controller.arn
+    role_arn = aws_iam_role.scheduler_player_props_invoke.arn
+    input    = jsonencode({ universe = "closing" })
+  }
+}
+
 resource "aws_scheduler_schedule" "player_props_rate" {
   count       = var.player_props_enable_schedule && length(var.player_props_schedule_crons) == 0 ? 1 : 0
   name        = "nba-player-props-schedule"

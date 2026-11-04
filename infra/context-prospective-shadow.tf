@@ -97,8 +97,9 @@ resource "aws_lambda_function" "context_prospective_shadow" {
   count         = var.context_prospective_create ? 1 : 0
   function_name = var.context_prospective_lambda_function_name
   role          = aws_iam_role.lambda_context_prospective_execution[0].arn
-  handler       = "index.handler"
-  runtime       = "nodejs20.x"
+  # The esbuild bundle writes dist/index.js (target node22), like the other ingestion functions.
+  handler       = "dist/index.handler"
+  runtime       = "nodejs22.x"
   timeout       = var.context_prospective_lambda_timeout
   memory_size   = var.context_prospective_lambda_memory_size
   filename      = data.archive_file.context_prospective_shadow[0].output_path

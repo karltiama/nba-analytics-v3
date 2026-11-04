@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from 'pg';
 import type { NormalizedPropRow } from './types';
+import type { PropUniverse } from './game-discovery';
 import { OBSERVATION_CLOCK_RESPONSE_RECEIVED, type PropObservationClocks } from './observation-clock';
 import { pregamePropsMarketEligibleSql } from './pregame-market';
 
@@ -21,7 +22,7 @@ function chunk<T>(items: T[], size: number): T[][] {
 /**
  * A game already claimed for the same universe inside this window is not re-enqueued.
  * Covers duplicate Scheduler deliveries and Lambda async retries (minutes apart) and stays below the
- * shortest same-universe cadence (near-tip 15 min; broad crons hours apart, rate fallback 30 min).
+ * shortest same-universe cadence (closing 5 min, so a closing game is only in one poll window; near-tip 15 min; broad crons hours apart, rate fallback 30 min).
  */
 export const CONTROLLER_DEDUPE_WINDOW_SECONDS = 600;
 /** Marker for game runs whose SQS send failed. They were never queued, so a retry may claim them again. */
@@ -50,7 +51,7 @@ export function selectUnclaimedTargets<T extends { gameId: string }>(
  */
 export async function claimGameRunsForWave<T extends { gameId: string }>(
   pool: Pool,
-  universe: 'broad' | 'near_tip',
+  universe: PropUniverse,
   targets: T[],
   windowSeconds: number = CONTROLLER_DEDUPE_WINDOW_SECONDS
 ): Promise<{ pullRunId: number | null; claimed: T[]; skipped: T[] }> {
@@ -134,7 +135,7 @@ export async function createGameRun(
   pool: Pool | PoolClient,
   pullRunId: number,
   gameId: string,
-  universe?: 'broad' | 'near_tip' | null
+  universe?: PropUniverse | null
 ): Promise<void> {
   await pool.query(
     `INSERT INTO raw.player_prop_game_runs (pull_run_id, game_id, status, started_at, universe)

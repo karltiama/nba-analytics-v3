@@ -13,7 +13,7 @@
  */
 
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
@@ -55,6 +55,12 @@ export const INGESTION_LAMBDA_BUNDLES = {
   'context-prospective-shadow': {
     dir: 'lambda/context-prospective-shadow',
     entries: { 'dist/index.js': 'index.ts' },
+    // Frozen model artifacts are read at runtime with readFileSync(join(process.cwd(), ...)).
+    // Lambda's cwd is the package root (/var/task), so they ship at the same relative paths.
+    assets: [
+      'lib/context-projection/artifacts/model_artifact.json',
+      'lib/context-projection/artifacts/aux-min-model_artifact.json',
+    ],
   },
   'projection-ledger': {
     dir: 'lambda/projection-ledger',
@@ -114,6 +120,12 @@ export async function bundleIngestionLambda(name, esbuild = null, outRoot = null
       logLevel: 'warning',
     });
     hashes[outRel] = sha256File(outfile);
+  }
+  for (const assetRel of spec.assets ?? []) {
+    const dest = path.join(packageRoot, assetRel);
+    mkdirSync(path.dirname(dest), { recursive: true });
+    copyFileSync(path.join(root, assetRel), dest);
+    hashes[assetRel] = sha256File(dest);
   }
   return hashes;
 }
