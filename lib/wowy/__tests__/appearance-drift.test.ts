@@ -41,11 +41,12 @@ describe('WOWY appearance vs established classifyAppearance', () => {
     }
   });
 
-  it('intentionally differs on "0" with no stats: a DNP in WOWY (2026-27 token), played in the ledger', () => {
+  it('both treat "0" with no stats as a DNP (2026-27 BallDontLie token)', () => {
     for (const token of ['0', '0.0']) {
-      expect(classifyWowyAppearance(log(token)).class).toBe('dnp');
-      expect(classifyWowyAppearance(log(token)).reason).toBe('zero_minutes_no_box');
-      expect(classifyAppearance(log(token)).class).toBe('played');
+      for (const classify of [classifyWowyAppearance, classifyAppearance]) {
+        expect(classify(log(token)).class).toBe('dnp');
+        expect(classify(log(token)).reason).toBe('zero_minutes_no_box');
+      }
     }
   });
 

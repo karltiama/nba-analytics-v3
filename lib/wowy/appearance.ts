@@ -84,7 +84,7 @@ export function classifyWowyAppearance(log: WowyAppearanceInput): WowyAppearance
     };
   }
   // "0" with stats is a sub-minute appearance. Without stats it is a DNP: 2026-27 BallDontLie logs
-  // store DNPs as "0" (earlier seasons used "00"). Intentionally differs from classifyAppearance.
+  // store DNPs as "0" (earlier seasons used "00"). Same rule as classifyAppearance.
   if ((token === '0' || token === '0.0') && box) {
     return {
       class: 'played',
