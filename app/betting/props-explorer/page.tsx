@@ -32,6 +32,12 @@ import {
   formatArbProfit,
   type PropsExplorerArb,
 } from '@/lib/betting/props-explorer-arb';
+import {
+  MOVEMENT_TITLE,
+  movementLabel,
+  movementTextClass,
+  type PropsExplorerMovement,
+} from '@/lib/betting/props-explorer-movement';
 import { LATEST_OBSERVED_LINE_LABEL, PREGAME_LINE_LABEL } from '@/lib/betting/props-market-context';
 import { clearSelectedGameUpdates } from '@/lib/betting/selected-game-filter';
 import {
@@ -106,6 +112,7 @@ type ExplorerRow = {
   fairProbability?: number | null;
   bestPrice?: ExplorerBestPrice | null;
   arb?: PropsExplorerArb | null;
+  movement?: PropsExplorerMovement | null;
   sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
@@ -1246,6 +1253,14 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td className="type-table-data whitespace-nowrap py-1.5 px-2 text-right tabular-nums text-[#075B5C]">
                       {formatOdds(r.oddsAmerican)}
+                      {movementLabel(r.movement) ? (
+                        <span
+                          className={`type-metadata block font-normal ${movementTextClass(r.movement)}`}
+                          title={MOVEMENT_TITLE}
+                        >
+                          {movementLabel(r.movement)}
+                        </span>
+                      ) : null}
                     </td>
                     <td
                       className={`type-metadata whitespace-nowrap py-1.5 px-2 ${r.bestPrice?.isBest && r.bestPrice.bookCount > 1 ? 'font-medium text-[#178A45]' : ''}`}

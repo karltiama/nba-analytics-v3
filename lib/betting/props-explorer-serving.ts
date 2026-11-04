@@ -28,6 +28,11 @@ import {
   type ArbQuote,
   type PropsExplorerArb,
 } from '@/lib/betting/props-explorer-arb';
+import {
+  computeMovement,
+  type MovementObservation,
+  type PropsExplorerMovement,
+} from '@/lib/betting/props-explorer-movement';
 
 export type PropsExplorerDbRow = {
   game_id: string | number;
@@ -433,6 +438,61 @@ async function loadArbQuotes(rows: PropsExplorerDbRow[], books: string[] | null)
   return out;
 }
 
+const movementKey = (gameId: unknown, playerId: unknown, sportsbook: unknown, propType: unknown): string =>
+  [String(gameId), String(playerId), String(sportsbook ?? '').trim().toLowerCase(), String(propType)].join('|');
+
+/**
+ * Stored over/under history for each live row's game, player, book and prop (all lines, both sides),
+ * from the append-only snapshot table. One query per page, joined on the exact keys.
+ */
+async function loadMovementHistory(rows: PropsExplorerDbRow[]): Promise<Map<string, MovementObservation[]>> {
+  const out = new Map<string, MovementObservation[]>();
+  const keys = new Map<string, [number, number, string, string]>();
+  for (const r of rows) {
+    const g = Number(r.game_id);
+    const p = Number(r.player_id);
+    const book = String(r.sportsbook ?? '').trim().toLowerCase();
+    if (!Number.isFinite(g) || !Number.isFinite(p) || !book || !r.prop_type) continue;
+    keys.set(movementKey(g, p, book, r.prop_type), [g, p, book, r.prop_type]);
+  }
+  if (keys.size === 0) return out;
+  const list = [...keys.values()];
+  const found = await query<{
+    game_id: number;
+    player_id: number;
+    sportsbook: string;
+    prop_type: string;
+    side: string | null;
+    line_value: string | null;
+    odds_american: number | null;
+    odds_decimal: string | number | null;
+    fetched_at: string | Date;
+  }>(
+    `SELECT s.game_id, s.player_id, k.book AS sportsbook, s.prop_type, lower(s.side) AS side,
+            s.line_value::text AS line_value, s.odds_american, s.odds_decimal, s.fetched_at
+       FROM unnest($1::int[], $2::int[], $3::text[], $4::text[]) AS k(game_id, player_id, book, prop_type)
+       JOIN raw.player_prop_snapshots_v2 s
+         ON s.game_id = k.game_id AND s.player_id = k.player_id AND s.prop_type = k.prop_type
+        AND lower(trim(s.sportsbook)) = k.book
+      WHERE lower(s.market_type) = 'over_under'
+        AND s.line_value IS NOT NULL`,
+    [list.map((k) => k[0]), list.map((k) => k[1]), list.map((k) => k[2]), list.map((k) => k[3])]
+  );
+  for (const o of Array.isArray(found) ? found : []) {
+    const k = movementKey(o.game_id, o.player_id, o.sportsbook, o.prop_type);
+    const arr = out.get(k) ?? [];
+    arr.push({
+      side: o.side,
+      lineValue: o.line_value == null ? null : Number(o.line_value),
+      oddsAmerican: o.odds_american,
+      oddsDecimal: o.odds_decimal == null ? null : Number(o.odds_decimal),
+      observedAt: o.fetched_at,
+    });
+    out.set(k, arr);
+  }
+  return out;
+}
+
 async function loadInputsForPlayers(playerIds: number[]): Promise<Map<number, PlayerPropModelInputs | null>> {
   const map = new Map<number, PlayerPropModelInputs | null>();
   const unique = [...new Set(playerIds)];
@@ -493,6 +553,8 @@ export type PropsExplorerRow = {
   bestPrice: PropsExplorerBestPrice | null;
   /** Two-book arbitrage this row forms, for live lines before tip; null otherwise. */
   arb: PropsExplorerArb | null;
+  /** Line and price movement at this book since the first stored pull; live over/under rows only. */
+  movement: PropsExplorerMovement | null;
   snapshotAt: string;
   marketContext: PropsMarketContext;
   lineLabel: string;
@@ -856,6 +918,24 @@ export async function getPlayerPropsForExplorer(
     );
   };
 
+  const movementRows = liveRows.filter((r) => (r.market_type ?? '').toLowerCase() === 'over_under');
+  const movementRowSet = new Set(movementRows);
+  const movementHistory = await loadMovementHistory(movementRows);
+  const movementFor = (r: PropsExplorerDbRow): PropsExplorerMovement | null => {
+    if (!movementRowSet.has(r)) return null;
+    const history = movementHistory.get(movementKey(r.game_id, r.player_id, r.sportsbook, r.prop_type));
+    if (!history) return null;
+    return computeMovement(
+      {
+        side: r.side,
+        lineValue: r.line_value != null ? Number(r.line_value) : null,
+        oddsAmerican: r.odds_american,
+        oddsDecimal: r.odds_decimal != null ? Number(r.odds_decimal) : null,
+      },
+      history
+    );
+  };
+
   let inputsByPlayer = new Map<number, PlayerPropModelInputs | null>();
   if (marketContext === 'live') {
     const uniquePlayers = [
@@ -915,6 +995,7 @@ export async function getPlayerPropsForExplorer(
         return bp ? { ...bp, marketWide: priceScope === 'market' } : null;
       })(),
       arb: arbFor(r),
+      movement: movementFor(r),
       snapshotAt,
       marketContext,
       lineLabel:
