@@ -56,6 +56,21 @@ export function twoWayMarketDisplay(
   };
 }
 
+/**
+ * Two-way no-vig probability for one side: own / (own + opposite).
+ * Both inputs are raw (with-vig) implied probabilities from the same book and line.
+ * Returns null when either side is missing or out of (0, 1).
+ */
+export function noVigProbability(
+  ownImplied: number | null | undefined,
+  oppositeImplied: number | null | undefined
+): number | null {
+  if (ownImplied == null || oppositeImplied == null) return null;
+  if (!Number.isFinite(ownImplied) || !Number.isFinite(oppositeImplied)) return null;
+  if (ownImplied <= 0 || ownImplied >= 1 || oppositeImplied <= 0 || oppositeImplied >= 1) return null;
+  return ownImplied / (ownImplied + oppositeImplied);
+}
+
 export function projectionGap(
   projection: number | null | undefined,
   marketLine: number | null | undefined

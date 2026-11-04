@@ -35,10 +35,18 @@ import {
   PLAYER_SEARCH_COMMIT_MS,
 } from '@/lib/betting/props-explorer-filters';
 import {
+  EXPERIMENTAL_MODEL_HIDE,
+  EXPERIMENTAL_MODEL_NOTE,
+  EXPERIMENTAL_MODEL_SHOW,
+  FAIR_PROBABILITY_TITLE,
+  SAMPLE_TITLE,
   explorerCardPlayerName,
   explorerCardValueLabel,
+  explorerEvTextClass,
+  explorerSampleLabel,
   explorerValueToneClass,
   formatExplorerOdds,
+  formatFairProbability,
 } from '@/lib/betting/props-explorer-row-display';
 import {
   explorerGamesApiHref,
@@ -81,6 +89,8 @@ type ExplorerRow = {
   lineValue: number | null;
   oddsAmerican: number | null;
   impliedProbability: number | null;
+  fairProbability?: number | null;
+  sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
   ev: number | null;
@@ -138,13 +148,6 @@ type PageProps = {
 function formatPct(x: number | null | undefined, digits = 1): string {
   if (x == null || !Number.isFinite(x)) return '—';
   return `${(x * 100).toFixed(digits)}%`;
-}
-
-function formatConfidenceSimple(confidence: ExplorerRow['confidenceTier']): string {
-  if (confidence === 'high') return 'High';
-  if (confidence === 'medium') return 'Medium';
-  if (confidence === 'low') return 'Low';
-  return '—';
 }
 
 function formatOdds(odds: number | null): string {
@@ -712,9 +715,12 @@ export default function PropsExplorerPage(props: PageProps) {
           ) : null}
         </div>
         {showAdvancedMetrics && meta ? (
-          <p className="type-metadata font-mono">
-            {meta.calibrationVersion} · {new Date(meta.computedAt).toLocaleString()}
-          </p>
+          <div className="max-w-sm text-right">
+            <p className="type-metadata font-mono">
+              {meta.calibrationVersion} · {new Date(meta.computedAt).toLocaleString()}
+            </p>
+            <p className="type-metadata mt-1 text-[#8a4b08]">{EXPERIMENTAL_MODEL_NOTE}</p>
+          </div>
         ) : null}
       </div>
 
@@ -855,6 +861,7 @@ export default function PropsExplorerPage(props: PageProps) {
               <option value="under">Under</option>
             </select>
 
+            {showAdvancedMetrics || minEv.trim() !== '' ? (
             <div className="relative col-span-1">
               <input
                 className={`${inputClass} pl-8`}
@@ -875,6 +882,7 @@ export default function PropsExplorerPage(props: PageProps) {
                 <span className="type-interactive text-cc-secondary">EV+</span>
               </div>
             </div>
+            ) : null}
 
             <div className="col-span-2 md:col-span-4 lg:col-span-1 flex items-center gap-2">
               <select
@@ -1007,7 +1015,7 @@ export default function PropsExplorerPage(props: PageProps) {
             className="type-interactive hidden rounded-lg border border-[#DCE9EA] bg-white px-2.5 py-1 text-cc-secondary hover:bg-[#f7f9f7] hover:text-[#063f46] lg:inline-flex"
             aria-pressed={showAdvancedMetrics}
           >
-            {showAdvancedMetrics ? 'Hide advanced metrics' : 'Show advanced metrics'}
+            {showAdvancedMetrics ? EXPERIMENTAL_MODEL_HIDE : EXPERIMENTAL_MODEL_SHOW}
           </button>
           <button
             type="button"
@@ -1083,12 +1091,16 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">Line</th>
                 <th className="py-2 px-2 font-medium">Book</th>
                 <th className="py-2 px-2 font-medium text-right">Odds</th>
-                <th className="py-2 px-2 font-medium">Value</th>
-                <th className="py-2 px-2 font-medium text-right">Confidence</th>
+                <th className="py-2 px-2 font-medium text-right" title={FAIR_PROBABILITY_TITLE}>
+                  Fair P
+                </th>
+                <th className="py-2 px-2 font-medium text-right" title={SAMPLE_TITLE}>
+                  Sample
+                </th>
                 {showAdvancedMetrics ? (
                   <>
-                    <th className="py-2 px-2 font-medium text-right" title="Sportsbook implied probability">
-                      Market P
+                    <th className="py-2 px-2 font-medium" title={EXPERIMENTAL_MODEL_NOTE}>
+                      Model value
                     </th>
                     <th
                       className="py-2 px-2 font-medium text-right"
@@ -1190,39 +1202,39 @@ export default function PropsExplorerPage(props: PageProps) {
                     <td className="type-table-data whitespace-nowrap py-1.5 px-2 text-right tabular-nums text-[#075B5C]">
                       {formatOdds(r.oddsAmerican)}
                     </td>
-                    <td className="py-1.5 px-2">
-                      <span
-                        className={`type-badge inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 ${explorerValueToneClass(r.marketContext === 'historical' ? null : r.ev)}`}
-                        title={
-                          r.marketContext === 'historical'
-                            ? 'Historical closing line — estimated EV is not computed'
-                            : r.ev != null && Number.isFinite(r.ev)
-                              ? `Estimated EV (market-anchored): ${(r.ev * 100).toFixed(1)}%`
-                              : 'No estimated EV available'
-                        }
-                      >
-                        {explorerCardValueLabel(r.ev, r.marketContext)}
-                      </span>
-                    </td>
                     <td
-                      className="py-1.5 px-2 text-right font-mono text-[#4a6366] capitalize"
+                      className="py-1.5 px-2 text-right font-mono text-[#063f46]"
                       title={
-                        r.anchorDeltaAbsTrackB != null && Number.isFinite(r.anchorDeltaAbsTrackB)
-                          ? `Anchor |Δ| vs calibrated: ${(r.anchorDeltaAbsTrackB * 100).toFixed(2)}%`
+                        r.impliedProbability != null && Number.isFinite(r.impliedProbability)
+                          ? `With bookmaker margin: ${formatPct(r.impliedProbability)}`
                           : undefined
                       }
                     >
-                      {formatConfidenceSimple(r.confidenceTier)}
+                      {formatFairProbability(r.fairProbability)}
+                    </td>
+                    <td className="whitespace-nowrap py-1.5 px-2 text-right font-mono text-[#4a6366]" title={SAMPLE_TITLE}>
+                      {explorerSampleLabel(r.sampleGamesUsed)}
                     </td>
                     {showAdvancedMetrics ? (
                       <>
-                        <td className="py-1.5 px-2 text-right font-mono">
-                          {formatPct(r.impliedProbability)}
+                        <td className="py-1.5 px-2">
+                          <span
+                            className={`type-badge inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 ${explorerValueToneClass(r.marketContext === 'historical' ? null : r.ev)}`}
+                            title={
+                              r.marketContext === 'historical'
+                                ? 'Historical closing line — estimated EV is not computed'
+                                : r.ev != null && Number.isFinite(r.ev)
+                                  ? `Estimated EV (market-anchored): ${(r.ev * 100).toFixed(1)}%`
+                                  : 'No estimated EV available'
+                            }
+                          >
+                            {explorerCardValueLabel(r.ev, r.marketContext)}
+                          </span>
                         </td>
                         <td className="py-1.5 px-2 text-right font-mono">
                           {formatPct(r.modelProbability)}
                         </td>
-                        <td className="py-1.5 px-2 text-right font-mono text-[#20B95A]">
+                        <td className={`py-1.5 px-2 text-right font-mono ${explorerEvTextClass(r.ev)}`}>
                           {formatPct(r.ev)}
                         </td>
                         <td className="py-1.5 px-2 text-right font-mono text-[#063f46]">
