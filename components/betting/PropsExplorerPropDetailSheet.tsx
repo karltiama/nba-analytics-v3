@@ -6,10 +6,17 @@ import { X } from 'lucide-react';
 import { formatProjectionGap, projectionGap } from '@/lib/betting/market-probability';
 import { explorerBookDisplayName, explorerPropContextLabel } from '@/lib/betting/props-explorer-filters';
 import {
+  EXPERIMENTAL_MODEL_NOTE,
   explorerCardPlayerName,
+  explorerEvTextClass,
+  bestPriceLabel,
+  explorerSampleLabel,
+  formatVsAverage,
+  type ExplorerBestPrice,
   explorerTableValueCopy,
   explorerValueToneClass,
   formatExplorerOdds,
+  formatFairProbability,
 } from '@/lib/betting/props-explorer-row-display';
 import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
 
@@ -23,6 +30,9 @@ export type PropsExplorerDetailRow = {
   lineValue: number | null;
   oddsAmerican: number | null;
   impliedProbability: number | null;
+  fairProbability?: number | null;
+  bestPrice?: ExplorerBestPrice | null;
+  sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
   ev: number | null;
@@ -36,13 +46,6 @@ export type PropsExplorerDetailRow = {
 function formatPct(x: number | null | undefined): string {
   if (x == null || !Number.isFinite(x)) return '—';
   return `${(x * 100).toFixed(1)}%`;
-}
-
-function formatConfidence(confidence: PropsExplorerDetailRow['confidenceTier']): string {
-  if (confidence === 'high') return 'High';
-  if (confidence === 'medium') return 'Medium';
-  if (confidence === 'low') return 'Low';
-  return '—';
 }
 
 function formatClosingTime(iso: string): string {
@@ -138,17 +141,13 @@ export function PropsExplorerPropDetailSheet({
                 <Fact label="Line" value={row.lineValue != null ? String(row.lineValue) : '—'} />
                 <Fact label="Odds" value={formatExplorerOdds(row.oddsAmerican)} emphasize />
                 <Fact label="Sportsbook" value={explorerBookDisplayName(row.sportsbook)} />
+                <Fact label="Best price" value={bestPriceLabel(row.bestPrice, explorerBookDisplayName)} />
+                <Fact label="vs average book" value={formatVsAverage(row.bestPrice?.vsAverage)} />
               </dl>
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <p className="type-metadata">Value</p>
-                <span
-                  className={`type-badge inline-flex items-center rounded-full border px-2 py-0.5 ${explorerValueToneClass(historical ? null : row.ev)}`}
-                >
-                  {explorerTableValueCopy(row.ev, row.marketContext)}
-                </span>
-              </div>
               <dl className="mt-1 divide-y divide-[#DCE9EA] border-b border-[#DCE9EA]">
-                <Fact label="Confidence" value={formatConfidence(row.confidenceTier)} />
+                <Fact label="Fair probability" value={formatFairProbability(row.fairProbability)} />
+                <Fact label="With bookmaker margin" value={formatPct(row.impliedProbability)} />
+                <Fact label="Sample" value={explorerSampleLabel(row.sampleGamesUsed)} />
                 <Fact
                   label={
                     row.lineLabel === PREGAME_LINE_LABEL || row.lineLabel === LATEST_OBSERVED_LINE_LABEL
@@ -161,18 +160,24 @@ export function PropsExplorerPropDetailSheet({
                 />
               </dl>
               {showAdvanced ? (
+                <>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <p className="type-metadata">Model value</p>
+                  <span
+                    className={`type-badge inline-flex items-center rounded-full border px-2 py-0.5 ${explorerValueToneClass(historical ? null : row.ev)}`}
+                  >
+                    {explorerTableValueCopy(row.ev, row.marketContext)}
+                  </span>
+                </div>
+                <p className="type-metadata mt-1 text-[#8a4b08]">{EXPERIMENTAL_MODEL_NOTE}</p>
                 <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
-                  <div>
-                    <dt className="type-metadata">Market P</dt>
-                    <dd className="type-table-data tabular-nums text-[#063f46]">{formatPct(row.impliedProbability)}</dd>
-                  </div>
                   <div>
                     <dt className="type-metadata">Est. P</dt>
                     <dd className="type-table-data tabular-nums text-[#063f46]">{formatPct(row.modelProbability)}</dd>
                   </div>
                   <div>
                     <dt className="type-metadata">Est. EV</dt>
-                    <dd className="type-table-data tabular-nums text-[#063f46]">{formatPct(row.ev)}</dd>
+                    <dd className={`type-table-data tabular-nums ${explorerEvTextClass(row.ev)}`}>{formatPct(row.ev)}</dd>
                   </div>
                   <div>
                     <dt className="type-metadata">Proj</dt>
@@ -187,6 +192,7 @@ export function PropsExplorerPropDetailSheet({
                     </dd>
                   </div>
                 </dl>
+                </>
               ) : null}
               <div className="mt-4 flex flex-col gap-2">
                 <button

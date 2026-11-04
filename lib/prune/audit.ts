@@ -27,6 +27,9 @@ export type PruneAuditEvent = {
   };
   materialized: number;
   pendingClosingLines: number | null;
+  /** null = research.prop_first_seen_lines not installed. */
+  materializedFirstSeen: number | null;
+  pendingFirstSeenLines: number | null;
   archiveVerification: {
     ok: boolean | null;
     reason: string | null;

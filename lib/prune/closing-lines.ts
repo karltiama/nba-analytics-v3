@@ -5,7 +5,7 @@ import {
   isPreTipObservation,
   type PropObservationClockLabel,
 } from '@/lib/betting/prop-observation-clock';
-import { columnExists, type SqlQueryable } from '@/lib/db/schema-capability';
+import { columnExists, relationExists, type SqlQueryable } from '@/lib/db/schema-capability';
 
 export const RETENTION_DAYS = 3;
 export const DELETE_BATCH = 50_000;
@@ -112,6 +112,68 @@ export const MATERIALIZE_CLOSING_LINES_OBSERVED_SQL = `
     ON CONFLICT (game_id, player_id, sportsbook, prop_type, side) DO NOTHING
 `;
 
+export const FIRST_SEEN_LINES_TABLE = 'research.prop_first_seen_lines';
+
+/**
+ * Earliest valid pre-tip observation per market key, the mirror image of
+ * MATERIALIZE_CLOSING_LINES_OBSERVED_SQL (same decision clock, ascending instead of descending).
+ * Requires MIGRATION_prop_first_seen_lines.sql and the observation-clock migration.
+ */
+export const MATERIALIZE_FIRST_SEEN_LINES_SQL = `
+    INSERT INTO research.prop_first_seen_lines
+      (game_id, player_id, player_name, team_id, sportsbook, prop_type,
+       market_type, side, line_value, odds_american, odds_decimal,
+       implied_probability, first_seen_at, first_seen_clock, game_start_time)
+    SELECT DISTINCT ON (r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side)
+      g.game_id,
+      r.player_id::text,
+      r.player_name,
+      r.team_id,
+      r.sportsbook,
+      r.prop_type,
+      r.market_type,
+      r.side,
+      r.line_value,
+      r.odds_american,
+      r.odds_decimal,
+      r.implied_probability,
+      d.decision_at,
+      d.decision_clock,
+      g.start_time
+    FROM raw.player_prop_snapshots_v2 r
+    INNER JOIN analytics.games g ON g.game_id = r.game_id::text
+    CROSS JOIN LATERAL (
+      SELECT
+        CASE
+          WHEN r.observation_clock = 'RESPONSE_RECEIVED' THEN r.observed_at
+          WHEN r.observation_clock IS NULL THEN r.fetched_at
+        END AS decision_at,
+        CASE
+          WHEN r.observation_clock = 'RESPONSE_RECEIVED' THEN 'RESPONSE_RECEIVED'
+          ELSE 'LEGACY_CONTROLLER_TIME'
+        END AS decision_clock
+    ) d
+    WHERE g.status = 'Final'
+      AND g.start_time IS NOT NULL
+      AND d.decision_at IS NOT NULL
+      AND d.decision_at < g.start_time
+      AND lower(coalesce(r.market_type, '')) = 'over_under'
+      AND lower(r.side) IN ('over', 'under')
+      AND NOT EXISTS (
+        SELECT 1 FROM research.prop_first_seen_lines m
+        WHERE m.game_id = g.game_id
+          AND m.player_id = r.player_id::text
+          AND m.sportsbook = r.sportsbook
+          AND m.prop_type = r.prop_type
+          AND m.side = r.side
+      )
+    ORDER BY
+      r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side,
+      d.decision_at ASC,
+      r.pull_run_id ASC NULLS LAST
+    ON CONFLICT (game_id, player_id, sportsbook, prop_type, side) DO NOTHING
+`;
+
 export type PreTipObservation = {
   gameId: string;
   playerId: string;
@@ -184,6 +246,55 @@ export async function materializeClosingLines(pool: Pool): Promise<number> {
     mode === 'observed' ? MATERIALIZE_CLOSING_LINES_OBSERVED_SQL : MATERIALIZE_CLOSING_LINES_SQL
   );
   return result.rowCount ?? 0;
+}
+
+/**
+ * Returns null (not 0) when the first-seen table or the observation-clock columns are missing,
+ * so callers can tell "not installed" from "nothing new".
+ */
+export async function materializeFirstSeenLines(pool: Pool): Promise<number | null> {
+  const client = pool as unknown as SqlQueryable;
+  if (!(await relationExists(client, FIRST_SEEN_LINES_TABLE))) return null;
+  if ((await resolveClosingLinesSqlMode(client)) !== 'observed') return null;
+  const result = await pool.query(MATERIALIZE_FIRST_SEEN_LINES_SQL);
+  return result.rowCount ?? 0;
+}
+
+/**
+ * Pending first-seen keys that would be lost if prune-eligible raw rows were deleted.
+ * Returns null when the table is not installed (no first-seen guard applies).
+ */
+export async function countPendingFirstSeenLinesForPruneEligible(
+  pool: Pool,
+  retentionDays: number = RETENTION_DAYS
+): Promise<number | null> {
+  if (!(await relationExists(pool as unknown as SqlQueryable, FIRST_SEEN_LINES_TABLE))) return null;
+  const result = await pool.query<{ count: string }>(
+    `
+    SELECT COUNT(*)::text AS count
+    FROM (
+      SELECT DISTINCT r.game_id, r.player_id, r.sportsbook, r.prop_type, r.side
+      FROM raw.player_prop_snapshots_v2 r
+      INNER JOIN analytics.games g ON g.game_id = r.game_id::text
+      WHERE g.status = 'Final'
+        AND g.start_time IS NOT NULL
+        AND r.fetched_at < g.start_time
+        AND r.fetched_at < now() - ($1::text || ' days')::interval
+        AND lower(coalesce(r.market_type, '')) = 'over_under'
+        AND lower(r.side) IN ('over', 'under')
+        AND NOT EXISTS (
+          SELECT 1 FROM research.prop_first_seen_lines m
+          WHERE m.game_id = g.game_id
+            AND m.player_id = r.player_id::text
+            AND m.sportsbook = r.sportsbook
+            AND m.prop_type = r.prop_type
+            AND m.side = r.side
+        )
+    ) pending_first_seen
+    `,
+    [String(retentionDays)]
+  );
+  return Number(result.rows[0]?.count ?? 0);
 }
 
 /**

@@ -34,14 +34,12 @@ export function PropsExplorerTableSkeleton() {
               <th className="py-2 px-2 font-medium text-right">Line</th>
               <th className="py-2 px-2 font-medium">Book</th>
               <th className="py-2 px-2 font-medium text-right">Odds</th>
-              <th className="py-2 px-2 font-medium text-right">Market P</th>
-              <th className="py-2 px-2 font-medium text-right">Conf</th>
-              <th className="py-2 px-2 font-medium text-right">Est. P</th>
-              <th className="py-2 px-2 font-medium text-right">Est. EV</th>
-              <th className="py-2 px-2 font-medium text-right">Proj</th>
-              <th className="py-2 px-2 font-medium">Updated</th>
-              <th className="py-2 px-2 font-medium w-[72px]">Save</th>
-              <th className="py-2 px-2 font-medium w-[72px]">Paper</th>
+              <th className="py-2 px-2 font-medium">Best price</th>
+              <th className="py-2 px-2 font-medium text-right">vs Avg</th>
+              <th className="py-2 px-2 font-medium text-right">Fair P</th>
+              <th className="py-2 px-2 font-medium text-right">Sample</th>
+              <th className="py-2 px-2 font-medium">Observed</th>
+              <th className="py-2 px-2 font-medium text-right w-[168px]">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -68,17 +66,14 @@ export function PropsExplorerTableSkeleton() {
                 <td className="py-2 px-2 text-right">
                   <Skeleton className="h-3.5 w-9 ml-auto" />
                 </td>
-                <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-10 ml-auto" />
-                </td>
-                <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-8 ml-auto" />
+                <td className="py-2 px-2">
+                  <Skeleton className="h-3.5 w-16" />
                 </td>
                 <td className="py-2 px-2 text-right">
                   <Skeleton className="h-3.5 w-10 ml-auto" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-10 ml-auto bg-[#55ddb1]/25" />
+                  <Skeleton className="h-3.5 w-10 ml-auto" />
                 </td>
                 <td className="py-2 px-2 text-right">
                   <Skeleton className="h-3.5 w-8 ml-auto" />
@@ -87,10 +82,7 @@ export function PropsExplorerTableSkeleton() {
                   <Skeleton className="h-3 w-24" />
                 </td>
                 <td className="py-2 px-1">
-                  <Skeleton className="h-6 w-11 rounded-md mx-auto" />
-                </td>
-                <td className="py-2 px-1">
-                  <Skeleton className="h-6 w-10 rounded-md mx-auto" />
+                  <Skeleton className="h-6 w-24 rounded-md ml-auto" />
                 </td>
               </tr>
             ))}

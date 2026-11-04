@@ -126,6 +126,42 @@ Player props now run as **controller + per-game workers**:
    - `nba-nightly-bdl-updater-errors` / `nba-odds-pre-game-snapshot-errors` / `nba-boxscore-scraper-errors` (`AWS/Lambda` Errors)
 5. Keep old schedule disabled after fanout has stable coverage for at least one slate.
 
+### Closing pull (CLV)
+
+`aws_scheduler_schedule.player_props_closing` invokes the controller with `{ "universe": "closing" }` every 5 minutes
+(08:00–23:55 America/New_York). It targets games tipping in [now+10m, now+15m), so each game is collected once at T−10.
+It shares `local.player_props_schedule_state`: with `player_props_execution_enabled = true` it is created **ENABLED**.
+
+Order:
+
+1. Apply `db/schemas/MIGRATION_player_prop_closing_universe.sql` first. Without it the `raw.player_prop_game_runs`
+   universe check rejects `closing` and the closing wave fails to claim.
+2. Apply `db/schemas/MIGRATION_prop_first_seen_lines.sql` (first-seen lines next to `research.prop_decision_lines`).
+   The prune-props cron materializes it under the same gate as closing lines and refuses raw prune while keys are pending.
+3. Build from the main checkout (a worktree with a linked `node_modules` changes path comments in the bundle):
+   `npm run build:ingestion-lambdas`. Only the controller bundle should differ from the deployed one.
+4. Targeted plan, then apply after review:
+   `-target=aws_lambda_function.player_props_controller -target=aws_lambda_function.player_props_worker -target=aws_scheduler_schedule.player_props_closing`
+
+Budget: 15 games × 6 collections × 3 pages = 270 planned requests against the 300/day attempt cap.
+
+## Context prospective shadow (minutes and points collector)
+
+`infra/context-prospective-shadow.tf`. Two separate approvals, per
+`lib/context-projection/artifacts/context-projection-prospective-activation-runbook.md`.
+
+1. **Build:** `npm run build:context-prospective-shadow-lambda`. The package carries `dist/index.js` and the two frozen
+   model artifacts under `lib/context-projection/artifacts/` (the collector reads them from the package root).
+2. **Created, frozen:** `context_prospective_create = true`, `context_prospective_enable_schedule = true`,
+   `context_prospective_execution_enabled = false`, and `context_prospective_lambda_env` with `SUPABASE_DB_URL` and
+   writes `"0"`. The EventBridge rule is created DISABLED. Invoke `{ "action": "status" }` once to check it.
+3. **Activation:** `context_prospective_execution_enabled = true` and, in `context_prospective_lambda_env`,
+   `CONTEXT_MIN_SHADOW_WRITES = "1"` (and `CONTEXT_PTS_SHADOW_WRITES = "1"` for the points arm), `DATA_MODE = "live_api"`,
+   `OFFSEASON_MODE = "0"`, `CRON_DRY_RUN = "0"`, `CONTEXT_PROSPECTIVE_WINDOW_OPENED_AT = "2026-09-18T16:05:48Z"`.
+   The rule stays DISABLED unless `live_ingestion_enabled` is also true.
+
+Do not change model coefficients, window IDs or the snapshot policy without versioning the experiment.
+
 ## Boxscore scraper
 
 1. **Build before apply:** `cd lambda/boxscore-scraper && npm install && npm run build`

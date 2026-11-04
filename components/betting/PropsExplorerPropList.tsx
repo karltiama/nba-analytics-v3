@@ -3,10 +3,12 @@
 import { Check, Plus } from 'lucide-react';
 import { explorerBookDisplayName, explorerPropContextLabel } from '@/lib/betting/props-explorer-filters';
 import {
+  BEST_PRICE_TITLE,
+  FAIR_PROBABILITY_TITLE,
+  type ExplorerBestPrice,
   explorerCardPlayerName,
-  explorerCardValueLabel,
-  explorerValueToneClass,
   formatExplorerOdds,
+  formatFairProbability,
 } from '@/lib/betting/props-explorer-row-display';
 
 export type PropsExplorerScanRow = {
@@ -18,6 +20,8 @@ export type PropsExplorerScanRow = {
   lineValue: number | null;
   oddsAmerican: number | null;
   ev: number | null;
+  fairProbability?: number | null;
+  bestPrice?: ExplorerBestPrice | null;
   snapshotAt?: string | null;
   marketContext?: 'live' | 'historical';
 };
@@ -54,7 +58,6 @@ export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
         const propLabel = explorerPropContextLabel(row.propType, row.side, row.lineValue);
         const odds = formatExplorerOdds(row.oddsAmerican);
         const onSlip = isOnParlay(row);
-        const historical = row.marketContext === 'historical';
         const observed = formatObserved(row.snapshotAt);
         return (
           <div
@@ -76,12 +79,24 @@ export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
                 <span className="type-metadata block truncate">{explorerBookDisplayName(row.sportsbook)}</span>
                 {observed ? <span className="type-metadata block truncate">{observed}</span> : null}
               </span>
-              <span
-                className={`type-badge inline-flex w-fit items-center whitespace-nowrap rounded-full border px-1.5 py-px ${explorerValueToneClass(historical ? null : row.ev)}`}
-              >
-                {explorerCardValueLabel(row.ev, row.marketContext)}
+              <span className="whitespace-nowrap text-right" title={FAIR_PROBABILITY_TITLE}>
+                <span className="type-metadata block">Fair</span>
+                <span className="type-table-data block tabular-nums text-[#063f46]">
+                  {formatFairProbability(row.fairProbability)}
+                </span>
               </span>
-              <span className="type-table-data text-right tabular-nums text-[#075B5C]">{odds}</span>
+              <span className="whitespace-nowrap text-right" title={BEST_PRICE_TITLE}>
+                <span className="type-table-data block tabular-nums text-[#075B5C]">{odds}</span>
+                {row.bestPrice && row.bestPrice.bookCount > 1 ? (
+                  row.bestPrice.isBest ? (
+                    <span className="type-metadata block font-medium text-[#178A45]">Best</span>
+                  ) : (
+                    <span className="type-metadata block tabular-nums">
+                      Best {formatExplorerOdds(row.bestPrice.oddsAmerican)}
+                    </span>
+                  )
+                ) : null}
+              </span>
             </button>
             <button
               type="button"

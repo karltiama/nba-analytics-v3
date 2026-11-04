@@ -29,6 +29,16 @@ shadow_create = false
 shadow_enable_schedule = false
 context_prospective_create = false
 context_prospective_enable_schedule = false
+# Collector Lambda env (sensitive). Frozen stage: writes "0". Activation values: see infra/README.md.
+# context_prospective_lambda_env = {
+#   SUPABASE_DB_URL                     = "postgresql://..."
+#   DATA_MODE                           = "live_api"
+#   OFFSEASON_MODE                      = "0"
+#   CRON_DRY_RUN                        = "0"
+#   CONTEXT_PTS_SHADOW_WRITES           = "0"
+#   CONTEXT_MIN_SHADOW_WRITES           = "0"
+#   CONTEXT_PROSPECTIVE_WINDOW_OPENED_AT = "2026-09-18T16:05:48Z"
+# }
 # Display-only scoreboard (infra/scoreboard.tf). Created-but-frozen first; activation is a separate approval.
 scoreboard_create = false
 scoreboard_enable_schedule = false

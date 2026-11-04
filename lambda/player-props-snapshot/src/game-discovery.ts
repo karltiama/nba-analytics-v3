@@ -2,17 +2,25 @@ import type { Pool } from 'pg';
 import type { GameTarget } from './types';
 import { etDateOfInstant, SERVING_SEASON_PHASES, servingDateDecision } from './season-eligibility';
 
-export type PropUniverse = 'broad' | 'near_tip';
+export type PropUniverse = 'broad' | 'near_tip' | 'closing';
 
 export const NEAR_TIP_START_MINUTES = 60;
 export const NEAR_TIP_END_MINUTES = 75;
+
+/**
+ * Closing pull: games tipping in [now+10m, now+15m). Polled every 5 minutes, so a game
+ * scheduled on the hour or half hour is collected once, at T-10. Ten minutes leaves room for
+ * the rate limiter and SQS before the write-time pregame gate (start_time > clock_timestamp()).
+ */
+export const CLOSING_START_MINUTES = 10;
+export const CLOSING_END_MINUTES = 15;
 
 export function getTodayET(now: Date = new Date()): string {
   return now.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
 export function parsePropUniverse(raw: unknown): PropUniverse | null {
-  if (raw === 'broad' || raw === 'near_tip') return raw;
+  if (raw === 'broad' || raw === 'near_tip' || raw === 'closing') return raw;
   return null;
 }
 
@@ -42,6 +50,13 @@ export function isNearTipEligible(start: Date, now: Date, status: string | null)
   return deltaMs >= NEAR_TIP_START_MINUTES * 60_000 && deltaMs < NEAR_TIP_END_MINUTES * 60_000;
 }
 
+/** Games whose tip is in [now+10m, now+15m). T-10 is included; T-15 and T-9 are not. */
+export function isClosingEligible(start: Date, now: Date, status: string | null): boolean {
+  if (status === 'Final') return false;
+  const deltaMs = start.getTime() - now.getTime();
+  return deltaMs >= CLOSING_START_MINUTES * 60_000 && deltaMs < CLOSING_END_MINUTES * 60_000;
+}
+
 /** season_phase is read via to_jsonb so the query works before that column exists (null = unknown). */
 const TARGET_COLUMNS = `g.game_id, g.season::text AS season, g.start_time, to_jsonb(g)->>'season_phase' AS season_phase`;
 
@@ -59,6 +74,14 @@ SELECT ${TARGET_COLUMNS}
 FROM analytics.games g
 WHERE g.start_time >= $1::timestamptz + interval '60 minutes'
   AND g.start_time <  $1::timestamptz + interval '75 minutes'
+  AND g.status IS DISTINCT FROM 'Final'
+`;
+
+export const CLOSING_TARGET_SQL = `
+SELECT ${TARGET_COLUMNS}
+FROM analytics.games g
+WHERE g.start_time >= $1::timestamptz + interval '10 minutes'
+  AND g.start_time <  $1::timestamptz + interval '15 minutes'
   AND g.status IS DISTINCT FROM 'Final'
 `;
 
@@ -107,6 +130,7 @@ export async function getGameTargets(args: {
     const result = await args.pool.query(BROAD_TARGET_SQL, [args.date, now.toISOString()]);
     return toTargets(result.rows);
   }
-  const result = await args.pool.query(NEAR_TIP_TARGET_SQL, [now.toISOString()]);
+  const sql = args.universe === 'closing' ? CLOSING_TARGET_SQL : NEAR_TIP_TARGET_SQL;
+  const result = await args.pool.query(sql, [now.toISOString()]);
   return toTargets(result.rows);
 }

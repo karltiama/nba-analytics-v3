@@ -20,6 +20,9 @@ export const PROPS_BROAD_WAVES_PER_DAY = 3;
  */
 export const PROPS_NEAR_TIP_COLLECTIONS_PER_GAME = 2;
 
+/** Closing polls every 5 minutes across a 5-minute window: one collection per game, at T-10. */
+export const PROPS_CLOSING_COLLECTIONS_PER_GAME = 1;
+
 /** Redrive maxReceiveCount. Those receives share one pull's attempt counter. */
 export const PROPS_SQS_MAX_RECEIVES = 4;
 
@@ -37,11 +40,12 @@ export type PropsRequestBudget = {
 
 /**
  * Expected requests use the page allowance. Hard requests use the per-pull attempt
- * cap once per broad wave and near-tip collection. SQS receives are inside that cap.
+ * cap once per broad wave, near-tip and closing collection. SQS receives are inside that cap.
  */
 export function propsRequestBudget(games: number): PropsRequestBudget {
   const slate = Number.isInteger(games) && games > 0 ? games : 0;
-  const collectionsPerGame = PROPS_BROAD_WAVES_PER_DAY + PROPS_NEAR_TIP_COLLECTIONS_PER_GAME;
+  const collectionsPerGame =
+    PROPS_BROAD_WAVES_PER_DAY + PROPS_NEAR_TIP_COLLECTIONS_PER_GAME + PROPS_CLOSING_COLLECTIONS_PER_GAME;
   return {
     games: slate,
     collectionsPerGame,

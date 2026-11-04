@@ -36,11 +36,16 @@ function successManifest(): EntityManifest {
 
 type QueryHandler = (sql: string, params?: unknown[]) => Promise<{ rows: unknown[]; rowCount?: number }>;
 
-/** Capability probes see the pre-migration schema (no observation-clock columns). */
+/**
+ * Capability probes see the pre-migration schema (no observation-clock columns,
+ * no research.prop_first_seen_lines), so first-seen materialize and guard are skipped.
+ */
 function makePool(handler: QueryHandler): Pool {
   return {
     query: vi.fn(async (sql: string, params?: unknown[]) =>
-      sql.includes('information_schema.columns') ? { rows: [] } : handler(sql, params)
+      sql.includes('information_schema.columns') || sql.includes('to_regclass')
+        ? { rows: sql.includes('to_regclass') ? [{ rel: null }] : [] }
+        : handler(sql, params)
     ),
   } as unknown as Pool;
 }
@@ -133,6 +138,38 @@ describe('runPrunePropsJob', () => {
     expect(String(result.body.reason)).toMatch(/pending closing-line/);
     expect(result.audit.rowsDeleted.rawV2).toBe(0);
     expect(result.audit.rowsDeleted.analyticsCurrent).toBe(50);
+  });
+
+  it('blocks raw prune when first-seen lines are installed and pending', async () => {
+    const handler = defaultSqlHandler({
+      rawTotal: 1000,
+      rawEligible: 100,
+      currentTotal: 500,
+      currentEligible: 50,
+      pending: 0,
+      seasons: [2025],
+    });
+    const pool = {
+      query: vi.fn(async (sql: string, params?: unknown[]) => {
+        if (sql.includes('to_regclass')) return { rows: [{ rel: 'research.prop_first_seen_lines' }] };
+        if (sql.includes('information_schema.columns')) return { rows: [] };
+        if (sql.includes('pending_first_seen')) return { rows: [{ count: '9' }] };
+        return handler(sql, params);
+      }),
+    } as unknown as Pool;
+    const result = await runPrunePropsJob({
+      pool,
+      authenticated: true,
+      env: liveEnv(),
+      s3: {
+        getJson: async <T>() => successManifest() as T,
+        objectExists: async () => true,
+      },
+    });
+    expect(result.body.rawPruneBlocked).toBe(true);
+    expect(String(result.body.reason)).toMatch(/pending first-seen-line keys remain \(9\)/);
+    expect(result.audit.pendingFirstSeenLines).toBe(9);
+    expect(result.audit.rowsDeleted.rawV2).toBe(0);
   });
 
   it('blocks raw prune when archive missing but may still prune current', async () => {

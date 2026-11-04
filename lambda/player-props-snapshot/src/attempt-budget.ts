@@ -12,9 +12,9 @@ import type { Pool, PoolClient } from 'pg';
 export const PLAYER_PROPS_MAX_HTTP_ATTEMPTS = 10;
 
 /**
- * Eastern-day cap for every props HTTP attempt: all games, all four schedules,
- * SQS redelivery, and concurrent workers. 300 is the 225-request planning
- * estimate plus 75 requests of headroom. The 750 product of the per-pull cap
+ * Eastern-day cap for every props HTTP attempt: all games, all five schedules,
+ * SQS redelivery, and concurrent workers. 300 is the 270-request planning
+ * estimate (15 games x 6 collections x 3 pages) plus 30 requests of headroom. The 750 product of the per-pull cap
  * is not this budget. Tonight's 11-game wave used 11 requests.
  */
 export const PROPS_DAILY_HTTP_ATTEMPT_CAP = 300;

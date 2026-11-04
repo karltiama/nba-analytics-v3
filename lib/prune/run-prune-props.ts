@@ -15,6 +15,7 @@ import {
   countCurrentEligible,
   countCurrentTotal,
   countPendingClosingLinesForPruneEligible,
+  countPendingFirstSeenLinesForPruneEligible,
   countRawBlockedByMissingArchive,
   countRawDeletable,
   countRawEligible,
@@ -24,6 +25,7 @@ import {
   listSeasonsWithEligibleLegacyRaw,
   listSeasonsWithEligibleRaw,
   materializeClosingLines,
+  materializeFirstSeenLines,
   type RawPruneArchiveOpts,
 } from '@/lib/prune/closing-lines';
 import { parseArchiveRequiredAfter } from '@/lib/archive/player-prop-snapshot-archive';
@@ -71,6 +73,8 @@ function emptyAudit(
     rowsAfter: { rawV2: null, analyticsCurrent: null },
     materialized: 0,
     pendingClosingLines: null,
+    materializedFirstSeen: null,
+    pendingFirstSeenLines: null,
     archiveVerification: { ok: null, reason: null, seasons: [] },
     rawArchivePrune: {
       required: false,
@@ -132,6 +136,7 @@ export async function runPrunePropsJob(
       try {
         const materialized = await materializeClosingLines(input.pool);
         audit.materialized = materialized;
+        audit.materializedFirstSeen = await materializeFirstSeenLines(input.pool);
         audit.outcome = 'skipped';
         audit.reason = `${pruneGate.reason}; materialize-only completed`;
         logPruneAudit(audit);
@@ -191,12 +196,18 @@ export async function runPrunePropsJob(
 
     const materialized = await materializeClosingLines(input.pool);
     audit.materialized = materialized;
+    audit.materializedFirstSeen = await materializeFirstSeenLines(input.pool);
 
     const pendingClosingLines = await countPendingClosingLinesForPruneEligible(
       input.pool,
       RETENTION_DAYS
     );
     audit.pendingClosingLines = pendingClosingLines;
+    const pendingFirstSeenLines = await countPendingFirstSeenLinesForPruneEligible(
+      input.pool,
+      RETENTION_DAYS
+    );
+    audit.pendingFirstSeenLines = pendingFirstSeenLines;
 
     const rawEligible = await countRawEligible(input.pool, RETENTION_DAYS);
     const currentEligible = await countCurrentEligible(input.pool, RETENTION_DAYS);
@@ -333,6 +344,9 @@ export async function runPrunePropsJob(
       rawBlockReasons.push(
         `pending closing-line keys remain (${pendingClosingLines})`
       );
+    }
+    if (pendingFirstSeenLines != null && pendingFirstSeenLines > 0) {
+      rawBlockReasons.push(`pending first-seen-line keys remain (${pendingFirstSeenLines})`);
     }
     if (!audit.maxDelete.raw.allowed) {
       rawBlockReasons.push(audit.maxDelete.raw.reason ?? 'raw max-delete blocked');
