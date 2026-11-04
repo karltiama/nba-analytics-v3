@@ -1,4 +1,5 @@
 import type { SeasonComparisonRow } from '@/lib/pregame-matchup/overview';
+import { MatchupSection } from '@/components/matchup/MatchupSection';
 
 export type ComparisonGridProps = {
   awayAbbr: string;
@@ -15,6 +16,8 @@ export type ComparisonGridProps = {
   rows: SeasonComparisonRow[];
   historyNote: string | null;
   currentNote?: string | null;
+  /** Render as a divided block inside a shared surface instead of a card. */
+  flow?: boolean;
 };
 
 /** Primary value, with the 2025–26 value underneath when the primary is this season. */
@@ -45,16 +48,17 @@ export function ComparisonGrid({
   rows,
   historyNote,
   currentNote = null,
+  flow = false,
 }: ComparisonGridProps) {
   const heading = seasonLabel ? 'Team Comparison' : '2025–26 Team Identity';
   return (
-    <section id="section-comparison" className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} aria-labelledby="team-identity" data-current-season={seasonLabel ? 'shown' : 'hidden'}>
-      <div className="border-b border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
-        <h2 id="team-identity" className="type-section-heading text-[#063f46]">
-          {heading}
-        </h2>
-      </div>
-      <div className="p-3">
+    <MatchupSection
+      id="section-comparison"
+      headingId="team-identity"
+      title={heading}
+      flow={flow}
+      data-current-season={seasonLabel ? 'shown' : 'hidden'}
+    >
         {available ? (
           <>
             {currentLabel ? <p className="type-metadata">{currentLabel}</p> : null}
@@ -82,7 +86,6 @@ export function ComparisonGrid({
         ) : (
           <p className="type-secondary">{historyNote}</p>
         )}
-      </div>
-    </section>
+    </MatchupSection>
   );
 }

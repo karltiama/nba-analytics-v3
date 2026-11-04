@@ -1,12 +1,54 @@
 import type { HistoricalContributor } from '@/lib/pregame-matchup/aggregate';
 import type { MatchupContributors, ObservedRosterPlayer } from '@/lib/pregame-matchup/membership';
+import { MatchupSection } from '@/components/matchup/MatchupSection';
 
 const OVERVIEW_COUNT = 3;
 
-function HistoricalLine({ player }: { player: HistoricalContributor }) {
+/** Tonight's listed injuries for one team, by injury-report display name (usually the last name). */
+export type SideInjuries = Array<{ name: string; status: string }>;
+
+const STATUS_TEXT: Record<string, string> = { Q: 'Questionable' };
+
+/**
+ * Status for each full name. A report name tags a player only when exactly one
+ * listed player on that side ends with it, so a shared surname tags nobody.
+ */
+function injuryStatuses(names: string[], injuries: SideInjuries | undefined): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const injury of injuries ?? []) {
+    const key = injury.name.trim().toLowerCase();
+    if (!key) continue;
+    const matches = names.filter((name) => {
+      const full = name.trim().toLowerCase();
+      return full === key || full.endsWith(` ${key}`);
+    });
+    if (matches.length === 1) out.set(matches[0]!, STATUS_TEXT[injury.status] ?? injury.status);
+  }
+  return out;
+}
+
+function InjuryTag({ status }: { status: string | undefined }) {
+  if (!status) return null;
+  return (
+    <span className="type-badge ml-2 shrink-0 rounded-full border border-[#F2C9C4] bg-[#FDF3F2] px-2 py-0.5 text-[#8A2A1F]" data-injury-tag>
+      {status}
+    </span>
+  );
+}
+
+function PlayerName({ name, status }: { name: string; status?: string }) {
+  return (
+    <div className="flex min-w-0 items-center">
+      <span className="type-card-data truncate text-[#063f46]">{name}</span>
+      <InjuryTag status={status} />
+    </div>
+  );
+}
+
+function HistoricalLine({ player, status }: { player: HistoricalContributor; status?: string }) {
   return (
     <li className="min-w-0 border-b border-[#DCE9EA] py-2 last:border-0">
-      <div className="type-card-data truncate text-[#063f46]">{player.name}</div>
+      <PlayerName name={player.name} status={status} />
       <p className="type-secondary tabular-nums">
         2025–26 · {player.minutesPerGame.toFixed(1)} mpg · {player.pointsPerGame.toFixed(1)} ppg · {player.fgaPerGame.toFixed(1)} fga
         {player.usage != null ? ` · ${(player.usage * 100).toFixed(1)}% usg` : ''} · {player.games} gp
@@ -19,11 +61,14 @@ function HistoricalSide({
   abbr,
   players,
   emptyLabel,
+  injuries,
 }: {
   abbr: string;
   players: HistoricalContributor[];
   emptyLabel: string;
+  injuries?: SideInjuries;
 }) {
+  const statuses = injuryStatuses(players.map((player) => player.name), injuries);
   const lead = players.slice(0, OVERVIEW_COUNT);
   const rest = players.slice(OVERVIEW_COUNT);
   return (
@@ -34,7 +79,7 @@ function HistoricalSide({
       ) : (
         <>
           <ul>
-            {lead.map((player) => <HistoricalLine key={player.playerId} player={player} />)}
+            {lead.map((player) => <HistoricalLine key={player.playerId} player={player} status={statuses.get(player.name)} />)}
           </ul>
           {rest.length > 0 ? (
             <details className="mt-2">
@@ -42,7 +87,7 @@ function HistoricalSide({
                 {rest.length} more historical contributor{rest.length === 1 ? '' : 's'}
               </summary>
               <ul className="mt-1">
-                {rest.map((player) => <HistoricalLine key={player.playerId} player={player} />)}
+                {rest.map((player) => <HistoricalLine key={player.playerId} player={player} status={statuses.get(player.name)} />)}
               </ul>
             </details>
           ) : null}
@@ -52,10 +97,10 @@ function HistoricalSide({
   );
 }
 
-function CurrentLine({ abbr, player }: { abbr: string; player: ObservedRosterPlayer }) {
+function CurrentLine({ abbr, player, status }: { abbr: string; player: ObservedRosterPlayer; status?: string }) {
   return (
     <li className="min-w-0 border-b border-[#DCE9EA] py-2 last:border-0">
-      <div className="type-card-data truncate text-[#063f46]">{player.name}</div>
+      <PlayerName name={player.name} status={status} />
       {player.prior ? (
         <p className="type-secondary tabular-nums">
           2025–26 with {abbr} · {player.prior.minutesPerGame.toFixed(1)} mpg · {player.prior.pointsPerGame.toFixed(1)} ppg · {player.prior.fgaPerGame.toFixed(1)} fga
@@ -72,11 +117,14 @@ function CurrentSide({
   abbr,
   players,
   unidentified,
+  injuries,
 }: {
   abbr: string;
   players: ObservedRosterPlayer[];
   unidentified: number;
+  injuries?: SideInjuries;
 }) {
+  const statuses = injuryStatuses(players.map((player) => player.name), injuries);
   return (
     <div className="min-w-0">
       <h3 className="type-secondary mb-1">{abbr}</h3>
@@ -84,7 +132,7 @@ function CurrentSide({
         <p className="type-secondary">No named players were listed for {abbr} on this observation.</p>
       ) : (
         <ul>
-          {players.map((player) => <CurrentLine key={player.playerId} abbr={abbr} player={player} />)}
+          {players.map((player) => <CurrentLine key={player.playerId} abbr={abbr} player={player} status={statuses.get(player.name)} />)}
         </ul>
       )}
       {unidentified > 0 ? (
@@ -100,27 +148,29 @@ export function PlayerContributors({
   awayAbbr,
   homeAbbr,
   contributors,
+  flow = false,
+  awayInjuries,
+  homeInjuries,
 }: {
   awayAbbr: string;
   homeAbbr: string;
   contributors: MatchupContributors;
+  flow?: boolean;
+  /** Tonight's report, used only to tag listed players. */
+  awayInjuries?: SideInjuries;
+  homeInjuries?: SideInjuries;
 }) {
   return (
-    <section id="section-contributors" className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} aria-labelledby="contributors">
-      <div className="border-b border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
-        <h2 id="contributors" className="type-section-heading text-[#063f46]">
-          Players
-        </h2>
-      </div>
-      <div className="space-y-4 p-3" data-membership={contributors.membership}>
+    <MatchupSection id="section-contributors" headingId="contributors" title="Players" flow={flow}>
+      <div className="space-y-4" data-membership={contributors.membership}>
         <div>
           <h3 className="type-secondary text-[#063f46]">Observed 2026–27 roster</h3>
           {contributors.membership === 'shown' ? (
             <>
               <p className="type-metadata mt-1">{contributors.currentLabel}</p>
               <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2" data-player-role="current">
-                <CurrentSide abbr={awayAbbr} players={contributors.awayCurrent} unidentified={contributors.awayUnidentified} />
-                <CurrentSide abbr={homeAbbr} players={contributors.homeCurrent} unidentified={contributors.homeUnidentified} />
+                <CurrentSide abbr={awayAbbr} players={contributors.awayCurrent} unidentified={contributors.awayUnidentified} injuries={awayInjuries} />
+                <CurrentSide abbr={homeAbbr} players={contributors.homeCurrent} unidentified={contributors.homeUnidentified} injuries={homeInjuries} />
               </div>
             </>
           ) : (
@@ -131,11 +181,11 @@ export function PlayerContributors({
           <h3 className="type-secondary text-[#063f46]">2025–26 minute leaders</h3>
           <p className="type-metadata mt-1">{contributors.historicalLabel}</p>
           <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <HistoricalSide abbr={awayAbbr} players={contributors.awayHistorical} emptyLabel={contributors.awayHistoricalEmpty} />
-            <HistoricalSide abbr={homeAbbr} players={contributors.homeHistorical} emptyLabel={contributors.homeHistoricalEmpty} />
+            <HistoricalSide abbr={awayAbbr} players={contributors.awayHistorical} emptyLabel={contributors.awayHistoricalEmpty} injuries={awayInjuries} />
+            <HistoricalSide abbr={homeAbbr} players={contributors.homeHistorical} emptyLabel={contributors.homeHistoricalEmpty} injuries={homeInjuries} />
           </div>
         </div>
       </div>
-    </section>
+    </MatchupSection>
   );
 }

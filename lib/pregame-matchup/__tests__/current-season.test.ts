@@ -2,6 +2,9 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { PregameMatchupView } from '@/components/scoreboard/PregameMatchupView';
+import { PlayerContributors } from '@/components/matchup/PlayerContributors';
+import type { HistoricalContributor } from '@/lib/pregame-matchup/aggregate';
+import type { MatchupContributors } from '@/lib/pregame-matchup/membership';
 import type { TeamSumRow } from '@/lib/pregame-matchup/aggregate';
 import { CURRENT_SEASON_MIN_GAMES, partialTeamProfile, teamProfile } from '@/lib/pregame-matchup/aggregate';
 import { buildPregameMatchup, seasonSpan, type MatchupGameContext } from '@/lib/pregame-matchup/compose';
@@ -195,4 +198,92 @@ describe('matchup page', () => {
     expect(html).toContain('Injury report unavailable');
     expect(html).toContain('Schedule context unavailable.');
   });
+
+  it('puts the quick reference rail first in source and the sections in one divided surface', () => {
+    const model = buildPregameMatchup({
+      ...BASE,
+      current: { season: '2026', teamRows: [sum('22', 7), sum('6', 8)] },
+      context,
+    });
+    const html = renderToStaticMarkup(createElement(PregameMatchupView, { model }));
+    const rail = html.indexOf('data-matchup-rail');
+    const main = html.indexOf('data-matchup-main');
+    expect(rail).toBeGreaterThan(-1);
+    expect(rail).toBeLessThan(main);
+    expect(html.slice(rail, main)).toContain('id="section-tonight"');
+    expect(html.slice(rail, main)).toContain('id="section-quick-stats"');
+    expect(html.slice(rail, main)).toContain('Sportsbook quote');
+    expect(html.slice(main)).toContain('id="section-story"');
+    expect(html.slice(main)).toContain('id="section-comparison" class="min-w-0 border-t');
+    expect(html).not.toContain('section-compact-comparison');
+    expect(html).not.toContain('section-personnel');
+  });
 });
+
+function leader(playerId: string, name: string): HistoricalContributor {
+  return { playerId, name, games: 70, minutesPerGame: 30, pointsPerGame: 15, fgaPerGame: 12, usage: 0.2, totalMinutes: 2100 };
+}
+
+function contributors(away: HistoricalContributor[], home: HistoricalContributor[]): MatchupContributors {
+  return {
+    membership: 'unavailable',
+    observationDate: null,
+    collectedAt: null,
+    currentLabel: '',
+    historicalLabel: '2025–26 historical production',
+    unavailableNote: 'Roster unavailable.',
+    awayCurrent: [],
+    homeCurrent: [],
+    awayUnidentified: 0,
+    homeUnidentified: 0,
+    awayHistorical: away,
+    homeHistorical: home,
+    awayHistoricalEmpty: '',
+    homeHistoricalEmpty: '',
+  };
+}
+
+describe('player injury tags', () => {
+  it('tags a player whose surname matches tonight’s report on the same side only', () => {
+    const html = renderToStaticMarkup(
+      createElement(PlayerContributors, {
+        awayAbbr: 'PHI',
+        homeAbbr: 'DET',
+        contributors: contributors([leader('1', 'Tyrese Maxey')], [leader('2', 'Jalen Duren'), leader('3', 'Cade Cunningham')]),
+        awayInjuries: [{ name: 'Barlow', status: 'Out' }],
+        homeInjuries: [{ name: 'Duren', status: 'Out' }, { name: 'Joe', status: 'Q' }],
+      }),
+    );
+    expect(html.match(/data-injury-tag/g)).toHaveLength(1);
+    expect(html).toContain('Jalen Duren</span><span class="type-badge');
+  });
+
+  it('tags nobody when two listed players share the surname', () => {
+    const html = renderToStaticMarkup(
+      createElement(PlayerContributors, {
+        awayAbbr: 'PHI',
+        homeAbbr: 'DET',
+        contributors: contributors([leader('1', 'Jalen Williams'), leader('2', 'Jaylin Williams')], []),
+        awayInjuries: [{ name: 'Williams', status: 'Out' }],
+      }),
+    );
+    expect(html).not.toContain('data-injury-tag');
+  });
+});
+
+describe('roster section on the scoreboard page', () => {
+  it('skips the roster section when Players already carries the same unavailable note', () => {
+    const base = buildPregameMatchup(BASE);
+    const model = { ...base, contributors: contributors([leader('1', 'Tyrese Maxey')], []) };
+    model.contributors.unavailableNote = base.roster.note;
+    expect(base.roster.status).not.toBe('shown');
+    const html = renderToStaticMarkup(createElement(PregameMatchupView, { model }));
+    expect(html).not.toContain('id="section-roster"');
+    expect(html).not.toContain('href="#section-roster"');
+    expect(html).toContain('id="section-contributors"');
+
+    const withoutPlayers = renderToStaticMarkup(createElement(PregameMatchupView, { model: { ...base, contributors: null } }));
+    expect(withoutPlayers).toContain('id="section-roster"');
+  });
+});
+
