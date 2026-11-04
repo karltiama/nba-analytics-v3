@@ -12,6 +12,8 @@ import { requireLiveIngestionSeasonStartYear } from '../../../lambda/nightly-bdl
 import {
   BROAD_TARGET_SQL,
   isBroadEligible,
+  isClosingEligible,
+  CLOSING_TARGET_SQL,
   isNearTipEligible,
   NEAR_TIP_TARGET_SQL,
   parsePropUniverse,
@@ -106,11 +108,23 @@ describe('phase 4b2 prop universes', () => {
     expect(NEAR_TIP_TARGET_SQL).toContain("interval '75 minutes'");
   });
 
+  it('closing uses the [T-15, T-10) window', () => {
+    expect(isClosingEligible(new Date(now.getTime() + 10 * 60_000), now, 'Scheduled')).toBe(true);
+    expect(isClosingEligible(new Date(now.getTime() + 14 * 60_000), now, null)).toBe(true);
+    expect(isClosingEligible(new Date(now.getTime() + 9 * 60_000), now, 'Scheduled')).toBe(false);
+    expect(isClosingEligible(new Date(now.getTime() + 15 * 60_000), now, 'Scheduled')).toBe(false);
+    expect(isClosingEligible(new Date(now.getTime() + 12 * 60_000), now, 'Final')).toBe(false);
+    expect(CLOSING_TARGET_SQL).toContain("interval '10 minutes'");
+    expect(CLOSING_TARGET_SQL).toContain("interval '15 minutes'");
+    expect(CLOSING_TARGET_SQL).toContain("status IS DISTINCT FROM 'Final'");
+  });
+
   it('missing or empty universe does not dispatch', () => {
     expect(parsePropUniverse(undefined)).toBeNull();
     expect(parsePropUniverse('all')).toBeNull();
     expect(parsePropUniverse('broad')).toBe('broad');
     expect(parsePropUniverse('near_tip')).toBe('near_tip');
+    expect(parsePropUniverse('closing')).toBe('closing');
   });
 });
 
@@ -313,6 +327,10 @@ describe('phase 4b2 disabled runtime', () => {
     expect(lambdaTf).toContain('jsonencode({ universe = "near_tip" })');
     const near = lambdaTf.slice(lambdaTf.indexOf('player_props_near_tip'));
     expect(near).toContain('state       = local.player_props_schedule_state');
+    expect(lambdaTf).toContain('jsonencode({ universe = "closing" })');
+    const closing = lambdaTf.slice(lambdaTf.indexOf('player_props_closing'));
+    expect(closing).toContain('state       = local.player_props_schedule_state');
+    expect(closing).toContain('schedule_expression          = "cron(0/5 8-23 ? * * *)"');
     expect(lambdaTf).not.toMatch(/state\s*=\s*"ENABLED"/);
     const ledger = read('infra/projection-ledger.tf');
     expect(ledger).toMatch(/state\s*=\s*"DISABLED"/);

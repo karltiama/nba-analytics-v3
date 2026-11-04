@@ -1,3 +1,4 @@
+import type { PropUniverse } from './game-discovery';
 export interface GameTarget {
   gameId: string;
   bdlGameId: number;
@@ -53,5 +54,5 @@ export interface WorkerMessage {
   gameId: string;
   bdlGameId: number;
   date: string;
-  universe?: 'broad' | 'near_tip';
+  universe?: PropUniverse;
 }

@@ -46,14 +46,14 @@ describe('bounded game wave', () => {
 describe('props request budget', () => {
   it('plans three pages per collection and keeps the 10-attempt pull cap', () => {
     const one = propsRequestBudget(1);
-    expect(one.collectionsPerGame).toBe(5);
-    expect(one.expectedRequests).toBe(15);
-    expect(one.hardRequests).toBe(50);
+    expect(one.collectionsPerGame).toBe(6);
+    expect(one.expectedRequests).toBe(18);
+    expect(one.hardRequests).toBe(60);
     expect(PLAYER_PROPS_MAX_HTTP_ATTEMPTS).toBe(10);
     const slate = propsFullSlateBudget();
     expect(slate.games).toBe(15);
-    expect(slate.expectedRequests).toBe(225);
-    expect(slate.hardRequests).toBe(750);
+    expect(slate.expectedRequests).toBe(270);
+    expect(slate.hardRequests).toBe(900);
     expect(slate.hardRequests).toBeGreaterThan(slate.games * slate.collectionsPerGame);
     expect(PROPS_DAILY_HTTP_ATTEMPT_CAP).toBe(300);
     expect(PROPS_DAILY_HTTP_ATTEMPT_CAP).toBeGreaterThan(slate.expectedRequests);
