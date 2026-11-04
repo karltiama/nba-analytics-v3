@@ -21,6 +21,7 @@ import {
   type SupportedPropType,
   SUPPORTED_PROP_TYPES,
 } from '@/lib/betting/player-projection-eval';
+import { parseMinutesText } from '@/lib/players/minutes-sql';
 
 export const MINUTES_EVAL_VERSION = 'minutes-rate-v1';
 
@@ -121,9 +122,7 @@ export interface AsOfUsageFeatures {
 }
 
 export function parseMinutes(value: number | string | null | undefined): number | null {
-  if (value == null) return null;
-  const n = typeof value === 'string' ? Number.parseFloat(value) : value;
-  return Number.isFinite(n) ? n : null;
+  return parseMinutesText(value);
 }
 
 export function minutesToken(value: number | string | null | undefined): string | null {
@@ -152,6 +151,9 @@ export function hasBoxActivity(log: EvalGameLog): boolean {
  * - no DNP/inactive/DND column on analytics.player_game_logs
  * - public.bbref_player_game_stats.dnp_reason is unused (all null)
  * - minutes is integer-like text; no MM:SS; no nulls
+ * 2026-27 BallDontLie logs differ: played minutes are "MM:SS" (parsed by parseMinutesText) and a DNP
+ * is "0" with no box stats. This classifier still treats "0" as played (ledger certification and the
+ * deployed ledger SQL depend on it); WOWY's classifyWowyAppearance treats "0" with no stats as DNP.
  * - "00" (53,094) is the DNP/inactive roster row (~zero box)
  * - "0" (210) is a recorded 0-minute appearance, sometimes with stats
  * - minutes > 0 includes legitimate 0-point games (10,112)

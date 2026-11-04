@@ -15,6 +15,7 @@ import {
 } from '@/lib/pregame-matchup/roster';
 import { BDL_ROSTER_BATCH_TABLE, BDL_ROSTER_MEMBER_TABLE } from '@/lib/roster/bdl-roster-persist';
 import { BDL_ROSTER_COMPLETENESS, BDL_ROSTER_PROVIDER } from '@/lib/roster/bdl-active-roster';
+import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 
 export type BdlIdentityResolution =
   | 'RESOLVED_WITH_HISTORY'
@@ -204,7 +205,7 @@ export function explainRosterEligibility(input: {
 }
 
 const PLAYED_MINUTES = `CASE
-         WHEN l.minutes ~ '^[0-9]+(\\.[0-9]+)?$' AND l.minutes::numeric > 0 THEN l.minutes::numeric
+         WHEN ${minutesDecimalSql('l.minutes')} > 0 THEN ${minutesDecimalSql('l.minutes')}
          ELSE NULL
        END`;
 

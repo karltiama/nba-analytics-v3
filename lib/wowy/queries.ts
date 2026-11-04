@@ -14,6 +14,7 @@ import type {
   WowyTeamStintOption,
   WowyTeammateOption,
 } from './types';
+import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 
 function toIso(value: unknown): string | null {
   if (value == null) return null;
@@ -161,14 +162,23 @@ export async function loadWowyTeamStints(playerId: string, season: string): Prom
   }));
 }
 
+const PGL_MINUTES_SQL = (alias: string) => minutesDecimalSql(`${alias}.minutes`);
+const PGL_BOX_SQL = (alias: string) =>
+  `(COALESCE(${alias}.points, 0) + COALESCE(${alias}.rebounds, 0) + COALESCE(${alias}.assists, 0)
+    + COALESCE(${alias}.three_pointers_made, 0) + COALESCE(${alias}.field_goals_attempted, 0)
+    + COALESCE(${alias}.free_throws_attempted, 0)) > 0`;
+
 /**
- * Game-level played token, matching classifyWowyAppearance for numeric logs:
- * "00" is never played; "0"/"0.0" and minutes > 0 are played.
+ * Played, matching classifyWowyAppearance: minutes > 0 (decimal or "MM:SS"), or zero minutes with box
+ * stats unless the token is "00". "0" with no stats is a DNP (2026-27 BallDontLie's DNP token).
  */
 const PGL_PLAYED_SQL = (alias: string) =>
-  `${alias}.minutes ~ '^[0-9]+(\\.[0-9]+)?$'
-   AND ${alias}.minutes IS DISTINCT FROM '00'
-   AND (NULLIF(${alias}.minutes, '')::numeric > 0 OR ${alias}.minutes IN ('0', '0.0'))`;
+  `(${PGL_MINUTES_SQL(alias)} > 0
+    OR (${PGL_MINUTES_SQL(alias)} = 0 AND ${alias}.minutes IS DISTINCT FROM '00' AND ${PGL_BOX_SQL(alias)}))`;
+
+/** DNP, matching classifyWowyAppearance: zero minutes and either "00" or no box stats. */
+const PGL_DNP_SQL = (alias: string) =>
+  `(${PGL_MINUTES_SQL(alias)} = 0 AND (${alias}.minutes = '00' OR NOT ${PGL_BOX_SQL(alias)}))`;
 
 export async function loadWowyTeammates(args: {
   subjectPlayerId: string;
@@ -197,7 +207,7 @@ export async function loadWowyTeammates(args: {
             )::int AS together,
             count(*) FILTER (
               WHERE ${PGL_PLAYED_SQL('a')}
-                AND b.minutes = '00'
+                AND ${PGL_DNP_SQL('b')}
             )::int AS dnp
      FROM analytics.player_game_logs a
      JOIN analytics.games g ON g.game_id = a.game_id
