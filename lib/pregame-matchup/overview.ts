@@ -6,8 +6,8 @@
  * A later phase can add current_season, recent_form, or roster without a new page.
  */
 
-import type { ComparisonRow } from './compose';
-import { SAMPLE_LABEL } from './compose';
+import type { ComparisonRow, CurrentSeasonComparison } from './compose';
+import { POSSESSION_NOTE, SAMPLE_LABEL } from './compose';
 import { formatRosterObservationLabel, type RosterPresentation, type TeamContinuity } from './roster';
 import { ROSTER_LIMITATION, type MatchupInsight } from './signals';
 
@@ -58,6 +58,25 @@ export type OverviewPersonnel = {
   note: string;
 };
 
+/**
+ * One comparison line. `away`/`home` are the primary values: this season when it is shown,
+ * otherwise 2025–26. `priorAway`/`priorHome` carry 2025–26 under a current-season value.
+ */
+export type SeasonComparisonRow = ComparisonRow & { priorAway?: string; priorHome?: string };
+
+/** Current-season rows first, with the 2025–26 value attached. Falls back to 2025–26 rows alone. */
+export function mergeSeasonRows(
+  current: CurrentSeasonComparison | null | undefined,
+  prior: ComparisonRow[] | null | undefined
+): SeasonComparisonRow[] {
+  const priorRows = prior ?? [];
+  if (!current) return priorRows;
+  return current.rows.map((row) => {
+    const match = priorRows.find((candidate) => candidate.label === row.label);
+    return match ? { ...row, priorAway: match.away, priorHome: match.home } : row;
+  });
+}
+
 export type MatchupOverviewPresentation = {
   story: OverviewStory;
   findings: OverviewFinding[];
@@ -65,7 +84,7 @@ export type MatchupOverviewPresentation = {
     available: boolean;
     label: string | null;
     possessionNote: string | null;
-    rows: ComparisonRow[];
+    rows: SeasonComparisonRow[];
     emptyNote: string | null;
   };
   personnel: OverviewPersonnel;
@@ -78,6 +97,7 @@ export type MatchupOverviewSource = {
   historyNote: string | null;
   insights: MatchupInsight[];
   roster: RosterPresentation;
+  current?: CurrentSeasonComparison | null;
 };
 
 const SIGNIFICANCE = /gap stands out|stylistic contrast|profiles differ|wide relative to other|not official NBA pace/;
@@ -122,7 +142,7 @@ function alsoSentence(rest: MatchupInsight[]): string | null {
   return `The same selection threshold also marks contrasts in ${earlier} and ${subjects[subjects.length - 1]}.`;
 }
 
-function compactRows(rows: ComparisonRow[]): ComparisonRow[] {
+function compactRows<Row extends ComparisonRow>(rows: Row[]): Row[] {
   return COMPACT_COMPARISON_LABELS.flatMap((label) => {
     const row = rows.find((candidate) => candidate.label === label);
     return row ? [row] : [];
@@ -138,13 +158,22 @@ function rosterStoryLine(roster: RosterPresentation): string | null {
   return `Roster observation: ${label}. A listing is not confirmation that a player is available, active, or starting.${age}`;
 }
 
-function ratingsCaveat(roster: RosterPresentation, hasRatings: boolean): string | null {
+function ratingsCaveat(
+  roster: RosterPresentation,
+  hasRatings: boolean,
+  current: CurrentSeasonComparison | null
+): string | null {
   const parts: string[] = [];
   if (hasRatings && roster.status !== 'shown') parts.push(ROSTER_LIMITATION);
-  if (hasRatings) parts.push(RATINGS_SCOPE);
+  if (hasRatings) parts.push(current ? currentScope(current) : RATINGS_SCOPE);
   const rosterLine = rosterStoryLine(roster);
   if (rosterLine) parts.push(rosterLine);
   return parts.length > 0 ? parts.join(' ') : null;
+}
+
+/** Findings stay on the full 2025–26 sample; the comparison leads with this season. */
+export function currentScope(current: CurrentSeasonComparison): string {
+  return `Key findings use full 2025–26 regular-season figures. The team comparison leads with ${current.seasonLabel} so far (${current.awayGames} and ${current.homeGames} games), a small sample.`;
 }
 
 function personnel(roster: RosterPresentation): OverviewPersonnel {
@@ -165,7 +194,8 @@ function personnel(roster: RosterPresentation): OverviewPersonnel {
 export function presentMatchupOverview(input: MatchupOverviewSource): MatchupOverviewPresentation {
   const ranked = input.history ? input.insights : [];
   const top = ranked[0] ?? null;
-  const rows = input.history ? compactRows(input.history.rows) : [];
+  const current = input.current ?? null;
+  const rows = compactRows(mergeSeasonRows(current, input.history?.rows));
   const hasRatings = input.history != null;
   const story: OverviewStory = !input.history
     ? {
@@ -179,13 +209,13 @@ export function presentMatchupOverview(input: MatchupOverviewSource): MatchupOve
           headline: `The clearest 2025–26 contrast is ${INSIGHT_SUBJECT[top.id]}`,
           lede: [findingSummary(top.body), alsoSentence(ranked.slice(1))].filter(Boolean).join(' '),
           sampleLabel: input.history.label,
-          caveat: ratingsCaveat(input.roster, true),
+          caveat: ratingsCaveat(input.roster, true, current),
         }
       : {
           headline: 'No standout 2025–26 contrast',
           lede: 'None of the checked 2025–26 team differences cleared the one-standard-deviation selection threshold, so this matchup has no key finding.',
           sampleLabel: input.history.label,
-          caveat: ratingsCaveat(input.roster, hasRatings),
+          caveat: ratingsCaveat(input.roster, hasRatings, current),
         };
 
   return {
@@ -201,10 +231,10 @@ export function presentMatchupOverview(input: MatchupOverviewSource): MatchupOve
     })),
     comparison: {
       available: rows.length > 0,
-      label: input.history?.label ?? null,
-      possessionNote: input.history?.possessionNote ?? null,
+      label: current ? current.label : input.history?.label ?? null,
+      possessionNote: input.history?.possessionNote ?? (current ? POSSESSION_NOTE : null),
       rows,
-      emptyNote: input.history
+      emptyNote: input.history || current
         ? rows.length > 0
           ? null
           : 'The compact comparison is unavailable for this sample.'

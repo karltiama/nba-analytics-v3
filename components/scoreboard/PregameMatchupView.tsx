@@ -1,16 +1,21 @@
 import type { PregameMatchupModel } from '@/lib/pregame-matchup/compose';
 import type { MatchupNavLink } from '@/components/matchup/MatchupHeader';
 import { MatchupHeader } from '@/components/matchup/MatchupHeader';
+import { MatchupContextStrip } from '@/components/matchup/MatchupContextStrip';
 import { MatchupResearchSections } from '@/components/matchup/MatchupResearchSections';
 import Link from 'next/link';
 
 function sectionLinks(model: PregameMatchupModel): MatchupNavLink[] {
   const links: MatchupNavLink[] = [
+    ...(model.context ? [{ href: '#section-tonight', label: 'Tonight' }] : []),
     { href: '#section-story', label: 'Overview' },
     { href: '#section-comparison', label: 'Teams' },
     { href: '#section-roster', label: 'Roster' },
   ];
-  if (model.insights.length > 0) links.splice(1, 0, { href: '#section-signals', label: 'Findings' });
+  if (model.insights.length > 0) {
+    const overview = links.findIndex((link) => link.href === '#section-story');
+    links.splice(overview + 1, 0, { href: '#section-signals', label: 'Findings' });
+  }
   if (model.contributors) links.push({ href: '#section-contributors', label: 'Players' });
   return links;
 }
@@ -31,6 +36,8 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         links={sectionLinks(model)}
       />
 
+      {model.context ? <MatchupContextStrip context={model.context} /> : null}
+
       <MatchupResearchSections
         awayAbbr={model.awayAbbr}
         homeAbbr={model.homeAbbr}
@@ -39,6 +46,8 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         insights={model.insights}
         roster={model.roster}
         contributors={model.contributors}
+        current={model.current}
+        currentNote={model.currentNote}
       />
 
       {!model.quote && model.quoteNote ? (

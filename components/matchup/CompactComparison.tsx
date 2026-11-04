@@ -1,4 +1,5 @@
 import type { MatchupOverviewPresentation } from '@/lib/pregame-matchup/overview';
+import { SeasonValue } from '@/components/matchup/ComparisonGrid';
 
 const scrollMargin = { scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' } as const;
 
@@ -41,8 +42,8 @@ export function CompactComparison({
                 <div key={row.label} className="min-w-0 border-t border-[#DCE9EA] py-2.5">
                   <div className="type-secondary text-pretty text-center">{row.label}</div>
                   <div className="mt-1 grid grid-cols-2 gap-3">
-                    <div className="type-card-data min-w-0 break-words text-right tabular-nums text-[#063f46]">{row.away}</div>
-                    <div className="type-card-data min-w-0 break-words tabular-nums text-[#063f46]">{row.home}</div>
+                    <SeasonValue value={row.away} prior={row.priorAway} align="right" />
+                    <SeasonValue value={row.home} prior={row.priorHome} align="left" />
                   </div>
                 </div>
               ))}

@@ -4,11 +4,9 @@
  */
 
 import { ROSTER_SEASON, ROSTER_SEASON_LABEL } from './roster';
-import type { HistoricalWindow } from './window';
+import type { CurrentSeasonWindow, HistoricalWindow } from './window';
 
-export function historicalTeamQuery(window: HistoricalWindow): { text: string; params: string[] } {
-  return {
-    text: `SELECT team_id,
+const TEAM_SUMS_SELECT = `SELECT team_id,
             count(*)::int AS rows,
             count(DISTINCT game_id)::int AS games,
             coalesce(sum(team_points), 0)::float8 AS points,
@@ -27,12 +25,30 @@ export function historicalTeamQuery(window: HistoricalWindow): { text: string; p
             count(*) FILTER (WHERE estimated_possessions IS NULL OR estimated_possessions <= 0)::int AS bad_possessions,
             count(*) FILTER (WHERE team_fga IS NULL OR team_fga <= 0 OR team_fgm IS NULL OR team_3pm IS NULL OR team_3pa IS NULL)::int AS bad_shot,
             count(*) FILTER (WHERE offensive_rebounds IS NULL OR defensive_rebounds IS NULL OR opponent_offensive_rebounds IS NULL OR opponent_defensive_rebounds IS NULL)::int AS bad_rebounds,
-            count(*) FILTER (WHERE team_turnovers IS NULL OR team_fta IS NULL)::int AS bad_turnovers
+            count(*) FILTER (WHERE team_turnovers IS NULL OR team_fta IS NULL)::int AS bad_turnovers`;
+
+export function historicalTeamQuery(window: HistoricalWindow): { text: string; params: string[] } {
+  return {
+    text: `${TEAM_SUMS_SELECT}
      FROM analytics.team_game_stats
      WHERE season = $1
        AND game_date >= $2::date
        AND game_date < $3::date
        AND game_date <> $4::date
+     GROUP BY team_id`,
+    params: [window.season, window.startInclusive, window.endExclusive, window.excludeDate],
+  };
+}
+
+/** Same sums for every team, over this season's games before the matchup date. */
+export function currentSeasonTeamQuery(window: CurrentSeasonWindow): { text: string; params: (string | null)[] } {
+  return {
+    text: `${TEAM_SUMS_SELECT}
+     FROM analytics.team_game_stats
+     WHERE season = $1
+       AND game_date >= $2::date
+       AND game_date < $3::date
+       AND ($4::date IS NULL OR game_date <> $4::date)
      GROUP BY team_id`,
     params: [window.season, window.startInclusive, window.endExclusive, window.excludeDate],
   };

@@ -5,24 +5,63 @@
 
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
-import { isScoreboardMarketServingEnabled } from '@/lib/scoreboard/flags';
+import { loadCardContext } from '@/lib/scoreboard/card-context/load';
+import { isScoreboardCardContextEnabled, isScoreboardMarketServingEnabled } from '@/lib/scoreboard/flags';
 import { formatObservedAt, lifecycleLabel, seasonLabel } from '@/lib/scoreboard/present';
 import { createPgScoreboardStore, type ScoreboardStore } from '@/lib/scoreboard/store';
 import type { PlayerSumRow, TeamSumRow } from './aggregate';
-import { buildPregameMatchup, type PregameMatchupModel } from './compose';
+import { buildPregameMatchup, type CurrentSeasonInput, type MatchupGameContext, type PregameMatchupModel } from './compose';
 import { playerRow, teamRow } from './rows';
 import { dashboardReturnHref, parseSlateDate } from './href';
-import { historicalPlayerQuery, historicalTeamQuery, teamIdentityQuery } from './queries';
+import { currentSeasonTeamQuery, historicalPlayerQuery, historicalTeamQuery, teamIdentityQuery } from './queries';
 import { resolveMatchupQuote } from './quote';
 import { presentRoster } from './roster';
 import { loadRosterContinuity } from './roster-load';
-import { historicalWindow } from './window';
+import { currentSeasonWindow, historicalWindow } from './window';
 
 type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 
 async function defaultPool() {
   const { default: pool } = await import('@/lib/db');
   return pool;
+}
+
+async function loadCurrentSeason(run: Sql, game: StoredScoreboardGame): Promise<CurrentSeasonInput | null> {
+  const window = currentSeasonWindow(String(game.season), game.etDate);
+  if (!window) return null;
+  try {
+    const query = currentSeasonTeamQuery(window);
+    const rows = await run(query.text, query.params);
+    return { season: window.season, teamRows: rows.map(teamRow).filter((row): row is TeamSumRow => row != null) };
+  } catch {
+    return null;
+  }
+}
+
+/** Same read as the scoreboard card context, for this one game. Off unless the card flag is on. */
+async function loadGameContext(
+  run: Sql,
+  game: StoredScoreboardGame,
+  now: Date,
+  env: Record<string, string | undefined>
+): Promise<MatchupGameContext | null> {
+  if (!isScoreboardCardContextEnabled(env)) return null;
+  try {
+    const byId = await loadCardContext({ games: [game], query: run, now, env });
+    const entry = byId[game.gameId];
+    if (!entry) return null;
+    return {
+      schedule: entry.schedule.status === 'ready' ? entry.schedule.text : null,
+      injuries: {
+        status: entry.injuries.status,
+        text: entry.injuries.text,
+        asOfLabel: entry.injuries.as_of_label,
+        teams: entry.injuries.teams,
+      },
+    };
+  } catch {
+    return null;
+  }
 }
 
 function sameAbbr(scoreboard: string | null, analytics: string | null | undefined): boolean {
@@ -65,10 +104,12 @@ export async function loadPregameMatchup(input: {
   const teamIds: [string, string] = [game.visitorTeamId, game.homeTeamId];
   const playerQuery = historicalPlayerQuery(window, teamIds);
   const identity = teamIdentityQuery(teamIds);
-  const [teamResult, playerResult, identityResult] = await Promise.all([
+  const [teamResult, playerResult, identityResult, current, context] = await Promise.all([
     run(teamQuery.text, teamQuery.params),
     run(playerQuery.text, playerQuery.params),
     run(identity.text, identity.params),
+    loadCurrentSeason(run, game),
+    loadGameContext(run, game, now, env),
   ]);
   const identities = new Map(
     identityResult.map((row) => [String(row.team_id), { abbreviation: row.abbreviation == null ? null : String(row.abbreviation), fullName: row.full_name == null ? null : String(row.full_name) }])
@@ -108,5 +149,7 @@ export async function loadPregameMatchup(input: {
     playerRows: playerResult.map(playerRow).filter((row): row is PlayerSumRow => row != null),
     roster,
     quote,
+    current,
+    context,
   });
 }
