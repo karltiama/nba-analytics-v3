@@ -46,6 +46,7 @@ import {
   EXPERIMENTAL_MODEL_NOTE,
   EXPERIMENTAL_MODEL_SHOW,
   BEST_PRICE_TITLE,
+  priceColumnCopy,
   FAIR_PROBABILITY_TITLE,
   VS_AVERAGE_TITLE,
   bestPriceLabel,
@@ -136,6 +137,7 @@ type ExplorerMeta = {
   sourceTable?: string;
   lineLabel?: string;
   dateEt?: string;
+  priceScope?: 'selected_books' | 'market';
   selectedGame?: {
     gameId: string;
     awayAbbr: string | null;
@@ -216,6 +218,8 @@ export default function PropsExplorerPage(props: PageProps) {
 
   const [rows, setRows] = useState<ExplorerRow[]>([]);
   const [meta, setMeta] = useState<ExplorerMeta | null>(null);
+  // Matches the server: one selected book is compared with the whole market.
+  const priceCopy = priceColumnCopy(meta?.priceScope ?? (selectedBooks.size === 1 ? 'market' : 'selected_books'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [games, setGames] = useState<
@@ -1124,11 +1128,11 @@ export default function PropsExplorerPage(props: PageProps) {
                 <th className="py-2 px-2 font-medium text-right">Line</th>
                 <th className="py-2 px-2 font-medium">Book</th>
                 <th className="py-2 px-2 font-medium text-right">Odds</th>
-                <th className="py-2 px-2 font-medium" title={BEST_PRICE_TITLE}>
+                <th className="py-2 px-2 font-medium" title={priceCopy.bestTitle}>
                   Best price
                 </th>
-                <th className="py-2 px-2 font-medium text-right" title={VS_AVERAGE_TITLE}>
-                  vs Avg
+                <th className="py-2 px-2 font-medium text-right" title={priceCopy.vsTitle}>
+                  {priceCopy.vsHeader}
                 </th>
                 <th className="py-2 px-2 font-medium text-right" title={FAIR_PROBABILITY_TITLE}>
                   Fair P
@@ -1245,7 +1249,7 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td
                       className={`type-metadata whitespace-nowrap py-1.5 px-2 ${r.bestPrice?.isBest && r.bestPrice.bookCount > 1 ? 'font-medium text-[#178A45]' : ''}`}
-                      title={BEST_PRICE_TITLE}
+                      title={priceCopy.bestTitle}
                     >
                       {bestPriceLabel(r.bestPrice, explorerBookDisplayName)}
                       {r.arb ? (
@@ -1259,7 +1263,7 @@ export default function PropsExplorerPage(props: PageProps) {
                     </td>
                     <td
                       className={`whitespace-nowrap py-1.5 px-2 text-right font-mono ${vsAverageTextClass(r.bestPrice?.vsAverage)}`}
-                      title={VS_AVERAGE_TITLE}
+                      title={priceCopy.vsTitle}
                     >
                       {formatVsAverage(r.bestPrice?.vsAverage)}
                     </td>

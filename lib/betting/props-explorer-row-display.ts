@@ -86,6 +86,8 @@ export type ExplorerBestPrice = {
   bookCount: number;
   isBest: boolean;
   vsAverage: number | null;
+  /** Compared with every book because only one book is selected. */
+  marketWide?: boolean;
 };
 
 /** Payout difference vs the average book, one decimal; null or single-book markets show a dash. */
@@ -112,13 +114,30 @@ export function bestPriceLabel(
   if (!bp) return '—';
   if (bp.bookCount <= 1) return 'Only book';
   if (bp.isBest) return `Best of ${bp.bookCount}`;
-  return `${formatExplorerOdds(bp.oddsAmerican)} ${bookName(bp.sportsbook)}`;
+  const better = `${formatExplorerOdds(bp.oddsAmerican)} ${bookName(bp.sportsbook)}`;
+  return bp.marketWide ? `Elsewhere ${better}` : better;
 }
 
 export const BEST_PRICE_TITLE =
   'Best price for this exact line and side across books, or across the books you selected in the filter.';
 export const VS_AVERAGE_TITLE =
   'How much more this price pays than the average book for the same line and side. Taking the best price added about 3.5 points of return per bet on 2025-26 closing lines. It is a price comparison, not a prediction.';
+
+export const BEST_PRICE_MARKET_TITLE =
+  'With one book selected: is your book the best price for this line and side across every book we track? If not, the better price and where it is.';
+export const VS_MARKET_TITLE =
+  "With one book selected: how much more your book's price pays than the average across every book for the same line and side. Favouring props where your book is above the market is the part of line shopping you can still do with one account.";
+
+/** Column header and titles for the price columns, by comparison scope. */
+export function priceColumnCopy(scope: 'selected_books' | 'market' | null | undefined): {
+  vsHeader: string;
+  vsTitle: string;
+  bestTitle: string;
+} {
+  return scope === 'market'
+    ? { vsHeader: 'vs market', vsTitle: VS_MARKET_TITLE, bestTitle: BEST_PRICE_MARKET_TITLE }
+    : { vsHeader: 'vs Avg', vsTitle: VS_AVERAGE_TITLE, bestTitle: BEST_PRICE_TITLE };
+}
 
 export const FAIR_PROBABILITY_TITLE =
   'Sportsbook price with the bookmaker margin removed, using both sides of the same line at the same book.';

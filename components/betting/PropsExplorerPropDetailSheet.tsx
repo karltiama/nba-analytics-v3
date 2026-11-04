@@ -144,7 +144,10 @@ export function PropsExplorerPropDetailSheet({
                 <Fact label="Odds" value={formatExplorerOdds(row.oddsAmerican)} emphasize />
                 <Fact label="Sportsbook" value={explorerBookDisplayName(row.sportsbook)} />
                 <Fact label="Best price" value={bestPriceLabel(row.bestPrice, explorerBookDisplayName)} />
-                <Fact label="vs average book" value={formatVsAverage(row.bestPrice?.vsAverage)} />
+                <Fact
+                  label={row.bestPrice?.marketWide ? 'vs market (all books)' : 'vs average book'}
+                  value={formatVsAverage(row.bestPrice?.vsAverage)}
+                />
                 {row.arb ? <Fact label="Arbitrage" value={formatArbProfit(row.arb.profit)} emphasize /> : null}
               </dl>
               {row.arb ? (

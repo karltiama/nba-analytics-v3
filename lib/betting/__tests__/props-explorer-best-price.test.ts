@@ -11,6 +11,7 @@ import {
 import {
   bestPriceLabel,
   formatVsAverage,
+  priceColumnCopy,
   vsAverageTextClass,
 } from '@/lib/betting/props-explorer-row-display';
 import { EXPLORER_BOOKS, EXPLORER_SORT_OPTIONS, explorerBookDisplayName } from '@/lib/betting/props-explorer-filters';
@@ -105,7 +106,9 @@ describe('props explorer best-price contract', () => {
   const skeleton = readFileSync(join(ROOT, 'components/betting/PropsExplorerTableSkeleton.tsx'), 'utf8');
   it('shows Best price and vs Avg by default, and the skeleton matches', () => {
     expect(page).toContain('Best price');
-    expect(page).toContain('vs Avg');
+    // Header text comes from priceColumnCopy: "vs Avg", or "vs market" with one book selected.
+    expect(page).toContain('{priceCopy.vsHeader}');
+    expect(priceColumnCopy('selected_books').vsHeader).toBe('vs Avg');
     expect(page).toContain('colSpan={showAdvancedMetrics ? 17 : 12}');
     const header = (src: string) => (src.match(/<th /g) ?? []).length;
     expect(skeleton).toContain('Best price');
