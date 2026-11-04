@@ -7,6 +7,7 @@ import { addDaysET, getTodayET } from '@/components/betting/DateNav';
 import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
 import { SelectedGameFilter } from '@/components/betting/SelectedGameFilter';
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
+import { EXPERIMENTAL_MODEL_HIDE, EXPERIMENTAL_MODEL_SHOW } from '@/lib/betting/props-explorer-row-display';
 import {
   EXPLORER_BOOKS,
   EXPLORER_PROP_TYPES,
@@ -367,6 +368,7 @@ export function PropsExplorerMobileControls({
               </select>
             </label>
 
+            {showAdvancedMetrics || minEv.trim() !== '' ? (
             <label className="block">
               <span className="type-secondary mb-2 block">Minimum EV</span>
               <input
@@ -385,6 +387,7 @@ export function PropsExplorerMobileControls({
                 }
               />
             </label>
+            ) : null}
 
             <div>
               <p className="type-secondary mb-2">Sportsbooks</p>
@@ -421,7 +424,7 @@ export function PropsExplorerMobileControls({
               onClick={onToggleAdvanced}
               className="type-interactive inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#DCE9EA] bg-white px-3 text-[#063f46]"
             >
-              {showAdvancedMetrics ? 'Hide advanced metrics' : 'Show advanced metrics'}
+              {showAdvancedMetrics ? EXPERIMENTAL_MODEL_HIDE : EXPERIMENTAL_MODEL_SHOW}
             </button>
           </div>
         </Dialog.Content>

@@ -2,8 +2,8 @@ export const PLAYER_SEARCH_COMMIT_MS = 300;
 
 export const EXPLORER_SORT_OPTIONS = [
   { value: 'snapshot_at', label: 'Snapshot time' },
-  { value: 'ev', label: 'EV' },
-  { value: 'confidence', label: 'Confidence tier' },
+  { value: 'ev', label: 'Model EV (experimental)' },
+  { value: 'confidence', label: 'Sample & stability' },
   { value: 'odds_american', label: 'American odds' },
 ] as const;
 

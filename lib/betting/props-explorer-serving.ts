@@ -8,6 +8,7 @@ import { getPlayerPropModelInputs, type PlayerPropModelInputs } from '@/lib/bett
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
 import { computePropEvFields, type PropEvFields } from '@/lib/betting/player-prop-ev-row';
+import { noVigProbability } from '@/lib/betting/market-probability';
 import {
   etCalendarDate,
   etCalendarDateFromInstant,
@@ -40,6 +41,7 @@ export type PropsExplorerDbRow = {
   away_team_abbr: string | null;
   home_team_abbr: string | null;
   row_source?: string | null;
+  opposite_implied_probability?: string | number | null;
 };
 
 const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
@@ -157,6 +159,25 @@ function excludeGamesWithDecisionLines(whereSql: string): string {
   return whereSql ? `${whereSql} AND ${exclusion}` : `WHERE ${exclusion}`;
 }
 
+/**
+ * Raw implied probability of the other side of the same over/under offer
+ * (same game, player, book, prop and line). Feeds the no-vig fair probability.
+ */
+function oppositeImpliedSql(context: PropsMarketContext): string {
+  const table =
+    context === 'historical' ? 'research.prop_decision_lines' : 'analytics.player_props_current';
+  return `(SELECT COALESCE(o.implied_probability, 1 / NULLIF(o.odds_decimal, 0))
+             FROM ${table} o
+            WHERE o.game_id = p.game_id
+              AND o.player_id = p.player_id
+              AND o.sportsbook = p.sportsbook
+              AND o.prop_type = p.prop_type
+              AND o.line_value = p.line_value
+              AND lower(o.market_type) = 'over_under'
+              AND lower(o.side) = CASE lower(p.side) WHEN 'over' THEN 'under' WHEN 'under' THEN 'over' END
+            LIMIT 1)::float8 AS opposite_implied_probability`;
+}
+
 /** Same columns as selectList, with text ids so the two tables can be combined. */
 function mixedSelect(context: PropsMarketContext, rowSource: 'decision' | 'current'): string {
   const observed = context === 'historical' ? 'p.decision_at' : 'p.snapshot_at';
@@ -168,6 +189,7 @@ function mixedSelect(context: PropsMarketContext, rowSource: 'decision' | 'curre
                 nba.provider_player_id AS nba_player_id,
                 t_away.abbreviation AS away_team_abbr,
                 t_home.abbreviation AS home_team_abbr,
+                ${oppositeImpliedSql(context)},
                 '${rowSource}'::text AS row_source`;
 }
 
@@ -187,7 +209,8 @@ function selectList(context: PropsMarketContext): string {
                 g.start_time AS game_start_time,
                 nba.provider_player_id AS nba_player_id,
                 t_away.abbreviation AS away_team_abbr,
-                t_home.abbreviation AS home_team_abbr`;
+                t_home.abbreviation AS home_team_abbr,
+                ${oppositeImpliedSql(context)}`;
 }
 
 async function loadInputsForPlayers(playerIds: number[]): Promise<Map<number, PlayerPropModelInputs | null>> {
@@ -244,6 +267,8 @@ export type PropsExplorerRow = {
   oddsAmerican: number | null;
   oddsDecimal: number | null;
   impliedProbability: number | null;
+  /** No-vig probability from both sides of the same book and line; null without a matched pair. */
+  fairProbability: number | null;
   snapshotAt: string;
   marketContext: PropsMarketContext;
   lineLabel: string;
@@ -520,6 +545,13 @@ export async function getPlayerPropsForExplorer(
       oddsAmerican: r.odds_american ?? null,
       oddsDecimal: r.odds_decimal != null ? Number(r.odds_decimal) : null,
       impliedProbability: offerP != null && Number.isFinite(offerP) ? offerP : null,
+      fairProbability:
+        (r.market_type ?? '').toLowerCase() === 'over_under'
+          ? noVigProbability(
+              offerP,
+              r.opposite_implied_probability != null ? Number(r.opposite_implied_probability) : null
+            )
+          : null,
       snapshotAt,
       marketContext,
       lineLabel:
