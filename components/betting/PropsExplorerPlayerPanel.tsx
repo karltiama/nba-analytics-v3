@@ -11,6 +11,7 @@ import { METRIC_LABELS, propTypeToMetricKey } from '@/lib/players/types';
 import { extractMetric, getSeasonAvgForMetric } from '@/lib/players/metrics';
 import { explorerPropContextLabel } from '@/lib/betting/props-explorer-filters';
 import { playerResearchHref } from '@/lib/betting/research-journey';
+import { PropsExplorerTeammatesOut } from '@/components/betting/PropsExplorerTeammatesOut';
 
 const PREVIEW_GAMES = 25;
 const CHART_GAMES = 20;
@@ -266,6 +267,11 @@ export function PropsExplorerPlayerPanel({
               svgWidth={340}
               chartHeight={180}
               compactTrend
+            />
+            <PropsExplorerTeammatesOut
+              playerId={profileId}
+              gameId={selection.gameId}
+              metric={activeMetric}
             />
             <div className={drawer ? 'rounded-xl border border-[#DCE9EA]' : 'max-h-56 overflow-y-auto rounded-xl border border-[#DCE9EA]'}>
               <GameLogTable
