@@ -2,6 +2,10 @@ import Link from 'next/link';
 import type { GameRecap as GameRecapModel, RecapBoxLine, RecapStarter, RecapTeam } from '@/lib/pregame-matchup/recap';
 import { MatchupSection } from '@/components/matchup/MatchupSection';
 import { playerPageHref } from '@/lib/pregame-matchup/href';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+/** Same tab styling as the Market card and the game page's line movement. */
+const TAB = 'type-interactive rounded text-cc-secondary data-[state=active]:bg-[#063f46]! data-[state=active]:text-white!';
 
 function PlayerLink({ p }: { p: RecapStarter }) {
   return (
@@ -79,7 +83,7 @@ function TeamBox({ team }: { team: RecapTeam }) {
   return (
     <div className="min-w-0" data-recap-team={team.abbr}>
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <h3 className="type-interactive text-[#063f46]">{team.name}</h3>
+        <span className="type-secondary text-[#063f46]">{team.name}</span>
         {team.starters ? <span className="type-metadata">{team.starters.summary}</span> : null}
       </div>
       {team.starters && team.starters.in.length > 0 ? (
@@ -166,11 +170,26 @@ export function GameRecap({ recap, flow = false }: { recap: GameRecapModel; flow
         )}
       </div>
 
-      <div id="section-box" className="mt-6 space-y-6" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} data-recap-box>
-        {recap.teams.map((team) => (
-          <TeamBox key={team.teamId} team={team} />
-        ))}
-      </div>
+      {recap.teams.length > 0 ? (
+        <div id="section-box" className="mt-6" style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }} data-recap-box>
+          <h3 className="type-interactive mb-2 text-[#063f46]">Box score</h3>
+          {/* One team at a time, away first; same tab styling as the Market card. */}
+          <Tabs defaultValue={recap.teams[0]!.teamId} className="w-full">
+            <TabsList className="mb-3 grid h-9 w-full grid-cols-2 rounded-lg bg-[#F8FBFA] p-1">
+              {recap.teams.map((team, i) => (
+                <TabsTrigger key={team.teamId} value={team.teamId} className={TAB} data-box-tab={team.abbr}>
+                  {team.abbr} {i === 0 ? recap.score.away : recap.score.home}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {recap.teams.map((team) => (
+              <TabsContent key={team.teamId} value={team.teamId} className="mt-0 min-w-0 outline-none">
+                <TeamBox team={team} />
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      ) : null}
     </MatchupSection>
   );
 }

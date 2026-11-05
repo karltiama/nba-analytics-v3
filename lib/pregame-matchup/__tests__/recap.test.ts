@@ -183,8 +183,12 @@ function recapFixture() {
 }
 
 describe('GameRecap', () => {
-  it('renders result tiles and a box score with starters marked', () => {
+  it('renders result tiles and a box score per team tab, away first, with starters marked', () => {
     const html = renderToStaticMarkup(createElement(GameRecap, { recap: recapFixture(), flow: true }));
+    expect(html).toMatch(/data-box-tab="POR"[^>]*>POR 132</);
+    expect(html).toMatch(/data-box-tab="PHX"[^>]*>PHX 119</);
+    // Only the selected (away) team's table is rendered until the other tab is opened.
+    expect(html).not.toContain('Box score not loaded yet.');
     expect(html).toContain('id="section-recap"');
     expect(html).toContain('id="section-box"');
     expect(html).toContain('data-recap-tile="Spread"');
@@ -193,7 +197,6 @@ describe('GameRecap', () => {
     expect(html).toContain('href="/betting/players/n1">New One</a>');
     expect(html).toContain('New in the five: ');
     expect(html).toMatch(/Did not play: <span><a [^>]*href="\/betting\/players\/d1">Sat Out<\/a><\/span>/);
-    expect(html).toContain('Box score not loaded yet.');
     expect(html).not.toMatch(/won \$|payout|profit/i);
   });
 });
