@@ -1,3 +1,4 @@
+import { propsExplorerHref } from '@/lib/betting/research-journey';
 const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 /** Calendar YYYY-MM-DD, or null when the query value is missing or not a real date. */
@@ -29,9 +30,9 @@ export function playerPageHref(playerId: string): string {
   return `/betting/players/${encodeURIComponent(playerId.trim())}`;
 }
 
-/** This game's props and live board. */
-export function gamePropsHref(gameId: string): string {
-  return `/betting/games/${encodeURIComponent(gameId.trim())}`;
+/** Props Explorer filtered to this game (and its slate date when known). */
+export function gamePropsHref(gameId: string, date?: string | null): string {
+  return propsExplorerHref({ gameId: gameId.trim(), date: parseSlateDate(date) });
 }
 
 export function dashboardReturnHref(slateDate?: string | null): string {

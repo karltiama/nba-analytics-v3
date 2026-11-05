@@ -497,10 +497,10 @@ describe('pregame navigation', () => {
       ])
     )[0]!;
     const finalHtml = renderToStaticMarkup(createElement(GameCard, { game: finalGame, presentation: 'scoreboard' }));
-    expect(finalHtml.match(/aria-disabled="true"/g)).toHaveLength(1);
+    expect(finalHtml).not.toContain('aria-disabled');
     expect(finalHtml).toContain('>Game recap</span>');
-    expect(finalHtml).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=9002"');
-    expect(finalHtml).not.toContain('/scoreboard/games/');
+    expect(finalHtml).not.toContain('props-explorer');
+    expect(finalHtml).toContain('href="/scoreboard/games/9002?date=2026-10-09"');
     expect(finalHtml).not.toContain('/betting/games/');
 
     const researchHtml = renderToStaticMarkup(

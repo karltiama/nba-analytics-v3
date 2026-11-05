@@ -12,7 +12,7 @@ import { createPgScoreboardStore, type ScoreboardStore } from '@/lib/scoreboard/
 import type { PlayerSumRow, TeamSumRow } from './aggregate';
 import { buildPregameMatchup, type CurrentSeasonInput, type MatchupGameContext, type PregameMatchupModel } from './compose';
 import { playerRow, teamRow } from './rows';
-import { dashboardReturnHref, parseSlateDate } from './href';
+import { dashboardReturnHref, parseSlateDate, scoreboardMatchupHref } from './href';
 import { currentSeasonTeamQuery, historicalPlayerQuery, historicalTeamQuery, teamIdentityQuery } from './queries';
 import { resolveMatchupQuote } from './quote';
 import { presentRoster } from './roster';
@@ -23,7 +23,8 @@ import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 import { seasonSpan } from './compose';
 import { buildStarters, type StarterRow, type StartersModel } from './starters';
 import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
-import { consensusQuote, type BookOddsRow } from './odds-consensus';
+import { closingLine, consensusQuote, type BookOddsRow } from './odds-consensus';
+import { buildGameRecap, type GameRecap } from './recap';
 
 type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 
@@ -116,6 +117,24 @@ const STARTERS_SQL = `
   LEFT JOIN analytics.players p ON p.player_id = s.player_id
   WHERE s.season = $1 AND s.team_id = ANY($2)
     AND (g.start_time AT TIME ZONE 'America/New_York')::date < $3::date`;
+
+/** This game's own starters, for the postgame recap. */
+const GAME_STARTERS_SQL = `
+  SELECT s.team_id, s.player_id, COALESCE(NULLIF(TRIM(p.full_name), ''), s.player_id) AS name
+  FROM analytics.game_starters s
+  LEFT JOIN analytics.players p ON p.player_id = s.player_id
+  WHERE s.game_id = $1
+  ORDER BY s.team_id, s.player_id`;
+
+/** This game's box score lines, the same source as the game page's final box score. */
+const GAME_BOX_SQL = `
+  SELECT l.team_id, l.player_id, COALESCE(NULLIF(TRIM(p.full_name), ''), l.player_id) AS name, l.minutes,
+         l.points, l.rebounds, l.assists, l.steals, l.blocks, l.turnovers,
+         l.field_goals_made, l.field_goals_attempted, l.three_pointers_made, l.three_pointers_attempted,
+         l.free_throws_made, l.free_throws_attempted, l.plus_minus
+  FROM analytics.player_game_logs l
+  LEFT JOIN analytics.players p ON p.player_id = l.player_id
+  WHERE l.game_id = $1`;
 
 /** Each player's latest team this season, and whether he played at all last season. */
 const PLAYER_SEASONS_SQL = `
@@ -399,5 +418,94 @@ export async function loadPregameMatchup(input: {
     playerResult.map(playerRow).filter((row): row is PlayerSumRow => row != null),
     injuryReport
   );
-  return { ...model, injuryReport, starters, currentPlayers };
+  const recap = await loadRecap(run, game, { away: awayAbbr, home: homeAbbr, awayName: model.awayName, homeName: model.homeName }, starterRows);
+  return { ...model, injuryReport, starters, currentPlayers, recap, gameDate: game.etDate };
+}
+
+/**
+ * Final games only. The closing line, starters and box score each degrade on their own when a read
+ * fails: no line shows a note, no starters hides the comparison, no logs shows "not loaded yet".
+ */
+async function loadRecap(
+  run: Sql,
+  game: StoredScoreboardGame,
+  names: { away: string; home: string; awayName: string; homeName: string },
+  priorStarters: StarterRow[] | null
+): Promise<GameRecap | null> {
+  if (game.lifecycle !== 'final' || game.homeScore == null || game.visitorScore == null) return null;
+  const [close, starterRows, boxRows] = await Promise.all([
+    loadBookOdds(run, game.gameId)
+      .then((rows) => closingLine(rows, game.scheduledTip))
+      .catch(() => null),
+    run(GAME_STARTERS_SQL, [game.gameId]).catch(() => null),
+    run(GAME_BOX_SQL, [game.gameId]).catch(() => []),
+  ]);
+  const teams = [
+    { teamId: game.visitorTeamId, abbr: names.away, name: names.awayName },
+    { teamId: game.homeTeamId, abbr: names.home, name: names.homeName },
+  ].map((team) => {
+    const prior = (priorStarters ?? []).filter((r) => r.teamId === team.teamId);
+    const lastDate = prior.reduce<string | null>((max, r) => (max == null || r.date > max ? r.date : max), null);
+    const lastGame = lastDate ? prior.filter((r) => r.date === lastDate) : [];
+    const lastId = lastGame[0]?.gameId;
+    const actual = (starterRows ?? [])
+      .filter((r) => String(r.team_id) === team.teamId)
+      .map((r) => ({ playerId: String(r.player_id), name: String(r.name) }));
+    return {
+      ...team,
+      starters:
+        actual.length > 0
+          ? {
+              actual,
+              previous:
+                lastDate && lastId
+                  ? { date: lastDate, players: lastGame.filter((r) => r.gameId === lastId).map((r) => ({ playerId: r.playerId, name: r.name })) }
+                  : null,
+            }
+          : null,
+      box: boxRows
+        .filter((r) => String(r.team_id) === team.teamId)
+        .map((r) => ({
+          playerId: String(r.player_id),
+          name: String(r.name),
+          minutes: r.minutes == null ? null : String(r.minutes),
+          points: numOrNull(r.points),
+          rebounds: numOrNull(r.rebounds),
+          assists: numOrNull(r.assists),
+          steals: numOrNull(r.steals),
+          blocks: numOrNull(r.blocks),
+          turnovers: numOrNull(r.turnovers),
+          fgm: numOrNull(r.field_goals_made),
+          fga: numOrNull(r.field_goals_attempted),
+          tpm: numOrNull(r.three_pointers_made),
+          tpa: numOrNull(r.three_pointers_attempted),
+          ftm: numOrNull(r.free_throws_made),
+          fta: numOrNull(r.free_throws_attempted),
+          plusMinus: numOrNull(r.plus_minus),
+        })),
+    };
+  });
+  return buildGameRecap({
+    awayAbbr: names.away,
+    homeAbbr: names.home,
+    awayScore: game.visitorScore,
+    homeScore: game.homeScore,
+    overtimePeriods: game.overtimePeriods,
+    close,
+    teams,
+  });
+}
+
+/**
+ * For the old game page: the one-page URL when this game is Final on the scoreboard, else null.
+ * Older games that are not on the scoreboard keep the old page.
+ */
+export async function finalGameRedirect(gameId: string): Promise<string | null> {
+  try {
+    const store = createPgScoreboardStore(await defaultPool());
+    const game = await store.loadGameById(gameId);
+    return game && game.lifecycle === 'final' ? scoreboardMatchupHref(game.gameId, game.etDate) : null;
+  } catch {
+    return null;
+  }
 }
