@@ -37,6 +37,8 @@ export type MatchupHeaderProps = {
   links?: MatchupNavLink[];
   /** This game's props page, linked under the market strip. */
   propsHref?: string | null;
+  /** Final score; replaces the "@" between the teams. */
+  score?: { away: number; home: number } | null;
 };
 
 function TeamSide({ team }: { team: MatchupHeaderSide }) {
@@ -74,6 +76,7 @@ export function MatchupHeader({
   market,
   links = [],
   propsHref = null,
+  score = null,
 }: MatchupHeaderProps) {
   const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
   return (
@@ -104,7 +107,15 @@ export function MatchupHeader({
         </div>
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
           <TeamSide team={away} />
-          <span className="type-secondary shrink-0 px-1">@</span>
+          {score ? (
+            <span className="shrink-0 px-1 text-xl font-bold tabular-nums text-[#063f46] sm:text-3xl" data-header-score>
+              <span className={score.away > score.home ? '' : 'text-[#4a6366]'}>{score.away}</span>
+              <span className="px-1.5 text-[#9fb3b5] sm:px-2">–</span>
+              <span className={score.home > score.away ? '' : 'text-[#4a6366]'}>{score.home}</span>
+            </span>
+          ) : (
+            <span className="type-secondary shrink-0 px-1">@</span>
+          )}
           <TeamSide team={home} />
         </div>
       </div>

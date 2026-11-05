@@ -27,14 +27,18 @@ function showRosterSection(model: PregameMatchupModel): boolean {
 }
 
 function sectionLinks(model: PregameMatchupModel, roster: boolean): MatchupNavLink[] {
-  const links: MatchupNavLink[] = [
-    ...(model.recap ? [{ href: '#section-recap', label: 'Recap' }] : []),
-    ...(model.context ? [{ href: '#section-tonight', label: 'Tonight' }] : []),
-    { href: '#section-story', label: 'Overview' },
-  ];
+  const final = model.recap != null;
+  const links: MatchupNavLink[] = final
+    ? [
+        { href: '#section-recap', label: 'Recap' },
+        { href: '#section-box', label: 'Box score' },
+        { href: '#section-story', label: 'Before the game' },
+      ]
+    : [...(model.context ? [{ href: '#section-tonight', label: 'Tonight' }] : []), { href: '#section-story', label: 'Overview' }];
   if (model.insights.length > 0) links.push({ href: '#section-signals', label: 'Findings' });
-  if (model.starters) links.push({ href: '#section-starters', label: 'Starters' });
-  if (model.injuryReport) links.push({ href: '#section-injuries', label: 'Injuries' });
+  // Starters and injuries read today's report, so a Final game hides them.
+  if (model.starters && !final) links.push({ href: '#section-starters', label: 'Starters' });
+  if (model.injuryReport && !final) links.push({ href: '#section-injuries', label: 'Injuries' });
   links.push({ href: '#section-comparison', label: 'Teams' });
   if (model.contributors) links.push({ href: '#section-contributors', label: 'Players' });
   if (roster) links.push({ href: '#section-roster', label: 'Roster' });
@@ -61,6 +65,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
     injuryNotes: (model.injuryReport?.teams ?? []).flatMap((team) => (team.sampleNote ? [team.sampleNote] : [])),
   });
   const roster = showRosterSection(model);
+  const final = model.recap != null;
   return (
     <main className="mx-auto grid max-w-[1800px] grid-cols-1 gap-4 px-4 pb-8 pt-6 sm:px-6 lg:px-8">
       <MatchupHeader
@@ -74,6 +79,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         backLabel="Today's Games"
         market={model.quote}
         propsHref={gamePropsHref(model.gameId)}
+        score={model.recap?.score ?? null}
         links={sectionLinks(model, roster)}
       />
 
@@ -84,12 +90,12 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           aria-label="Quick reference"
           data-matchup-rail
         >
-          {model.context ? (
+          {model.context && !final ? (
             <MatchupContextStrip context={model.context} moreHref={model.injuryReport ? '#section-injuries' : null} />
           ) : null}
           {model.quote ? <MarketMovement quote={model.quote} homeAbbr={model.homeAbbr} /> : null}
           <MatchupQuickStats awayAbbr={model.awayAbbr} homeAbbr={model.homeAbbr} comparison={overview.comparison} />
-          {!model.quote && model.quoteNote ? (
+          {!model.quote && model.quoteNote && !final ? (
             <section className={RAIL_CARD} aria-labelledby="sportsbook">
               <div className={RAIL_HEADER}>
                 <h2 id="sportsbook" className="type-section-heading text-[#063f46]">
@@ -105,11 +111,19 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           className="min-w-0 rounded-2xl border border-[#DCE9EA] bg-white p-4 shadow-sm sm:p-6 lg:order-1"
           data-matchup-main
         >
-          {model.recap ? <GameRecap recap={model.recap} flow /> : null}
+          {model.recap ? (
+            <>
+              <GameRecap recap={model.recap} flow />
+              <div className="border-t-2 border-[#DCE9EA] pt-6" data-before-game>
+                <p className="type-section-heading text-[#063f46]">Before the game</p>
+                <p className="type-metadata mt-1">How the matchup looked going in, from games before this one.</p>
+              </div>
+            </>
+          ) : null}
           <MatchupStory story={overview.story} flow />
           <MatchupFindings findings={overview.findings} flow />
-          {model.starters ? <LikelyStarters starters={model.starters} flow /> : null}
-          {model.injuryReport ? <InjuryReport report={model.injuryReport} flow /> : null}
+          {model.starters && !final ? <LikelyStarters starters={model.starters} flow /> : null}
+          {model.injuryReport && !final ? <InjuryReport report={model.injuryReport} flow /> : null}
           <ComparisonGrid
             flow
             awayAbbr={model.awayAbbr}
