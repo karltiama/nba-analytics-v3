@@ -26,6 +26,7 @@ import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
 import { closingLine, consensusQuote, type BookOddsRow } from './odds-consensus';
 import { buildGameRecap, type GameRecap } from './recap';
 import { gamePhase } from '@/lib/scoreboard/game-pulse';
+import { ARCHIVE_GAME_SQL, archiveGameFromRow, archiveSeasonLabel, archiveWhenLabel, type ArchiveGame } from './archive';
 
 /** Start polling the live board this long before tip, so it appears at tip without a reload. */
 export const LIVE_WATCH_LEAD_MINUTES = 30;
@@ -223,7 +224,10 @@ async function loadBookOdds(run: Sql, gameId: string): Promise<BookOddsRow[]> {
   }
 }
 
-async function loadStarterRows(run: Sql, game: StoredScoreboardGame): Promise<StarterRow[] | null> {
+async function loadStarterRows(
+  run: Sql,
+  game: { season: number | string; visitorTeamId: string; homeTeamId: string; etDate: string }
+): Promise<StarterRow[] | null> {
   try {
     const rows = await run(STARTERS_SQL, [String(game.season), [game.visitorTeamId, game.homeTeamId], game.etDate]);
     return rows.map((r) => ({
@@ -329,7 +333,7 @@ export async function loadPregameMatchup(input: {
     return result.rows as Record<string, unknown>[];
   });
   const game: StoredScoreboardGame | null = await store.loadGameById(input.gameId);
-  if (!game) return null;
+  if (!game) return loadArchiveMatchup(run, input.gameId, input.slateDate ?? null, now);
 
   const awayAbbr = game.visitorAbbr?.trim() || 'Away';
   const homeAbbr = game.homeAbbr?.trim() || 'Home';
@@ -422,7 +426,11 @@ export async function loadPregameMatchup(input: {
     playerResult.map(playerRow).filter((row): row is PlayerSumRow => row != null),
     injuryReport
   );
-  const recap = await loadRecap(run, game, { away: awayAbbr, home: homeAbbr, awayName: model.awayName, homeName: model.homeName }, starterRows);
+  const names = { away: awayAbbr, home: homeAbbr, awayName: model.awayName, homeName: model.homeName };
+  const recap =
+    game.lifecycle === 'final' && game.homeScore != null && game.visitorScore != null
+      ? await loadRecap(run, { ...game, homeScore: game.homeScore, visitorScore: game.visitorScore }, names, starterRows)
+      : null;
   const phase = gamePhase(game.lifecycle);
   const tip = game.scheduledTip ? Date.parse(game.scheduledTip) : NaN;
   const watchLive =
@@ -430,17 +438,22 @@ export async function loadPregameMatchup(input: {
   return { ...model, injuryReport, starters, currentPlayers, recap, gameDate: game.etDate, phase, watchLive };
 }
 
+/** What the recap needs from a Final game, whether it came from the scoreboard or analytics.games. */
+type RecapGame = Pick<
+  ArchiveGame,
+  'gameId' | 'scheduledTip' | 'homeTeamId' | 'visitorTeamId' | 'homeScore' | 'visitorScore' | 'overtimePeriods'
+>;
+
 /**
  * Final games only. The closing line, starters and box score each degrade on their own when a read
  * fails: no line shows a note, no starters hides the comparison, no logs shows "not loaded yet".
  */
 async function loadRecap(
   run: Sql,
-  game: StoredScoreboardGame,
+  game: RecapGame,
   names: { away: string; home: string; awayName: string; homeName: string },
   priorStarters: StarterRow[] | null
 ): Promise<GameRecap | null> {
-  if (game.lifecycle !== 'final' || game.homeScore == null || game.visitorScore == null) return null;
   const [close, starterRows, boxRows] = await Promise.all([
     loadBookOdds(run, game.gameId)
       .then((rows) => closingLine(rows, game.scheduledTip))
@@ -504,15 +517,82 @@ async function loadRecap(
   });
 }
 
+async function loadArchiveGame(run: Sql, gameId: string): Promise<ArchiveGame | null> {
+  try {
+    return archiveGameFromRow((await run(ARCHIVE_GAME_SQL, [gameId]))[0]);
+  } catch {
+    return null;
+  }
+}
+
 /**
- * For the old game page: the one-page URL for any game on the scoreboard (pregame, live or Final).
- * Past-season games are not on the scoreboard and keep the old page.
+ * A Final game that is not on the scoreboard (past seasons). Header and recap only: the matchup sections
+ * compare against fixed 2025–26 and 2026–27 windows and today's roster and injuries, which would be wrong
+ * for an old game.
+ */
+async function loadArchiveMatchup(
+  run: Sql,
+  gameId: string,
+  slateDate: string | null,
+  now: Date
+): Promise<PregameMatchupModel | null> {
+  const game = await loadArchiveGame(run, gameId);
+  if (!game) return null;
+  const awayAbbr = game.visitorAbbr ?? 'Away';
+  const homeAbbr = game.homeAbbr ?? 'Home';
+  const awayName = game.visitorName ?? awayAbbr;
+  const homeName = game.homeName ?? homeAbbr;
+  const consensus = consensusQuote({ rows: await loadBookOdds(run, game.gameId), tipAt: game.scheduledTip, now, awayAbbr, homeAbbr });
+  const model = buildPregameMatchup({
+    gameId: game.gameId,
+    awayTeamId: game.visitorTeamId,
+    homeTeamId: game.homeTeamId,
+    awayAbbr,
+    homeAbbr,
+    awayName,
+    homeName,
+    tipLabel: archiveWhenLabel(game),
+    seasonLabel: archiveSeasonLabel(game),
+    statusLabel: 'Final',
+    updatedLabel: 'Box score from BallDontLie',
+    returnHref: dashboardReturnHref(parseSlateDate(slateDate)),
+    identityConfirmed: true,
+    teamRows: [],
+    playerRows: [],
+    roster: presentRoster({ gameDate: game.etDate, day: null, teams: [] }),
+    quote: consensus ? { quote: consensus, note: null, reason: null } : { quote: null, note: null, reason: 'unavailable' },
+    current: null,
+    context: null,
+  });
+  const priorStarters = await loadStarterRows(run, game);
+  const recap = await loadRecap(run, game, { away: awayAbbr, home: homeAbbr, awayName, homeName }, priorStarters);
+  return {
+    ...model,
+    insights: [],
+    contributors: null,
+    injuryReport: null,
+    starters: null,
+    currentPlayers: null,
+    recap,
+    gameDate: game.etDate,
+    phase: 'final',
+    watchLive: false,
+    archive: true,
+  };
+}
+
+/**
+ * For the old game page: the one-page URL for every game the matchup page renders, on the scoreboard
+ * (pregame, live or Final) or a past-season Final in analytics.games. Null keeps the old page.
  */
 export async function oneGamePageRedirect(gameId: string): Promise<string | null> {
   try {
-    const store = createPgScoreboardStore(await defaultPool());
-    const game = await store.loadGameById(gameId);
-    return game ? scoreboardMatchupHref(game.gameId, game.etDate) : null;
+    const pool = await defaultPool();
+    const game = await createPgScoreboardStore(pool).loadGameById(gameId);
+    if (game) return scoreboardMatchupHref(game.gameId, game.etDate);
+    const run: Sql = async (text, params) => (await pool.query(text, params)).rows as Record<string, unknown>[];
+    const archived = await loadArchiveGame(run, gameId);
+    return archived ? scoreboardMatchupHref(archived.gameId) : null;
   } catch {
     return null;
   }

@@ -28,6 +28,15 @@ function showRosterSection(model: PregameMatchupModel): boolean {
 }
 
 function sectionLinks(model: PregameMatchupModel, roster: boolean): MatchupNavLink[] {
+  // A past-season game shows only the recap: the matchup sections compare against this season and last.
+  if (model.archive) {
+    return model.recap
+      ? [
+          { href: '#section-recap', label: 'Recap' },
+          { href: '#section-box', label: 'Box score' },
+        ]
+      : [];
+  }
   const final = model.recap != null;
   const live = model.phase === 'live';
   const links: MatchupNavLink[] = live
@@ -76,6 +85,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
   const roster = showRosterSection(model);
   const final = model.recap != null;
   const live = model.phase === 'live';
+  const archive = model.archive === true;
   const page = (
     <main className="mx-auto grid max-w-[1800px] grid-cols-1 gap-4 px-4 pb-8 pt-6 sm:px-6 lg:px-8">
       <MatchupHeader
@@ -86,7 +96,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         seasonLabel={model.seasonLabel}
         updatedLabel={model.updatedLabel}
         backHref={model.returnHref}
-        backLabel="Today's Games"
+        backLabel={archive ? 'Scoreboard' : "Today's Games"}
         market={model.quote}
         propsHref={final ? null : gamePropsHref(model.gameId, model.gameDate)}
         score={model.recap?.score ?? null}
@@ -105,7 +115,9 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
             <MatchupContextStrip context={model.context} moreHref={model.injuryReport ? '#section-injuries' : null} />
           ) : null}
           {model.quote ? <MarketMovement quote={model.quote} homeAbbr={model.homeAbbr} /> : null}
-          <MatchupQuickStats awayAbbr={model.awayAbbr} homeAbbr={model.homeAbbr} comparison={overview.comparison} />
+          {archive ? null : (
+            <MatchupQuickStats awayAbbr={model.awayAbbr} homeAbbr={model.homeAbbr} comparison={overview.comparison} />
+          )}
           {!model.quote && model.quoteNote && !final && !live ? (
             <section className={RAIL_CARD} aria-labelledby="sportsbook">
               <div className={RAIL_HEADER}>
@@ -124,41 +136,45 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         >
           {model.watchLive ? <LiveBoardSection expectLive={live} /> : null}
           {model.recap ? <GameRecap recap={model.recap} flow /> : null}
-          {model.recap || live ? (
+          {!archive && (model.recap || live) ? (
             <div className="border-t-2 border-[#DCE9EA] pt-6" data-before-game>
               <p className="type-section-heading text-[#063f46]">Before the game</p>
               <p className="type-metadata mt-1">How the matchup looked going in, from games before this one.</p>
             </div>
           ) : null}
-          <MatchupStory story={overview.story} flow />
-          <MatchupFindings findings={overview.findings} flow />
-          {model.starters && !final ? <LikelyStarters starters={model.starters} flow /> : null}
-          {model.injuryReport && !final ? <InjuryReport report={model.injuryReport} flow /> : null}
-          <ComparisonGrid
-            flow
-            awayAbbr={model.awayAbbr}
-            homeAbbr={model.homeAbbr}
-            available={model.history != null || model.current != null}
-            label={model.history?.label ?? null}
-            currentLabel={model.current?.label ?? null}
-            seasonLabel={model.current?.seasonLabel ?? null}
-            possessionNote={overview.comparison.possessionNote}
-            rows={mergeSeasonRows(model.current, model.history?.rows)}
-            historyNote={model.historyNote}
-            currentNote={model.currentNote}
-          />
-          {model.contributors ? (
-            <PlayerContributors
-              flow
-              awayAbbr={model.awayAbbr}
-              homeAbbr={model.homeAbbr}
-              contributors={model.contributors}
-              current={model.currentPlayers ?? null}
-              awayInjuries={sideInjuries(model, model.awayAbbr)}
-              homeInjuries={sideInjuries(model, model.homeAbbr)}
-            />
-          ) : null}
-          {roster ? <RosterContinuity roster={model.roster} flow /> : null}
+          {archive ? null : (
+            <>
+              <MatchupStory story={overview.story} flow />
+              <MatchupFindings findings={overview.findings} flow />
+              {model.starters && !final ? <LikelyStarters starters={model.starters} flow /> : null}
+              {model.injuryReport && !final ? <InjuryReport report={model.injuryReport} flow /> : null}
+              <ComparisonGrid
+                flow
+                awayAbbr={model.awayAbbr}
+                homeAbbr={model.homeAbbr}
+                available={model.history != null || model.current != null}
+                label={model.history?.label ?? null}
+                currentLabel={model.current?.label ?? null}
+                seasonLabel={model.current?.seasonLabel ?? null}
+                possessionNote={overview.comparison.possessionNote}
+                rows={mergeSeasonRows(model.current, model.history?.rows)}
+                historyNote={model.historyNote}
+                currentNote={model.currentNote}
+              />
+              {model.contributors ? (
+                <PlayerContributors
+                  flow
+                  awayAbbr={model.awayAbbr}
+                  homeAbbr={model.homeAbbr}
+                  contributors={model.contributors}
+                  current={model.currentPlayers ?? null}
+                  awayInjuries={sideInjuries(model, model.awayAbbr)}
+                  homeInjuries={sideInjuries(model, model.homeAbbr)}
+                />
+              ) : null}
+              {roster ? <RosterContinuity roster={model.roster} flow /> : null}
+            </>
+          )}
         </div>
       </div>
     </main>
