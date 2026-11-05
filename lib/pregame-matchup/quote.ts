@@ -21,11 +21,15 @@ export type MatchupQuote = {
   moneylineAway: string;
   moneylineHome: string;
   implied: string | null;
+  /** Best available price per side, when the quote is a consensus of several books. */
+  best?: string | null;
 };
 
 export type MatchupQuoteResult = {
   quote: MatchupQuote | null;
   note: string | null;
+  /** Why there is no quote. Only 'unavailable' may fall back to the odds job. */
+  reason?: 'disabled' | 'not_pregame' | 'stale' | 'unavailable' | null;
 };
 
 function signedLine(value: number | null): string {
@@ -55,7 +59,7 @@ export function resolveMatchupQuote(input: {
   homeAbbr: string;
 }): MatchupQuoteResult {
   const enabled = isScoreboardMarketServingEnabled(input.env);
-  if (!enabled) return { quote: null, note: noteFor({ status: 'unavailable', market: null, reason: 'disabled' }, false) };
+  if (!enabled) return { quote: null, note: noteFor({ status: 'unavailable', market: null, reason: 'disabled' }, false), reason: 'disabled' };
   const gameStale = staleness(input.game, input.now).stale;
   const selection = selectMarket({
     game: input.game,
@@ -63,7 +67,10 @@ export function resolveMatchupQuote(input: {
     now: input.now,
     gameStale,
   });
-  if (selection.market == null) return { quote: null, note: noteFor(selection, true) };
+  if (selection.market == null) {
+    const reason = selection.status === 'not_pregame' ? 'not_pregame' : selection.status === 'stale' ? 'stale' : 'unavailable';
+    return { quote: null, note: noteFor(selection, true), reason };
+  }
   const market = selection.market;
   const noVig = twoWayMarketDisplay(market.moneyline?.away ?? null, market.moneyline?.home ?? null);
   return {

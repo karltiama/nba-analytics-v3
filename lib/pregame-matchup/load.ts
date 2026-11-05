@@ -23,6 +23,7 @@ import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 import { seasonSpan } from './compose';
 import { buildStarters, type StarterRow, type StartersModel } from './starters';
 import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
+import { consensusQuote, type BookOddsRow } from './odds-consensus';
 
 type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 
@@ -164,6 +165,39 @@ async function loadCurrentPlayers(
   }
 }
 
+/** Every sportsbook snapshot the odds job stored for this game. */
+const BOOK_ODDS_SQL = `
+  SELECT vendor, snapshot_at, home_moneyline, away_moneyline, home_spread, home_spread_odds, away_spread_odds,
+         total, over_odds, under_odds
+  FROM analytics.game_odds_history
+  WHERE game_id = $1`;
+
+const numOrNull = (v: unknown): number | null => {
+  if (v == null || v === '') return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+};
+
+async function loadBookOdds(run: Sql, gameId: string): Promise<BookOddsRow[]> {
+  try {
+    const rows = await run(BOOK_ODDS_SQL, [gameId]);
+    return rows.map((r) => ({
+      vendor: String(r.vendor ?? ''),
+      snapshotAt: r.snapshot_at instanceof Date ? r.snapshot_at.toISOString() : String(r.snapshot_at ?? ''),
+      homeMoneyline: numOrNull(r.home_moneyline),
+      awayMoneyline: numOrNull(r.away_moneyline),
+      homeSpread: numOrNull(r.home_spread),
+      homeSpreadOdds: numOrNull(r.home_spread_odds),
+      awaySpreadOdds: numOrNull(r.away_spread_odds),
+      total: numOrNull(r.total),
+      overOdds: numOrNull(r.over_odds),
+      underOdds: numOrNull(r.under_odds),
+    }));
+  } catch {
+    return [];
+  }
+}
+
 async function loadStarterRows(run: Sql, game: StoredScoreboardGame): Promise<StarterRow[] | null> {
   try {
     const rows = await run(STARTERS_SQL, [String(game.season), [game.visitorTeamId, game.homeTeamId], game.etDate]);
@@ -282,7 +316,11 @@ export async function loadPregameMatchup(input: {
       quotes = [];
     }
   }
-  const quote = resolveMatchupQuote({ game, quotes, now, env, awayAbbr, homeAbbr });
+  let quote = resolveMatchupQuote({ game, quotes, now, env, awayAbbr, homeAbbr });
+  if (!quote.quote && quote.reason === 'unavailable') {
+    const consensus = consensusQuote({ rows: await loadBookOdds(run, game.gameId), tipAt: game.scheduledTip, now, awayAbbr, homeAbbr });
+    if (consensus) quote = { quote: consensus, note: null, reason: null };
+  }
 
   const window = historicalWindow();
   const teamQuery = historicalTeamQuery(window);
