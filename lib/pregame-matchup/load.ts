@@ -167,10 +167,11 @@ async function loadCurrentPlayers(
 
 /** Every sportsbook snapshot the odds job stored for this game. */
 const BOOK_ODDS_SQL = `
-  SELECT vendor, snapshot_at, home_moneyline, away_moneyline, home_spread, home_spread_odds, away_spread_odds,
-         total, over_odds, under_odds
-  FROM analytics.game_odds_history
-  WHERE game_id = $1`;
+  SELECT h.vendor, h.snapshot_at, h.home_moneyline, h.away_moneyline, h.home_spread, h.home_spread_odds, h.away_spread_odds,
+         h.total, h.over_odds, h.under_odds, r.pulled_at
+  FROM analytics.game_odds_history h
+  LEFT JOIN raw.odds_pull_runs r ON r.pull_run_id = h.pull_run_id
+  WHERE h.game_id = $1`;
 
 const numOrNull = (v: unknown): number | null => {
   if (v == null || v === '') return null;
@@ -192,6 +193,7 @@ async function loadBookOdds(run: Sql, gameId: string): Promise<BookOddsRow[]> {
       total: numOrNull(r.total),
       overOdds: numOrNull(r.over_odds),
       underOdds: numOrNull(r.under_odds),
+      pulledAt: r.pulled_at instanceof Date ? r.pulled_at.toISOString() : r.pulled_at == null ? null : String(r.pulled_at),
     }));
   } catch {
     return [];

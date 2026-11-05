@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { consensusQuote, latestPregameBooks, lineMovement, type BookOddsRow } from '@/lib/pregame-matchup/odds-consensus';
+import { consensusQuote, latestPregameBooks, lineMovement, marketSeries, type BookOddsRow } from '@/lib/pregame-matchup/odds-consensus';
 
 const tip = '2026-11-06T02:00:00Z';
 const now = new Date('2026-11-05T15:00:00Z');
@@ -91,5 +91,42 @@ describe('lineMovement', () => {
 
   it('is null with a single pull', () => {
     expect(lineMovement({ rows: [book('draftkings'), book('fanduel')], tipAt: tip, now, awayAbbr: 'ORL', homeAbbr: 'PHX' })).toBeNull();
+  });
+});
+
+describe('marketSeries', () => {
+  it('gives one consensus point per pull, carrying each book forward', () => {
+    const pulls = ['2026-11-04T05:00:00Z', '2026-11-04T05:02:00Z', '2026-11-04T18:00:00Z', '2026-11-05T14:00:00Z'];
+    const rows = [
+      book('draftkings', { snapshotAt: pulls[0], homeSpread: -2.5 }),
+      book('fanduel', { snapshotAt: pulls[1], homeSpread: -2.5 }),
+      book('draftkings', { snapshotAt: pulls[2], homeSpread: -2 }),
+      book('betmgm', { snapshotAt: pulls[2], homeSpread: -2 }),
+      book('draftkings', { snapshotAt: pulls[3] }),
+      book('fanduel', { snapshotAt: pulls[3] }),
+      book('betmgm', { snapshotAt: pulls[3] }),
+      book('polymarket', { snapshotAt: pulls[3], homeSpread: -9 }),
+    ];
+    const series = marketSeries(rows, tip, now);
+    expect(series.map((p) => [p.at, p.spread, p.books])).toEqual([
+      ['2026-11-04T05:02:00.000Z', -2.5, 2],
+      ['2026-11-04T18:00:00.000Z', -2, 3],
+      ['2026-11-05T14:00:00.000Z', -1.5, 3],
+    ]);
+    expect(lineMovement({ rows, tipAt: tip, now, awayAbbr: 'ORL', homeAbbr: 'PHX' })).toMatch(
+      /^Since Nov 4, 12:02 AM ET: spread PHX −2\.5 → PHX −1\.5 · total steady at 223\.5\./
+    );
+  });
+});
+
+describe('marketSeries by pull', () => {
+  it('groups rows by the pull that stored them, whatever their snapshot times', () => {
+    const pull = '2026-11-05T14:00:37Z';
+    const rows = [
+      book('caesars', { snapshotAt: '2026-11-05T13:51:02Z', pulledAt: pull, homeSpread: -1 }),
+      book('betmgm', { snapshotAt: '2026-11-05T13:51:02Z', pulledAt: pull }),
+      book('draftkings', { snapshotAt: '2026-11-05T14:00:01Z', pulledAt: pull }),
+    ];
+    expect(marketSeries(rows, tip, now).map((p) => [p.at, p.spread, p.books])).toEqual([['2026-11-05T14:00:37.000Z', -1.5, 3]]);
   });
 });

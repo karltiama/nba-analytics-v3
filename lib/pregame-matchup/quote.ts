@@ -8,6 +8,7 @@ import type { StoredOddsQuote, StoredScoreboardGame } from '@/lib/scoreboard/con
 import { isScoreboardMarketServingEnabled } from '@/lib/scoreboard/flags';
 import { marketSourceCaption, selectMarket, type MarketSelection } from '@/lib/scoreboard/market';
 import { staleness } from '@/lib/scoreboard/response';
+import type { MarketPoint } from './odds-consensus';
 
 export type MatchupQuote = {
   vendorLabel: string;
@@ -25,6 +26,8 @@ export type MatchupQuote = {
   best?: string | null;
   /** Opening vs now, from the odds job's snapshots. */
   movement?: string | null;
+  /** Consensus after each odds pull, for the movement chart. */
+  series?: MarketPoint[];
 };
 
 export type MatchupQuoteResult = {

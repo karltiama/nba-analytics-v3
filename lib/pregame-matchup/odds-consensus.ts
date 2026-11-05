@@ -18,6 +18,8 @@ export type BookOddsRow = {
   total: number | null;
   overOdds: number | null;
   underOdds: number | null;
+  /** When the odds job pull that stored this row ran. Snapshot times inside one pull vary by book. */
+  pulledAt?: string | null;
 };
 
 /** Exchanges and prediction markets price differently; the quote is sportsbooks only. */
@@ -173,8 +175,12 @@ export function lineMovement(input: {
   const lastAt = latest.reduce((max, r) => Math.max(max, Date.parse(r.snapshotAt)), -Infinity);
   if (!Number.isFinite(firstAt) || lastAt - firstAt < 30 * 60_000) return null;
 
-  const open = marketOf(first);
-  const now = marketOf(latest);
+  // With two or more pulls, open and now are the first and last points of the chart's series.
+  const series = marketSeries(input.rows, input.tipAt, input.now);
+  const fromSeries = series.length >= 2;
+  const open: MarketSnapshot = fromSeries ? series[0]! : marketOf(first);
+  const now: MarketSnapshot = fromSeries ? series[series.length - 1]! : marketOf(latest);
+  const openedAt = fromSeries ? Date.parse(series[0]!.at) : firstAt;
   const H = input.homeAbbr;
   const fav = (spread: number) => (spread <= 0 ? `${H} ${signedLine(spread)}` : `${input.awayAbbr} ${signedLine(-spread)}`);
   const parts: string[] = [];
@@ -199,9 +205,61 @@ export function lineMovement(input: {
     if (bits.length > 0) moved.push(`${bookLabel(f.vendor)} ${bits.join(', ')}`);
   }
   if (parts.length === 0) return null;
-  const since = `Since ${etTime(new Date(firstAt).toISOString())} ET`;
+  const since = `Since ${etTime(new Date(openedAt).toISOString())} ET`;
   const movedText = moved.length > 0 ? ` Books that moved: ${moved.slice(0, 4).join('; ')}${moved.length > 4 ? ` (+${moved.length - 4} more)` : ''}.` : '';
   return `${since}: ${parts.join(' · ')}.${movedText}`;
+}
+
+export type MarketPoint = {
+  /** ISO time of the newest snapshot in this pull. */
+  at: string;
+  /** Consensus home spread (negative = home favoured). */
+  spread: number | null;
+  total: number | null;
+  homeProb: number | null;
+  books: number;
+};
+
+/** Snapshots this close together belong to one pull. */
+const PULL_BUCKET_MS = 5 * 60_000;
+/** Fewer points than this and no chart is drawn. */
+export const MIN_SERIES_POINTS = 3;
+
+/**
+ * Consensus after each odds pull: every sportsbook's latest snapshot as of that pull (within 36h),
+ * then the same consensus rules as the quote. One point per pull, so the chart steps only when we
+ * actually saw new prices.
+ */
+export function marketSeries(rows: BookOddsRow[], tipAt: string | null, now: Date): MarketPoint[] {
+  const tip = tipAt ? Date.parse(tipAt) : NaN;
+  const cutoff = Number.isFinite(tip) ? tip : now.getTime();
+  // Time each row by its pull when known; otherwise by snapshot, grouping snapshots minutes apart.
+  const snaps = rows
+    .map((r) => {
+      const pulled = r.pulledAt ? Date.parse(r.pulledAt) : NaN;
+      return { ...r, vendor: r.vendor.trim().toLowerCase(), t: Number.isFinite(pulled) ? pulled : Date.parse(r.snapshotAt), byPull: Number.isFinite(pulled) };
+    })
+    .filter((r) => r.vendor && !NOT_SPORTSBOOKS.has(r.vendor) && Number.isFinite(r.t) && r.t < cutoff)
+    .sort((a, b) => a.t - b.t);
+  const pullEnds: number[] = [];
+  for (const s of snaps) {
+    const last = pullEnds[pullEnds.length - 1];
+    if (last != null && (s.byPull ? s.t === last : s.t - last <= PULL_BUCKET_MS)) pullEnds[pullEnds.length - 1] = s.t;
+    else pullEnds.push(s.t);
+  }
+  const points: MarketPoint[] = [];
+  for (const end of pullEnds) {
+    const asOf = new Date(end + 1);
+    const books = latestPregameBooks(
+      snaps.filter((s) => s.t <= end),
+      new Date(Math.min(end + 1, cutoff)).toISOString(),
+      asOf
+    );
+    if (books.length < MIN_BOOKS) continue;
+    const m = marketOf(books);
+    points.push({ at: new Date(end).toISOString(), spread: m.spread, total: m.total, homeProb: m.homeProb, books: books.length });
+  }
+  return points;
 }
 
 function etTime(iso: string): string {
@@ -275,5 +333,6 @@ export function consensusQuote(input: {
     implied: noVig ? `No-vig implied probability: ${A} ${noVig.awayPct}%, ${H} ${noVig.homePct}%` : null,
     best: bestParts.length > 0 ? `Best price: ${bestParts.join(' · ')}` : null,
     movement: lineMovement(input),
+    series: marketSeries(input.rows, input.tipAt, input.now),
   };
 }

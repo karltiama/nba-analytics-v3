@@ -11,6 +11,7 @@ import { RosterContinuity } from '@/components/matchup/RosterContinuity';
 import { PlayerContributors, type SideInjuries } from '@/components/matchup/PlayerContributors';
 import { InjuryReport } from '@/components/matchup/InjuryReport';
 import { LikelyStarters } from '@/components/matchup/LikelyStarters';
+import { MarketMovement } from '@/components/matchup/MarketMovement';
 import { gamePropsHref } from '@/lib/pregame-matchup/href';
 import Link from 'next/link';
 
@@ -84,6 +85,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           {model.context ? (
             <MatchupContextStrip context={model.context} moreHref={model.injuryReport ? '#section-injuries' : null} />
           ) : null}
+          {model.quote ? <MarketMovement quote={model.quote} homeAbbr={model.homeAbbr} /> : null}
           <MatchupQuickStats awayAbbr={model.awayAbbr} homeAbbr={model.homeAbbr} comparison={overview.comparison} />
           {!model.quote && model.quoteNote ? (
             <section className={RAIL_CARD} aria-labelledby="sportsbook">

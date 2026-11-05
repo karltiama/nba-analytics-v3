@@ -17,8 +17,6 @@ export type MatchupHeaderMarket = {
   moneylineAway: string;
   moneylineHome: string;
   implied: string | null;
-  best?: string | null;
-  movement?: string | null;
 };
 
 export type MatchupNavLink = {
@@ -120,12 +118,6 @@ export function MatchupHeader({
             <MarketCell label="Market ML" primary={market.moneylineAway} secondary={market.moneylineHome} />
           </div>
           {market.implied ? <p className="type-secondary mt-2 text-center">{market.implied}</p> : null}
-          {market.best ? <p className="type-metadata mt-1 text-center" data-market-best>{market.best}</p> : null}
-          {market.movement ? (
-            <p className="type-metadata mt-1 text-center" data-market-movement>
-              Line movement · {market.movement}
-            </p>
-          ) : null}
           {propsHref ? (
             <p className="mt-1 text-center">
               <Link href={propsHref} className="type-interactive text-[#075B5C] hover:underline" data-props-link>
