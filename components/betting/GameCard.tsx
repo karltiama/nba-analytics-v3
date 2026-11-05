@@ -324,7 +324,13 @@ export function GameCard({
     (game.gameDate && /^\d{4}-\d{2}-\d{2}/.test(String(game.gameDate))
       ? String(game.gameDate).slice(0, 10)
       : null) ?? researchDate ?? undefined;
-  const gameHref = samplePreview ? '/dashboard' : gameDetailHref(game.id);
+  // Scoreboard cards open the one game page; other presentations keep the game-detail link, which
+  // redirects there for scoreboard games.
+  const gameHref = samplePreview
+    ? '/dashboard'
+    : presentation === 'scoreboard'
+      ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
+      : gameDetailHref(game.id);
   const propsHref = samplePreview ? '/betting/props-explorer' : propsExplorerHref({ gameId: game.id, date: dateForProps });
 
   const hasOdds =

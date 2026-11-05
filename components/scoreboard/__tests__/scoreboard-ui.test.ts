@@ -202,7 +202,8 @@ describe('Pre-game card keeps the original market layout', () => {
       expect(html).toContain('Market implied probability');
       expect(html).toMatch(/aria-label="Market implied probability: NYK \d+ percent, BOS \d+ percent"/);
       expect(html).toContain('Boston is rested; New York played last night.');
-      expect(html).toContain('href="/betting/games/reg-1"');
+      // Scoreboard cards open the one game page; the market card below keeps the game-detail link.
+      expect(html).toMatch(/href="\/scoreboard\/games\/reg-1(\?date=[\d-]+)?"/);
       expect(html).toContain('props-explorer');
       expect(html).not.toContain('aria-disabled');
     }

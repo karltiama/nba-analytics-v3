@@ -512,7 +512,8 @@ describe('pregame navigation', () => {
         presentation: 'scoreboard',
       })
     );
-    expect(researchHtml).toContain('href="/betting/games/21681995"');
+    expect(researchHtml).toMatch(/href="\/scoreboard\/games\/21681995(\?date=[\d-]+)?"/);
+    expect(researchHtml).not.toContain('/betting/games/');
     expect(researchHtml).toContain('props-explorer');
   });
 

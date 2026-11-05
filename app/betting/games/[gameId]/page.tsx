@@ -25,7 +25,7 @@ export default async function BettingGamePage({
   params: Promise<{ gameId: string }>;
 }) {
   const { gameId } = await params;
-  // One page per game: live and Final scoreboard games open the matchup page. Pregame and older games keep this page.
+  // One page per game: every scoreboard game opens the matchup page. Past-season games keep this page.
   const gamePageHref = await oneGamePageRedirect(gameId);
   if (gamePageHref) redirect(gamePageHref);
   const signedIn = await researchSessionPresent();
