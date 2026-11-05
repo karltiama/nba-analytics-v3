@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MatchupScrollOffset } from '@/components/matchup/MatchupScrollOffset';
@@ -39,6 +40,8 @@ export type MatchupHeaderProps = {
   propsHref?: string | null;
   /** Final score; replaces the "@" between the teams. */
   score?: { away: number; home: number } | null;
+  /** Wraps the "@" between the teams, e.g. to swap in the live score once play starts. */
+  renderCenter?: ((fallback: ReactNode) => ReactNode) | null;
 };
 
 function TeamSide({ team }: { team: MatchupHeaderSide }) {
@@ -77,6 +80,7 @@ export function MatchupHeader({
   links = [],
   propsHref = null,
   score = null,
+  renderCenter = null,
 }: MatchupHeaderProps) {
   const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
   return (
@@ -113,6 +117,8 @@ export function MatchupHeader({
               <span className="px-1.5 text-[#9fb3b5] sm:px-2">–</span>
               <span className={score.home > score.away ? '' : 'text-[#4a6366]'}>{score.home}</span>
             </span>
+          ) : renderCenter ? (
+            renderCenter(<span className="type-secondary shrink-0 px-1">@</span>)
           ) : (
             <span className="type-secondary shrink-0 px-1">@</span>
           )}

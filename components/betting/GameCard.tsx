@@ -394,10 +394,12 @@ export function GameCard({
       : scoreboardPresentation && !samplePreview && !research && (phase === 'pregame' || phase === 'final')
         ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
         : null;
-  // Live games open the game page's live props board, which reads the scoreboard's own live box score,
+  // Live games open the matchup page's live props board, which reads the scoreboard's own live box score,
   // so it does not wait on the research flag.
   const followLiveHref =
-    !schedulePreview && scoreboardPresentation && !samplePreview && !research && phase === 'live' ? gameHref : null;
+    !schedulePreview && scoreboardPresentation && !samplePreview && !research && phase === 'live'
+      ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
+      : null;
 
   return (
     <div

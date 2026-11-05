@@ -72,9 +72,9 @@ function expectInPlayShell(html: string) {
   expect(html).toContain('data-leaders-panel');
   expect(html).not.toContain('data-pregame-lines');
   expect(html).not.toContain('Pregame Lines');
-  // Live cards link Follow live to the game page's live props board; final cards still have no game link.
-  const gameLinks = html.match(/href="\/betting\/games\/[^"]*"/g) ?? [];
-  expect(gameLinks).toHaveLength(html.includes('data-phase="live"') ? 1 : 0);
+  // Live and final cards open the one game page (live board / recap); neither links the old game page.
+  expect(html).not.toContain('/betting/games/');
+  expect(html.match(/href="\/scoreboard\/games\/[^"]*"/g) ?? []).toHaveLength(1);
   // Live cards keep View props; final cards drop it (postgame lines can't be bet).
   const live = html.includes('data-phase="live"');
   expect(html.includes('data-view-props')).toBe(live);
@@ -270,7 +270,7 @@ describe('Live card swaps market slots for live facts', () => {
     expect(textOf(teamRow(html))).toMatch(/Clippers — 10 – 17 Raptors —/);
     expect(html).not.toContain('aria-disabled');
     expect(html).toContain('data-follow-live');
-    expect(html).toContain('href="/betting/games/21717908"');
+    expect(html).toContain('href="/scoreboard/games/21717908?date=2026-10-09"');
     expect(html).toContain('>Follow live</span>');
     expect(html).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=21717908"');
   });
