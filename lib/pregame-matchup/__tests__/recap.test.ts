@@ -6,6 +6,7 @@ import { closingLine, type BookOddsRow } from '@/lib/pregame-matchup/odds-consen
 import { GameRecap } from '@/components/matchup/GameRecap';
 import { PregameMatchupView } from '@/components/scoreboard/PregameMatchupView';
 import type { PregameMatchupModel } from '@/lib/pregame-matchup/compose';
+import { gamePropsHref } from '@/lib/pregame-matchup/href';
 
 const close = (over: Partial<ClosingLine> = {}): ClosingLine => ({
   spread: 2.5,
@@ -232,5 +233,11 @@ describe('PregameMatchupView on a Final game', () => {
     expect(html).toContain('data-before-game');
     expect(html.indexOf('data-game-recap')).toBeLessThan(html.indexOf('id="section-story"'));
     expect(html).not.toContain('Pregame prices stay off');
+    expect(html).not.toContain('props-explorer');
+  });
+
+  it('links Props to Props Explorer for the game and its date', () => {
+    expect(gamePropsHref('21718041', '2026-11-05')).toBe('/betting/props-explorer?date=2026-11-05&game_id=21718041');
+    expect(gamePropsHref('21718041')).toBe('/betting/props-explorer?game_id=21718041');
   });
 });

@@ -153,6 +153,8 @@ export type PregameMatchupModel = {
   currentPlayers?: CurrentPlayers | null;
   /** Final games only: result against the closing line and who started. */
   recap?: GameRecap | null;
+  /** The game's ET date (YYYY-MM-DD), for links that filter by slate. */
+  gameDate?: string | null;
 };
 
 function one(value: number): string {

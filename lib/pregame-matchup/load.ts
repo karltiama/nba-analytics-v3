@@ -419,7 +419,7 @@ export async function loadPregameMatchup(input: {
     injuryReport
   );
   const recap = await loadRecap(run, game, { away: awayAbbr, home: homeAbbr, awayName: model.awayName, homeName: model.homeName }, starterRows);
-  return { ...model, injuryReport, starters, currentPlayers, recap };
+  return { ...model, injuryReport, starters, currentPlayers, recap, gameDate: game.etDate };
 }
 
 /**

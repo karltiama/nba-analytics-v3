@@ -42,7 +42,8 @@ function sectionLinks(model: PregameMatchupModel, roster: boolean): MatchupNavLi
   links.push({ href: '#section-comparison', label: 'Teams' });
   if (model.contributors) links.push({ href: '#section-contributors', label: 'Players' });
   if (roster) links.push({ href: '#section-roster', label: 'Roster' });
-  links.push({ href: gamePropsHref(model.gameId), label: 'Props' });
+  // Postgame lines can't be bet, so a Final game has no Props link (same as its scoreboard card).
+  if (!final) links.push({ href: gamePropsHref(model.gameId, model.gameDate), label: 'Props' });
   return links;
 }
 
@@ -78,7 +79,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         backHref={model.returnHref}
         backLabel="Today's Games"
         market={model.quote}
-        propsHref={gamePropsHref(model.gameId)}
+        propsHref={final ? null : gamePropsHref(model.gameId, model.gameDate)}
         score={model.recap?.score ?? null}
         links={sectionLinks(model, roster)}
       />
