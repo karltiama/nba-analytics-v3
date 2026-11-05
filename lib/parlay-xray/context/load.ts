@@ -108,6 +108,8 @@ export async function loadXrayContextSources(
     cutoffAt: string;
     season: string | null;
     teamIds: string[];
+    /** Default true. Current-props analysis passes false: projections are never shown there. */
+    includeProjections?: boolean;
   }
 ): Promise<XRayContextSources> {
   const cutoff = parseCutoffIso(args.cutoffAt);
@@ -124,10 +126,12 @@ export async function loadXrayContextSources(
       : query<Record<string, unknown>>(CONTEXT_TEAM_STATS_SQL, [teamIds, cutoff, args.gameId, seasonParams]),
   ]);
   let projections: Record<string, unknown>[] = [];
-  try {
-    projections = await query<Record<string, unknown>>(CONTEXT_PROJECTION_SQL, [args.playerId, args.gameId, cutoff]);
-  } catch (error) {
-    if (!isMissingRelation(error, 'prediction_snapshots')) throw error;
+  if (args.includeProjections !== false) {
+    try {
+      projections = await query<Record<string, unknown>>(CONTEXT_PROJECTION_SQL, [args.playerId, args.gameId, cutoff]);
+    } catch (error) {
+      if (!isMissingRelation(error, 'prediction_snapshots')) throw error;
+    }
   }
   return {
     priorPlayerLogs: logs.map(mapPlayerLog),

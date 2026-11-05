@@ -22,6 +22,8 @@ import type { SelectedParlayLeg } from './selection';
 
 export type WorkspaceLegStatus = 'supported' | 'mixed' | 'needs_review';
 
+export type WorkspaceAnalysisMode = 'historical' | 'current';
+
 export type WorkspaceSignalTone = 'support' | 'watch' | 'concern' | 'info';
 
 export type WorkspaceSignal = {
@@ -123,26 +125,36 @@ function coverageShare(buckets: CoverageBucket[]): number | null {
 }
 
 /** Presentation bands over existing have/of counts. Not a new coverage model. */
-export function workspaceCoverageSummary(parlay: XRayParlayInterpretation): {
+export function workspaceCoverageSummary(
+  parlay: XRayParlayInterpretation,
+  mode: WorkspaceAnalysisMode = 'historical'
+): {
   percent: number | null;
   band: 'High' | 'Partial' | 'Limited' | 'Unavailable';
   warnings: string[];
 } {
   const quality = parlay.dataQuality;
-  const percent = coverageShare([
-    quality.canonical,
-    quality.recentForm,
-    quality.role,
-    quality.wowy,
-    quality.projection,
-    quality.availability,
-    { have: quality.historicalMarket.exact, of: quality.historicalMarket.of },
-  ]);
+  const current = mode === 'current';
+  // Current props: projections are not read (no edge vs the no-vig market), WOWY is not wired,
+  // and close-line history does not exist before tip, so none of them count as coverage.
+  const percent = coverageShare(
+    current
+      ? [quality.canonical, quality.recentForm, quality.role, quality.availability]
+      : [
+          quality.canonical,
+          quality.recentForm,
+          quality.role,
+          quality.wowy,
+          quality.projection,
+          quality.availability,
+          { have: quality.historicalMarket.exact, of: quality.historicalMarket.of },
+        ]
+  );
   const warnings: string[] = [];
-  if (quality.wowy.of > 0 && quality.wowy.have === 0) warnings.push('WOWY unavailable');
-  if (quality.projection.of > 0 && quality.projection.have === 0) warnings.push('Projection unavailable');
+  if (!current && quality.wowy.of > 0 && quality.wowy.have === 0) warnings.push('WOWY unavailable');
+  if (!current && quality.projection.of > 0 && quality.projection.have === 0) warnings.push('Projection unavailable');
   if (quality.availability.of > 0 && quality.availability.have === 0) warnings.push('Availability unavailable');
-  if (quality.historicalMarket.of > 0 && quality.historicalMarket.exact === 0) {
+  if (!current && quality.historicalMarket.of > 0 && quality.historicalMarket.exact === 0) {
     warnings.push('No exact market history');
   }
   if (quality.recentForm.of > 0 && quality.recentForm.have < quality.recentForm.of) {
@@ -166,11 +178,25 @@ function projectionOnRequestedSide(interp: XRayLegInterpretation, context: XRayL
   return null;
 }
 
+/** `current` when any analyzed leg came from current-mode analysis (today's props). */
+export function workspaceAnalysisMode(interpretations: XRayLegInterpretation[]): WorkspaceAnalysisMode {
+  return interpretations.some((interp) => interp.analysisMode === 'current') ? 'current' : 'historical';
+}
+
+/**
+ * Model projections are shown only for certified historical replays. Backtests found the props
+ * model has no edge over the no-vig market, so current props never show a projection.
+ */
+export function workspaceShowsProjection(interpretations: XRayLegInterpretation[]): boolean {
+  return workspaceAnalysisMode(interpretations) === 'historical';
+}
+
 export function workspaceKeySignals(
   parlay: XRayParlayInterpretation,
   interpretations: XRayLegInterpretation[],
   contexts: XRayLegContext[]
 ): WorkspaceSignal[] {
+  const mode = workspaceAnalysisMode(interpretations);
   const knownProjection = interpretations.filter((interp, index) => projectionOnRequestedSide(interp, contexts[index]) != null);
   const onSide = interpretations.filter((interp, index) => projectionOnRequestedSide(interp, contexts[index]) === true).length;
   const projection: WorkspaceSignal =
@@ -216,7 +242,7 @@ export function workspaceKeySignals(
     warnings: [],
   };
 
-  const coverage = workspaceCoverageSummary(parlay);
+  const coverage = workspaceCoverageSummary(parlay, mode);
   const coverageSignal: WorkspaceSignal = {
     id: 'coverage',
     label: 'Data coverage',
@@ -226,6 +252,7 @@ export function workspaceKeySignals(
     warnings: coverage.warnings,
   };
 
+  if (mode === 'current') return [role, relationships, coverageSignal];
   return [projection, role, relationships, coverageSignal];
 }
 
@@ -288,6 +315,7 @@ export function workspaceProjectionTable(
   interpretations: XRayLegInterpretation[],
   contexts: XRayLegContext[]
 ) {
+  if (!workspaceShowsProjection(interpretations)) return [];
   return interpretations.flatMap((interp, index) => {
     const projection = contexts[index]?.projection;
     if (!projection || projection.status !== 'AVAILABLE' || projection.projectedStat == null) return [];

@@ -108,6 +108,10 @@ export function formLineRead(above: number, below: number, sample: number): Form
   return above > below ? 'ABOVE_MORE_OFTEN_THAN_BELOW' : 'BELOW_MORE_OFTEN_THAN_ABOVE';
 }
 
+function availabilityStatusWord(status: 'Out' | 'Doubtful' | 'Q'): string {
+  return status === 'Q' ? 'Questionable' : status;
+}
+
 function coverageStatus(
   status: XRayLegContext['wowy']['status']
 ): 'UNAVAILABLE' | 'AVAILABLE' | 'LIMITED' {
@@ -167,6 +171,9 @@ function summarySentence(
 }
 
 export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation {
+  // Current mode: the offer is pre-tip, so close-line and 3-Hour gaps are expected, and
+  // projections are not read (no edge over the no-vig market in backtests).
+  const current = context.analysisMode === 'current';
   const side = context.identity.side;
   const line = context.identity.line;
   const market = context.identity.market;
@@ -207,7 +214,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
     );
     counter.push(item);
     whyItCouldFail.push(item);
-  } else if (position === 'UNKNOWN' && !context.market.snapshotAvailable.decisionClose) {
+  } else if (!current && position === 'UNKNOWN' && !context.market.snapshotAvailable.decisionClose) {
     uncertainties.push(
       evidence(
         'MARKET_CLOSE_UNKNOWN',
@@ -218,7 +225,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
     );
   }
 
-  if (context.market.matchStatus === 'PARTIAL_MATCH' || context.market.reason === 'BOOK_UNAVAILABLE') {
+  if (!current && (context.market.matchStatus === 'PARTIAL_MATCH' || context.market.reason === 'BOOK_UNAVAILABLE')) {
     const item = evidence(
       context.market.reason === 'BOOK_UNAVAILABLE' ? 'MARKET_BOOK_UNAVAILABLE' : 'MARKET_PARTIAL_MATCH',
       'MARKET',
@@ -231,7 +238,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
     whyItCouldFail.push(item);
   }
 
-  if (!context.market.snapshotAvailable.threeHourPreTip) {
+  if (!current && !context.market.snapshotAvailable.threeHourPreTip) {
     uncertainties.push(
       evidence(
         'MARKET_MISSING_THREE_HOUR',
@@ -360,7 +367,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
     whyItCouldFail.push(item);
   }
 
-  if (context.wowy.status !== 'AVAILABLE') {
+  if (!current && context.wowy.status !== 'AVAILABLE') {
     uncertainties.push(
       evidence(
         'NO_AS_OF_SAFE_WOWY',
@@ -370,7 +377,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
       )
     );
   }
-  if (context.projection.status !== 'AVAILABLE') {
+  if (!current && context.projection.status !== 'AVAILABLE') {
     uncertainties.push(
       evidence(
         'NO_ARCHIVED_PROJECTION',
@@ -380,7 +387,45 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
       )
     );
   }
-  if (context.availability.status !== 'AVAILABLE') {
+  if (current && context.availability.status === 'AVAILABLE') {
+    const asOf = context.availability.asOfLabel ? ` (${context.availability.asOfLabel})` : '';
+    const own = context.availability.playerStatus ?? null;
+    if (own) {
+      const item = evidence(
+        'AVAILABILITY_PLAYER_LISTED',
+        'ROLE',
+        `Listed ${availabilityStatusWord(own)} on the injury report`,
+        `${context.identity.playerDisplayName ?? 'This player'} is listed ${availabilityStatusWord(own)} on the current injury report${asOf}.`
+      );
+      uncertainties.push(item);
+      whyItCouldFail.push(item);
+    }
+    const teammates = context.availability.teammatesOut ?? [];
+    if (teammates.length > 0) {
+      const names = teammates
+        .slice(0, 3)
+        .map((row) => `${row.name} (${availabilityStatusWord(row.status)})`)
+        .join(', ');
+      const more = teammates.length > 3 ? ` and ${teammates.length - 3} more` : '';
+      const item = evidence(
+        'AVAILABILITY_TEAMMATES_OUT',
+        'ROLE',
+        'Rotation teammates on the injury report',
+        `${names}${more}${asOf}. Recent minutes may not reflect tonight's rotation.`
+      );
+      uncertainties.push(item);
+      whyItCouldFail.push(item);
+    }
+  } else if (current) {
+    const item = evidence(
+      'NO_CURRENT_AVAILABILITY',
+      'COVERAGE',
+      'Current injury report unavailable',
+      'No fresh injury report is being served, so lineup-driven role changes are not represented.'
+    );
+    uncertainties.push(item);
+    whyItCouldFail.push(item);
+  } else if (context.availability.status !== 'AVAILABLE') {
     const item = evidence(
       'NO_HISTORICAL_AVAILABILITY',
       'COVERAGE',
@@ -390,7 +435,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
     uncertainties.push(item);
     whyItCouldFail.push(item);
   }
-  if (context.role.startersPregame.status !== 'AVAILABLE') {
+  if (!current && context.role.startersPregame.status !== 'AVAILABLE') {
     uncertainties.push(
       evidence(
         'STARTERS_POSTGAME_CONFIRMED',
@@ -404,6 +449,7 @@ export function interpretXrayLeg(context: XRayLegContext): XRayLegInterpretation
   const state = summaryState(supporting, counter, sample);
 
   return {
+    ...(current ? { analysisMode: 'current' as const } : {}),
     identity: {
       playerDisplayName: context.identity.playerDisplayName,
       market,
