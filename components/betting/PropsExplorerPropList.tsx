@@ -2,6 +2,7 @@
 
 import { Check, Plus } from 'lucide-react';
 import { explorerBookDisplayName, explorerPropContextLabel } from '@/lib/betting/props-explorer-filters';
+import { formatArbProfit, type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
 import {
   BEST_PRICE_TITLE,
   FAIR_PROBABILITY_TITLE,
@@ -22,6 +23,7 @@ export type PropsExplorerScanRow = {
   ev: number | null;
   fairProbability?: number | null;
   bestPrice?: ExplorerBestPrice | null;
+  arb?: PropsExplorerArb | null;
   snapshotAt?: string | null;
   marketContext?: 'live' | 'historical';
 };
@@ -95,6 +97,9 @@ export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
                       Best {formatExplorerOdds(row.bestPrice.oddsAmerican)}
                     </span>
                   )
+                ) : null}
+                {row.arb ? (
+                  <span className="type-metadata block font-medium text-[#178A45]">{formatArbProfit(row.arb.profit)}</span>
                 ) : null}
               </span>
             </button>

@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
       limit,
       offset,
       minEv,
+      arbOnly: sp.get('arb') === '1',
     });
 
     return NextResponse.json({

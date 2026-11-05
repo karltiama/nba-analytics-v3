@@ -22,6 +22,12 @@ import {
   type PropsMarketContext,
   type PropsServingSource,
 } from '@/lib/betting/props-market-context';
+import {
+  ARB_MAX_QUOTE_GAP_MINUTES,
+  findArb,
+  type ArbQuote,
+  type PropsExplorerArb,
+} from '@/lib/betting/props-explorer-arb';
 
 export type PropsExplorerDbRow = {
   game_id: string | number;
@@ -343,6 +349,80 @@ async function loadMarketPrices(
   return out;
 }
 
+/**
+ * Rows that form a two-book arbitrage (see props-explorer-arb): another book's opposite side at the
+ * same line, captured within the quote-gap window, adds up to under 100% implied. Live lines for
+ * games that have not started only.
+ */
+export function arbExistsSql(booksParamIndex: number | null): string {
+  const bookFilter =
+    booksParamIndex == null ? '' : `AND lower(trim(o.sportsbook)) = ANY($${booksParamIndex})`;
+  return `lower(p.market_type) = 'over_under'
+       AND g.start_time > now()
+       AND EXISTS (
+         SELECT 1 FROM analytics.player_props_current o
+          WHERE o.game_id = p.game_id
+            AND o.player_id = p.player_id
+            AND o.prop_type = p.prop_type
+            AND o.line_value = p.line_value
+            AND lower(o.market_type) = 'over_under'
+            AND lower(o.side) = CASE lower(p.side) WHEN 'over' THEN 'under' WHEN 'under' THEN 'over' END
+            AND lower(trim(o.sportsbook)) <> lower(trim(p.sportsbook))
+            ${bookFilter}
+            AND abs(extract(epoch FROM (o.snapshot_at - p.snapshot_at))) <= ${ARB_MAX_QUOTE_GAP_MINUTES * 60}
+            AND 1 / ${decimalOdds('p')} + 1 / ${decimalOdds('o')} < 1
+       )`;
+}
+
+const lineKey = (gameId: unknown, playerId: unknown, propType: unknown, line: unknown): string =>
+  [String(gameId), String(playerId), String(propType), Number(line)].join('|');
+
+/** Every live over/under quote for the page's players, grouped by game, player, prop and line. */
+async function loadArbQuotes(rows: PropsExplorerDbRow[], books: string[] | null): Promise<Map<string, ArbQuote[]>> {
+  const out = new Map<string, ArbQuote[]>();
+  if (rows.length === 0) return out;
+  const params: unknown[] = [
+    [...new Set(rows.map((r) => String(r.game_id)))],
+    [...new Set(rows.map((r) => String(r.player_id)))],
+  ];
+  const bookFilter = books && books.length > 0 ? `AND lower(trim(m.sportsbook)) = ANY($3)` : '';
+  if (bookFilter) params.push(books);
+  const found = await query<{
+    game_id: string;
+    player_id: string;
+    prop_type: string;
+    line_value: string;
+    sportsbook: string | null;
+    side: string | null;
+    odds_american: number | null;
+    odds_decimal: string | number | null;
+    snapshot_at: string | Date;
+  }>(
+    `SELECT m.game_id::text AS game_id, m.player_id::text AS player_id, m.prop_type, m.line_value::text AS line_value,
+            m.sportsbook, lower(m.side) AS side, m.odds_american, m.odds_decimal, m.snapshot_at
+       FROM analytics.player_props_current m
+      WHERE m.game_id::text = ANY($1::text[])
+        AND m.player_id::text = ANY($2::text[])
+        AND lower(m.market_type) = 'over_under'
+        AND m.line_value IS NOT NULL
+        ${bookFilter}`,
+    params
+  );
+  for (const q of Array.isArray(found) ? found : []) {
+    const k = lineKey(q.game_id, q.player_id, q.prop_type, q.line_value);
+    const list = out.get(k) ?? [];
+    list.push({
+      sportsbook: q.sportsbook,
+      side: q.side,
+      oddsAmerican: q.odds_american,
+      oddsDecimal: q.odds_decimal == null ? null : Number(q.odds_decimal),
+      snapshotAt: q.snapshot_at,
+    });
+    out.set(k, list);
+  }
+  return out;
+}
+
 async function loadInputsForPlayers(playerIds: number[]): Promise<Map<number, PlayerPropModelInputs | null>> {
   const map = new Map<number, PlayerPropModelInputs | null>();
   const unique = [...new Set(playerIds)];
@@ -401,6 +481,8 @@ export type PropsExplorerRow = {
   fairProbability: number | null;
   /** Price shopping across books for the same player, prop, side and line. */
   bestPrice: PropsExplorerBestPrice | null;
+  /** Two-book arbitrage this row forms, for live lines before tip; null otherwise. */
+  arb: PropsExplorerArb | null;
   snapshotAt: string;
   marketContext: PropsMarketContext;
   lineLabel: string;
@@ -479,6 +561,8 @@ export type GetPlayerPropsForExplorerInput = {
   limit: number;
   offset: number;
   minEv?: number | null;
+  /** Only rows that form a two-book arbitrage (live lines before tip). */
+  arbOnly?: boolean;
   todayEt?: string;
   now?: Date;
 };
@@ -614,7 +698,7 @@ export async function getPlayerPropsForExplorer(
   const sourceTable = propsServingSource(sqlContext);
   const selectedTrack = resolveEvTrack();
 
-  const { sql: whereSql, params: whereParams, booksParamIndex } = buildPropsExplorerWhere({
+  const built = buildPropsExplorerWhere({
     gameId,
     dateEt,
     playerName: (input.playerName ?? '').trim(),
@@ -623,6 +707,28 @@ export async function getPlayerPropsForExplorer(
     sportsbook: (input.sportsbook ?? '').trim(),
     marketType: (input.marketType || 'over_under').trim().toLowerCase(),
   });
+  const { params: whereParams, booksParamIndex } = built;
+  // Arbs are a live, pre-tip feature: past lines are not bettable.
+  const arbOnly = Boolean(input.arbOnly);
+  const arbAvailable = sqlContext === 'live' && !mixDateSources;
+  if (arbOnly && !arbAvailable) {
+    return {
+      rows: [],
+      totalMatching: 0,
+      marketContext,
+      sourceTable,
+      lineLabel,
+      dateEt,
+      evSelectedTrack: selectedTrack,
+      calibrationVersion: null,
+      evFetchCap: null,
+      sort: (input.sort || 'snapshot_at').toLowerCase() === 'edge' ? 'snapshot_at' : (input.sort || 'snapshot_at').toLowerCase(),
+      selectedGame,
+    };
+  }
+  const whereSql = arbOnly
+    ? `${built.sql ? `${built.sql} AND` : 'WHERE'} ${arbExistsSql(booksParamIndex)}`
+    : built.sql;
 
   const sortRaw = (input.sort || 'snapshot_at').toLowerCase();
   const sort = sortRaw === 'edge' ? 'snapshot_at' : sortRaw;
@@ -706,6 +812,30 @@ export async function getPlayerPropsForExplorer(
     }
   }
 
+  const liveRows = mixDateSources
+    ? dbRows.filter((r) => r.row_source === 'current')
+    : sqlContext === 'live'
+      ? dbRows
+      : [];
+  const arbQuotes = await loadArbQuotes(
+    liveRows.filter((r) => (r.market_type ?? '').toLowerCase() === 'over_under' && !gameHasStarted(r.game_start_time, now)),
+    booksParamIndex == null ? null : (whereParams[booksParamIndex - 1] as string[])
+  );
+  const arbFor = (r: PropsExplorerDbRow): PropsExplorerArb | null => {
+    const quotes = arbQuotes.get(lineKey(r.game_id, r.player_id, r.prop_type, r.line_value));
+    if (!quotes) return null;
+    return findArb(
+      {
+        sportsbook: r.sportsbook,
+        side: r.side,
+        oddsAmerican: r.odds_american,
+        oddsDecimal: r.odds_decimal == null ? null : Number(r.odds_decimal),
+        snapshotAt: r.snapshot_at,
+      },
+      quotes
+    );
+  };
+
   let inputsByPlayer = new Map<number, PlayerPropModelInputs | null>();
   if (marketContext === 'live') {
     const uniquePlayers = [
@@ -761,6 +891,7 @@ export async function getPlayerPropsForExplorer(
             )
           : null,
       bestPrice: toBestPrice(r),
+      arb: arbFor(r),
       snapshotAt,
       marketContext,
       lineLabel:

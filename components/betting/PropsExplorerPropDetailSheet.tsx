@@ -19,6 +19,7 @@ import {
   formatFairProbability,
 } from '@/lib/betting/props-explorer-row-display';
 import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
+import { ARB_TITLE, arbInstructions, formatArbProfit, type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
 
 export type PropsExplorerDetailRow = {
   gameId: number;
@@ -32,6 +33,7 @@ export type PropsExplorerDetailRow = {
   impliedProbability: number | null;
   fairProbability?: number | null;
   bestPrice?: ExplorerBestPrice | null;
+  arb?: PropsExplorerArb | null;
   sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
@@ -143,7 +145,20 @@ export function PropsExplorerPropDetailSheet({
                 <Fact label="Sportsbook" value={explorerBookDisplayName(row.sportsbook)} />
                 <Fact label="Best price" value={bestPriceLabel(row.bestPrice, explorerBookDisplayName)} />
                 <Fact label="vs average book" value={formatVsAverage(row.bestPrice?.vsAverage)} />
+                {row.arb ? <Fact label="Arbitrage" value={formatArbProfit(row.arb.profit)} emphasize /> : null}
               </dl>
+              {row.arb ? (
+                <p className="type-metadata mt-2 rounded-lg bg-[#e7f8ef] px-3 py-2 text-[#063f46]" title={ARB_TITLE}>
+                  {arbInstructions({
+                    arb: row.arb,
+                    side: row.side,
+                    sportsbook: row.sportsbook,
+                    bookName: explorerBookDisplayName,
+                    formatOdds: formatExplorerOdds,
+                  })}{' '}
+                  Confirm both prices before betting; they move fast.
+                </p>
+              ) : null}
               <dl className="mt-1 divide-y divide-[#DCE9EA] border-b border-[#DCE9EA]">
                 <Fact label="Fair probability" value={formatFairProbability(row.fairProbability)} />
                 <Fact label="With bookmaker margin" value={formatPct(row.impliedProbability)} />
