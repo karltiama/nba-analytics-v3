@@ -15,6 +15,17 @@ const DEFAULT_HASHES = [
   'section-contributors',
 ];
 
+function stickyTopPx(style: CSSStyleDeclaration): number {
+  const top = Number.parseFloat(style.top);
+  return Number.isFinite(top) ? top : 0;
+}
+
+/** The app's sticky site header (layout `<header>`), when present. */
+function siteHeaderPx(): number {
+  const site = document.querySelector('header');
+  return site instanceof HTMLElement && getComputedStyle(site).position === 'sticky' ? site.offsetHeight : 0;
+}
+
 /**
  * Publishes the stuck matchup header's viewport height as a scroll offset.
  * Section anchors use it so their title bars stay below the sticky card.
@@ -31,9 +42,12 @@ export function MatchupScrollOffset({
     if (!header) return;
 
     const apply = () => {
-      const stickyTop = Number.parseFloat(getComputedStyle(header).top);
-      const top = Number.isFinite(stickyTop) ? stickyTop : 0;
-      const offset = Math.ceil(top + header.offsetHeight + GAP_PX);
+      const style = getComputedStyle(header);
+      // Below sm the card is not sticky (it scrolls away), so only the site header covers sections.
+      const offset =
+        style.position === 'sticky'
+          ? Math.ceil(stickyTopPx(style) + header.offsetHeight + GAP_PX)
+          : Math.ceil(siteHeaderPx() + GAP_PX);
       document.documentElement.style.setProperty(OFFSET_VAR, `${offset}px`);
     };
 

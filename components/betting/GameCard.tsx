@@ -580,7 +580,8 @@ export function GameCard({
       <>
       {scoreboardPresentation && hasOdds ? (
         <p className="type-metadata mx-5 sm:mx-6 mb-2 text-center" data-pregame-lines>
-          Pregame Lines
+          {/* Stored dashboard odds are one DraftKings quote; the matchup page shows a multi-book consensus. */}
+          {marketCaption ? 'DraftKings Pregame Lines' : 'Pregame Lines'}
         </p>
       ) : null}
       <div className="mx-5 sm:mx-6 mb-5 grid grid-cols-3 rounded-xl border border-[#DCE9EA] overflow-hidden bg-[#F8FBFA]">

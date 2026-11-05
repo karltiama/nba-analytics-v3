@@ -114,6 +114,8 @@ describe('stored DraftKings dashboard odds', () => {
     expect(html).toContain('data-odds-freshness="fresh"');
     expect(html).not.toContain('>LIVE<');
     expect(html).not.toContain('text-amber-800');
+    // One book's quote, named in the heading so it is not mistaken for the matchup page's consensus.
+    expect(html).toMatch(/data-pregame-lines[^>]*>[^<]*(<!-- -->)?DraftKings Pregame Lines/);
   });
 
   it('prints the stored Boston prices and does not fill a different price with -110', () => {
