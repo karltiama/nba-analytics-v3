@@ -83,6 +83,22 @@ function ratio(numerator: number, denominator: number): number | null {
 
 export function teamProfile(row: TeamSumRow): TeamProfile | null {
   if (row.rows !== EXPECTED_TEAM_GAMES || row.games !== EXPECTED_TEAM_GAMES) return null;
+  return profileFromSums(row);
+}
+
+/** Minimum games before a team's in-progress season is shown. Matches the injury baseline floor. */
+export const CURRENT_SEASON_MIN_GAMES = 3;
+
+/**
+ * In-progress season profile. Any game count at or above the floor, one row per game,
+ * and no incomplete box-score rows.
+ */
+export function partialTeamProfile(row: TeamSumRow, minGames = CURRENT_SEASON_MIN_GAMES): TeamProfile | null {
+  if (row.games < minGames || row.rows !== row.games) return null;
+  return profileFromSums(row);
+}
+
+function profileFromSums(row: TeamSumRow): TeamProfile | null {
   if (row.badPossessions > 0 || row.badShot > 0 || row.badRebounds > 0 || row.badTurnovers > 0) return null;
   const offensiveRating = ratio(row.points * 100, row.possessions);
   const defensiveRating = ratio(row.pointsAllowed * 100, row.possessions);

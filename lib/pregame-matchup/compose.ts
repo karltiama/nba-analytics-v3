@@ -1,10 +1,21 @@
 import type { PlayerSumRow, TeamProfile, TeamSumRow } from './aggregate';
-import { regularSeasonSample } from './aggregate';
+import { CURRENT_SEASON_MIN_GAMES, partialTeamProfile, regularSeasonSample } from './aggregate';
 import { attributeMatchupPlayers, type MatchupContributors } from './membership';
 import type { MatchupQuoteResult } from './quote';
 import { hiddenRosterForUnconfirmedTeam, type RosterPresentation } from './roster';
 import { selectMatchupInsights, type MatchupInsight } from './signals';
 import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
+
+/** Pregame schedule and injury lines, the same ones Today's Games cards show. */
+export type MatchupGameContext = {
+  schedule: string | null;
+  injuries: {
+    status: 'listed' | 'none' | 'unavailable';
+    text: string;
+    asOfLabel: string | null;
+    teams: Array<{ abbr: string; players: Array<{ name: string; status: string }>; extra: number }> | null;
+  };
+};
 
 export const POSSESSION_NOTE =
   'Estimated possessions are a box-score estimate, not official NBA pace, and are not adjusted for overtime.';
@@ -14,6 +25,28 @@ export type { MatchupContributors };
 export const SAMPLE_LABEL = `${HISTORICAL_SEASON_LABEL} · ${EXPECTED_TEAM_GAMES} games`;
 
 export type ComparisonRow = { label: string; away: string; home: string };
+
+/** This season so far. Values are the same rows as `history`, over fewer games. */
+export type CurrentSeasonComparison = {
+  seasonLabel: string;
+  label: string;
+  awayGames: number;
+  homeGames: number;
+  rows: ComparisonRow[];
+};
+
+export type CurrentSeasonInput = {
+  season: string;
+  /** Every team's sums for this season's games before the matchup date. */
+  teamRows: TeamSumRow[];
+};
+
+/** '2026' → '2026–27'. */
+export function seasonSpan(season: string): string {
+  const year = Number(season);
+  if (!Number.isInteger(year)) return season;
+  return `${year}–${String((year + 1) % 100).padStart(2, '0')}`;
+}
 
 export type PregameMatchupModel = {
   gameId: string;
@@ -28,6 +61,9 @@ export type PregameMatchupModel = {
   returnHref: string;
   history: { label: string; possessionNote: string; rows: ComparisonRow[] } | null;
   historyNote: string | null;
+  current: CurrentSeasonComparison | null;
+  currentNote: string | null;
+  context: MatchupGameContext | null;
   insights: MatchupInsight[];
   contributors: MatchupContributors | null;
   roster: RosterPresentation;
@@ -70,6 +106,38 @@ function comparison(away: TeamProfile, home: TeamProfile): ComparisonRow[] {
   ];
 }
 
+function currentComparison(input: {
+  current: CurrentSeasonInput | null;
+  awayTeamId: string;
+  homeTeamId: string;
+  awayAbbr: string;
+  homeAbbr: string;
+}): { current: CurrentSeasonComparison | null; currentNote: string | null } {
+  if (!input.current) return { current: null, currentNote: null };
+  const span = seasonSpan(input.current.season);
+  const byTeam = new Map(input.current.teamRows.map((row) => [row.teamId, row]));
+  const awayRow = byTeam.get(input.awayTeamId);
+  const homeRow = byTeam.get(input.homeTeamId);
+  const away = awayRow ? partialTeamProfile(awayRow) : null;
+  const home = homeRow ? partialTeamProfile(homeRow) : null;
+  if (!away || !home) {
+    return {
+      current: null,
+      currentNote: `${span} numbers appear once both teams have ${CURRENT_SEASON_MIN_GAMES} complete games.`,
+    };
+  }
+  return {
+    current: {
+      seasonLabel: span,
+      label: `${span} so far · ${input.awayAbbr} ${away.games} games · ${input.homeAbbr} ${home.games} games`,
+      awayGames: away.games,
+      homeGames: home.games,
+      rows: comparison(away, home),
+    },
+    currentNote: null,
+  };
+}
+
 export function buildPregameMatchup(input: {
   gameId: string;
   awayTeamId: string;
@@ -88,6 +156,8 @@ export function buildPregameMatchup(input: {
   playerRows: PlayerSumRow[];
   roster: RosterPresentation;
   quote: MatchupQuoteResult;
+  current?: CurrentSeasonInput | null;
+  context?: MatchupGameContext | null;
 }): PregameMatchupModel {
   const base = {
     gameId: input.gameId,
@@ -103,6 +173,16 @@ export function buildPregameMatchup(input: {
     quote: input.quote.quote,
     quoteNote: input.quote.note,
     roster: input.identityConfirmed ? input.roster : hiddenRosterForUnconfirmedTeam(),
+    context: input.context ?? null,
+    ...(input.identityConfirmed
+      ? currentComparison({
+          current: input.current ?? null,
+          awayTeamId: input.awayTeamId,
+          homeTeamId: input.homeTeamId,
+          awayAbbr: input.awayAbbr,
+          homeAbbr: input.homeAbbr,
+        })
+      : { current: null, currentNote: null }),
   };
   if (!input.identityConfirmed) {
     return {

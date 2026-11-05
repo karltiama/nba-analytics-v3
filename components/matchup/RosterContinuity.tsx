@@ -1,4 +1,5 @@
 import type { RosterPresentation, TeamContinuity } from '@/lib/pregame-matchup/roster';
+import { MatchupSection } from '@/components/matchup/MatchupSection';
 
 function pct(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
@@ -44,22 +45,17 @@ function ShareRow({
   );
 }
 
-export function RosterContinuity({ roster }: { roster: RosterPresentation }) {
+export function RosterContinuity({ roster, flow = false }: { roster: RosterPresentation; flow?: boolean }) {
   const teams = roster.status === 'shown' ? roster.teams : null;
   return (
-    <section
+    <MatchupSection
       id="section-roster"
-      className="overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white shadow-sm"
-      style={{ scrollMarginTop: 'var(--matchup-scroll-offset, 9rem)' }}
-      aria-labelledby="roster-continuity"
+      headingId="roster-continuity"
+      title="Roster Continuity"
+      flow={flow}
+      bodyClassName="space-y-4"
       data-continuity={roster.status}
     >
-      <div className="border-b border-[#DCE9EA] bg-[#F8FBFA] px-3 py-2">
-        <h2 id="roster-continuity" className="type-section-heading text-[#063f46]">
-          Roster Continuity
-        </h2>
-      </div>
-      <div className="space-y-4 p-3">
         {teams && teams.length > 0 ? (
           <>
             <ShareRow emphasize label="Returning minutes" teams={teams} value={(team) => team.minutesShare} />
@@ -80,7 +76,6 @@ export function RosterContinuity({ roster }: { roster: RosterPresentation }) {
           </>
         ) : null}
         <p className="type-secondary">{roster.note}</p>
-      </div>
-    </section>
+    </MatchupSection>
   );
 }

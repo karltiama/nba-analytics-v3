@@ -106,7 +106,7 @@ describe('matchup roster attribution', () => {
     const historical = html.slice(html.indexOf('data-player-role="historical"'));
     expect(current).toContain('Tyrese Maxey');
     expect(current).toContain('2025–26 with PHI');
-    expect(current).toContain('Roster Rookie</div><p class="type-secondary">2025–26 sample with PHI unavailable</p>');
+    expect(current).toContain('Roster Rookie</span></div><p class="type-secondary">2025–26 sample with PHI unavailable</p>');
     expect(current).not.toContain('Quentin Grimes');
     expect(current).not.toContain('Kelly Oubre Jr.');
     expect(historical).toContain('Quentin Grimes');

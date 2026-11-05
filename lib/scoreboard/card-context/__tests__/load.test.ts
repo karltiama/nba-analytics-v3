@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import {
   BASELINE_LOGS_SQL,
+  priorBaselineParams,
   INJURY_FEED_SQL,
   INJURY_ROWS_SQL,
   loadCardContext,
@@ -87,9 +88,9 @@ describe('card context loader', () => {
       if (sql === INJURY_FEED_SQL) return [{ snapshot_at: '2026-11-02T21:00:00.000Z' }];
       if (sql === BASELINE_LOGS_SQL) {
         return [
-          { player_id: 'a', team_id: 'cle', season: '2025', season_phase: 'REGULAR', minutes: '32' },
-          { player_id: 'a', team_id: 'cle', season: '2025', season_phase: 'REGULAR', minutes: '28' },
-          { player_id: 'a', team_id: 'cle', season: '2025', season_phase: 'REGULAR', minutes: '30' },
+          { player_id: 'a', team_id: 'cle', season: '2025', season_phase: 'UNCLASSIFIED', minutes: '32', prior_regular: true },
+          { player_id: 'a', team_id: 'cle', season: '2025', season_phase: 'UNCLASSIFIED', minutes: '28', prior_regular: true },
+          { player_id: 'a', team_id: 'cle', season: '2025', season_phase: 'UNCLASSIFIED', minutes: '30', prior_regular: true },
         ];
       }
       throw new Error(`unexpected sql: ${sql}`);
@@ -144,5 +145,44 @@ describe('card context loader', () => {
       env: ENV,
     });
     expect(emptyFeed['5001'].injuries.status).toBe('unavailable');
+  });
+
+  it('takes the 2025–26 baseline from the date window, not season_phase', async () => {
+    let baselineParams: unknown[] | undefined;
+    const run = (logs: Record<string, unknown>[]) =>
+      loadCardContext({
+        games: [game()],
+        query: async (sql: string, params?: unknown[]) => {
+          if (sql === MATCH_GAMES_SQL) return [];
+          if (sql === INJURY_ROWS_SQL) {
+            return [{ player_id: 'd', team_id: 'cle', status: 'Out', snapshot_at: '2026-11-02T21:00:00.000Z', last_name: 'Duren', full_name: 'Jalen Duren' }];
+          }
+          if (sql === INJURY_FEED_SQL) return [{ snapshot_at: '2026-11-02T21:00:00.000Z' }];
+          if (sql === BASELINE_LOGS_SQL) {
+            baselineParams = params;
+            return logs;
+          }
+          return [];
+        },
+        now: NOW,
+        env: ENV,
+      });
+
+    // Two current games (below the floor) and an unclassified 2025–26 regular season: shown.
+    const shown = await run([
+      { player_id: 'd', team_id: 'cle', season: '2026', season_phase: 'REGULAR', minutes: '28:02', prior_regular: false },
+      { player_id: 'd', team_id: 'cle', season: '2026', season_phase: 'REGULAR', minutes: '10:07', prior_regular: false },
+      { player_id: 'd', team_id: 'cle', season: '2025', season_phase: 'UNCLASSIFIED', minutes: '28', prior_regular: true },
+      { player_id: 'd', team_id: 'cle', season: '2025', season_phase: 'UNCLASSIFIED', minutes: '30', prior_regular: true },
+    ]);
+    expect(shown['5001'].injuries.text).toContain('CLE: Duren (Out)');
+    expect(baselineParams?.slice(2)).toEqual(priorBaselineParams());
+    expect(priorBaselineParams()).toEqual(['2025', '2025-10-21', '2026-04-14', '2025-12-16']);
+
+    // Playoff or Cup Final minutes outside the window do not count, whatever the phase label says.
+    const hidden = await run([
+      { player_id: 'd', team_id: 'cle', season: '2025', season_phase: 'REGULAR', minutes: '35', prior_regular: false },
+    ]);
+    expect(hidden['5001'].injuries.text).not.toContain('Duren');
   });
 });
