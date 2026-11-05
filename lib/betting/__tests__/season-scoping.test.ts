@@ -21,8 +21,6 @@ import {
   getDashboardSummary,
   getGamesForDate,
   getGamesForCalendarDate,
-  getPaceAnalysis,
-  getProjectedStartingLineupFromAnalytics,
   getTeamRecentForm,
   getTrendingPlayersFromAnalytics,
   getTrendingPlayersStrip,
@@ -47,20 +45,6 @@ describe('betting season scoping (Phase 2.2)', () => {
     expect(params).toEqual(['p1', '2026']);
   });
 
-  it('getPaceAnalysis uses only active season and returns null when missing', async () => {
-    mockQuery.mockResolvedValue([{ home_team_pace: null, away_team_pace: 100 }]);
-    const missing = await getPaceAnalysis('h', 'a');
-    expect(missing).toBeNull();
-    const [sql, params] = mockQuery.mock.calls[0];
-    expect(String(sql)).toMatch(/WHERE season = \$3/);
-    expect(params).toEqual(['h', 'a', '2026']);
-    expect(String(sql)).not.toMatch(/ORDER BY team_id, season DESC/);
-
-    mockQuery.mockResolvedValue([{ home_team_pace: 101, away_team_pace: 99 }]);
-    const ok = await getPaceAnalysis('h', 'a');
-    expect(ok?.projected_pace).toBe(100);
-  });
-
   it('getAllTeamRatings filters to active season only', async () => {
     mockQuery.mockResolvedValue([
       {
@@ -79,14 +63,6 @@ describe('betting season scoping (Phase 2.2)', () => {
     expect(String(sql)).toMatch(/WHERE season = \$1/);
     expect(params).toEqual(['2026']);
     expect(map.t1.wins).toBe(1);
-  });
-
-  it('getProjectedStartingLineupFromAnalytics scopes Finals to active season', async () => {
-    mockQuery.mockResolvedValue([]);
-    await getProjectedStartingLineupFromAnalytics('t1');
-    const [sql, params] = mockQuery.mock.calls[0];
-    expect(String(sql)).toMatch(/g\.season = \$2/);
-    expect(params).toEqual(['t1', '2026']);
   });
 
   it('getTeamRecentForm scopes to active season', async () => {

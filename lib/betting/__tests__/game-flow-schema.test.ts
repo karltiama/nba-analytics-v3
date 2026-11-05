@@ -7,7 +7,6 @@ const script = readFileSync(
   join(process.cwd(), 'scripts/ingestion/materialize-game-flow-2025.ts'),
   'utf8'
 );
-const server = readFileSync(join(process.cwd(), 'lib/betting/historical-timeline-server.ts'), 'utf8');
 
 describe('MIGRATION_game_flow.sql', () => {
   it('uses compact game grain and does not store names or raw event JSON', () => {
@@ -37,14 +36,5 @@ describe('game_flow backfill script contract', () => {
     expect(script).not.toContain('BdlArchiveClient');
     expect(script).not.toContain('BALLDONTLIE');
     expect(script).not.toContain('putJson');
-  });
-});
-
-describe('timeline server cache policy', () => {
-  it('keeps events on S3 and uses a process cache rather than a Postgres event table', () => {
-    expect(server).toContain('PROCESS_CACHE_MAX');
-    expect(server).toContain('readCanonicalPlaysObject');
-    expect(server).toContain('next-unstable-cache-plus-process-lru');
-    expect(server).not.toContain('insert into analytics.plays');
   });
 });

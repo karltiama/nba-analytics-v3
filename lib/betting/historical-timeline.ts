@@ -137,16 +137,6 @@ export type NormalizedTimelineEvent = {
   becameTied: boolean;
 };
 
-export type TimelineQuality = {
-  timelineAvailable: boolean;
-  scoreReconciled: boolean;
-  streamComplete: boolean;
-  streamClass: StreamClass;
-  rotationContextAvailable: boolean;
-  rotationFailureClass: RotationFailureClass | null;
-  qualityCode: TimelineQualityCode;
-};
-
 export type GameFlowSummary = {
   gameId: string;
   season: string;
@@ -171,15 +161,6 @@ export type GameFlowSummary = {
   awayPointsByPeriod: number[];
   rotationAvailable: boolean;
   rotationFailureClass: RotationFailureClass | null;
-};
-
-export type HistoricalGameTimeline = {
-  available: boolean;
-  quality: TimelineQuality;
-  gameFlow: GameFlowSummary | null;
-  events: NormalizedTimelineEvent[];
-  officialHomeScore: number | null;
-  officialAwayScore: number | null;
 };
 
 type Leader = 'home' | 'away' | 'tie';
@@ -406,27 +387,6 @@ export function isKeyTimelineEvent(event: NormalizedTimelineEvent): boolean {
     return true;
   }
   return false;
-}
-
-export function emptyTimeline(gameId: string, officialHome: number | null, officialAway: number | null): HistoricalGameTimeline {
-  const rotation = rotationContextForGame(gameId, { inPlays2025Archive: false });
-  const quality: TimelineQuality = {
-    timelineAvailable: false,
-    scoreReconciled: false,
-    streamComplete: false,
-    streamClass: 'truncated',
-    rotationContextAvailable: rotation.available,
-    rotationFailureClass: rotation.failureClass,
-    qualityCode: 'NO_EVENTS',
-  };
-  return {
-    available: false,
-    quality,
-    gameFlow: null,
-    events: [],
-    officialHomeScore: officialHome,
-    officialAwayScore: officialAway,
-  };
 }
 
 export function normalizePlayEvent(raw: Record<string, unknown>, fallbackGameId: string): NormalizedTimelineEvent | null {
@@ -687,18 +647,6 @@ export function buildGameFlowSummary(input: {
     awayPointsByPeriod: progression.awayPointsByPeriod,
     rotationAvailable: rotation.available,
     rotationFailureClass: rotation.failureClass,
-  };
-}
-
-export function qualityFromGameFlow(flow: GameFlowSummary): TimelineQuality {
-  return {
-    timelineAvailable: flow.timelineAvailable,
-    scoreReconciled: flow.scoreReconciled,
-    streamComplete: flow.streamComplete,
-    streamClass: flow.streamClass,
-    rotationContextAvailable: flow.rotationAvailable,
-    rotationFailureClass: flow.rotationFailureClass,
-    qualityCode: flow.qualityCode,
   };
 }
 

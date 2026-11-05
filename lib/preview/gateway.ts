@@ -1,4 +1,4 @@
-import { previewGameDetails, previewPlayerPropsResponse, previewSidebarProps } from './game-fixture';
+import { previewGameDetails, previewSidebarProps } from './game-fixture';
 import { previewMarketResponse } from './market-fixture';
 import { previewGameLogPayload } from './player-fixture';
 import {
@@ -106,18 +106,6 @@ export async function resolvePreviewRequest(
 
   const gameDetails = path.match(/^\/api\/betting\/games\/([^/]+)\/details$/);
   if (gameDetails && method === 'GET') return decide(previewGameDetails(scenario, decodeURIComponent(gameDetails[1])));
-  const playerProps = path.match(/^\/api\/betting\/games\/([^/]+)\/player-props$/);
-  if (playerProps && method === 'GET') return decide(previewPlayerPropsResponse(scenario));
-  const matchup = path.match(/^\/api\/betting\/games\/([^/]+)\/matchup-analysis$/);
-  if (matchup && method === 'GET') {
-    if (scenario === 'error') return json(500, { error: 'Preview error scenario' });
-    return json(200, { starting_lineups: { home: null, away: null } });
-  }
-  const timeline = path.match(/^\/api\/betting\/games\/([^/]+)\/timeline$/);
-  if (timeline && method === 'GET') {
-    if (scenario === 'error') return json(500, { error: 'Preview error scenario' });
-    return json(200, { events: [] });
-  }
   const aiSummary = path.match(/^\/api\/betting\/games\/([^/]+)\/ai-projection-summary$/);
   if (aiSummary && method === 'POST') {
     if (scenario === 'error') {

@@ -62,13 +62,6 @@ export function isHistoricalFinalView(status: string | null | undefined): boolea
   return isFinalStatus(status);
 }
 
-/** Client/server: skip live matchup-analysis / BDL lineup fetches when details already resolved Final. */
-export function shouldFetchLiveMatchupAnalysis(
-  viewMode: string | null | undefined
-): boolean {
-  return viewMode !== HISTORICAL_VIEW_MODE_FINAL;
-}
-
 /** Default: later modules are not product-ready. Flags become true only from certified serving. */
 export function historicalModuleAvailability(
   starters = false,

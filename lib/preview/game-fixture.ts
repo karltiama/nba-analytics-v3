@@ -164,22 +164,6 @@ export function previewGameDetails(scenario: PreviewScenario, requestedId: strin
   };
 }
 
-export function previewPlayerPropsResponse(scenario: PreviewScenario): { status: number; body: unknown } {
-  if (scenario === 'error') {
-    return { status: 500, body: { error: 'Preview error scenario' } };
-  }
-  const playerProps = previewExplorerRows(scenario).map((row) => ({
-    playerId: String(row.playerId),
-    playerName: row.playerName,
-    propType: row.propType,
-    lineValue: row.lineValue,
-    overOdds: row.side === 'over' ? row.oddsAmerican : -115,
-    underOdds: row.side === 'under' ? row.oddsAmerican : -105,
-    vendor: row.sportsbook,
-  }));
-  return { status: 200, body: { playerProps } };
-}
-
 export function previewSidebarProps(scenario: PreviewScenario, playerId: string): { status: number; body: unknown } {
   if (scenario === 'error') {
     return { status: 500, body: { error: 'Preview error scenario' } };
