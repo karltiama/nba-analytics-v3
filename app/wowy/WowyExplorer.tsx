@@ -35,8 +35,7 @@ import {
   wowyTeammateFilterProperties,
 } from '@/lib/product-analytics/wowy-events';
 import { WowyResults } from './WowyResults';
-
-const SEASONS = ['2025', '2024', '2023'] as const;
+import { earlySeasonNotice } from '@/lib/wowy/season-default';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'empty' | 'error' | 'unavailable';
 
@@ -50,12 +49,19 @@ export function WowyExplorer({
   initialSeason,
   initialTeamId,
   initialSeasonType,
+  seasons,
+  currentSeason,
+  currentSeasonFinalGames,
 }: {
   initialSubjectId: string;
   initialTeammateId: string;
   initialSeason: string;
   initialTeamId: string;
   initialSeasonType: WowySeasonType | 'all';
+  /** Newest first; the page resolves initialSeason to one of these. */
+  seasons: string[];
+  currentSeason: string;
+  currentSeasonFinalGames: number;
 }) {
   const pathname = usePathname() || '/wowy';
 
@@ -65,9 +71,13 @@ export function WowyExplorer({
   const [requestedTeammateId, setRequestedTeammateId] = useState<string | null>(
     initialTeammateId.trim() || null
   );
-  const [season, setSeason] = useState(
-    SEASONS.includes(initialSeason as (typeof SEASONS)[number]) ? initialSeason : '2025'
-  );
+  const [season, setSeason] = useState(initialSeason);
+  const seasonNotice = earlySeasonNotice({
+    season,
+    currentSeason,
+    currentSeasonFinalGames,
+    seasonLabel: formatNbaSeasonLabel,
+  });
   const [teamId, setTeamId] = useState(initialTeamId);
   const [seasonType, setSeasonType] = useState<WowySeasonType | 'all'>(initialSeasonType);
   const [teams, setTeams] = useState<WowyTeamStintOption[]>([]);
@@ -355,12 +365,13 @@ export function WowyExplorer({
               }}
               className="w-full rounded-lg border border-[#DCE9EA] bg-white px-3 py-2 text-sm text-[#063f46]"
             >
-              {SEASONS.map((s) => (
+              {seasons.map((s) => (
                 <option key={s} value={s}>
                   {formatNbaSeasonLabel(s)}
                 </option>
               ))}
             </select>
+            {seasonNotice ? <span className="type-metadata block text-[#8A5A00]">{seasonNotice}</span> : null}
           </label>
 
           <label className="block space-y-1.5">

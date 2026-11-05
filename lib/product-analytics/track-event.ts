@@ -186,7 +186,7 @@ export type SportsbookHandoffOutboundClickedProperties = {
 };
 
 export type WowyFilterChangedProperties =
-  | { surface: 'wowy'; filter: 'season'; value: '2023' | '2024' | '2025' }
+  | { surface: 'wowy'; filter: 'season'; value: '2023' | '2024' | '2025' | '2026' }
   | { surface: 'wowy'; filter: 'team_stint' }
   | { surface: 'wowy'; filter: 'season_type'; value: 'regular' | 'playoffs' }
   | { surface: 'wowy'; filter: 'teammate'; value: 'selected' | 'cleared' }
