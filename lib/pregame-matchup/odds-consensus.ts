@@ -122,6 +122,88 @@ export function latestPregameBooks(rows: BookOddsRow[], tipAt: string | null, no
   return [...latest.values()].sort((a, b) => a.vendor.localeCompare(b.vendor));
 }
 
+/** Each sportsbook's first pregame snapshot we stored (no age limit). */
+export function firstPregameBooks(rows: BookOddsRow[], tipAt: string | null, now: Date): BookOddsRow[] {
+  const tip = tipAt ? Date.parse(tipAt) : NaN;
+  const cutoff = Number.isFinite(tip) ? tip : now.getTime();
+  const first = new Map<string, BookOddsRow>();
+  for (const r of rows) {
+    const vendor = r.vendor.trim().toLowerCase();
+    if (!vendor || NOT_SPORTSBOOKS.has(vendor)) continue;
+    const at = Date.parse(r.snapshotAt);
+    if (!Number.isFinite(at) || at >= cutoff) continue;
+    const prev = first.get(vendor);
+    if (!prev || Date.parse(prev.snapshotAt) > at) first.set(vendor, { ...r, vendor });
+  }
+  return [...first.values()].sort((a, b) => a.vendor.localeCompare(b.vendor));
+}
+
+type MarketSnapshot = { spread: number | null; total: number | null; homeProb: number | null };
+
+function marketOf(books: BookOddsRow[]): MarketSnapshot {
+  const spreadBooks = books.filter(spreadAgreesWithMoneyline);
+  const mlAway = medianPrice(books.filter((r) => ok(r.awayMoneyline)).map((r) => r.awayMoneyline!));
+  const mlHome = medianPrice(books.filter((r) => ok(r.homeMoneyline)).map((r) => r.homeMoneyline!));
+  const noVig = twoWayMarketDisplay(mlAway, mlHome);
+  return {
+    spread: consensusLine(spreadBooks.map((r) => r.homeSpread!)),
+    total: consensusLine(books.filter((r) => ok(r.total)).map((r) => r.total!)),
+    homeProb: noVig ? noVig.homePct : null,
+  };
+}
+
+/**
+ * Opening vs now from the odds job's snapshots: consensus of each book's first stored price against
+ * the consensus of its latest, plus the books whose own spread or total moved.
+ * "Opening" is the first price we stored, not necessarily the book's true open.
+ */
+export function lineMovement(input: {
+  rows: BookOddsRow[];
+  tipAt: string | null;
+  now: Date;
+  awayAbbr: string;
+  homeAbbr: string;
+}): string | null {
+  const latest = latestPregameBooks(input.rows, input.tipAt, input.now);
+  if (latest.length < MIN_BOOKS) return null;
+  const firstAll = firstPregameBooks(input.rows, input.tipAt, input.now);
+  const latestByVendor = new Map(latest.map((r) => [r.vendor, r]));
+  const first = firstAll.filter((r) => latestByVendor.has(r.vendor));
+  const firstAt = first.reduce((min, r) => Math.min(min, Date.parse(r.snapshotAt)), Infinity);
+  const lastAt = latest.reduce((max, r) => Math.max(max, Date.parse(r.snapshotAt)), -Infinity);
+  if (!Number.isFinite(firstAt) || lastAt - firstAt < 30 * 60_000) return null;
+
+  const open = marketOf(first);
+  const now = marketOf(latest);
+  const H = input.homeAbbr;
+  const fav = (spread: number) => (spread <= 0 ? `${H} ${signedLine(spread)}` : `${input.awayAbbr} ${signedLine(-spread)}`);
+  const parts: string[] = [];
+  if (open.spread != null && now.spread != null) {
+    parts.push(open.spread === now.spread ? `spread steady at ${fav(now.spread)}` : `spread ${fav(open.spread)} → ${fav(now.spread)}`);
+  }
+  if (open.total != null && now.total != null) {
+    parts.push(open.total === now.total ? `total steady at ${now.total}` : `total ${open.total} → ${now.total}`);
+  }
+  if (open.homeProb != null && now.homeProb != null && open.homeProb !== now.homeProb) {
+    parts.push(`${H} win chance ${open.homeProb}% → ${now.homeProb}%`);
+  }
+
+  const moved: string[] = [];
+  for (const f of first) {
+    const l = latestByVendor.get(f.vendor)!;
+    const bits: string[] = [];
+    if (spreadAgreesWithMoneyline(f) && spreadAgreesWithMoneyline(l) && f.homeSpread !== l.homeSpread) {
+      bits.push(`${fav(f.homeSpread!)} → ${fav(l.homeSpread!)}`);
+    }
+    if (ok(f.total) && ok(l.total) && f.total !== l.total) bits.push(`total ${f.total} → ${l.total}`);
+    if (bits.length > 0) moved.push(`${bookLabel(f.vendor)} ${bits.join(', ')}`);
+  }
+  if (parts.length === 0) return null;
+  const since = `Since ${etTime(new Date(firstAt).toISOString())} ET`;
+  const movedText = moved.length > 0 ? ` Books that moved: ${moved.slice(0, 4).join('; ')}${moved.length > 4 ? ` (+${moved.length - 4} more)` : ''}.` : '';
+  return `${since}: ${parts.join(' · ')}.${movedText}`;
+}
+
 function etTime(iso: string): string {
   return new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/New_York',
@@ -192,5 +274,6 @@ export function consensusQuote(input: {
     moneylineHome: `${H} ${american(mlHome)}`,
     implied: noVig ? `No-vig implied probability: ${A} ${noVig.awayPct}%, ${H} ${noVig.homePct}%` : null,
     best: bestParts.length > 0 ? `Best price: ${bestParts.join(' · ')}` : null,
+    movement: lineMovement(input),
   };
 }

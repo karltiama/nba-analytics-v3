@@ -23,6 +23,8 @@ export type MatchupQuote = {
   implied: string | null;
   /** Best available price per side, when the quote is a consensus of several books. */
   best?: string | null;
+  /** Opening vs now, from the odds job's snapshots. */
+  movement?: string | null;
 };
 
 export type MatchupQuoteResult = {

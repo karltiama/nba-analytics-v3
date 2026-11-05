@@ -1,6 +1,8 @@
 import type { HistoricalContributor } from '@/lib/pregame-matchup/aggregate';
 import type { MatchupContributors, ObservedRosterPlayer } from '@/lib/pregame-matchup/membership';
 import { MatchupSection } from '@/components/matchup/MatchupSection';
+import { playerPageHref } from '@/lib/pregame-matchup/href';
+import Link from 'next/link';
 import { CURRENT_PLAYER_MIN_GAMES, type CurrentPlayer, type CurrentPlayers, type CurrentPlayersTeam } from '@/lib/pregame-matchup/current-players';
 
 const OVERVIEW_COUNT = 3;
@@ -37,10 +39,16 @@ function InjuryTag({ status }: { status: string | undefined }) {
   );
 }
 
-function PlayerName({ name, status }: { name: string; status?: string }) {
+function PlayerName({ name, status, playerId }: { name: string; status?: string; playerId?: string }) {
   return (
     <div className="flex min-w-0 items-center">
-      <span className="type-card-data truncate text-[#063f46]">{name}</span>
+      {playerId ? (
+        <Link href={playerPageHref(playerId)} className="type-card-data truncate text-[#063f46] hover:text-[#075B5C] hover:underline">
+          {name}
+        </Link>
+      ) : (
+        <span className="type-card-data truncate text-[#063f46]">{name}</span>
+      )}
       <InjuryTag status={status} />
     </div>
   );
@@ -49,7 +57,7 @@ function PlayerName({ name, status }: { name: string; status?: string }) {
 function HistoricalLine({ player, status }: { player: HistoricalContributor; status?: string }) {
   return (
     <li className="min-w-0 border-b border-[#DCE9EA] py-2 last:border-0">
-      <PlayerName name={player.name} status={status} />
+      <PlayerName name={player.name} status={status} playerId={player.playerId} />
       <p className="type-secondary tabular-nums">
         2025–26 · {player.minutesPerGame.toFixed(1)} mpg · {player.pointsPerGame.toFixed(1)} ppg · {player.fgaPerGame.toFixed(1)} fga
         {player.usage != null ? ` · ${(player.usage * 100).toFixed(1)}% usg` : ''} · {player.games} gp
@@ -154,7 +162,9 @@ function SeasonLine({ player, team, current }: { player: CurrentPlayer; team: Cu
   return (
     <li className="min-w-0 border-b border-[#DCE9EA] py-2 last:border-0" data-current-player={player.playerId}>
       <div className="flex min-w-0 items-center">
-        <span className="type-card-data truncate text-[#063f46]">{player.name}</span>
+        <Link href={playerPageHref(player.playerId)} className="type-card-data truncate text-[#063f46] hover:text-[#075B5C] hover:underline">
+          {player.name}
+        </Link>
         <InjuryTag status={player.status ?? undefined} />
         {player.newToTeam ? (
           <span className="type-badge ml-2 shrink-0 rounded-full border border-[#DCE9EA] bg-[#F8FBFA] px-2 py-0.5 text-[#4a6366]" data-new-to-team>

@@ -1,5 +1,6 @@
 import type { InjuryReport as InjuryReportModel, InjuryReportPlayer, InjurySeverity } from '@/lib/pregame-matchup/injury-report';
 import { lastName, timeOutLabel } from '@/lib/pregame-matchup/injury-report';
+import { playerPageHref } from '@/lib/pregame-matchup/href';
 import { MatchupSection } from '@/components/matchup/MatchupSection';
 import Link from 'next/link';
 
@@ -44,7 +45,9 @@ function PlayerRow({ p, abbr }: { p: InjuryReportPlayer; abbr: string }) {
   return (
     <li className="py-2.5" data-injury-player={p.playerId}>
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <span className="text-sm font-semibold text-[#063f46]">{p.name}</span>
+        <Link href={playerPageHref(p.playerId)} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C] hover:underline">
+          {p.name}
+        </Link>
         <span className={`type-badge rounded-full border px-2 py-0.5 ${STATUS_STYLE[p.severity]}`}>{p.status}</span>
         {p.injury ? <span className="type-secondary">{p.injury}</span> : null}
       </div>

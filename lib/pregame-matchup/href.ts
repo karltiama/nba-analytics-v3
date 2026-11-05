@@ -24,6 +24,16 @@ export function scoreboardMatchupHref(gameId: string, slateDate?: string | null)
   return date ? `/scoreboard/games/${id}?date=${date}` : `/scoreboard/games/${id}`;
 }
 
+/** The player page that reads analytics game logs (the older /players page reads BBRef). */
+export function playerPageHref(playerId: string): string {
+  return `/betting/players/${encodeURIComponent(playerId.trim())}`;
+}
+
+/** This game's props and live board. */
+export function gamePropsHref(gameId: string): string {
+  return `/betting/games/${encodeURIComponent(gameId.trim())}`;
+}
+
 export function dashboardReturnHref(slateDate?: string | null): string {
   const date = parseSlateDate(slateDate);
   return date ? `/dashboard?date=${date}` : '/dashboard';

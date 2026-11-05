@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { consensusQuote, latestPregameBooks, type BookOddsRow } from '@/lib/pregame-matchup/odds-consensus';
+import { consensusQuote, latestPregameBooks, lineMovement, type BookOddsRow } from '@/lib/pregame-matchup/odds-consensus';
 
 const tip = '2026-11-06T02:00:00Z';
 const now = new Date('2026-11-05T15:00:00Z');
@@ -62,5 +62,34 @@ describe('consensusQuote', () => {
 
   it('needs at least two sportsbooks', () => {
     expect(consensusQuote({ rows: [book('draftkings'), book('polymarket')], tipAt: tip, now, awayAbbr: 'ORL', homeAbbr: 'PHX' })).toBeNull();
+  });
+});
+
+describe('lineMovement', () => {
+  const early = '2026-11-04T05:00:00Z';
+  it('compares each book’s first stored price with its latest', () => {
+    const history = [
+      book('draftkings', { snapshotAt: early, homeSpread: -2.5, total: 225.5, homeMoneyline: -135, awayMoneyline: 115 }),
+      book('fanduel', { snapshotAt: early, homeSpread: -2.5, total: 225.5, homeMoneyline: -132, awayMoneyline: 112 }),
+      book('betmgm', { snapshotAt: early, homeSpread: -2.5, total: 225.5 }),
+      book('draftkings'),
+      book('fanduel'),
+      book('betmgm', { homeSpread: -2.5 }),
+    ];
+    const text = lineMovement({ rows: history, tipAt: tip, now, awayAbbr: 'ORL', homeAbbr: 'PHX' })!;
+    expect(text).toMatch(/^Since Nov 4, 12:00 AM ET: spread PHX −2\.5 → PHX −1\.5 · total 225\.5 → 223\.5 · PHX win chance \d+% → \d+%\./);
+    expect(text).toContain('DraftKings PHX −2.5 → PHX −1.5, total 225.5 → 223.5');
+    expect(text).toContain('BetMGM total 225.5 → 223.5');
+  });
+
+  it('says steady when the consensus did not move', () => {
+    const history = [book('draftkings', { snapshotAt: early }), book('fanduel', { snapshotAt: early }), book('draftkings'), book('fanduel')];
+    expect(lineMovement({ rows: history, tipAt: tip, now, awayAbbr: 'ORL', homeAbbr: 'PHX' })).toBe(
+      'Since Nov 4, 12:00 AM ET: spread steady at PHX −1.5 · total steady at 223.5.'
+    );
+  });
+
+  it('is null with a single pull', () => {
+    expect(lineMovement({ rows: [book('draftkings'), book('fanduel')], tipAt: tip, now, awayAbbr: 'ORL', homeAbbr: 'PHX' })).toBeNull();
   });
 });

@@ -1,6 +1,8 @@
 import type { LikelyStarter, StartersModel, StartersTeam } from '@/lib/pregame-matchup/starters';
 import { MatchupSection } from '@/components/matchup/MatchupSection';
 import { shortDate } from '@/components/matchup/InjuryReport';
+import { playerPageHref } from '@/lib/pregame-matchup/href';
+import Link from 'next/link';
 
 function StatusTag({ p }: { p: LikelyStarter }) {
   if (!p.status) return null;
@@ -16,7 +18,9 @@ function Row({ p, games }: { p: LikelyStarter; games: number }) {
     <li className="py-2" data-likely-starter={p.playerId}>
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className="type-metadata w-4 shrink-0 text-center">{p.position ?? '–'}</span>
-        <span className="text-sm font-semibold text-[#063f46]">{p.name}</span>
+        <Link href={playerPageHref(p.playerId)} className="text-sm font-semibold text-[#063f46] hover:text-[#075B5C] hover:underline">
+          {p.name}
+        </Link>
         <StatusTag p={p} />
         <span className="type-metadata ml-auto">
           Started {p.starts} of {games}
@@ -24,7 +28,11 @@ function Row({ p, games }: { p: LikelyStarter; games: number }) {
       </div>
       {p.replaces ? (
         <p className="type-metadata mt-0.5 pl-6 text-[#7A4B05]" data-starter-replaces={p.replaces.playerId}>
-          In for {p.replaces.name} ({p.replaces.status})
+          In for{' '}
+          <Link href={playerPageHref(p.replaces.playerId)} className="hover:underline">
+            {p.replaces.name}
+          </Link>{' '}
+          ({p.replaces.status})
         </p>
       ) : null}
     </li>

@@ -18,6 +18,7 @@ export type MatchupHeaderMarket = {
   moneylineHome: string;
   implied: string | null;
   best?: string | null;
+  movement?: string | null;
 };
 
 export type MatchupNavLink = {
@@ -36,6 +37,8 @@ export type MatchupHeaderProps = {
   backLabel: string;
   market?: MatchupHeaderMarket | null;
   links?: MatchupNavLink[];
+  /** This game's props page, linked under the market strip. */
+  propsHref?: string | null;
 };
 
 function TeamSide({ team }: { team: MatchupHeaderSide }) {
@@ -72,6 +75,7 @@ export function MatchupHeader({
   backLabel,
   market,
   links = [],
+  propsHref = null,
 }: MatchupHeaderProps) {
   const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
   return (
@@ -117,6 +121,18 @@ export function MatchupHeader({
           </div>
           {market.implied ? <p className="type-secondary mt-2 text-center">{market.implied}</p> : null}
           {market.best ? <p className="type-metadata mt-1 text-center" data-market-best>{market.best}</p> : null}
+          {market.movement ? (
+            <p className="type-metadata mt-1 text-center" data-market-movement>
+              Line movement · {market.movement}
+            </p>
+          ) : null}
+          {propsHref ? (
+            <p className="mt-1 text-center">
+              <Link href={propsHref} className="type-interactive text-[#075B5C] hover:underline" data-props-link>
+                Player props for this game →
+              </Link>
+            </p>
+          ) : null}
         </div>
       ) : null}
 
