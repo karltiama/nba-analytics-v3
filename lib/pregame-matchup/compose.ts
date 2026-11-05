@@ -5,6 +5,9 @@ import type { MatchupQuoteResult } from './quote';
 import { hiddenRosterForUnconfirmedTeam, type RosterPresentation } from './roster';
 import { selectMatchupInsights, type MatchupInsight } from './signals';
 import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
+import type { InjuryReport } from './injury-report';
+import type { StartersModel } from './starters';
+import type { CurrentPlayers } from './current-players';
 
 /** Pregame schedule and injury lines, the same ones Today's Games cards show. */
 export type MatchupGameContext = {
@@ -16,6 +19,73 @@ export type MatchupGameContext = {
     teams: Array<{ abbr: string; players: Array<{ name: string; status: string }>; extra: number }> | null;
   };
 };
+
+/** Games each team needs this season before the story leads with this season. */
+export const CURRENT_STORY_MIN_GAMES = 5;
+/** Teams with a current-season profile needed to measure the league spread. */
+const CURRENT_STORY_MIN_LEAGUE = 20;
+
+export type CurrentInsight = MatchupInsight & {
+  /**
+   * held: 2025–26 showed the same contrast in the same direction. reversed: it showed this measure
+   * running the other way. new: it did not show it.
+   */
+  trend: 'held' | 'reversed' | 'new';
+};
+
+export type CurrentStory = {
+  seasonLabel: string;
+  awayGames: number;
+  homeGames: number;
+  insights: CurrentInsight[];
+  /** Last season's findings whose measure does not show up this season at all. */
+  faded: MatchupInsight[];
+};
+
+const sameContrast = (a: MatchupInsight, b: MatchupInsight) => a.id === b.id && a.subject === b.subject;
+
+/** This season's findings against this season's league, tagged against last season's. */
+export function buildCurrentStory(input: {
+  current: CurrentSeasonInput | null;
+  awayTeamId: string;
+  homeTeamId: string;
+  awayAbbr: string;
+  homeAbbr: string;
+  history: MatchupInsight[];
+}): CurrentStory | null {
+  if (!input.current) return null;
+  const profiles = new Map<string, TeamProfile>();
+  for (const row of input.current.teamRows) {
+    const profile = partialTeamProfile(row);
+    if (profile) profiles.set(row.teamId, profile);
+  }
+  const away = profiles.get(input.awayTeamId);
+  const home = profiles.get(input.homeTeamId);
+  if (!away || !home) return null;
+  if (away.games < CURRENT_STORY_MIN_GAMES || home.games < CURRENT_STORY_MIN_GAMES) return null;
+  if (profiles.size < CURRENT_STORY_MIN_LEAGUE) return null;
+  const seasonLabel = seasonSpan(input.current.season);
+  const found = selectMatchupInsights({
+    away: { abbr: input.awayAbbr, profile: away },
+    home: { abbr: input.homeAbbr, profile: home },
+    league: [...profiles.values()],
+    season: { label: seasonLabel, current: true },
+  });
+  return {
+    seasonLabel,
+    awayGames: away.games,
+    homeGames: home.games,
+    insights: found.map((insight) => ({
+      ...insight,
+      trend: input.history.some((prior) => sameContrast(prior, insight))
+        ? 'held'
+        : input.history.some((prior) => prior.id === insight.id)
+          ? 'reversed'
+          : 'new',
+    })),
+    faded: input.history.filter((prior) => !found.some((insight) => insight.id === prior.id)),
+  };
+}
 
 export const POSSESSION_NOTE =
   'Estimated possessions are a box-score estimate, not official NBA pace, and are not adjusted for overtime.';
@@ -69,6 +139,17 @@ export type PregameMatchupModel = {
   roster: RosterPresentation;
   quote: MatchupQuoteResult['quote'];
   quoteNote: string | null;
+  /**
+   * This season's findings, each tagged by whether last season showed the same contrast. Null until
+   * both teams have CURRENT_STORY_MIN_GAMES games; the story then stays on 2025–26.
+   */
+  currentStory?: CurrentStory | null;
+  /** Every listed injury on both teams with time out. Set by the loader; absent in pure builds. */
+  injuryReport?: InjuryReport | null;
+  /** Likely starters from this season's certified lineups. Null before any starters are loaded. */
+  starters?: StartersModel | null;
+  /** This season's players per team, still with the team. Null before opening night. */
+  currentPlayers?: CurrentPlayers | null;
 };
 
 function one(value: number): string {
@@ -205,6 +286,11 @@ export function buildPregameMatchup(input: {
       contributors: null,
     };
   }
+  const insights = selectMatchupInsights({
+    away: { abbr: input.awayAbbr, profile: away },
+    home: { abbr: input.homeAbbr, profile: home },
+    league: [...sample.values()],
+  });
   return {
     ...base,
     history: {
@@ -213,10 +299,14 @@ export function buildPregameMatchup(input: {
       rows: comparison(away, home),
     },
     historyNote: null,
-    insights: selectMatchupInsights({
-      away: { abbr: input.awayAbbr, profile: away },
-      home: { abbr: input.homeAbbr, profile: home },
-      league: [...sample.values()],
+    insights,
+    currentStory: buildCurrentStory({
+      current: input.current ?? null,
+      awayTeamId: input.awayTeamId,
+      homeTeamId: input.homeTeamId,
+      awayAbbr: input.awayAbbr,
+      homeAbbr: input.homeAbbr,
+      history: insights,
     }),
     contributors: attributeMatchupPlayers({
       awayTeamId: input.awayTeamId,

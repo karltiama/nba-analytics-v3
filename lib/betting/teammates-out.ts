@@ -18,6 +18,7 @@ import {
 import { INJURY_REPORT_UNAVAILABLE } from '@/lib/betting/teammates-out-display';
 import { parseMinutes } from '@/lib/wowy/appearance';
 import { loadWowyPairSummary } from '@/lib/wowy/queries';
+import { wowyHref } from '@/lib/wowy/href';
 import type { WowyPairSummary } from '@/lib/wowy/types';
 import type {
   SplitStats,
@@ -169,10 +170,7 @@ export function chooseSplit(current: TeammateOutSplit | null, prior: TeammateOut
   return current ?? prior;
 }
 
-export function wowyHref(args: { subjectId: string; teammateId: string; season: string; teamId: string }): string {
-  const sp = new URLSearchParams({ subject: args.subjectId, teammate: args.teammateId, season: args.season, teamId: args.teamId });
-  return `/wowy?${sp.toString()}`;
-}
+export { wowyHref } from '@/lib/wowy/href';
 
 /** The player's team in this game: his latest log for either side before tip, else the current roster. */
 async function resolveTeam(playerId: string, game: GameRow): Promise<string | null> {

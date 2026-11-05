@@ -6,7 +6,7 @@
  * A later phase can add current_season, recent_form, or roster without a new page.
  */
 
-import type { ComparisonRow, CurrentSeasonComparison } from './compose';
+import type { ComparisonRow, CurrentInsight, CurrentSeasonComparison, CurrentStory } from './compose';
 import { POSSESSION_NOTE, SAMPLE_LABEL } from './compose';
 import { formatRosterObservationLabel, type RosterPresentation, type TeamContinuity } from './roster';
 import { ROSTER_LIMITATION, type MatchupInsight } from './signals';
@@ -44,6 +44,8 @@ export type OverviewFinding = {
   summary: string;
   sampleLabel: string;
   destination: '#section-comparison';
+  /** Set on this-season findings: whether 2025–26 showed the same contrast. */
+  trend?: CurrentInsight['trend'];
 };
 
 export type OverviewPersonnelShare = {
@@ -98,6 +100,10 @@ export type MatchupOverviewSource = {
   insights: MatchupInsight[];
   roster: RosterPresentation;
   current?: CurrentSeasonComparison | null;
+  /** This season's findings. When present, the story and findings lead with this season. */
+  currentStory?: CurrentStory | null;
+  /** Lines like "ORL's 2026–27 numbers: Banchero played 2 of 7." from the injury report. */
+  injuryNotes?: string[];
 };
 
 const SIGNIFICANCE = /gap stands out|stylistic contrast|profiles differ|wide relative to other|not official NBA pace/;
@@ -141,6 +147,26 @@ function alsoSentence(rest: MatchupInsight[]): string | null {
   const earlier = subjects.slice(0, -1).join(', ');
   return `The same selection threshold also marks contrasts in ${earlier} and ${subjects[subjects.length - 1]}.`;
 }
+
+function trendSentence(top: CurrentInsight, priorLabel: string): string {
+  if (top.trend === 'held') return `It also stood out in ${priorLabel}.`;
+  if (top.trend === 'reversed') return `In ${priorLabel} this contrast ran the other way, so treat it as early.`;
+  return `It did not stand out in ${priorLabel}, so treat it as early.`;
+}
+
+function fadedSentence(faded: MatchupInsight[], priorLabel: string): string | null {
+  if (faded.length === 0) return null;
+  const subjects = [...new Set(faded.map((item) => INSIGHT_SUBJECT[item.id]))];
+  const list = subjects.length === 1 ? subjects[0] : `${subjects.slice(0, -1).join(', ')} and ${subjects[subjects.length - 1]}`;
+  return `Last season's contrast${subjects.length === 1 ? '' : 's'} in ${list} ${subjects.length === 1 ? 'has' : 'have'} not shown up this season.`;
+}
+
+/** Scope line for a this-season story. */
+export function currentStoryScope(story: CurrentStory): string {
+  return `Findings use ${story.seasonLabel} so far (${story.awayGames} and ${story.homeGames} games), a small sample, measured against this season's teams. Each is marked by whether ${HISTORY_LABEL} showed the same contrast.`;
+}
+
+const HISTORY_LABEL = '2025–26';
 
 function compactRows<Row extends ComparisonRow>(rows: Row[]): Row[] {
   return COMPACT_COMPARISON_LABELS.flatMap((label) => {
@@ -192,12 +218,45 @@ function personnel(roster: RosterPresentation): OverviewPersonnel {
 }
 
 export function presentMatchupOverview(input: MatchupOverviewSource): MatchupOverviewPresentation {
+  const thisSeason = input.history ? input.currentStory ?? null : null;
   const ranked = input.history ? input.insights : [];
   const top = ranked[0] ?? null;
   const current = input.current ?? null;
   const rows = compactRows(mergeSeasonRows(current, input.history?.rows));
   const hasRatings = input.history != null;
-  const story: OverviewStory = !input.history
+  const thisSeasonLabel = thisSeason
+    ? current?.label ?? `${thisSeason.seasonLabel} so far · ${input.awayAbbr} ${thisSeason.awayGames} games · ${input.homeAbbr} ${thisSeason.homeGames} games`
+    : null;
+  const story: OverviewStory = thisSeason
+    ? (() => {
+        const lead = thisSeason.insights[0] ?? null;
+        const caveat = [currentStoryScope(thisSeason), ...(input.injuryNotes ?? []), rosterStoryLine(input.roster)]
+          .filter(Boolean)
+          .join(' ');
+        const faded = fadedSentence(thisSeason.faded, HISTORY_LABEL);
+        if (!lead) {
+          return {
+            headline: `No standout ${thisSeason.seasonLabel} contrast yet`,
+            lede: [
+              `None of the checked ${thisSeason.seasonLabel} team differences cleared the one-standard-deviation selection threshold against this season's teams.`,
+              faded,
+            ]
+              .filter(Boolean)
+              .join(' '),
+            sampleLabel: thisSeasonLabel,
+            caveat,
+          };
+        }
+        return {
+          headline: `The clearest ${thisSeason.seasonLabel} contrast is ${INSIGHT_SUBJECT[lead.id]}`,
+          lede: [findingSummary(lead.body), trendSentence(lead, HISTORY_LABEL), alsoSentence(thisSeason.insights.slice(1)), faded]
+            .filter(Boolean)
+            .join(' '),
+          sampleLabel: thisSeasonLabel,
+          caveat,
+        };
+      })()
+    : !input.history
     ? {
         headline: '2025–26 team comparison unavailable',
         lede: input.historyNote ?? 'Team and player comparisons are hidden.',
@@ -218,17 +277,30 @@ export function presentMatchupOverview(input: MatchupOverviewSource): MatchupOve
           caveat: ratingsCaveat(input.roster, hasRatings, current),
         };
 
+  const findings: OverviewFinding[] = thisSeason
+    ? thisSeason.insights.map((insight) => ({
+        id: insight.id,
+        category: 'current_season' as const,
+        title: insight.headline,
+        evidence: insight.evidence,
+        summary: findingExplanation(insight.body),
+        sampleLabel: thisSeasonLabel ?? thisSeason.seasonLabel,
+        destination: '#section-comparison' as const,
+        trend: insight.trend,
+      }))
+    : ranked.map((insight) => ({
+        id: insight.id,
+        category: findingCategory(insight.id),
+        title: insight.headline,
+        evidence: insight.evidence,
+        summary: findingExplanation(insight.body),
+        sampleLabel: input.history?.label ?? SAMPLE_LABEL,
+        destination: '#section-comparison' as const,
+      }));
+
   return {
     story,
-    findings: ranked.map((insight) => ({
-      id: insight.id,
-      category: findingCategory(insight.id),
-      title: insight.headline,
-      evidence: insight.evidence,
-      summary: findingExplanation(insight.body),
-      sampleLabel: input.history?.label ?? SAMPLE_LABEL,
-      destination: '#section-comparison' as const,
-    })),
+    findings,
     comparison: {
       available: rows.length > 0,
       label: current ? current.label : input.history?.label ?? null,

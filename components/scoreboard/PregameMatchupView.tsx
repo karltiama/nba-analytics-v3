@@ -9,6 +9,8 @@ import { MatchupFindings } from '@/components/matchup/MatchupFindings';
 import { ComparisonGrid } from '@/components/matchup/ComparisonGrid';
 import { RosterContinuity } from '@/components/matchup/RosterContinuity';
 import { PlayerContributors, type SideInjuries } from '@/components/matchup/PlayerContributors';
+import { InjuryReport } from '@/components/matchup/InjuryReport';
+import { LikelyStarters } from '@/components/matchup/LikelyStarters';
 import Link from 'next/link';
 
 /**
@@ -27,6 +29,8 @@ function sectionLinks(model: PregameMatchupModel, roster: boolean): MatchupNavLi
     { href: '#section-story', label: 'Overview' },
   ];
   if (model.insights.length > 0) links.push({ href: '#section-signals', label: 'Findings' });
+  if (model.starters) links.push({ href: '#section-starters', label: 'Starters' });
+  if (model.injuryReport) links.push({ href: '#section-injuries', label: 'Injuries' });
   links.push({ href: '#section-comparison', label: 'Teams' });
   if (model.contributors) links.push({ href: '#section-contributors', label: 'Players' });
   if (roster) links.push({ href: '#section-roster', label: 'Roster' });
@@ -48,6 +52,8 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
     insights: model.insights,
     roster: model.roster,
     current: model.current,
+    currentStory: model.currentStory ?? null,
+    injuryNotes: (model.injuryReport?.teams ?? []).flatMap((team) => (team.sampleNote ? [team.sampleNote] : [])),
   });
   const roster = showRosterSection(model);
   return (
@@ -72,7 +78,9 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           aria-label="Quick reference"
           data-matchup-rail
         >
-          {model.context ? <MatchupContextStrip context={model.context} /> : null}
+          {model.context ? (
+            <MatchupContextStrip context={model.context} moreHref={model.injuryReport ? '#section-injuries' : null} />
+          ) : null}
           <MatchupQuickStats awayAbbr={model.awayAbbr} homeAbbr={model.homeAbbr} comparison={overview.comparison} />
           {!model.quote && model.quoteNote ? (
             <section className={RAIL_CARD} aria-labelledby="sportsbook">
@@ -92,6 +100,8 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         >
           <MatchupStory story={overview.story} flow />
           <MatchupFindings findings={overview.findings} flow />
+          {model.starters ? <LikelyStarters starters={model.starters} flow /> : null}
+          {model.injuryReport ? <InjuryReport report={model.injuryReport} flow /> : null}
           <ComparisonGrid
             flow
             awayAbbr={model.awayAbbr}
@@ -111,6 +121,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
               awayAbbr={model.awayAbbr}
               homeAbbr={model.homeAbbr}
               contributors={model.contributors}
+              current={model.currentPlayers ?? null}
               awayInjuries={sideInjuries(model, model.awayAbbr)}
               homeInjuries={sideInjuries(model, model.homeAbbr)}
             />

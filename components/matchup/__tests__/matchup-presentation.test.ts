@@ -141,6 +141,7 @@ describe('shared matchup presentation', () => {
   it('renders signal evidence and the historical limitation, and nothing when there are no signals', () => {
     const insight: MatchupInsight = {
       id: 'efficiency',
+      subject: 'ORL',
       headline: 'ORL offense, CLE defense',
       body: 'It describes last season\'s teams, not a winner tonight.',
       evidence: 'ORL offensive rating 114.2 · CLE defensive rating 110.1',

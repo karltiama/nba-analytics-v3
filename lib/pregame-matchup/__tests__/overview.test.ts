@@ -84,6 +84,7 @@ function insight(id: MatchupInsight['id'], headline: string): MatchupInsight {
   };
   return {
     id,
+    subject: 'ORL',
     headline,
     body: bodies[id],
     evidence: `${headline} evidence`,
