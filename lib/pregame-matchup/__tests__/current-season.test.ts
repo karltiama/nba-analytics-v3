@@ -255,7 +255,7 @@ describe('player injury tags', () => {
       }),
     );
     expect(html.match(/data-injury-tag/g)).toHaveLength(1);
-    expect(html).toContain('Jalen Duren</span><span class="type-badge');
+    expect(html).toContain('href="/betting/players/2">Jalen Duren</a><span class="type-badge');
   });
 
   it('tags nobody when two listed players share the surname', () => {

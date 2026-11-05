@@ -164,7 +164,7 @@ export function LineMovementChart({
             y={height - 8}
             fill="#4a6366"
             fontSize="11"
-            textAnchor="middle"
+            textAnchor={i === 0 ? 'start' : 'end'}
           >
             {point.time}
           </text>
