@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
         lineLabel: result.lineLabel,
         dateEt: result.dateEt,
         selectedGame: result.selectedGame,
+        priceScope: result.priceScope,
       },
     });
   } catch (error: unknown) {

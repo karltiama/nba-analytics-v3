@@ -58,6 +58,16 @@ export type PropsExplorerDbRow = {
 const COMPUTED_SORTS = new Set(['ev', 'ev_track_a', 'ev_track_b', 'confidence']);
 /** SQL-orderable sort on the price-shopping columns (price_gap is a select alias). */
 export const PRICE_GAP_SORT = 'price_gap';
+
+/**
+ * What Best price and vs Avg compare against. With one book selected there is nothing to compare
+ * within the filter, so the row's price is compared with every book ("vs market"). With no filter or
+ * two or more books, the comparison stays inside the selected books.
+ */
+export type PriceScope = 'selected_books' | 'market';
+export function priceScopeForBooks(books: string[] | null | undefined): PriceScope {
+  return books != null && books.length === 1 ? 'market' : 'selected_books';
+}
 export const PROPS_EXPLORER_MAX_LIMIT = 200;
 export const PROPS_EXPLORER_EV_FETCH_CAP = 2500;
 
@@ -506,6 +516,8 @@ export type PropsExplorerBestPrice = {
   isBest: boolean;
   /** This row's decimal price over the average book's, minus 1; null with one book. */
   vsAverage: number | null;
+  /** True when compared with every book because only one book is selected. */
+  marketWide: boolean;
 };
 
 const num = (v: string | number | null | undefined): number | null => {
@@ -545,6 +557,7 @@ export function toBestPrice(
     bookCount,
     isBest: own != null && own >= best - 1e-9,
     vsAverage: bookCount >= 2 && own != null && avg != null && avg > 0 ? own / avg - 1 : null,
+    marketWide: false,
   };
 }
 
@@ -593,6 +606,7 @@ export async function getPlayerPropsForExplorer(
   evFetchCap: number | null;
   sort: string;
   selectedGame: SelectedExplorerGame | null;
+  priceScope: PriceScope;
 }> {
   const now = input.now ?? new Date();
   const todayEt = input.todayEt ?? etCalendarDate(now);
@@ -632,6 +646,7 @@ export async function getPlayerPropsForExplorer(
         evFetchCap: null,
         sort: sortRaw === 'edge' ? 'snapshot_at' : sortRaw,
         selectedGame: { gameId, awayAbbr: null, homeAbbr: null, found: false },
+        priceScope: priceScopeForBooks((input.sportsbook ?? '').split(',').filter(Boolean)),
       };
     }
     gameStart = game.start_time ?? null;
@@ -708,6 +723,10 @@ export async function getPlayerPropsForExplorer(
     marketType: (input.marketType || 'over_under').trim().toLowerCase(),
   });
   const { params: whereParams, booksParamIndex } = built;
+  const selectedBooks = booksParamIndex == null ? null : (whereParams[booksParamIndex - 1] as string[]);
+  const priceScope = priceScopeForBooks(selectedBooks);
+  // Best price / vs Avg: the selected books, or every book when only one is selected.
+  const priceBooksParamIndex = priceScope === 'market' ? null : booksParamIndex;
   // Arbs are a live, pre-tip feature: past lines are not bettable.
   const arbOnly = Boolean(input.arbOnly);
   const arbAvailable = sqlContext === 'live' && !mixDateSources;
@@ -724,6 +743,7 @@ export async function getPlayerPropsForExplorer(
       evFetchCap: null,
       sort: (input.sort || 'snapshot_at').toLowerCase() === 'edge' ? 'snapshot_at' : (input.sort || 'snapshot_at').toLowerCase(),
       selectedGame,
+      priceScope,
     };
   }
   const whereSql = arbOnly
@@ -734,10 +754,10 @@ export async function getPlayerPropsForExplorer(
   const sort = sortRaw === 'edge' ? 'snapshot_at' : sortRaw;
   // Only the price-gap sort needs market prices inside SQL; other sorts look them up per page.
   const sqlMarket = sort === PRICE_GAP_SORT;
-  const mixedBody = mixDateSources ? mixedDateBody(whereSql, booksParamIndex, sqlMarket) : '';
+  const mixedBody = mixDateSources ? mixedDateBody(whereSql, priceBooksParamIndex, sqlMarket) : '';
   const join = mixDateSources
     ? ''
-    : fromJoin(sqlContext, whereSql, sqlMarket ? { booksParamIndex } : null);
+    : fromJoin(sqlContext, whereSql, sqlMarket ? { booksParamIndex: priceBooksParamIndex } : null);
   const countResult = await query<{ count: string }>(
     mixDateSources
       ? `SELECT count(*)::text AS count FROM (${mixedDateCountBody(whereSql)}) mixed_rows`
@@ -796,7 +816,7 @@ export async function getPlayerPropsForExplorer(
   }
 
   if (!sqlMarket) {
-    const books = booksParamIndex == null ? null : (whereParams[booksParamIndex - 1] as string[]);
+    const books = priceScope === 'market' ? null : selectedBooks;
     const groups: Array<[PropsMarketContext, PropsExplorerDbRow[]]> = mixDateSources
       ? [
           ['historical', dbRows.filter((r) => r.row_source === 'decision')],
@@ -890,7 +910,10 @@ export async function getPlayerPropsForExplorer(
               r.opposite_implied_probability != null ? Number(r.opposite_implied_probability) : null
             )
           : null,
-      bestPrice: toBestPrice(r),
+      bestPrice: (() => {
+        const bp = toBestPrice(r);
+        return bp ? { ...bp, marketWide: priceScope === 'market' } : null;
+      })(),
       arb: arbFor(r),
       snapshotAt,
       marketContext,
@@ -957,5 +980,6 @@ export async function getPlayerPropsForExplorer(
     evFetchCap: useComputedSort ? PROPS_EXPLORER_EV_FETCH_CAP : null,
     sort,
     selectedGame,
+    priceScope,
   };
 }
