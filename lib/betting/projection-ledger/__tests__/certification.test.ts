@@ -309,12 +309,27 @@ describe('projection ledger certification', () => {
     });
     expect(dnp).toBe('DNP_VOID');
     expect(includedInPrimaryAccuracy(dnp)).toBe(false);
+    // A 0-minute appearance with stats is PLAYED.
     const zeroMinutes = classifyLedgerResolution({
+      statusRaw: 'Final',
+      gameLogCount: 10,
+      playerLog: { game_id: 'g', player_id: 'p', start_time: openingTip, season: '2026', minutes: '0', points: 0, rebounds: 1, assists: 0, three_pointers_made: 0 },
+    });
+    expect(zeroMinutes).toBe('PLAYED');
+    // 2026-27 BallDontLie stores a DNP as "0" with no stats: void it, as with "00".
+    const zeroNoStats = classifyLedgerResolution({
       statusRaw: 'Final',
       gameLogCount: 10,
       playerLog: { game_id: 'g', player_id: 'p', start_time: openingTip, season: '2026', minutes: '0', points: 0, rebounds: 0, assists: 0, three_pointers_made: 0 },
     });
-    expect(zeroMinutes).toBe('PLAYED');
+    expect(zeroNoStats).toBe('DNP_VOID');
+    // 2026-27 played minutes are clock format.
+    const clock = classifyLedgerResolution({
+      statusRaw: 'Final',
+      gameLogCount: 10,
+      playerLog: { game_id: 'g', player_id: 'p', start_time: openingTip, season: '2026', minutes: '22:51', points: 0, rebounds: 0, assists: 0, three_pointers_made: 0 },
+    });
+    expect(clock).toBe('PLAYED');
     const zeroPoints = classifyLedgerResolution({
       statusRaw: 'Final',
       gameLogCount: 10,

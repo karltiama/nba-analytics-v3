@@ -184,10 +184,28 @@ describe('played-game semantics', () => {
     expect(windowCountingMean([zeroPts], 'points', 'all', true)).toBe(0);
   });
 
-  it('treats minutes token 0 as a sub-minute appearance, not DNP', () => {
+  it('treats minutes token 0 as a sub-minute appearance when it has stats, otherwise DNP', () => {
     expect(
       isPlayedGame(log({ game_id: 'sub', start_time: t, season: '2025', minutes: '0', points: 0 }))
     ).toBe(true);
+    const noStats = log({
+      game_id: 'dnp26',
+      start_time: t,
+      season: '2026',
+      minutes: '0',
+      points: 0,
+      rebounds: 0,
+      assists: 0,
+      three_pointers_made: 0,
+    });
+    expect(isPlayedGame(noStats)).toBe(false);
+    expect(classifyAppearance(noStats).reason).toBe('zero_minutes_no_box');
+  });
+
+  it('reads 2026-27 clock minutes', () => {
+    const c = classifyAppearance(log({ game_id: 'clk', start_time: t, season: '2026', minutes: '22:51' }));
+    expect(c.class).toBe('played');
+    expect(c.minutes).toBeCloseTo(22.85, 10);
   });
 
   it('treats malformed minutes as not played', () => {
