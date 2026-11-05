@@ -4,6 +4,12 @@ import { Check, Plus } from 'lucide-react';
 import { explorerBookDisplayName, explorerPropContextLabel } from '@/lib/betting/props-explorer-filters';
 import { formatArbProfit, type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
 import {
+  MOVEMENT_TITLE,
+  movementLabel,
+  movementTextClass,
+  type PropsExplorerMovement,
+} from '@/lib/betting/props-explorer-movement';
+import {
   BEST_PRICE_TITLE,
   FAIR_PROBABILITY_TITLE,
   type ExplorerBestPrice,
@@ -24,6 +30,7 @@ export type PropsExplorerScanRow = {
   fairProbability?: number | null;
   bestPrice?: ExplorerBestPrice | null;
   arb?: PropsExplorerArb | null;
+  movement?: PropsExplorerMovement | null;
   snapshotAt?: string | null;
   marketContext?: 'live' | 'historical';
 };
@@ -100,6 +107,11 @@ export function PropsExplorerPropList<T extends PropsExplorerScanRow>({
                 ) : null}
                 {row.arb ? (
                   <span className="type-metadata block font-medium text-[#178A45]">{formatArbProfit(row.arb.profit)}</span>
+                ) : null}
+                {movementLabel(row.movement) ? (
+                  <span className={`type-metadata block ${movementTextClass(row.movement)}`} title={MOVEMENT_TITLE}>
+                    {movementLabel(row.movement)}
+                  </span>
                 ) : null}
               </span>
             </button>

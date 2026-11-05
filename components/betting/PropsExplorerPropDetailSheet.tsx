@@ -20,6 +20,15 @@ import {
 } from '@/lib/betting/props-explorer-row-display';
 import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
 import { ARB_TITLE, arbInstructions, formatArbProfit, type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
+import {
+  MOVEMENT_TITLE,
+  formatMovementLine,
+  formatMovementOdds,
+  movementSummary,
+  movementTextClass,
+  movementTimeLabel,
+  type PropsExplorerMovement,
+} from '@/lib/betting/props-explorer-movement';
 
 export type PropsExplorerDetailRow = {
   gameId: number;
@@ -34,6 +43,7 @@ export type PropsExplorerDetailRow = {
   fairProbability?: number | null;
   bestPrice?: ExplorerBestPrice | null;
   arb?: PropsExplorerArb | null;
+  movement?: PropsExplorerMovement | null;
   sampleGamesUsed?: number | null;
   snapshotAt: string;
   modelProbability: number | null;
@@ -161,6 +171,35 @@ export function PropsExplorerPropDetailSheet({
                   })}{' '}
                   Confirm both prices before betting; they move fast.
                 </p>
+              ) : null}
+              {!historical ? (
+                <section className="mt-3" aria-label="Line movement" title={MOVEMENT_TITLE}>
+                  <p className="type-metadata font-medium text-[#063f46]">Line movement at {explorerBookDisplayName(row.sportsbook)}</p>
+                  <p className={`type-metadata mt-0.5 ${movementTextClass(row.movement)}`}>
+                    {movementSummary(row.movement, row.side)}
+                  </p>
+                  {row.movement ? (
+                    <dl className="mt-1.5 divide-y divide-[#DCE9EA] border-y border-[#DCE9EA]">
+                      {row.movement.mainLineOpen != null && row.movement.mainLineNow != null ? (
+                        <Fact
+                          label="Main line"
+                          value={
+                            row.movement.mainLineOpen === row.movement.mainLineNow
+                              ? `${formatMovementLine(row.movement.mainLineNow)} (unchanged)`
+                              : `${formatMovementLine(row.movement.mainLineOpen)} → ${formatMovementLine(row.movement.mainLineNow)}`
+                          }
+                        />
+                      ) : null}
+                      {row.movement.points.map((pt, i) => (
+                        <Fact
+                          key={pt.at}
+                          label={`${i === 0 ? 'Opened' : 'Seen'} ${movementTimeLabel(pt.at)}`}
+                          value={`${row.lineValue ?? '—'} ${formatMovementOdds(pt.oddsAmerican)}`}
+                        />
+                      ))}
+                    </dl>
+                  ) : null}
+                </section>
               ) : null}
               <dl className="mt-1 divide-y divide-[#DCE9EA] border-b border-[#DCE9EA]">
                 <Fact label="Fair probability" value={formatFairProbability(row.fairProbability)} />
