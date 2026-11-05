@@ -831,6 +831,20 @@ describe('isolation: preseason observations cannot reach modeling tables', () =>
         expect.soft(code, f).not.toMatch(/lib\/scoreboard/);
         continue;
       }
+      if (f === 'app/api/betting/games/[gameId]/live-props/route.ts') {
+        // Follow-live board: reads the live box score for display next to pregame prop lines. Read-only,
+        // and nothing it reads is written back or passed to a model.
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+        expect.soft(code, f).not.toMatch(/(INSERT|UPDATE|DELETE|MERGE)/i);
+        for (const m of code.matchAll(/display\.(scoreboard_[a-z_]+)/g)) {
+          expect.soft(m[1], f).toMatch(/^scoreboard_(games|player_lines)$/);
+        }
+        for (const imp of src.matchAll(/@\/lib\/scoreboard\/[A-Za-z0-9_\/-]+/g)) {
+          expect.soft(imp[0], f).toMatch(/^@\/lib\/scoreboard\/(game-pulse|present)$/);
+        }
+        expect.soft(src, f).not.toMatch(/@\/lib\/(betting\/projection|wowy|backtesting|context-projection|context-center)/);
+        continue;
+      }
       expect.soft(src, f).not.toMatch(/display\.scoreboard_/);
       if (f === 'lib/pregame-matchup/load.ts' || f === 'lib/pregame-matchup/quote.ts') {
         const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');

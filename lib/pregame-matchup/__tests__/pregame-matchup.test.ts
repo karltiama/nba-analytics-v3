@@ -477,11 +477,13 @@ describe('pregame navigation', () => {
       scoreboardResponse([scoreboardGame({ game_id: '9001', lifecycle: 'live', period: 1, clock: '4:00', home: { score: 10 }, visitor: { score: 8 } })])
     )[0]!;
     const liveHtml = renderToStaticMarkup(createElement(GameCard, { game: live, presentation: 'scoreboard' }));
-    expect(liveHtml.match(/aria-disabled="true"/g)).toHaveLength(1);
+    // Follow live opens the game page's live props board without waiting on the research flag.
+    expect(liveHtml).not.toContain('aria-disabled');
+    expect(liveHtml).toContain('data-follow-live');
+    expect(liveHtml).toContain('href="/betting/games/9001"');
     expect(liveHtml).toContain('>Follow live</span>');
     expect(liveHtml).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=9001"');
     expect(liveHtml).not.toContain('/scoreboard/games/');
-    expect(liveHtml).not.toContain('/betting/games/');
 
     const finalGame = mergeTodaysGames(
       scoreboardResponse([

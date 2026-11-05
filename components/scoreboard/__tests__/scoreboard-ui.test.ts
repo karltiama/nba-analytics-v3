@@ -72,7 +72,9 @@ function expectInPlayShell(html: string) {
   expect(html).toContain('data-leaders-panel');
   expect(html).not.toContain('data-pregame-lines');
   expect(html).not.toContain('Pregame Lines');
-  expect(html).not.toContain('/betting/games/');
+  // Live cards link Follow live to the game page's live props board; final cards still have no game link.
+  const gameLinks = html.match(/href="\/betting\/games\/[^"]*"/g) ?? [];
+  expect(gameLinks).toHaveLength(html.includes('data-phase="live"') ? 1 : 0);
   expect(html).toContain('data-view-props');
   expect(html).toContain('props-explorer');
 }
@@ -165,6 +167,7 @@ describe('Pre-game card keeps the original market layout', () => {
       html
         .replace(/data-(game-id|season-type)="[^"]*"/g, '')
         .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
+        .replace(/href="\/betting\/games\/[^"]*"/g, 'href="/betting/games/id"')
         .replace(/href="\/betting\/props-explorer\?[^"]*"/g, 'href="/betting/props-explorer"')
         .replace(/NBA · (Preseason|Regular season)/, '');
     expect(strip(cardHtml(merged[0]!, 'scoreboard'))).toBe(strip(cardHtml(merged[1]!, 'scoreboard')));
@@ -263,7 +266,10 @@ describe('Live card swaps market slots for live facts', () => {
     expect(html).not.toContain('LAC – TOR');
     expect(teamRow(html)).toContain('data-scoreline');
     expect(textOf(teamRow(html))).toMatch(/Clippers — 10 – 17 Raptors —/);
-    expectUnavailableFooter(html, 'Follow live');
+    expect(html).not.toContain('aria-disabled');
+    expect(html).toContain('data-follow-live');
+    expect(html).toContain('href="/betting/games/21717908"');
+    expect(html).toContain('>Follow live</span>');
     expect(html).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=21717908"');
   });
 
@@ -482,6 +488,7 @@ describe('Lifecycle parity', () => {
         .replace(/data-game-id="[^"]*"/g, '')
         .replace(/data-season-type="[^"]*"/g, '')
         .replace(/href="\/scoreboard\/games\/[^"]*"/g, 'href="/scoreboard/games/id"')
+        .replace(/href="\/betting\/games\/[^"]*"/g, 'href="/betting/games/id"')
         .replace(/href="\/betting\/props-explorer\?[^"]*"/g, 'href="/betting/props-explorer"')
         .replace(/NBA · (Preseason|Regular season|Play-in|Playoffs)/g, '');
     const players = [

@@ -21,6 +21,7 @@ import { MarketSentimentChart, resolveSentimentChartData } from '@/components/be
 import type { InjuryFeedAvailability } from '@/lib/injuries/freshness';
 import { injuryAbsenceCopy } from '@/lib/injuries/freshness';
 import { HistoricalFinalBoxScore } from '@/components/betting/HistoricalFinalBoxScore';
+import { LivePropsBoard, useLiveProps } from '@/components/betting/LivePropsBoard';
 import { HistoricalStartingFive } from '@/components/betting/HistoricalStartingFive';
 import { HistoricalFinalRoleProfile } from '@/components/betting/HistoricalFinalRoleProfile';
 import { HistoricalFinalTimeline } from '@/components/betting/HistoricalFinalTimeline';
@@ -600,6 +601,7 @@ const BETTING_MATCHUP_HASHES = [
 
 const SECTION_IDS = ['section-overview', 'section-matchup', 'section-odds', 'section-injuries'] as const;
 const SECTION_LABELS: Record<string, string> = {
+  'section-live': 'Live props',
   'section-overview': 'Overview',
   'section-historical-overview': 'Overview',
   'section-ai-projection': 'AI Matchup Summary',
@@ -679,8 +681,16 @@ export function MatchupPageLayout({
     [showHistoricalRoleProfile, showHistoricalTimeline, hasOdds]
   );
 
-  const liveSectionIds = SECTION_IDS;
+  const live = useLiveProps(game.id);
+  const liveGame = !isFinalView && live.data?.game?.phase === 'live' ? live.data.game : null;
+  const isLive = liveGame != null;
+  const liveSectionIds = useMemo<readonly string[]>(
+    () => (isLive ? ['section-live', ...SECTION_IDS] : SECTION_IDS),
+    [isLive]
+  );
   const navIds = isFinalView ? finalSectionIds : liveSectionIds;
+  const liveAwayScore = liveGame?.visitor.score;
+  const liveHomeScore = liveGame?.home.score;
   const hasStoredOdds = finalSectionIds.includes('section-odds');
   const coverageLine = isFinalView
     ? formatHistoricalCoverageLine(
@@ -963,7 +973,9 @@ export function MatchupPageLayout({
                 <span className="block text-base sm:text-xl font-bold tabular-nums text-[#063f46] leading-tight">
                   {isFinalView
                     ? (game.awayScore != null ? String(game.awayScore) : '—')
-                    : (game.awayTeam.record ?? '—')}
+                    : isLive
+                      ? (liveAwayScore != null ? String(liveAwayScore) : '—')
+                      : (game.awayTeam.record ?? '—')}
                 </span>
               </span>
             </Link>
@@ -980,7 +992,9 @@ export function MatchupPageLayout({
                 <span className="block text-base sm:text-xl font-bold tabular-nums text-[#063f46] leading-tight">
                   {isFinalView
                     ? (game.homeScore != null ? String(game.homeScore) : '—')
-                    : (game.homeTeam.record ?? '—')}
+                    : isLive
+                      ? (liveHomeScore != null ? String(liveHomeScore) : '—')
+                      : (game.homeTeam.record ?? '—')}
                 </span>
               </span>
             </Link>
@@ -1065,6 +1079,11 @@ export function MatchupPageLayout({
           />
         ) : null}
         </>
+        ) : null}
+        {isLive ? (
+        <section id="section-live" className="order-0 scroll-mt-matchup">
+          <LivePropsBoard data={live.data} error={live.error} />
+        </section>
         ) : null}
         {!isFinalView ? (
         <section id="section-overview" className="order-1 scroll-mt-matchup space-y-4">
@@ -1584,7 +1603,9 @@ export function MatchupPageLayout({
                 <span className="type-table-data whitespace-nowrap font-mono tabular-nums text-[#063f46]">
                   {isFinalView
                     ? (game.awayScore != null ? String(game.awayScore) : '—')
-                    : (game.awayTeam.record ?? '—')}
+                    : isLive
+                      ? (liveAwayScore != null ? String(liveAwayScore) : '—')
+                      : (game.awayTeam.record ?? '—')}
                 </span>
               </div>
               <div className="type-secondary flex justify-between gap-2">
@@ -1592,7 +1613,9 @@ export function MatchupPageLayout({
                 <span className="type-table-data whitespace-nowrap font-mono tabular-nums text-[#063f46]">
                   {isFinalView
                     ? (game.homeScore != null ? String(game.homeScore) : '—')
-                    : (game.homeTeam.record ?? '—')}
+                    : isLive
+                      ? (liveHomeScore != null ? String(liveHomeScore) : '—')
+                      : (game.homeTeam.record ?? '—')}
                 </span>
               </div>
               {isFinalView && hasStoredOdds ? (
