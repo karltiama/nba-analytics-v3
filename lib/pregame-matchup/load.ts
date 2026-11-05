@@ -505,16 +505,14 @@ async function loadRecap(
 }
 
 /**
- * For the old game page: the one-page URL when this game is live or Final on the scoreboard, else null.
- * Pregame games and older games that are not on the scoreboard keep the old page for now.
+ * For the old game page: the one-page URL for any game on the scoreboard (pregame, live or Final).
+ * Past-season games are not on the scoreboard and keep the old page.
  */
 export async function oneGamePageRedirect(gameId: string): Promise<string | null> {
   try {
     const store = createPgScoreboardStore(await defaultPool());
     const game = await store.loadGameById(gameId);
-    if (!game) return null;
-    const phase = gamePhase(game.lifecycle);
-    return phase === 'live' || phase === 'final' ? scoreboardMatchupHref(game.gameId, game.etDate) : null;
+    return game ? scoreboardMatchupHref(game.gameId, game.etDate) : null;
   } catch {
     return null;
   }
