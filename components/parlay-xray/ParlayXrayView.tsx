@@ -18,6 +18,8 @@ import { ExtractedLegsPanel } from './ExtractedLegsPanel';
 import { UploadDropzone } from './UploadDropzone';
 import { XrayAnalysisPanel } from './XrayAnalysisPanel';
 import { XrayResultsPanel } from './XrayResultsPanel';
+import { TrueCostPanel } from '@/components/parlay/TrueCostPanel';
+import { buildXrayTrueCost, xrayHasKnownPrices } from '@/lib/parlay/true-cost-presentation';
 import { SCREENSHOT_EXTRACTION_AVAILABLE, type UploadErrorCode, type UploadedScreenshot } from '@/lib/parlay-xray/types';
 
 type ParlayXrayViewProps = {
@@ -53,6 +55,7 @@ export function ParlayXrayView({
   const presentation = selectAnalysisPresentation(state);
   const structural = detectStructuralDependencies(state.parlay.legs);
   const combined = liveCombinedOdds(state.parlay.legs);
+  const trueCost = xrayHasKnownPrices(state.parlay.legs) ? buildXrayTrueCost(state.parlay.legs, structural) : null;
   const error = state.uploadErrorCode ? UPLOAD_ERROR_COPY[state.uploadErrorCode] : null;
   const extractionCopy = EXTRACTION_STAGE_COPY[state.parlay.extractionStatus];
   const analysisCopy = state.replayStage
@@ -203,6 +206,14 @@ export function ParlayXrayView({
           />
         </div>
       </div>
+
+      {trueCost ? (
+        <TrueCostPanel
+          view={trueCost}
+          pricesStatus="not_applicable"
+          unknownHint="A slip shows only the side you picked. Open the confirmed legs in Workspace to look up the other side and compare books."
+        />
+      ) : null}
 
       {state.replayError ? (
         <p className="type-body rounded-xl border border-amber-200 bg-[#fff8ee] px-4 py-3 text-[#9a3412]" role="alert">
