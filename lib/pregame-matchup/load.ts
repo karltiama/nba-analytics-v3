@@ -25,6 +25,10 @@ import { buildStarters, type StarterRow, type StartersModel } from './starters';
 import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
 import { closingLine, consensusQuote, type BookOddsRow } from './odds-consensus';
 import { buildGameRecap, type GameRecap } from './recap';
+import { gamePhase } from '@/lib/scoreboard/game-pulse';
+
+/** Start polling the live board this long before tip, so it appears at tip without a reload. */
+export const LIVE_WATCH_LEAD_MINUTES = 30;
 
 type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 
@@ -419,7 +423,11 @@ export async function loadPregameMatchup(input: {
     injuryReport
   );
   const recap = await loadRecap(run, game, { away: awayAbbr, home: homeAbbr, awayName: model.awayName, homeName: model.homeName }, starterRows);
-  return { ...model, injuryReport, starters, currentPlayers, recap, gameDate: game.etDate };
+  const phase = gamePhase(game.lifecycle);
+  const tip = game.scheduledTip ? Date.parse(game.scheduledTip) : NaN;
+  const watchLive =
+    phase === 'live' || (phase === 'pregame' && Number.isFinite(tip) && now.getTime() >= tip - LIVE_WATCH_LEAD_MINUTES * 60_000);
+  return { ...model, injuryReport, starters, currentPlayers, recap, gameDate: game.etDate, phase, watchLive };
 }
 
 /**
@@ -497,14 +505,16 @@ async function loadRecap(
 }
 
 /**
- * For the old game page: the one-page URL when this game is Final on the scoreboard, else null.
- * Older games that are not on the scoreboard keep the old page.
+ * For the old game page: the one-page URL when this game is live or Final on the scoreboard, else null.
+ * Pregame games and older games that are not on the scoreboard keep the old page for now.
  */
-export async function finalGameRedirect(gameId: string): Promise<string | null> {
+export async function oneGamePageRedirect(gameId: string): Promise<string | null> {
   try {
     const store = createPgScoreboardStore(await defaultPool());
     const game = await store.loadGameById(gameId);
-    return game && game.lifecycle === 'final' ? scoreboardMatchupHref(game.gameId, game.etDate) : null;
+    if (!game) return null;
+    const phase = gamePhase(game.lifecycle);
+    return phase === 'live' || phase === 'final' ? scoreboardMatchupHref(game.gameId, game.etDate) : null;
   } catch {
     return null;
   }

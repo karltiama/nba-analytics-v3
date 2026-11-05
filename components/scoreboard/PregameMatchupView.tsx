@@ -13,6 +13,7 @@ import { InjuryReport } from '@/components/matchup/InjuryReport';
 import { LikelyStarters } from '@/components/matchup/LikelyStarters';
 import { MarketMovement } from '@/components/matchup/MarketMovement';
 import { GameRecap } from '@/components/matchup/GameRecap';
+import { LiveBoardSection, LiveGameProvider, LiveHeaderScore } from '@/components/matchup/LiveGame';
 import { gamePropsHref } from '@/lib/pregame-matchup/href';
 import Link from 'next/link';
 
@@ -28,7 +29,14 @@ function showRosterSection(model: PregameMatchupModel): boolean {
 
 function sectionLinks(model: PregameMatchupModel, roster: boolean): MatchupNavLink[] {
   const final = model.recap != null;
-  const links: MatchupNavLink[] = final
+  const live = model.phase === 'live';
+  const links: MatchupNavLink[] = live
+    ? [
+        { href: '#section-live', label: 'Live' },
+        ...(model.context ? [{ href: '#section-tonight', label: 'Tonight' }] : []),
+        { href: '#section-story', label: 'Before the game' },
+      ]
+    : final
     ? [
         { href: '#section-recap', label: 'Recap' },
         { href: '#section-box', label: 'Box score' },
@@ -67,7 +75,8 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
   });
   const roster = showRosterSection(model);
   const final = model.recap != null;
-  return (
+  const live = model.phase === 'live';
+  const page = (
     <main className="mx-auto grid max-w-[1800px] grid-cols-1 gap-4 px-4 pb-8 pt-6 sm:px-6 lg:px-8">
       <MatchupHeader
         away={{ abbr: model.awayAbbr, name: model.awayName }}
@@ -81,6 +90,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
         market={model.quote}
         propsHref={final ? null : gamePropsHref(model.gameId, model.gameDate)}
         score={model.recap?.score ?? null}
+        renderCenter={model.watchLive ? (fallback) => <LiveHeaderScore fallback={fallback} /> : null}
         links={sectionLinks(model, roster)}
       />
 
@@ -96,7 +106,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           ) : null}
           {model.quote ? <MarketMovement quote={model.quote} homeAbbr={model.homeAbbr} /> : null}
           <MatchupQuickStats awayAbbr={model.awayAbbr} homeAbbr={model.homeAbbr} comparison={overview.comparison} />
-          {!model.quote && model.quoteNote && !final ? (
+          {!model.quote && model.quoteNote && !final && !live ? (
             <section className={RAIL_CARD} aria-labelledby="sportsbook">
               <div className={RAIL_HEADER}>
                 <h2 id="sportsbook" className="type-section-heading text-[#063f46]">
@@ -112,14 +122,13 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           className="min-w-0 rounded-2xl border border-[#DCE9EA] bg-white p-4 shadow-sm sm:p-6 lg:order-1"
           data-matchup-main
         >
-          {model.recap ? (
-            <>
-              <GameRecap recap={model.recap} flow />
-              <div className="border-t-2 border-[#DCE9EA] pt-6" data-before-game>
-                <p className="type-section-heading text-[#063f46]">Before the game</p>
-                <p className="type-metadata mt-1">How the matchup looked going in, from games before this one.</p>
-              </div>
-            </>
+          {model.watchLive ? <LiveBoardSection expectLive={live} /> : null}
+          {model.recap ? <GameRecap recap={model.recap} flow /> : null}
+          {model.recap || live ? (
+            <div className="border-t-2 border-[#DCE9EA] pt-6" data-before-game>
+              <p className="type-section-heading text-[#063f46]">Before the game</p>
+              <p className="type-metadata mt-1">How the matchup looked going in, from games before this one.</p>
+            </div>
           ) : null}
           <MatchupStory story={overview.story} flow />
           <MatchupFindings findings={overview.findings} flow />
@@ -154,6 +163,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
       </div>
     </main>
   );
+  return model.watchLive ? <LiveGameProvider gameId={model.gameId}>{page}</LiveGameProvider> : page;
 }
 
 export function PregameMatchupMissing({ returnHref }: { returnHref: string }) {

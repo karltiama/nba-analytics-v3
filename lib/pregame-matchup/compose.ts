@@ -155,6 +155,10 @@ export type PregameMatchupModel = {
   recap?: GameRecap | null;
   /** The game's ET date (YYYY-MM-DD), for links that filter by slate. */
   gameDate?: string | null;
+  /** Scoreboard phase when the page rendered. */
+  phase?: 'pregame' | 'live' | 'final' | 'other';
+  /** Poll the live board: the game is live, or tips within LIVE_WATCH_LEAD_MINUTES. */
+  watchLive?: boolean;
 };
 
 function one(value: number): string {
