@@ -23,7 +23,8 @@ import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 import { seasonSpan } from './compose';
 import { buildStarters, type StarterRow, type StartersModel } from './starters';
 import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
-import { consensusQuote, type BookOddsRow } from './odds-consensus';
+import { closingLine, consensusQuote, type BookOddsRow } from './odds-consensus';
+import { buildGameRecap, type GameRecap } from './recap';
 
 type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 
@@ -116,6 +117,14 @@ const STARTERS_SQL = `
   LEFT JOIN analytics.players p ON p.player_id = s.player_id
   WHERE s.season = $1 AND s.team_id = ANY($2)
     AND (g.start_time AT TIME ZONE 'America/New_York')::date < $3::date`;
+
+/** This game's own starters, for the postgame recap. */
+const GAME_STARTERS_SQL = `
+  SELECT s.team_id, s.player_id, COALESCE(NULLIF(TRIM(p.full_name), ''), s.player_id) AS name
+  FROM analytics.game_starters s
+  LEFT JOIN analytics.players p ON p.player_id = s.player_id
+  WHERE s.game_id = $1
+  ORDER BY s.team_id, s.player_id`;
 
 /** Each player's latest team this season, and whether he played at all last season. */
 const PLAYER_SEASONS_SQL = `
@@ -399,5 +408,53 @@ export async function loadPregameMatchup(input: {
     playerResult.map(playerRow).filter((row): row is PlayerSumRow => row != null),
     injuryReport
   );
-  return { ...model, injuryReport, starters, currentPlayers };
+  const recap = await loadRecap(run, game, awayAbbr, homeAbbr, starterRows);
+  return { ...model, injuryReport, starters, currentPlayers, recap };
+}
+
+/** Final games only. The closing line and starters each degrade to a note when their read fails. */
+async function loadRecap(
+  run: Sql,
+  game: StoredScoreboardGame,
+  awayAbbr: string,
+  homeAbbr: string,
+  priorStarters: StarterRow[] | null
+): Promise<GameRecap | null> {
+  if (game.lifecycle !== 'final' || game.homeScore == null || game.visitorScore == null) return null;
+  const [close, actualRows] = await Promise.all([
+    loadBookOdds(run, game.gameId)
+      .then((rows) => closingLine(rows, game.scheduledTip))
+      .catch(() => null),
+    run(GAME_STARTERS_SQL, [game.gameId]).catch(() => null),
+  ]);
+  const starters = actualRows
+    ? [
+        { teamId: game.visitorTeamId, abbr: awayAbbr },
+        { teamId: game.homeTeamId, abbr: homeAbbr },
+      ].map((team) => {
+        const prior = (priorStarters ?? []).filter((r) => r.teamId === team.teamId);
+        const lastDate = prior.reduce<string | null>((max, r) => (max == null || r.date > max ? r.date : max), null);
+        const lastGame = lastDate ? prior.filter((r) => r.date === lastDate) : [];
+        const lastId = lastGame[0]?.gameId;
+        return {
+          ...team,
+          actual: actualRows
+            .filter((r) => String(r.team_id) === team.teamId)
+            .map((r) => ({ playerId: String(r.player_id), name: String(r.name) })),
+          previous:
+            lastDate && lastId
+              ? { date: lastDate, players: lastGame.filter((r) => r.gameId === lastId).map((r) => ({ playerId: r.playerId, name: r.name })) }
+              : null,
+        };
+      })
+    : null;
+  return buildGameRecap({
+    awayAbbr,
+    homeAbbr,
+    awayScore: game.visitorScore,
+    homeScore: game.homeScore,
+    overtimePeriods: game.overtimePeriods,
+    close,
+    starters,
+  });
 }

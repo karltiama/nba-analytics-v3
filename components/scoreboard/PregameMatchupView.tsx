@@ -12,6 +12,7 @@ import { PlayerContributors, type SideInjuries } from '@/components/matchup/Play
 import { InjuryReport } from '@/components/matchup/InjuryReport';
 import { LikelyStarters } from '@/components/matchup/LikelyStarters';
 import { MarketMovement } from '@/components/matchup/MarketMovement';
+import { GameRecap } from '@/components/matchup/GameRecap';
 import { gamePropsHref } from '@/lib/pregame-matchup/href';
 import Link from 'next/link';
 
@@ -27,6 +28,7 @@ function showRosterSection(model: PregameMatchupModel): boolean {
 
 function sectionLinks(model: PregameMatchupModel, roster: boolean): MatchupNavLink[] {
   const links: MatchupNavLink[] = [
+    ...(model.recap ? [{ href: '#section-recap', label: 'Recap' }] : []),
     ...(model.context ? [{ href: '#section-tonight', label: 'Tonight' }] : []),
     { href: '#section-story', label: 'Overview' },
   ];
@@ -103,6 +105,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
           className="min-w-0 rounded-2xl border border-[#DCE9EA] bg-white p-4 shadow-sm sm:p-6 lg:order-1"
           data-matchup-main
         >
+          {model.recap ? <GameRecap recap={model.recap} flow /> : null}
           <MatchupStory story={overview.story} flow />
           <MatchupFindings findings={overview.findings} flow />
           {model.starters ? <LikelyStarters starters={model.starters} flow /> : null}

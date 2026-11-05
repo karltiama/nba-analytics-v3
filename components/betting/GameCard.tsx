@@ -391,7 +391,7 @@ export function GameCard({
   const pregameMatchupHref =
     schedulePreview
       ? null
-      : scoreboardPresentation && !samplePreview && !research && phase === 'pregame'
+      : scoreboardPresentation && !samplePreview && !research && (phase === 'pregame' || phase === 'final')
         ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
         : null;
   // Live games open the game page's live props board, which reads the scoreboard's own live box score,
@@ -767,7 +767,7 @@ export function GameCard({
             ) : pregameMatchupHref ? (
               <Link href={pregameMatchupHref} className={PRIMARY_ACTION} data-scoreboard-matchup>
                 <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
-                <span className="type-interactive text-white">View matchup</span>
+                <span className="type-interactive text-white">{phase === 'final' ? 'Game recap' : 'View matchup'}</span>
                 <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             ) : (
@@ -775,7 +775,7 @@ export function GameCard({
             )}
             {schedulePreview ? (
               <UnavailableAction primary={false} label="View props" />
-            ) : (
+            ) : phase === 'final' ? null /* Postgame lines can't be bet; prop results belong in the recap. */ : (
               <Link href={propsHref} className={SECONDARY_ACTION} data-view-props>
                 <ListFilter className="w-3.5 h-3.5 shrink-0" />
                 <span className="type-interactive">View props</span>

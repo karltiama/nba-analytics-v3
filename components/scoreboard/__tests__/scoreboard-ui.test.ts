@@ -75,8 +75,10 @@ function expectInPlayShell(html: string) {
   // Live cards link Follow live to the game page's live props board; final cards still have no game link.
   const gameLinks = html.match(/href="\/betting\/games\/[^"]*"/g) ?? [];
   expect(gameLinks).toHaveLength(html.includes('data-phase="live"') ? 1 : 0);
-  expect(html).toContain('data-view-props');
-  expect(html).toContain('props-explorer');
+  // Live cards keep View props; final cards drop it (postgame lines can't be bet).
+  const live = html.includes('data-phase="live"');
+  expect(html.includes('data-view-props')).toBe(live);
+  expect(html.includes('props-explorer')).toBe(live);
 }
 
 /** Primary action stays disabled. View props opens the stored lines for this game. */
@@ -409,8 +411,11 @@ describe('Final card', () => {
     expect(html).not.toContain('data-freshness');
     expect(html).not.toContain('animate-pulse');
     expect(html).not.toContain('LIVE');
-    expectUnavailableFooter(html, 'Game recap');
-    expect(html).toContain('href="/betting/props-explorer?date=2026-10-09&amp;game_id=final"');
+    // Final games open the matchup page, which leads with the recap.
+    expect(html).toContain('href="/scoreboard/games/final?date=2026-10-09"');
+    expect(html).toContain('>Game recap</span>');
+    expect(html).not.toContain('aria-disabled');
+    expect(html).not.toContain('data-view-props');
   });
 
   it('shows a pending or verifying status instead of unverified leaders', () => {

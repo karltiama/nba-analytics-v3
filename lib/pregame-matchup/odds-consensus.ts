@@ -6,6 +6,7 @@
 
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import type { MatchupQuote } from './quote';
+import type { ClosingLine } from './recap';
 
 export type BookOddsRow = {
   vendor: string;
@@ -260,6 +261,21 @@ export function marketSeries(rows: BookOddsRow[], tipAt: string | null, now: Dat
     points.push({ at: new Date(end).toISOString(), spread: m.spread, total: m.total, homeProb: m.homeProb, books: books.length });
   }
   return points;
+}
+
+/**
+ * Consensus at tip: each sportsbook's last pregame snapshot (within 36h), plus the first pull's
+ * consensus so the recap can say which way the line moved. Null with fewer than two books.
+ */
+export function closingLine(rows: BookOddsRow[], tipAt: string | null): ClosingLine | null {
+  const tip = tipAt ? Date.parse(tipAt) : NaN;
+  if (!Number.isFinite(tip)) return null;
+  const at = new Date(tip);
+  const books = latestPregameBooks(rows, tipAt, at);
+  if (books.length < MIN_BOOKS) return null;
+  const series = marketSeries(rows, tipAt, at);
+  const open = series.length >= 2 ? series[0]! : null;
+  return { ...marketOf(books), books: books.length, openSpread: open?.spread ?? null, openTotal: open?.total ?? null };
 }
 
 function etTime(iso: string): string {

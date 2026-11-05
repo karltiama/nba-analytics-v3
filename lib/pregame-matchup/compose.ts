@@ -8,6 +8,7 @@ import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
 import type { InjuryReport } from './injury-report';
 import type { StartersModel } from './starters';
 import type { CurrentPlayers } from './current-players';
+import type { GameRecap } from './recap';
 
 /** Pregame schedule and injury lines, the same ones Today's Games cards show. */
 export type MatchupGameContext = {
@@ -150,6 +151,8 @@ export type PregameMatchupModel = {
   starters?: StartersModel | null;
   /** This season's players per team, still with the team. Null before opening night. */
   currentPlayers?: CurrentPlayers | null;
+  /** Final games only: result against the closing line and who started. */
+  recap?: GameRecap | null;
 };
 
 function one(value: number): string {
