@@ -8,26 +8,49 @@ vi.mock('@/lib/db', () => ({
 import { classifyAppearance } from '@/lib/betting/minutes-projection-eval';
 import { classifyWowyAppearance } from '../appearance';
 
-describe('WOWY appearance vs established classifyAppearance', () => {
-  const cases = ['00', '0', '0.0', '32', 'DNP', null, 12];
+const log = (minutes: string | number | null, points = 0) => ({
+  game_id: 'g',
+  player_id: 'p',
+  start_time: '2025-01-01T00:00:00.000Z',
+  season: '2024',
+  minutes,
+  points,
+  rebounds: 0,
+  assists: 0,
+  three_pointers_made: 0,
+});
 
+describe('WOWY appearance vs established classifyAppearance', () => {
   it('matches minutes-projection-eval class and reason for DNP/played tokens', () => {
-    for (const minutes of cases) {
-      const log = {
-        game_id: 'g',
-        player_id: 'p',
-        start_time: '2025-01-01T00:00:00.000Z',
-        season: '2024',
-        minutes,
-        points: 0,
-        rebounds: 0,
-        assists: 0,
-        three_pointers_made: 0,
-      };
-      const established = classifyAppearance(log);
-      const local = classifyWowyAppearance(log);
+    const cases: Array<[string | number | null, number]> = [
+      ['00', 0],
+      ['0', 2],
+      ['0.0', 2],
+      ['32', 0],
+      ['22:51', 0],
+      ['0:30', 0],
+      ['DNP', 0],
+      [null, 0],
+      [12, 0],
+    ];
+    for (const [minutes, points] of cases) {
+      const established = classifyAppearance(log(minutes, points));
+      const local = classifyWowyAppearance(log(minutes, points));
       expect(local.class).toBe(established.class);
       expect(local.reason).toBe(established.reason);
     }
+  });
+
+  it('intentionally differs on "0" with no stats: a DNP in WOWY (2026-27 token), played in the ledger', () => {
+    for (const token of ['0', '0.0']) {
+      expect(classifyWowyAppearance(log(token)).class).toBe('dnp');
+      expect(classifyWowyAppearance(log(token)).reason).toBe('zero_minutes_no_box');
+      expect(classifyAppearance(log(token)).class).toBe('played');
+    }
+  });
+
+  it('parses clock minutes in both', () => {
+    expect(classifyWowyAppearance(log('22:51')).minutes).toBeCloseTo(22.85, 10);
+    expect(classifyAppearance(log('22:51')).minutes).toBeCloseTo(22.85, 10);
   });
 });

@@ -31,3 +31,17 @@ describe('minutes SQL', () => {
     expect(src).not.toMatch(/minutes::numeric/);
   });
 });
+
+describe('parseMinutesText', () => {
+  it('reads decimal and clock minutes like the SQL expression', async () => {
+    const { parseMinutesText } = await import('@/lib/players/minutes-sql');
+    expect(parseMinutesText('32')).toBe(32);
+    expect(parseMinutesText(' 32.5 ')).toBe(32.5);
+    expect(parseMinutesText(12)).toBe(12);
+    expect(parseMinutesText('22:51')).toBeCloseTo(22.85, 10);
+    expect(parseMinutesText('0:30')).toBe(0.5);
+    expect(parseMinutesText('DNP-CD')).toBeNull();
+    expect(parseMinutesText('22:75')).toBeNull();
+    expect(parseMinutesText(null)).toBeNull();
+  });
+});

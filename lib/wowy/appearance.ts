@@ -1,3 +1,5 @@
+import { parseMinutesText } from '@/lib/players/minutes-sql';
+
 /**
  * Played / DNP semantics copied from lib/betting/minutes-projection-eval.ts
  * (classifyAppearance). Kept local so WOWY does not import the minutes-eval
@@ -30,9 +32,7 @@ export interface WowyAppearanceClassification {
 }
 
 export function parseMinutes(value: number | string | null | undefined): number | null {
-  if (value == null) return null;
-  const n = typeof value === 'string' ? Number.parseFloat(value) : value;
-  return Number.isFinite(n) ? n : null;
+  return parseMinutesText(value);
 }
 
 export function minutesToken(value: number | string | null | undefined): string | null {
@@ -83,7 +83,9 @@ export function classifyWowyAppearance(log: WowyAppearanceInput): WowyAppearance
       reason: box ? 'minutes_00_dnp_with_anomalous_box' : 'minutes_00_dnp',
     };
   }
-  if (token === '0' || token === '0.0') {
+  // "0" with stats is a sub-minute appearance. Without stats it is a DNP: 2026-27 BallDontLie logs
+  // store DNPs as "0" (earlier seasons used "00"). Intentionally differs from classifyAppearance.
+  if ((token === '0' || token === '0.0') && box) {
     return {
       class: 'played',
       minutes: 0,

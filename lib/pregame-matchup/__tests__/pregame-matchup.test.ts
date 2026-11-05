@@ -160,7 +160,9 @@ describe('pregame matchup history', () => {
     expect(team.text).toContain('analytics.team_game_stats');
     expect(team.text).not.toContain('team_season_averages');
     expect(team.text).not.toContain('offensive_rating');
-    expect(players.text).toContain('minutes::numeric > 0');
+    // Played minutes accept decimal and 2026-27 "MM:SS" logs without a raw cast.
+    expect(players.text).toContain("split_part(l.minutes, ':', 2)::numeric / 60");
+    expect(players.text).not.toContain('WHEN l.minutes::numeric');
     expect(players.text).toContain('usage_percentage * a.possessions');
     expect(players.params[1]).toEqual(['22', '6']);
   });
