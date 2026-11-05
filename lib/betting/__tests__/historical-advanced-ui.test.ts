@@ -5,7 +5,6 @@ import {
 } from '@/lib/betting/historical-advanced';
 import { attachAdvancedToBox, groupBoxScoreByTeam } from '@/lib/betting/historical-final';
 import { emptyPlayerAdvanced } from '@/lib/betting/historical-advanced';
-import { formatAdvancedRow } from '@/lib/betting/historical-advanced-format';
 import { shouldShowStartingFive } from '@/lib/betting/historical-starters';
 
 const tatum = {
@@ -85,9 +84,7 @@ describe('historical Advanced UI contract', () => {
     expect(enriched.home.map((p) => p.playerId)).toEqual(['434']);
     expect(enriched.away.map((p) => p.playerId)).toEqual(['132']);
     expect(enriched.away[0]?.advanced).toBeNull();
-    expect(formatAdvancedRow(enriched.away[0]?.advanced).usg).toBe('—');
     expect(enriched.home[0]?.advanced?.usagePercentage).toBe(0.284);
-    expect(formatAdvancedRow(enriched.home[0]?.advanced).usg).toBe('28.4%');
     expect([...enriched.home, ...enriched.away].map((p) => p.playerId)).not.toContain('273');
   });
 
@@ -109,7 +106,5 @@ describe('historical Advanced UI contract', () => {
     );
     expect(enriched.home[0]?.playerName).toBe('Jayson Tatum');
     expect(enriched.away[0]?.playerName).toBe('Bench');
-    expect(formatAdvancedRow(enriched.away[0]?.advanced).ts).toBe('—');
-    expect(formatAdvancedRow(enriched.away[0]?.advanced).ortg).not.toBe('0.0');
   });
 });

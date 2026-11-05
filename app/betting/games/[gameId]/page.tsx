@@ -1,34 +1,16 @@
-import { redirect } from 'next/navigation';
-import { GameDetailsPageClient } from './GameDetailsPageClient';
+import { notFound, redirect } from 'next/navigation';
+import { isScoreboardGameId, scoreboardMatchupHref } from '@/lib/pregame-matchup/href';
 import { oneGamePageRedirect } from '@/lib/pregame-matchup/load';
-import { loadResearchOverview } from '@/lib/pregame-matchup/from-analytics-game';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
-async function researchSessionPresent(): Promise<boolean> {
-  try {
-    const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase.auth.getUser();
-    return !error && Boolean(data.user?.id);
-  } catch (error: unknown) {
-    console.error('[research-overview] session check failed', {
-      error: error instanceof Error ? error.name : 'unknown',
-    });
-    return false;
-  }
-}
-
-export default async function BettingGamePage({
-  params,
-}: {
-  params: Promise<{ gameId: string }>;
-}) {
+/**
+ * Old game URL. Every game has one page, /scoreboard/games/{id}: scoreboard games keep their slate date,
+ * past-season Finals come from analytics.games. A failed lookup still sends the id there, where an unknown
+ * game is a 404.
+ */
+export default async function BettingGamePage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = await params;
-  // One page per game: every scoreboard game opens the matchup page. Past-season games keep this page.
-  const gamePageHref = await oneGamePageRedirect(gameId);
-  if (gamePageHref) redirect(gamePageHref);
-  const signedIn = await researchSessionPresent();
-  const historicalOverview = signedIn ? await loadResearchOverview({ gameId }) : null;
-  return <GameDetailsPageClient gameId={gameId} historicalOverview={historicalOverview} />;
+  if (!isScoreboardGameId(gameId)) notFound();
+  redirect((await oneGamePageRedirect(gameId)) ?? scoreboardMatchupHref(gameId));
 }

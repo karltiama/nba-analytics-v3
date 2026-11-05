@@ -1,7 +1,4 @@
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { MatchupResearchSections } from '@/components/matchup/MatchupResearchSections';
 import type { ComparisonRow } from '@/lib/pregame-matchup/compose';
 import { SAMPLE_LABEL } from '@/lib/pregame-matchup/compose';
 import {
@@ -223,65 +220,5 @@ describe('matchup overview presentation', () => {
       expect(overview.story.lede).not.toContain(finding.evidence);
       if (finding.summary) expect(original?.body.includes(finding.summary)).toBe(true);
     }
-  });
-
-  it('renders zero through three findings, null history, and a hidden roster without a starter claim', () => {
-    const cases = [
-      source(),
-      source({ insights: [insight('efficiency', 'ORL offense, CLE defense')] }),
-      source({ insights: [insight('efficiency', 'One'), insight('three_point_rate', 'Two')] }),
-      source({
-        insights: [
-          insight('efficiency', 'One'),
-          insight('three_point_rate', 'Two'),
-          insight('offensive_rebounding', 'Three'),
-        ],
-      }),
-      source({
-        history: null,
-        historyNote: 'The 2025–26 regular-season sample is incomplete, so team and player comparisons are hidden.',
-        roster: hiddenRoster(),
-      }),
-    ];
-    const counts = ['0', '1', '2', '3', '0'];
-    cases.forEach((item, index) => {
-      const html = renderToStaticMarkup(createElement(MatchupResearchSections, { ...item, contributors: null }));
-      expect(html).toContain('data-matchup-story');
-      expect(html).toContain('2025–26 Team Identity');
-      expect(html).toContain('Personnel context');
-      expect(html).not.toMatch(/confirmed starter|starting lineup|win probability|confidence/i);
-      if (counts[index] === '0') {
-        expect(html).not.toContain('data-finding-count');
-      } else {
-        expect(html).toContain(`data-finding-count="${counts[index]}"`);
-      }
-      if (item.history == null) {
-        expect(html).toContain('sample is incomplete');
-        expect(html).not.toContain('Net rating');
-      }
-    });
-
-    const oneFinding = renderToStaticMarkup(createElement(MatchupResearchSections, {
-      ...source({ insights: [insight('efficiency', 'ORL offense, CLE defense')] }),
-      contributors: null,
-    }));
-    const storyHtml = oneFinding.slice(oneFinding.indexOf('data-matchup-story'), oneFinding.indexOf('data-finding-count'));
-    const cardHtml = oneFinding.slice(oneFinding.indexOf('data-finding-count'), oneFinding.indexOf('section-compact-comparison'));
-    expect(storyHtml).toContain('The clearest 2025–26 contrast is scoring versus defense');
-    expect(storyHtml).toContain('gap stands out');
-    expect(storyHtml).not.toContain('ORL offense, CLE defense evidence');
-    expect(cardHtml).toContain('ORL offense, CLE defense');
-    expect(cardHtml).toContain('ORL offense, CLE defense evidence');
-    expect(cardHtml).not.toContain('gap stands out');
-
-    const shown = renderToStaticMarkup(createElement(MatchupResearchSections, {
-      ...source({ roster: shownRoster() }),
-      contributors: null,
-    }));
-    expect(shown).toContain('data-personnel="shown"');
-    expect(shown).toContain('50.0%');
-    expect(shown).toContain('not confirmation');
-    expect(shown).not.toContain('minmax(6.5rem, 9.5rem)');
-    expect(shown).toContain('Returning minutes, 2025–26');
   });
 });

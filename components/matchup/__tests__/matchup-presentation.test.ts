@@ -260,17 +260,9 @@ describe('shared matchup presentation', () => {
 
     const view = readFileSync(join(process.cwd(), 'components/scoreboard/PregameMatchupView.tsx'), 'utf8');
     const page = readFileSync(join(process.cwd(), 'app/scoreboard/games/[gameId]/page.tsx'), 'utf8');
-    const layout = readFileSync(join(process.cwd(), 'components/betting/MatchupPageLayout.tsx'), 'utf8');
     expect(view).not.toContain('GameDetailsPageClient');
     expect(view).not.toContain('/api/betting/');
     expect(page).toContain('loadPregameMatchup');
     expect(page).not.toContain('/api/betting/');
-    expect(layout).toContain('IntersectionObserver');
-    expect(layout).toContain('scrollToSection');
-    expect(layout).toContain('section-ai-projection');
-    expect(layout).toContain('section-box');
-    expect(layout).toContain('components/matchup/ResearchMatchupOverview');
-    expect(layout).not.toContain('loadPregameMatchup');
-    expect(layout).not.toContain('loadResearchOverview');
   });
 });
