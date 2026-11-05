@@ -121,6 +121,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
               awayAbbr={model.awayAbbr}
               homeAbbr={model.homeAbbr}
               contributors={model.contributors}
+              current={model.currentPlayers ?? null}
               awayInjuries={sideInjuries(model, model.awayAbbr)}
               homeInjuries={sideInjuries(model, model.homeAbbr)}
             />

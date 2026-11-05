@@ -163,7 +163,7 @@ export function regularSeasonSample(rows: TeamSumRow[]): Map<string, TeamProfile
   return profiles;
 }
 
-export function historicalContributors(rows: PlayerSumRow[], teamId: string): HistoricalContributor[] {
+export function historicalContributors(rows: PlayerSumRow[], teamId: string, limit = CONTRIBUTOR_LIMIT): HistoricalContributor[] {
   const contributors: HistoricalContributor[] = [];
   for (const row of rows) {
     if (row.teamId !== teamId || row.games <= 0 || row.minutes <= 0 || !row.name?.trim()) continue;
@@ -190,5 +190,5 @@ export function historicalContributors(rows: PlayerSumRow[], teamId: string): Hi
   contributors.sort(
     (a, b) => b.totalMinutes - a.totalMinutes || a.name.localeCompare(b.name) || a.playerId.localeCompare(b.playerId)
   );
-  return contributors.slice(0, CONTRIBUTOR_LIMIT);
+  return contributors.slice(0, limit);
 }

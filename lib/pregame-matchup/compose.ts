@@ -7,6 +7,7 @@ import { selectMatchupInsights, type MatchupInsight } from './signals';
 import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
 import type { InjuryReport } from './injury-report';
 import type { StartersModel } from './starters';
+import type { CurrentPlayers } from './current-players';
 
 /** Pregame schedule and injury lines, the same ones Today's Games cards show. */
 export type MatchupGameContext = {
@@ -147,6 +148,8 @@ export type PregameMatchupModel = {
   injuryReport?: InjuryReport | null;
   /** Likely starters from this season's certified lineups. Null before any starters are loaded. */
   starters?: StartersModel | null;
+  /** This season's players per team, still with the team. Null before opening night. */
+  currentPlayers?: CurrentPlayers | null;
 };
 
 function one(value: number): string {

@@ -22,6 +22,7 @@ import { buildInjuryReport, type InjuryReport } from './injury-report';
 import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 import { seasonSpan } from './compose';
 import { buildStarters, type StarterRow, type StartersModel } from './starters';
+import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
 
 type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 
@@ -114,6 +115,54 @@ const STARTERS_SQL = `
   LEFT JOIN analytics.players p ON p.player_id = s.player_id
   WHERE s.season = $1 AND s.team_id = ANY($2)
     AND (g.start_time AT TIME ZONE 'America/New_York')::date < $3::date`;
+
+/** Each player's latest team this season, and whether he played at all last season. */
+const PLAYER_SEASONS_SQL = `
+  SELECT player_id,
+         (array_agg(team_id ORDER BY game_date DESC) FILTER (WHERE season = $1))[1] AS latest_team,
+         bool_or(season = $2) AS played_prior
+  FROM analytics.player_game_logs
+  WHERE player_id = ANY($3) AND season = ANY(ARRAY[$1, $2]) AND game_date < $4::date
+  GROUP BY player_id`;
+
+async function loadCurrentPlayers(
+  run: Sql,
+  game: StoredScoreboardGame,
+  awayAbbr: string,
+  homeAbbr: string,
+  current: CurrentSeasonInput | null,
+  priorRows: PlayerSumRow[],
+  injuries: InjuryReport | null
+): Promise<CurrentPlayers | null> {
+  const window = currentSeasonWindow(String(game.season), game.etDate);
+  if (!window) return null;
+  try {
+    const query = historicalPlayerQuery(
+      { season: window.season, startInclusive: window.startInclusive, endExclusive: window.endExclusive, excludeDate: window.excludeDate ?? '1900-01-01' },
+      [game.visitorTeamId, game.homeTeamId]
+    );
+    const currentRows = (await run(query.text, query.params)).map(playerRow).filter((row): row is PlayerSumRow => row != null);
+    if (currentRows.length === 0) return null;
+    const ids = [...new Set([...currentRows, ...priorRows].map((r) => r.playerId))];
+    const seasons = await run(PLAYER_SEASONS_SQL, [window.season, String(game.season - 1), ids, game.etDate]);
+    return buildCurrentPlayers({
+      seasonLabel: seasonSpan(window.season),
+      priorLabel: seasonSpan(String(game.season - 1)),
+      teams: [
+        { teamId: game.visitorTeamId, abbr: awayAbbr },
+        { teamId: game.homeTeamId, abbr: homeAbbr },
+      ],
+      currentRows,
+      priorRows,
+      latestTeam: new Map(seasons.filter((r) => r.latest_team != null).map((r) => [String(r.player_id), String(r.latest_team)])),
+      playedLastSeason: new Set(seasons.filter((r) => r.played_prior === true).map((r) => String(r.player_id))),
+      teamGames: new Map((current?.teamRows ?? []).map((r) => [r.teamId, r.games])),
+      injuries,
+    });
+  } catch {
+    return null;
+  }
+}
 
 async function loadStarterRows(run: Sql, game: StoredScoreboardGame): Promise<StarterRow[] | null> {
   try {
@@ -301,5 +350,14 @@ export async function loadPregameMatchup(input: {
         injuries: injuryReport,
       })
     : null;
-  return { ...model, injuryReport, starters };
+  const currentPlayers = await loadCurrentPlayers(
+    run,
+    game,
+    awayAbbr,
+    homeAbbr,
+    current,
+    playerResult.map(playerRow).filter((row): row is PlayerSumRow => row != null),
+    injuryReport
+  );
+  return { ...model, injuryReport, starters, currentPlayers };
 }
