@@ -394,6 +394,10 @@ export function GameCard({
       : scoreboardPresentation && !samplePreview && !research && phase === 'pregame'
         ? scoreboardMatchupHref(game.id, researchDate ?? dateForProps)
         : null;
+  // Live games open the game page's live props board, which reads the scoreboard's own live box score,
+  // so it does not wait on the research flag.
+  const followLiveHref =
+    !schedulePreview && scoreboardPresentation && !samplePreview && !research && phase === 'live' ? gameHref : null;
 
   return (
     <div
@@ -752,6 +756,12 @@ export function GameCard({
                 <span className="type-interactive text-white">
                   {phase === 'live' ? 'Follow live' : phase === 'final' ? 'Game recap' : 'View matchup'}
                 </span>
+                <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            ) : followLiveHref ? (
+              <Link href={followLiveHref} onClick={() => onViewDetails?.(game.id)} className={PRIMARY_ACTION} data-follow-live>
+                <TrendingUp className="w-3.5 h-3.5 text-white shrink-0" />
+                <span className="type-interactive text-white">Follow live</span>
                 <ChevronRight className="w-3.5 h-3.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             ) : pregameMatchupHref ? (
