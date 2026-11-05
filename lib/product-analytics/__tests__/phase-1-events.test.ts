@@ -93,7 +93,8 @@ describe('phase 1 payloads', () => {
       context_type: 'player_panel',
       market: 'threes',
     });
-    expect(wowySeasonFilterProperties('2026')).toBeNull();
+    expect(wowySeasonFilterProperties('2019')).toBeNull();
+    expect(wowySeasonFilterProperties('2026')?.value).toBe('2026');
     expect(wowySeasonFilterProperties('2025')).toEqual({
       surface: 'wowy',
       filter: 'season',

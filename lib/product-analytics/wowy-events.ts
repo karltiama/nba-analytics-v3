@@ -12,11 +12,11 @@ import {
 
 export const WOWY_FILTER_CHANGED = PRODUCT_EVENTS.WOWY_FILTER_CHANGED;
 
-const WOWY_SEASONS = ['2023', '2024', '2025'] as const;
+const WOWY_SEASONS = ['2023', '2024', '2025', '2026'] as const;
 
 export function wowySeasonFilterProperties(season: string): WowyFilterChangedProperties | null {
   if (!(WOWY_SEASONS as readonly string[]).includes(season)) return null;
-  return { surface: 'wowy', filter: 'season', value: season as '2023' | '2024' | '2025' };
+  return { surface: 'wowy', filter: 'season', value: season as (typeof WOWY_SEASONS)[number] };
 }
 
 export function wowyTeamStintFilterProperties(): WowyFilterChangedProperties {

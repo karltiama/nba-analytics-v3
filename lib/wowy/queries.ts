@@ -455,3 +455,12 @@ export async function loadWowyModelPair(args: {
     }),
   };
 }
+
+/** Finished games in a season, for choosing the WOWY page's default season. */
+export async function countFinalGames(season: string): Promise<number> {
+  const row = await queryOne<{ n: string | number }>(
+    `SELECT count(*) AS n FROM analytics.games WHERE season = $1 AND status = 'Final'`,
+    [season]
+  );
+  return Number(row?.n ?? 0);
+}
