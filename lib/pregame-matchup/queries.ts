@@ -5,6 +5,7 @@
 
 import { ROSTER_SEASON, ROSTER_SEASON_LABEL } from './roster';
 import type { CurrentSeasonWindow, HistoricalWindow } from './window';
+import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 
 const TEAM_SUMS_SELECT = `SELECT team_id,
             count(*)::int AS rows,
@@ -85,7 +86,7 @@ export function historicalPlayerQuery(window: HistoricalWindow, teamIds: [string
        ON a.game_id = l.game_id AND a.player_id = l.player_id AND a.season = l.season
      LEFT JOIN LATERAL (
        SELECT CASE
-         WHEN l.minutes ~ '^[0-9]+(\\.[0-9]+)?$' AND l.minutes::numeric > 0 THEN l.minutes::numeric
+         WHEN ${minutesDecimalSql('l.minutes')} > 0 THEN ${minutesDecimalSql('l.minutes')}
          ELSE NULL
        END AS minutes
      ) played ON true
@@ -100,7 +101,7 @@ export function historicalPlayerQuery(window: HistoricalWindow, teamIds: [string
 }
 
 const PLAYED_MINUTES = `CASE
-         WHEN l.minutes ~ '^[0-9]+(\\.[0-9]+)?$' AND l.minutes::numeric > 0 THEN l.minutes::numeric
+         WHEN ${minutesDecimalSql('l.minutes')} > 0 THEN ${minutesDecimalSql('l.minutes')}
          ELSE NULL
        END`;
 

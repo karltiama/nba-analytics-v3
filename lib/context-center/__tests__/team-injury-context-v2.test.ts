@@ -166,17 +166,39 @@ describe('player-role-expectation-v1', () => {
     expect(dnp.status).toBe('NO_HISTORY');
   });
 
-  it('treats minutes token 0 as played (canonical WOWY rule)', () => {
+  it('treats minutes token 0 as played only with box stats (canonical WOWY rule)', () => {
     const r = estimatePlayerRole({
+      playerEntityId: 'A',
+      season: '2023',
+      teamId: '10',
+      targetGameStart: TIP,
+      history: hist([{ minutes: '0', points: 2, field_goals_attempted: 1 }]),
+    });
+    expect(r.status).toBe('OK');
+    if (r.status !== 'OK') return;
+    expect(r.estimate.expectedMinutes).toBe(0);
+    // 2026-27 BallDontLie stores a DNP as "0" with no stats.
+    const dnp = estimatePlayerRole({
       playerEntityId: 'A',
       season: '2023',
       teamId: '10',
       targetGameStart: TIP,
       history: hist([{ minutes: '0', points: 0, field_goals_attempted: 0 }]),
     });
+    expect(dnp.status).toBe('NO_HISTORY');
+  });
+
+  it('reads clock-format minutes', () => {
+    const r = estimatePlayerRole({
+      playerEntityId: 'A',
+      season: '2026',
+      teamId: '10',
+      targetGameStart: TIP,
+      history: hist([{ season: '2026', minutes: '22:30' }]),
+    });
     expect(r.status).toBe('OK');
     if (r.status !== 'OK') return;
-    expect(r.estimate.expectedMinutes).toBe(0);
+    expect(r.estimate.expectedMinutes).toBe(22.5);
   });
 
   it('future mutation does not change historical estimate', () => {

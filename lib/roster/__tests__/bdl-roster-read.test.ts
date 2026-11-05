@@ -220,7 +220,8 @@ describe('BallDontLie roster reader', () => {
     expect(batchQuery.text).not.toContain('nba_player_id');
     const membership = bdlTeamMembershipQuery('batch-1', 'ORL');
     expect(membership.text).toContain('p.player_id = m.provider_player_id');
-    expect(membership.text).toContain('l.minutes::numeric > 0');
+    // Played minutes accept decimal and 2026-27 "MM:SS" logs without a raw cast.
+    expect(membership.text).toContain("split_part(l.minutes, ':', 2)::numeric / 60");
     expect(membership.text).not.toContain('nba_player_id');
     expect(membership.params[2]).toBe('2025');
     expect(membership.params[3]).toBe('2025-10-21');
