@@ -14,8 +14,18 @@ export const MIN_STANDARDIZED_GAP = 1;
 export const ROSTER_LIMITATION =
   'These figures describe 2025–26 regular-season teams. Current rosters are not verified, so this is not a prediction for tonight.';
 
+export const CURRENT_LIMITATION =
+  'These figures are this season so far, a small sample, and some players have missed games. They are not a prediction for tonight.';
+
+/** Which season's teams the insight describes. History is the default and keeps its original copy. */
+export type InsightSeason = { label: string; current: boolean };
+
+const HISTORY_SEASON: InsightSeason = { label: '2025–26', current: false };
+
 export type MatchupInsight = {
   id: 'efficiency' | 'three_point_rate' | 'offensive_rebounding' | 'turnover_rate' | 'estimated_possessions';
+  /** Direction key: the team the contrast is about (offense side, or the higher value). Same id + subject = same contrast. */
+  subject: string;
   headline: string;
   body: string;
   evidence: string;
@@ -61,8 +71,11 @@ export function selectMatchupInsights(input: {
   away: Side;
   home: Side;
   league: TeamProfile[];
+  season?: InsightSeason;
 }): MatchupInsight[] {
   const { away, home, league } = input;
+  const season = input.season ?? HISTORY_SEASON;
+  const limitation = season.current ? CURRENT_LIMITATION : ROSTER_LIMITATION;
   if (league.length < 2) return [];
   const ortgSd = sampleSd(league.map((team) => team.offensiveRating));
   const drtgSd = sampleSd(league.map((team) => team.defensiveRating));
@@ -88,10 +101,11 @@ export function selectMatchupInsights(input: {
     if (absZ == null || absZ < MIN_STANDARDIZED_GAP) continue;
     const insight: MatchupInsight = {
       id: 'efficiency',
+      subject: pair.offense.abbr,
       headline: `${pair.offense.abbr} offense, ${pair.defense.abbr} defense`,
-      body: `${pair.offense.abbr} scored ${num(pair.offense.profile.offensiveRating)} points per 100 estimated possessions. ${pair.defense.abbr} allowed ${num(pair.defense.profile.defensiveRating)}. Relative to a typical 2025–26 team, that offense-versus-defense gap stands out. It describes last season's teams, not a winner tonight.`,
+      body: `${pair.offense.abbr} scored ${num(pair.offense.profile.offensiveRating)} points per 100 estimated possessions. ${pair.defense.abbr} allowed ${num(pair.defense.profile.defensiveRating)}. Relative to a typical ${season.label} team, that offense-versus-defense gap stands out. It describes ${season.current ? 'this season so far' : "last season's teams"}, not a winner tonight.`,
       evidence: `${pair.offense.abbr} offensive rating ${num(pair.offense.profile.offensiveRating)} · ${pair.defense.abbr} defensive rating ${num(pair.defense.profile.defensiveRating)}`,
-      limitation: ROSTER_LIMITATION,
+      limitation,
     };
     if (!bestEfficiency || absZ > bestEfficiency.absZ) bestEfficiency = { absZ, insight };
   }
@@ -106,10 +120,11 @@ export function selectMatchupInsights(input: {
       rank: 2,
       insight: {
         id: 'three_point_rate',
+        subject: higher.abbr,
         headline: `${higher.abbr} lived on more threes`,
         body: `${higher.abbr} took threes on ${pct(higher.profile.threePointAttemptRate)} of its field-goal attempts. ${lower.abbr} took them on ${pct(lower.profile.threePointAttemptRate)}. The volume difference is large enough, against the league's team spread, to be a stylistic contrast. It is not a made-three prediction.`,
         evidence: `${higher.abbr} 3PA rate ${pct(higher.profile.threePointAttemptRate)} · ${lower.abbr} 3PA rate ${pct(lower.profile.threePointAttemptRate)}`,
-        limitation: ROSTER_LIMITATION,
+        limitation,
       },
     });
   }
@@ -124,10 +139,11 @@ export function selectMatchupInsights(input: {
     if (absZ == null || absZ < MIN_STANDARDIZED_GAP) continue;
     const insight: MatchupInsight = {
       id: 'offensive_rebounding',
+      subject: pair.offense.abbr,
       headline: 'Second-chance profile',
-      body: `${pair.offense.abbr} grabbed ${pct(pair.offense.profile.offensiveReboundRate)} of its missed shots. Opponents grabbed ${pct(pair.defense.profile.opponentOffensiveReboundRate)} of their misses against ${pair.defense.abbr}. Rebounding is a place these historical profiles differ. It does not say who will control the glass tonight.`,
+      body: `${pair.offense.abbr} grabbed ${pct(pair.offense.profile.offensiveReboundRate)} of its missed shots. Opponents grabbed ${pct(pair.defense.profile.opponentOffensiveReboundRate)} of their misses against ${pair.defense.abbr}. Rebounding is a place these ${season.current ? '' : 'historical '}profiles differ. It does not say who will control the glass tonight.`,
       evidence: `${pair.offense.abbr} offensive-rebounding rate ${pct(pair.offense.profile.offensiveReboundRate)} · opponents' offensive-rebounding rate against ${pair.defense.abbr} ${pct(pair.defense.profile.opponentOffensiveReboundRate)}`,
-      limitation: ROSTER_LIMITATION,
+      limitation,
     };
     if (!bestRebound || absZ > bestRebound.absZ) bestRebound = { absZ, insight };
   }
@@ -142,10 +158,11 @@ export function selectMatchupInsights(input: {
       rank: 4,
       insight: {
         id: 'turnover_rate',
+        subject: higher.abbr,
         headline: `${higher.abbr} gave the ball up more often`,
-        body: `${higher.abbr}'s turnover rate was ${pct(higher.profile.turnoverRate)}. ${lower.abbr}'s was ${pct(lower.profile.turnoverRate)}. The gap is wide relative to other 2025–26 teams. Turnover rate here is turnovers divided by shot attempts, a free-throw estimate, and turnovers. It is not a steal projection.`,
+        body: `${higher.abbr}'s turnover rate was ${pct(higher.profile.turnoverRate)}. ${lower.abbr}'s was ${pct(lower.profile.turnoverRate)}. The gap is wide relative to other ${season.label} teams. Turnover rate here is turnovers divided by shot attempts, a free-throw estimate, and turnovers. It is not a steal projection.`,
         evidence: `${higher.abbr} turnover rate ${pct(higher.profile.turnoverRate)} · ${lower.abbr} turnover rate ${pct(lower.profile.turnoverRate)}`,
-        limitation: ROSTER_LIMITATION,
+        limitation,
       },
     });
   }
@@ -159,10 +176,11 @@ export function selectMatchupInsights(input: {
       rank: 5,
       insight: {
         id: 'estimated_possessions',
+        subject: higher.abbr,
         headline: 'Different estimated possession counts',
         body: `${higher.abbr} averaged ${num(higher.profile.estimatedPossessionsPerGame)} estimated possessions per game. ${lower.abbr} averaged ${num(lower.profile.estimatedPossessionsPerGame)}. This is a box-score possession estimate, not official NBA pace, and it is not adjusted for overtime.`,
         evidence: `${higher.abbr} ${num(higher.profile.estimatedPossessionsPerGame)} estimated possessions/game · ${lower.abbr} ${num(lower.profile.estimatedPossessionsPerGame)}`,
-        limitation: ROSTER_LIMITATION,
+        limitation,
       },
     });
   }
