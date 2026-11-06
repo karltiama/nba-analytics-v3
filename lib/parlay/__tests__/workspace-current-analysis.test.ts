@@ -4,7 +4,11 @@ vi.mock('@/lib/db', () => ({ query: vi.fn(), queryOne: vi.fn() }));
 
 import { adaptPropsExplorerOffer, type PropsExplorerOfferInput } from '../adapt-props-explorer-offer';
 import type { SelectedParlayLeg } from '../selection';
-import { evaluateWorkspaceAnalysisEligibility, runWorkspaceHistoricalAnalysis } from '../workspace-analysis';
+import {
+  WORKSPACE_CURRENT_MAX_GAMES,
+  evaluateWorkspaceAnalysisEligibility,
+  runWorkspaceHistoricalAnalysis,
+} from '../workspace-analysis';
 import { isWorkspaceCurrentAnalysisEnabled, PARLAY_WORKSPACE_CURRENT_ANALYSIS_ENV } from '../workspace-current-analysis-flag';
 import {
   WORKSPACE_CURRENT_CONTEXT_PATH,
@@ -13,6 +17,7 @@ import {
 } from '../workspace-current-analysis-client';
 import {
   buildWorkspaceCurrentReplay,
+  buildWorkspaceCurrentReplays,
   ownInjuryStatus,
   type WorkspaceCurrentContextDeps,
 } from '../workspace-current-context';
@@ -33,6 +38,7 @@ import { buildX3fReplayContext, buildX3fReplayDeps } from '@/lib/parlay-xray/e2e
 import type { TeammatesOutResponse } from '@/lib/betting/teammates-out-display';
 
 const GAME_ID = '18450001';
+const GAME_2 = '18450002';
 const HOME = '21';
 const AWAY = '14';
 const TIP = '2026-11-06T00:30:00.000Z';
@@ -94,12 +100,16 @@ function fakeDeps(overrides: Partial<WorkspaceCurrentContextDeps> = {}) {
   const query = (async (sql: string, params?: unknown[]) => {
     calls.push({ sql, params });
     if (sql === CONTEXT_TARGET_GAME_SQL) {
+      if (params?.[0] === GAME_2) {
+        return [{ game_id: GAME_2, start_time: TIP, season: '2026', home_team_id: '7', away_team_id: '9', home_abbr: 'GSW', away_abbr: 'MIA' }];
+      }
       return params?.[0] === GAME_ID
         ? [{ game_id: GAME_ID, start_time: TIP, season: '2026', home_team_id: HOME, away_team_id: AWAY, home_abbr: 'OKC', away_abbr: 'LAL' }]
         : [];
     }
     if (sql === CONTEXT_PLAYER_LOGS_SQL) {
       const playerId = String(params?.[0]);
+      if (playerId === 'p3') return priorLogRows('p3', '7', 10, 25);
       return playerId === 'p1' ? priorLogRows('p1', HOME, 10, 20) : priorLogRows('p2', AWAY, 10, 8);
     }
     if (sql === CONTEXT_TEAM_STATS_SQL) return teamRows();
@@ -146,13 +156,28 @@ describe('current-props eligibility flag', () => {
     const eligibility = evaluateWorkspaceAnalysisEligibility([liveLeg('p1', 'A', 19.5), liveLeg('p2', 'B', 8.5)], {
       currentAnalysisEnabled: true,
     });
-    expect(eligibility).toEqual({ status: 'READY', gameId: GAME_ID, mode: 'current', reasons: [] });
+    expect(eligibility).toEqual({ status: 'READY', gameId: GAME_ID, gameIds: [GAME_ID], mode: 'current', reasons: [] });
   });
 
-  it('still blocks multi-game and mixed-snapshot live selections with the flag on', () => {
+  it('allows multi-game live selections up to the game cap, and still blocks mixed snapshots', () => {
     const other = liveLeg('p2', 'B', 8.5, { gameId: '18450002' });
     const multi = evaluateWorkspaceAnalysisEligibility([liveLeg('p1', 'A', 19.5), other], { currentAnalysisEnabled: true });
-    expect(multi.status === 'UNAVAILABLE' && multi.reasons.map((row) => row.code)).toEqual(['MULTI_GAME']);
+    expect(multi).toEqual({
+      status: 'READY',
+      gameId: GAME_ID,
+      gameIds: [GAME_ID, '18450002'],
+      mode: 'current',
+      reasons: [],
+    });
+
+    const seven = Array.from({ length: WORKSPACE_CURRENT_MAX_GAMES + 1 }, (_, i) =>
+      liveLeg(`p${i}`, `P${i}`, 10.5, { gameId: `1845010${i}` })
+    );
+    const tooMany = evaluateWorkspaceAnalysisEligibility(seven, { currentAnalysisEnabled: true });
+    expect(tooMany.status === 'UNAVAILABLE' && tooMany.reasons.map((row) => row.code)).toEqual(['TOO_MANY_GAMES']);
+
+    const offMulti = evaluateWorkspaceAnalysisEligibility([liveLeg('p1', 'A', 19.5), other]);
+    expect(offMulti.status === 'UNAVAILABLE' && offMulti.reasons.map((row) => row.code)).toEqual(['LIVE_CURRENT', 'MULTI_GAME']);
 
     const decision = liveLeg('p2', 'B', 8.5, { marketContext: 'historical', sourceTable: 'research.prop_decision_lines' });
     const mixed = evaluateWorkspaceAnalysisEligibility([liveLeg('p1', 'A', 19.5), decision], { currentAnalysisEnabled: true });
@@ -253,17 +278,27 @@ describe('current-props analysis end to end', () => {
     const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
       expect(url).toBe(WORKSPACE_CURRENT_CONTEXT_PATH);
       const body = JSON.parse(String(init?.body));
-      const built = await buildWorkspaceCurrentReplay(body, deps);
+      const built = await buildWorkspaceCurrentReplays(body, deps);
       if (!built.ok) return new Response('{}', { status: 404 });
-      return new Response(JSON.stringify(built.replay), { status: 200 });
+      return new Response(JSON.stringify({ replays: built.replays }), { status: 200 });
     });
     const result = await runWorkspaceCurrentAnalysis(legs, fetcher as unknown as typeof fetch);
     return { legs, result, fetcher };
   }
 
-  it('requests one game with deduped players', () => {
-    const legs = [liveLeg('p1', 'A', 19.5), liveLeg('p1', 'A', 4.5, { propType: 'assists' }), liveLeg('p2', 'B', 9.5)];
-    expect(workspaceCurrentContextRequest(legs)).toEqual({ gameId: GAME_ID, playerIds: ['p1', 'p2'] });
+  it('requests each game once with deduped players, in slip order', () => {
+    const legs = [
+      liveLeg('p3', 'C', 5.5, { gameId: GAME_2 }),
+      liveLeg('p1', 'A', 19.5),
+      liveLeg('p1', 'A', 4.5, { propType: 'assists' }),
+      liveLeg('p2', 'B', 9.5),
+    ];
+    expect(workspaceCurrentContextRequest(legs)).toEqual({
+      games: [
+        { gameId: GAME_2, playerIds: ['p3'] },
+        { gameId: GAME_ID, playerIds: ['p1', 'p2'] },
+      ],
+    });
   });
 
   it('uses real form, role, matchup and availability, with no projection', async () => {
@@ -310,5 +345,55 @@ describe('current-props analysis end to end', () => {
     const legs = [liveLeg('p1', 'A', 19.5)];
     const fetcher = vi.fn(async () => new Response('{}', { status: 404 }));
     await expect(runWorkspaceCurrentAnalysis(legs, fetcher as unknown as typeof fetch)).rejects.toThrow(/404/);
+  });
+});
+
+describe('current-props analysis across games', () => {
+  async function analyzeMulti() {
+    const legs = [
+      liveLeg('p1', 'Shai Gilgeous-Alexander', 19.5),
+      liveLeg('p3', 'Stephen Curry', 4.5, { gameId: GAME_2, propType: 'threes' }),
+      liveLeg('p2', 'Austin Reaves', 9.5),
+    ];
+    const { deps, calls } = fakeDeps();
+    const fetcher = vi.fn(async (_url: string, init?: RequestInit) => {
+      const built = await buildWorkspaceCurrentReplays(JSON.parse(String(init?.body)), deps);
+      if (!built.ok) return new Response('{}', { status: 404 });
+      return new Response(JSON.stringify({ replays: built.replays }), { status: 200 });
+    });
+    const result = await runWorkspaceCurrentAnalysis(legs, fetcher as unknown as typeof fetch);
+    return { legs, result, calls };
+  }
+
+  it('runs each leg against its own game and keeps slip order', async () => {
+    const { result, calls } = await analyzeMulti();
+    expect(result.contexts.map((ctx) => ctx.identity.gameId)).toEqual([GAME_ID, GAME_2, GAME_ID]);
+    expect(result.contexts[0]!.identity.teamAbbr).toBe('OKC');
+    expect(result.contexts[1]!.identity.teamAbbr).toBe('GSW');
+    expect(result.contexts[1]!.identity.opponentAbbr).toBe('MIA');
+    expect(result.contexts[2]!.identity.opponentAbbr).toBe('OKC');
+    expect(result.interpretations).toHaveLength(3);
+    expect(result.identityLayers.map((row) => row.canonicalPlayerId)).toEqual(['p1', 'p3', 'p2']);
+    expect(result.historicalReplay.dateLabel).toMatch(/LAL @ OKC, MIA @ GSW$/);
+
+    const logCalls = calls.filter((call) => call.sql === CONTEXT_PLAYER_LOGS_SQL);
+    expect(logCalls.map((call) => call.params?.[2])).toEqual([GAME_ID, GAME_ID, GAME_2]);
+  });
+
+  it('groups shared-game risk per game, not across the whole slip', async () => {
+    const { result } = await analyzeMulti();
+    const sharedGame = result.parlayInterpretation.dependencyGroups.filter((group) => group.kind === 'SHARED_GAME');
+    expect(sharedGame).toHaveLength(1);
+    expect(sharedGame[0]!.legIndexes).toEqual([0, 2]);
+  });
+
+  it('fails closed when any requested game is unknown', async () => {
+    const { deps } = fakeDeps();
+    await expect(
+      buildWorkspaceCurrentReplays(
+        { games: [{ gameId: GAME_ID, playerIds: ['p1'] }, { gameId: 'nope', playerIds: ['p2'] }] },
+        deps
+      )
+    ).resolves.toEqual({ ok: false, code: 'GAME_NOT_FOUND' });
   });
 });

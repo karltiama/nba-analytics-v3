@@ -1,5 +1,5 @@
 import type { ExtractedParlayLeg } from '@/lib/parlay-xray/types';
-import { dailyLimitForPlan, dedupeIdentity, utcDayKey, type XrayExtractionConfig } from './config';
+import { dailyLimitForPlan, dedupeIdentity, resolveVisionDetail, utcDayKey, type XrayExtractionConfig } from './config';
 import { estimateCostUsd } from './cost';
 import { XRAY_EXTRACT_MESSAGE } from './copy';
 import { toDataUrl, validateAndNormalizeScreenshot } from './image';
@@ -126,8 +126,19 @@ function safeLog(log: XrayExtractDeps['log'], event: string, meta: Record<string
  * Quota semantics:
  * - validation / kill switch / missing key / cache hit: no quota consumed
  * - reservation then internal failure before provider: reservation released
- * - provider request actually attempted: quota kept (may cost money)
+ * - provider request actually attempted: global quota kept (may cost money)
+ * - attempted but no usable read (provider error, malformed output, NO_LEGS_FOUND,
+ *   UNREADABLE_IMAGE): the user's read is refunded, at most userLimit times per UTC day,
+ *   so a junk-upload loop is still bounded by the global cap and cooldown
  */
+/** Paid attempts that produced no usable read: the user gets the read back. */
+const REFUNDED_RESULTS: ReadonlySet<string> = new Set([
+  'NO_LEGS_FOUND',
+  'UNREADABLE_IMAGE',
+  'PROVIDER_UNAVAILABLE',
+  'INTERNAL_ERROR',
+]);
+
 export async function runXrayExtraction(
   request: XrayExtractRequest,
   deps: XrayExtractDeps
@@ -183,12 +194,14 @@ export async function runXrayExtraction(
     });
   }
 
+  const detail = resolveVisionDetail(config.visionDetail, validated.normalizedWidth, validated.normalizedHeight);
   const identity = dedupeIdentity({
     userId: request.userId,
     imageHash: validated.sha256,
     extractionVersion: config.extractionVersion,
     schemaVersion: config.schemaVersion,
     model: config.visionModel,
+    detail,
   });
 
   const cached = await store.getCached(identity, now.getTime());
@@ -255,6 +268,7 @@ export async function runXrayExtraction(
   }
 
   const reservation: XrayReservation = reserved.reservation;
+  const refundOptions = { refundUser: { maxRefunds: userLimit } };
   const started = Date.now();
 
   let providerResult: Awaited<ReturnType<XrayVisionProvider>>;
@@ -267,7 +281,7 @@ export async function runXrayExtraction(
     providerResult = await deps.provider({
       apiKey: config.openaiApiKey,
       model: config.visionModel,
-      detail: config.visionDetail,
+      detail,
       dataUrl: toDataUrl(validated.mime, validated.bytes),
       maxOutputTokens: config.maxOutputTokens,
     });
@@ -286,7 +300,6 @@ export async function runXrayExtraction(
     }
     const category = error instanceof XrayProviderError ? error.category : 'network';
     const latencyMs = Date.now() - started;
-    const quota = await currentQuota();
     await store.finalizeAttempt(reservation, {
       ...usageBase({
         userId: request.userId,
@@ -310,7 +323,8 @@ export async function runXrayExtraction(
       totalTokens: null,
       estimatedCostUsd: null,
       errorCategory: category,
-    });
+    }, refundOptions);
+    const quota = await currentQuota();
     safeLog(deps.log, 'xray_extract_provider_failed', {
       extractionVersion: version,
       model: config.visionModel,
@@ -334,7 +348,6 @@ export async function runXrayExtraction(
   });
   if (!contracted.ok) {
     const latencyMs = Date.now() - started;
-    const quota = await currentQuota();
     await store.finalizeAttempt(reservation, {
       ...usageBase({
         userId: request.userId,
@@ -358,7 +371,8 @@ export async function runXrayExtraction(
       totalTokens: providerResult.totalTokens,
       estimatedCostUsd: null,
       errorCategory: 'malformed_output',
-    });
+    }, refundOptions);
+    const quota = await currentQuota();
     safeLog(deps.log, 'xray_extract_provider_failed', {
       extractionVersion: version,
       model: config.visionModel,
@@ -406,7 +420,7 @@ export async function runXrayExtraction(
     totalTokens: providerResult.totalTokens,
     estimatedCostUsd,
     errorCategory: null,
-  });
+  }, REFUNDED_RESULTS.has(result) ? refundOptions : undefined);
 
   const quota = await currentQuota();
   safeLog(deps.log, 'xray_extract_completed', {

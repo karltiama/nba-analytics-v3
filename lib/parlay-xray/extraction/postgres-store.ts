@@ -192,7 +192,7 @@ export function createPostgresXrayStore(pool: Pool): XrayExtractionStore {
       }
     },
 
-    async finalizeAttempt(reservation, record) {
+    async finalizeAttempt(reservation, record, options) {
       try {
         await withClient(pool, async (client) => {
           await client.query('BEGIN');
@@ -208,6 +208,36 @@ export function createPostgresXrayStore(pool: Pool): XrayExtractionStore {
               [reservation.userId, record.timestamp]
             );
             await insertUsage(client, record);
+            const refund = options?.refundUser;
+            if (refund) {
+              // Refund the user's read only; the global counter keeps the paid attempt.
+              const refundScope = `refund:user:${reservation.userId}`;
+              await client.query(
+                `INSERT INTO parlay_xray_daily_counters (bucket_date, scope, count)
+                 VALUES ($1::date, $2, 0)
+                 ON CONFLICT (bucket_date, scope) DO NOTHING`,
+                [reservation.dayKey, refundScope]
+              );
+              const refunded = await client.query<{ count: number }>(
+                `SELECT count FROM parlay_xray_daily_counters
+                 WHERE bucket_date = $1::date AND scope = $2 FOR UPDATE`,
+                [reservation.dayKey, refundScope]
+              );
+              if (Number(refunded.rows[0]?.count ?? 0) < refund.maxRefunds) {
+                const userRow = await client.query(
+                  `UPDATE parlay_xray_daily_counters SET count = count - 1
+                   WHERE bucket_date = $1::date AND scope = $2 AND count > 0`,
+                  [reservation.dayKey, `user:${reservation.userId}`]
+                );
+                if ((userRow.rowCount ?? 0) > 0) {
+                  await client.query(
+                    `UPDATE parlay_xray_daily_counters SET count = count + 1
+                     WHERE bucket_date = $1::date AND scope = $2`,
+                    [reservation.dayKey, refundScope]
+                  );
+                }
+              }
+            }
             await client.query('COMMIT');
           } catch (inner) {
             await client.query('ROLLBACK');

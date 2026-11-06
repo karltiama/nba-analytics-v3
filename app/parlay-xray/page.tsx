@@ -1,4 +1,8 @@
+import { isXrayExtractionLive } from '@/lib/parlay-xray/extraction/config';
 import { ParlayXrayClient } from './ParlayXrayClient';
+
+// Read the kill switch per request, not at build time.
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Parlay XRay · Court Context',
@@ -7,5 +11,5 @@ export const metadata = {
 };
 
 export default function ParlayXrayPage() {
-  return <ParlayXrayClient />;
+  return <ParlayXrayClient extractionAvailable={isXrayExtractionLive()} />;
 }

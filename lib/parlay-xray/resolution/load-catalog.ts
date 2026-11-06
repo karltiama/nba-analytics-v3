@@ -46,10 +46,19 @@ export function assertResolutionSqlIsOutcomeFree(sql: string): void {
   }
 }
 
-export async function loadXrayResolutionCatalog(query: ResolutionQuery): Promise<XrayResolutionCatalog> {
+/** Optional start_time window so live resolution does not load every season. */
+export type ResolutionGamesWindow = { fromIso: string; toIso: string };
+
+export async function loadXrayResolutionCatalog(
+  query: ResolutionQuery,
+  options: { gamesWindow?: ResolutionGamesWindow } = {}
+): Promise<XrayResolutionCatalog> {
   assertResolutionSqlIsOutcomeFree(LOAD_PLAYERS_SQL);
   assertResolutionSqlIsOutcomeFree(LOAD_TEAMS_SQL);
   assertResolutionSqlIsOutcomeFree(LOAD_GAMES_SQL);
+  const window = options.gamesWindow;
+  const gamesSql = window ? `${LOAD_GAMES_SQL} WHERE g.start_time >= $1 AND g.start_time < $2` : LOAD_GAMES_SQL;
+  const gamesParams = window ? [window.fromIso, window.toIso] : undefined;
 
   const [playerRows, teamRows, gameRows] = await Promise.all([
     query<{
@@ -66,7 +75,7 @@ export async function loadXrayResolutionCatalog(query: ResolutionQuery): Promise
       start_time: string;
       home_team_abbr: string;
       away_team_abbr: string;
-    }>(LOAD_GAMES_SQL),
+    }>(gamesSql, gamesParams),
   ]);
 
   const players: XrayPlayerRecord[] = playerRows.map((row) => ({

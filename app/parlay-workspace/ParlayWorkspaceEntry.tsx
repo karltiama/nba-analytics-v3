@@ -6,7 +6,13 @@ import { ParlayWorkspacePreviewClient } from './ParlayWorkspacePreviewClient';
 import { isWorkspaceHistoricalPreview } from '@/lib/parlay/preview-fixture';
 import { parsePreviewScenario } from '@/lib/preview/scenario';
 
-export function ParlayWorkspaceEntry({ currentAnalysisEnabled = false }: { currentAnalysisEnabled?: boolean }) {
+export function ParlayWorkspaceEntry({
+  currentAnalysisEnabled = false,
+  xrayImportAvailable,
+}: {
+  currentAnalysisEnabled?: boolean;
+  xrayImportAvailable?: boolean;
+}) {
   const searchParams = useSearchParams();
   const scenario = parsePreviewScenario(searchParams.get('preview'));
   if (scenario) {
@@ -15,5 +21,5 @@ export function ParlayWorkspaceEntry({ currentAnalysisEnabled = false }: { curre
   if (isWorkspaceHistoricalPreview(searchParams.get('preview'))) {
     return <ParlayWorkspacePreviewClient />;
   }
-  return <ParlayWorkspaceClient currentAnalysisEnabled={currentAnalysisEnabled} />;
+  return <ParlayWorkspaceClient currentAnalysisEnabled={currentAnalysisEnabled} xrayImportAvailable={xrayImportAvailable} />;
 }

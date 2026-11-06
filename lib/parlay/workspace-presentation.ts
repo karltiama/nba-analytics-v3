@@ -237,7 +237,7 @@ export function workspaceKeySignals(
     value: parlay.dependencyGroups.length === 0 ? 'Independent' : `${parlay.dependencyGroups.length} shared`,
     detail:
       sharedGames.length > 0
-        ? `${sharedGames.reduce((sum, group) => sum + group.legIndexes.length, 0)} legs in a shared game`
+        ? `${new Set(sharedGames.flatMap((group) => group.legIndexes)).size} legs in a shared game`
         : 'Structural groups from identity',
     tone: sharedGames.length > 0 ? 'watch' : 'info',
     warnings: [],
