@@ -171,12 +171,43 @@ export function resolveEligibility(input: {
   return 'existing_user_prompt';
 }
 
-export function shouldAutoOpenOnboarding(
+export const WELCOME_PATH = '/welcome';
+
+/** Full first-run flow, or just region + books (editing from Props Explorer). */
+export const WELCOME_STEPS = ['region', 'books', 'goal'] as const;
+export type WelcomeStep = (typeof WELCOME_STEPS)[number];
+export type WelcomeMode = 'full' | 'books';
+
+export function welcomeStepsFor(mode: WelcomeMode): readonly WelcomeStep[] {
+  return mode === 'books' ? ['region', 'books'] : WELCOME_STEPS;
+}
+
+export function parseWelcomeStep(raw: string | null | undefined, mode: WelcomeMode): WelcomeStep {
+  const steps = welcomeStepsFor(mode);
+  return (steps as readonly string[]).includes(raw ?? '') ? (raw as WelcomeStep) : steps[0];
+}
+
+export function welcomeHref(input: { next?: string | null; mode?: WelcomeMode } = {}): string {
+  const params = new URLSearchParams();
+  if (input.mode === 'books') params.set('mode', 'books');
+  if (input.next) params.set('next', input.next);
+  const q = params.toString();
+  return q ? `${WELCOME_PATH}?${q}` : WELCOME_PATH;
+}
+
+/**
+ * Signed-in users who have not finished setup go to the /welcome page once.
+ * Guests are never interrupted; setup is asked for where it pays off (Props Explorer).
+ */
+export function shouldRouteToWelcome(
   eligibility: OnboardingEligibility,
   pathname: string,
-  previewFlag?: string | null
+  previewFlag?: string | null,
+  launchedFromCta = false
 ): boolean {
-  if (eligibility !== 'new_user' && eligibility !== 'guest_first_visit') return false;
+  const routable = eligibility === 'new_user' || (launchedFromCta && eligibility === 'existing_user_prompt');
+  if (!routable) return false;
+  if (pathname === WELCOME_PATH || pathname.startsWith(`${WELCOME_PATH}/`)) return false;
   if (pathname === '/billing' || pathname.startsWith('/billing/')) return false;
   if (pathname.startsWith('/betting/profile')) return false;
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return false;

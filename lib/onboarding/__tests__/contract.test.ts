@@ -12,7 +12,10 @@ import {
   nextCoachmark,
   ONBOARDING_NEW_USER_CUTOFF_ISO,
   resolveEligibility,
-  shouldAutoOpenOnboarding,
+  parseWelcomeStep,
+  shouldRouteToWelcome,
+  welcomeHref,
+  welcomeStepsFor,
   surfaceForPath,
 } from '../contract';
 import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
@@ -85,16 +88,36 @@ describe('E9 onboarding contract', () => {
     expect(ONBOARDING_NEW_USER_CUTOFF_ISO).toBe('2026-09-16T00:00:00.000Z');
   });
 
-  it('does not auto-open on billing and does not loop after completion', () => {
-    expect(shouldAutoOpenOnboarding('new_user', '/dashboard')).toBe(true);
-    expect(shouldAutoOpenOnboarding('new_user', '/billing')).toBe(false);
-    expect(shouldAutoOpenOnboarding('completed', '/betting')).toBe(false);
-    expect(shouldAutoOpenOnboarding('existing_user_prompt', '/betting')).toBe(false);
-    expect(shouldAutoOpenOnboarding('guest_first_visit', '/betting/props-explorer')).toBe(true);
-    expect(shouldAutoOpenOnboarding('new_user', '/admin/product-preview')).toBe(false);
-    expect(shouldAutoOpenOnboarding('new_user', '/parlay-workspace', 'historical')).toBe(false);
-    expect(shouldAutoOpenOnboarding('new_user', '/parlay-xray', 'replay')).toBe(false);
-    expect(shouldAutoOpenOnboarding('new_user', '/betting/props-explorer', 'historical')).toBe(false);
+  it('routes new signed-in users to /welcome once, never guests or completed users', () => {
+    expect(shouldRouteToWelcome('new_user', '/dashboard')).toBe(true);
+    expect(shouldRouteToWelcome('new_user', '/welcome')).toBe(false);
+    expect(shouldRouteToWelcome('new_user', '/billing')).toBe(false);
+    expect(shouldRouteToWelcome('new_user', '/betting/profile')).toBe(false);
+    expect(shouldRouteToWelcome('completed', '/betting')).toBe(false);
+    expect(shouldRouteToWelcome('completed', '/dashboard', null, true)).toBe(false);
+    expect(shouldRouteToWelcome('existing_user_prompt', '/betting')).toBe(false);
+    expect(shouldRouteToWelcome('existing_user_prompt', '/dashboard', null, true)).toBe(true);
+    expect(shouldRouteToWelcome('guest_first_visit', '/betting/props-explorer')).toBe(false);
+    expect(shouldRouteToWelcome('guest_first_visit', '/teams', null, true)).toBe(false);
+    expect(shouldRouteToWelcome('new_user', '/admin/product-preview')).toBe(false);
+    expect(shouldRouteToWelcome('new_user', '/parlay-workspace', 'historical')).toBe(false);
+    expect(shouldRouteToWelcome('new_user', '/parlay-xray', 'replay')).toBe(false);
+  });
+
+  it('builds /welcome links and keeps steps inside the mode', () => {
+    expect(welcomeHref()).toBe('/welcome');
+    expect(welcomeHref({ next: '/dashboard?date=2026-11-06' })).toBe(
+      '/welcome?next=%2Fdashboard%3Fdate%3D2026-11-06'
+    );
+    expect(welcomeHref({ mode: 'books', next: '/betting/props-explorer' })).toBe(
+      '/welcome?mode=books&next=%2Fbetting%2Fprops-explorer'
+    );
+    expect(welcomeStepsFor('full')).toEqual(['region', 'books', 'goal']);
+    expect(welcomeStepsFor('books')).toEqual(['region', 'books']);
+    expect(parseWelcomeStep('books', 'full')).toBe('books');
+    expect(parseWelcomeStep('goal', 'books')).toBe('region');
+    expect(parseWelcomeStep(null, 'full')).toBe('region');
+    expect(parseWelcomeStep('nope', 'full')).toBe('region');
   });
 
   it('reduces coachmarks for stats/advanced without gating features', () => {

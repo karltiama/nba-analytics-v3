@@ -16,7 +16,12 @@ export {
   mapIntentToLegacyGoal,
   nextCoachmark,
   resolveEligibility,
-  shouldAutoOpenOnboarding,
+  parseWelcomeStep,
+  shouldRouteToWelcome,
+  welcomeHref,
+  welcomeStepsFor,
+  WELCOME_PATH,
+  WELCOME_STEPS,
   surfaceForPath,
 } from './contract';
 export type {
@@ -27,6 +32,8 @@ export type {
   OnboardingEligibility,
   OnboardingSurface,
   PrimaryIntent,
+  WelcomeMode,
+  WelcomeStep,
 } from './contract';
 export {
   CHECKLIST_COPY,

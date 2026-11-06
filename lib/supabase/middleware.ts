@@ -24,8 +24,13 @@ export function isAdminHtmlPath(pathname: string): boolean {
   return pathname === '/admin' || pathname.startsWith('/admin/');
 }
 
+export function isWelcomeHtmlPath(pathname: string): boolean {
+  return pathname === '/welcome' || pathname.startsWith('/welcome/');
+}
+
 export function isSessionProtectedHtmlPath(pathname: string): boolean {
   return (
+    isWelcomeHtmlPath(pathname) ||
     isBettingHtmlPath(pathname) ||
     isDashboardHtmlPath(pathname) ||
     isOpsHtmlPath(pathname) ||
