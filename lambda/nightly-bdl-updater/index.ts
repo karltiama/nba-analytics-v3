@@ -43,6 +43,7 @@ import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
 import { executeRecovery } from './recovery-execute';
+import { extractPeriodScores, periodScoresParams, upsertGamePeriodScoresSql } from './period-scores';
 import { isExplicitRecoveryEvent, recoveryOnlyEnabled } from './recovery-plan';
 import {
   partitionServingGames,
@@ -767,8 +768,21 @@ async function runPipeline(): Promise<PipelineResult> {
         JSON.stringify(g.visitor_team ?? null),
       ]);
     }
+    let periodRows = 0;
+    let periodUnreconciled = 0;
+    for (const g of finalGames) {
+      const p = extractPeriodScores(g);
+      if (!p) continue;
+      await client.query(upsertGamePeriodScoresSql, periodScoresParams(p));
+      periodRows++;
+      if (!p.reconciled) periodUnreconciled++;
+    }
     await client.query('commit');
-    console.log('  Done.');
+    console.log(
+      `  Done. Period scores: ${periodRows}/${finalGames.length} games` +
+        (periodUnreconciled ? ` (${periodUnreconciled} not matching final)` : '') +
+        '.'
+    );
 
     // Step 3: Fetch box scores
     const gameIds = finalGames.map((g: any) => g.id);
