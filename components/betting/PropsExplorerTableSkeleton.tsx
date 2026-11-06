@@ -1,9 +1,14 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 const ROWS = 12;
 
+function Bar({ className }: { className?: string }) {
+  return <Skeleton className={cn('bg-[#E8F0F1]', className)} />;
+}
+
 /**
- * Initial-load placeholder for the Props Explorer results table (bar shapes read like tiny spark/chart strips).
+ * Placeholder for the Props Explorer results table while rows are loading.
  */
 export function PropsExplorerTableSkeleton() {
   return (
@@ -13,13 +18,13 @@ export function PropsExplorerTableSkeleton() {
           <div key={i} className="flex h-[4.75rem] items-center gap-3 border-b border-[#DCE9EA] px-3 last:border-b-0">
             <div className="min-w-0 flex-1 space-y-1.5">
               <div className="flex items-center justify-between gap-3">
-                <Skeleton className="h-3.5 w-28" />
-                <Skeleton className="h-3.5 w-10" />
+                <Bar className="h-3.5 w-28" />
+                <Bar className="h-3.5 w-10" />
               </div>
-              <Skeleton className="h-3.5 w-36" />
-              <Skeleton className="h-3 w-24" />
+              <Bar className="h-3.5 w-36" />
+              <Bar className="h-3 w-24" />
             </div>
-            <Skeleton className="h-8 w-8 shrink-0 rounded-lg" />
+            <Bar className="h-8 w-8 shrink-0 rounded-lg" />
           </div>
         ))}
       </div>
@@ -38,7 +43,7 @@ export function PropsExplorerTableSkeleton() {
               <th className="py-2 px-2 font-medium text-right">vs Avg</th>
               <th className="py-2 px-2 font-medium text-right">Fair P</th>
               <th className="py-2 px-2 font-medium text-right">Sample</th>
-              <th className="py-2 px-2 font-medium">Observed</th>
+              <th className="py-2 px-2 font-medium">Updated</th>
               <th className="py-2 px-2 font-medium text-right w-[168px]">Actions</th>
             </tr>
           </thead>
@@ -47,42 +52,42 @@ export function PropsExplorerTableSkeleton() {
               <tr key={i} className="border-b border-[#DCE9EA]">
                 <td className="py-2 px-2">
                   <div className="flex items-center gap-2 min-w-0 max-w-[160px]">
-                    <Skeleton className="h-3.5 flex-1 max-w-[100px]" />
-                    <Skeleton className="h-3.5 w-3.5 shrink-0 rounded" />
+                    <Bar className="h-3.5 flex-1 max-w-[100px]" />
+                    <Bar className="h-3.5 w-3.5 shrink-0 rounded" />
                   </div>
                 </td>
                 <td className="py-2 px-2">
-                  <Skeleton className="h-3.5 w-14" />
+                  <Bar className="h-3.5 w-14" />
                 </td>
                 <td className="py-2 px-2">
-                  <Skeleton className="h-3.5 w-10" />
+                  <Bar className="h-3.5 w-10" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-8 ml-auto" />
+                  <Bar className="h-3.5 w-8 ml-auto" />
                 </td>
                 <td className="py-2 px-2">
-                  <Skeleton className="h-3.5 w-16 max-w-[100px]" />
+                  <Bar className="h-3.5 w-16 max-w-[100px]" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-9 ml-auto" />
+                  <Bar className="h-3.5 w-9 ml-auto" />
                 </td>
                 <td className="py-2 px-2">
-                  <Skeleton className="h-3.5 w-16" />
+                  <Bar className="h-3.5 w-16" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-10 ml-auto" />
+                  <Bar className="h-3.5 w-10 ml-auto" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-10 ml-auto" />
+                  <Bar className="h-3.5 w-10 ml-auto" />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <Skeleton className="h-3.5 w-8 ml-auto" />
+                  <Bar className="h-3.5 w-8 ml-auto" />
                 </td>
                 <td className="py-2 px-2">
-                  <Skeleton className="h-3 w-24" />
+                  <Bar className="h-3 w-24" />
                 </td>
                 <td className="py-2 px-1">
-                  <Skeleton className="h-6 w-24 rounded-md ml-auto" />
+                  <Bar className="h-6 w-24 rounded-md ml-auto" />
                 </td>
               </tr>
             ))}
