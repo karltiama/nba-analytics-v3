@@ -286,6 +286,33 @@ describe('DATA2E.1 game-status-sync acquisition: archive before serve', () => {
     expect(r).toMatchObject({ http_status: 503, archive_status: 'archived', parse_ok: null });
   });
 
+  it('starts the HTTP abort after the rate-limit grant', async () => {
+    let call = 0;
+    let signal: AbortSignal | undefined;
+    const h = harness({
+      env: {
+        BDL_RATE_LIMIT_INTERVAL_MS: '80',
+        BDL_RATE_LIMIT_MAX_REQUESTS: '1',
+        BDL_RATE_LIMIT_BURST: '1',
+        BDL_HTTP_TIMEOUT_MS: '40',
+      },
+      respond: (_url, init) => {
+        call += 1;
+        if (call === 2) {
+          signal = init?.signal ?? undefined;
+          expect(signal.aborted).toBe(false);
+        }
+        return ok(page([game({ id: 501 })]));
+      },
+    });
+
+    expect((await h.runSync()).status).toBe('success');
+    expect((await h.runSync()).status).toBe('success');
+    expect(signal).toBeInstanceOf(AbortSignal);
+    await new Promise((resolve) => setTimeout(resolve, 70));
+    expect(signal?.aborted).toBe(true);
+  });
+
   it('provider 429 (BDL_RATE_LIMIT_MAX_RETRIES=0): attempt archived, cycle fails as limiter timeout', async () => {
     const h = harness({ respond: () => ok('{"error":"rate limited"}', 429, { 'retry-after': '13' }) });
     const result = await h.runSync();

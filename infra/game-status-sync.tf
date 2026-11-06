@@ -151,6 +151,8 @@ resource "aws_lambda_function" "game_status_sync" {
         BDL_RATE_LIMIT_MAX_REQUESTS       = tostring(var.game_status_sync_bdl_rate_limit_max_requests)
         BDL_RATE_LIMIT_BURST              = tostring(var.game_status_sync_bdl_rate_limit_burst)
         BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS = "20000"
+        # HTTP budget only. The limiter starts it after the shared-bucket grant.
+        BDL_HTTP_TIMEOUT_MS               = "15000"
         BDL_RATE_LIMIT_MAX_RETRIES        = tostring(var.game_status_sync_bdl_rate_limit_max_retries)
       }
     )

@@ -146,6 +146,7 @@ describe('game-status-sync terraform (13I.2 creation boundary)', () => {
     const last = src.slice(src.indexOf('# Last-merge wins.'));
     expect(last).toMatch(/NBA_DATA_BUCKET\s*=\s*var\.nba_data_bucket_name/);
     expect(last).toMatch(/NBA_RAW_PREFIX\s*=\s*local\.game_status_sync_raw_prefix/);
+    expect(last).toMatch(/BDL_HTTP_TIMEOUT_MS\s*=\s*"15000"/);
   });
 
   it('runtime archive keys fall inside the IAM resource for slash-wrapped and plain prefixes', async () => {

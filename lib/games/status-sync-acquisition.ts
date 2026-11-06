@@ -160,13 +160,21 @@ export function createAcquiringBdlFetch(
       return new Response(null, { status: capture.response.http_status, headers });
     };
 
+    const configuredTimeout = (deps.env.BDL_HTTP_TIMEOUT_MS ?? '').trim();
+    const limiterEnv = configuredTimeout
+      ? deps.env
+      : { ...deps.env, BDL_HTTP_TIMEOUT_MS: String(HTTP_TIMEOUT_MS) };
+
     let thrown: unknown = null;
     try {
+      // No caller abort signal. AbortSignal.timeout would start before fetchBdlLive waits
+      // on the shared bucket, so a ~13s token wait aborts the request as soon as the
+      // permit is granted. The limiter starts BDL_HTTP_TIMEOUT_MS after the grant.
       await fetchBdlLive(
         url,
-        { headers: { Authorization: deps.apiKey }, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) },
+        { headers: { Authorization: deps.apiKey } },
         {
-          env: deps.env,
+          env: limiterEnv,
           worker: deps.env.BDL_RATE_LIMIT_WORKER ?? identity.defaultWorker,
           fetchImpl: capturingFetch as typeof fetch,
           store: deps.rateLimitStore,

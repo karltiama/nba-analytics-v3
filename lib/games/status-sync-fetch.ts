@@ -20,15 +20,18 @@ export function createStatusSyncFetchPage(
     if (!key) {
       return { status: 0, ok: false, error: 'missing BALLDONTLIE_API_KEY' };
     }
+    const configuredTimeout = (env.BDL_HTTP_TIMEOUT_MS ?? '').trim();
+    const limiterEnv = configuredTimeout
+      ? env
+      : { ...env, BDL_HTTP_TIMEOUT_MS: String(HTTP_TIMEOUT_MS) };
     try {
+      // The limiter starts this timeout after the rate-limit grant. A signal created
+      // here would include the shared-bucket wait and abort a request that just got a token.
       const res = await fetchBdlLive(
         url,
+        { headers: { Authorization: key } },
         {
-          headers: { Authorization: key },
-          signal: AbortSignal.timeout(HTTP_TIMEOUT_MS),
-        },
-        {
-          env,
+          env: limiterEnv,
           worker: env.BDL_RATE_LIMIT_WORKER ?? 'game-status-sync',
         }
       );
