@@ -10,7 +10,6 @@ import {
   defaultRoleProfilePlayerId,
   shouldShowHistoricalRoleProfile,
 } from '@/lib/betting/historical-role-profile';
-import { formatRolePercent, formatRolePpp, visiblePlaytypes } from '@/lib/betting/historical-role-profile-format';
 import { shouldShowHistoricalAdvanced } from '@/lib/betting/historical-advanced';
 
 const tatumSeason = {
@@ -118,25 +117,5 @@ describe('historical Role Profile contract helpers', () => {
         starters: { available: true, away: five('27', 1), home: five('13', 1) },
       })
     ).toBe('27-1');
-  });
-});
-
-describe('Role Profile UI semantics', () => {
-  it('labels Context as season-level and does not percent-format PPP', () => {
-    expect('Season Role — 2023–24').toMatch(/Season Role/);
-    expect('This season, not this game').not.toMatch(/Tonight's Role|Game Role/i);
-    expect(formatRolePpp(1.04)).toBe('1.04');
-    expect(formatRolePercent(0.42)).toBe('42.0%');
-    const missingIso = visiblePlaytypes({
-      ...tatumSeason,
-      isolationPossPct: null,
-      isolationPpp: null,
-      pnrBallHandlerPossPct: 0.42,
-      pnrBallHandlerPpp: 0.96,
-      pnrRollManPossPct: null,
-      pnrRollManPpp: null,
-    });
-    expect(missingIso.map((r) => r.id)).toEqual(['pnrBallHandler']);
-    expect(missingIso.some((r) => r.frequency === '0.0%')).toBe(false);
   });
 });

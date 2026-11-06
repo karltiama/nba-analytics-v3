@@ -517,7 +517,7 @@ describe('pregame navigation', () => {
     expect(researchHtml).toContain('props-explorer');
   });
 
-  it('rejects a bad return date and keeps the research redirect', () => {
+  it('rejects a bad return date, and the old game URL only redirects', () => {
     expect(parseSlateDate('2026-13-40')).toBeNull();
     expect(parseSlateDate('yesterday')).toBeNull();
     expect(dashboardReturnHref('yesterday')).toBe('/dashboard');
@@ -527,7 +527,9 @@ describe('pregame navigation', () => {
     const legacy = readFileSync(join(process.cwd(), 'app/games/[gameId]/page.tsx'), 'utf8');
     const researchPage = readFileSync(join(process.cwd(), 'app/betting/games/[gameId]/page.tsx'), 'utf8');
     expect(legacy).toContain('gameDetailHref');
-    expect(researchPage).not.toContain('/scoreboard/games/');
+    expect(researchPage).toContain('oneGamePageRedirect');
+    expect(researchPage).toContain('redirect(');
+    expect(researchPage).not.toContain('GameDetailsPageClient');
     expect(shouldShowLayoutHeader('/scoreboard/games/21826166')).toBe(true);
   });
 });

@@ -12,14 +12,6 @@ export { AIInsightPanel } from './AIInsightPanel';
 export type { Insight } from './AIInsightPanel';
 export { BettingInsights } from './BettingInsights';
 export { LineMovementChart } from './LineMovementChart';
-export { MatchupPageLayout } from './MatchupPageLayout';
-export type { GameDetailsData, MarketSentimentSnapshot } from './MatchupPageLayout';
-export {
-  MarketSentimentChart,
-  resolveSentimentChartData,
-  demoSentimentHistory,
-} from './MarketSentimentChart';
-export type { SentimentHistoryPoint, SentimentChartMode } from './MarketSentimentChart';
 export { FilterBar } from './FilterBar';
 export type { SortOption } from './FilterBar';
 export { MarketProbability } from './MarketProbability';
