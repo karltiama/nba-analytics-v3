@@ -2,12 +2,12 @@
   "phase": "2.T.2D.1cB",
   "mode": "dry-run",
   "stats": {
-    "analyticsPlayersScanned": 5534,
-    "entitiesProposed": 0,
+    "analyticsPlayersScanned": 5590,
+    "entitiesProposed": 56,
     "entitiesReused": 5534,
-    "bdlMappingsProposed": 0,
+    "bdlMappingsProposed": 56,
     "nbaMappingsProposed": 0,
-    "noSafeNbaMapping": 4967,
+    "noSafeNbaMapping": 5023,
     "nbaConflicts": 14
   },
   "wilson_pippen": {

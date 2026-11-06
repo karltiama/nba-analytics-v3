@@ -1080,7 +1080,7 @@ export default function PropsExplorerPage(props: PageProps) {
         </div>
       </div>
 
-      {loading && rows.length === 0 ? (
+      {loading ? (
         <PropsExplorerTableSkeleton />
       ) : (
       <>

@@ -9,7 +9,7 @@ import { shouldShowLayoutHeader } from '@/components/betting/betting-shell-paths
 
 /**
  * Shared chrome for betting primary destinations (incl. /teams).
- * Keeps Header/theme when navigating off /betting into the team directory.
+ * Keeps Header when navigating off /betting into the team directory.
  *
  * Header must stay outside the OnboardingGate Suspense boundary. Gate uses
  * useSearchParams(), which suspends during SSR; putting Radix menus in that
@@ -17,16 +17,7 @@ import { shouldShowLayoutHeader } from '@/components/betting/betting-shell-paths
  */
 export function BettingAppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || '';
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [offseason, setOffseason] = useState(false);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,10 +49,7 @@ export function BettingAppShell({ children }: { children: React.ReactNode }) {
         </div>
       ) : null}
       {showLayoutHeader && (
-        <Header
-          isDarkMode={isDarkMode}
-          onThemeToggle={() => setIsDarkMode(!isDarkMode)}
-        />
+        <Header />
       )}
       {children}
       <Suspense fallback={null}>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
-import { Sun, Moon, User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu, CircleHelp } from 'lucide-react';
+import { User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu, CircleHelp } from 'lucide-react';
 import { signOutToLogin } from '@/lib/auth/logout';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
@@ -18,8 +18,6 @@ import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
 import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
 
 interface HeaderProps {
-  isDarkMode: boolean;
-  onThemeToggle: () => void;
   teamName?: string;
   teamAbbr?: string;
 }
@@ -117,7 +115,7 @@ function ContextualParlayNav({
   );
 }
 
-export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: HeaderProps) {
+export function Header({ teamName, teamAbbr }: HeaderProps) {
   const pathname = usePathname() || '/dashboard';
   const nextEncoded = encodeURIComponent(pathname);
 
@@ -277,19 +275,6 @@ export function Header({ isDarkMode, onThemeToggle, teamName, teamAbbr }: Header
                 </DropdownMenu.Root>
               </>
             )}
-
-            <button
-              type="button"
-              onClick={onThemeToggle}
-              className="p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors"
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? (
-                <Sun className="w-4 h-4 text-[#ff6b35]" />
-              ) : (
-                <Moon className="w-4 h-4 text-[#bf5af2]" />
-              )}
-            </button>
 
             <DropdownMenu.Root modal={false}>
               <DropdownMenu.Trigger asChild>
