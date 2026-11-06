@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { AlignJustify, BarChart3, Link2, X, type LucideIcon } from 'lucide-react';
 import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
 import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
+import { PostToFeedControls } from '@/components/feed/PostToFeedControls';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -285,6 +286,7 @@ export function ParlayWorkspaceView({
             Save
           </button>
           {share}
+          {previewLabel ? null : <PostToFeedControls legs={legs} />}
         </div>
       </header>
 

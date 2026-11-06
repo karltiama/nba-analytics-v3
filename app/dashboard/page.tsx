@@ -17,6 +17,7 @@ import {
   type SortOption,
 } from '@/components/betting';
 import { GettingStartedChecklist } from '@/components/onboarding/GettingStartedChecklist';
+import { BetFeed } from '@/components/feed/BetFeed';
 import { ExistingUserPrompt } from '@/components/onboarding/ProductTourDialog';
 import {
   GameCardSkeleton,
@@ -681,6 +682,9 @@ export default function BettingDashboard(props: PageProps) {
                 </div>
               )}
             </section>
+
+            {/* Bet feed for the selected date */}
+            {previewActive ? null : <BetFeed date={selectedDate} />}
 
             {/* Betting Insights */}
             <section>

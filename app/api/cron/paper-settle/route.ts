@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeCronRequest } from '@/lib/auth/cron-auth';
 import { runPaperSettlement } from '@/lib/betting/paper-settle-runner';
+import { runFeedSettlement } from '@/lib/feed/feed-store';
 import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
 
 function runtimeMode() {
@@ -41,12 +42,21 @@ export async function GET(request: NextRequest) {
 
   try {
     const out = await runPaperSettlement();
+    let feed: Awaited<ReturnType<typeof runFeedSettlement>> | { error: string };
+    try {
+      feed = await runFeedSettlement();
+    } catch (error: unknown) {
+      // Feed is additive: a missing feed schema must not fail paper settlement.
+      console.error('[cron/paper-settle] feed settlement failed', error);
+      feed = { error: error instanceof Error ? error.message : 'Feed settlement failed' };
+    }
     return NextResponse.json({
       ok: true,
       examined: out.examined,
       settled: out.settled,
       skippedNoBoxScore: out.skippedNoBoxScore,
       errors: out.errors,
+      feed,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
