@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { notifyProfileUpdated } from '@/lib/auth/profile-events';
 import { SPORTSBOOK_OPTIONS } from '@/lib/onboarding/sportsbooks';
 
 type OddsFormat = 'american' | 'decimal' | 'fractional';
@@ -152,6 +153,7 @@ export default function BettingProfilePage() {
         return;
       }
       setProfileMsg('Profile saved.');
+      notifyProfileUpdated();
     } catch {
       setProfileMsg('Network error.');
     } finally {
