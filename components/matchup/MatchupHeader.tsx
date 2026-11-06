@@ -18,6 +18,8 @@ export type MatchupHeaderMarket = {
   moneylineAway: string;
   moneylineHome: string;
   implied: string | null;
+  /** e.g. "Consensus of 10 sportsbooks"; a consensus quote labels its cells "Consensus …". */
+  vendorLabel?: string | null;
 };
 
 export type MatchupNavLink = {
@@ -66,7 +68,11 @@ function MarketCell({ label, primary, secondary }: { label: string; primary: str
   );
 }
 
-/** Presentational sticky header. No data fetching and no scroll-spy. */
+/**
+ * Presentational header, sticky from the sm breakpoint up. On phones it is ~400px tall,
+ * so pinning it would leave under half the screen for content; it scrolls away there.
+ * No data fetching and no scroll-spy.
+ */
 export function MatchupHeader({
   away,
   home,
@@ -83,8 +89,9 @@ export function MatchupHeader({
   renderCenter = null,
 }: MatchupHeaderProps) {
   const sourceLine = [market?.caption, updatedLabel].filter((part) => part && part.trim()).join(' · ');
+  const marketPrefix = market?.vendorLabel?.startsWith('Consensus') ? 'Consensus' : 'Market';
   return (
-    <div id="matchup-overview" className="sticky top-16 z-10 scroll-mt-16 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white/95 shadow-sm">
+    <div id="matchup-overview" className="relative z-10 scroll-mt-16 sm:sticky sm:top-16 overflow-hidden rounded-2xl border border-[#DCE9EA] bg-white/95 shadow-sm">
       <MatchupScrollOffset />
       <div className="flex min-w-0 flex-col gap-3 bg-[#F8FBFA] px-3 py-3 sm:flex-row sm:items-center sm:gap-6 sm:px-5 sm:py-4">
         <div className="flex min-w-0 shrink-0 items-center gap-2 sm:w-64 lg:w-80">
@@ -130,9 +137,9 @@ export function MatchupHeader({
         <div className="bg-[#F8FBFA] px-3 pb-3 sm:px-5" data-market-strip>
           {sourceLine ? <p className="type-metadata mb-2 text-center">{sourceLine}</p> : null}
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-[#DCE9EA] bg-[#DCE9EA] sm:grid-cols-3">
-            <MarketCell label="Market spread" primary={market.spreadAway} secondary={market.spreadHome} />
-            <MarketCell label="Market total" primary={market.total} secondary={market.totalPrices} />
-            <MarketCell label="Market ML" primary={market.moneylineAway} secondary={market.moneylineHome} />
+            <MarketCell label={`${marketPrefix} spread`} primary={market.spreadAway} secondary={market.spreadHome} />
+            <MarketCell label={`${marketPrefix} total`} primary={market.total} secondary={market.totalPrices} />
+            <MarketCell label={`${marketPrefix} ML`} primary={market.moneylineAway} secondary={market.moneylineHome} />
           </div>
           {market.implied ? <p className="type-secondary mt-2 text-center">{market.implied}</p> : null}
           {propsHref ? (

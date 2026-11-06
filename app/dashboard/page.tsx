@@ -24,6 +24,7 @@ import {
   AIInsightPanelSkeleton,
 } from '@/components/betting/skeletons';
 import { filterSlateGames } from '@/lib/betting/slate-filters';
+import { parseSlateDate } from '@/lib/pregame-matchup/href';
 import {
   cardContextApiUrl,
   cardContextPollDelayMs,
@@ -90,12 +91,11 @@ export default function BettingDashboard(props: PageProps) {
   const [showCloseMatchups, setShowCloseMatchups] = useState(false);
   const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
 
-  // Selected date from URL (ET, YYYY-MM-DD); default today
-  const selectedDate = useMemo(() => {
-    const date = searchParams.get('date');
-    if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
-    return getTodayET();
-  }, [searchParams]);
+  // Selected date from URL (ET, YYYY-MM-DD); a missing or impossible date means today
+  const selectedDate = useMemo(
+    () => parseSlateDate(searchParams.get('date')) ?? getTodayET(),
+    [searchParams]
+  );
 
   // Data states
   const [scoreboard, setScoreboard] = useState<ScoreboardResponse | null>(null);
@@ -142,9 +142,9 @@ export default function BettingDashboard(props: PageProps) {
     [router, searchParams]
   );
 
-  // Optional: sync URL to today when no date param (so default view is shareable)
+  // Sync URL to today when the date param is missing or impossible (so default view is shareable)
   useEffect(() => {
-    if (!searchParams.get('date')) {
+    if (!parseSlateDate(searchParams.get('date'))) {
       const params = new URLSearchParams(searchParams.toString());
       params.set('date', getTodayET());
       router.replace(`/dashboard?${params.toString()}`, { scroll: false });

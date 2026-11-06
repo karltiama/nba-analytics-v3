@@ -90,6 +90,48 @@ describe('shared matchup presentation', () => {
     expect(html.match(/CLE -5\.5/g)).toHaveLength(1);
     expect(html).toContain('No-vig implied probability');
     expect(html).toContain('href="#section-comparison"');
+    expect(html).toContain('Market spread');
+    expect(html).not.toContain('Consensus spread');
+  });
+
+  it('labels a consensus quote as consensus, not as one market', () => {
+    const html = renderToStaticMarkup(createElement(MatchupHeader, {
+      away: { abbr: 'ORL', name: 'Orlando Magic' },
+      home: { abbr: 'PHX', name: 'Phoenix Suns' },
+      statusLabel: 'Scheduled',
+      whenLabel: '9:00 PM EST',
+      backHref: '/dashboard',
+      backLabel: "Today's Games",
+      market: {
+        caption: 'Consensus of 10 sportsbooks · prices as of Nov 5, 6:00 PM ET, not live',
+        vendorLabel: 'Consensus of 10 sportsbooks',
+        spreadAway: 'ORL +1.5 −116',
+        spreadHome: 'PHX −1.5 −104',
+        total: 'O/U 222.5',
+        totalPrices: 'O −110 / U −110',
+        moneylineAway: 'ORL −105',
+        moneylineHome: 'PHX −115',
+        implied: null,
+      },
+    }));
+    expect(html).toContain('Consensus spread');
+    expect(html).toContain('Consensus total');
+    expect(html).toContain('Consensus ML');
+    expect(html).not.toContain('Market ML');
+  });
+
+  it('pins the header only from the sm breakpoint up, so it scrolls away on phones', () => {
+    const html = renderToStaticMarkup(createElement(MatchupHeader, {
+      away: { abbr: 'ORL', name: 'Orlando Magic' },
+      home: { abbr: 'PHX', name: 'Phoenix Suns' },
+      statusLabel: 'Scheduled',
+      whenLabel: '9:00 PM EST',
+      backHref: '/dashboard',
+      backLabel: "Today's Games",
+    }));
+    const header = /<div id="matchup-overview" class="([^"]*)"/.exec(html)?.[1] ?? '';
+    expect(header.split(' ')).toEqual(expect.arrayContaining(['sm:sticky', 'sm:top-16']));
+    expect(header.split(' ')).not.toContain('sticky');
   });
 
   it('omits the market strip when no quote is passed', () => {
