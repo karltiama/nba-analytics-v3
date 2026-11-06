@@ -19,6 +19,7 @@ import {
 import {
   workspaceCoverageSummary,
   workspaceKeySignals,
+  workspaceLegChips,
   workspaceProjectionTable,
   workspaceShowsProjection,
 } from '../workspace-presentation';
@@ -299,6 +300,10 @@ describe('current-props analysis end to end', () => {
     expect(coverage.warnings).not.toContain('Projection unavailable');
     expect(coverage.warnings).not.toContain('WOWY unavailable');
     expect(coverage.band).toBe('High');
+    for (const interp of result.interpretations) {
+      expect(workspaceLegChips(interp).join(' ')).not.toMatch(/close/i);
+    }
+    expect(result.contexts.every((ctx) => ctx.role.priorGameMinutes == null || Number.isInteger(ctx.role.priorGameMinutes * 10))).toBe(true);
   });
 
   it('surfaces a route failure instead of falling back to the fixture', async () => {

@@ -73,7 +73,8 @@ export function workspaceLegChips(interp: XRayLegInterpretation): string[] {
   ];
   const support = [
     ...interp.supportingContext.map((item) => item.title),
-    marketPositionLabel(interp.marketPosition.kind),
+    // Current props are pre-tip: there is no close to compare with yet.
+    interp.analysisMode === 'current' ? '' : marketPositionLabel(interp.marketPosition.kind),
     formLineReadLabel(interp.recentForm.lineRead),
     roleMinutesLabel(interp.role.minutesVsSeason),
   ];

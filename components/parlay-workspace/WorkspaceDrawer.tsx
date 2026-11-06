@@ -89,6 +89,10 @@ export function LegContextBody({
   const market = `${formatMarketLabel(interp.identity.market)} ${side} ${formatXrayPropLine(interp.identity.line)}`;
   // Current props never show model projections (no edge vs the no-vig market in backtests).
   const current = interp.analysisMode === 'current';
+  // Counter items are also listed under why-it-could-fail; show each piece of evidence once.
+  const evidenceItems = [...interp.supportingContext, ...interp.counterContext, ...interp.whyItCouldFail].filter(
+    (item, index, all) => all.findIndex((other) => other.code === item.code && other.detail === item.detail) === index
+  );
 
   return (
     <div className="space-y-4">
@@ -186,10 +190,10 @@ export function LegContextBody({
       <section>
         <h3 className="type-secondary text-[#063f46]">Evidence</h3>
         <ul className="mt-2 space-y-2">
-          {[...interp.supportingContext, ...interp.counterContext, ...interp.whyItCouldFail].length === 0 ? (
+          {evidenceItems.length === 0 ? (
             <li className="type-secondary">None identified from certified available sources.</li>
           ) : (
-            [...interp.supportingContext, ...interp.counterContext, ...interp.whyItCouldFail].map((item) => (
+            evidenceItems.map((item) => (
               <li key={item.code + item.detail} className="rounded-lg border border-[#DCE9EA] bg-[#f7f9f7] px-3 py-2">
                 <p className="type-secondary text-[#063f46]">{item.title}</p>
                 <p className="type-metadata mt-0.5">{item.detail}</p>
