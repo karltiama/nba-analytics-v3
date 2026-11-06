@@ -40,6 +40,7 @@ describe('proxy matcher', () => {
     expect(isSessionProtectedHtmlPath('/')).toBe(false);
     expect(isSessionProtectedHtmlPath('/login')).toBe(false);
     expect(isSessionProtectedHtmlPath('/signup')).toBe(false);
+    expect(isSessionProtectedHtmlPath('/welcome')).toBe(true);
   });
 });
 

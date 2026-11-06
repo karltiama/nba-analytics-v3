@@ -1,17 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { OnboardingModal } from './OnboardingModal';
 import {
-  destinationForIntent,
   resolveEligibility,
-  shouldAutoOpenOnboarding,
-  SKIP_DESTINATION,
+  shouldRouteToWelcome,
+  welcomeHref,
   type OnboardingEligibility,
 } from '@/lib/onboarding/contract';
-import type { GuidanceLevel, PrimaryIntent } from '@/lib/onboarding/contract';
-import { markOnboardingComplete, patchOnboardingState, readOnboardingState } from '@/lib/onboarding/storage';
+import { patchOnboardingState, readOnboardingState } from '@/lib/onboarding/storage';
 
 type ProfileResponse = {
   profile?: {
@@ -44,16 +41,24 @@ async function fetchProfileWithSessionWait(launchFromCta: boolean, signal?: Abor
   return last;
 }
 
-function stripOnboardParam(router: ReturnType<typeof useRouter>) {
-  if (typeof window === 'undefined') return;
+function currentPathWithoutOnboard(): string {
+  if (typeof window === 'undefined') return '/dashboard';
   const params = new URLSearchParams(window.location.search);
-  if (!params.has('onboard')) return;
   params.delete('onboard');
   const q = params.toString();
-  const path = window.location.pathname;
-  router.replace(q ? `${path}?${q}` : path);
+  return q ? `${window.location.pathname}?${q}` : window.location.pathname;
 }
 
+function stripOnboardParam(router: ReturnType<typeof useRouter>) {
+  if (typeof window === 'undefined') return;
+  if (!new URLSearchParams(window.location.search).has('onboard')) return;
+  router.replace(currentPathWithoutOnboard());
+}
+
+/**
+ * First-run routing. Signed-in users who have not finished setup are sent to the
+ * /welcome page once (E9 modal retired). Guests are never interrupted.
+ */
 export function OnboardingGate({ children }: { children?: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname() || '/dashboard';
@@ -67,25 +72,6 @@ export function OnboardingGate({ children }: { children?: React.ReactNode }) {
 
   const [authState, setAuthState] = useState<AuthState>('loading');
   const [eligibility, setEligibility] = useState<OnboardingEligibility>('not_eligible');
-  const [forceOpen, setForceOpen] = useState(launchedFromCta);
-
-  const handleCompleted = useCallback(
-    (input: {
-      skipped: boolean;
-      primaryIntent: PrimaryIntent | null;
-      guidanceLevel: GuidanceLevel | null;
-    }) => {
-      markOnboardingComplete(input);
-      setEligibility('completed');
-      setForceOpen(false);
-      stripOnboardParam(router);
-      const dest = input.skipped ? SKIP_DESTINATION : destinationForIntent(input.primaryIntent);
-      if (typeof window !== 'undefined' && window.location.pathname !== dest) {
-        router.push(dest);
-      }
-    },
-    [router]
-  );
 
   useEffect(() => {
     const ac = new AbortController();
@@ -103,7 +89,6 @@ export function OnboardingGate({ children }: { children?: React.ReactNode }) {
             localCompleted: local.completed,
           });
           setEligibility(next);
-          if (next === 'completed') setForceOpen(false);
           stripOnboardParam(router);
           return;
         }
@@ -119,11 +104,12 @@ export function OnboardingGate({ children }: { children?: React.ReactNode }) {
           localCompleted: local.completed,
         });
         setEligibility(next);
-        if (next === 'completed') setForceOpen(false);
         if (next === 'existing_user_prompt') {
           patchOnboardingState({ existingPromptEligible: true });
         }
-        stripOnboardParam(router);
+        if (!shouldRouteToWelcome(next, window.location.pathname, searchParams.get('preview'), launchedFromCta)) {
+          stripOnboardParam(router);
+        }
       } catch (e) {
         if (ac.signal.aborted) return;
         if (e instanceof DOMException && e.name === 'AbortError') return;
@@ -136,19 +122,18 @@ export function OnboardingGate({ children }: { children?: React.ReactNode }) {
     })();
 
     return () => ac.abort();
+    // searchParams is read once at mount; re-running on every query change would refetch the profile.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, launchedFromCta]);
 
-  const autoOpen =
-    authState !== 'loading' &&
-    shouldAutoOpenOnboarding(eligibility, pathname, searchParams.get('preview'));
-  const ctaOpen = forceOpen && eligibility !== 'completed' && eligibility !== 'existing_user_prompt';
-  const modalOpen = autoOpen || ctaOpen || (launchedFromCta && authState === 'loading');
-  const modalPhase = launchedFromCta && authState === 'loading' ? 'loading' : 'ready';
+  const routeToWelcome =
+    authState === 'authed' &&
+    shouldRouteToWelcome(eligibility, pathname, searchParams.get('preview'), launchedFromCta);
 
-  return (
-    <>
-      {children}
-      <OnboardingModal open={modalOpen} phase={modalPhase} onCompleted={handleCompleted} />
-    </>
-  );
+  useEffect(() => {
+    if (!routeToWelcome) return;
+    router.replace(welcomeHref({ next: currentPathWithoutOnboard() }));
+  }, [routeToWelcome, router]);
+
+  return <>{children}</>;
 }

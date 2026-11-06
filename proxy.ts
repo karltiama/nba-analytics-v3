@@ -16,6 +16,7 @@ export const config = {
     '/update-password',
     '/dashboard',
     '/dashboard/:path*',
+    '/welcome',
     '/betting/:path*',
     '/ops',
     '/ops/:path*',

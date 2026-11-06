@@ -232,6 +232,11 @@ export type OnboardingSurfaceProperties = {
   surface: 'onboarding';
   primary_intent?: string;
   guidance_level?: string;
+  /** /welcome: 'full' first run, or 'books' when editing books from Props Explorer. */
+  welcome_mode?: 'full' | 'books';
+  betting_country?: string;
+  book_count?: number;
+  books_with_odds_count?: number;
 };
 
 export type CoachmarkSeenProperties = {

@@ -99,13 +99,14 @@ Surface + category only. Do **not** send wager contents, player names, sportsboo
 
 ## `onboarding_started`
 
-- **Trigger:** First-run dialog opens.
+- **Trigger:** The `/welcome` setup page opens.
 - **Properties:** `surface` = `onboarding`
 
 ## `onboarding_skipped` / `onboarding_completed`
 
-- **Trigger:** Skip for now, or Continue after guidance level.
+- **Trigger:** "Do this later" on `/welcome`, or finishing its last step.
 - **Properties:** `surface` = `onboarding`, `primary_intent` (category or `skipped` / `none`), `guidance_level` (category or `skipped` / `none`)
+- **/welcome page (v3):** also `welcome_mode` (`full` / `books`), `betting_country` (`US` / `CA` / `OTHER` / `none`), `book_count`, `books_with_odds_count`. Counts and country only: never book names or state/province. `guidance_level` is no longer asked.
 
 ## `coachmark_seen`
 

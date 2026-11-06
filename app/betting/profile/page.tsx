@@ -4,7 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SPORTSBOOK_OPTIONS } from '@/lib/onboarding/sportsbooks';
+import { normalizeBookIds } from '@/lib/onboarding/sportsbooks';
+import { isBettingCountry, isValidSubdivision } from '@/lib/onboarding/regions';
+import { RegionFields, type RegionValue } from '@/components/onboarding/RegionFields';
+import { BookPicker } from '@/components/onboarding/BookPicker';
 
 type OddsFormat = 'american' | 'decimal' | 'fractional';
 type PaperMode = 'dollars' | 'units' | 'off';
@@ -31,7 +34,10 @@ export default function BettingProfilePage() {
   const [username, setUsername] = useState('');
   const [timezone, setTimezone] = useState('America/New_York');
 
-  const [sportsbook, setSportsbook] = useState('');
+  const [region, setRegion] = useState<RegionValue>({ country: null, region: null });
+  const [books, setBooks] = useState<string[]>([]);
+  /** Saved before, or edited here. Untouched books are not written, so Props Explorer keeps asking. */
+  const [booksKnown, setBooksKnown] = useState(false);
   const [oddsFormat, setOddsFormat] = useState<OddsFormat>('american');
   const [paperMode, setPaperMode] = useState<PaperMode>('units');
   const [primaryGoal, setPrimaryGoal] = useState<PrimaryGoal | ''>('');
@@ -77,8 +83,10 @@ export default function BettingProfilePage() {
       };
       const sj = (await sr.json()) as {
         settings?: {
-          preferredSportsbook?: string | null;
           oddsFormat?: string | null;
+          bettingCountry?: string | null;
+          bettingRegion?: string | null;
+          sportsbooks?: string[] | null;
           paperDisplayMode?: string | null;
           primaryGoal?: string | null;
           experienceLevel?: string | null;
@@ -98,7 +106,15 @@ export default function BettingProfilePage() {
         setTimezone(p.timezone || 'America/New_York');
       }
       if (s) {
-        setSportsbook(s.preferredSportsbook ?? '');
+        const country = isBettingCountry(s.bettingCountry) ? s.bettingCountry : null;
+        setRegion({
+          country,
+          region: isValidSubdivision(country, s.bettingRegion) ? (s.bettingRegion ?? null) : null,
+        });
+        if (Array.isArray(s.sportsbooks)) {
+          setBooks(normalizeBookIds(s.sportsbooks));
+          setBooksKnown(true);
+        }
         if (s.oddsFormat === 'american' || s.oddsFormat === 'decimal' || s.oddsFormat === 'fractional') {
           setOddsFormat(s.oddsFormat);
         }
@@ -171,8 +187,9 @@ export default function BettingProfilePage() {
         .filter(Boolean)
         .slice(0, 50);
       const body: Record<string, unknown> = {
-        preferredSportsbook: sportsbook.trim() || null,
         oddsFormat,
+        ...(region.country ? { bettingCountry: region.country, bettingRegion: region.region } : {}),
+        ...(booksKnown ? { sportsbooks: books } : {}),
         paperDisplayMode: paperMode,
         primaryGoal: primaryGoal || null,
         experienceLevel: experience || null,
@@ -200,7 +217,9 @@ export default function BettingProfilePage() {
       setSavingPrefs(false);
     }
   }, [
-    sportsbook,
+    region,
+    books,
+    booksKnown,
     oddsFormat,
     paperMode,
     primaryGoal,
@@ -313,23 +332,20 @@ export default function BettingProfilePage() {
         <h2 className="type-section-heading text-[#063f46] mb-4">Betting preferences</h2>
         <div className="space-y-4">
           <div>
-            <label className={labelCls} htmlFor="sportsbook">
-              Preferred sportsbook
-            </label>
-            <input
-              id="sportsbook"
-              className={inputCls}
-              list="sportsbook-suggestions"
-              value={sportsbook}
-              onChange={(e) => setSportsbook(e.target.value)}
-              placeholder="DraftKings, FanDuel, …"
-              maxLength={60}
+            <h3 className={labelCls}>Where you bet</h3>
+            <RegionFields value={region} onChange={setRegion} />
+          </div>
+          <div>
+            <h3 className={labelCls}>Your sportsbooks</h3>
+            <BookPicker
+              country={region.country}
+              region={region.region}
+              selected={books}
+              onChange={(next) => {
+                setBooks(next);
+                setBooksKnown(true);
+              }}
             />
-            <datalist id="sportsbook-suggestions">
-              {SPORTSBOOK_OPTIONS.map((b) => (
-                <option key={b} value={b} />
-              ))}
-            </datalist>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
