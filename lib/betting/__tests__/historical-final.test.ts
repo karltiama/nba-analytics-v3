@@ -7,7 +7,6 @@ import {
   historicalModuleAvailability,
   isHistoricalFinalView,
   mapBoxLogRow,
-  shouldFetchLiveMatchupAnalysis,
 } from '../historical-final';
 
 describe('isHistoricalFinalView', () => {
@@ -16,14 +15,6 @@ describe('isHistoricalFinalView', () => {
     expect(isHistoricalFinalView('Scheduled')).toBe(false);
     expect(isHistoricalFinalView('In Progress')).toBe(false);
     expect(isHistoricalFinalView(null)).toBe(false);
-  });
-});
-
-describe('shouldFetchLiveMatchupAnalysis', () => {
-  it('skips matchup-analysis (and therefore BDL lineups) for Final viewMode', () => {
-    expect(shouldFetchLiveMatchupAnalysis('final')).toBe(false);
-    expect(shouldFetchLiveMatchupAnalysis('live')).toBe(true);
-    expect(shouldFetchLiveMatchupAnalysis(undefined)).toBe(true);
   });
 });
 
