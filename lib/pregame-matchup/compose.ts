@@ -159,6 +159,8 @@ export type PregameMatchupModel = {
   phase?: 'pregame' | 'live' | 'final' | 'other';
   /** Poll the live board: the game is live, or tips within LIVE_WATCH_LEAD_MINUTES. */
   watchLive?: boolean;
+  /** A past-season Final read from analytics.games, not the scoreboard. The page shows the header and recap only. */
+  archive?: boolean;
 };
 
 function one(value: number): string {
