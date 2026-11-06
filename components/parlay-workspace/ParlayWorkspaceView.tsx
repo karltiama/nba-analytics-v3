@@ -99,6 +99,7 @@ export function ParlayWorkspaceView({
   onShowReview,
   editedAfterXrayImport = false,
   previewLabel = null,
+  xrayImportAvailable = isPublicXrayExtractionReady(),
 }: {
   legs: SelectedParlayLeg[];
   explorerHref: string;
@@ -113,6 +114,8 @@ export function ParlayWorkspaceView({
   onShowReview: () => void;
   editedAfterXrayImport?: boolean;
   previewLabel?: string | null;
+  /** Server XRay kill switch. Defaults to the static public readiness. */
+  xrayImportAvailable?: boolean;
 }) {
   const [contextIndex, setContextIndex] = useState<number | null>(null);
   const [relationshipsOpen, setRelationshipsOpen] = useState(false);
@@ -188,7 +191,7 @@ export function ParlayWorkspaceView({
         <section className="max-w-xl rounded-2xl border border-[#DCE9EA] bg-white p-6 shadow-sm">
           <p className="type-card-data text-[#063f46]">Your parlay is empty.</p>
           <p className="type-body mt-2 text-cc-secondary">
-            {isPublicXrayExtractionReady()
+            {xrayImportAvailable
               ? 'Add legs from Props Explorer, or import a slip in Parlay XRay.'
               : 'Add legs from Props Explorer. Screenshot import is not available yet.'}
           </p>
@@ -199,7 +202,7 @@ export function ParlayWorkspaceView({
             >
               Explore Props
             </Link>
-            {isPublicXrayExtractionReady() ? (
+            {xrayImportAvailable ? (
               <Link
                 href="/parlay-xray"
                 className="type-interactive inline-flex min-h-11 items-center justify-center rounded-lg border border-[#DCE9EA] px-4 text-[#063f46] hover:bg-[#f7f9f7]"

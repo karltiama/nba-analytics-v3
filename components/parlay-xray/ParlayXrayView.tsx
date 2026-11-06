@@ -35,6 +35,8 @@ type ParlayXrayViewProps = {
   onReviewInWorkspace?: () => void;
   onUploadStarted: () => void;
   showDesignPreviewLink: boolean;
+  /** Server kill switch state. SCREENSHOT_EXTRACTION_AVAILABLE is the static default. */
+  extractionAvailable?: boolean;
 };
 
 export function ParlayXrayView({
@@ -50,6 +52,7 @@ export function ParlayXrayView({
   onReviewInWorkspace,
   onUploadStarted,
   showDesignPreviewLink,
+  extractionAvailable = SCREENSHOT_EXTRACTION_AVAILABLE,
 }: ParlayXrayViewProps) {
   const counts = extractionCounts(state.parlay.legs);
   const presentation = selectAnalysisPresentation(state);
@@ -74,7 +77,7 @@ export function ParlayXrayView({
   const quotaLabel =
     state.quota != null ? quotaRemainingLabel(state.quota.used, state.quota.limit) : null;
   const publicExtractionOff =
-    !SCREENSHOT_EXTRACTION_AVAILABLE && !historicalReplay && !state.designPreview;
+    !extractionAvailable && !historicalReplay && !state.designPreview;
 
   return (
     <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
@@ -195,14 +198,19 @@ export function ParlayXrayView({
             confirmHint={
               historicalReplay
                 ? 'Confirm is the boundary between what XRay read and reviewing these legs in Workspace. This will not run as live analysis.'
-                : 'Confirm is the boundary between what XRay read and Parlay Workspace. Current-season analysis is not enabled yet.'
+                : extractionAvailable
+                  ? 'Confirm is the boundary between what XRay read and Parlay Workspace. Legs are matched to scheduled games when you open Workspace.'
+                  : 'Confirm is the boundary between what XRay read and Parlay Workspace. Current-season analysis is not enabled yet.'
             }
             onToggleEditing={onToggleEditing}
             onEditLeg={onEditLeg}
             onAcceptLeg={onAcceptLeg}
             onConfirm={onConfirm}
             onReviewInWorkspace={onReviewInWorkspace}
-            workspaceHandoffAvailable={Boolean(state.confirmed && historicalReplay?.gameId)}
+            workspaceHandoffAvailable={Boolean(
+              state.confirmed &&
+                (historicalReplay?.gameId || (extractionAvailable && !historicalReplay && !state.designPreview))
+            )}
           />
         </div>
       </div>

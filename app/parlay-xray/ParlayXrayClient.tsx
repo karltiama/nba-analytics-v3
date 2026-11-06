@@ -32,7 +32,30 @@ import { trackEvent } from '@/lib/product-analytics/track-event';
 
 const SUCCESS_RESULTS = new Set(['SUCCESS', 'PARTIAL', 'NEEDS_CONFIRMATION', 'NO_LEGS_FOUND']);
 
-export function ParlayXrayClient() {
+const LIVE_HANDOFF_REASON_COPY: Record<string, string> = {
+  NO_GAME: 'no game for that matchup on that date',
+  NO_TEAM_GAME: 'their team has no game on the slip date',
+  MISSING_DATE: 'no game date',
+  MISSING_MATCHUP: 'the matchup is missing',
+  AMBIGUOUS_GAME: 'more than one game matches',
+  UNKNOWN_SPORTSBOOK: 'the sportsbook is not supported',
+  MISSING_SPORTSBOOK: 'the sportsbook is missing',
+};
+
+function liveHandoffFailureNotice(body: {
+  code: string;
+  failure?: { playerName: string | null; reason: string | null } | null;
+}): string {
+  const who = body.failure?.playerName ?? 'A leg';
+  const reason = body.failure?.reason;
+  if (reason) {
+    const why = LIVE_HANDOFF_REASON_COPY[reason] ?? reason.toLowerCase().replace(/_/g, ' ');
+    return `${who} could not be matched for Workspace: ${why}. Edit the leg, or add it from Props Explorer.`;
+  }
+  return 'These confirmed legs cannot open in Workspace yet. Edit any names that look wrong, then try again.';
+}
+
+export function ParlayXrayClient({ extractionAvailable = false }: { extractionAvailable?: boolean }) {
   const router = useRouter();
   const [state, dispatch] = useReducer(reduceXrayState, undefined, createInitialXrayState);
   const objectUrlRef = useRef<string | null>(null);
@@ -225,7 +248,8 @@ export function ParlayXrayClient() {
 
   async function openWorkspaceFromConfirmed() {
     if (!state.confirmed) return false;
-    if (!state.historicalReplay?.gameId) return false;
+    if (!state.historicalReplay) return openWorkspaceFromLiveConfirmed();
+    if (!state.historicalReplay.gameId) return false;
     try {
       const [{ X3F_CATALOG }, { X3F_GAME_ID, X3F_HISTORICAL_DATE }] = await Promise.all([
         import('@/lib/parlay-xray/e2e/fixture'),
@@ -266,6 +290,35 @@ export function ParlayXrayClient() {
       return true;
     } catch {
       workspaceHandoffRef.current = false;
+      return false;
+    }
+  }
+
+  async function openWorkspaceFromLiveConfirmed() {
+    if (workspaceHandoffRef.current) return false;
+    workspaceHandoffRef.current = true;
+    dispatch({ type: 'SET_NOTICE', notice: null });
+    try {
+      const res = await fetch('/api/parlay-xray/handoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ legs: state.parlay.legs }),
+      });
+      const body = (await res.json()) as
+        | { ok: true; legs: Parameters<typeof importConfirmedXrayLegsToStore>[0] }
+        | { ok: false; code: string; failure?: { playerName: string | null; reason: string | null } | null };
+      if (!body.ok) {
+        workspaceHandoffRef.current = false;
+        dispatch({ type: 'SET_NOTICE', notice: liveHandoffFailureNotice(body) });
+        return false;
+      }
+      importConfirmedXrayLegsToStore(body.legs);
+      trackEvent(PARLAY_XRAY_OPEN_WORKSPACE, { surface: 'parlay_xray', action: 'open_workspace' });
+      router.push(PARLAY_WORKSPACE_HREF);
+      return true;
+    } catch {
+      workspaceHandoffRef.current = false;
+      dispatch({ type: 'SET_NOTICE', notice: 'Workspace could not open these legs. Try again.' });
       return false;
     }
   }
@@ -375,6 +428,7 @@ export function ParlayXrayClient() {
       }}
       onUploadStarted={onUploadStarted}
       showDesignPreviewLink={process.env.NODE_ENV !== 'production'}
+      extractionAvailable={extractionAvailable}
     />
   );
 }

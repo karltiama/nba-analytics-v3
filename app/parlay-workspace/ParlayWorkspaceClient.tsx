@@ -23,7 +23,13 @@ function previewFlagFromWindow(): string | null {
   }
 }
 
-export function ParlayWorkspaceClient({ currentAnalysisEnabled = false }: { currentAnalysisEnabled?: boolean }) {
+export function ParlayWorkspaceClient({
+  currentAnalysisEnabled = false,
+  xrayImportAvailable,
+}: {
+  currentAnalysisEnabled?: boolean;
+  xrayImportAvailable?: boolean;
+}) {
   const { legs, analysis, explorerReturnHref, removeLeg, clear, setAnalysis, editedAfterXrayImport } =
     useParlaySelection();
   const [busy, setBusy] = useState(false);
@@ -102,6 +108,7 @@ export function ParlayWorkspaceClient({ currentAnalysisEnabled = false }: { curr
       onAnalyze={() => void runAnalyze()}
       onShowReview={() => setReviewMode(true)}
       editedAfterXrayImport={editedAfterXrayImport}
+      xrayImportAvailable={xrayImportAvailable}
     />
   );
 }

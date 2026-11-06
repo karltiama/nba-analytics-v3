@@ -107,6 +107,14 @@ export function dedupeIdentity(input: {
   return `${input.userId}:${input.imageHash}:${input.extractionVersion}:${input.schemaVersion}:${input.model}`;
 }
 
+/**
+ * Whether the live screenshot upload path should be shown. Mirrors what the
+ * extract route enforces: kill switch on and a provider key present.
+ */
+export function isXrayExtractionLive(config: XrayExtractionConfig = loadXrayExtractionConfig()): boolean {
+  return config.enabled && Boolean(config.openaiApiKey);
+}
+
 export function isKnownSafeDefaultModel(model: string): boolean {
   return SAFE_MODELS.has(model);
 }

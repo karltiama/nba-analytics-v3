@@ -165,3 +165,27 @@ export async function buildWorkspaceCurrentReplay(
     },
   };
 }
+
+export type WorkspaceCurrentGamesRequest = { games: { gameId: string; playerIds: string[] }[] };
+
+export type WorkspaceCurrentReplaysResult =
+  | { ok: true; replays: WorkspaceCurrentReplay[] }
+  | { ok: false; code: 'GAME_NOT_FOUND' | 'GAME_TIME_UNKNOWN' };
+
+/**
+ * One replay per game for a multi-game parlay. Games are built one after another, and players
+ * within a game sequentially, so a parlay never opens more than one game's queries at a time
+ * (EMAXCONNSESSION). Fails closed if any game is unknown.
+ */
+export async function buildWorkspaceCurrentReplays(
+  input: WorkspaceCurrentGamesRequest,
+  deps: WorkspaceCurrentContextDeps
+): Promise<WorkspaceCurrentReplaysResult> {
+  const replays: WorkspaceCurrentReplay[] = [];
+  for (const game of input.games) {
+    const built = await buildWorkspaceCurrentReplay(game, deps);
+    if (!built.ok) return built;
+    replays.push(built.replay);
+  }
+  return { ok: true, replays };
+}

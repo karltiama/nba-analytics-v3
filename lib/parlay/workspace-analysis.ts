@@ -6,6 +6,7 @@
 import { toCanonicalParlayLegResolution } from './adapt-props-explorer-offer';
 import { X3F_GAME_ID } from '@/lib/parlay-xray/e2e/ground-truth';
 import { runHistoricalCanonicalParlayAnalysis } from '@/lib/parlay-xray/e2e/run';
+import { interpretXrayParlay } from '@/lib/parlay-xray/interpretation/parlay';
 import type {
   HistoricalXrayReplayContext,
   HistoricalXrayReplayDeps,
@@ -28,9 +29,13 @@ export const WORKSPACE_ANALYSIS_BLOCK_CODES = [
   'LIVE_CURRENT',
   'MIXED_SNAPSHOT',
   'MULTI_GAME',
+  'TOO_MANY_GAMES',
   'MISSING_IDENTITY',
   'OUTSIDE_COVERAGE',
 ] as const;
+
+/** Current-props analysis loads one context per game; this caps the DB work per request. */
+export const WORKSPACE_CURRENT_MAX_GAMES = 6;
 
 export type WorkspaceAnalysisBlockCode = (typeof WORKSPACE_ANALYSIS_BLOCK_CODES)[number];
 
@@ -43,7 +48,7 @@ export type WorkspaceAnalysisBlock = {
 export type WorkspaceAnalysisRunMode = 'historical' | 'current';
 
 export type WorkspaceAnalysisEligibility =
-  | { status: 'READY'; gameId: string; mode: WorkspaceAnalysisRunMode; reasons: [] }
+  | { status: 'READY'; gameId: string; gameIds: string[]; mode: WorkspaceAnalysisRunMode; reasons: [] }
   | { status: 'UNAVAILABLE'; reasons: WorkspaceAnalysisBlock[] };
 
 export type WorkspaceAnalysisOptions = {
@@ -126,10 +131,19 @@ export function evaluateWorkspaceAnalysisEligibility(
     });
   }
 
-  if (gameIds.size > 1) {
+  // Current props load context per game, so they may span games. The certified historical
+  // fixture covers one game only.
+  const currentMode = snapshots.has('live_current') && Boolean(options.currentAnalysisEnabled);
+  if (gameIds.size > 1 && !currentMode) {
     reasons.push({
       code: 'MULTI_GAME',
       message: 'Historical Court Context analysis currently supports parlays from one game.',
+    });
+  }
+  if (currentMode && gameIds.size > WORKSPACE_CURRENT_MAX_GAMES) {
+    reasons.push({
+      code: 'TOO_MANY_GAMES',
+      message: `Court Context analysis supports parlays from up to ${WORKSPACE_CURRENT_MAX_GAMES} games.`,
     });
   }
 
@@ -156,7 +170,7 @@ export function evaluateWorkspaceAnalysisEligibility(
   const unique = uniqueReasons(reasons);
   if (unique.length > 0) return { status: 'UNAVAILABLE', reasons: unique };
   const mode: WorkspaceAnalysisRunMode = snapshots.has('live_current') ? 'current' : 'historical';
-  return { status: 'READY', gameId, mode, reasons: [] };
+  return { status: 'READY', gameId, gameIds: [...gameIds], mode, reasons: [] };
 }
 
 function uniqueReasons(reasons: WorkspaceAnalysisBlock[]): WorkspaceAnalysisBlock[] {
@@ -195,6 +209,85 @@ export function runWorkspaceHistoricalAnalysis(
   );
   const adapterMs = Math.max(0, (deps.nowMs?.() ?? t0) - t0);
   return runHistoricalCanonicalParlayAnalysis(resolutions, context, deps, { resolveMs: adapterMs });
+}
+
+/** One game's current-props context, as served by POST /api/parlay-workspace/context. */
+export type WorkspaceGameReplay = {
+  context: HistoricalXrayReplayContext;
+  deps: HistoricalXrayReplayDeps;
+};
+
+/**
+ * Current-props analysis across one or more games. Each game's legs run against that game's
+ * context (target game, cutoff, sources); per-leg results are put back in slip order and the
+ * parlay-level read is computed once over every leg, so shared-game groups stay per game.
+ */
+export function runWorkspaceCurrentGamesAnalysis(
+  legs: SelectedParlayLeg[],
+  replays: WorkspaceGameReplay[],
+  options: WorkspaceAnalysisOptions = {}
+): HistoricalXrayReplayResult {
+  const eligibility = evaluateWorkspaceAnalysisEligibility(legs, { ...options, currentAnalysisEnabled: true });
+  if (eligibility.status !== 'READY') {
+    throw new Error(`WORKSPACE_ANALYSIS_${eligibility.reasons[0]?.code ?? 'UNAVAILABLE'}`);
+  }
+  if (eligibility.mode !== 'current') throw new Error('WORKSPACE_ANALYSIS_MODE_MISMATCH');
+
+  const groups = eligibility.gameIds.map((gameId) => {
+    const replay = replays.find((row) => row.context.gameId === gameId);
+    if (!replay) throw new Error('WORKSPACE_ANALYSIS_GAME_MISMATCH');
+    const indexes = legs.flatMap((leg, index) => (leg.offer.gameId === gameId ? [index] : []));
+    const result = runWorkspaceHistoricalAnalysis(
+      indexes.map((index) => legs[index]!),
+      replay.context,
+      replay.deps,
+      { currentAnalysisEnabled: true }
+    );
+    return { replay, indexes, result };
+  });
+  if (groups.length === 1) return groups[0]!.result;
+
+  const slot = new Map<number, { result: HistoricalXrayReplayResult; at: number }>();
+  for (const group of groups) {
+    group.indexes.forEach((legIndex, at) => slot.set(legIndex, { result: group.result, at }));
+  }
+  const pick = <K extends 'confirmedLegs' | 'resolutions' | 'matches' | 'contexts' | 'interpretations' | 'identityLayers'>(
+    key: K
+  ): HistoricalXrayReplayResult[K] =>
+    legs.map((_, index) => {
+      const hit = slot.get(index)!;
+      return hit.result[key][hit.at];
+    }) as HistoricalXrayReplayResult[K];
+
+  const interpretations = pick('interpretations');
+  const first = groups[0]!.replay.context;
+  const cutoffAt = groups
+    .map((group) => group.replay.context.cutoffAt)
+    .reduce((min, value) => (Date.parse(value) < Date.parse(min) ? value : min));
+  const sum = (key: keyof HistoricalXrayReplayResult['timings']) =>
+    groups.reduce((total, group) => total + group.result.timings[key], 0);
+
+  return {
+    confirmedLegs: pick('confirmedLegs'),
+    resolutions: pick('resolutions'),
+    matches: pick('matches'),
+    contexts: pick('contexts'),
+    interpretations,
+    parlayInterpretation: interpretXrayParlay(interpretations),
+    historicalReplay: {
+      cutoffAt,
+      dateLabel: `${first.dateLabel} · ${groups.map((group) => group.replay.context.slateLabel).join(', ')}`,
+      gameId: first.gameId,
+    },
+    identityLayers: pick('identityLayers'),
+    timings: {
+      resolveMs: sum('resolveMs'),
+      matchMs: sum('matchMs'),
+      contextMs: sum('contextMs'),
+      interpretMs: sum('interpretMs'),
+      totalMs: sum('totalMs'),
+    },
+  };
 }
 
 function attachMatchupFromReplayDeps(

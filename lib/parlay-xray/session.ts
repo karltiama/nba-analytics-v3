@@ -76,6 +76,7 @@ export type XrayAction =
   | { type: 'SET_EXTRACTION'; status: ExtractionStatus; legs: ExtractedParlayLeg[]; notice?: string | null }
   | { type: 'RECOVER_LINES' }
   | { type: 'SET_QUOTA'; quota: XrayQuotaView | null }
+  | { type: 'SET_NOTICE'; notice: string | null }
   | { type: 'SET_ANALYSIS'; analysis: XRayAnalysis | null };
 
 function newId(): string {
@@ -244,6 +245,8 @@ export function reduceXrayState(state: XrayState, action: XrayAction): XrayState
       if (!changed) return state;
       return { ...state, parlay: { ...state.parlay, legs } };
     }
+    case 'SET_NOTICE':
+      return { ...state, extractNotice: action.notice };
     case 'CONFIRM_LEGS': {
       // Public Confirm only locks extracted legs. It does not invent a historical
       // date or assemble live analysis. Historical replay analysis runs only when
