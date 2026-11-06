@@ -44,6 +44,7 @@ import { formatAvg } from '@/lib/parlay-xray/interpretation/display';
 import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
 import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
+import { WorkspaceTrueCost } from '@/components/parlay/WorkspaceTrueCost';
 import { LegContextBody, WorkspaceDrawer } from './WorkspaceDrawer';
 
 const TONE_CLASS: Record<WorkspaceSignalTone, string> = {
@@ -533,6 +534,8 @@ export function ParlayWorkspaceView({
             })}
           </div>
         </section>
+
+        <WorkspaceTrueCost legs={legs} />
 
         {formRows.length > 0 || projectionRows.length > 0 ? (
           <section className="rounded-2xl border border-[#DCE9EA] bg-white p-3 shadow-sm sm:p-4">
