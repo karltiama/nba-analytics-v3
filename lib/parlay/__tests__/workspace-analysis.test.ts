@@ -77,7 +77,7 @@ describe('Workspace historical analysis', () => {
 
   it('marks the certified X3F selection READY', () => {
     const eligibility = evaluateWorkspaceAnalysisEligibility(x3fWorkspaceLegs());
-    expect(eligibility).toEqual({ status: 'READY', gameId: X3F_GAME_ID, reasons: [] });
+    expect(eligibility).toEqual({ status: 'READY', gameId: X3F_GAME_ID, mode: 'historical', reasons: [] });
   });
 
   it('fail-closes live_current instead of running historical matching', () => {

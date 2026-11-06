@@ -23,14 +23,17 @@ function previewFlagFromWindow(): string | null {
   }
 }
 
-export function ParlayWorkspaceClient() {
+export function ParlayWorkspaceClient({ currentAnalysisEnabled = false }: { currentAnalysisEnabled?: boolean }) {
   const { legs, analysis, explorerReturnHref, removeLeg, clear, setAnalysis, editedAfterXrayImport } =
     useParlaySelection();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
   const inFlightFingerprint = useRef<string | null>(null);
-  const eligibility = useMemo(() => evaluateWorkspaceAnalysisEligibility(legs), [legs]);
+  const eligibility = useMemo(
+    () => evaluateWorkspaceAnalysisEligibility(legs, { currentAnalysisEnabled }),
+    [legs, currentAnalysisEnabled]
+  );
   const fingerprint = useMemo(() => selectionFingerprint(legs), [legs]);
   const analysisCurrent = Boolean(analysis && analysis.fingerprint === fingerprint);
 
@@ -48,13 +51,24 @@ export function ParlayWorkspaceClient() {
           action: 'analysis_started',
         });
       }
-      const { buildX3fReplayContext, buildX3fReplayDeps } = await import('@/lib/parlay-xray/e2e/fixture');
-      const result = runWorkspaceHistoricalAnalysis(legs, buildX3fReplayContext(), buildX3fReplayDeps());
+      let result;
+      if (eligibility.mode === 'current') {
+        // Today's props: context from the DB as of now. No projections, no fixture.
+        const { runWorkspaceCurrentAnalysis } = await import('@/lib/parlay/workspace-current-analysis-client');
+        result = await runWorkspaceCurrentAnalysis(legs);
+      } else {
+        const { buildX3fReplayContext, buildX3fReplayDeps } = await import('@/lib/parlay-xray/e2e/fixture');
+        result = runWorkspaceHistoricalAnalysis(legs, buildX3fReplayContext(), buildX3fReplayDeps());
+      }
       setAnalysis({ fingerprint, result });
       setReviewMode(false);
       completeChecklistItem('workspace_analyzed');
     } catch {
-      setError('Historical analysis could not run for this selection.');
+      setError(
+        eligibility.status === 'READY' && eligibility.mode === 'current'
+          ? 'Court Context could not load current context for this selection.'
+          : 'Historical analysis could not run for this selection.'
+      );
     } finally {
       if (inFlightFingerprint.current === fingerprint) inFlightFingerprint.current = null;
       setBusy(false);

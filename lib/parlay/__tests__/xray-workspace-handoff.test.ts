@@ -194,6 +194,7 @@ describe('XRay → Workspace source convergence', () => {
     expect(evaluateWorkspaceAnalysisEligibility(sameGame)).toEqual({
       status: 'READY',
       gameId: X3F_GAME_ID,
+      mode: 'historical',
       reasons: [],
     });
 
