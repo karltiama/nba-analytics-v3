@@ -146,7 +146,7 @@ export function PregameMatchupView({ model }: { model: PregameMatchupModel }) {
             <>
               <MatchupStory story={overview.story} flow />
               <MatchupFindings findings={overview.findings} flow />
-              {model.starters && !final ? <LikelyStarters starters={model.starters} flow /> : null}
+              {model.starters && !final ? <LikelyStarters starters={model.starters} q1={model.starterQ1 ?? null} flow /> : null}
               {model.injuryReport && !final ? <InjuryReport report={model.injuryReport} flow /> : null}
               <ComparisonGrid
                 flow

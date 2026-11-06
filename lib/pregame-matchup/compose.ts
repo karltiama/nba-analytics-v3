@@ -7,6 +7,7 @@ import { selectMatchupInsights, type MatchupInsight } from './signals';
 import { EXPECTED_TEAM_GAMES, HISTORICAL_SEASON_LABEL } from './window';
 import type { InjuryReport } from './injury-report';
 import type { StartersModel } from './starters';
+import type { StarterQ1Model } from './q1-scoring';
 import type { CurrentPlayers } from './current-players';
 import type { GameRecap } from './recap';
 
@@ -149,6 +150,8 @@ export type PregameMatchupModel = {
   injuryReport?: InjuryReport | null;
   /** Likely starters from this season's certified lineups. Null before any starters are loaded. */
   starters?: StartersModel | null;
+  /** First-quarter scoring for the players the starters section names. Null when unavailable. */
+  starterQ1?: StarterQ1Model | null;
   /** This season's players per team, still with the team. Null before opening night. */
   currentPlayers?: CurrentPlayers | null;
   /** Final games only: result against the closing line and who started. */
