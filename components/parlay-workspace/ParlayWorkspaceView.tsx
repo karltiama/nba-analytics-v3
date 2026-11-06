@@ -47,6 +47,7 @@ import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
 import { WorkspaceTrueCost } from '@/components/parlay/WorkspaceTrueCost';
 import { LegContextBody, WorkspaceDrawer } from './WorkspaceDrawer';
+import { WorkspaceSamplePreview } from './WorkspaceSamplePreview';
 
 const TONE_CLASS: Record<WorkspaceSignalTone, string> = {
   support: 'border-[#bfe8d2] bg-[#f3fbf7]',
@@ -189,7 +190,8 @@ export function ParlayWorkspaceView({
             </p>
           </div>
         </header>
-        <section className="max-w-xl rounded-2xl border border-[#DCE9EA] bg-white p-6 shadow-sm">
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+        <section className="rounded-2xl border border-[#DCE9EA] bg-white p-6 shadow-sm">
           <p className="type-card-data text-[#063f46]">Your parlay is empty.</p>
           <p className="type-body mt-2 text-cc-secondary">
             {xrayImportAvailable
@@ -213,6 +215,8 @@ export function ParlayWorkspaceView({
             ) : null}
           </div>
         </section>
+        {previewLabel ? null : <WorkspaceSamplePreview />}
+        </div>
       </main>
     );
   }
@@ -421,7 +425,7 @@ export function ParlayWorkspaceView({
                   <PlayerHeadshot
                     nbaPlayerId={leg.nbaPlayerId}
                     name={player}
-                    className="relative row-span-2 aspect-square h-full min-h-[4.75rem] overflow-hidden rounded-full border border-[#DCE9EA] bg-[#E8F0F1]"
+                    className="relative row-span-2 h-[4.75rem] w-[4.75rem] shrink-0 self-center overflow-hidden rounded-full border border-[#DCE9EA] bg-[#E8F0F1]"
                   />
                   <div className="min-w-0">
                     <h3 className="type-card-data truncate leading-5 text-[#063f46]">{player}</h3>
