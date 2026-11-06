@@ -3,6 +3,15 @@ import { XRAY_MAX_UPLOAD_BYTES } from '@/lib/parlay-xray/types';
 const SAFE_MODELS = new Set(['gpt-4o-mini']);
 
 export type XrayVisionDetail = 'low' | 'high';
+/** `auto` (default) picks per image: see resolveVisionDetail. */
+export type XrayVisionDetailSetting = XrayVisionDetail | 'auto';
+
+/**
+ * OpenAI `low` detail fits the whole image into 512px. Up to a 1024px long edge that is at
+ * most a 2x shrink and slip text stays legible; a phone screenshot (~1170x2532) would shrink
+ * ~5x to ~8px text, so larger images go `high`.
+ */
+export const XRAY_LOW_DETAIL_MAX_LONG_EDGE = 1024;
 export type XrayStoreKind = 'memory' | 'postgres';
 
 export type XrayExtractionConfig = {
@@ -17,7 +26,7 @@ export type XrayExtractionConfig = {
   extractionVersion: string;
   schemaVersion: string;
   visionModel: string;
-  visionDetail: XrayVisionDetail;
+  visionDetail: XrayVisionDetailSetting;
   maxUploadBytes: number;
   maxLongEdge: number;
   maxOutputTokens: number;
@@ -58,8 +67,9 @@ export function loadXrayExtractionConfig(
 ): XrayExtractionConfig {
   const requestedModel = (env.PARLAY_XRAY_VISION_MODEL ?? '').trim();
   const visionModel = requestedModel || 'gpt-4o-mini';
-  const detailRaw = (env.PARLAY_XRAY_VISION_DETAIL ?? 'low').trim().toLowerCase();
-  const visionDetail: XrayVisionDetail = detailRaw === 'high' ? 'high' : 'low';
+  const detailRaw = (env.PARLAY_XRAY_VISION_DETAIL ?? 'auto').trim().toLowerCase();
+  const visionDetail: XrayVisionDetailSetting =
+    detailRaw === 'high' ? 'high' : detailRaw === 'low' ? 'low' : 'auto';
 
   const dedicatedKey = env.PARLAY_XRAY_OPENAI_API_KEY?.trim() || null;
   const sharedKey = env.OPENAI_API_KEY?.trim() || null;
@@ -97,14 +107,26 @@ export function utcDayKey(now: Date): string {
   return now.toISOString().slice(0, 10);
 }
 
+export function resolveVisionDetail(
+  setting: XrayVisionDetailSetting,
+  width: number,
+  height: number
+): XrayVisionDetail {
+  if (setting !== 'auto') return setting;
+  return Math.max(width, height) <= XRAY_LOW_DETAIL_MAX_LONG_EDGE ? 'low' : 'high';
+}
+
 export function dedupeIdentity(input: {
   userId: string;
   imageHash: string;
   extractionVersion: string;
   schemaVersion: string;
   model: string;
+  /** A `low` read must not be served for a `high` request of the same image. */
+  detail?: XrayVisionDetail;
 }): string {
-  return `${input.userId}:${input.imageHash}:${input.extractionVersion}:${input.schemaVersion}:${input.model}`;
+  const base = `${input.userId}:${input.imageHash}:${input.extractionVersion}:${input.schemaVersion}:${input.model}`;
+  return input.detail ? `${base}:${input.detail}` : base;
 }
 
 /**

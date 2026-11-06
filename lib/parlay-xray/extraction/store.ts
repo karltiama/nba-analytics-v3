@@ -51,6 +51,10 @@ export type XrayUsageRecord = {
   errorCategory: string | null;
 };
 
+export type XrayFinalizeOptions = {
+  refundUser?: { maxRefunds: number };
+};
+
 export type XrayReserveInput = {
   userId: string;
   dayKey: string;
@@ -69,9 +73,15 @@ export interface XrayExtractionStore {
     input: XrayReserveInput
   ): Promise<{ ok: true; reservation: XrayReservation } | { ok: false; reason: XrayReserveFailure }>;
   /**
-   * Provider was attempted (may have cost money). Keep quota. Clear inflight. Persist usage.
+   * Provider was attempted (may have cost money). Keep global quota. Clear inflight. Persist usage.
+   * With `refundUser`, a failed read (no slip found, unreadable, provider error) gives the user
+   * their read back, at most `maxRefunds` times per UTC day. The global counter is never refunded.
    */
-  finalizeAttempt(reservation: XrayReservation, usage: XrayUsageRecord): Promise<void>;
+  finalizeAttempt(
+    reservation: XrayReservation,
+    usage: XrayUsageRecord,
+    options?: XrayFinalizeOptions
+  ): Promise<void>;
   /**
    * Failure before the provider request. Release inflight AND decrement reserved quota.
    */

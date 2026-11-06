@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type {
   XrayCachedExtraction,
   XrayExtractionStore,
+  XrayFinalizeOptions,
   XrayQuotaSnapshot,
   XrayReservation,
   XrayReserveFailure,
@@ -17,6 +18,10 @@ function userCounterKey(dayKey: string, userId: string): CounterKey {
 
 function globalCounterKey(dayKey: string): CounterKey {
   return `${dayKey}:global`;
+}
+
+function refundCounterKey(dayKey: string, userId: string): CounterKey {
+  return `${dayKey}:refund:user:${userId}`;
 }
 
 /**
@@ -97,7 +102,7 @@ export function createMemoryXrayStore(): XrayExtractionStore & { usage: XrayUsag
         };
       });
     },
-    async finalizeAttempt(reservation: XrayReservation, record: XrayUsageRecord) {
+    async finalizeAttempt(reservation: XrayReservation, record: XrayUsageRecord, options?: XrayFinalizeOptions) {
       return locked(() => {
         const lock = inflight.get(reservation.userId);
         if (lock && lock.reservationId === reservation.reservationId) {
@@ -105,6 +110,17 @@ export function createMemoryXrayStore(): XrayExtractionStore & { usage: XrayUsag
         }
         lastAttempt.set(reservation.userId, Date.parse(record.timestamp) || Date.now());
         usage.push(record);
+        const refund = options?.refundUser;
+        if (refund) {
+          const refundKey = refundCounterKey(reservation.dayKey, reservation.userId);
+          const refunded = counters.get(refundKey) ?? 0;
+          const userKey = userCounterKey(reservation.dayKey, reservation.userId);
+          const userUsed = counters.get(userKey) ?? 0;
+          if (refunded < refund.maxRefunds && userUsed > 0) {
+            counters.set(refundKey, refunded + 1);
+            counters.set(userKey, userUsed - 1);
+          }
+        }
       });
     },
     async releaseBeforeProvider(reservation: XrayReservation) {

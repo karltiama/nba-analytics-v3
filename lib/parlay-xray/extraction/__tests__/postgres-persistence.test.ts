@@ -192,7 +192,7 @@ describe('postgres xray guardrail persistence', () => {
     expect(rows).toHaveLength(0);
   });
 
-  it('keeps quota after mocked provider failure and releases inflight', async () => {
+  it('refunds the user read but keeps global quota after a provider failure, and releases inflight', async () => {
     const store = createPostgresXrayStore(pool);
     const provider: XrayVisionProvider = vi.fn(async () => {
       throw new XrayProviderError('timeout', 'timeout');
@@ -208,7 +208,8 @@ describe('postgres xray guardrail persistence', () => {
     );
     expect(failed.result).toBe('PROVIDER_UNAVAILABLE');
     expect(failed.providerAttempted).toBe(true);
-    expect(failed.quota.used).toBe(1);
+    expect(failed.quota.used).toBe(0);
+    expect((await store.getQuota('u1', '2026-09-15')).globalUsed).toBe(1);
     const inflight = await pool.query(`SELECT 1 FROM parlay_xray_inflight WHERE user_id = 'u1'`);
     expect(inflight.rows).toHaveLength(0);
     const usage = await pool.query<{ error_category: string; provider_attempted: boolean }>(
@@ -216,6 +217,28 @@ describe('postgres xray guardrail persistence', () => {
     );
     expect(usage.rows[0]?.error_category).toBe('timeout');
     expect(usage.rows[0]?.provider_attempted).toBe(true);
+  });
+
+  it('caps failed-read refunds at the daily limit in one transaction', async () => {
+    const store = createPostgresXrayStore(pool);
+    const provider: XrayVisionProvider = vi.fn(async () => {
+      throw new XrayProviderError('provider_5xx', 'provider_5xx');
+    });
+    const config = testConfig({ freeDailyLimit: 2, globalDailyLimit: 100, cooldownMs: 0, store: 'postgres' });
+    const used: number[] = [];
+    for (let i = 0; i < 4; i += 1) {
+      const result = await runXrayExtraction(
+        { userId: 'u1', isPro: false, bytes: pngVariant(`refund-${i}`), declaredMime: 'image/png' },
+        { config, store, provider, now: () => new Date('2026-09-15T12:00:00.000Z') }
+      );
+      used.push(result.quota.used);
+    }
+    expect(used).toEqual([0, 0, 1, 2]);
+    const refundRow = await pool.query<{ count: number }>(
+      `SELECT count FROM parlay_xray_daily_counters WHERE bucket_date = '2026-09-15' AND scope = 'refund:user:u1'`
+    );
+    expect(Number(refundRow.rows[0]?.count)).toBe(2);
+    expect((await store.getQuota('u1', '2026-09-15')).globalUsed).toBe(4);
   });
 
   it('does not retry 429 / 5xx / malformed mocks and stores no fake legs', async () => {

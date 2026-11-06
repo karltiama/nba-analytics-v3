@@ -54,7 +54,7 @@ describe('kill switch config', () => {
     const config = loadXrayExtractionConfig({ NODE_ENV: 'test' } as NodeJS.ProcessEnv);
     expect(config.enabled).toBe(false);
     expect(config.visionModel).toBe('gpt-4o-mini');
-    expect(config.visionDetail).toBe('low');
+    expect(config.visionDetail).toBe('auto');
     expect(config.extractionVersion).toBe('xray-extract-v2.1');
     expect(config.schemaVersion).toBe('xray-legs-v2');
     expect(config.freeDailyLimit).toBe(3);

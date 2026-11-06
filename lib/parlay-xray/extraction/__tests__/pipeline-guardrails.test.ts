@@ -1,8 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createMemoryXrayStore } from '../memory-store';
+import { resolveVisionDetail } from '../config';
 import { runXrayExtraction } from '../pipeline';
 import { XrayProviderError, type XrayVisionProvider } from '../provider';
 import { MIN_PNG, boxScoreVision, pngVariant, sampleVision, testConfig } from './fixtures';
+
+function utcToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 function okProvider() {
   return vi.fn(async () => ({
@@ -212,7 +217,7 @@ describe('xray paid-call boundary', () => {
 });
 
 describe('xray provider failure accounting', () => {
-  it('does not retry, keeps quota after an attempted call, releases inflight, and returns no fake legs', async () => {
+  it('does not retry, refunds the user read but keeps global quota, releases inflight, and returns no fake legs', async () => {
     const provider: XrayVisionProvider = vi.fn(async () => {
       throw new XrayProviderError('timeout', 'timeout');
     });
@@ -226,7 +231,8 @@ describe('xray provider failure accounting', () => {
     expect(failed.legs).toEqual([]);
     expect(failed.providerAttempted).toBe(true);
     expect(provider).toHaveBeenCalledTimes(1);
-    expect(failed.quota.used).toBe(1);
+    expect(failed.quota.used).toBe(0);
+    expect((await store.getQuota('u1', utcToday())).globalUsed).toBe(1);
     expect(store.usage[0]?.errorCategory).toBe('timeout');
 
     const recovered = await runXrayExtraction(
@@ -238,7 +244,7 @@ describe('xray provider failure accounting', () => {
       }
     );
     expect(recovered.result).toBe('SUCCESS');
-    expect(recovered.quota.used).toBe(2);
+    expect(recovered.quota.used).toBe(1);
   });
 
   it('treats malformed structured output as a failed paid attempt with no invented legs', async () => {
@@ -391,5 +397,102 @@ describe('xray extraction v2 refusal and version isolation', () => {
     expect(result.result).toBe('PROVIDER_UNAVAILABLE');
     expect(result.legs).toEqual([]);
     expect(provider).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('xray failed-read refunds', () => {
+  function boxScoreProvider() {
+    return vi.fn(async () => ({
+      output: boxScoreVision(),
+      requestId: 'box',
+      promptTokens: 10,
+      completionTokens: 10,
+      totalTokens: 20,
+    }));
+  }
+
+  it('refunds the user read for NO_LEGS_FOUND but keeps the global count', async () => {
+    const store = createMemoryXrayStore();
+    const config = testConfig({ freeDailyLimit: 3, cooldownMs: 0 });
+    const result = await runXrayExtraction(
+      { userId: 'u1', isPro: false, bytes: pngVariant('box'), declaredMime: 'image/png' },
+      { config, store, provider: boxScoreProvider() }
+    );
+    expect(result.result).toBe('NO_LEGS_FOUND');
+    expect(result.providerAttempted).toBe(true);
+    expect(result.quota.used).toBe(0);
+    const snap = await store.getQuota('u1', utcToday());
+    expect(snap.userUsed).toBe(0);
+    expect(snap.globalUsed).toBe(1);
+  });
+
+  it('does not refund a successful read', async () => {
+    const store = createMemoryXrayStore();
+    const result = await runXrayExtraction(
+      { userId: 'u1', isPro: false, bytes: pngVariant('ok'), declaredMime: 'image/png' },
+      { config: testConfig({ freeDailyLimit: 3, cooldownMs: 0 }), store, provider: okProvider() }
+    );
+    expect(result.result).toBe('SUCCESS');
+    expect(result.quota.used).toBe(1);
+  });
+
+  it('caps refunds at the daily limit so junk uploads cannot run forever', async () => {
+    const store = createMemoryXrayStore();
+    const config = testConfig({ freeDailyLimit: 2, globalDailyLimit: 100, cooldownMs: 0 });
+    const provider = boxScoreProvider();
+    const used: number[] = [];
+    for (let i = 0; i < 4; i += 1) {
+      const result = await runXrayExtraction(
+        { userId: 'u1', isPro: false, bytes: pngVariant(`junk-${i}`), declaredMime: 'image/png' },
+        { config, store, provider }
+      );
+      used.push(result.quota.used);
+    }
+    // Two refunds, then failed reads count normally.
+    expect(used).toEqual([0, 0, 1, 2]);
+    const blocked = await runXrayExtraction(
+      { userId: 'u1', isPro: false, bytes: pngVariant('junk-5'), declaredMime: 'image/png' },
+      { config, store, provider }
+    );
+    expect(blocked.result).toBe('USER_QUOTA_EXCEEDED');
+    expect(provider).toHaveBeenCalledTimes(4);
+    expect((await store.getQuota('u1', utcToday())).globalUsed).toBe(4);
+  });
+});
+
+describe('xray vision detail', () => {
+  /** MIN_PNG with its IHDR size patched; geometry is read from the header only. */
+  function sizedPng(width: number, height: number, tag: string): Buffer {
+    const buf = Buffer.from(pngVariant(tag));
+    buf.writeUInt32BE(width, 16);
+    buf.writeUInt32BE(height, 20);
+    return buf;
+  }
+
+  it('picks low for small images and high for tall phone screenshots', () => {
+    expect(resolveVisionDetail('auto', 1024, 1024)).toBe('low');
+    expect(resolveVisionDetail('auto', 1170, 2532)).toBe('high');
+    expect(resolveVisionDetail('auto', 1290, 600)).toBe('high');
+    expect(resolveVisionDetail('low', 1170, 2532)).toBe('low');
+    expect(resolveVisionDetail('high', 400, 400)).toBe('high');
+  });
+
+  it('sends high detail for a phone-sized slip and keeps low and high reads in separate cache entries', async () => {
+    const store = createMemoryXrayStore();
+    const provider = okProvider();
+    const tall = sizedPng(1170, 2532, 'phone');
+    const auto = await runXrayExtraction(
+      { userId: 'u1', isPro: false, bytes: tall, declaredMime: 'image/png' },
+      { config: testConfig({ visionDetail: 'auto', cooldownMs: 0 }), store, provider }
+    );
+    expect(auto.result).toBe('SUCCESS');
+    expect(vi.mocked(provider).mock.calls[0]?.[0].detail).toBe('high');
+
+    const forcedLow = await runXrayExtraction(
+      { userId: 'u1', isPro: false, bytes: tall, declaredMime: 'image/png' },
+      { config: testConfig({ visionDetail: 'low', cooldownMs: 0 }), store, provider }
+    );
+    expect(forcedLow.cacheHit).toBe(false);
+    expect(vi.mocked(provider).mock.calls[1]?.[0].detail).toBe('low');
   });
 });
