@@ -169,8 +169,7 @@ describe('team directory (Phase 2.T.4B)', () => {
     const teams = PRIMARY_NAV.find((n) => n.label === 'Teams');
     expect(teams).toEqual({ href: '/teams', label: 'Teams' });
     const labels = PRIMARY_NAV.map((n) => n.label);
-    expect(labels.indexOf('Dashboard')).toBeLessThan(labels.indexOf('Teams'));
-    expect(labels.indexOf('Teams')).toBeLessThan(labels.indexOf('Props Explorer'));
+    expect(labels.slice(0, 5)).toEqual(['Dashboard', 'Parlay XRay', 'Props Explorer', 'WOWY', 'Teams']);
 
     const headerSrc = readFileSync(
       join(ROOT, 'components/betting/Header.tsx'),
