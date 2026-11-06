@@ -1,10 +1,5 @@
-import {
-  Archivo_Black,
-  Barlow_Condensed,
-  Inter,
-  League_Spartan,
-  Manrope,
-} from 'next/font/google';
+import { Archivo_Black, Barlow_Condensed, Inter, Manrope } from 'next/font/google';
+import localFont from 'next/font/local';
 
 /**
  * Instagram card fonts only. Applied as CSS variables on the card —
@@ -24,9 +19,15 @@ export const ccManrope = Manrope({
   display: 'swap',
 });
 
-export const ccLeagueSpartan = League_Spartan({
-  weight: ['600', '700'],
-  subsets: ['latin'],
+/**
+ * Self-hosted: Google sometimes serves League Spartan as `/l/font?kit=...&skey=...` URLs,
+ * which Turbopack's next/font/google loader cannot parse ("queries have exactly one entry"),
+ * failing the production build. File is the Google Fonts v15 latin variable woff2.
+ */
+export const ccLeagueSpartan = localFont({
+  src: './fonts/LeagueSpartan-latin-variable.woff2',
+  weight: '600 700',
+  style: 'normal',
   variable: '--font-cc-league-spartan',
   display: 'swap',
 });
