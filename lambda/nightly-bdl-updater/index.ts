@@ -43,6 +43,15 @@ import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
 import { executeRecovery } from './recovery-execute';
+import {
+  BDL_PLAYS_URL,
+  PLAYS_MAX_PAGES,
+  loadBoxTotals,
+  playRowsFromPages,
+  playerPeriodLinesFromPlays,
+  reconcileGameWithBox,
+  replaceGamePlayerPeriodScoring,
+} from './player-period-scoring';
 import { isExplicitRecoveryEvent, recoveryOnlyEnabled } from './recovery-plan';
 import {
   partitionServingGames,
@@ -142,6 +151,94 @@ async function fetchWithRetry(
     return res;
   }
   throw new Error(`BDL API failed after ${retries + 1} attempts: ${url}`);
+}
+
+/** All pages of BDL play-by-play for one game. Throws on HTTP error or more than PLAYS_MAX_PAGES pages. */
+async function fetchPlaysForGame(gameId: number): Promise<Record<string, unknown>[]> {
+  const pages: unknown[] = [];
+  let cursor: string | null = null;
+  while (true) {
+    const params = new URLSearchParams({ game_id: String(gameId) });
+    if (cursor != null) params.set('cursor', cursor);
+    const res = await fetchWithRetry(`${BDL_PLAYS_URL}?${params.toString()}`);
+    if (!res.ok) throw new Error(`Plays API returned ${res.status} for game ${gameId}`);
+    const json: any = await res.json();
+    pages.push(json);
+    cursor = json.meta?.next_cursor != null ? String(json.meta.next_cursor) : null;
+    if (cursor == null) break;
+    if (pages.length >= PLAYS_MAX_PAGES) throw new Error(`Plays for game ${gameId} exceeded ${PLAYS_MAX_PAGES} pages`);
+    await sleep(REQUEST_DELAY_MS);
+  }
+  return playRowsFromPages(pages);
+}
+
+/**
+ * Player scoring by period for tonight's Final games (analytics.player_period_scoring).
+ * Runs after player game logs are written so each game is checked against its box score.
+ * Non-fatal: a failure here is logged and never fails the nightly run.
+ */
+async function syncPlayerPeriodScoring(
+  finalGames: any[],
+  result: PipelineResult
+): Promise<void> {
+  if (process.env.DISABLE_PLAYER_PERIOD_SCORING === '1') {
+    console.log('[10] Player period scoring skipped (DISABLE_PLAYER_PERIOD_SCORING=1).');
+    return;
+  }
+  console.log(`[10] Player period scoring from play-by-play for ${finalGames.length} games...`);
+  let box: Awaited<ReturnType<typeof loadBoxTotals>>;
+  try {
+    box = await loadBoxTotals(pool, finalGames.map((g: any) => String(g.id)));
+  } catch (err) {
+    console.error(JSON.stringify({ evt: 'player_period_scoring_failed', stage: 'box', error: String(err) }));
+    return;
+  }
+  for (const g of finalGames) {
+    const gameId = String(g.id);
+    if (runDeadlineMs != null && Date.now() > runDeadlineMs - 30_000) {
+      console.warn(JSON.stringify({ evt: 'player_period_scoring_deadline', remaining_games: true }));
+      break;
+    }
+    const gameBox = box.get(gameId);
+    if (!gameBox) continue;
+    try {
+      const rows = await fetchPlaysForGame(g.id);
+      const lines = playerPeriodLinesFromPlays(rows);
+      const rec = reconcileGameWithBox(lines, gameBox.box);
+      const client = await pool.connect();
+      try {
+        await client.query('begin');
+        await replaceGamePlayerPeriodScoring(client, {
+          gameId,
+          season: String(g.season),
+          source: 'bdl_plays_nightly',
+          reconciled: rec.reconciled,
+          lines,
+          teamByPlayer: gameBox.teams,
+        });
+        await client.query('commit');
+      } catch (err) {
+        await client.query('rollback').catch(() => {});
+        throw err;
+      } finally {
+        client.release();
+      }
+      result.playerPeriodGames++;
+      if (!rec.reconciled) {
+        result.playerPeriodNotReconciled++;
+        console.warn(
+          JSON.stringify({ evt: 'player_period_scoring_not_reconciled', game_id: gameId, mismatches: rec.mismatches.slice(0, 5) })
+        );
+      }
+    } catch (err) {
+      result.playerPeriodFailed++;
+      console.error(JSON.stringify({ evt: 'player_period_scoring_failed', game_id: gameId, error: String(err) }));
+    }
+    await sleep(REQUEST_DELAY_MS);
+  }
+  console.log(
+    `  Done. ${result.playerPeriodGames} games (${result.playerPeriodNotReconciled} not matching box), ${result.playerPeriodFailed} failed.`
+  );
 }
 
 async function fetchGames(startDate: string, endDate: string, season: number, seasonType: string): Promise<any[]> {
@@ -666,6 +763,9 @@ interface PipelineResult {
   teamGameStats: number;
   teamSeasonAvgs: number;
   playerSeasonAvgs: number;
+  playerPeriodGames: number;
+  playerPeriodNotReconciled: number;
+  playerPeriodFailed: number;
 }
 
 async function runPipeline(): Promise<PipelineResult> {
@@ -684,6 +784,9 @@ async function runPipeline(): Promise<PipelineResult> {
     teamGameStats: 0,
     teamSeasonAvgs: 0,
     playerSeasonAvgs: 0,
+    playerPeriodGames: 0,
+    playerPeriodNotReconciled: 0,
+    playerPeriodFailed: 0,
   };
 
   if (!SHOULD_CALL_LIVE_API) {
@@ -1164,6 +1267,8 @@ async function runPipeline(): Promise<PipelineResult> {
   } finally {
     client.release();
   }
+
+  await syncPlayerPeriodScoring(finalGames, result);
 
   return result;
 }

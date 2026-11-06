@@ -225,9 +225,13 @@ export const PLAYS_2025_AVAILABILITY_LIMITATION =
 
 export type PlaysArchiveJson = Record<string, unknown>;
 
-export function plays2025CanonicalPrefix(): string {
+export function playsCanonicalPrefix(season: number | string): string {
   const raw = (process.env.NBA_RAW_PREFIX ?? 'raw').replace(/^\/+|\/+$/g, '') || 'raw';
-  return `${raw}/source=balldontlie/league=nba/season=2025/entity=${PLAYS_2025_ENTITY}`;
+  return `${raw}/source=balldontlie/league=nba/season=${season}/entity=${PLAYS_2025_ENTITY}`;
+}
+
+export function plays2025CanonicalPrefix(): string {
+  return playsCanonicalPrefix(2025);
 }
 
 export function plays2025GameObjectKey(prefix: string, gameId: string): string {
