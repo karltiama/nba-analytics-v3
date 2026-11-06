@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { notifyProfileUpdated } from '@/lib/auth/profile-events';
 import { normalizeBookIds } from '@/lib/onboarding/sportsbooks';
 import { isBettingCountry, isValidSubdivision } from '@/lib/onboarding/regions';
 import { RegionFields, type RegionValue } from '@/components/onboarding/RegionFields';
@@ -168,6 +169,7 @@ export default function BettingProfilePage() {
         return;
       }
       setProfileMsg('Profile saved.');
+      notifyProfileUpdated();
     } catch {
       setProfileMsg('Network error.');
     } finally {

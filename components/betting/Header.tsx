@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
 import { User, Zap, LogIn, LogOut, ChevronDown, Settings, Menu, CircleHelp } from 'lucide-react';
 import { signOutToLogin } from '@/lib/auth/logout';
+import { PROFILE_UPDATED_EVENT } from '@/lib/auth/profile-events';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { PRIMARY_NAV } from '@/components/betting/primary-nav';
@@ -28,6 +29,12 @@ type ProfilePayload = {
   email: string | null;
   timezone: string;
 };
+
+/**
+ * Last account this browser tab resolved. Client-only: it is written from effects, never on the server,
+ * so the first server render and hydration both start from null.
+ */
+let accountCache: { userId: string; profile: ProfilePayload; loaded: boolean } | null = null;
 
 function navItemActive(pathname: string, href: string): boolean {
   if (href === '/dashboard') return pathname === '/dashboard';
@@ -121,43 +128,61 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
-  const [sessionState, setSessionState] = useState<'loading' | 'guest' | 'user'>('loading');
-  const [profile, setProfile] = useState<ProfilePayload | null>(null);
+  // Each section layout mounts its own Header, so seed from the last account this tab saw.
+  const [sessionState, setSessionState] = useState<'loading' | 'guest' | 'user'>(() =>
+    accountCache ? 'user' : 'loading'
+  );
+  const [profile, setProfile] = useState<ProfilePayload | null>(() => accountCache?.profile ?? null);
+  const [profileLoaded, setProfileLoaded] = useState(() => accountCache?.loaded ?? false);
   const [tourOpen, setTourOpen] = useState(false);
+  const userIdRef = useRef<string | null>(accountCache?.userId ?? null);
 
-  /** Signed-in UI follows getUser, the same check the proxy uses. Profile API only enriches fields. */
+  /**
+   * Signed-in UI follows getUser, the same check the proxy uses. Profile API only enriches fields.
+   * Keeps the last known profile for the same user while it refreshes, so the label never drops
+   * back to the email prefix mid-session.
+   */
   const syncAccount = useCallback(async () => {
     const { data } = await supabase.auth.getUser();
     const user = data.user;
     if (!user) {
+      accountCache = null;
+      userIdRef.current = null;
       setSessionState('guest');
       setProfile(null);
+      setProfileLoaded(false);
       return;
     }
 
     const sessionEmail = user.email ?? null;
+    if (userIdRef.current !== user.id) {
+      userIdRef.current = user.id;
+      const seed = { displayName: null, username: null, email: sessionEmail, timezone: 'America/New_York' };
+      accountCache = { userId: user.id, profile: seed, loaded: false };
+      setProfile(seed);
+      setProfileLoaded(false);
+    }
     setSessionState('user');
-    setProfile({
-      displayName: null,
-      username: null,
-      email: sessionEmail,
-      timezone: 'America/New_York',
-    });
 
     try {
       const res = await fetch('/api/user/profile', { credentials: 'include', cache: 'no-store' });
       if (!res.ok) return;
-      const data = (await res.json()) as { profile?: ProfilePayload };
-      const p = data.profile;
-      if (!p) return;
-      setProfile({
+      const body = (await res.json()) as { profile?: ProfilePayload };
+      const p = body.profile;
+      if (!p || userIdRef.current !== user.id) return;
+      const next = {
         displayName: p.displayName ?? null,
         username: p.username ?? null,
         email: p.email ?? sessionEmail,
         timezone: p.timezone ?? 'America/New_York',
-      });
+      };
+      accountCache = { userId: user.id, profile: next, loaded: true };
+      setProfile(next);
+      setProfileLoaded(true);
     } catch {
-      // keep session-derived email
+      // keep the last known profile
+    } finally {
+      if (userIdRef.current === user.id) setProfileLoaded(true);
     }
   }, [supabase]);
 
@@ -165,13 +190,22 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
     void syncAccount();
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
+    } = supabase.auth.onAuthStateChange((event) => {
+      // INITIAL_SESSION duplicates the mount sync; token refreshes don't change who is signed in.
+      if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') return;
       void syncAccount();
     });
-    return () => subscription.unsubscribe();
+    const onProfileUpdated = () => void syncAccount();
+    window.addEventListener(PROFILE_UPDATED_EVENT, onProfileUpdated);
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener(PROFILE_UPDATED_EVENT, onProfileUpdated);
+    };
   }, [supabase, syncAccount]);
 
   const handleSignOut = useCallback(async () => {
+    accountCache = null;
+    userIdRef.current = null;
     setSessionState('guest');
     setProfile(null);
     const next = await signOutToLogin(() => supabase.auth.signOut());
@@ -179,11 +213,9 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
   }, [supabase]);
 
   const explorerOwnsWorkspaceEntry = pathname.startsWith('/betting/props-explorer');
-  const displayLabel =
-    profile?.displayName?.trim() ||
-    profile?.username?.trim() ||
-    profile?.email?.split('@')[0] ||
-    'Account';
+  const namedLabel = profile?.displayName?.trim() || profile?.username?.trim() || null;
+  // Email prefix only once the profile has answered with no name; before that, a neutral placeholder.
+  const displayLabel = namedLabel || (profileLoaded ? profile?.email?.split('@')[0] || 'Account' : null);
 
   return (
     <header className="sticky top-0 z-50 bg-[#f7f9f7]/90 backdrop-blur-md border-b border-[#DCE9EA]">
@@ -287,7 +319,7 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
                   )}
                   aria-label={
                     sessionState === 'user'
-                      ? `Account menu for ${displayLabel}`
+                      ? `Account menu for ${displayLabel ?? 'your account'}`
                       : sessionState === 'guest'
                         ? 'Sign in or create an account'
                         : 'Loading account'
@@ -308,9 +340,13 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
                   ) : sessionState === 'guest' ? (
                     <span className="text-sm font-medium text-[#063f46] pr-0.5 max-sm:sr-only">Sign in</span>
                   ) : (
-                    <span className="text-sm font-medium text-[#063f46] truncate min-w-0 max-w-[7rem] sm:max-w-[11rem] md:max-w-[15rem] text-left max-sm:hidden">
-                      {displayLabel}
-                    </span>
+                    displayLabel ? (
+                      <span className="text-sm font-medium text-[#063f46] truncate min-w-0 max-w-[7rem] sm:max-w-[11rem] md:max-w-[15rem] text-left max-sm:hidden">
+                        {displayLabel}
+                      </span>
+                    ) : (
+                      <span className="h-4 w-20 animate-pulse rounded bg-[#E8F0F1] max-sm:hidden" aria-hidden />
+                    )
                   )}
                   <ChevronDown className="w-3.5 h-3.5 text-[#4a6366] shrink-0" aria-hidden />
                 </button>
