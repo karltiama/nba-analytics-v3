@@ -1,5 +1,9 @@
 import { Suspense } from 'react';
 import { ParlayWorkspaceEntry } from './ParlayWorkspaceEntry';
+import { isWorkspaceCurrentAnalysisEnabled } from '@/lib/parlay/workspace-current-analysis-flag';
+
+// Reads the current-props analysis flag per request.
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Parlay Workspace · Court Context',
@@ -9,7 +13,7 @@ export const metadata = {
 export default function ParlayWorkspacePage() {
   return (
     <Suspense fallback={<main className="mx-auto max-w-xl px-4 py-12 text-sm text-[#4a6366]">Loading workspace…</main>}>
-      <ParlayWorkspaceEntry />
+      <ParlayWorkspaceEntry currentAnalysisEnabled={isWorkspaceCurrentAnalysisEnabled(process.env)} />
     </Suspense>
   );
 }

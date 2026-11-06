@@ -49,10 +49,32 @@ export type XrayArchivedProjection = {
   predictions: Record<string, unknown> | null;
 };
 
+/**
+ * `historical`: certified replay at a past cutoff. `current`: today's offer, context as of now.
+ * Current mode does not read model projections (backtests found no edge over the no-vig market)
+ * and does not expect close-line snapshots, which do not exist before tip.
+ */
+export const XRAY_ANALYSIS_MODES = ['historical', 'current'] as const;
+export type XRayAnalysisMode = (typeof XRAY_ANALYSIS_MODES)[number];
+
+export type XrayAvailabilityStatus = 'Out' | 'Doubtful' | 'Q';
+
+/** Served injury-report facts as of now (current mode only). Descriptive, never a pick. */
+export type XrayCurrentAvailabilitySource =
+  | {
+      status: 'ok';
+      asOfLabel: string | null;
+      /** The leg's own player, when listed Out / Doubtful / Questionable on a served report. */
+      playerStatus: XrayAvailabilityStatus | null;
+      teammatesOut: Array<{ name: string; status: XrayAvailabilityStatus; avgMinutes: number }>;
+    }
+  | { status: 'unavailable'; reason: string };
+
 export type XRayContextSources = {
   priorPlayerLogs: XrayPriorPlayerLog[];
   priorTeamStats: XrayPriorTeamStat[];
   projectionSnapshots: XrayArchivedProjection[];
+  availability?: XrayCurrentAvailabilitySource;
 };
 
 export type XRayLegContextRequest = {
@@ -63,6 +85,7 @@ export type XRayLegContextRequest = {
   playerTeamId?: string | null;
   opponentTeamId?: string | null;
   sources: XRayContextSources;
+  analysisMode?: XRayAnalysisMode;
 };
 
 export type WindowStat = {
@@ -142,7 +165,11 @@ export type XRayMatchupContext = ContextSectionBase & {
 };
 
 export type XRayWowyContext = ContextSectionBase;
-export type XRayAvailabilityContext = ContextSectionBase;
+export type XRayAvailabilityContext = ContextSectionBase & {
+  asOfLabel?: string | null;
+  playerStatus?: XrayAvailabilityStatus | null;
+  teammatesOut?: Array<{ name: string; status: XrayAvailabilityStatus; avgMinutes: number }>;
+};
 
 export type XRayProjectionContext = ContextSectionBase & {
   modelVersion: string | null;
@@ -184,4 +211,6 @@ export type XRayLegContext = {
   projection: XRayProjectionContext;
   availability: XRayAvailabilityContext;
   dataQuality: XRayDataQualityContext;
+  /** Set only for current-mode analysis. Absent means historical replay. */
+  analysisMode?: XRayAnalysisMode;
 };

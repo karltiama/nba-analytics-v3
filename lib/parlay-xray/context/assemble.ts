@@ -50,8 +50,21 @@ export function assembleXrayLegContext(request: XRayLegContextRequest): XRayLegC
     opponentTeamId,
     opponentAbbr: resolution.opponentResolution.value?.abbreviation ?? null,
   });
+  const current = request.analysisMode === 'current';
   const wowy = assembleWowyContext();
-  const projection = assembleProjection({
+  // Current mode never reads model projections: backtests found no edge over the no-vig market.
+  const projection = current
+    ? {
+        status: 'UNAVAILABLE' as const,
+        reason: 'PROJECTION_NOT_USED_FOR_CURRENT_PROPS',
+        modelVersion: null,
+        generatedAt: null,
+        intendedCutoffAt: null,
+        projectedStat: null,
+        requestedLine: resolution.lineResolution.value,
+        difference: null,
+      }
+    : assembleProjection({
     snapshots: request.sources.projectionSnapshots,
     playerId,
     gameId,
@@ -59,7 +72,7 @@ export function assembleXrayLegContext(request: XRayLegContextRequest): XRayLegC
     market: resolution.marketResolution.value?.propType ?? null,
     requestedLine: resolution.lineResolution.value,
   });
-  const availability = assembleAvailabilityContext();
+  const availability = assembleAvailabilityContext(current ? (request.sources.availability ?? null) : null);
   const dataQuality = assembleDataQuality({
     identity,
     market,
@@ -81,5 +94,6 @@ export function assembleXrayLegContext(request: XRayLegContextRequest): XRayLegC
     projection,
     availability,
     dataQuality,
+    ...(current ? { analysisMode: 'current' as const } : {}),
   };
 }

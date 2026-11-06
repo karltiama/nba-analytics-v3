@@ -1,5 +1,5 @@
 import type { TargetGameContextRow } from '@/lib/parlay-xray/context/load';
-import type { XRayContextSources, XRayLegContext } from '@/lib/parlay-xray/context/types';
+import type { XRayAnalysisMode, XRayContextSources, XRayLegContext } from '@/lib/parlay-xray/context/types';
 import type { XRayParlayInterpretation } from '@/lib/parlay-xray/interpretation/parlay-types';
 import type { XRayLegInterpretation } from '@/lib/parlay-xray/interpretation/types';
 import type { HistoricalMovementRow, HistoricalParlayLegMatch } from '@/lib/parlay-xray/replay/types';
@@ -14,6 +14,8 @@ export type HistoricalXrayReplayContext = {
   dateLabel: string;
   season: string;
   slateLabel: string;
+  /** Omitted means historical replay. `current` is today's offer with context as of now. */
+  analysisMode?: XRayAnalysisMode;
 };
 
 export type HistoricalXrayReplayDeps = {

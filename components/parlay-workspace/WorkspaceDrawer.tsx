@@ -87,6 +87,12 @@ export function LegContextBody({
 }) {
   const side = interp.identity.side === 'under' ? 'Under' : interp.identity.side === 'over' ? 'Over' : '—';
   const market = `${formatMarketLabel(interp.identity.market)} ${side} ${formatXrayPropLine(interp.identity.line)}`;
+  // Current props never show model projections (no edge vs the no-vig market in backtests).
+  const current = interp.analysisMode === 'current';
+  // Counter items are also listed under why-it-could-fail; show each piece of evidence once.
+  const evidenceItems = [...interp.supportingContext, ...interp.counterContext, ...interp.whyItCouldFail].filter(
+    (item, index, all) => all.findIndex((other) => other.code === item.code && other.detail === item.detail) === index
+  );
 
   return (
     <div className="space-y-4">
@@ -96,11 +102,41 @@ export function LegContextBody({
         <p className="type-body mt-2 text-cc-secondary">{interp.summarySentence}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] p-3">
-        <Fact label="Projection" value={formatAvg(context?.projection.projectedStat ?? null)} />
-        <Fact label="Line" value={formatXrayPropLine(interp.identity.line)} />
-        <Fact label="Difference" value={workspaceProjectionDeltaLabel(context)} />
-      </div>
+      {current ? (
+        <div className="grid grid-cols-3 gap-2 rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] p-3">
+          <Fact label="Season avg" value={formatAvg(interp.recentForm.seasonAverage)} />
+          <Fact label="Line" value={formatXrayPropLine(interp.identity.line)} />
+          <Fact label="L10" value={formatAvg(interp.recentForm.last10Average)} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-2 rounded-xl border border-[#DCE9EA] bg-[#f7f9f7] p-3">
+          <Fact label="Projection" value={formatAvg(context?.projection.projectedStat ?? null)} />
+          <Fact label="Line" value={formatXrayPropLine(interp.identity.line)} />
+          <Fact label="Difference" value={workspaceProjectionDeltaLabel(context)} />
+        </div>
+      )}
+
+      {current && context?.availability.status === 'AVAILABLE' ? (
+        <section>
+          <h3 className="type-secondary text-[#063f46]">Availability</h3>
+          <p className="type-secondary mt-1">
+            {context.availability.playerStatus
+              ? `Listed ${context.availability.playerStatus === 'Q' ? 'Questionable' : context.availability.playerStatus}`
+              : 'Not listed on the injury report'}
+            {context.availability.asOfLabel ? ` · ${context.availability.asOfLabel}` : ''}
+          </p>
+          {(context.availability.teammatesOut ?? []).length > 0 ? (
+            <p className="type-metadata mt-1">
+              Teammates listed:{' '}
+              {(context.availability.teammatesOut ?? [])
+                .map((row) => `${row.name} (${row.status === 'Q' ? 'Questionable' : row.status})`)
+                .join(', ')}
+            </p>
+          ) : (
+            <p className="type-metadata mt-1">No rotation teammates listed Out, Doubtful, or Questionable.</p>
+          )}
+        </section>
+      ) : null}
 
       <section>
         <h3 className="type-secondary text-[#063f46]">Role and usage</h3>
@@ -133,6 +169,7 @@ export function LegContextBody({
         </dl>
       </section>
 
+      {current ? null : (
       <section>
         <h3 className="type-secondary text-[#063f46]">Market</h3>
         <p className="type-secondary mt-1">
@@ -148,14 +185,15 @@ export function LegContextBody({
           <p className="type-metadata mt-1">Market history unavailable</p>
         )}
       </section>
+      )}
 
       <section>
         <h3 className="type-secondary text-[#063f46]">Evidence</h3>
         <ul className="mt-2 space-y-2">
-          {[...interp.supportingContext, ...interp.counterContext, ...interp.whyItCouldFail].length === 0 ? (
+          {evidenceItems.length === 0 ? (
             <li className="type-secondary">None identified from certified available sources.</li>
           ) : (
-            [...interp.supportingContext, ...interp.counterContext, ...interp.whyItCouldFail].map((item) => (
+            evidenceItems.map((item) => (
               <li key={item.code + item.detail} className="rounded-lg border border-[#DCE9EA] bg-[#f7f9f7] px-3 py-2">
                 <p className="type-secondary text-[#063f46]">{item.title}</p>
                 <p className="type-metadata mt-0.5">{item.detail}</p>
@@ -168,11 +206,11 @@ export function LegContextBody({
       <section>
         <h3 className="type-secondary text-[#063f46]">Data coverage</h3>
         <ul className="mt-1">
-          <Check label="Projection" ok={interp.dataAvailability.projection === 'AVAILABLE'} />
+          {current ? null : <Check label="Projection" ok={interp.dataAvailability.projection === 'AVAILABLE'} />}
           <Check label="Recent form" ok={interp.dataAvailability.playerForm === 'AVAILABLE'} />
-          <Check label="WOWY" ok={interp.dataAvailability.wowy === 'AVAILABLE'} />
+          {current ? null : <Check label="WOWY" ok={interp.dataAvailability.wowy === 'AVAILABLE'} />}
           <Check label="Availability" ok={interp.dataAvailability.availability === 'AVAILABLE'} />
-          <Check label="Market history" ok={interp.dataAvailability.market === 'AVAILABLE'} />
+          {current ? null : <Check label="Market history" ok={interp.dataAvailability.market === 'AVAILABLE'} />}
         </ul>
       </section>
     </div>

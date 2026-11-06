@@ -72,6 +72,7 @@ export function runHistoricalCanonicalParlayAnalysis(
       playerTeamId: mapped.playerTeamId,
       opponentTeamId: mapped.opponentTeamId,
       sources,
+      analysisMode: context.analysisMode,
     });
   });
   const contextMs = elapsed(now, tContext);

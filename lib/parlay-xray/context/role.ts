@@ -2,6 +2,7 @@ import {
   formStatus,
   playedLogs,
   playedMinutes,
+  round1,
   seasonToDateLogs,
   selectPriorLogs,
   windowStat,
@@ -51,7 +52,7 @@ export function assembleRole(args: {
   return {
     status: formStatus(minutes.length),
     reason: formStatus(minutes.length) === 'LIMITED' ? 'SMALL_PRIOR_SAMPLE' : null,
-    priorGameMinutes: minutes[0] ?? null,
+    priorGameMinutes: minutes[0] == null ? null : round1(minutes[0]),
     seasonToDateMinutes: windowStat(stdMinutes),
     last5Minutes: windowStat(minutes.slice(0, 5)),
     last10Minutes: windowStat(minutes.slice(0, 10)),

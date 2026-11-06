@@ -39,9 +39,20 @@ export type WorkspaceAnalysisBlock = {
   message: string;
 };
 
+/** `historical`: certified fixture replay. `current`: today's props, context loaded from the DB as of now. */
+export type WorkspaceAnalysisRunMode = 'historical' | 'current';
+
 export type WorkspaceAnalysisEligibility =
-  | { status: 'READY'; gameId: string; reasons: [] }
+  | { status: 'READY'; gameId: string; mode: WorkspaceAnalysisRunMode; reasons: [] }
   | { status: 'UNAVAILABLE'; reasons: WorkspaceAnalysisBlock[] };
+
+export type WorkspaceAnalysisOptions = {
+  /**
+   * Server flag `PARLAY_WORKSPACE_CURRENT_ANALYSIS_ENABLED=1`. Default off: live_current legs stay
+   * blocked with LIVE_CURRENT. Entitlement `CURRENT_LIVE_ANALYSIS` is still NOT_READY.
+   */
+  currentAnalysisEnabled?: boolean;
+};
 
 export function selectionFingerprint(legs: SelectedParlayLeg[]): string {
   return legs
@@ -67,7 +78,8 @@ export function resolutionsFromWorkspaceSelection(
 }
 
 export function evaluateWorkspaceAnalysisEligibility(
-  legs: SelectedParlayLeg[]
+  legs: SelectedParlayLeg[],
+  options: WorkspaceAnalysisOptions = {}
 ): WorkspaceAnalysisEligibility {
   if (legs.length === 0) {
     return {
@@ -85,7 +97,7 @@ export function evaluateWorkspaceAnalysisEligibility(
   const snapshots = new Set(legs.map((leg) => leg.offer.snapshotKind));
   const gameIds = new Set(legs.map((leg) => leg.offer.gameId));
 
-  if (snapshots.has('live_current')) {
+  if (snapshots.has('live_current') && !options.currentAnalysisEnabled) {
     reasons.push({
       code: 'LIVE_CURRENT',
       message: 'Current-season Court Context analysis is not enabled yet.',
@@ -143,7 +155,8 @@ export function evaluateWorkspaceAnalysisEligibility(
 
   const unique = uniqueReasons(reasons);
   if (unique.length > 0) return { status: 'UNAVAILABLE', reasons: unique };
-  return { status: 'READY', gameId, reasons: [] };
+  const mode: WorkspaceAnalysisRunMode = snapshots.has('live_current') ? 'current' : 'historical';
+  return { status: 'READY', gameId, mode, reasons: [] };
 }
 
 function uniqueReasons(reasons: WorkspaceAnalysisBlock[]): WorkspaceAnalysisBlock[] {
@@ -161,14 +174,19 @@ function uniqueReasons(reasons: WorkspaceAnalysisBlock[]): WorkspaceAnalysisBloc
 export function runWorkspaceHistoricalAnalysis(
   legs: SelectedParlayLeg[],
   context: HistoricalXrayReplayContext,
-  deps: HistoricalXrayReplayDeps
+  deps: HistoricalXrayReplayDeps,
+  options: WorkspaceAnalysisOptions = {}
 ): HistoricalXrayReplayResult {
-  const eligibility = evaluateWorkspaceAnalysisEligibility(legs);
+  const eligibility = evaluateWorkspaceAnalysisEligibility(legs, options);
   if (eligibility.status !== 'READY') {
     throw new Error(`WORKSPACE_ANALYSIS_${eligibility.reasons[0]?.code ?? 'UNAVAILABLE'}`);
   }
   if (context.gameId !== eligibility.gameId) {
     throw new Error('WORKSPACE_ANALYSIS_GAME_MISMATCH');
+  }
+  // A current-props context must never be paired with historical legs, or the reverse.
+  if ((context.analysisMode === 'current') !== (eligibility.mode === 'current')) {
+    throw new Error('WORKSPACE_ANALYSIS_MODE_MISMATCH');
   }
 
   const t0 = deps.nowMs?.() ?? 0;

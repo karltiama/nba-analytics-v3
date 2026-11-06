@@ -34,6 +34,7 @@ import {
   workspaceProjectionTable,
   workspaceRelationships,
   workspaceReviewFlags,
+  workspaceShowsProjection,
   workspaceSportsbookLabel,
   type WorkspaceLegStatus,
   type WorkspaceSignal,
@@ -128,6 +129,9 @@ export function ParlayWorkspaceView({
   const allRelationships = parlay ? workspaceRelationships(parlay, parlay.dependencyGroups.length) : [];
   const formRows = analyzed ? workspaceFormTable(interpretations) : [];
   const projectionRows = analyzed ? workspaceProjectionTable(interpretations, contexts) : [];
+  // Today's props never show model projections: backtests found no edge over the no-vig market.
+  const showProjection =
+    !legs.some((leg) => leg.offer.snapshotKind === 'live_current') && workspaceShowsProjection(interpretations);
   const totalOdds = workspaceCombinedOdds(legs);
   const implied = workspaceImpliedProbabilityLabel(totalOdds);
   const book = workspaceSportsbookLabel(legs);
@@ -436,9 +440,11 @@ export function ParlayWorkspaceView({
                   <div className="hidden min-w-0 self-center md:block">
                     <div className="mx-auto grid w-fit grid-cols-3 justify-items-center gap-x-8 gap-y-1 text-center lg:grid-cols-4 lg:gap-x-10">
                       <p className="min-w-0">
-                        <span className="type-secondary block">Projection</span>
+                        <span className="type-secondary block">{showProjection ? 'Projection' : 'Season avg'}</span>
                         <span className="type-card-data text-[#063f46]">
-                          {formatAvg(context?.projection.projectedStat ?? null)}
+                          {showProjection
+                            ? formatAvg(context?.projection.projectedStat ?? null)
+                            : formatAvg(interp?.recentForm.seasonAverage ?? null)}
                         </span>
                       </p>
                       <p className="min-w-0">
@@ -446,9 +452,9 @@ export function ParlayWorkspaceView({
                         <span className="type-card-data text-[#063f46]">{leg.offer.line}</span>
                       </p>
                       <p className="min-w-0">
-                        <span className="type-secondary block">{interp ? 'Difference' : 'Odds'}</span>
+                        <span className="type-secondary block">{interp && showProjection ? 'Difference' : 'Odds'}</span>
                         <span className="type-card-data text-[#063f46]">
-                          {interp ? workspaceProjectionDeltaLabel(context) : formatOdds(leg.offer.oddsAmerican)}
+                          {interp && showProjection ? workspaceProjectionDeltaLabel(context) : formatOdds(leg.offer.oddsAmerican)}
                         </span>
                       </p>
                       {interp ? (
@@ -479,9 +485,11 @@ export function ParlayWorkspaceView({
                   <div className="col-span-full flex min-w-0 flex-col gap-1.5 md:col-span-3 md:col-start-3">
                     <div className="grid grid-cols-3 gap-2 md:hidden">
                       <p className="min-w-0">
-                        <span className="type-secondary block">Projection</span>
+                        <span className="type-secondary block">{showProjection ? 'Projection' : 'Season avg'}</span>
                         <span className="type-card-data text-[#063f46]">
-                          {formatAvg(context?.projection.projectedStat ?? null)}
+                          {showProjection
+                            ? formatAvg(context?.projection.projectedStat ?? null)
+                            : formatAvg(interp?.recentForm.seasonAverage ?? null)}
                         </span>
                       </p>
                       <p className="min-w-0">
@@ -489,9 +497,9 @@ export function ParlayWorkspaceView({
                         <span className="type-card-data text-[#063f46]">{leg.offer.line}</span>
                       </p>
                       <p className="min-w-0">
-                        <span className="type-secondary block">{interp ? 'Difference' : 'Odds'}</span>
+                        <span className="type-secondary block">{interp && showProjection ? 'Difference' : 'Odds'}</span>
                         <span className="type-card-data text-[#063f46]">
-                          {interp ? workspaceProjectionDeltaLabel(context) : formatOdds(leg.offer.oddsAmerican)}
+                          {interp && showProjection ? workspaceProjectionDeltaLabel(context) : formatOdds(leg.offer.oddsAmerican)}
                         </span>
                       </p>
                     </div>
@@ -695,7 +703,7 @@ export function ParlayWorkspaceView({
           <LegContextBody interp={openInterp} context={contextIndex != null ? contexts[contextIndex] : undefined} />
         ) : contextIndex != null ? (
           <p className="type-secondary">
-            {legs[contextIndex]?.offer.playerDisplayName ?? 'This leg'} is on the slip. Run Court Context to read projection, role, and market evidence.
+            {legs[contextIndex]?.offer.playerDisplayName ?? 'This leg'} is on the slip. Run Court Context to read {showProjection ? 'projection, role, and market evidence' : 'recent form, role, and availability'}.
           </p>
         ) : null}
       </WorkspaceDrawer>

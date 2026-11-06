@@ -22,6 +22,9 @@ export const INTERPRETATION_CODES = [
   'NO_AS_OF_SAFE_WOWY',
   'NO_ARCHIVED_PROJECTION',
   'NO_HISTORICAL_AVAILABILITY',
+  'NO_CURRENT_AVAILABILITY',
+  'AVAILABILITY_PLAYER_LISTED',
+  'AVAILABILITY_TEAMMATES_OUT',
   'STARTERS_POSTGAME_CONFIRMED',
 ] as const;
 export type InterpretationCode = (typeof INTERPRETATION_CODES)[number];
@@ -65,6 +68,8 @@ export type InterpretationEvidence = {
 };
 
 export type XRayLegInterpretation = {
+  /** Set only for current-mode analysis. Absent means historical replay. */
+  analysisMode?: XRayLegContext['analysisMode'];
   identity: {
     playerDisplayName: string | null;
     market: CanonicalPropType | null;

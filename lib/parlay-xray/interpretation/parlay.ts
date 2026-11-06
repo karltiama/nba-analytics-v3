@@ -476,17 +476,21 @@ export function interpretXrayParlay(legs: XRayLegInterpretation[]): XRayParlayIn
   }
 
   const all = legs.map((_, i) => i);
+  // Current-mode legs never read projections and have no as-of-safe WOWY yet; those are not gaps.
+  const current = legs.length > 0 && legs.every((leg) => leg.analysisMode === 'current');
   if (legs.length > 0 && quality.availability.have === 0) {
     const item = evidence(
       'PARLAY_SHARED_GAP_AVAILABILITY',
       'Availability gap across the parlay',
-      `Historical availability context is unavailable for all ${legs.length} legs.`,
+      current
+        ? `No fresh injury report is being served for all ${legs.length} legs.`
+        : `Historical availability context is unavailable for all ${legs.length} legs.`,
       all
     );
     pushUnique(uncertainties, item);
     pushUnique(whyFail, item);
   }
-  if (legs.length > 0 && quality.projection.have === 0) {
+  if (!current && legs.length > 0 && quality.projection.have === 0) {
     const item = evidence(
       'PARLAY_SHARED_GAP_PROJECTION',
       'Projection gap across the parlay',
@@ -495,7 +499,7 @@ export function interpretXrayParlay(legs: XRayLegInterpretation[]): XRayParlayIn
     );
     pushUnique(uncertainties, item);
   }
-  if (legs.length > 0 && quality.wowy.have === 0) {
+  if (!current && legs.length > 0 && quality.wowy.have === 0) {
     const item = evidence(
       'PARLAY_SHARED_GAP_WOWY',
       'WOWY gap across the parlay',
