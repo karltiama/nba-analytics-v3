@@ -18,6 +18,7 @@ import {
 import { PropsExplorerGameContextPanel } from '@/components/betting/PropsExplorerGameContextPanel';
 import { PropsExplorerParlayTray } from '@/components/betting/PropsExplorerParlayTray';
 import { PropsExplorerMobileControls } from '@/components/betting/PropsExplorerMobileControls';
+import { MyBooksBar } from '@/components/onboarding/MyBooksBar';
 import { PropsExplorerPropList } from '@/components/betting/PropsExplorerPropList';
 import { PropsExplorerPropDetailSheet } from '@/components/betting/PropsExplorerPropDetailSheet';
 import { PropsExplorerDesktopActions } from '@/components/betting/PropsExplorerDesktopActions';
@@ -752,6 +753,11 @@ export default function PropsExplorerPage(props: PageProps) {
           </div>
         ) : null}
       </div>
+
+      <MyBooksBar
+        sportsbook={sportsbook}
+        onApply={(ids) => updateParams({ sportsbook: ids && ids.length > 0 ? ids.join(',') : null, offset: '0' })}
+      />
 
       <PropsExplorerMobileControls
         searchDraft={searchDraft}

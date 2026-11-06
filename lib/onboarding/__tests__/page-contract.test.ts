@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { SCREENSHOT_EXTRACTION_AVAILABLE } from '@/lib/parlay-xray/types';
@@ -11,7 +11,7 @@ function read(path: string): string {
 }
 
 describe('E9 first-run page contract', () => {
-  const modal = read('components/betting/OnboardingModal.tsx');
+  const welcome = read('app/welcome/WelcomeClient.tsx');
   const gate = read('components/betting/OnboardingGate.tsx');
   const route = read('app/api/user/onboarding/route.ts');
   const header = read('components/betting/Header.tsx');
@@ -22,21 +22,25 @@ describe('E9 first-run page contract', () => {
   const workspace = read('components/parlay-workspace/ParlayWorkspaceView.tsx');
   const summary = read('components/parlay-xray/XrayParlaySummary.tsx');
 
-  it('is a short skippable flow with destination questions only', () => {
-    expect(modal).toMatch(/Skip for now/);
-    expect(modal).toMatch(/What are you here to do\?/);
-    expect(modal).toMatch(/How do you usually research NBA props\?/);
-    expect(modal).toMatch(/ONBOARDING_WELCOME\.title/);
-    expect(read('lib/onboarding/copy.ts')).toMatch(/Welcome to Court Context/);
-    expect(modal).not.toMatch(/Preferred sportsbook|odds format|Paper trading|bankroll|favorite team|Find edges/i);
-    expect(modal).not.toMatch(/lock|guaranteed|Start Winning|AI picks/i);
-    expect(gate).toMatch(/destinationForIntent/);
-    expect(gate).toMatch(/shouldAutoOpenOnboarding/);
+  it('is a short skippable page, not a modal, asking only what changes the product', () => {
+    expect(existsSync(join(ROOT, 'components/betting/OnboardingModal.tsx'))).toBe(false);
+    expect(gate).not.toMatch(/Dialog|OnboardingModal/);
+    expect(welcome).toMatch(/Do this later/);
+    expect(welcome).toMatch(/Skip/);
+    expect(welcome).toMatch(/Where do you usually bet\?/);
+    expect(welcome).toMatch(/Which books do you have accounts with\?/);
+    expect(welcome).toMatch(/What do you want to do first\?/);
+    // Odds format is stored but not rendered anywhere yet, so the flow must not ask for it.
+    expect(welcome).not.toMatch(/odds format|Paper trading|bankroll|favorite team|how much guidance/i);
+    expect(welcome).not.toMatch(/lock|guaranteed|Start Winning|AI picks/i);
+    expect(welcome).toMatch(/destinationForIntent/);
+    expect(gate).toMatch(/shouldRouteToWelcome/);
     expect(gate).toMatch(/existing_user_prompt/);
     expect(gate).not.toMatch(/signin_required/);
+    expect(read('lib/onboarding/copy.ts')).toMatch(/Welcome to Court Context/);
   });
 
-  it('reuses existing onboarding columns and does not introduce schema', () => {
+  it('keeps schema in migration files, not in the route', () => {
     expect(route).toMatch(/onboarding_completed_at/);
     expect(route).toMatch(/mapIntentToLegacyGoal/);
     expect(route).toMatch(/mapGuidanceToExperience/);
