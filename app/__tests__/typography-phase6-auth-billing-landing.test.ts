@@ -46,8 +46,7 @@ describe('typography phase 6 auth billing landing', () => {
   });
 
   it('keeps the landing hero and aligns product previews with current roles', () => {
-    expect(hero).toContain('text-[10px] sm:text-[11px]');
-    expect(hero).toContain('Offseason Improvements In Progress');
+    expect(hero).not.toContain('Offseason Improvements In Progress');
     expect(propsPreview).toContain('type-table-data');
     expect(propsPreview).toContain('type-metadata');
     expect(propsPreview).toContain('type-badge');

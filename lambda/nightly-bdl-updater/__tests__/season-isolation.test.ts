@@ -171,6 +171,19 @@ describe('nightly BDL updater preseason isolation', () => {
     }
   });
 
+  it('writes period scores only for eligible Final games that carry all four quarters', async () => {
+    const quarters = { home_q1: 25, home_q2: 25, home_q3: 25, home_q4: 25, visitor_q1: 24, visitor_q2: 25, visitor_q3: 25, visitor_q4: 25 };
+    h.gamesBySeasonType.regular = [
+      { ...game(100, '2026-10-19'), ...quarters },
+      { ...game(200, '2026-10-20'), ...quarters },
+      game(300, '2026-10-20'),
+    ];
+    await runHandler();
+    const periodCalls = h.calls.filter((c) => c.sql.includes('insert into raw.game_period_scores'));
+    expect(periodCalls.map((c) => c.values[0])).toEqual([200]);
+    expect(periodCalls[0].values).toEqual([200, 2026, [25, 25, 25, 25], [24, 25, 25, 25], 4, 0, true]);
+  });
+
   it('season-average aggregates carry the opening-night predicate', async () => {
     const { readFileSync } = await import('node:fs');
     const path = await import('node:path');
