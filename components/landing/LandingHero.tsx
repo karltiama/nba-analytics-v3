@@ -33,13 +33,6 @@ export function LandingHero() {
           />
 
           <div className="relative z-10 mx-auto flex w-full flex-col items-center text-center gap-4 pb-0 max-w-xl sm:mx-0 sm:items-start sm:text-left sm:gap-6 sm:pb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#d7e2de] bg-white">
-              <span className="flex h-2 w-2 rounded-full bg-[#55ddb1]" />
-              <span className="text-[10px] sm:text-[11px] font-bold text-[#063f46] uppercase tracking-wider">
-                Offseason Improvements In Progress
-              </span>
-            </div>
-
             <div className="flex w-full flex-col items-center gap-2 sm:items-start sm:gap-3">
               <p className="text-[11px] sm:text-[13px] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-[#8aa0a3]">
                 More than the trend.
