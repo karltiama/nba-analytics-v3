@@ -22,6 +22,7 @@ import { buildInjuryReport, type InjuryReport } from './injury-report';
 import { minutesDecimalSql } from '@/lib/players/minutes-sql';
 import { seasonSpan } from './compose';
 import { buildStarters, type StarterRow, type StartersModel } from './starters';
+import { buildStarterQ1, STARTER_Q1_SQL, starterPlayerIds, type StarterQ1Model } from './q1-scoring';
 import { buildCurrentPlayers, type CurrentPlayers } from './current-players';
 import { closingLine, consensusQuote, type BookOddsRow } from './odds-consensus';
 import { buildGameRecap, type GameRecap } from './recap';
@@ -247,6 +248,37 @@ const str = (v: unknown): string => (v == null ? '' : String(v));
 const iso = (v: unknown): string | null => (v instanceof Date ? v.toISOString() : v == null ? null : String(v));
 
 /** Every listed player on both teams with how long he has been out. Null when the read fails. */
+/** Q1 scoring for the starters section's players, this season and last. Null when the read fails. */
+async function loadStarterQ1(
+  run: Sql,
+  game: { season: number | string; etDate: string },
+  starters: StartersModel | null
+): Promise<StarterQ1Model | null> {
+  if (!starters) return null;
+  const playerIds = starterPlayerIds(starters);
+  if (playerIds.length === 0) return null;
+  const season = String(game.season);
+  const previous = String(Number(season) - 1);
+  try {
+    const rows = await run(STARTER_Q1_SQL, [playerIds, [season, previous], game.etDate]);
+    return buildStarterQ1({
+      season,
+      seasonLabel: seasonSpan(season),
+      previousSeasonLabel: seasonSpan(previous),
+      playerIds,
+      rows: rows.map((r) => ({
+        playerId: String(r.player_id),
+        season: String(r.season),
+        date: String(r.game_date),
+        gameId: String(r.game_id),
+        q1Points: Number(r.q1_points) || 0,
+      })),
+    });
+  } catch {
+    return null;
+  }
+}
+
 async function loadInjuryReport(
   run: Sql,
   game: StoredScoreboardGame,
@@ -417,6 +449,7 @@ export async function loadPregameMatchup(input: {
         injuries: injuryReport,
       })
     : null;
+  const starterQ1 = game.lifecycle === 'final' ? null : await loadStarterQ1(run, game, starters);
   const currentPlayers = await loadCurrentPlayers(
     run,
     game,
@@ -435,7 +468,7 @@ export async function loadPregameMatchup(input: {
   const tip = game.scheduledTip ? Date.parse(game.scheduledTip) : NaN;
   const watchLive =
     phase === 'live' || (phase === 'pregame' && Number.isFinite(tip) && now.getTime() >= tip - LIVE_WATCH_LEAD_MINUTES * 60_000);
-  return { ...model, injuryReport, starters, currentPlayers, recap, gameDate: game.etDate, phase, watchLive };
+  return { ...model, injuryReport, starters, starterQ1, currentPlayers, recap, gameDate: game.etDate, phase, watchLive };
 }
 
 /** What the recap needs from a Final game, whether it came from the scoreboard or analytics.games. */
