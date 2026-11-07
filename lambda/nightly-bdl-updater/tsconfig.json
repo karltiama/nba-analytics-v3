@@ -23,6 +23,7 @@
     "recovery-fetch.ts",
     "box-completeness.ts",
     "recovery-execute.ts",
+    "player-period-scoring.ts",
     "period-scores.ts"
   ],
   "exclude": ["node_modules", "dist"]
