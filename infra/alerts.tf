@@ -90,10 +90,19 @@ resource "aws_cloudwatch_log_metric_filter" "ingestion_run_failed" {
 
 # Daily jobs alert on any failed run. Status-sync polls every 15 minutes and the next poll
 # retries, so it alerts only when 2 of 3 consecutive 15-minute windows fail.
+locals {
+  ingestion_run_failed_descriptions = {
+    game_status_sync = "Game-status-sync recorded repeated handled failures. Affected polls did not write game updates. Check recent failure logs and whether subsequent scheduled runs completed. An OK alarm state does not by itself confirm successful ingestion."
+    injuries         = "injuries-snapshot logged a handled failure. That run did not finish the injury snapshot. Check the next slate. Search the log for \"Error in injuries snapshot\". This is separate from Lambda Errors. A later OK only means this signal went quiet."
+    nightly          = "nightly-bdl-updater logged \"Nightly BDL Updater: FAILED\". The nightly game and stats load did not finish. Check before the next slate. Read that log line. This is separate from Lambda Errors. A later OK only means this signal went quiet."
+    odds             = "odds-pre-game-snapshot logged a handled processing error. That run did not finish odds ingestion. Check during the slate. Search for \"Error processing\" or \"Error in pre-game odds snapshot\". This is separate from Lambda Errors. A later OK only means this signal went quiet."
+  }
+}
+
 resource "aws_cloudwatch_metric_alarm" "ingestion_run_failed" {
   for_each            = local.ingestion_run_failures
   alarm_name          = "court-context-${each.key}-run-failed"
-  alarm_description   = "A ${each.key} run logged a handled failure (Lambda returned 500 without raising)."
+  alarm_description   = local.ingestion_run_failed_descriptions[each.key]
   namespace           = local.ingestion_metric_ns
   metric_name         = "RunFailed-${each.key}"
   statistic           = "Sum"
@@ -149,7 +158,7 @@ resource "aws_cloudwatch_log_metric_filter" "game_status_sync_readiness_unverifi
 resource "aws_cloudwatch_metric_alarm" "game_status_sync_readiness_not_ready" {
   count               = var.game_status_sync_create && var.game_status_sync_enable_schedule && local.family_schedule_enabled.game_status_sync ? 1 : 0
   alarm_name          = "court-context-game-status-sync-readiness-not-ready"
-  alarm_description   = "game-status-sync logged season_phase_readiness ready=false in 2 of 3 consecutive 15-minute windows. Not downstream-ready: check reasons (unclassified, missing, provider evidence incomplete)."
+  alarm_description   = "game-status-sync logged season phase not ready in 2 of 3 consecutive 15-minute windows. Downstream season-phase use is not ready. Check the next slate. Read season_phase_readiness reasons. A provider-confirmed empty window does not count. A later OK only means this signal went quiet."
   namespace           = local.ingestion_metric_ns
   metric_name         = "ReadinessNotReady-game_status_sync"
   statistic           = "Sum"
@@ -196,7 +205,7 @@ resource "aws_cloudwatch_log_metric_filter" "bdl_limiter_failure" {
 
 resource "aws_cloudwatch_metric_alarm" "bdl_provider_429" {
   alarm_name          = "court-context-bdl-provider-429"
-  alarm_description   = "BALLDONTLIE returned 429 at least 3 times in 5 minutes across all live callers. Check for unmanaged callers before raising the limiter."
+  alarm_description   = "BallDontLie returned 429 at least 3 times in 5 minutes across live callers. Calls are being rate limited. Check during the slate. Look for callers outside the shared limiter before raising it. A later OK only means this signal went quiet."
   namespace           = local.ingestion_metric_ns
   metric_name         = "BdlProvider429"
   statistic           = "Sum"
@@ -212,7 +221,7 @@ resource "aws_cloudwatch_metric_alarm" "bdl_provider_429" {
 
 resource "aws_cloudwatch_metric_alarm" "bdl_limiter_failure" {
   alarm_name          = "court-context-bdl-limiter-failure"
-  alarm_description   = "Permit timeouts, DynamoDB coordination errors, deadline aborts or HTTP transport errors: at least 3 in 15 minutes."
+  alarm_description   = "The shared BallDontLie limiter logged at least 3 permit, coordination, deadline, or transport failures in 15 minutes. Live callers can stall. Act now. Open the bdl_throttle logs before changing limiter settings. A later OK only means this signal went quiet."
   namespace           = local.ingestion_metric_ns
   metric_name         = "BdlLimiterFailure"
   statistic           = "Sum"
@@ -234,7 +243,7 @@ resource "aws_cloudwatch_metric_alarm" "bdl_limiter_failure" {
 # sustained, a single retried failure is not.
 resource "aws_cloudwatch_metric_alarm" "player_props_worker_errors" {
   alarm_name          = "nba-player-props-worker-errors"
-  alarm_description   = "Player-props worker raised at least 3 errors in 15 minutes."
+  alarm_description   = "The player-props worker raised at least 3 errors in 15 minutes. One retried failure stays below this threshold. Check during the slate. Read the worker Lambda errors and the dead-letter queue. A later OK only means this signal went quiet."
   namespace           = "AWS/Lambda"
   metric_name         = "Errors"
   statistic           = "Sum"
@@ -252,7 +261,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_worker_errors" {
 
 resource "aws_cloudwatch_metric_alarm" "player_props_controller_errors" {
   alarm_name          = "nba-player-props-controller-errors"
-  alarm_description   = "Player-props controller raised an error (queueing failed)."
+  alarm_description   = "The player-props controller raised an unhandled error. Queueing for that wave failed. Check during the slate. Read the controller Lambda error. A later OK only means no new error was counted."
   namespace           = "AWS/Lambda"
   metric_name         = "Errors"
   statistic           = "Sum"
@@ -277,7 +286,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_controller_errors" {
 resource "aws_cloudwatch_metric_alarm" "game_status_sync_missed_cycles" {
   count               = var.game_status_sync_create && var.game_status_sync_enable_schedule && local.family_schedule_enabled.game_status_sync ? 1 : 0
   alarm_name          = "court-context-game-status-sync-missed-cycles"
-  alarm_description   = "No game-status-sync invocation for 45 minutes while the schedule is live."
+  alarm_description   = "No game-status-sync invocation for 45 minutes while its schedule is live. Status in analytics.games can go stale. The separate one-minute scoreboard collector can keep updating. Act now. Check the game-status-sync schedule, function, and shared rate limiter. A later OK means invocations resumed, not that a run succeeded."
   namespace           = "AWS/Lambda"
   metric_name         = "Invocations"
   statistic           = "Sum"
@@ -298,7 +307,7 @@ resource "aws_cloudwatch_metric_alarm" "game_status_sync_missed_cycles" {
 resource "aws_cloudwatch_metric_alarm" "player_props_controller_missed_cycles" {
   count               = var.player_props_enable_schedule && local.family_schedule_enabled.player_props ? 1 : 0
   alarm_name          = "court-context-player-props-controller-missed-cycles"
-  alarm_description   = "No player-props controller invocation for 12 hours while props schedules are live."
+  alarm_description   = "No player-props controller invocation for 12 hours while its schedules are live. New games are not queued. Act now. Check the controller schedules and function. A later OK means invocations resumed, not that games were queued."
   namespace           = "AWS/Lambda"
   metric_name         = "Invocations"
   statistic           = "Sum"
@@ -319,7 +328,7 @@ resource "aws_cloudwatch_metric_alarm" "player_props_controller_missed_cycles" {
 resource "aws_cloudwatch_metric_alarm" "injuries_missed_cycles" {
   count               = var.injuries_enable_schedule && local.family_schedule_enabled.injuries ? 1 : 0
   alarm_name          = "court-context-injuries-missed-cycles"
-  alarm_description   = "No injuries-snapshot invocation for 18 hours while the injuries schedule is live."
+  alarm_description   = "No injuries-snapshot invocation for 18 hours while its schedule is live. Injury data can go stale. Act now. Check the injuries schedule and function. A later OK means invocations resumed, not that the snapshot succeeded."
   namespace           = "AWS/Lambda"
   metric_name         = "Invocations"
   statistic           = "Sum"
@@ -340,7 +349,7 @@ resource "aws_cloudwatch_metric_alarm" "injuries_missed_cycles" {
 resource "aws_cloudwatch_metric_alarm" "player_props_queue_backlog" {
   count               = local.family_schedule_enabled.player_props ? 1 : 0
   alarm_name          = "court-context-player-props-queue-backlog"
-  alarm_description   = "Oldest player-props game message is older than 15 minutes for 10 minutes."
+  alarm_description   = "The oldest player-props queue message has been waiting at least 15 minutes across two checks. Props for that game are delayed. Check during the slate. Look at worker errors and the shared limiter. A later OK means the oldest message is under 15 minutes or the queue is empty."
   namespace           = "AWS/SQS"
   metric_name         = "ApproximateAgeOfOldestMessage"
   statistic           = "Maximum"
