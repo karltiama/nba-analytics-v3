@@ -288,7 +288,7 @@ resource "aws_scheduler_schedule" "scoreboard" {
 resource "aws_cloudwatch_metric_alarm" "scoreboard_errors" {
   count               = var.scoreboard_create ? 1 : 0
   alarm_name          = "nba-scoreboard-errors"
-  alarm_description   = "Alerts when the scoreboard collector reports any invocation errors."
+  alarm_description   = "The scoreboard collector raised an unhandled Lambda error. That invocation failed. Check during games. Read the Lambda error, not only scoreboard_cycle failed. The next one-minute tick can still succeed. A later OK only means no new error was counted."
   namespace           = "AWS/Lambda"
   metric_name         = "Errors"
   statistic           = "Sum"
@@ -346,7 +346,7 @@ resource "aws_cloudwatch_log_metric_filter" "scoreboard_odds_failed" {
 resource "aws_cloudwatch_metric_alarm" "scoreboard_run_failed" {
   count               = var.scoreboard_create && var.scoreboard_enable_schedule && local.family_schedule_enabled.scoreboard ? 1 : 0
   alarm_name          = "court-context-scoreboard-run-failed"
-  alarm_description   = "The scoreboard collector logged handled failures in 2 of 3 consecutive 5-minute windows. The website shows stored scores as stale."
+  alarm_description   = "The scoreboard collector recorded repeated handled failures. Affected cycles can leave stored scores stale. Check recent scoreboard_cycle failure logs and whether later one-minute runs completed. This is separate from an unhandled Lambda error. An OK alarm state does not by itself confirm successful collection."
   namespace           = local.ingestion_metric_ns
   metric_name         = "RunFailed-scoreboard"
   statistic           = "Sum"
