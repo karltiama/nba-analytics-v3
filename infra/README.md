@@ -181,9 +181,13 @@ Do not change model coefficients, window IDs or the snapshot policy without vers
 
 Tests build Lambda packages into a temp dir (`--out-root`), never into `lambda/*/.package`. Before any plan, confirm the `.package` hashes are the ones you reviewed.
 
-## Remote state (deferred)
+## Remote state
 
-State is still local (`infra/`). Moving to an S3 backend is not required to deploy boxscore; do it before a second environment or shared laptop.
+Production state is the S3 object `nba-analytics/infra.tfstate` in `court-context-tfstate-260029269390` (`us-east-1`). `backend.tf` selects that object. Use Terraform 1.14.6 with the committed provider lock. A fresh checkout runs `terraform init` with no migration flag and uses workspace `default`. Do not run `terraform init -migrate-state` again, and do not apply from a local `terraform.tfstate`.
+
+On 2026-11-09 the local snapshot was copied to that key. The source lineage was `d0fb6df2-0cfa-f38b-1196-11aebecebde6`, serial 403. Terraform 1.14.6 saved the copy into an empty backend by writing a new snapshot: lineage `63c7f4c1-2282-61d1-36ec-1126ab6d36ef`, serial 1, S3 version `K5AHpeg1Ieu3I8wNB4UtmfM4MkjEIrdN`. The resource data was unchanged: 134 resource blocks, 150 instances, and 41 outputs. A full read-only plan then exited 0 with no changes. That S3 snapshot is the accepted baseline. The serial-403 file is a historical backup only. Never use it as a second active state.
+
+The bucket itself is a separate local-state root. Read [bootstrap/README.md](bootstrap/README.md) before touching it. Do not apply that root from an empty checkout.
 
 ## Extending to more Lambdas
 
