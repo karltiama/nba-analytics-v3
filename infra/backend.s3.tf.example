@@ -1,0 +1,15 @@
+# Reference copy of infra/backend.tf. This example is not loaded by Terraform.
+# The production backend is already active. Do not copy this file over
+# backend.tf, and do not run terraform init -migrate-state again.
+#
+# Both machines must be Terraform 1.14.6. use_lockfile requires 1.11 or newer.
+
+terraform {
+  backend "s3" {
+    bucket       = "court-context-tfstate-260029269390"
+    key          = "nba-analytics/infra.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
+  }
+}
