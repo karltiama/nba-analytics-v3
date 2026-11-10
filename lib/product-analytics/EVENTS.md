@@ -215,3 +215,24 @@ Status: **LIVE** means a real interaction emits it. **RESERVED** means the name 
 - **Does not capture:** email or user id.
 - **NEEDS_SERVER_SIDE_CONFIRMATION:** “Check your email” signups and Google OAuth do not emit this. Success happens after a redirect or inbox confirm, and the client cannot see it here.
 
+# Product events — Quick Builds
+
+Same `trackEvent` helper. Closed sportsbook, preset, result, and age values only. No player names, player ids, game ids, lines, prices, pull ids, account identifiers, or response bodies. Preview routes stay suppressed by `trackEvent`.
+
+A search count is an accepted terminal search. Find clicks, pending requests, aborted requests, and stale responses are not searches. The search error rate uses those accepted terminal outcomes as its denominator. The handoff rate is event-level, not unique-user conversion. Observation age is the age at search time, not a claim that the sportsbook still offers the price. Searches before this instrumentation is deployed cannot be reconstructed. The five-slate scorecard starts with the first full eligible NBA slate after the instrumentation is live. Controlled release smoke-test events should be kept separate from organic usage where the session can be identified.
+
+## `quick_builds_search_completed` — LIVE
+
+- **Trigger:** A user-initiated Quick Builds response is accepted. One event for a nonempty result, one for an empty result, and one for a terminal error. Five builds produce one event.
+- **Not fired:** Find click, in-flight request, abort, or a response rejected because a newer request superseded it. Mode switches and rerenders do not fire it again.
+- **Properties:** `sportsbook` (`draftkings` | `fanduel` | `betmgm` | `caesars`), `preset` (`higher_hit_chance` | `balanced` | `higher_payout`), `result` (`success` | `empty` | `error`), `build_count` (0–5), `age_bucket` (`under_5m` | `5_15m` | `15_30m` | `30_60m` | `1_3h` | `over_3h` | `unknown`), and `empty_reason` only when `result` is `empty`.
+- **Age:** For a nonempty result, the bucket is the maximum valid `maxAgeMs` among the returned shortlist. Boundaries are half-open, and an exact boundary belongs to the older bucket. Empty results, errors, and missing or invalid ages use `unknown`.
+- **Attribution:** Sportsbook and preset come from the request that was accepted.
+
+## `quick_builds_handoff_completed` — LIVE
+
+- **Trigger:** `handoffQuickBuild` returns `replaced`. When replacement needs confirmation, the event fires only after the user confirms and replacement succeeds.
+- **Not fired:** Opening the confirmation, canceling it, `needs_confirmation`, a rejected or unsupported build, a tipped game, or returning to Quick Builds.
+- **Properties:** `sportsbook`, `preset`, `result` = `successful_handoff`.
+- **Attribution:** Sportsbook and preset come from the accepted search that produced the build, including when the visible filters changed before confirmation.
+

@@ -32,6 +32,11 @@ import {
   type QuickBuildPreviewView,
 } from '@/lib/quick-builds/preview';
 import { QUICK_BUILD_PRESETS, type QuickBuildEmptyReason } from '@/lib/quick-builds/types';
+import {
+  oldestShortlistAgeMs,
+  quickBuildsHandoffEvent,
+  quickBuildsSearchEvent,
+} from '@/lib/product-analytics/quick-builds-events';
 
 const GENERATED_AT = '2026-11-09T22:00:00.000Z';
 const OBSERVED_AT = '2026-11-09T21:00:00.000Z';
@@ -550,5 +555,141 @@ describe('workspace quick builds mode', () => {
       expect(source).not.toContain('addExplorerOfferToSelection');
       expect(source).not.toContain('clearSelectedLegs');
     }
+  });
+});
+
+describe('quick builds analytics lifecycle', () => {
+  function acceptedSearch(input: {
+    sportsbook?: 'draftkings' | 'fanduel' | 'betmgm' | 'caesars';
+    preset?: 'higher_hit_chance' | 'balanced' | 'higher_payout';
+    result: Parameters<typeof acceptPreviewResult>[2];
+    ageMs?: number | null;
+  }) {
+    const started = beginPreviewRequest({
+      ...initialPreviewModel(),
+      sportsbook: input.sportsbook ?? 'draftkings',
+      preset: input.preset ?? 'balanced',
+    });
+    const captured = {
+      requestId: started.requestId,
+      sportsbook: started.state.sportsbook,
+      preset: started.state.preset,
+    };
+    const accepted = acceptPreviewResult(started.state, captured, input.result);
+    return quickBuildsSearchEvent({
+      accepted: accepted !== started.state,
+      sportsbook: captured.sportsbook,
+      preset: captured.preset,
+      kind: input.result.kind,
+      buildCount: input.result.kind === 'ok' ? input.result.view.builds.length : 0,
+      emptyReason: input.result.kind === 'empty' ? input.result.view.emptyReason : null,
+      ageMs: input.result.kind === 'ok' ? (input.ageMs ?? null) : null,
+    });
+  }
+
+  it('emits one event for an accepted nonempty search and keeps that search attribution', () => {
+    const payload = body({ sportsbook: 'fanduel', preset: 'higher_payout' });
+    const event = acceptedSearch({
+      sportsbook: 'fanduel',
+      preset: 'higher_payout',
+      result: { kind: 'ok', view: viewOf(payload) },
+      ageMs: oldestShortlistAgeMs(payload),
+    });
+    expect(event).toEqual({
+      sportsbook: 'fanduel',
+      preset: 'higher_payout',
+      result: 'success',
+      build_count: 1,
+      age_bucket: '1_3h',
+    });
+  });
+
+  it('emits one event for an accepted empty search', () => {
+    const empty = body({ status: 'empty', emptyReason: 'NO_PAIRS_IN_BAND', builds: [] });
+    expect(
+      acceptedSearch({
+        sportsbook: 'caesars',
+        preset: 'higher_hit_chance',
+        result: { kind: 'empty', view: viewOf(empty) },
+        ageMs: 60_000,
+      }),
+    ).toEqual({
+      sportsbook: 'caesars',
+      preset: 'higher_hit_chance',
+      result: 'empty',
+      build_count: 0,
+      empty_reason: 'NO_PAIRS_IN_BAND',
+      age_bucket: 'unknown',
+    });
+  });
+
+  it('emits one event for an accepted terminal error', () => {
+    expect(acceptedSearch({ result: { kind: 'server' } })).toEqual({
+      sportsbook: 'draftkings',
+      preset: 'balanced',
+      result: 'error',
+      build_count: 0,
+      age_bucket: 'unknown',
+    });
+    expect(acceptedSearch({ result: { kind: 'network' } })?.result).toBe('error');
+  });
+
+  it('does not emit for an aborted or stale response', () => {
+    expect(acceptedSearch({ result: { kind: 'aborted' } })).toBeNull();
+    let state = initialPreviewModel();
+    const started = beginPreviewRequest(state);
+    state = started.state;
+    const stale = { requestId: started.requestId, sportsbook: state.sportsbook, preset: state.preset };
+    state = invalidatePreview(state, { preset: 'higher_payout' });
+    const after = acceptPreviewResult(state, stale, { kind: 'ok', view: viewOf(body()) });
+    expect(after).toBe(state);
+    expect(
+      quickBuildsSearchEvent({
+        accepted: after !== state,
+        sportsbook: stale.sportsbook,
+        preset: 'balanced',
+        kind: 'ok',
+        buildCount: 1,
+        emptyReason: null,
+        ageMs: 0,
+      }),
+    ).toBeNull();
+  });
+
+  it('emits one handoff event only after replacement, using the search that created the build', () => {
+    const search = { sportsbook: 'betmgm', preset: 'balanced' } as const;
+    expect(quickBuildsHandoffEvent({ status: 'needs_confirmation', ...search })).toBeNull();
+    expect(quickBuildsHandoffEvent({ status: 'canceled', ...search })).toBeNull();
+    expect(quickBuildsHandoffEvent({ status: 'rejected', ...search })).toBeNull();
+    expect(quickBuildsHandoffEvent({ status: 'tipped', ...search })).toBeNull();
+    expect(quickBuildsHandoffEvent({ status: 'replaced', ...search })).toEqual({
+      ...search,
+      result: 'successful_handoff',
+    });
+    expect(quickBuildsHandoffEvent({ status: 'replaced', sportsbook: 'betmgm', preset: 'higher_payout' })).toMatchObject({
+      preset: 'higher_payout',
+    });
+  });
+
+  it('wires search and handoff tracking to the accepted transitions only', () => {
+    const source = readFileSync('components/parlay-workspace/QuickBuildsPreview.tsx', 'utf8');
+    expect(source.match(/trackEvent\(/g)).toHaveLength(2);
+    const findBody = source.slice(source.indexOf('function find()'), source.indexOf('function applyBuild'));
+    expect(findBody.indexOf('fetchQuickBuilds')).toBeGreaterThan(-1);
+    expect(findBody.indexOf('acceptPreviewResult')).toBeGreaterThan(findBody.indexOf('fetchQuickBuilds'));
+    expect(findBody.indexOf('trackEvent')).toBeGreaterThan(findBody.indexOf('acceptPreviewResult'));
+    expect(findBody).toContain('accepted !== current');
+    expect(findBody).toContain('acceptedSearchRef.current = { sportsbook: captured.sportsbook, preset: captured.preset }');
+    const applyBody = source.slice(source.indexOf('function applyBuild'), source.indexOf('function cancelReplace'));
+    expect(applyBody.indexOf("result.status === 'needs_confirmation'")).toBeLessThan(applyBody.indexOf('trackEvent'));
+    expect(applyBody).toContain("result.status === 'replaced'");
+    expect(source).toContain('applyBuild(pending.legs, true, pending.attribution)');
+    expect(source.slice(source.indexOf('function cancelReplace'), source.indexOf('useEffect(() => {'))).not.toContain('trackEvent');
+    const modeBody = source.slice(source.indexOf('export function WorkspaceModeSwitch'), source.indexOf('function ModeButton'));
+    expect(modeBody).not.toContain('trackEvent');
+    const abortEffect = source.slice(source.indexOf('useEffect(() => () =>'), source.indexOf('function commit'));
+    const dialogEffect = source.slice(source.indexOf('useEffect(() => {'), source.indexOf('}, [pending]);'));
+    expect(abortEffect).not.toContain('trackEvent');
+    expect(dialogEffect).not.toContain('trackEvent');
   });
 });
