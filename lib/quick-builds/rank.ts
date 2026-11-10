@@ -34,6 +34,24 @@ export function bandMidpointDecimal(range: AmericanOddsRange): number {
   return (low + high) / 2;
 }
 
+/**
+ * How far, in decimal odds, a candidate may sit beyond the best pair and still
+ * be promoted for variety.
+ *
+ * The allowance is one eighth of the preset's decimal-odds width, which is one
+ * quarter of the distance from the midpoint to either edge. Balanced is about
+ * 0.043 decimal (near +108 to +112). A pair farther away stays in price order
+ * and is not pulled forward just to change the player or the market.
+ */
+export function diversityQualitySlack(range: AmericanOddsRange): number {
+  const low = americanToDecimal(range.minAmerican);
+  const high = americanToDecimal(range.maxAmerican);
+  if (low == null || high == null || !(high > low)) {
+    throw new QuickBuildInputError('MALFORMED_INPUT', 'range bounds are not American odds');
+  }
+  return (high - low) / 8;
+}
+
 /** Absolute decimal-odds distance from the displayed combined price to the band midpoint. */
 export function decimalDistanceToMidpoint(american: number, midpointDecimal: number): number {
   const decimal = americanToDecimal(american);
@@ -68,31 +86,76 @@ export function collapseNearDuplicates(pairs: RankedPair[]): RankedPair[] {
   return [...groups.values()].sort(comparePairs);
 }
 
+/** Canonical offered leg. Display names are not part of the identity. */
+export function exactLegKey(leg: SideQuote): string {
+  return [leg.playerId, leg.gameId, leg.market, leg.side, String(leg.line)].join('|');
+}
+
 /**
- * Up to five builds. First prefer a new player pair and a new game pair,
- * then a new player pair, then a new game pair, then rank order.
+ * Up to five builds from the existing price ranking.
+ *
+ * Pairs within diversityQualitySlack of the best distance are the competitive
+ * window. Inside that window, rank order still breaks ties, and each pass gives
+ * way only when a later pass can still fill the card:
+ * a new exact leg, a new player, a new market, then a new game pair.
+ * Pairs outside the window are not promoted. They fill a remaining slot only
+ * in the original price order, so a much worse payout match cannot jump a
+ * closer one for variety.
  */
-export function selectShortlist(pairs: RankedPair[], cap = QUICK_BUILD_SHORTLIST_CAP): RankedPair[] {
+export function selectShortlist(
+  pairs: RankedPair[],
+  cap = QUICK_BUILD_SHORTLIST_CAP,
+  range?: AmericanOddsRange,
+): RankedPair[] {
   const sorted = pairs.slice().sort(comparePairs);
+  if (sorted.length === 0 || cap <= 0) return [];
+  const best = sorted[0]!.distanceToMidpoint;
+  const limit = range == null ? Number.POSITIVE_INFINITY : best + diversityQualitySlack(range);
+  const competitive: RankedPair[] = [];
+  const remainder: RankedPair[] = [];
+  for (const pair of sorted) {
+    if (pair.distanceToMidpoint <= limit + 1e-9) competitive.push(pair);
+    else remainder.push(pair);
+  }
+
   const selected: RankedPair[] = [];
   const used = new Set<string>();
+  const exactLegs = new Set<string>();
   const players = new Set<string>();
-  const games = new Set<string>();
+  const markets = new Set<string>();
+  const gamePairs = new Set<string>();
 
-  const take = (allow: (pair: RankedPair) => boolean) => {
-    for (const pair of sorted) {
+  const freshExact = (pair: RankedPair) =>
+    !exactLegs.has(exactLegKey(pair.legs[0])) && !exactLegs.has(exactLegKey(pair.legs[1]));
+  const freshPlayers = (pair: RankedPair) =>
+    !players.has(pair.legs[0].playerId) && !players.has(pair.legs[1].playerId);
+  const addsMarket = (pair: RankedPair) =>
+    !markets.has(pair.legs[0].market) || !markets.has(pair.legs[1].market);
+  const freshGames = (pair: RankedPair) => !gamePairs.has(pair.gamePair);
+
+  const take = (pool: readonly RankedPair[], allow: (pair: RankedPair) => boolean) => {
+    for (const pair of pool) {
       if (selected.length >= cap) return;
       if (used.has(pair.id) || !allow(pair)) continue;
       selected.push(pair);
       used.add(pair.id);
-      players.add(pair.playerPair);
-      games.add(pair.gamePair);
+      exactLegs.add(exactLegKey(pair.legs[0]));
+      exactLegs.add(exactLegKey(pair.legs[1]));
+      players.add(pair.legs[0].playerId);
+      players.add(pair.legs[1].playerId);
+      markets.add(pair.legs[0].market);
+      markets.add(pair.legs[1].market);
+      gamePairs.add(pair.gamePair);
     }
   };
 
-  take((pair) => !players.has(pair.playerPair) && !games.has(pair.gamePair));
-  take((pair) => !players.has(pair.playerPair));
-  take((pair) => !games.has(pair.gamePair));
-  take(() => true);
+  take(competitive, (pair) => freshExact(pair) && freshPlayers(pair) && addsMarket(pair) && freshGames(pair));
+  take(competitive, (pair) => freshExact(pair) && freshPlayers(pair) && addsMarket(pair));
+  take(competitive, (pair) => freshExact(pair) && freshPlayers(pair) && freshGames(pair));
+  take(competitive, (pair) => freshExact(pair) && freshPlayers(pair));
+  take(competitive, (pair) => freshExact(pair) && addsMarket(pair));
+  take(competitive, (pair) => freshExact(pair));
+  take(competitive, () => true);
+  take(remainder, () => true);
   return selected;
 }

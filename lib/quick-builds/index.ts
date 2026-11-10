@@ -11,6 +11,7 @@ import { emptyQuickBuildResult, presentBuilds } from './present';
 import { collapseNearDuplicates, selectShortlist } from './rank';
 import {
   QUICK_BUILD_PRESETS,
+  QUICK_BUILD_SHORTLIST_CAP,
   QuickBuildInputError,
   type AmericanOddsRange,
   type QuickBuildEmptyReason,
@@ -138,7 +139,7 @@ export function generateQuickBuilds(input: QuickBuildRequest): QuickBuildResult 
     return emptyQuickBuildResult({ ...base, reason: 'NO_PAIRS_IN_BAND' });
   }
 
-  const shortlist = selectShortlist(collapseNearDuplicates(band));
+  const shortlist = selectShortlist(collapseNearDuplicates(band), QUICK_BUILD_SHORTLIST_CAP, range);
   if (shortlist.length === 0) {
     return emptyQuickBuildResult({ ...base, reason: 'NO_PAIRS_IN_BAND' satisfies QuickBuildEmptyReason });
   }
