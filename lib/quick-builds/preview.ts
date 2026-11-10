@@ -134,6 +134,8 @@ export type QuickBuildFetchResult =
   | { kind: 'empty'; view: QuickBuildPreviewView }
   | { kind: 'unauthorized' }
   | { kind: 'invalid' }
+  | { kind: 'need_two' }
+  | { kind: 'ineligible' }
   | { kind: 'limit' }
   | { kind: 'server' }
   | { kind: 'network' }
@@ -142,9 +144,23 @@ export type QuickBuildFetchResult =
 
 export type PreviewPhase = 'idle' | 'loading' | 'ready' | 'error';
 
+export type PreviewGameScope = 'all' | 'select';
+
+export type SlateGameView = {
+  gameId: string;
+  startTime: string;
+  label: string | null;
+  startLabel: string;
+};
+
 export type PreviewModel = {
   sportsbook: PlayerPropV1Vendor;
   preset: QuickBuildPresetName;
+  scope: PreviewGameScope;
+  selectedGameIds: string[];
+  slatePhase: 'idle' | 'loading' | 'ready' | 'error';
+  slateGames: SlateGameView[];
+  slateMessage: string | null;
   phase: PreviewPhase;
   requestId: number;
   view: QuickBuildPreviewView | null;
@@ -155,6 +171,11 @@ export function initialPreviewModel(): PreviewModel {
   return {
     sportsbook: QUICK_BUILD_DEFAULT_BOOK,
     preset: QUICK_BUILD_DEFAULT_PRESET,
+    scope: 'all',
+    selectedGameIds: [],
+    slatePhase: 'idle',
+    slateGames: [],
+    slateMessage: null,
     phase: 'idle',
     requestId: 0,
     view: null,
@@ -162,8 +183,55 @@ export function initialPreviewModel(): PreviewModel {
   };
 }
 
-export function previewRequestPath(sportsbook: PlayerPropV1Vendor, preset: QuickBuildPresetName): string {
-  return `/api/parlay-workspace/quick-builds?sportsbook=${encodeURIComponent(sportsbook)}&preset=${encodeURIComponent(preset)}`;
+export const QUICK_BUILD_GAMES_PATH = '/api/parlay-workspace/quick-builds/games';
+
+export const QUICK_BUILD_SELECT_TWO_COPY = 'Select at least two matchups.';
+export const QUICK_BUILD_ONE_GAME_COPY = 'Cross-game Quick Builds need at least two games.';
+export const QUICK_BUILD_NO_GAMES_COPY = 'There are no upcoming eligible NBA games in this slate.';
+export const QUICK_BUILD_REFRESH_GAMES_COPY = 'A selected game is no longer eligible. Refresh the game list and choose again.';
+export const QUICK_BUILD_MATCHUP_UNAVAILABLE = 'Matchup unavailable';
+
+export function previewScopeKey(scope: PreviewGameScope, gameIds: readonly string[]): string {
+  return scope === 'all' ? 'all' : gameIds.join(',');
+}
+
+export function toggleSelectedGame(ids: readonly string[], gameId: string): string[] {
+  const next = ids.includes(gameId) ? ids.filter((id) => id !== gameId) : [...ids, gameId];
+  return [...next].sort();
+}
+
+export function searchBlockReason(model: Pick<PreviewModel, 'scope' | 'selectedGameIds' | 'slatePhase' | 'slateGames'>): string | null {
+  if (model.scope !== 'select') return null;
+  if (model.slatePhase === 'ready' && model.slateGames.length === 0) return QUICK_BUILD_NO_GAMES_COPY;
+  if (model.slatePhase === 'ready' && model.slateGames.length === 1) return QUICK_BUILD_ONE_GAME_COPY;
+  if (model.selectedGameIds.length < 2) return QUICK_BUILD_SELECT_TWO_COPY;
+  return null;
+}
+
+export function previewRequestPath(
+  sportsbook: PlayerPropV1Vendor,
+  preset: QuickBuildPresetName,
+  gameIds?: readonly string[],
+): string {
+  const base = `/api/parlay-workspace/quick-builds?sportsbook=${encodeURIComponent(sportsbook)}&preset=${encodeURIComponent(preset)}`;
+  if (gameIds == null) return base;
+  return `${base}&games=${encodeURIComponent(gameIds.join(','))}`;
+}
+
+export function parseSlateGames(data: unknown): SlateGameView[] | null {
+  if (!isRecord(data) || !Array.isArray(data.games)) return null;
+  const games: SlateGameView[] = [];
+  const seen = new Set<string>();
+  for (const raw of data.games) {
+    if (!isRecord(raw) || typeof raw.gameId !== 'string' || !/^\d{1,10}$/.test(raw.gameId)) return null;
+    if (typeof raw.startTime !== 'string') return null;
+    const startLabel = formatEtTimestamp(raw.startTime);
+    if (startLabel == null || seen.has(raw.gameId)) return null;
+    seen.add(raw.gameId);
+    const label = typeof raw.label === 'string' && raw.label.trim() !== '' ? raw.label : null;
+    games.push({ gameId: raw.gameId, startTime: raw.startTime, label, startLabel });
+  }
+  return games;
 }
 
 export function bookLabel(vendor: string): string {
@@ -245,6 +313,10 @@ export function previewErrorMessage(kind: Exclude<QuickBuildFetchResult['kind'],
       return 'Your session expired. Sign in again to find Quick Builds.';
     case 'invalid':
       return 'That sportsbook or payout target is not supported.';
+    case 'need_two':
+      return QUICK_BUILD_SELECT_TWO_COPY;
+    case 'ineligible':
+      return QUICK_BUILD_REFRESH_GAMES_COPY;
     case 'limit':
       return 'Too many eligible markets to build a shortlist safely. This is not an empty market.';
     case 'server':
@@ -263,19 +335,27 @@ export function previewErrorMessage(kind: Exclude<QuickBuildFetchResult['kind'],
 export async function fetchQuickBuilds(args: {
   sportsbook: PlayerPropV1Vendor;
   preset: QuickBuildPresetName;
+  gameIds?: readonly string[];
   signal?: AbortSignal;
   fetchImpl?: typeof fetch;
 }): Promise<QuickBuildFetchResult> {
   const fetchImpl = args.fetchImpl ?? fetch;
   try {
-    const response = await fetchImpl(previewRequestPath(args.sportsbook, args.preset), {
+    const response = await fetchImpl(previewRequestPath(args.sportsbook, args.preset, args.gameIds), {
       method: 'GET',
       headers: { accept: 'application/json' },
       cache: 'no-store',
       signal: args.signal,
     });
     if (response.status === 401) return { kind: 'unauthorized' };
-    if (response.status === 400) return { kind: 'invalid' };
+    if (response.status === 409) {
+      const body = await readJson(response);
+      return isRecord(body) && body.code === 'INELIGIBLE_GAME' ? { kind: 'ineligible' } : { kind: 'server' };
+    }
+    if (response.status === 400) {
+      const body = await readJson(response);
+      return isRecord(body) && body.code === 'NEED_TWO_GAMES' ? { kind: 'need_two' } : { kind: 'invalid' };
+    }
     if (response.status === 422) {
       const body = await readJson(response);
       return isRecord(body) && body.code === 'LIMIT_EXCEEDED' ? { kind: 'limit' } : { kind: 'server' };
@@ -300,11 +380,21 @@ export function beginPreviewRequest(state: PreviewModel): { state: PreviewModel;
   };
 }
 
-export function invalidatePreview(state: PreviewModel, patch: { sportsbook?: PlayerPropV1Vendor; preset?: QuickBuildPresetName }): PreviewModel {
+export function invalidatePreview(
+  state: PreviewModel,
+  patch: {
+    sportsbook?: PlayerPropV1Vendor;
+    preset?: QuickBuildPresetName;
+    scope?: PreviewGameScope;
+    selectedGameIds?: string[];
+  },
+): PreviewModel {
   return {
     ...state,
     sportsbook: patch.sportsbook ?? state.sportsbook,
     preset: patch.preset ?? state.preset,
+    scope: patch.scope ?? state.scope,
+    selectedGameIds: patch.selectedGameIds ?? state.selectedGameIds,
     phase: 'idle',
     requestId: state.requestId + 1,
     view: null,
@@ -314,11 +404,12 @@ export function invalidatePreview(state: PreviewModel, patch: { sportsbook?: Pla
 
 export function acceptPreviewResult(
   state: PreviewModel,
-  request: { requestId: number; sportsbook: PlayerPropV1Vendor; preset: QuickBuildPresetName },
+  request: { requestId: number; sportsbook: PlayerPropV1Vendor; preset: QuickBuildPresetName; scopeKey?: string },
   result: QuickBuildFetchResult,
 ): PreviewModel {
   if (state.requestId !== request.requestId) return state;
   if (state.sportsbook !== request.sportsbook || state.preset !== request.preset) return state;
+  if (request.scopeKey != null && request.scopeKey !== previewScopeKey(state.scope, state.selectedGameIds)) return state;
   if (result.kind === 'aborted') return state;
   if (result.kind === 'ok' || result.kind === 'empty') {
     return { ...state, phase: 'ready', view: result.view, message: null };

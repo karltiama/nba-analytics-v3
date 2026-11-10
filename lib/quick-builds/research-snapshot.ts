@@ -28,12 +28,29 @@ import {
 export const QUICK_BUILD_RESEARCH_LIMITATION =
   'Research snapshot of the latest complete pregame pull on today\'s unstarted slate. It is not a current sportsbook quote.';
 
-export const QUICK_BUILD_GAMES_SQL = `
-SELECT g.game_id, g.start_time, g.status
-  FROM analytics.games g
+const QUICK_BUILD_GAMES_WHERE = `
  WHERE g.start_time >= ($1::timestamp AT TIME ZONE 'America/New_York')
    AND g.start_time <  (($1::timestamp + interval '1 day') AT TIME ZONE 'America/New_York')
    AND g.start_time > $2::timestamptz
+`;
+
+export const QUICK_BUILD_GAMES_SQL = `
+SELECT g.game_id, g.start_time, g.status
+  FROM analytics.games g
+${QUICK_BUILD_GAMES_WHERE}
+`;
+
+/** Matchup labels for the selector. Not part of the observation read. */
+export const QUICK_BUILD_SLATE_SQL = `
+SELECT g.game_id,
+       g.start_time,
+       g.status,
+       ht.abbreviation AS home_abbr,
+       at.abbreviation AS away_abbr
+  FROM analytics.games g
+  LEFT JOIN analytics.teams ht ON ht.team_id = g.home_team_id
+  LEFT JOIN analytics.teams at ON at.team_id = g.away_team_id
+${QUICK_BUILD_GAMES_WHERE}
 `;
 
 export const QUICK_BUILD_ATTEMPTS_SQL = `
@@ -117,7 +134,22 @@ type GameRow = {
   game_id: unknown;
   start_time: unknown;
   status: unknown;
+  home_abbr?: unknown;
+  away_abbr?: unknown;
 };
+
+export type ResearchSlateGame = {
+  gameId: string;
+  startTime: string;
+  awayAbbreviation: string | null;
+  homeAbbreviation: string | null;
+  /** Verified "AWY @ HOM" label. Null when either abbreviation is missing. */
+  label: string | null;
+};
+
+export type SelectedGameIdParse =
+  | { ok: true; ids: string[] }
+  | { ok: false; status: 400 | 422; code: 'INVALID_GAME_SELECTION' | 'NEED_TWO_GAMES' | 'LIMIT_EXCEEDED' };
 
 type AttemptRow = {
   pull_run_id: unknown;
@@ -195,6 +227,61 @@ function asCount(value: unknown): number {
     throw new QuickBuildInputError('MALFORMED_INPUT', 'snapshot count is invalid');
   }
   return n;
+}
+
+function cleanAbbreviation(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  if (!/^[A-Za-z]{2,4}$/.test(text)) return null;
+  return text.toUpperCase();
+}
+
+export function matchupLabel(away: string | null, home: string | null): string | null {
+  if (away == null || home == null) return null;
+  return `${away} @ ${home}`;
+}
+
+/**
+ * Comma-separated game ids for Select Games.
+ * Absent means All Games. Duplicates and non-numeric ids are rejected, not dropped.
+ */
+export function parseSelectedGameIds(raw: string): SelectedGameIdParse {
+  const parts = raw.split(',');
+  if (parts.length === 0 || parts.some((part) => part.trim() === '')) {
+    return { ok: false, status: 400, code: 'INVALID_GAME_SELECTION' };
+  }
+  const ids = parts.map((part) => part.trim());
+  if (ids.some((id) => !/^\d{1,10}$/.test(id))) {
+    return { ok: false, status: 400, code: 'INVALID_GAME_SELECTION' };
+  }
+  if (new Set(ids).size !== ids.length) {
+    return { ok: false, status: 400, code: 'INVALID_GAME_SELECTION' };
+  }
+  if (ids.length > QUICK_BUILD_MAX_GAMES) {
+    return { ok: false, status: 422, code: 'LIMIT_EXCEEDED' };
+  }
+  if (ids.length < 2) {
+    return { ok: false, status: 400, code: 'NEED_TWO_GAMES' };
+  }
+  return { ok: true, ids };
+}
+
+function restrictToSelectedGames(games: QuickBuildGameInput[], selected: readonly string[]): QuickBuildGameInput[] {
+  if (selected.length > QUICK_BUILD_MAX_GAMES) {
+    throw new QuickBuildInputError('LIMIT_EXCEEDED', `games exceed ${QUICK_BUILD_MAX_GAMES}`);
+  }
+  if (selected.length < 2) {
+    throw new QuickBuildInputError('NEED_TWO_GAMES', 'at least two games are required');
+  }
+  if (new Set(selected).size !== selected.length) {
+    throw new QuickBuildInputError('INELIGIBLE_GAME', 'selected games contain a duplicate');
+  }
+  const eligible = new Set(games.map((game) => game.gameId));
+  if (selected.some((id) => !eligible.has(id))) {
+    throw new QuickBuildInputError('INELIGIBLE_GAME', 'selected game is not eligible');
+  }
+  const want = new Set(selected);
+  return games.filter((game) => want.has(game.gameId));
 }
 
 /** Upcoming game on the ET slate the props pipeline actually collects. */
@@ -356,11 +443,46 @@ function mapObservation(row: ObservationRow): MarketObservationInput {
   };
 }
 
+export async function loadResearchSlate(args: {
+  now: Date;
+  query: QuickBuildReader;
+}): Promise<{ asOf: string; games: ResearchSlateGame[] }> {
+  if (!(args.now instanceof Date) || !Number.isFinite(args.now.getTime())) {
+    throw new QuickBuildInputError('MALFORMED_INPUT', 'server time is invalid');
+  }
+  const asOf = args.now.toISOString();
+  const rows = requireRows(await args.query(QUICK_BUILD_SLATE_SQL, [etDateKey(args.now), asOf]), 'games') as GameRow[];
+  const games = mapGames(rows, args.now);
+  const labels = new Map<string, { away: string | null; home: string | null }>();
+  for (const row of rows) {
+    if (typeof row.game_id !== 'number' && (typeof row.game_id !== 'string' || row.game_id.trim() === '')) continue;
+    const gameId = asId(row.game_id, 'game_id');
+    labels.set(gameId, { away: cleanAbbreviation(row.away_abbr), home: cleanAbbreviation(row.home_abbr) });
+  }
+  return {
+    asOf,
+    games: games.map((game) => {
+      const teams = labels.get(game.gameId);
+      const away = teams?.away ?? null;
+      const home = teams?.home ?? null;
+      return {
+        gameId: game.gameId,
+        startTime: game.startTime,
+        awayAbbreviation: away,
+        homeAbbreviation: home,
+        label: matchupLabel(away, home),
+      };
+    }),
+  };
+}
+
 export async function buildResearchQuickBuildRequest(args: {
   sportsbook: string;
   preset: QuickBuildPresetName;
   now: Date;
   query: QuickBuildReader;
+  /** Omitted for All Games. When present, attempts and observations use only these ids. */
+  gameIds?: readonly string[];
 }): Promise<QuickBuildRequest> {
   if (!(args.now instanceof Date) || !Number.isFinite(args.now.getTime())) {
     throw new QuickBuildInputError('MALFORMED_INPUT', 'server time is invalid');
@@ -377,7 +499,7 @@ export async function buildResearchQuickBuildRequest(args: {
     await args.query(QUICK_BUILD_GAMES_SQL, [etDateKey(args.now), asOf]),
     'games'
   ) as GameRow[];
-  const games = mapGames(gameRows, args.now);
+  const games = args.gameIds == null ? mapGames(gameRows, args.now) : restrictToSelectedGames(mapGames(gameRows, args.now), args.gameIds);
   const gameIds = games.map((game) => game.gameId);
 
   let attempts: GamePullAttempt[] = [];
@@ -442,6 +564,7 @@ export async function loadResearchQuickBuilds(args: {
   preset: QuickBuildPresetName;
   now: Date;
   query: QuickBuildReader;
+  gameIds?: readonly string[];
 }): Promise<QuickBuildApiBody> {
   const request = await buildResearchQuickBuildRequest(args);
   const result = generateQuickBuilds(request);

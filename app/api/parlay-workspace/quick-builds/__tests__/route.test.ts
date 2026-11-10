@@ -17,9 +17,15 @@ vi.mock('@/lib/db', () => ({
   default: {},
 }));
 
-vi.mock('@/lib/quick-builds/research-snapshot', () => ({
-  loadResearchQuickBuilds: (...args: unknown[]) => loadResearchQuickBuilds(...args),
-}));
+vi.mock('@/lib/quick-builds/research-snapshot', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/quick-builds/research-snapshot')>(
+    '@/lib/quick-builds/research-snapshot',
+  );
+  return {
+    ...actual,
+    loadResearchQuickBuilds: (...args: unknown[]) => loadResearchQuickBuilds(...args),
+  };
+});
 
 import { GET } from '@/app/api/parlay-workspace/quick-builds/route';
 
@@ -158,6 +164,58 @@ describe('GET /api/parlay-workspace/quick-builds', () => {
     const response = await GET(ask('sportsbook=draftkings&preset=balanced'));
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ error: 'Quick builds unavailable' });
+  });
+
+  it('passes selected game ids and omits them for All Games', async () => {
+    loadResearchQuickBuilds.mockResolvedValue({
+      status: 'empty',
+      emptyReason: 'NO_PAIRS_IN_BAND',
+      sportsbook: 'draftkings',
+      range: { minAmerican: -110, maxAmerican: 125 },
+      policy: { mode: 'research_snapshot', asOf: '2026-11-09T18:00:00.000Z' },
+      priceNotice: QUICK_BUILD_PRICE_NOTICE,
+      games: [],
+      builds: [],
+      generatedAt: '2026-11-09T18:00:00.000Z',
+      preset: 'balanced',
+      snapshotClass: 'research_snapshot',
+      limitations: ['research'],
+    });
+    const all = await GET(ask('sportsbook=draftkings&preset=balanced'));
+    expect(all.status).toBe(200);
+    expect(loadResearchQuickBuilds.mock.calls[0]?.[0]).not.toHaveProperty('gameIds');
+
+    const selected = await GET(ask('sportsbook=draftkings&preset=balanced&games=101,%20102'));
+    expect(selected.status).toBe(200);
+    expect(loadResearchQuickBuilds.mock.calls[1]?.[0]).toMatchObject({ gameIds: ['101', '102'] });
+  });
+
+  it('rejects a malformed, duplicate, short, or oversized game selection before loading', async () => {
+    const malformed = await GET(ask('sportsbook=draftkings&preset=balanced&games=101,abc'));
+    expect(malformed.status).toBe(400);
+    expect(await malformed.json()).toMatchObject({ code: 'INVALID_GAME_SELECTION' });
+
+    const duplicate = await GET(ask('sportsbook=draftkings&preset=balanced&games=101,101'));
+    expect(duplicate.status).toBe(400);
+    expect(await duplicate.json()).toMatchObject({ code: 'INVALID_GAME_SELECTION' });
+
+    const one = await GET(ask('sportsbook=draftkings&preset=balanced&games=101'));
+    expect(one.status).toBe(400);
+    expect(await one.json()).toMatchObject({ code: 'NEED_TWO_GAMES' });
+
+    const ids = Array.from({ length: 33 }, (_, index) => String(index + 1)).join(',');
+    const over = await GET(ask(`sportsbook=draftkings&preset=balanced&games=${ids}`));
+    expect(over.status).toBe(422);
+    expect(await over.json()).toMatchObject({ code: 'LIMIT_EXCEEDED' });
+    expect(loadResearchQuickBuilds).not.toHaveBeenCalled();
+  });
+
+  it('does not widen an ineligible selection to All Games', async () => {
+    loadResearchQuickBuilds.mockRejectedValue(new QuickBuildInputError('INELIGIBLE_GAME', 'selected game is not eligible'));
+    const response = await GET(ask('sportsbook=draftkings&preset=balanced&games=101,999'));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ error: 'Refresh the game selection.', code: 'INELIGIBLE_GAME' });
+    expect(loadResearchQuickBuilds).toHaveBeenCalledTimes(1);
   });
 
   it('hides database failure details', async () => {
