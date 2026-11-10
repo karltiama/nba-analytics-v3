@@ -6,6 +6,7 @@
 import type { XrayExtractResult } from '@/lib/parlay-xray/extraction/result-codes';
 import type { CanonicalPropType } from '@/lib/betting/market-movement';
 import type { CanonicalParlaySelectionSourceContext } from '@/lib/parlay/selection';
+import type { QuickBuildEmptyReason } from '@/lib/quick-builds/types';
 import { shouldSuppressProductPreviewAnalytics } from '@/lib/parlay/preview-fixture';
 
 export const PRODUCT_EVENTS = {
@@ -48,6 +49,8 @@ export const PRODUCT_EVENTS = {
   CHECKOUT_STARTED: 'checkout_started',
   SIGNUP_STARTED: 'signup_started',
   SIGNUP_COMPLETED: 'signup_completed',
+  QUICK_BUILDS_SEARCH_COMPLETED: 'quick_builds_search_completed',
+  QUICK_BUILDS_HANDOFF_COMPLETED: 'quick_builds_handoff_completed',
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
@@ -217,6 +220,35 @@ export type SignupSurfaceProperties = {
   surface: 'signup';
 };
 
+export type QuickBuildAnalyticsSportsbook = 'draftkings' | 'fanduel' | 'betmgm' | 'caesars';
+
+export type QuickBuildAnalyticsPreset = 'higher_hit_chance' | 'balanced' | 'higher_payout';
+
+export type QuickBuildAgeBucket =
+  | 'under_5m'
+  | '5_15m'
+  | '15_30m'
+  | '30_60m'
+  | '1_3h'
+  | 'over_3h'
+  | 'unknown';
+
+export type QuickBuildsSearchCompletedProperties = {
+  sportsbook: QuickBuildAnalyticsSportsbook;
+  preset: QuickBuildAnalyticsPreset;
+  result: 'success' | 'empty' | 'error';
+  build_count: number;
+  age_bucket: QuickBuildAgeBucket;
+  /** Present only when result is empty. */
+  empty_reason?: QuickBuildEmptyReason;
+};
+
+export type QuickBuildsHandoffCompletedProperties = {
+  sportsbook: QuickBuildAnalyticsSportsbook;
+  preset: QuickBuildAnalyticsPreset;
+  result: 'successful_handoff';
+};
+
 export type ParlayXrayOpenWorkspaceProperties = {
   surface: 'parlay_xray';
   action: 'open_workspace';
@@ -294,6 +326,8 @@ export type ProductEventProperties = {
   [PRODUCT_EVENTS.CHECKOUT_STARTED]: CheckoutStartedProperties;
   [PRODUCT_EVENTS.SIGNUP_STARTED]: SignupSurfaceProperties;
   [PRODUCT_EVENTS.SIGNUP_COMPLETED]: SignupSurfaceProperties;
+  [PRODUCT_EVENTS.QUICK_BUILDS_SEARCH_COMPLETED]: QuickBuildsSearchCompletedProperties;
+  [PRODUCT_EVENTS.QUICK_BUILDS_HANDOFF_COMPLETED]: QuickBuildsHandoffCompletedProperties;
 };
 
 export type AnalyticsPrimitive = string | number | boolean;

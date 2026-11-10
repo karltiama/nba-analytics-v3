@@ -22,6 +22,24 @@ import {
   type QuickBuildPreviewView,
 } from '@/lib/quick-builds/preview';
 import type { QuickBuildPresetName } from '@/lib/quick-builds/types';
+import {
+  QUICK_BUILDS_HANDOFF_COMPLETED,
+  QUICK_BUILDS_SEARCH_COMPLETED,
+  oldestShortlistAgeMs,
+  quickBuildsHandoffEvent,
+  quickBuildsSearchEvent,
+} from '@/lib/product-analytics/quick-builds-events';
+import { trackEvent } from '@/lib/product-analytics/track-event';
+
+type QuickBuildSearchAttribution = {
+  sportsbook: PlayerPropV1Vendor;
+  preset: QuickBuildPresetName;
+};
+
+type PendingQuickBuild = {
+  legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg];
+  attribution: QuickBuildSearchAttribution | null;
+};
 
 export type WorkspaceMode = 'mine' | 'quick';
 
@@ -92,7 +110,10 @@ export function QuickBuildsPreview({
   const modelRef = useRef(model);
   const abortRef = useRef<AbortController | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [pending, setPending] = useState<[QuickBuildHandoffLeg, QuickBuildHandoffLeg] | null>(null);
+  const acceptedSearchRef = useRef<QuickBuildSearchAttribution | null>(
+    model.phase === 'ready' && model.view ? { sportsbook: model.sportsbook, preset: model.preset } : null,
+  );
+  const [pending, setPending] = useState<PendingQuickBuild | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -115,21 +136,55 @@ export function QuickBuildsPreview({
     abortRef.current = controller;
     const next = beginPreviewRequest(modelRef.current);
     const captured = { requestId: next.requestId, sportsbook: next.state.sportsbook, preset: next.state.preset };
+    const observed = { ageMs: null as number | null };
     commit(next.state);
     void fetchQuickBuilds({
       sportsbook: captured.sportsbook,
       preset: captured.preset,
       signal: controller.signal,
+      fetchImpl: async (input, init) => {
+        const response = await fetch(input, init);
+        try {
+          observed.ageMs = oldestShortlistAgeMs(await response.clone().json());
+        } catch {
+          observed.ageMs = null;
+        }
+        return response;
+      },
     }).then((result) => {
-      commit((current) => acceptPreviewResult(current, captured, result));
+      commit((current) => {
+        const accepted = acceptPreviewResult(current, captured, result);
+        if (accepted !== current && (result.kind === 'ok' || result.kind === 'empty')) {
+          acceptedSearchRef.current = { sportsbook: captured.sportsbook, preset: captured.preset };
+        }
+        try {
+          const properties = quickBuildsSearchEvent({
+            accepted: accepted !== current,
+            sportsbook: captured.sportsbook,
+            preset: captured.preset,
+            kind: result.kind,
+            buildCount: result.kind === 'ok' ? result.view.builds.length : 0,
+            emptyReason: result.kind === 'empty' ? result.view.emptyReason : null,
+            ageMs: result.kind === 'ok' ? observed.ageMs : null,
+          });
+          if (properties) trackEvent(QUICK_BUILDS_SEARCH_COMPLETED, properties);
+        } catch {
+          // Analytics must not block the search result.
+        }
+        return accepted;
+      });
     });
   }
 
-  function applyBuild(legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg], confirmed: boolean) {
+  function applyBuild(
+    legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg],
+    confirmed: boolean,
+    attribution: QuickBuildSearchAttribution | null,
+  ) {
     if (!onUseBuild) return;
     const result = onUseBuild(legs, confirmed);
     if (result.status === 'needs_confirmation') {
-      setPending(legs);
+      setPending({ legs, attribution });
       return;
     }
     setPending(null);
@@ -137,6 +192,20 @@ export function QuickBuildsPreview({
     if (result.status === 'tipped') setNotice(QUICK_BUILD_TIPPED_COPY);
     else if (result.status === 'rejected') setNotice(QUICK_BUILD_REJECTED_COPY);
     else setNotice(null);
+    if (result.status === 'replaced') {
+      try {
+        const properties = attribution
+          ? quickBuildsHandoffEvent({
+              status: 'replaced',
+              sportsbook: attribution.sportsbook,
+              preset: attribution.preset,
+            })
+          : null;
+        if (properties) trackEvent(QUICK_BUILDS_HANDOFF_COMPLETED, properties);
+      } catch {
+        // Analytics must not block the handoff.
+      }
+    }
   }
 
   function cancelReplace() {
@@ -201,13 +270,13 @@ export function QuickBuildsPreview({
           {notice}
         </p>
       ) : null}
-      <QuickBuildsStatus model={model} onUseBuild={(legs) => applyBuild(legs, false)} />
+      <QuickBuildsStatus model={model} onUseBuild={(legs) => applyBuild(legs, false, acceptedSearchRef.current)} />
       <QuickBuildReplaceDialog
         dialogRef={dialogRef}
         pending={pending != null}
         onCancel={cancelReplace}
         onConfirm={() => {
-          if (pending) applyBuild(pending, true);
+          if (pending) applyBuild(pending.legs, true, pending.attribution);
         }}
       />
     </section>
