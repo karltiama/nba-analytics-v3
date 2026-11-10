@@ -87,6 +87,11 @@ export function ParlayWorkspacePreviewClient({ scenario }: { scenario?: PreviewS
       onAnalyze={() => void runAnalyze()}
       onShowReview={() => setReviewMode(true)}
       previewLabel={scenario ? null : 'Historical Preview'}
+      onReplaceQuickBuild={(next) => {
+        setLegs(next);
+        setAnalysis(null);
+        setReviewMode(false);
+      }}
     />
   );
 }

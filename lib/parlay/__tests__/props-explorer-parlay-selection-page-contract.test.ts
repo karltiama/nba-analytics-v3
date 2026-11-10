@@ -11,33 +11,37 @@ function read(path: string): string {
 
 describe('Props Explorer Add to Parlay page contract', () => {
   const page = read('app/betting/props-explorer/page.tsx');
+  const actions = read('components/betting/PropsExplorerDesktopActions.tsx');
+  const sheet = read('components/betting/PropsExplorerPropDetailSheet.tsx');
   const tray = read('components/betting/PropsExplorerParlayTray.tsx');
   const selection = read('lib/parlay/selection.ts');
   const adapter = read('lib/parlay/adapt-props-explorer-offer.ts');
 
   it('keeps Save, Compare, and Paper actions', () => {
-    expect(page).toMatch(/isSaved \? 'Saved' : 'Save'/);
-    expect(page).toMatch(/>Compare</);
-    expect(page).toMatch(/title="Compare books"/);
+    expect(actions).toMatch(/isSaved \? 'Saved' : 'Save'/);
+    expect(actions).toMatch(/Compare Sportsbooks/);
+    expect(sheet).toMatch(/Compare Sportsbooks/);
     expect(page).toMatch(/addToPaper/);
-    expect(page).toMatch(/title=\{[\s\S]*Add to paper bets/);
+    expect(actions).toMatch(/title=\{[\s\S]*Add to paper bets/);
+    expect(sheet).toMatch(/title=\{[\s\S]*Add to paper bets/);
     expect(page).toMatch(/setSelectedMarket/);
     expect(page).toMatch(/PropsExplorerMarketPanel/);
+    expect(page).toMatch(/<PropsExplorerDesktopActions/);
   });
 
   it('adds a local Add to Parlay action through the certified E1 adapter', () => {
     expect(page).toMatch(/rowToParlayOfferInput/);
     expect(page).toMatch(/addExplorerOffer/);
     expect(page).toMatch(/useParlaySelection/);
-    expect(page).toMatch(/Add to Parlay/);
-    expect(page).toMatch(/\+ Parlay/);
-    expect(page).toMatch(/isOnParlay \? 'Added' : '\+ Parlay'/);
+    expect(sheet).toMatch(/Add to Parlay/);
+    expect(actions).toMatch(/\+ Parlay/);
+    expect(actions).toMatch(/isOnParlay \? 'Added' : '\+ Parlay'/);
     expect(selection).toMatch(/adaptPropsExplorerOffer\(input\)/);
     expect(adapter).toMatch(/export function adaptPropsExplorerOffer/);
     expect(read('lib/parlay/use-parlay-selection.ts')).toMatch(/addExplorerOfferToSelection/);
   });
 
-  it('does not add Workspace to primary nav or connect analysis', () => {
+  it('keeps Props Explorer selection independent of header navigation', () => {
     expect(page).not.toMatch(/\/parlay-explorer/);
     expect(tray).not.toMatch(/\/parlay-explorer/);
     expect(tray).not.toMatch(/Analyze/);
@@ -46,7 +50,7 @@ describe('Props Explorer Add to Parlay page contract', () => {
     expect(page).not.toMatch(/localStorage/);
     expect(tray).not.toMatch(/localStorage/);
     expect(selection).not.toMatch(/localStorage/);
-    expect(PRIMARY_NAV.some((item) => item.href.includes('parlay-workspace'))).toBe(false);
+    expect(PRIMARY_NAV.some((item) => item.href === '/parlay-workspace' && item.label === 'Parlay Workspace')).toBe(true);
     expect(PRIMARY_NAV.some((item) => item.href.includes('parlay-explorer'))).toBe(false);
   });
 

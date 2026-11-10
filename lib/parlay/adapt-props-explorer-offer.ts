@@ -32,20 +32,27 @@ import {
 export const PARLAY_OFFER_SOURCE_PROPS_EXPLORER = 'props_explorer' as const;
 export const PARLAY_OFFER_SOURCE_XRAY = 'xray' as const;
 export const PARLAY_OFFER_SOURCE_SHARED_SLIP = 'shared_slip' as const;
+export const PARLAY_OFFER_SOURCE_QUICK_BUILD = 'quick_build' as const;
 export type ParlayOfferSourceKind =
   | typeof PARLAY_OFFER_SOURCE_PROPS_EXPLORER
   | typeof PARLAY_OFFER_SOURCE_XRAY
-  | typeof PARLAY_OFFER_SOURCE_SHARED_SLIP;
+  | typeof PARLAY_OFFER_SOURCE_SHARED_SLIP
+  | typeof PARLAY_OFFER_SOURCE_QUICK_BUILD;
 export type ParlayOfferSourceProvenance =
   | 'selected_canonical_offer'
   | 'xray_confirmed'
-  | 'shared_slip_import';
+  | 'shared_slip_import'
+  | 'quick_build_research_snapshot';
 
 export const PARLAY_SNAPSHOT_DECISION_CLOSE = PLAYER_PROP_COMPARISON_KIND;
 export const PARLAY_SNAPSHOT_LIVE_CURRENT = 'live_current' as const;
 export const PARLAY_SNAPSHOT_SHARED = 'shared_snapshot' as const;
+export const PARLAY_SNAPSHOT_RESEARCH = 'research_snapshot' as const;
 /** Includes shared_snapshot for historical share imports (not live priced offers). */
-export type ParlayOfferSnapshotKind = PlayerPropComparisonKind | typeof PARLAY_SNAPSHOT_SHARED;
+export type ParlayOfferSnapshotKind =
+  | PlayerPropComparisonKind
+  | typeof PARLAY_SNAPSHOT_SHARED
+  | typeof PARLAY_SNAPSHOT_RESEARCH;
 
 export const ADAPTER_FAILURE_CODES = [
   'MISSING_PLAYER_ID',

@@ -47,6 +47,9 @@ import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
 import { WorkspaceTrueCost } from '@/components/parlay/WorkspaceTrueCost';
 import { LegContextBody, WorkspaceDrawer } from './WorkspaceDrawer';
+import { handoffQuickBuild, type QuickBuildHandoffLeg } from '@/lib/parlay/adapt-quick-build';
+import { initialPreviewModel, type PreviewModel } from '@/lib/quick-builds/preview';
+import { QuickBuildsPreview, WorkspaceModeSwitch, type WorkspaceMode } from './QuickBuildsPreview';
 import { WorkspaceSamplePreview } from './WorkspaceSamplePreview';
 
 const TONE_CLASS: Record<WorkspaceSignalTone, string> = {
@@ -102,6 +105,9 @@ export function ParlayWorkspaceView({
   editedAfterXrayImport = false,
   previewLabel = null,
   xrayImportAvailable = isPublicXrayExtractionReady(),
+  workspaceMode,
+  onReplaceQuickBuild,
+  initialQuickModel,
 }: {
   legs: SelectedParlayLeg[];
   explorerHref: string;
@@ -118,9 +124,18 @@ export function ParlayWorkspaceView({
   previewLabel?: string | null;
   /** Server XRay kill switch. Defaults to the static public readiness. */
   xrayImportAvailable?: boolean;
+  /** Test seam. Production leaves this unset and keeps the mode in local state. */
+  workspaceMode?: WorkspaceMode;
+  /** Applies a validated two-leg Research Snapshot. The view does not touch the store itself. */
+  onReplaceQuickBuild?: (legs: SelectedParlayLeg[]) => void;
+  /** Test seam for a preview model that must survive a mode render. */
+  initialQuickModel?: PreviewModel;
 }) {
   const [contextIndex, setContextIndex] = useState<number | null>(null);
   const [relationshipsOpen, setRelationshipsOpen] = useState(false);
+  const [uncontrolledMode, setUncontrolledMode] = useState<WorkspaceMode>('mine');
+  const [quickModel, setQuickModel] = useState<PreviewModel>(initialQuickModel ?? initialPreviewModel);
+  const mode = workspaceMode ?? uncontrolledMode;
   const structure = summarizeCanonicalSelection(legs);
   const sourceLabel = workspaceSourceLabel(legs);
   const analyzed = Boolean(showingResults && analysis);
@@ -153,7 +168,8 @@ export function ParlayWorkspaceView({
     </p>
   ) : null;
 
-  const share = (
+  const researchSnapshot = legs.some((leg) => leg.offer.snapshotKind === 'research_snapshot');
+  const share = researchSnapshot ? null : (
     <ShareParlayControls
       legs={legs}
       source={
@@ -166,6 +182,21 @@ export function ParlayWorkspaceView({
       surface="parlay_workspace"
       className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
     />
+  );
+
+  function useQuickBuild(nextLegs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg], confirmed: boolean) {
+    const result = handoffQuickBuild({ current: legs, legs: nextLegs, nowMs: Date.now(), confirmed });
+    if (result.status === 'replaced') {
+      onReplaceQuickBuild?.(result.legs);
+      if (workspaceMode === undefined) setUncontrolledMode('mine');
+    }
+    return result;
+  }
+
+  const quickPanel = (
+    <div hidden={mode !== 'quick'} data-workspace-panel="quick">
+      <QuickBuildsPreview model={quickModel} onModelChange={setQuickModel} onUseBuild={useQuickBuild} />
+    </div>
   );
 
   if (legs.length === 0) {
@@ -190,6 +221,9 @@ export function ParlayWorkspaceView({
             </p>
           </div>
         </header>
+        <WorkspaceModeSwitch mode={mode} onMode={setUncontrolledMode} />
+        {quickPanel}
+        <div hidden={mode !== 'mine'} data-workspace-panel="mine">
         <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-6 shadow-sm">
           <p className="type-card-data text-[#063f46]">Your parlay is empty.</p>
@@ -216,6 +250,7 @@ export function ParlayWorkspaceView({
           </div>
         </section>
         {previewLabel ? null : <WorkspaceSamplePreview />}
+        </div>
         </div>
       </main>
     );
@@ -290,9 +325,12 @@ export function ParlayWorkspaceView({
             Save
           </button>
           {share}
-          {previewLabel ? null : <PostToFeedControls legs={legs} />}
+          {previewLabel || researchSnapshot ? null : <PostToFeedControls legs={legs} />}
         </div>
       </header>
+      <WorkspaceModeSwitch mode={mode} onMode={setUncontrolledMode} />
+      {quickPanel}
+      <div hidden={mode !== 'mine'} data-workspace-panel="mine">
 
       {analysisBusy ? (
         <p className="type-secondary mb-3" role="status">
@@ -729,6 +767,7 @@ export function ParlayWorkspaceView({
           ))}
         </ul>
       </WorkspaceDrawer>
+      </div>
     </main>
   );
 }

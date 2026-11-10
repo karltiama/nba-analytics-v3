@@ -207,16 +207,17 @@ describe('product preview page contract', () => {
     expect(view).toMatch(/certified historical fixture/);
   });
 
-  it('exposes a contextual header Parlay count without adding Workspace to primary nav', () => {
-    expect(PRIMARY_NAV.some((item) => item.href === '/parlay-workspace')).toBe(false);
-    expect(primaryNav).not.toMatch(/parlay-workspace/);
+  it('keeps Workspace in primary nav and does not add a second header entry', () => {
+    expect(PRIMARY_NAV.filter((item) => item.href === '/parlay-workspace')).toHaveLength(1);
+    expect(primaryNav).toMatch(/\/parlay-workspace/);
     expect(header).toMatch(/useParlaySelection/);
-    expect(header).toMatch(/contextualWorkspaceNavLabel/);
     expect(header).toMatch(/contextualWorkspaceNavAriaLabel/);
     expect(header).toMatch(/PARLAY_WORKSPACE_HREF/);
-    expect(header).toMatch(/variant="desktop"/);
-    expect(header).toMatch(/variant="mobile-badge"/);
-    expect(header).toMatch(/variant="mobile-menu"/);
+    expect(header).not.toMatch(/ContextualParlayNav/);
+    expect(header).not.toMatch(/variant="desktop"/);
+    expect(header).not.toMatch(/variant="mobile-badge"/);
+    expect(header).not.toMatch(/variant="mobile-menu"/);
+    expect(header).not.toMatch(/replaceParlaySelectionLegs|clearSelectedLegs|addExplorerOfferToSelection/);
   });
 
   it('allows certified XRay replay preview without enabling public extraction', () => {

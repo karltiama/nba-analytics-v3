@@ -19,13 +19,13 @@ describe('Parlay Workspace page contract', () => {
   const store = read('lib/parlay/selection-store.ts');
   const hook = read('lib/parlay/use-parlay-selection.ts');
 
-  it('is routed at /parlay-workspace with Court Context shell and no primary-nav item', () => {
+  it('is routed at /parlay-workspace with Court Context shell and a primary-nav item', () => {
     expect(shouldShowLayoutHeader('/parlay-workspace')).toBe(true);
     expect(layout).toMatch(/BettingAppShell/);
     expect(page).toMatch(/ParlayWorkspaceEntry/);
     expect(read('app/parlay-workspace/ParlayWorkspaceEntry.tsx')).toMatch(/ParlayWorkspaceClient/);
     expect(read('app/parlay-workspace/ParlayWorkspaceEntry.tsx')).toMatch(/ParlayWorkspacePreviewClient/);
-    expect(PRIMARY_NAV.some((item) => item.href === '/parlay-workspace')).toBe(false);
+    expect(PRIMARY_NAV.some((item) => item.href === '/parlay-workspace' && item.label === 'Parlay Workspace')).toBe(true);
     expect(PRIMARY_NAV.some((item) => item.href.includes('parlay-explorer'))).toBe(false);
   });
 
