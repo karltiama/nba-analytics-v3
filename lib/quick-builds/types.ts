@@ -1,0 +1,179 @@
+/**
+ * Isolated Quick Builds candidate contract.
+ * Price math only. A timestamp on an input row does not mean the sportsbook
+ * will still accept the bet, and combined American odds are not a parlay quote.
+ */
+
+import type { CanonicalPropType, PlayerPropV1Vendor } from '@/lib/betting/market-movement';
+
+export const QUICK_BUILD_SHORTLIST_CAP = 5;
+export const QUICK_BUILD_MAX_GAMES = 32;
+export const QUICK_BUILD_MAX_ATTEMPTS = 256;
+export const QUICK_BUILD_MAX_OBSERVATIONS = 4000;
+export const QUICK_BUILD_MAX_TWO_SIDED_MARKETS = 2000;
+
+/** Product of the two leg decimals, rounded with the shared American converter. Not a book quote. */
+export const QUICK_BUILD_PRICE_NOTICE =
+  'Calculated combined odds are the product of the two leg prices. They are not a sportsbook parlay quote.';
+
+export const QUICK_BUILD_EMPTY_REASONS = [
+  'NO_UPCOMING_GAMES',
+  'NO_SUCCESSFUL_PULL',
+  'NO_ELIGIBLE_MARKETS',
+  'NO_CROSS_GAME',
+  'NO_PAIRS_IN_BAND',
+] as const;
+export type QuickBuildEmptyReason = (typeof QUICK_BUILD_EMPTY_REASONS)[number];
+
+/**
+ * Inclusive American bounds, compared as numbers (−200 is less than −110).
+ * +125 is inside both Balanced and Higher Payout when those ranges are requested separately.
+ * The decimal midpoint of the band is a ranking heuristic, not a probability or an edge.
+ */
+export const QUICK_BUILD_PRESETS = {
+  higher_hit_chance: { minAmerican: -200, maxAmerican: -110 },
+  balanced: { minAmerican: -110, maxAmerican: 125 },
+  higher_payout: { minAmerican: 125, maxAmerican: 200 },
+} as const;
+export type QuickBuildPresetName = keyof typeof QUICK_BUILD_PRESETS;
+
+export type AmericanOddsRange = {
+  minAmerican: number;
+  maxAmerican: number;
+};
+
+export type QuickBuildEligibilityMode = 'research_snapshot' | 'recently_observed';
+
+/**
+ * research_snapshot: latest complete success may be used, and a later failed or
+ * zero-row attempt is reported on the game instead of being treated as proof
+ * that the older board is still current.
+ * recently_observed: that later attempt blocks the game, and each row must fall
+ * inside maxObservationAgeMs of asOf.
+ */
+export type QuickBuildPolicy = {
+  mode: QuickBuildEligibilityMode;
+  /** Instant the caller is asking about. The engine does not read the clock. */
+  asOf: string;
+  maxObservationAgeMs?: number;
+};
+
+export type QuickBuildGameInput = {
+  gameId: string;
+  startTime: string;
+  status?: string | null;
+};
+
+export type PullAttemptStatus = 'started' | 'success' | 'error';
+
+export type GamePullAttempt = {
+  pullRunId: string;
+  gameId: string;
+  status: PullAttemptStatus;
+  rowsStored: number;
+  completedAt: string | null;
+  /** RESPONSE_RECEIVED when this attempt's stored rows use the observation clock. */
+  observationClock: 'RESPONSE_RECEIVED' | null;
+};
+
+export type MarketObservationInput = {
+  playerId: string;
+  gameId: string;
+  market: string;
+  side: string;
+  line: number | string;
+  sportsbook: string;
+  oddsAmerican: number | null;
+  pullRunId: string;
+  observedAt: string | null;
+  observationClock: 'RESPONSE_RECEIVED' | null;
+};
+
+export type QuickBuildRequest = {
+  sportsbook: string;
+  range: AmericanOddsRange;
+  policy: QuickBuildPolicy;
+  games: QuickBuildGameInput[];
+  attempts: GamePullAttempt[];
+  observations: MarketObservationInput[];
+};
+
+export type BlockingAttemptKind = 'failed' | 'zero_row' | 'invalid_clock' | 'in_progress' | 'incomplete';
+
+export type BlockingAttempt = {
+  pullRunId: string;
+  status: PullAttemptStatus;
+  rowsStored: number;
+  kind: BlockingAttemptKind;
+};
+
+export type GameEligibilityRejection =
+  | 'NOT_UPCOMING'
+  | 'NO_COMPLETE_PULL'
+  | 'NEWER_UNSUCCESSFUL_ATTEMPT'
+  | 'STALE_OBSERVATION';
+
+export type GameEligibility = {
+  gameId: string;
+  upcoming: boolean;
+  /** Set only when this game's rows may enter the generator. */
+  eligiblePullRunId: string | null;
+  rejection: GameEligibilityRejection | null;
+  /**
+   * A later attempt that is not a complete success. Present for both policies.
+   * recently_observed refuses the game. research_snapshot still uses the older
+   * complete pull and does not treat this attempt as a fresh board.
+   */
+  newerUnsuccessfulAttempt: BlockingAttempt | null;
+  stalePullRunId: string | null;
+};
+
+export type QuickBuildLeg = {
+  playerId: string;
+  gameId: string;
+  market: CanonicalPropType;
+  side: 'over' | 'under';
+  line: number;
+  sportsbook: PlayerPropV1Vendor;
+  oddsAmerican: number;
+  oppositeAmerican: number;
+  /** Two-sided no-vig estimate for this leg only. Not a joint parlay probability. */
+  noVigProbability: number;
+  pullRunId: string;
+  observedAt: string;
+  ageMs: number;
+};
+
+export type QuickBuild = {
+  id: string;
+  legs: [QuickBuildLeg, QuickBuildLeg];
+  combinedAmerican: number;
+  /** 1 / combined decimal at the calculated payout. Not a model hit rate. */
+  breakEvenProbability: number;
+  /** Absolute decimal-odds distance from the decimal midpoint of the requested band. Not a probability. */
+  distanceToMidpoint: number;
+  oldestObservedAt: string;
+  newestObservedAt: string;
+  maxAgeMs: number;
+};
+
+export type QuickBuildResult = {
+  status: 'ok' | 'empty';
+  emptyReason: QuickBuildEmptyReason | null;
+  sportsbook: PlayerPropV1Vendor | null;
+  range: AmericanOddsRange | null;
+  policy: QuickBuildPolicy | null;
+  priceNotice: typeof QUICK_BUILD_PRICE_NOTICE;
+  games: GameEligibility[];
+  builds: QuickBuild[];
+};
+
+export class QuickBuildInputError extends Error {
+  readonly code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED';
+
+  constructor(code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED', message: string) {
+    super(message);
+    this.name = 'QuickBuildInputError';
+    this.code = code;
+  }
+}

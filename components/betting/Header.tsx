@@ -13,7 +13,6 @@ import { PRIMARY_NAV } from '@/components/betting/primary-nav';
 import { ProductTourDialog } from '@/components/onboarding/ProductTourDialog';
 import {
   contextualWorkspaceNavAriaLabel,
-  contextualWorkspaceNavLabel,
 } from '@/lib/parlay/preview-fixture';
 import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
 import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
@@ -41,21 +40,29 @@ function navItemActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function selectedLegCount(href: string, legCount: number): number | null {
+  return href === PARLAY_WORKSPACE_HREF && legCount > 0 ? legCount : null;
+}
+
 function NavLink({
   href,
   label,
   active,
   className,
+  legCount,
 }: {
   href: string;
   label: string;
   active?: boolean;
   className?: string;
+  legCount: number;
 }) {
+  const count = selectedLegCount(href, legCount);
   return (
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
+      aria-label={count != null ? contextualWorkspaceNavAriaLabel(count) : undefined}
       className={cn(
         'transition-colors',
         active ? 'text-[#063f46] font-semibold' : 'text-[#4a6366] hover:text-[#063f46]',
@@ -63,61 +70,11 @@ function NavLink({
       )}
     >
       {label}
-    </Link>
-  );
-}
-
-function ContextualParlayNav({
-  variant,
-  hideBelowLg = false,
-}: {
-  variant: 'desktop' | 'mobile-badge' | 'mobile-menu';
-  hideBelowLg?: boolean;
-}) {
-  const { legs } = useParlaySelection();
-  const label = contextualWorkspaceNavLabel(legs.length);
-  if (!label) return null;
-  const aria = contextualWorkspaceNavAriaLabel(legs.length);
-  if (variant === 'mobile-badge') {
-    if (hideBelowLg) return null;
-    return (
-      <Link
-        href={PARLAY_WORKSPACE_HREF}
-        aria-label={aria}
-        className={cn(
-          'md:hidden inline-flex items-center justify-center min-h-[36px] min-w-[36px] px-2 rounded-xl',
-          'bg-white border border-[#DCE9EA] text-xs font-semibold tabular-nums text-[#063f46]',
-          'hover:bg-[#f7f9f7] outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40'
-        )}
-      >
-        <span aria-hidden="true">{legs.length}</span>
-      </Link>
-    );
-  }
-  if (variant === 'mobile-menu') {
-    return (
-      <DropdownMenu.Item
-        className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
-        asChild
-      >
-        <Link href={PARLAY_WORKSPACE_HREF} aria-label={aria}>
-          {label}
-        </Link>
-      </DropdownMenu.Item>
-    );
-  }
-  return (
-    <Link
-      href={PARLAY_WORKSPACE_HREF}
-      aria-label={aria}
-      aria-live="polite"
-      className={
-        hideBelowLg
-          ? 'hidden lg:inline-flex items-center text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors'
-          : 'hidden md:inline-flex items-center text-sm font-medium text-[#4a6366] hover:text-[#063f46] transition-colors'
-      }
-    >
-      {label}
+      {count != null ? (
+        <span className="ml-1 tabular-nums" aria-hidden="true">
+          {count}
+        </span>
+      ) : null}
     </Link>
   );
 }
@@ -125,6 +82,7 @@ function ContextualParlayNav({
 export function Header({ teamName, teamAbbr }: HeaderProps) {
   const pathname = usePathname() || '/dashboard';
   const nextEncoded = encodeURIComponent(pathname);
+  const { legs } = useParlaySelection();
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
@@ -212,7 +170,6 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
     window.location.assign(next);
   }, [supabase]);
 
-  const explorerOwnsWorkspaceEntry = pathname.startsWith('/betting/props-explorer');
   const namedLabel = profile?.displayName?.trim() || profile?.username?.trim() || null;
   // Email prefix only once the profile has answered with no name; before that, a neutral placeholder.
   const displayLabel = namedLabel || (profileLoaded ? profile?.email?.split('@')[0] || 'Account' : null);
@@ -249,7 +206,7 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
 
           {!teamName && (
             <nav
-              className="hidden md:flex items-center gap-3 lg:gap-4 text-sm"
+              className="hidden lg:flex items-center gap-3 lg:gap-4 text-sm"
               aria-label="Primary"
             >
               {PRIMARY_NAV.map((item) => (
@@ -258,6 +215,7 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
                   href={item.href}
                   label={item.label}
                   active={navItemActive(pathname, item.href)}
+                  legCount={legs.length}
                 />
               ))}
             </nav>
@@ -266,15 +224,12 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             {!teamName && (
-              <>
-                <ContextualParlayNav variant="desktop" hideBelowLg={explorerOwnsWorkspaceEntry} />
-                <ContextualParlayNav variant="mobile-badge" hideBelowLg={explorerOwnsWorkspaceEntry} />
                 <DropdownMenu.Root modal={false}>
                   <DropdownMenu.Trigger asChild>
                     <button
                       type="button"
                       className={cn(
-                        'md:hidden p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors',
+                        'lg:hidden p-2.5 rounded-xl bg-white border border-[#DCE9EA] hover:bg-[#f7f9f7] transition-colors',
                         'outline-none focus-visible:ring-2 focus-visible:ring-[#55ddb1]/40'
                       )}
                       aria-label="Open primary navigation"
@@ -292,20 +247,33 @@ export function Header({ teamName, teamAbbr }: HeaderProps) {
                         'data-[state=open]:animate-in data-[state=closed]:animate-out'
                       )}
                     >
-                      <ContextualParlayNav variant="mobile-menu" />
-                      {PRIMARY_NAV.map((item) => (
-                        <DropdownMenu.Item
-                          key={item.href}
-                          className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
-                          asChild
-                        >
-                          <Link href={item.href}>{item.label}</Link>
-                        </DropdownMenu.Item>
-                      ))}
+                      {PRIMARY_NAV.map((item) => {
+                        const count = selectedLegCount(item.href, legs.length);
+                        const active = navItemActive(pathname, item.href);
+                        return (
+                          <DropdownMenu.Item
+                            key={item.href}
+                            className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm text-[#063f46] outline-none hover:bg-[#f7f9f7] focus:bg-[#f7f9f7]"
+                            asChild
+                          >
+                            <Link
+                              href={item.href}
+                              aria-current={active ? 'page' : undefined}
+                              aria-label={count != null ? contextualWorkspaceNavAriaLabel(count) : undefined}
+                            >
+                              {item.label}
+                              {count != null ? (
+                                <span className="ml-1 tabular-nums" aria-hidden="true">
+                                  {count}
+                                </span>
+                              ) : null}
+                            </Link>
+                          </DropdownMenu.Item>
+                        );
+                      })}
                     </DropdownMenu.Content>
                   </DropdownMenu.Portal>
                 </DropdownMenu.Root>
-              </>
             )}
 
             <DropdownMenu.Root modal={false}>
