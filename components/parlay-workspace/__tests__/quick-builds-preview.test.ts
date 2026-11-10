@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { QuickBuildReplaceDialog, QuickBuildsResults, QuickBuildsStatus, QUICK_BUILD_REPLACE_COPY, QUICK_BUILD_UNAVAILABLE_COPY, QUICK_BUILD_UNAVAILABLE_TITLE } from '@/components/parlay-workspace/QuickBuildsPreview';
+import { QuickBuildReplaceDialog, QuickBuildsPreview, QuickBuildsResults, QuickBuildsStatus, QUICK_BUILD_REPLACE_COPY, QUICK_BUILD_UNAVAILABLE_COPY, QUICK_BUILD_UNAVAILABLE_TITLE } from '@/components/parlay-workspace/QuickBuildsPreview';
 import { ParlayWorkspaceView } from '@/components/parlay-workspace/ParlayWorkspaceView';
 import { adaptPropsExplorerOffer } from '@/lib/parlay/adapt-props-explorer-offer';
 import type { SelectedParlayLeg } from '@/lib/parlay/selection';
@@ -15,7 +15,12 @@ import {
   QUICK_BUILD_LOWER_PAYOUT_EMPTY_SUGGESTION,
   QUICK_BUILD_PAYOUT_OPTIONS,
   QUICK_BUILD_PRESET_EXPLANATION,
+  QUICK_BUILD_MATCHUP_UNAVAILABLE,
+  QUICK_BUILD_NO_GAMES_COPY,
+  QUICK_BUILD_ONE_GAME_COPY,
+  QUICK_BUILD_REFRESH_GAMES_COPY,
   QUICK_BUILD_RESEARCH_SNAPSHOT_COPY,
+  QUICK_BUILD_SELECT_TWO_COPY,
   lowerPayoutEmptySuggestion,
   acceptPreviewResult,
   beginPreviewRequest,
@@ -25,6 +30,11 @@ import {
   initialPreviewModel,
   invalidatePreview,
   parseQuickBuildResponse,
+  previewErrorMessage,
+  parseSlateGames,
+  previewScopeKey,
+  searchBlockReason,
+  toggleSelectedGame,
   presetApiKey,
   presetRange,
   previewRequestPath,
@@ -580,7 +590,7 @@ describe('quick builds analytics lifecycle', () => {
       accepted: accepted !== started.state,
       sportsbook: captured.sportsbook,
       preset: captured.preset,
-      kind: input.result.kind,
+      kind: input.result.kind === 'ineligible' || input.result.kind === 'need_two' ? 'invalid' : input.result.kind,
       buildCount: input.result.kind === 'ok' ? input.result.view.builds.length : 0,
       emptyReason: input.result.kind === 'empty' ? input.result.view.emptyReason : null,
       ageMs: input.result.kind === 'ok' ? (input.ageMs ?? null) : null,
@@ -687,9 +697,129 @@ describe('quick builds analytics lifecycle', () => {
     expect(source.slice(source.indexOf('function cancelReplace'), source.indexOf('useEffect(() => {'))).not.toContain('trackEvent');
     const modeBody = source.slice(source.indexOf('export function WorkspaceModeSwitch'), source.indexOf('function ModeButton'));
     expect(modeBody).not.toContain('trackEvent');
-    const abortEffect = source.slice(source.indexOf('useEffect(() => () =>'), source.indexOf('function commit'));
+    const abortEffect = source.slice(source.indexOf('abortRef.current?.abort()'), source.indexOf('function commit'));
     const dialogEffect = source.slice(source.indexOf('useEffect(() => {'), source.indexOf('}, [pending]);'));
     expect(abortEffect).not.toContain('trackEvent');
     expect(dialogEffect).not.toContain('trackEvent');
+    const toggleBody = source.slice(source.indexOf('function toggleGame'), source.indexOf('function find'));
+    expect(toggleBody).not.toContain('fetchQuickBuilds');
+    expect(toggleBody).not.toContain('loadSlate');
+    expect(source).not.toContain('quick_builds_search_requested');
+  });
+});
+
+describe('quick builds game selection', () => {
+  function picker(model: PreviewModel): string {
+    return renderToStaticMarkup(createElement(QuickBuildsPreview, { model, onModelChange: () => undefined }));
+  }
+
+  const slateGame = {
+    gameId: '101',
+    startTime: '2026-11-10T00:00:00.000Z',
+    label: 'LAL @ DEN',
+    startLabel: 'Nov 9, 7:00 PM EST',
+  };
+
+  it('defaults to All Games and sends no game ids', () => {
+    expect(initialPreviewModel().scope).toBe('all');
+    expect(initialPreviewModel().selectedGameIds).toEqual([]);
+    const html = picker(initialPreviewModel());
+    expect(html).toContain('All Games');
+    expect(html).toContain('Select Games');
+    expect(html).not.toContain('games selected');
+    expect(previewRequestPath('draftkings', 'balanced')).not.toContain('games=');
+    expect(searchBlockReason(initialPreviewModel())).toBeNull();
+  });
+
+  it('selects and clears games, counts them, and requires two before search', () => {
+    expect(toggleSelectedGame([], '102')).toEqual(['102']);
+    expect(toggleSelectedGame(['102'], '101')).toEqual(['101', '102']);
+    expect(toggleSelectedGame(['101', '102'], '101')).toEqual(['102']);
+    const selected = {
+      ...initialPreviewModel(),
+      scope: 'select' as const,
+      slatePhase: 'ready' as const,
+      slateGames: [slateGame, { ...slateGame, gameId: '102', label: 'NYK @ BOS' }],
+      selectedGameIds: ['101', '102'],
+    };
+    const html = picker(selected);
+    expect(html).toContain('2 games selected');
+    expect(html).toContain('LAL @ DEN');
+    expect(html).toContain('NYK @ BOS');
+    expect(html).toContain('max-h-64');
+    expect(html).toContain('min-h-11');
+    expect(html).toContain('type="checkbox"');
+    expect(searchBlockReason(selected)).toBeNull();
+    expect(previewRequestPath('draftkings', 'balanced', selected.selectedGameIds)).toContain('games=101%2C102');
+
+    const one = { ...selected, selectedGameIds: ['101'] };
+    expect(searchBlockReason(one)).toBe(QUICK_BUILD_SELECT_TWO_COPY);
+    expect(picker(one)).toContain('disabled');
+    const cleared = invalidatePreview(selected, { scope: 'all', selectedGameIds: [] });
+    expect(cleared.scope).toBe('all');
+    expect(cleared.selectedGameIds).toEqual([]);
+    expect(cleared.view).toBeNull();
+  });
+
+  it('explains an empty slate, a one-game slate, and a missing matchup name', () => {
+    const none = { ...initialPreviewModel(), scope: 'select' as const, slatePhase: 'ready' as const, slateGames: [] };
+    expect(searchBlockReason(none)).toBe(QUICK_BUILD_NO_GAMES_COPY);
+    const only = { ...none, slateGames: [{ ...slateGame, label: null }] };
+    expect(searchBlockReason(only)).toBe(QUICK_BUILD_ONE_GAME_COPY);
+    expect(picker(only)).toContain(QUICK_BUILD_MATCHUP_UNAVAILABLE);
+    expect(picker(only)).toContain(slateGame.startLabel);
+  });
+
+  it('drops a result when the game scope changes and rejects a stale scope', () => {
+    const ready: PreviewModel = {
+      ...initialPreviewModel(),
+      phase: 'ready',
+      view: viewOf(body()),
+      scope: 'select',
+      selectedGameIds: ['101', '102'],
+    };
+    const changed = invalidatePreview(ready, { selectedGameIds: ['101', '103'] });
+    expect(changed.view).toBeNull();
+    expect(changed.phase).toBe('idle');
+    const started = beginPreviewRequest(changed);
+    const stale = acceptPreviewResult(
+      { ...started.state, selectedGameIds: ['101', '104'] },
+      {
+        requestId: started.requestId,
+        sportsbook: 'draftkings',
+        preset: 'balanced',
+        scopeKey: previewScopeKey('select', ['101', '103']),
+      },
+      { kind: 'ok', view: viewOf(body()) },
+    );
+    expect(stale.view).toBeNull();
+    expect(stale).toMatchObject({ selectedGameIds: ['101', '104'] });
+  });
+
+  it('maps an ineligible game response to a refresh message and parses the slate', async () => {
+    const result = await fetchQuickBuilds({
+      sportsbook: 'draftkings',
+      preset: 'balanced',
+      gameIds: ['101', '102'],
+      fetchImpl: async () => Response.json({ error: 'Refresh the game selection.', code: 'INELIGIBLE_GAME' }, { status: 409 }),
+    });
+    expect(result.kind).toBe('ineligible');
+    expect(previewErrorMessage('ineligible')).toBe(QUICK_BUILD_REFRESH_GAMES_COPY);
+    const games = parseSlateGames({
+      games: [
+        { gameId: '101', startTime: '2026-11-10T00:00:00.000Z', label: 'LAL @ DEN' },
+        { gameId: '102', startTime: '2026-11-10T01:00:00.000Z', label: null },
+      ],
+    });
+    expect(games?.map((game) => game.gameId)).toEqual(['101', '102']);
+    expect(games?.[1]?.label).toBeNull();
+    expect(parseSlateGames({ games: [{ gameId: 'nope', startTime: '2026-11-10T00:00:00.000Z', label: 'X' }] })).toBeNull();
+  });
+
+  it('keeps the quick panel mounted so a mode switch does not drop the selection', () => {
+    const source = readFileSync('components/parlay-workspace/ParlayWorkspaceView.tsx', 'utf8');
+    expect(source).toContain('hidden={mode !== \'quick\'}');
+    expect(source).toContain('useState<PreviewModel>(initialQuickModel ?? initialPreviewModel)');
+    expect(source).toContain('<QuickBuildsPreview model={quickModel}');
   });
 });

@@ -12,11 +12,18 @@ import {
   QUICK_BUILD_PAYOUT_OPTIONS,
   QUICK_BUILD_PRESET_EXPLANATION,
   QUICK_BUILD_RESEARCH_SNAPSHOT_COPY,
+  QUICK_BUILD_GAMES_PATH,
+  QUICK_BUILD_MATCHUP_UNAVAILABLE,
+  QUICK_BUILD_REFRESH_GAMES_COPY,
   acceptPreviewResult,
   lowerPayoutEmptySuggestion,
   beginPreviewRequest,
   fetchQuickBuilds,
   invalidatePreview,
+  parseSlateGames,
+  previewScopeKey,
+  searchBlockReason,
+  toggleSelectedGame,
   type PreviewModel,
   type QuickBuildPreviewCard,
   type QuickBuildPreviewView,
@@ -109,6 +116,7 @@ export function QuickBuildsPreview({
 }) {
   const modelRef = useRef(model);
   const abortRef = useRef<AbortController | null>(null);
+  const slateAbortRef = useRef<AbortController | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const acceptedSearchRef = useRef<QuickBuildSearchAttribution | null>(
     model.phase === 'ready' && model.view ? { sportsbook: model.sportsbook, preset: model.preset } : null,
@@ -116,7 +124,13 @@ export function QuickBuildsPreview({
   const [pending, setPending] = useState<PendingQuickBuild | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(
+    () => () => {
+      abortRef.current?.abort();
+      slateAbortRef.current?.abort();
+    },
+    [],
+  );
 
   function commit(next: SetStateAction<PreviewModel>) {
     const resolved = typeof next === 'function' ? next(modelRef.current) : next;
@@ -130,17 +144,79 @@ export function QuickBuildsPreview({
     commit((current) => invalidatePreview(current, patch));
   }
 
+  function loadSlate() {
+    slateAbortRef.current?.abort();
+    const controller = new AbortController();
+    slateAbortRef.current = controller;
+    commit((current) => ({ ...current, slatePhase: 'loading', slateMessage: null }));
+    void fetch(QUICK_BUILD_GAMES_PATH, { method: 'GET', headers: { accept: 'application/json' }, cache: 'no-store', signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('slate');
+        const games = parseSlateGames(await response.json());
+        if (!games) throw new Error('slate');
+        return games;
+      })
+      .then((games) => {
+        if (controller.signal.aborted) return;
+        commit((current) => {
+          const allowed = new Set(games.map((game) => game.gameId));
+          return invalidatePreview(
+            { ...current, slatePhase: 'ready', slateGames: games, slateMessage: null },
+            { selectedGameIds: current.selectedGameIds.filter((id) => allowed.has(id)) },
+          );
+        });
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        if (controller.signal.aborted) return;
+        commit((current) => ({
+          ...invalidatePreview(current, { selectedGameIds: [] }),
+          slatePhase: 'error',
+          slateGames: [],
+          slateMessage: 'The game list could not be loaded.',
+        }));
+      });
+  }
+
+  function chooseAllGames() {
+    if (modelRef.current.scope === 'all') return;
+    abortRef.current?.abort();
+    abortRef.current = null;
+    commit((current) => invalidatePreview(current, { scope: 'all', selectedGameIds: [] }));
+  }
+
+  function chooseSelectedGames() {
+    if (modelRef.current.scope === 'select') return;
+    abortRef.current?.abort();
+    abortRef.current = null;
+    commit((current) => invalidatePreview(current, { scope: 'select' }));
+    if (modelRef.current.slatePhase === 'idle') loadSlate();
+  }
+
+  function toggleGame(gameId: string) {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    commit((current) => invalidatePreview(current, { selectedGameIds: toggleSelectedGame(current.selectedGameIds, gameId) }));
+  }
+
   function find() {
+    if (searchBlockReason(modelRef.current) != null) return;
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
     const next = beginPreviewRequest(modelRef.current);
-    const captured = { requestId: next.requestId, sportsbook: next.state.sportsbook, preset: next.state.preset };
+    const captured = {
+      requestId: next.requestId,
+      sportsbook: next.state.sportsbook,
+      preset: next.state.preset,
+      scopeKey: previewScopeKey(next.state.scope, next.state.selectedGameIds),
+    };
     const observed = { ageMs: null as number | null };
     commit(next.state);
     void fetchQuickBuilds({
       sportsbook: captured.sportsbook,
       preset: captured.preset,
+      gameIds: next.state.scope === 'select' ? next.state.selectedGameIds : undefined,
       signal: controller.signal,
       fetchImpl: async (input, init) => {
         const response = await fetch(input, init);
@@ -162,7 +238,7 @@ export function QuickBuildsPreview({
             accepted: accepted !== current,
             sportsbook: captured.sportsbook,
             preset: captured.preset,
-            kind: result.kind,
+            kind: result.kind === 'ineligible' || result.kind === 'need_two' ? 'invalid' : result.kind,
             buildCount: result.kind === 'ok' ? result.view.builds.length : 0,
             emptyReason: result.kind === 'empty' ? result.view.emptyReason : null,
             ageMs: result.kind === 'ok' ? observed.ageMs : null,
@@ -227,6 +303,24 @@ export function QuickBuildsPreview({
           Find possible parlay combinations without manually researching every player. Use This Build replaces your current ticket with that Research Snapshot.
         </p>
         <fieldset className="mt-4">
+          <legend className="type-metadata">Games</legend>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <ChoiceButton pressed={model.scope === 'all'} onClick={chooseAllGames}>
+              All Games
+            </ChoiceButton>
+            <ChoiceButton pressed={model.scope === 'select'} onClick={chooseSelectedGames}>
+              Select Games
+            </ChoiceButton>
+          </div>
+          {model.scope === 'select' ? (
+            <GamePicker
+              model={model}
+              onToggle={toggleGame}
+              onRefresh={loadSlate}
+            />
+          ) : null}
+        </fieldset>
+        <fieldset className="mt-4">
           <legend className="type-metadata">Sportsbook</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {QUICK_BUILD_BOOK_OPTIONS.map((book) => (
@@ -255,11 +349,23 @@ export function QuickBuildsPreview({
           </div>
           <p className="type-secondary mt-2">{QUICK_BUILD_PRESET_EXPLANATION}</p>
         </fieldset>
+        {searchBlockReason(model) ? (
+          <p className="type-secondary mt-3">{searchBlockReason(model)}</p>
+        ) : null}
+        {model.message === QUICK_BUILD_REFRESH_GAMES_COPY ? (
+          <button
+            type="button"
+            className="type-interactive mt-3 inline-flex min-h-11 items-center justify-center rounded-lg border border-[#075B5C] px-4 text-[#075B5C]"
+            onClick={loadSlate}
+          >
+            Refresh games
+          </button>
+        ) : null}
         <button
           type="button"
           className="type-interactive mt-4 inline-flex min-h-11 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-4 text-white hover:opacity-90 disabled:opacity-70"
           onClick={find}
-          disabled={model.phase === 'loading'}
+          disabled={model.phase === 'loading' || searchBlockReason(model) != null}
           aria-busy={model.phase === 'loading'}
         >
           Find Quick Builds
@@ -280,6 +386,63 @@ export function QuickBuildsPreview({
         }}
       />
     </section>
+  );
+}
+
+function GamePicker({
+  model,
+  onToggle,
+  onRefresh,
+}: {
+  model: PreviewModel;
+  onToggle: (gameId: string) => void;
+  onRefresh: () => void;
+}) {
+  const count = model.selectedGameIds.length;
+  return (
+    <div className="mt-3 space-y-2">
+      <p className="type-secondary">
+        {count === 1 ? '1 game selected' : `${count} games selected`}
+      </p>
+      {model.slatePhase === 'loading' ? <p className="type-secondary">Loading games…</p> : null}
+      {model.slatePhase === 'error' ? (
+        <div className="space-y-2">
+          <p className="type-secondary">{model.slateMessage}</p>
+          <button
+            type="button"
+            className="type-interactive inline-flex min-h-11 items-center justify-center rounded-lg border border-[#075B5C] px-4 text-[#075B5C]"
+            onClick={onRefresh}
+          >
+            Try again
+          </button>
+        </div>
+      ) : null}
+      {model.slatePhase === 'ready' && model.slateGames.length > 0 ? (
+        <ul className="max-h-64 space-y-1 overflow-y-auto">
+          {model.slateGames.map((game) => {
+            const checked = model.selectedGameIds.includes(game.gameId);
+            return (
+              <li key={game.gameId}>
+                <label className="flex min-h-11 items-center gap-3 rounded-lg border border-[#DCE9EA] px-3 py-2">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4"
+                    checked={checked}
+                    onChange={() => onToggle(game.gameId)}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-[#063f46]">
+                      {game.label ?? QUICK_BUILD_MATCHUP_UNAVAILABLE}
+                    </span>
+                    <span className="type-secondary block">{game.startLabel}</span>
+                  </span>
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
   );
 }
 

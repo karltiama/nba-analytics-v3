@@ -8,9 +8,12 @@ import {
   QUICK_BUILD_OBSERVATION_COUNT_SQL,
   QUICK_BUILD_OBSERVATION_ROWS_SQL,
   QUICK_BUILD_READ_SQL,
+  QUICK_BUILD_SLATE_SQL,
   buildResearchQuickBuildRequest,
   isResearchSlateGame,
   loadResearchQuickBuilds,
+  loadResearchSlate,
+  parseSelectedGameIds,
   type QuickBuildReader,
 } from '../research-snapshot';
 import { QUICK_BUILD_PLAYERS_SQL } from '../display';
@@ -663,5 +666,128 @@ describe('research snapshot adapter', () => {
         },
       })
     ).rejects.toThrow('players unavailable');
+  });
+
+  it('keeps All Games on the full slate and limits attempts to a selected subset', async () => {
+    const calls: { sql: string; params: unknown[] }[] = [];
+    const mem = slate();
+    mem.games.push({ gameId: '103', startTime: '2026-11-10T02:00:00.000Z', status: 'Scheduled' });
+    mem.runs.push(success('9', '103', '2026-11-09T17:10:00.000Z'));
+    mem.snaps.push(...bothSides({ pullRunId: '9', gameId: '103', playerId: '33', line: '4.5' }));
+    const query = reader(mem, calls);
+    const all = await loadResearchQuickBuilds({ sportsbook: 'draftkings', preset: 'higher_payout', now: NOW, query });
+    const attemptIds = calls.find((call) => call.sql === QUICK_BUILD_ATTEMPTS_SQL)?.params[0];
+    expect(attemptIds).toEqual(['101', '102', '103']);
+    expect(all.status).toBe('ok');
+
+    calls.length = 0;
+    const selected = await loadResearchQuickBuilds({
+      sportsbook: 'draftkings',
+      preset: 'higher_payout',
+      now: NOW,
+      query,
+      gameIds: ['101', '103'],
+    });
+    expect(calls.find((call) => call.sql === QUICK_BUILD_ATTEMPTS_SQL)?.params[0]).toEqual(['101', '103']);
+    const observedGames = calls.find((call) => call.sql === QUICK_BUILD_OBSERVATION_ROWS_SQL)?.params[1];
+    expect((observedGames as number[]).map(String).sort()).toEqual(['101', '103']);
+    expect(JSON.stringify(calls)).not.toContain('102');
+    expect(selected.builds.every((build) => build.legs.every((leg) => leg.gameId === '101' || leg.gameId === '103'))).toBe(true);
+    expect(selected.builds.some((build) => build.legs.some((leg) => leg.gameId === '102'))).toBe(false);
+  });
+
+  it('does not read attempts when a selected game is unknown, finished, or already started', async () => {
+    const calls: { sql: string; params: unknown[] }[] = [];
+    const mem = slate();
+    mem.games.push(
+      { gameId: '201', startTime: '2026-11-09T17:00:00.000Z', status: 'Scheduled' },
+      { gameId: '202', startTime: TIP, status: 'Final' },
+      { gameId: '203', startTime: TIP, status: 'In Progress' },
+      { gameId: '204', startTime: '2026-11-11T00:00:00.000Z', status: 'Scheduled' },
+    );
+    const query = reader(mem, calls);
+    await expect(
+      buildResearchQuickBuildRequest({ sportsbook: 'draftkings', preset: 'balanced', now: NOW, query, gameIds: ['101', '999'] }),
+    ).rejects.toMatchObject({ code: 'INELIGIBLE_GAME' });
+    await expect(
+      buildResearchQuickBuildRequest({ sportsbook: 'draftkings', preset: 'balanced', now: NOW, query, gameIds: ['101', '201'] }),
+    ).rejects.toMatchObject({ code: 'INELIGIBLE_GAME' });
+    await expect(
+      buildResearchQuickBuildRequest({ sportsbook: 'draftkings', preset: 'balanced', now: NOW, query, gameIds: ['101', '202'] }),
+    ).rejects.toMatchObject({ code: 'INELIGIBLE_GAME' });
+    await expect(
+      buildResearchQuickBuildRequest({ sportsbook: 'draftkings', preset: 'balanced', now: NOW, query, gameIds: ['101', '204'] }),
+    ).rejects.toMatchObject({ code: 'INELIGIBLE_GAME' });
+    expect(calls.some((call) => call.sql === QUICK_BUILD_ATTEMPTS_SQL)).toBe(false);
+    expect(calls.some((call) => call.sql === QUICK_BUILD_OBSERVATION_ROWS_SQL)).toBe(false);
+  });
+
+  it('returns an empty snapshot when the selected games have no usable observations', async () => {
+    const calls: { sql: string; params: unknown[] }[] = [];
+    const mem = slate();
+    mem.snaps = [];
+    const result = await loadResearchQuickBuilds({
+      sportsbook: 'draftkings',
+      preset: 'balanced',
+      now: NOW,
+      query: reader(mem, calls),
+      gameIds: ['101', '102'],
+    });
+    expect(result.status).toBe('empty');
+    expect(result.builds).toEqual([]);
+    expect(calls.find((call) => call.sql === QUICK_BUILD_ATTEMPTS_SQL)?.params[0]).toEqual(['101', '102']);
+  });
+});
+
+describe('eligible game discovery', () => {
+  function slateReader(rows: Record<string, unknown>[]): QuickBuildReader {
+    return async (sql, params = []) => {
+      expect(sql).toBe(QUICK_BUILD_SLATE_SQL);
+      expect(params).toEqual(['2026-11-09', NOW.toISOString()]);
+      expect(sql).not.toContain('101');
+      return rows;
+    };
+  }
+
+  it('returns today\'s future scheduled games in start order with verified abbreviations', async () => {
+    const slate = await loadResearchSlate({
+      now: NOW,
+      query: slateReader([
+        { game_id: '102', start_time: '2026-11-10T01:00:00.000Z', status: '7:00 pm', away_abbr: 'nyk', home_abbr: 'bos' },
+        { game_id: '101', start_time: TIP, status: '2026-11-10T00:00:00.000Z', away_abbr: 'LAL', home_abbr: 'DEN' },
+        { game_id: '301', start_time: TIP, status: 'Final', away_abbr: 'MIA', home_abbr: 'PHI' },
+        { game_id: '302', start_time: TIP, status: 'In Progress', away_abbr: 'CHI', home_abbr: 'MIL' },
+        { game_id: '303', start_time: '2026-11-09T17:00:00.000Z', status: 'Scheduled', away_abbr: 'DAL', home_abbr: 'HOU' },
+        { game_id: '104', start_time: '2026-11-10T02:00:00.000Z', status: 'Scheduled', away_abbr: 'not-a-team', home_abbr: 'GSW' },
+      ]),
+    });
+    expect(slate.games.map((game) => game.gameId)).toEqual(['101', '102', '104']);
+    expect(slate.games[0]).toMatchObject({ label: 'LAL @ DEN', awayAbbreviation: 'LAL', homeAbbreviation: 'DEN' });
+    expect(slate.games[1]?.label).toBe('NYK @ BOS');
+    expect(slate.games[2]).toMatchObject({ label: null, awayAbbreviation: null, homeAbbreviation: 'GSW' });
+    expect(JSON.stringify(slate)).not.toContain('MIA');
+    expect(JSON.stringify(slate)).not.toContain('not-a-team');
+  });
+
+  it('returns no games when the slate has none and rejects a slate over the cap', async () => {
+    const empty = await loadResearchSlate({ now: NOW, query: slateReader([]) });
+    expect(empty.games).toEqual([]);
+    const rows = Array.from({ length: 33 }, (_, index) => ({
+      game_id: String(400 + index),
+      start_time: TIP,
+      status: 'Scheduled',
+      away_abbr: 'BOS',
+      home_abbr: 'NYK',
+    }));
+    await expect(loadResearchSlate({ now: NOW, query: slateReader(rows) })).rejects.toMatchObject({ code: 'LIMIT_EXCEEDED' });
+  });
+
+  it('rejects duplicate and malformed selections instead of searching every game', () => {
+    expect(parseSelectedGameIds('101,102')).toEqual({ ok: true, ids: ['101', '102'] });
+    expect(parseSelectedGameIds('101,101').ok).toBe(false);
+    expect(parseSelectedGameIds('101,abc').ok).toBe(false);
+    const one = parseSelectedGameIds('101');
+    expect(one.ok).toBe(false);
+    if (!one.ok) expect(one.code).toBe('NEED_TWO_GAMES');
   });
 });

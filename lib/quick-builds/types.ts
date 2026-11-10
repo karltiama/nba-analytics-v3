@@ -169,9 +169,9 @@ export type QuickBuildResult = {
 };
 
 export class QuickBuildInputError extends Error {
-  readonly code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED';
+  readonly code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES';
 
-  constructor(code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED', message: string) {
+  constructor(code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES', message: string) {
     super(message);
     this.name = 'QuickBuildInputError';
     this.code = code;
