@@ -91,9 +91,9 @@ describe('props explorer mobile phase 3 contract', () => {
     expect(tray).toContain('mobileParlayBarCopy');
     expect(tray).toContain('safe-area-inset-bottom');
     expect(tray).toContain('Review Parlay');
-    expect(header).toContain('variant="mobile-badge"');
-    expect(header).toContain('hideBelowLg={explorerOwnsWorkspaceEntry}');
-    expect(header).toContain("pathname.startsWith('/betting/props-explorer')");
+    expect(header).not.toContain('variant="mobile-badge"');
+    expect(header).not.toContain('ContextualParlayNav');
+    expect(header).toContain('PRIMARY_NAV.map');
   });
 
   it('gives the drawers a 44px close, prop context, scrolling tabs, and safe-area padding', () => {

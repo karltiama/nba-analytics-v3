@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { adaptPropsExplorerOffer, type PropsExplorerOfferInput } from '../adapt-props-explorer-offer';
+import { handoffQuickBuild, type QuickBuildHandoffLeg } from '../adapt-quick-build';
 import {
   X3F_AJAY_ID,
   X3F_CUTOFF_AT,
@@ -34,6 +35,36 @@ function mustAdapt(input: PropsExplorerOfferInput) {
   expect(result.ok).toBe(true);
   if (!result.ok) throw new Error(result.code);
   return result.offer;
+}
+
+function researchLegs(): SelectedParlayLeg[] {
+  const now = Date.parse('2026-11-09T18:00:00.000Z');
+  const result = handoffQuickBuild({
+    current: [],
+    legs: [researchLeg('11', 'g1', 'Jayson Tatum'), researchLeg('22', 'g2', 'Jaylen Brown')],
+    nowMs: now,
+    confirmed: false,
+  });
+  expect(result.status).toBe('replaced');
+  if (result.status !== 'replaced') throw new Error(result.status);
+  return result.legs;
+}
+
+function researchLeg(playerId: string, gameId: string, playerName: string): QuickBuildHandoffLeg {
+  return {
+    displayReady: true,
+    playerId,
+    playerName,
+    gameId,
+    market: 'points',
+    side: 'over',
+    line: 22.5,
+    sportsbook: 'draftkings',
+    oddsAmerican: -115,
+    observedAt: '2026-11-09T16:00:00.000Z',
+    gameStartTime: '2026-11-10T00:00:00.000Z',
+    gameStatus: 'Scheduled',
+  };
 }
 
 function x3fWorkspaceLegs(): SelectedParlayLeg[] {
@@ -140,6 +171,25 @@ describe('Workspace historical analysis', () => {
     expect(eligibility.status).toBe('UNAVAILABLE');
     if (eligibility.status !== 'UNAVAILABLE') return;
     expect(eligibility.reasons.some((row) => row.code === 'MULTI_GAME')).toBe(true);
+  });
+
+  it('blocks current and historical analysis for a research snapshot', () => {
+    const pair = researchLegs();
+    const eligibility = evaluateWorkspaceAnalysisEligibility(pair, { currentAnalysisEnabled: true });
+    expect(eligibility.status).toBe('UNAVAILABLE');
+    if (eligibility.status !== 'UNAVAILABLE') return;
+    expect(eligibility.reasons.map((row) => row.code)).toEqual(['RESEARCH_SNAPSHOT']);
+    expect(eligibility.reasons[0]?.message).toContain('unavailable for a Research Snapshot');
+    expect(eligibility.reasons.some((row) => row.message.includes('Decision Close'))).toBe(false);
+  });
+
+  it('fail-closes a research snapshot mixed with another kind', () => {
+    const [research] = researchLegs();
+    const mixed = evaluateWorkspaceAnalysisEligibility([research!, x3fWorkspaceLegs()[0]!], { currentAnalysisEnabled: true });
+    expect(mixed.status).toBe('UNAVAILABLE');
+    if (mixed.status !== 'UNAVAILABLE') return;
+    expect(mixed.reasons.some((row) => row.code === 'RESEARCH_SNAPSHOT' && row.message.includes('cannot be mixed'))).toBe(true);
+    expect(mixed.reasons.some((row) => row.message.includes('Historical analysis only accepts Decision Close'))).toBe(false);
   });
 
   it('preserves the selected Decision Close line and keeps 3-Hour as comparison', () => {

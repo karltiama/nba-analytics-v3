@@ -170,8 +170,10 @@ describe('user isolation SQL', () => {
 
 describe('saved research navigation item', () => {
   it('is a primary betting destination with header shell', () => {
-    expect(PRIMARY_NAV.some((n) => n.href === '/betting/saved' && n.label === 'Saved')).toBe(true);
-    expect(PRIMARY_NAV.some((n) => n.href === '/betting/research')).toBe(false);
+    const hrefs: readonly string[] = PRIMARY_NAV.map((item) => item.href);
+    expect(PRIMARY_NAV.some((item) => item.href === '/betting/saved' && item.label === 'Saved')).toBe(true);
+    expect(hrefs).not.toContain('/betting/research');
+    expect(savedResearchHref()).toBe('/betting/saved');
     expect(shouldShowLayoutHeader('/betting/saved')).toBe(true);
     expect(shouldShowLayoutHeader('/billing')).toBe(true);
     expect(shouldShowLayoutHeader('/billing/success')).toBe(true);

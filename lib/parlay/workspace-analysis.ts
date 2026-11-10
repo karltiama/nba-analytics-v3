@@ -32,6 +32,7 @@ export const WORKSPACE_ANALYSIS_BLOCK_CODES = [
   'TOO_MANY_GAMES',
   'MISSING_IDENTITY',
   'OUTSIDE_COVERAGE',
+  'RESEARCH_SNAPSHOT',
 ] as const;
 
 /** Current-props analysis loads one context per game; this caps the DB work per request. */
@@ -101,7 +102,17 @@ export function evaluateWorkspaceAnalysisEligibility(
   const reasons: WorkspaceAnalysisBlock[] = [];
   const snapshots = new Set(legs.map((leg) => leg.offer.snapshotKind));
   const gameIds = new Set(legs.map((leg) => leg.offer.gameId));
+  const gameId = [...gameIds][0] ?? '';
 
+  if (snapshots.has('research_snapshot')) {
+    reasons.push({
+      code: 'RESEARCH_SNAPSHOT',
+      message:
+        snapshots.size === 1
+          ? 'Current contextual analysis is unavailable for a Research Snapshot.'
+          : 'Research Snapshot legs cannot be mixed with another snapshot.',
+    });
+  } else {
   if (snapshots.has('live_current') && !options.currentAnalysisEnabled) {
     reasons.push({
       code: 'LIVE_CURRENT',
@@ -147,6 +158,15 @@ export function evaluateWorkspaceAnalysisEligibility(
     });
   }
 
+  const historicalOnly = [...snapshots].every((kind) => kind === 'decision_close');
+  if (historicalOnly && gameId && gameId !== WORKSPACE_HISTORICAL_ANALYSIS_GAME_ID) {
+    reasons.push({
+      code: 'OUTSIDE_COVERAGE',
+      message: 'Historical Court Context analysis is not available for one or more selected offers.',
+    });
+  }
+  }
+
   for (const leg of legs) {
     const offer = leg.offer;
     if (!offer.playerId.trim() || !offer.gameId.trim() || offer.sportsbook.vendor.trim() === '') {
@@ -156,15 +176,6 @@ export function evaluateWorkspaceAnalysisEligibility(
       });
       break;
     }
-  }
-
-  const gameId = [...gameIds][0] ?? '';
-  const historicalOnly = [...snapshots].every((kind) => kind === 'decision_close');
-  if (historicalOnly && gameId && gameId !== WORKSPACE_HISTORICAL_ANALYSIS_GAME_ID) {
-    reasons.push({
-      code: 'OUTSIDE_COVERAGE',
-      message: 'Historical Court Context analysis is not available for one or more selected offers.',
-    });
   }
 
   const unique = uniqueReasons(reasons);

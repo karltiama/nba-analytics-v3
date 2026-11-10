@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ParlayWorkspaceView } from '@/components/parlay-workspace/ParlayWorkspaceView';
 import { selectionSourceContext } from '@/lib/parlay/selection';
+import { replaceParlaySelectionLegs } from '@/lib/parlay/selection-store';
 import { useParlaySelection } from '@/lib/parlay/use-parlay-selection';
 import {
   evaluateWorkspaceAnalysisEligibility,
@@ -109,6 +110,9 @@ export function ParlayWorkspaceClient({
       onShowReview={() => setReviewMode(true)}
       editedAfterXrayImport={editedAfterXrayImport}
       xrayImportAvailable={xrayImportAvailable}
+      onReplaceQuickBuild={(next) => {
+        replaceParlaySelectionLegs(next);
+      }}
     />
   );
 }

@@ -169,13 +169,19 @@ describe('team directory (Phase 2.T.4B)', () => {
     const teams = PRIMARY_NAV.find((n) => n.label === 'Teams');
     expect(teams).toEqual({ href: '/teams', label: 'Teams' });
     const labels = PRIMARY_NAV.map((n) => n.label);
-    expect(labels.slice(0, 5)).toEqual(['Dashboard', 'Parlay XRay', 'Props Explorer', 'WOWY', 'Teams']);
+    expect(labels.slice(0, 5)).toEqual([
+      'Dashboard',
+      'Props Explorer',
+      'Parlay Workspace',
+      'Parlay XRay',
+      'WOWY',
+    ]);
 
     const headerSrc = readFileSync(
       join(ROOT, 'components/betting/Header.tsx'),
       'utf8'
     );
-    expect(headerSrc).toMatch(/hidden md:flex/);
+    expect(headerSrc).toMatch(/hidden lg:flex/);
     expect(headerSrc).toMatch(/PRIMARY_NAV\.map/);
     expect(headerSrc).toMatch(/aria-label="Primary"/);
   });
@@ -197,7 +203,7 @@ describe('team directory (Phase 2.T.4B)', () => {
       join(ROOT, 'components/betting/Header.tsx'),
       'utf8'
     );
-    expect(headerSrc).toMatch(/md:hidden/);
+    expect(headerSrc).toMatch(/lg:hidden/);
     expect(headerSrc).toMatch(/Open primary navigation/);
     expect(headerSrc).toMatch(/PRIMARY_NAV\.map/);
     expect(PRIMARY_NAV.some((n) => n.href === '/teams')).toBe(true);
