@@ -245,3 +245,90 @@ export function selectTripleShortlist(
   take(remainder, () => true);
   return selected;
 }
+
+export type RankedTuple = {
+  id: string;
+  legs: SideQuote[];
+  combinedAmerican: number;
+  breakEvenProbability: number;
+  distanceToMidpoint: number;
+  nearKey: string;
+  gameSet: string;
+  tieKey: string;
+};
+
+function compareTuples(a: RankedTuple, b: RankedTuple): number {
+  if (a.distanceToMidpoint !== b.distanceToMidpoint) return a.distanceToMidpoint - b.distanceToMidpoint;
+  if (a.combinedAmerican !== b.combinedAmerican) return a.combinedAmerican - b.combinedAmerican;
+  if (a.tieKey !== b.tieKey) return a.tieKey < b.tieKey ? -1 : 1;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/** One representative per player/market/side set. Used only by four- and five-leg search. */
+export function collapseTupleNearDuplicates(tuples: RankedTuple[]): RankedTuple[] {
+  const groups = new Map<string, RankedTuple>();
+  const sorted = tuples.slice().sort(compareTuples);
+  for (const tuple of sorted) {
+    if (!groups.has(tuple.nearKey)) groups.set(tuple.nearKey, tuple);
+  }
+  return [...groups.values()].sort(compareTuples);
+}
+
+/**
+ * Up to five four- or five-leg builds. Same quality window and pass order as
+ * three-leg ranking. The game identity is the sorted set of every game id.
+ * Two- and three-leg ranking functions are not called from here.
+ */
+export function selectTupleShortlist(
+  tuples: RankedTuple[],
+  cap = QUICK_BUILD_SHORTLIST_CAP,
+  range?: AmericanOddsRange,
+): RankedTuple[] {
+  const sorted = tuples.slice().sort(compareTuples);
+  if (sorted.length === 0 || cap <= 0) return [];
+  const best = sorted[0]!.distanceToMidpoint;
+  const limit = range == null ? Number.POSITIVE_INFINITY : best + diversityQualitySlack(range);
+  const competitive: RankedTuple[] = [];
+  const remainder: RankedTuple[] = [];
+  for (const tuple of sorted) {
+    if (tuple.distanceToMidpoint <= limit + 1e-9) competitive.push(tuple);
+    else remainder.push(tuple);
+  }
+
+  const selected: RankedTuple[] = [];
+  const used = new Set<string>();
+  const exactLegs = new Set<string>();
+  const players = new Set<string>();
+  const markets = new Set<string>();
+  const gameSets = new Set<string>();
+
+  const freshExact = (tuple: RankedTuple) => tuple.legs.every((leg) => !exactLegs.has(exactLegKey(leg)));
+  const freshPlayers = (tuple: RankedTuple) => tuple.legs.every((leg) => !players.has(leg.playerId));
+  const addsMarket = (tuple: RankedTuple) => tuple.legs.some((leg) => !markets.has(leg.market));
+  const freshGames = (tuple: RankedTuple) => !gameSets.has(tuple.gameSet);
+
+  const take = (pool: readonly RankedTuple[], allow: (tuple: RankedTuple) => boolean) => {
+    for (const tuple of pool) {
+      if (selected.length >= cap) return;
+      if (used.has(tuple.id) || !allow(tuple)) continue;
+      selected.push(tuple);
+      used.add(tuple.id);
+      for (const leg of tuple.legs) {
+        exactLegs.add(exactLegKey(leg));
+        players.add(leg.playerId);
+        markets.add(leg.market);
+      }
+      gameSets.add(tuple.gameSet);
+    }
+  };
+
+  take(competitive, (tuple) => freshExact(tuple) && freshPlayers(tuple) && addsMarket(tuple) && freshGames(tuple));
+  take(competitive, (tuple) => freshExact(tuple) && freshPlayers(tuple) && addsMarket(tuple));
+  take(competitive, (tuple) => freshExact(tuple) && freshPlayers(tuple) && freshGames(tuple));
+  take(competitive, (tuple) => freshExact(tuple) && freshPlayers(tuple));
+  take(competitive, (tuple) => freshExact(tuple) && addsMarket(tuple));
+  take(competitive, (tuple) => freshExact(tuple));
+  take(competitive, () => true);
+  take(remainder, () => true);
+  return selected;
+}

@@ -262,7 +262,7 @@ describe('GET /api/parlay-workspace/quick-builds', () => {
     expect(otherWay.status).toBe(400);
     expect(await otherWay.json()).toMatchObject({ code: 'INVALID_PRESET' });
 
-    const badCount = await GET(ask('sportsbook=fanduel&legs=4&preset=midrange'));
+    const badCount = await GET(ask('sportsbook=fanduel&legs=6&preset=midrange'));
     expect(badCount.status).toBe(400);
     expect(await badCount.json()).toEqual({ error: 'Invalid leg count', code: 'INVALID_LEG_COUNT' });
     expect(loadResearchQuickBuilds).toHaveBeenCalledTimes(1);
@@ -283,5 +283,28 @@ describe('GET /api/parlay-workspace/quick-builds', () => {
       preset: 'longer_payout',
       gameIds: ['101', '102', '103'],
     });
+  });
+
+  it('accepts four and five legs with their own defaults and game minimums', async () => {
+    loadResearchQuickBuilds.mockResolvedValue({ status: 'empty', builds: [] });
+    const four = await GET(ask('sportsbook=draftkings&legs=4'));
+    expect(four.status).toBe(200);
+    expect(loadResearchQuickBuilds.mock.calls[0]?.[0]).toMatchObject({ legCount: 4, preset: 'four_middle' });
+    const five = await GET(ask('sportsbook=draftkings&legs=5'));
+    expect(five.status).toBe(400);
+    expect(await five.json()).toMatchObject({ code: 'FIVE_LEG_UNAVAILABLE' });
+    expect(loadResearchQuickBuilds).toHaveBeenCalledTimes(1);
+
+    const crossed = await GET(ask('sportsbook=draftkings&legs=4&preset=five_middle'));
+    expect(crossed.status).toBe(400);
+    expect(await crossed.json()).toMatchObject({ code: 'INVALID_PRESET' });
+    const unknown = await GET(ask('sportsbook=draftkings&legs=5&preset=safe_bet'));
+    expect(unknown.status).toBe(400);
+    expect(await unknown.json()).toMatchObject({ code: 'FIVE_LEG_UNAVAILABLE' });
+
+    const short = await GET(ask('sportsbook=draftkings&legs=4&preset=four_middle&games=1,2,3'));
+    expect(short.status).toBe(400);
+    expect(await short.json()).toMatchObject({ code: 'NEED_FOUR_GAMES' });
+    expect(loadResearchQuickBuilds).toHaveBeenCalledTimes(1);
   });
 });

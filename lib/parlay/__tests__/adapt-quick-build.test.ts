@@ -224,4 +224,59 @@ describe('adaptQuickBuildLeg', () => {
     expect(pending.status).toBe('needs_confirmation');
     expect(getParlaySelectionLegs()).toHaveLength(3);
   });
+
+  it('replaces a ticket with four or five legs and rejects one invalid leg', () => {
+    const names = ['Jayson Tatum', 'Jaylen Brown', 'Derrick White', 'Jrue Holiday', 'Al Horford'];
+    const legs = names.map((playerName, index) => leg({
+      playerId: String(11 + index),
+      playerName,
+      gameId: `g${index + 1}`,
+      market: index % 2 === 0 ? 'points' : 'rebounds',
+      line: 10.5 + index,
+    })) as [
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+    ];
+    const five = handoffQuickBuildSelection({ current: [], legs, nowMs: NOW, confirmed: true });
+    expect(five.status).toBe('replaced');
+    if (five.status !== 'replaced') return;
+    expect(five.legs).toHaveLength(5);
+    expect(five.legs.every((row) => row.offer.snapshotKind === 'research_snapshot')).toBe(true);
+    expect(shouldRequestCurrentParlayPrices(five.legs)).toBe(false);
+
+    const four = handoffQuickBuildSelection({
+      current: five.legs,
+      legs: [legs[0], legs[1], legs[2], legs[3]],
+      nowMs: NOW,
+      confirmed: false,
+    });
+    expect(four.status).toBe('needs_confirmation');
+    const confirmed = handoffQuickBuildSelection({
+      current: five.legs,
+      legs: [legs[0], legs[1], legs[2], legs[3]],
+      nowMs: NOW,
+      confirmed: true,
+    });
+    expect(confirmed.status).toBe('replaced');
+    if (confirmed.status !== 'replaced') return;
+    expect(confirmed.legs).toHaveLength(4);
+
+    const duplicate = handoffQuickBuildSelection({
+      current: [],
+      legs: [legs[0], legs[1], legs[2], { ...legs[3], playerId: legs[0].playerId, playerName: legs[0].playerName }],
+      nowMs: NOW,
+      confirmed: true,
+    });
+    expect(duplicate.status).toBe('rejected');
+    const started = handoffQuickBuildSelection({
+      current: [],
+      legs: [legs[0], legs[1], legs[2], { ...legs[3], gameStatus: 'In Progress' }],
+      nowMs: NOW,
+      confirmed: true,
+    });
+    expect(started.status).toBe('tipped');
+  });
 });

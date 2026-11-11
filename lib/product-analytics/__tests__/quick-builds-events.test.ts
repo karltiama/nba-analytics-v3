@@ -302,4 +302,36 @@ describe('quick build event privacy', () => {
     expect(track.mock.calls[0]?.[1]).toEqual(search);
     expect(track.mock.calls[1]?.[1]).toEqual(handoff);
   });
+
+  it('emits four- and five-leg counts without private leg details', () => {
+    const search = quickBuildsSearchEvent({
+      accepted: true,
+      sportsbook: 'fanduel',
+      preset: 'four_middle',
+      legCount: 4,
+      kind: 'ok',
+      buildCount: 5,
+      emptyReason: null,
+      ageMs: 60_000,
+    });
+    const handoff = quickBuildsHandoffEvent({
+      status: 'replaced',
+      sportsbook: 'caesars',
+      preset: 'five_longer',
+      legCount: 5,
+    });
+    expect(search).toMatchObject({ leg_count: 4, preset: 'four_middle', build_count: 5 });
+    expect(handoff).toMatchObject({ leg_count: 5, preset: 'five_longer' });
+    expect(JSON.stringify({ search, handoff })).not.toMatch(/player|gameId|oddsAmerican/);
+    expect(quickBuildsSearchEvent({
+      accepted: true,
+      sportsbook: 'fanduel',
+      preset: 'four_middle',
+      legCount: 4,
+      kind: 'aborted',
+      buildCount: 0,
+      emptyReason: null,
+      ageMs: null,
+    })).toBeNull();
+  });
 });

@@ -21,6 +21,7 @@ import {
   invalidatePreview,
   parseSlateGames,
   previewScopeKey,
+  legModeLabel,
   payoutOptionsFor,
   searchBlockReason,
   selectLegCount,
@@ -103,6 +104,10 @@ export const QUICK_BUILD_REPLACE_COPY =
   'Your current ticket will be replaced with this two-leg Research Snapshot. The legs already on My Parlay will be removed.';
 export const QUICK_BUILD_REPLACE_THREE_COPY =
   'Your current ticket will be replaced with this three-leg Research Snapshot. The legs already on My Parlay will be removed.';
+export const QUICK_BUILD_REPLACE_FOUR_COPY =
+  'Your current ticket will be replaced with this four-leg Research Snapshot. The legs already on My Parlay will be removed.';
+export const QUICK_BUILD_REPLACE_FIVE_COPY =
+  'Your current ticket will be replaced with this five-leg Research Snapshot. The legs already on My Parlay will be removed.';
 export const QUICK_BUILD_TIPPED_COPY =
   'This build includes a game that has already tipped, so it was not added.';
 export const QUICK_BUILD_UNAVAILABLE_TITLE = 'Build unavailable for Workspace';
@@ -255,7 +260,7 @@ export function QuickBuildsPreview({
             sportsbook: captured.sportsbook,
             preset: captured.preset,
             legCount: captured.legCount,
-            kind: result.kind === 'ineligible' || result.kind === 'need_two' || result.kind === 'need_three' ? 'invalid' : result.kind,
+            kind: result.kind === 'ineligible' || result.kind === 'need_two' || result.kind === 'need_three' || result.kind === 'need_four' || result.kind === 'need_five' ? 'invalid' : result.kind,
             buildCount: result.kind === 'ok' ? result.view.builds.length : 0,
             emptyReason: result.kind === 'empty' ? result.view.emptyReason : null,
             ageMs: result.kind === 'ok' ? observed.ageMs : null,
@@ -328,6 +333,9 @@ export function QuickBuildsPreview({
             </ChoiceButton>
             <ChoiceButton pressed={model.legCount === 3} onClick={() => chooseLegCount(3)}>
               3 Legs
+            </ChoiceButton>
+            <ChoiceButton pressed={model.legCount === 4} onClick={() => chooseLegCount(4)}>
+              4 Legs
             </ChoiceButton>
           </div>
         </fieldset>
@@ -409,7 +417,7 @@ export function QuickBuildsPreview({
       <QuickBuildReplaceDialog
         dialogRef={dialogRef}
         pending={pending != null}
-        legCount={pending?.legs.length === 3 ? 3 : 2}
+        legCount={pending?.legs.length === 5 ? 5 : pending?.legs.length === 4 ? 4 : pending?.legs.length === 3 ? 3 : 2}
         onCancel={cancelReplace}
         onConfirm={() => {
           if (pending) applyBuild(pending.legs, true, pending.attribution);
@@ -600,7 +608,7 @@ function BuildCard({
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="type-section-heading text-[#063f46]">Build {build.number}</h3>
         <p className="type-metadata">
-          {sportsbookLabel} · {build.legs.length === 3 ? 'Three-leg' : 'Two-leg'} · Research Snapshot
+          {sportsbookLabel} · {legModeLabel(build.legs.length)} · Research Snapshot
         </p>
       </header>
       {build.displayReady ? null : (
@@ -664,6 +672,13 @@ function BuildCard({
   );
 }
 
+export function replaceCopy(legCount: 2 | 3 | 4 | 5): string {
+  if (legCount === 5) return QUICK_BUILD_REPLACE_FIVE_COPY;
+  if (legCount === 4) return QUICK_BUILD_REPLACE_FOUR_COPY;
+  if (legCount === 3) return QUICK_BUILD_REPLACE_THREE_COPY;
+  return QUICK_BUILD_REPLACE_COPY;
+}
+
 export function QuickBuildReplaceDialog({
   dialogRef,
   pending,
@@ -673,7 +688,7 @@ export function QuickBuildReplaceDialog({
 }: {
   dialogRef?: { current: HTMLDialogElement | null };
   pending: boolean;
-  legCount?: 2 | 3;
+  legCount?: 2 | 3 | 4 | 5;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -691,7 +706,7 @@ export function QuickBuildReplaceDialog({
       <h2 id="quick-build-replace-title" className="type-section-heading text-[#063f46]">
         {QUICK_BUILD_REPLACE_TITLE}
       </h2>
-      <p className="type-body mt-2 text-cc-secondary">{legCount === 3 ? QUICK_BUILD_REPLACE_THREE_COPY : QUICK_BUILD_REPLACE_COPY}</p>
+      <p className="type-body mt-2 text-cc-secondary">{replaceCopy(legCount)}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"

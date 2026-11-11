@@ -228,9 +228,15 @@ export type QuickBuildAnalyticsPreset =
   | 'higher_payout'
   | 'shorter_payout'
   | 'midrange'
-  | 'longer_payout';
+  | 'longer_payout'
+  | 'four_shorter'
+  | 'four_middle'
+  | 'four_longer'
+  | 'five_shorter'
+  | 'five_middle'
+  | 'five_longer';
 
-export type QuickBuildAnalyticsLegCount = 2 | 3;
+export type QuickBuildAnalyticsLegCount = 2 | 3 | 4 | 5;
 
 export type QuickBuildAgeBucket =
   | 'under_5m'
