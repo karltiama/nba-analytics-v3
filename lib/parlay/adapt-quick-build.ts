@@ -55,8 +55,18 @@ export type AdaptQuickBuildLegResult =
   | { ok: true; leg: SelectedParlayLeg }
   | { ok: false; code: QuickBuildHandoffCode };
 
+export type QuickBuildHandoffLegs =
+  | readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg]
+  | readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg, QuickBuildHandoffLeg];
+
 export type QuickBuildHandoffResult =
   | { status: 'replaced'; legs: [SelectedParlayLeg, SelectedParlayLeg] }
+  | { status: 'needs_confirmation' }
+  | { status: 'tipped' }
+  | { status: 'rejected'; code: QuickBuildHandoffCode };
+
+export type QuickBuildSelectionHandoffResult =
+  | { status: 'replaced'; legs: [SelectedParlayLeg, SelectedParlayLeg] | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg] }
   | { status: 'needs_confirmation' }
   | { status: 'tipped' }
   | { status: 'rejected'; code: QuickBuildHandoffCode };
@@ -147,15 +157,31 @@ export function adaptQuickBuildLeg(input: QuickBuildHandoffLeg): AdaptQuickBuild
 export function assessQuickBuildPair(
   legs: readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg],
 ): { ok: true; legs: [SelectedParlayLeg, SelectedParlayLeg] } | { ok: false; code: QuickBuildHandoffCode } {
-  const first = adaptQuickBuildLeg(legs[0]);
-  if (!first.ok) return first;
-  const second = adaptQuickBuildLeg(legs[1]);
-  if (!second.ok) return second;
-  if (first.leg.offer.wagerIdentity === second.leg.offer.wagerIdentity) {
-    return { ok: false, code: 'DUPLICATE_LEG' };
+  const assessed = assessQuickBuildSelection(legs);
+  if (!assessed.ok) return assessed;
+  return { ok: true, legs: [assessed.legs[0], assessed.legs[1]] };
+}
+
+/** Validates every leg before any replacement. One failure rejects the whole build. */
+export function assessQuickBuildSelection(
+  legs: QuickBuildHandoffLegs,
+): { ok: true; legs: [SelectedParlayLeg, SelectedParlayLeg] | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg] } | { ok: false; code: QuickBuildHandoffCode } {
+  const adapted = legs.map((leg) => adaptQuickBuildLeg(leg));
+  for (const result of adapted) {
+    if (!result.ok) return result;
+  }
+  const ready = adapted.map((result) => (result.ok ? result.leg : null));
+  const identities = new Set<string>();
+  for (const leg of ready) {
+    if (leg == null) return { ok: false, code: 'NOT_DISPLAY_READY' };
+    if (identities.has(leg.offer.wagerIdentity)) return { ok: false, code: 'DUPLICATE_LEG' };
+    identities.add(leg.offer.wagerIdentity);
   }
   if (!gameStarts(legs)) return { ok: false, code: 'MISSING_GAME_START' };
-  return { ok: true, legs: [first.leg, second.leg] };
+  if (legs.length === 3) {
+    return { ok: true, legs: [ready[0]!, ready[1]!, ready[2]!] };
+  }
+  return { ok: true, legs: [ready[0]!, ready[1]!] };
 }
 
 /**
@@ -170,8 +196,20 @@ export function handoffQuickBuild(input: {
   nowMs: number;
   confirmed: boolean;
 }): QuickBuildHandoffResult {
-  const pair = assessQuickBuildPair(input.legs);
-  if (!pair.ok) return { status: 'rejected', code: pair.code };
+  const result = handoffQuickBuildSelection(input);
+  if (result.status !== 'replaced') return result;
+  return { status: 'replaced', legs: [result.legs[0], result.legs[1]] };
+}
+
+/** Same replacement rules as the two-leg handoff, for either two or three legs. */
+export function handoffQuickBuildSelection(input: {
+  current: readonly SelectedParlayLeg[];
+  legs: QuickBuildHandoffLegs;
+  nowMs: number;
+  confirmed: boolean;
+}): QuickBuildSelectionHandoffResult {
+  const assessed = assessQuickBuildSelection(input.legs);
+  if (!assessed.ok) return { status: 'rejected', code: assessed.code };
 
   const start = gameStarts(input.legs);
   if (!start) return { status: 'rejected', code: 'MISSING_GAME_START' };
@@ -180,7 +218,7 @@ export function handoffQuickBuild(input: {
   }
 
   if (input.current.length > 0 && !input.confirmed) return { status: 'needs_confirmation' };
-  return { status: 'replaced', legs: pair.legs };
+  return { status: 'replaced', legs: assessed.legs };
 }
 
 function canonicalId(value: string | number | null | undefined): string | null {
@@ -208,7 +246,7 @@ function asXrayKind(raw: string): XrayPropKind | null {
 }
 
 function gameStarts(
-  legs: readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg]
+  legs: readonly QuickBuildHandoffLeg[]
 ): { startMs: number; status: string | null }[] | null {
   const starts = legs.map((leg) => {
     const startMs = Date.parse((leg.gameStartTime ?? '').trim());

@@ -47,7 +47,7 @@ import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
 import { WorkspaceTrueCost } from '@/components/parlay/WorkspaceTrueCost';
 import { LegContextBody, WorkspaceDrawer } from './WorkspaceDrawer';
-import { handoffQuickBuild, type QuickBuildHandoffLeg } from '@/lib/parlay/adapt-quick-build';
+import { handoffQuickBuildSelection, type QuickBuildHandoffLegs } from '@/lib/parlay/adapt-quick-build';
 import { initialPreviewModel, type PreviewModel } from '@/lib/quick-builds/preview';
 import { QuickBuildsPreview, WorkspaceModeSwitch, type WorkspaceMode } from './QuickBuildsPreview';
 import { WorkspaceSamplePreview } from './WorkspaceSamplePreview';
@@ -184,8 +184,8 @@ export function ParlayWorkspaceView({
     />
   );
 
-  function useQuickBuild(nextLegs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg], confirmed: boolean) {
-    const result = handoffQuickBuild({ current: legs, legs: nextLegs, nowMs: Date.now(), confirmed });
+  function useQuickBuild(nextLegs: QuickBuildHandoffLegs, confirmed: boolean) {
+    const result = handoffQuickBuildSelection({ current: legs, legs: nextLegs, nowMs: Date.now(), confirmed });
     if (result.status === 'replaced') {
       onReplaceQuickBuild?.(result.legs);
       if (workspaceMode === undefined) setUncontrolledMode('mine');

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { canonicalOfferIdentity, canonicalWagerIdentity } from '../adapt-props-explorer-offer';
-import { adaptQuickBuildLeg, assessQuickBuildPair, handoffQuickBuild, type QuickBuildHandoffLeg } from '../adapt-quick-build';
+import { adaptQuickBuildLeg, assessQuickBuildPair, handoffQuickBuild, handoffQuickBuildSelection, type QuickBuildHandoffLeg } from '../adapt-quick-build';
+import { shouldRequestCurrentParlayPrices } from '../research-snapshot-cost';
 import { snapshotDisplayLabel, workspaceSourceLabel } from '../selection';
 import {
   getParlaySelectionLegs,
@@ -184,5 +185,43 @@ describe('adaptQuickBuildLeg', () => {
       confirmed: false,
     });
     expect(futureUnknown.status).toBe('replaced');
+  });
+
+  it('replaces an empty ticket with three legs and rejects the whole build when one leg fails', () => {
+    const legs = [
+      leg({ playerId: '11', gameId: 'g1' }),
+      leg({ playerId: '22', playerName: 'Jaylen Brown', gameId: 'g2', market: 'rebounds' }),
+      leg({ playerId: '33', playerName: 'Derrick White', gameId: 'g3', market: 'assists', oddsAmerican: 120 }),
+    ] as [QuickBuildHandoffLeg, QuickBuildHandoffLeg, QuickBuildHandoffLeg];
+    const replaced = handoffQuickBuildSelection({ current: [], legs, nowMs: NOW, confirmed: false });
+    expect(replaced.status).toBe('replaced');
+    if (replaced.status !== 'replaced') return;
+    expect(replaced.legs).toHaveLength(3);
+    expect(replaced.legs.map((row) => row.offer.oddsAmerican)).toEqual([-115, -115, 120]);
+    expect(replaced.legs.every((row) => row.offer.snapshotAt === OBSERVED)).toBe(true);
+    expect(replaced.legs.every((row) => row.offer.snapshotKind === 'research_snapshot')).toBe(true);
+    expect(shouldRequestCurrentParlayPrices(replaced.legs)).toBe(false);
+
+    const invalid = handoffQuickBuildSelection({
+      current: [],
+      legs: [legs[0], legs[1], { ...legs[2], observedAt: null }],
+      nowMs: NOW,
+      confirmed: true,
+    });
+    expect(invalid.status).toBe('rejected');
+    expect(getParlaySelectionLegs()).toEqual([]);
+
+    const tipped = handoffQuickBuildSelection({
+      current: [],
+      legs: [legs[0], legs[1], { ...legs[2], gameStartTime: '2026-11-09T17:00:00.000Z' }],
+      nowMs: NOW,
+      confirmed: true,
+    });
+    expect(tipped.status).toBe('tipped');
+
+    replaceParlaySelectionLegs(replaced.legs);
+    const pending = handoffQuickBuildSelection({ current: getParlaySelectionLegs(), legs, nowMs: NOW, confirmed: false });
+    expect(pending.status).toBe('needs_confirmation');
+    expect(getParlaySelectionLegs()).toHaveLength(3);
   });
 });

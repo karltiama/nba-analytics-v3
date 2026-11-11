@@ -5,7 +5,7 @@
 
 import { formatAmericanOdds, formatMarketLine } from '@/lib/betting/market-movement-format';
 import type { PlayerPropV1Vendor } from '@/lib/betting/market-movement';
-import { assessQuickBuildPair, type QuickBuildHandoffLeg } from '@/lib/parlay/adapt-quick-build';
+import { assessQuickBuildSelection, type QuickBuildHandoffLeg, type QuickBuildHandoffLegs } from '@/lib/parlay/adapt-quick-build';
 import { XRAY_PROP_KIND_LABEL, type XrayPropKind } from '@/lib/parlay-xray/types';
 import {
   QUICK_BUILD_DISPLAY_GAPS,
@@ -15,9 +15,11 @@ import {
   QUICK_BUILD_EMPTY_REASONS,
   QUICK_BUILD_PRESETS,
   QUICK_BUILD_SHORTLIST_CAP,
+  QUICK_BUILD_SEARCH_BUDGET_NOTE,
   type BlockingAttemptKind,
   type QuickBuildEmptyReason,
   type QuickBuildPresetName,
+  type QuickBuildThreeLegPresetName,
 } from './types';
 
 export const QUICK_BUILD_BOOK_OPTIONS = [
@@ -37,8 +39,30 @@ export const QUICK_BUILD_PAYOUT_OPTIONS = [
   rangeLabel: string;
 }[];
 
+export const QUICK_BUILD_THREE_LEG_PAYOUT_OPTIONS = [
+  { preset: 'shorter_payout', label: 'Shorter Payout', rangeLabel: '+200 to +399' },
+  { preset: 'midrange', label: 'Midrange', rangeLabel: '+400 to +699' },
+  { preset: 'longer_payout', label: 'Longer Payout', rangeLabel: '+700 to +999' },
+] as const satisfies readonly {
+  preset: QuickBuildThreeLegPresetName;
+  label: string;
+  rangeLabel: string;
+}[];
+
+export type QuickBuildLegCount = 2 | 3;
+export type QuickBuildAnyPresetName = QuickBuildPresetName | QuickBuildThreeLegPresetName;
+
 export const QUICK_BUILD_DEFAULT_BOOK: PlayerPropV1Vendor = 'draftkings';
 export const QUICK_BUILD_DEFAULT_PRESET: QuickBuildPresetName = 'balanced';
+export const QUICK_BUILD_DEFAULT_THREE_LEG_PRESET: QuickBuildThreeLegPresetName = 'midrange';
+
+export function payoutOptionsFor(legCount: QuickBuildLegCount) {
+  return legCount === 3 ? QUICK_BUILD_THREE_LEG_PAYOUT_OPTIONS : QUICK_BUILD_PAYOUT_OPTIONS;
+}
+
+export function defaultPresetFor(legCount: QuickBuildLegCount): QuickBuildAnyPresetName {
+  return legCount === 3 ? QUICK_BUILD_DEFAULT_THREE_LEG_PRESET : QUICK_BUILD_DEFAULT_PRESET;
+}
 
 export const QUICK_BUILD_RESEARCH_SNAPSHOT_COPY =
   'Based on previously observed sportsbook prices. Lines may have changed.';
@@ -60,11 +84,20 @@ export const QUICK_BUILD_EMPTY_COPY: Record<QuickBuildEmptyReason, string> = {
   NO_ELIGIBLE_MARKETS: "We couldn't find enough eligible two-sided player prop markets for this sportsbook.",
   NO_CROSS_GAME: 'At least two eligible games are needed to construct a Quick Build.',
   NO_PAIRS_IN_BAND: 'No observed two-leg combinations matched this payout range.',
+  NO_COMBINATIONS_IN_BAND: 'No observed three-leg combinations matched this payout range.',
+  SEARCH_BUDGET_REACHED: 'The search stopped before it could confirm whether this payout range has a combination. This is not an empty market.',
 };
+
+export function emptyCopyFor(reason: QuickBuildEmptyReason, legCount: QuickBuildLegCount): string {
+  if (reason === 'NO_CROSS_GAME' && legCount === 3) {
+    return 'At least three eligible games are needed to construct a three-leg Quick Build.';
+  }
+  return QUICK_BUILD_EMPTY_COPY[reason];
+}
 
 /** Extra guidance for Lower Payout only. The empty reason itself stays unchanged. */
 export function lowerPayoutEmptySuggestion(
-  preset: QuickBuildPresetName,
+  preset: QuickBuildAnyPresetName,
   reason: QuickBuildEmptyReason | null,
 ): string | null {
   if (preset === 'higher_hit_chance' && reason === 'NO_PAIRS_IN_BAND') {
@@ -111,13 +144,13 @@ export type QuickBuildPreviewCard = {
   newestObservedLabel: string;
   oldestAgeLabel: string;
   warning: string | null;
-  legs: [QuickBuildPreviewLeg, QuickBuildPreviewLeg];
+  legs: [QuickBuildPreviewLeg, QuickBuildPreviewLeg] | [QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg];
   /**
-   * Present only when both legs pass canonical handoff validation.
+   * Present only when every leg passes canonical handoff validation.
    * Display-ready cards can still omit this when a market, book, or price cannot be transferred.
    * Not rendered as an id.
    */
-  handoff: [QuickBuildHandoffLeg, QuickBuildHandoffLeg] | null;
+  handoff: QuickBuildHandoffLegs | null;
 };
 
 export type QuickBuildPreviewView = {
@@ -126,6 +159,7 @@ export type QuickBuildPreviewView = {
   emptyReason: QuickBuildEmptyReason | null;
   emptyMessage: string | null;
   researchLimitation: string | null;
+  boundedSearchNote: string | null;
   builds: QuickBuildPreviewCard[];
 };
 
@@ -135,6 +169,7 @@ export type QuickBuildFetchResult =
   | { kind: 'unauthorized' }
   | { kind: 'invalid' }
   | { kind: 'need_two' }
+  | { kind: 'need_three' }
   | { kind: 'ineligible' }
   | { kind: 'limit' }
   | { kind: 'server' }
@@ -155,7 +190,8 @@ export type SlateGameView = {
 
 export type PreviewModel = {
   sportsbook: PlayerPropV1Vendor;
-  preset: QuickBuildPresetName;
+  legCount: QuickBuildLegCount;
+  preset: QuickBuildAnyPresetName;
   scope: PreviewGameScope;
   selectedGameIds: string[];
   slatePhase: 'idle' | 'loading' | 'ready' | 'error';
@@ -170,6 +206,7 @@ export type PreviewModel = {
 export function initialPreviewModel(): PreviewModel {
   return {
     sportsbook: QUICK_BUILD_DEFAULT_BOOK,
+    legCount: 2,
     preset: QUICK_BUILD_DEFAULT_PRESET,
     scope: 'all',
     selectedGameIds: [],
@@ -186,7 +223,9 @@ export function initialPreviewModel(): PreviewModel {
 export const QUICK_BUILD_GAMES_PATH = '/api/parlay-workspace/quick-builds/games';
 
 export const QUICK_BUILD_SELECT_TWO_COPY = 'Select at least two matchups.';
+export const QUICK_BUILD_SELECT_THREE_COPY = 'Select at least three matchups.';
 export const QUICK_BUILD_ONE_GAME_COPY = 'Cross-game Quick Builds need at least two games.';
+export const QUICK_BUILD_NEED_THREE_GAMES_COPY = 'Three-leg Quick Builds need at least three eligible games.';
 export const QUICK_BUILD_NO_GAMES_COPY = 'There are no upcoming eligible NBA games in this slate.';
 export const QUICK_BUILD_REFRESH_GAMES_COPY = 'A selected game is no longer eligible. Refresh the game list and choose again.';
 export const QUICK_BUILD_MATCHUP_UNAVAILABLE = 'Matchup unavailable';
@@ -200,22 +239,41 @@ export function toggleSelectedGame(ids: readonly string[], gameId: string): stri
   return [...next].sort();
 }
 
-export function searchBlockReason(model: Pick<PreviewModel, 'scope' | 'selectedGameIds' | 'slatePhase' | 'slateGames'>): string | null {
-  if (model.scope !== 'select') return null;
+export function searchBlockReason(
+  model: Pick<PreviewModel, 'scope' | 'selectedGameIds' | 'slatePhase' | 'slateGames' | 'legCount'>,
+): string | null {
+  const required = model.legCount === 3 ? 3 : 2;
+  if (model.scope !== 'select') {
+    if (model.legCount === 3 && model.slatePhase === 'ready' && model.slateGames.length > 0 && model.slateGames.length < 3) {
+      return QUICK_BUILD_NEED_THREE_GAMES_COPY;
+    }
+    return null;
+  }
   if (model.slatePhase === 'ready' && model.slateGames.length === 0) return QUICK_BUILD_NO_GAMES_COPY;
-  if (model.slatePhase === 'ready' && model.slateGames.length === 1) return QUICK_BUILD_ONE_GAME_COPY;
-  if (model.selectedGameIds.length < 2) return QUICK_BUILD_SELECT_TWO_COPY;
+  if (model.slatePhase === 'ready' && model.slateGames.length < required) {
+    return model.legCount === 3 ? QUICK_BUILD_NEED_THREE_GAMES_COPY : QUICK_BUILD_ONE_GAME_COPY;
+  }
+  if (model.selectedGameIds.length < required) {
+    return model.legCount === 3 ? QUICK_BUILD_SELECT_THREE_COPY : QUICK_BUILD_SELECT_TWO_COPY;
+  }
   return null;
+}
+
+export function selectLegCount(state: PreviewModel, legCount: QuickBuildLegCount): PreviewModel {
+  if (state.legCount === legCount) return state;
+  return invalidatePreview(state, { legCount, preset: defaultPresetFor(legCount) });
 }
 
 export function previewRequestPath(
   sportsbook: PlayerPropV1Vendor,
-  preset: QuickBuildPresetName,
+  preset: QuickBuildAnyPresetName,
   gameIds?: readonly string[],
+  legCount: QuickBuildLegCount = 2,
 ): string {
   const base = `/api/parlay-workspace/quick-builds?sportsbook=${encodeURIComponent(sportsbook)}&preset=${encodeURIComponent(preset)}`;
-  if (gameIds == null) return base;
-  return `${base}&games=${encodeURIComponent(gameIds.join(','))}`;
+  const withLegs = legCount === 3 ? `${base}&legs=3` : base;
+  if (gameIds == null) return withLegs;
+  return `${withLegs}&games=${encodeURIComponent(gameIds.join(','))}`;
 }
 
 export function parseSlateGames(data: unknown): SlateGameView[] | null {
@@ -296,13 +354,17 @@ export function parseQuickBuildResponse(data: unknown): QuickBuildPreviewView | 
     if (!card) return null;
     builds.push(card);
   }
-  const limitation = Array.isArray(data.limitations) && typeof data.limitations[0] === 'string' ? data.limitations[0] : null;
+  const limitations = Array.isArray(data.limitations)
+    ? data.limitations.filter((item): item is string => typeof item === 'string')
+    : [];
+  const limitation = limitations[0] ?? null;
   return {
     generatedAtLabel: formatEtTimestamp(data.generatedAt) as string,
     sportsbookLabel: bookLabel(sportsbook),
     emptyReason: data.status === 'empty' ? (emptyReason as QuickBuildEmptyReason) : null,
-    emptyMessage: data.status === 'empty' ? QUICK_BUILD_EMPTY_COPY[emptyReason as QuickBuildEmptyReason] : null,
+    emptyMessage: data.status === 'empty' ? emptyCopyFor(emptyReason as QuickBuildEmptyReason, 2) : null,
     researchLimitation: limitation,
+    boundedSearchNote: limitations.includes(QUICK_BUILD_SEARCH_BUDGET_NOTE) ? QUICK_BUILD_SEARCH_BUDGET_NOTE : null,
     builds,
   };
 }
@@ -315,6 +377,8 @@ export function previewErrorMessage(kind: Exclude<QuickBuildFetchResult['kind'],
       return 'That sportsbook or payout target is not supported.';
     case 'need_two':
       return QUICK_BUILD_SELECT_TWO_COPY;
+    case 'need_three':
+      return QUICK_BUILD_SELECT_THREE_COPY;
     case 'ineligible':
       return QUICK_BUILD_REFRESH_GAMES_COPY;
     case 'limit':
@@ -334,14 +398,16 @@ export function previewErrorMessage(kind: Exclude<QuickBuildFetchResult['kind'],
 
 export async function fetchQuickBuilds(args: {
   sportsbook: PlayerPropV1Vendor;
-  preset: QuickBuildPresetName;
+  preset: QuickBuildAnyPresetName;
+  legCount?: QuickBuildLegCount;
   gameIds?: readonly string[];
   signal?: AbortSignal;
   fetchImpl?: typeof fetch;
 }): Promise<QuickBuildFetchResult> {
   const fetchImpl = args.fetchImpl ?? fetch;
+  const legCount = args.legCount ?? 2;
   try {
-    const response = await fetchImpl(previewRequestPath(args.sportsbook, args.preset, args.gameIds), {
+    const response = await fetchImpl(previewRequestPath(args.sportsbook, args.preset, args.gameIds, legCount), {
       method: 'GET',
       headers: { accept: 'application/json' },
       cache: 'no-store',
@@ -354,6 +420,7 @@ export async function fetchQuickBuilds(args: {
     }
     if (response.status === 400) {
       const body = await readJson(response);
+      if (isRecord(body) && body.code === 'NEED_THREE_GAMES') return { kind: 'need_three' };
       return isRecord(body) && body.code === 'NEED_TWO_GAMES' ? { kind: 'need_two' } : { kind: 'invalid' };
     }
     if (response.status === 422) {
@@ -365,6 +432,7 @@ export async function fetchQuickBuilds(args: {
     if (body === undefined) return { kind: 'malformed' };
     const view = parseQuickBuildResponse(body);
     if (!view) return { kind: 'malformed' };
+    if (view.emptyReason) view.emptyMessage = emptyCopyFor(view.emptyReason, legCount);
     return view.emptyReason ? { kind: 'empty', view } : { kind: 'ok', view };
   } catch (error: unknown) {
     if (isAbortError(error)) return { kind: 'aborted' };
@@ -384,7 +452,8 @@ export function invalidatePreview(
   state: PreviewModel,
   patch: {
     sportsbook?: PlayerPropV1Vendor;
-    preset?: QuickBuildPresetName;
+    preset?: QuickBuildAnyPresetName;
+    legCount?: QuickBuildLegCount;
     scope?: PreviewGameScope;
     selectedGameIds?: string[];
   },
@@ -392,6 +461,7 @@ export function invalidatePreview(
   return {
     ...state,
     sportsbook: patch.sportsbook ?? state.sportsbook,
+    legCount: patch.legCount ?? state.legCount,
     preset: patch.preset ?? state.preset,
     scope: patch.scope ?? state.scope,
     selectedGameIds: patch.selectedGameIds ?? state.selectedGameIds,
@@ -404,11 +474,12 @@ export function invalidatePreview(
 
 export function acceptPreviewResult(
   state: PreviewModel,
-  request: { requestId: number; sportsbook: PlayerPropV1Vendor; preset: QuickBuildPresetName; scopeKey?: string },
+  request: { requestId: number; sportsbook: PlayerPropV1Vendor; preset: QuickBuildAnyPresetName; legCount?: QuickBuildLegCount; scopeKey?: string },
   result: QuickBuildFetchResult,
 ): PreviewModel {
   if (state.requestId !== request.requestId) return state;
   if (state.sportsbook !== request.sportsbook || state.preset !== request.preset) return state;
+  if (request.legCount != null && request.legCount !== state.legCount) return state;
   if (request.scopeKey != null && request.scopeKey !== previewScopeKey(state.scope, state.selectedGameIds)) return state;
   if (result.kind === 'aborted') return state;
   if (result.kind === 'ok' || result.kind === 'empty') {
@@ -423,15 +494,16 @@ function parseBuild(raw: unknown, number: number, games: Map<string, NewerAttemp
   if (typeof raw.oldestObservedAt !== 'string' || formatEtTimestamp(raw.oldestObservedAt) == null) return null;
   if (typeof raw.newestObservedAt !== 'string' || formatEtTimestamp(raw.newestObservedAt) == null) return null;
   if (!isFiniteNumber(raw.maxAgeMs) || raw.maxAgeMs < 0) return null;
-  if (!Array.isArray(raw.legs) || raw.legs.length !== 2) return null;
-  const first = parseLeg(raw.legs[0]);
-  const second = parseLeg(raw.legs[1]);
-  if (!first || !second) return null;
+  if (!Array.isArray(raw.legs) || (raw.legs.length !== 2 && raw.legs.length !== 3)) return null;
+  const parsed = raw.legs.map((entry) => parseLeg(entry));
+  if (parsed.some((entry) => entry == null)) return null;
+  const readyLegs = parsed as NonNullable<(typeof parsed)[number]>[];
   const age = formatObservationAge(raw.maxAgeMs);
   if (!age) return null;
-  const displayReady = first.ready && second.ready;
-  const candidate = displayReady ? handoffPair(raw.legs[0], raw.legs[1]) : null;
-  const handoff = candidate && assessQuickBuildPair(candidate).ok ? candidate : null;
+  const displayReady = readyLegs.every((entry) => entry.ready);
+  const candidate = displayReady ? handoffLegs(raw.legs) : null;
+  const handoff = candidate && assessQuickBuildSelection(candidate).ok ? candidate : null;
+  const previewLegs = readyLegs.map((entry) => entry.leg);
   return {
     id: raw.id,
     number,
@@ -441,17 +513,21 @@ function parseBuild(raw: unknown, number: number, games: Map<string, NewerAttemp
     oldestObservedLabel: formatEtTimestamp(raw.oldestObservedAt) as string,
     newestObservedLabel: formatEtTimestamp(raw.newestObservedAt) as string,
     oldestAgeLabel: age,
-    warning: warningFor([first.gameId, second.gameId], games),
-    legs: [first.leg, second.leg],
+    warning: warningFor(readyLegs.map((entry) => entry.gameId), games),
+    legs: previewLegs.length === 3
+      ? [previewLegs[0]!, previewLegs[1]!, previewLegs[2]!]
+      : [previewLegs[0]!, previewLegs[1]!],
     handoff,
   };
 }
 
-function handoffPair(first: unknown, second: unknown): [QuickBuildHandoffLeg, QuickBuildHandoffLeg] | null {
-  const left = handoffLeg(first);
-  const right = handoffLeg(second);
-  if (!left || !right) return null;
-  return [left, right];
+function handoffLegs(rawLegs: unknown[]): QuickBuildHandoffLegs | null {
+  const adapted = rawLegs.map((raw) => handoffLeg(raw));
+  if (adapted.some((leg) => leg == null)) return null;
+  const legs = adapted as QuickBuildHandoffLeg[];
+  if (legs.length === 3) return [legs[0]!, legs[1]!, legs[2]!];
+  if (legs.length === 2) return [legs[0]!, legs[1]!];
+  return null;
 }
 
 function handoffLeg(raw: unknown): QuickBuildHandoffLeg | null {

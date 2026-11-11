@@ -226,4 +226,62 @@ describe('GET /api/parlay-workspace/quick-builds', () => {
     expect(body).toEqual({ error: 'Quick builds unavailable' });
     expect(JSON.stringify(body)).not.toContain('secret');
   });
+
+  it('keeps an omitted leg count on the two-leg request', async () => {
+    loadResearchQuickBuilds.mockResolvedValue({ status: 'empty', builds: [] });
+    const response = await GET(ask('sportsbook=draftkings&preset=balanced'));
+    expect(response.status).toBe(200);
+    expect(loadResearchQuickBuilds.mock.calls[0]?.[0]).toMatchObject({
+      legCount: 2,
+      preset: 'balanced',
+    });
+    const explicit = await GET(ask('sportsbook=draftkings&preset=higher_payout&legs=2'));
+    expect(explicit.status).toBe(200);
+    expect(loadResearchQuickBuilds.mock.calls[1]?.[0]).toMatchObject({
+      legCount: 2,
+      preset: 'higher_payout',
+    });
+  });
+
+  it('accepts three legs with its own default and rejects a crossed preset', async () => {
+    loadResearchQuickBuilds.mockResolvedValue({ status: 'empty', builds: [] });
+    const omitted = await GET(ask('sportsbook=fanduel&legs=3'));
+    expect(omitted.status).toBe(200);
+    expect(loadResearchQuickBuilds.mock.calls[0]?.[0]).toMatchObject({
+      legCount: 3,
+      preset: 'midrange',
+    });
+
+    const crossed = await GET(ask('sportsbook=fanduel&legs=3&preset=balanced'));
+    expect(crossed.status).toBe(400);
+    expect(await crossed.json()).toEqual({
+      error: 'Preset does not match the leg count.',
+      code: 'INVALID_PRESET',
+    });
+    const otherWay = await GET(ask('sportsbook=fanduel&preset=midrange'));
+    expect(otherWay.status).toBe(400);
+    expect(await otherWay.json()).toMatchObject({ code: 'INVALID_PRESET' });
+
+    const badCount = await GET(ask('sportsbook=fanduel&legs=4&preset=midrange'));
+    expect(badCount.status).toBe(400);
+    expect(await badCount.json()).toEqual({ error: 'Invalid leg count', code: 'INVALID_LEG_COUNT' });
+    expect(loadResearchQuickBuilds).toHaveBeenCalledTimes(1);
+  });
+
+  it('requires three selected games for a three-leg search', async () => {
+    const two = await GET(ask('sportsbook=caesars&legs=3&preset=shorter_payout&games=101,102'));
+    expect(two.status).toBe(400);
+    expect(await two.json()).toMatchObject({ code: 'NEED_THREE_GAMES' });
+    expect(loadResearchQuickBuilds).not.toHaveBeenCalled();
+
+    loadResearchQuickBuilds.mockResolvedValue({ status: 'empty', builds: [] });
+    const three = await GET(ask('sportsbook=caesars&legs=3&preset=longer_payout&games=101,102,103'));
+    expect(three.status).toBe(200);
+    expect(three.headers.get('Cache-Control')).toBe('no-store');
+    expect(loadResearchQuickBuilds.mock.calls[0]?.[0]).toMatchObject({
+      legCount: 3,
+      preset: 'longer_payout',
+      gameIds: ['101', '102', '103'],
+    });
+  });
 });

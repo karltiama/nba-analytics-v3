@@ -279,6 +279,8 @@ describe('quick builds preview contract', () => {
       'NO_ELIGIBLE_MARKETS',
       'NO_CROSS_GAME',
       'NO_PAIRS_IN_BAND',
+      'NO_COMBINATIONS_IN_BAND',
+      'SEARCH_BUDGET_REACHED',
     ]);
     for (const reason of reasons) {
       const html = markup(viewOf(body({ status: 'empty', emptyReason: reason, builds: [] })));
@@ -590,7 +592,7 @@ describe('quick builds analytics lifecycle', () => {
       accepted: accepted !== started.state,
       sportsbook: captured.sportsbook,
       preset: captured.preset,
-      kind: input.result.kind === 'ineligible' || input.result.kind === 'need_two' ? 'invalid' : input.result.kind,
+      kind: input.result.kind === 'ineligible' || input.result.kind === 'need_two' || input.result.kind === 'need_three' ? 'invalid' : input.result.kind,
       buildCount: input.result.kind === 'ok' ? input.result.view.builds.length : 0,
       emptyReason: input.result.kind === 'empty' ? input.result.view.emptyReason : null,
       ageMs: input.result.kind === 'ok' ? (input.ageMs ?? null) : null,
@@ -608,6 +610,7 @@ describe('quick builds analytics lifecycle', () => {
     expect(event).toEqual({
       sportsbook: 'fanduel',
       preset: 'higher_payout',
+      leg_count: 2,
       result: 'success',
       build_count: 1,
       age_bucket: '1_3h',
@@ -626,6 +629,7 @@ describe('quick builds analytics lifecycle', () => {
     ).toEqual({
       sportsbook: 'caesars',
       preset: 'higher_hit_chance',
+      leg_count: 2,
       result: 'empty',
       build_count: 0,
       empty_reason: 'NO_PAIRS_IN_BAND',
@@ -637,6 +641,7 @@ describe('quick builds analytics lifecycle', () => {
     expect(acceptedSearch({ result: { kind: 'server' } })).toEqual({
       sportsbook: 'draftkings',
       preset: 'balanced',
+      leg_count: 2,
       result: 'error',
       build_count: 0,
       age_bucket: 'unknown',
@@ -674,6 +679,7 @@ describe('quick builds analytics lifecycle', () => {
     expect(quickBuildsHandoffEvent({ status: 'tipped', ...search })).toBeNull();
     expect(quickBuildsHandoffEvent({ status: 'replaced', ...search })).toEqual({
       ...search,
+      leg_count: 2,
       result: 'successful_handoff',
     });
     expect(quickBuildsHandoffEvent({ status: 'replaced', sportsbook: 'betmgm', preset: 'higher_payout' })).toMatchObject({
@@ -689,7 +695,7 @@ describe('quick builds analytics lifecycle', () => {
     expect(findBody.indexOf('acceptPreviewResult')).toBeGreaterThan(findBody.indexOf('fetchQuickBuilds'));
     expect(findBody.indexOf('trackEvent')).toBeGreaterThan(findBody.indexOf('acceptPreviewResult'));
     expect(findBody).toContain('accepted !== current');
-    expect(findBody).toContain('acceptedSearchRef.current = { sportsbook: captured.sportsbook, preset: captured.preset }');
+    expect(findBody).toContain('acceptedSearchRef.current = { sportsbook: captured.sportsbook, preset: captured.preset, legCount: captured.legCount }');
     const applyBody = source.slice(source.indexOf('function applyBuild'), source.indexOf('function cancelReplace'));
     expect(applyBody.indexOf("result.status === 'needs_confirmation'")).toBeLessThan(applyBody.indexOf('trackEvent'));
     expect(applyBody).toContain("result.status === 'replaced'");
