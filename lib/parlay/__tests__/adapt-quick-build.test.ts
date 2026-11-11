@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { canonicalOfferIdentity, canonicalWagerIdentity } from '../adapt-props-explorer-offer';
 import { adaptQuickBuildLeg, assessQuickBuildPair, handoffQuickBuild, handoffQuickBuildSelection, type QuickBuildHandoffLeg } from '../adapt-quick-build';
+import { formatEtTimestamp, quickBuildGameStartLine } from '@/lib/quick-builds/format-et';
 import { shouldRequestCurrentParlayPrices } from '../research-snapshot-cost';
 import { snapshotDisplayLabel, workspaceSourceLabel } from '../selection';
 import {
@@ -278,5 +279,91 @@ describe('adaptQuickBuildLeg', () => {
       confirmed: true,
     });
     expect(started.status).toBe('tipped');
+  });
+
+  it('labels each transferred leg with the Quick Builds Eastern start time', () => {
+    const starts = [
+      '2026-11-10T00:30:00.000Z',
+      '2026-11-10T01:00:00.000Z',
+      '2026-11-10T02:00:00.000Z',
+      '2026-11-10T03:00:00.000Z',
+    ];
+    const names = ['Jayson Tatum', 'Jaylen Brown', 'Derrick White', 'Jrue Holiday'];
+    const legs = names.map((playerName, index) => leg({
+      playerId: String(11 + index),
+      playerName,
+      gameId: `g${index + 1}`,
+      market: index % 2 === 0 ? 'points' : 'rebounds',
+      side: index % 2 === 0 ? 'over' : 'under',
+      line: 10.5 + index,
+      oddsAmerican: -110 - index,
+      observedAt: OBSERVED,
+      gameStartTime: starts[index],
+    })) as [
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+    ];
+
+    for (const count of [2, 3, 4] as const) {
+      const selected = legs.slice(0, count) as typeof legs;
+      const result = handoffQuickBuildSelection({ current: [], legs: selected, nowMs: NOW, confirmed: false });
+      expect(result.status).toBe('replaced');
+      if (result.status !== 'replaced') return;
+      expect(result.legs).toHaveLength(count);
+      result.legs.forEach((row, index) => {
+        const source = selected[index]!;
+        expect(row.offer.gameId).toBe(source.gameId);
+        expect(row.offer.playerId).toBe(source.playerId);
+        expect(row.offer.playerDisplayName).toBe(source.playerName);
+        expect(row.offer.market).toBe(source.market);
+        expect(row.offer.side).toBe(source.side);
+        expect(row.offer.line).toBe(source.line);
+        expect(row.offer.oddsAmerican).toBe(source.oddsAmerican);
+        expect(row.offer.sportsbook.vendor).toBe('draftkings');
+        expect(row.offer.snapshotAt).toBe(OBSERVED);
+        expect(row.offer.snapshotKind).toBe('research_snapshot');
+        expect(row.awayAbbr).toBeNull();
+        expect(row.homeAbbr).toBeNull();
+        expect(row.gameLabel).toBe(quickBuildGameStartLine(source.gameStartTime));
+        expect(row.gameLabel).toBe(`Game start ${formatEtTimestamp(source.gameStartTime!)}`);
+        expect(row.gameLabel).toContain('EST');
+        expect(row.gameLabel).not.toContain('@');
+      });
+    }
+
+    const summer = adaptQuickBuildLeg(leg({ gameStartTime: '2026-07-10T23:30:00.000Z' }));
+    expect(summer.ok).toBe(true);
+    if (!summer.ok) return;
+    expect(summer.leg.offer.gameId).toBe('g1');
+    expect(summer.leg.gameLabel).toBe('Game start Jul 10, 7:30 PM EDT');
+    expect(summer.leg.awayAbbr).toBeNull();
+    expect(summer.leg.homeAbbr).toBeNull();
+  });
+
+  it('does not invent a start label when the snapshot time is missing or invalid', () => {
+    for (const gameStartTime of [null, '', '   ', 'not-a-time']) {
+      const adapted = adaptQuickBuildLeg(leg({ gameStartTime }));
+      expect(adapted.ok).toBe(true);
+      if (!adapted.ok) return;
+      expect(adapted.leg.gameLabel).toBeNull();
+      expect(adapted.leg.offer.gameId).toBe('g1');
+      expect(adapted.leg.offer.oddsAmerican).toBe(-115);
+      expect(adapted.leg.awayAbbr).toBeNull();
+      expect(adapted.leg.homeAbbr).toBeNull();
+
+      const rejected = handoffQuickBuildSelection({
+        current: [],
+        legs: pair().map((row, index) => (index === 0 ? { ...row, gameStartTime } : row)) as [
+          QuickBuildHandoffLeg,
+          QuickBuildHandoffLeg,
+        ],
+        nowMs: NOW,
+        confirmed: true,
+      });
+      expect(rejected.status).toBe('rejected');
+      expect(getParlaySelectionLegs()).toEqual([]);
+    }
   });
 });

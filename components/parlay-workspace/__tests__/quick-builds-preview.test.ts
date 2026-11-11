@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { QuickBuildReplaceDialog, QuickBuildsPreview, QuickBuildsResults, QuickBuildsStatus, QUICK_BUILD_REPLACE_COPY, QUICK_BUILD_UNAVAILABLE_COPY, QUICK_BUILD_UNAVAILABLE_TITLE } from '@/components/parlay-workspace/QuickBuildsPreview';
 import { ParlayWorkspaceView } from '@/components/parlay-workspace/ParlayWorkspaceView';
 import { adaptPropsExplorerOffer } from '@/lib/parlay/adapt-props-explorer-offer';
+import { handoffQuickBuildSelection, type QuickBuildHandoffLeg } from '@/lib/parlay/adapt-quick-build';
+import { quickBuildGameStartLine } from '@/lib/quick-builds/format-et';
 import type { SelectedParlayLeg } from '@/lib/parlay/selection';
 import {
   QUICK_BUILD_AGE_AT_SEARCH_NOTE,
@@ -527,6 +529,43 @@ describe('workspace quick builds mode', () => {
     expect(quick).toContain('Nikola Jokic');
     expect(quick).toContain('hidden=""');
     expect(calls).toEqual({ remove: 0, clear: 0, analyze: 0 });
+  });
+
+  it('renders a transferred Quick Build start time instead of Matchup unavailable', () => {
+    const start = '2026-11-10T00:30:00.000Z';
+    const handoffLeg = (overrides: Partial<QuickBuildHandoffLeg>): QuickBuildHandoffLeg => ({
+      displayReady: true,
+      playerId: '11',
+      playerName: 'Jayson Tatum',
+      gameId: 'g1',
+      market: 'points',
+      side: 'over',
+      line: 22.5,
+      sportsbook: 'draftkings',
+      oddsAmerican: -115,
+      observedAt: '2026-11-09T16:00:00.000Z',
+      gameStartTime: start,
+      gameStatus: 'Scheduled',
+      ...overrides,
+    });
+    const result = handoffQuickBuildSelection({
+      current: [],
+      legs: [
+        handoffLeg({}),
+        handoffLeg({ playerId: '22', playerName: 'Jaylen Brown', gameId: 'g2', market: 'rebounds' }),
+      ],
+      nowMs: Date.parse('2026-11-09T18:00:00.000Z'),
+      confirmed: false,
+    });
+    expect(result.status).toBe('replaced');
+    if (result.status !== 'replaced') return;
+    const label = quickBuildGameStartLine(start);
+    expect(label).toBe('Game start Nov 9, 7:30 PM EST');
+    const html = renderWorkspace('mine', [...result.legs]);
+    expect(html).toContain('Jayson Tatum');
+    expect(html).toContain('Jaylen Brown');
+    expect(html).toContain(label!);
+    expect(html).not.toContain('Matchup unavailable');
   });
 
   it('keeps generated cards in the hidden Quick Builds panel', () => {

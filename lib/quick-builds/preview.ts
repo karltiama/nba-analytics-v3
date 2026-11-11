@@ -11,6 +11,7 @@ import {
   QUICK_BUILD_DISPLAY_GAPS,
   type QuickBuildDisplayGap,
 } from './display';
+import { formatEtTimestamp } from './format-et';
 import {
   QUICK_BUILD_EMPTY_REASONS,
   QUICK_BUILD_PRESETS,
@@ -23,6 +24,8 @@ import {
   type QuickBuildPresetName,
   type QuickBuildThreeLegPresetName,
 } from './types';
+
+export { formatEtTimestamp, quickBuildGameStartLine, withGameStartPrefix } from './format-et';
 
 export const QUICK_BUILD_BOOK_OPTIONS = [
   { vendor: 'draftkings', label: 'DraftKings' },
@@ -371,29 +374,6 @@ export function parseSlateGames(data: unknown): SlateGameView[] | null {
 
 export function bookLabel(vendor: string): string {
   return QUICK_BUILD_BOOK_OPTIONS.find((book) => book.vendor === vendor)?.label ?? vendor;
-}
-
-export function formatEtTimestamp(iso: string): string | null {
-  const ms = Date.parse(iso);
-  if (!Number.isFinite(ms)) return null;
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZoneName: 'short',
-  }).formatToParts(new Date(ms));
-  const get = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? '';
-  const month = get('month');
-  const day = get('day');
-  const hour = get('hour');
-  const minute = get('minute');
-  const dayPeriod = get('dayPeriod');
-  const zone = get('timeZoneName');
-  if (!month || !day || !hour || !minute || !dayPeriod || !zone) return null;
-  return `${month} ${day}, ${hour}:${minute} ${dayPeriod} ${zone}`;
 }
 
 /** Age of the stored observation at the time the API built the result. */

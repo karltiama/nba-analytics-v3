@@ -5,6 +5,7 @@
 
 import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
 import { parseLineValue, parsePropSide } from '@/lib/betting/prop-market-compare';
+import { quickBuildGameStartLine } from '@/lib/quick-builds/format-et';
 import { usableAmerican } from '@/lib/quick-builds/markets';
 import { canonicalizeXrayMarket } from '@/lib/parlay-xray/resolution/market';
 import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook';
@@ -157,7 +158,7 @@ export function adaptQuickBuildLeg(input: QuickBuildHandoffLeg): AdaptQuickBuild
     ok: true,
     leg: {
       offer,
-      gameLabel: null,
+      gameLabel: quickBuildGameStartLine(input.gameStartTime),
       awayAbbr: null,
       homeAbbr: null,
     },
