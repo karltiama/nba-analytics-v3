@@ -16,12 +16,36 @@ export const QUICK_BUILD_MAX_TWO_SIDED_MARKETS = 2000;
 export const QUICK_BUILD_PRICE_NOTICE =
   'Calculated combined odds are the product of the two leg prices. They are not a sportsbook parlay quote.';
 
+/** Product of the three leg decimals, rounded with the shared American converter. Not a book quote. */
+export const QUICK_BUILD_THREE_LEG_PRICE_NOTICE =
+  'Calculated combined odds are the product of the three leg prices. They are not a sportsbook parlay quote.';
+
+/** Shown when a three-leg search stops at its work bound after finding candidates. */
+export const QUICK_BUILD_SEARCH_BUDGET_NOTE =
+  'This shortlist came from a bounded search. More combinations may exist outside the candidates that were kept.';
+
+/** Exact combined-odds checks a three-leg search may perform before it stops. */
+export const QUICK_BUILD_TRIPLE_PROBE_BUDGET = 80_000;
+
+/** Closest in-band triples retained for the diversity shortlist. */
+export const QUICK_BUILD_TRIPLE_RETAIN = 1_500;
+
+/**
+ * One closest side per player, for at most this many players, used for the
+ * first two legs of each game triple. The third leg stays the price window
+ * over that game's sides, so a qualifying price is not dropped with the seed.
+ * Games are ordered by id, and a slate wider than this seed is incomplete.
+ */
+export const QUICK_BUILD_TRIPLE_SEED_PLAYERS = 12;
+
 export const QUICK_BUILD_EMPTY_REASONS = [
   'NO_UPCOMING_GAMES',
   'NO_SUCCESSFUL_PULL',
   'NO_ELIGIBLE_MARKETS',
   'NO_CROSS_GAME',
   'NO_PAIRS_IN_BAND',
+  'NO_COMBINATIONS_IN_BAND',
+  'SEARCH_BUDGET_REACHED',
 ] as const;
 export type QuickBuildEmptyReason = (typeof QUICK_BUILD_EMPTY_REASONS)[number];
 
@@ -36,6 +60,14 @@ export const QUICK_BUILD_PRESETS = {
   higher_payout: { minAmerican: 125, maxAmerican: 200 },
 } as const;
 export type QuickBuildPresetName = keyof typeof QUICK_BUILD_PRESETS;
+
+/** Inclusive American bounds for optional three-leg builds. Separate from the two-leg presets. */
+export const QUICK_BUILD_THREE_LEG_PRESETS = {
+  shorter_payout: { minAmerican: 200, maxAmerican: 399 },
+  midrange: { minAmerican: 400, maxAmerican: 699 },
+  longer_payout: { minAmerican: 700, maxAmerican: 999 },
+} as const;
+export type QuickBuildThreeLegPresetName = keyof typeof QUICK_BUILD_THREE_LEG_PRESETS;
 
 export type AmericanOddsRange = {
   minAmerican: number;
@@ -96,6 +128,8 @@ export type QuickBuildRequest = {
   games: QuickBuildGameInput[];
   attempts: GamePullAttempt[];
   observations: MarketObservationInput[];
+  /** Omitted means two legs. Three legs uses the separate generator. */
+  legCount?: 2 | 3;
 };
 
 export type BlockingAttemptKind = 'failed' | 'zero_row' | 'invalid_clock' | 'in_progress' | 'incomplete';
@@ -144,9 +178,8 @@ export type QuickBuildLeg = {
   ageMs: number;
 };
 
-export type QuickBuild = {
+type QuickBuildCommon = {
   id: string;
-  legs: [QuickBuildLeg, QuickBuildLeg];
   combinedAmerican: number;
   /** 1 / combined decimal at the calculated payout. Not a model hit rate. */
   breakEvenProbability: number;
@@ -157,21 +190,33 @@ export type QuickBuild = {
   maxAgeMs: number;
 };
 
+export type QuickBuild =
+  | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg] })
+  | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] });
+
 export type QuickBuildResult = {
   status: 'ok' | 'empty';
   emptyReason: QuickBuildEmptyReason | null;
   sportsbook: PlayerPropV1Vendor | null;
   range: AmericanOddsRange | null;
   policy: QuickBuildPolicy | null;
-  priceNotice: typeof QUICK_BUILD_PRICE_NOTICE;
+  priceNotice: typeof QUICK_BUILD_PRICE_NOTICE | typeof QUICK_BUILD_THREE_LEG_PRICE_NOTICE;
   games: GameEligibility[];
   builds: QuickBuild[];
+  /**
+   * Three-leg searches only. False means the work bound stopped the search
+   * before every legal triple was assessed. Absent on two-leg results.
+   */
+  searchComplete?: boolean;
 };
 
 export class QuickBuildInputError extends Error {
-  readonly code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES';
+  readonly code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES' | 'NEED_THREE_GAMES';
 
-  constructor(code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES', message: string) {
+  constructor(
+    code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES' | 'NEED_THREE_GAMES',
+    message: string,
+  ) {
     super(message);
     this.name = 'QuickBuildInputError';
     this.code = code;

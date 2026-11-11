@@ -25,7 +25,14 @@ const SIXTY_MINUTES_MS = 60 * 60_000;
 const THREE_HOURS_MS = 180 * 60_000;
 
 const SPORTSBOOKS = new Set<string>(['draftkings', 'fanduel', 'betmgm', 'caesars']);
-const PRESETS = new Set<string>(['higher_hit_chance', 'balanced', 'higher_payout']);
+const PRESETS = new Set<string>([
+  'higher_hit_chance',
+  'balanced',
+  'higher_payout',
+  'shorter_payout',
+  'midrange',
+  'longer_payout',
+]);
 const EMPTY_REASONS = new Set<string>(QUICK_BUILD_EMPTY_REASONS);
 
 export type QuickBuildSearchKind =
@@ -92,6 +99,8 @@ export function quickBuildsSearchEvent(input: {
   accepted: boolean;
   sportsbook: string;
   preset: string;
+  /** Omitted means the historical two-leg event. New events pass 2 or 3. */
+  legCount?: 2 | 3;
   kind: QuickBuildSearchKind;
   buildCount: number;
   emptyReason: string | null;
@@ -100,7 +109,8 @@ export function quickBuildsSearchEvent(input: {
   if (!input.accepted || input.kind === 'aborted') return null;
   const sportsbook = closedSportsbook(input.sportsbook);
   const preset = closedPreset(input.preset);
-  if (!sportsbook || !preset) return null;
+  const legCount = input.legCount ?? 2;
+  if (!sportsbook || !preset || (legCount !== 2 && legCount !== 3)) return null;
   if (input.kind === 'ok') {
     if (!Number.isInteger(input.buildCount) || input.buildCount < 1 || input.buildCount > QUICK_BUILD_SHORTLIST_EVENT_CAP) {
       return null;
@@ -108,6 +118,7 @@ export function quickBuildsSearchEvent(input: {
     return {
       sportsbook,
       preset,
+      leg_count: legCount,
       result: 'success',
       build_count: input.buildCount,
       age_bucket: quickBuildAgeBucket(input.ageMs),
@@ -118,6 +129,7 @@ export function quickBuildsSearchEvent(input: {
     return {
       sportsbook,
       preset,
+      leg_count: legCount,
       result: 'empty',
       build_count: 0,
       empty_reason: input.emptyReason as QuickBuildEmptyReason,
@@ -127,6 +139,7 @@ export function quickBuildsSearchEvent(input: {
   return {
     sportsbook,
     preset,
+    leg_count: legCount,
     result: 'error',
     build_count: 0,
     age_bucket: 'unknown',
@@ -138,10 +151,13 @@ export function quickBuildsHandoffEvent(input: {
   status: QuickBuildHandoffEventStatus;
   sportsbook: string;
   preset: string;
+  /** Omitted means the historical two-leg event. */
+  legCount?: 2 | 3;
 }): QuickBuildsHandoffCompletedProperties | null {
   if (input.status !== 'replaced') return null;
   const sportsbook = closedSportsbook(input.sportsbook);
   const preset = closedPreset(input.preset);
-  if (!sportsbook || !preset) return null;
-  return { sportsbook, preset, result: 'successful_handoff' };
+  const legCount = input.legCount ?? 2;
+  if (!sportsbook || !preset || (legCount !== 2 && legCount !== 3)) return null;
+  return { sportsbook, preset, leg_count: legCount, result: 'successful_handoff' };
 }

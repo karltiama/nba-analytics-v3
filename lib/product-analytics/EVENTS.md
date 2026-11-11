@@ -225,14 +225,14 @@ A search count is an accepted terminal search. Find clicks, pending requests, ab
 
 - **Trigger:** A user-initiated Quick Builds response is accepted. One event for a nonempty result, one for an empty result, and one for a terminal error. Five builds produce one event.
 - **Not fired:** Find click, in-flight request, abort, or a response rejected because a newer request superseded it. Mode switches and rerenders do not fire it again.
-- **Properties:** `sportsbook` (`draftkings` | `fanduel` | `betmgm` | `caesars`), `preset` (`higher_hit_chance` | `balanced` | `higher_payout`), `result` (`success` | `empty` | `error`), `build_count` (0–5), `age_bucket` (`under_5m` | `5_15m` | `15_30m` | `30_60m` | `1_3h` | `over_3h` | `unknown`), and `empty_reason` only when `result` is `empty`.
+- **Properties:** `sportsbook` (`draftkings` | `fanduel` | `betmgm` | `caesars`), `preset` (`higher_hit_chance` | `balanced` | `higher_payout` | `shorter_payout` | `midrange` | `longer_payout`), `leg_count` (`2` | `3`), `result` (`success` | `empty` | `error`), `build_count` (0–5), `age_bucket` (`under_5m` | `5_15m` | `15_30m` | `30_60m` | `1_3h` | `over_3h` | `unknown`), and `empty_reason` only when `result` is `empty`. Events recorded before three-leg support omit `leg_count` and are two-leg searches.
 - **Age:** For a nonempty result, the bucket is the maximum valid `maxAgeMs` among the returned shortlist. Boundaries are half-open, and an exact boundary belongs to the older bucket. Empty results, errors, and missing or invalid ages use `unknown`.
 - **Attribution:** Sportsbook and preset come from the request that was accepted.
 
 ## `quick_builds_handoff_completed` — LIVE
 
-- **Trigger:** `handoffQuickBuild` returns `replaced`. When replacement needs confirmation, the event fires only after the user confirms and replacement succeeds.
+- **Trigger:** The Quick Builds handoff returns `replaced`. When replacement needs confirmation, the event fires only after the user confirms and replacement succeeds.
 - **Not fired:** Opening the confirmation, canceling it, `needs_confirmation`, a rejected or unsupported build, a tipped game, or returning to Quick Builds.
-- **Properties:** `sportsbook`, `preset`, `result` = `successful_handoff`.
-- **Attribution:** Sportsbook and preset come from the accepted search that produced the build, including when the visible filters changed before confirmation.
+- **Properties:** `sportsbook`, `preset`, `leg_count` (`2` | `3`), `result` = `successful_handoff`. Events recorded before three-leg support omit `leg_count` and are two-leg handoffs.
+- **Attribution:** Sportsbook, preset, and leg count come from the accepted search that produced the build, including when the visible filters changed before confirmation.
 

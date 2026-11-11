@@ -75,6 +75,7 @@ describe('quick build search event', () => {
     expect(event).toEqual({
       sportsbook: 'draftkings',
       preset: 'balanced',
+      leg_count: 2,
       result: 'success',
       build_count: 5,
       age_bucket: '5_15m',
@@ -96,6 +97,7 @@ describe('quick build search event', () => {
     ).toEqual({
       sportsbook: 'caesars',
       preset: 'higher_hit_chance',
+      leg_count: 2,
       result: 'empty',
       build_count: 0,
       empty_reason: 'NO_PAIRS_IN_BAND',
@@ -118,6 +120,7 @@ describe('quick build search event', () => {
       ).toEqual({
         sportsbook: 'betmgm',
         preset: 'higher_payout',
+        leg_count: 2,
         result: 'error',
         build_count: 0,
         age_bucket: 'unknown',
@@ -219,11 +222,46 @@ describe('quick build handoff event', () => {
     ).toEqual({
       sportsbook: 'fanduel',
       preset: 'higher_hit_chance',
+      leg_count: 2,
       result: 'successful_handoff',
     });
     for (const status of ['needs_confirmation', 'canceled', 'rejected', 'tipped'] as const) {
       expect(quickBuildsHandoffEvent({ status, sportsbook: 'fanduel', preset: 'higher_hit_chance' })).toBeNull();
     }
+  });
+
+  it('records the accepted build leg count and treats an omission as two legs', () => {
+    expect(
+      quickBuildsSearchEvent({
+        accepted: true,
+        sportsbook: 'draftkings',
+        preset: 'midrange',
+        legCount: 3,
+        kind: 'ok',
+        buildCount: 5,
+        emptyReason: null,
+        ageMs: 0,
+      }),
+    ).toMatchObject({ preset: 'midrange', leg_count: 3, result: 'success', build_count: 5 });
+    expect(
+      quickBuildsHandoffEvent({
+        status: 'replaced',
+        sportsbook: 'draftkings',
+        preset: 'longer_payout',
+        legCount: 3,
+      }),
+    ).toMatchObject({ preset: 'longer_payout', leg_count: 3 });
+    expect(
+      quickBuildsSearchEvent({
+        accepted: true,
+        sportsbook: 'draftkings',
+        preset: 'balanced',
+        kind: 'empty',
+        buildCount: 0,
+        emptyReason: 'NO_COMBINATIONS_IN_BAND',
+        ageMs: null,
+      })?.leg_count,
+    ).toBe(2);
   });
 });
 
@@ -247,11 +285,13 @@ describe('quick build event privacy', () => {
       'age_bucket',
       'build_count',
       'empty_reason',
+      'leg_count',
       'preset',
       'result',
       'sportsbook',
     ]);
-    expect(Object.keys(handoff ?? {}).sort()).toEqual(['preset', 'result', 'sportsbook']);
+    expect(Object.keys(handoff ?? {}).sort()).toEqual(['leg_count', 'preset', 'result', 'sportsbook']);
+    expect(JSON.stringify({ search, handoff })).not.toMatch(/player|gameId|oddsAmerican|line/i);
     const serialized = JSON.stringify({ search, handoff });
     expect(serialized).not.toMatch(/player|gameId|pullRun|odds|line|@|email/i);
     const track = vi.fn();

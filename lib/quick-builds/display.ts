@@ -38,9 +38,13 @@ export type QuickBuildDisplayedLeg = QuickBuildLeg & {
   display: QuickBuildLegDisplay;
 };
 
-export type QuickBuildDisplayed = Omit<QuickBuild, 'legs'> & {
-  legs: [QuickBuildDisplayedLeg, QuickBuildDisplayedLeg];
-};
+export type QuickBuildDisplayed =
+  | (Omit<Extract<QuickBuild, { legs: [QuickBuildLeg, QuickBuildLeg] }>, 'legs'> & {
+      legs: [QuickBuildDisplayedLeg, QuickBuildDisplayedLeg];
+    })
+  | (Omit<Extract<QuickBuild, { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] }>, 'legs'> & {
+      legs: [QuickBuildDisplayedLeg, QuickBuildDisplayedLeg, QuickBuildDisplayedLeg];
+    });
 
 export type PlayerNameRow = {
   playerId: string;
@@ -102,11 +106,14 @@ export function attachQuickBuildDisplay(input: {
   games: QuickBuildGameInput[];
   playerRows: PlayerNameRow[];
 }): QuickBuildDisplayed[] {
-  return input.builds.map((build) => ({
-    ...build,
-    legs: build.legs.map((leg) => ({
+  return input.builds.map((build) => {
+    const legs = build.legs.map((leg) => ({
       ...leg,
       display: displayFor(leg, input.games, input.playerRows),
-    })) as QuickBuildDisplayed['legs'],
-  }));
+    }));
+    if (legs.length === 3) {
+      return { ...build, legs: [legs[0]!, legs[1]!, legs[2]!] } as QuickBuildDisplayed;
+    }
+    return { ...build, legs: [legs[0]!, legs[1]!] } as QuickBuildDisplayed;
+  });
 }

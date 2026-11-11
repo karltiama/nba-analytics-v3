@@ -222,7 +222,15 @@ export type SignupSurfaceProperties = {
 
 export type QuickBuildAnalyticsSportsbook = 'draftkings' | 'fanduel' | 'betmgm' | 'caesars';
 
-export type QuickBuildAnalyticsPreset = 'higher_hit_chance' | 'balanced' | 'higher_payout';
+export type QuickBuildAnalyticsPreset =
+  | 'higher_hit_chance'
+  | 'balanced'
+  | 'higher_payout'
+  | 'shorter_payout'
+  | 'midrange'
+  | 'longer_payout';
+
+export type QuickBuildAnalyticsLegCount = 2 | 3;
 
 export type QuickBuildAgeBucket =
   | 'under_5m'
@@ -236,6 +244,7 @@ export type QuickBuildAgeBucket =
 export type QuickBuildsSearchCompletedProperties = {
   sportsbook: QuickBuildAnalyticsSportsbook;
   preset: QuickBuildAnalyticsPreset;
+  leg_count: QuickBuildAnalyticsLegCount;
   result: 'success' | 'empty' | 'error';
   build_count: number;
   age_bucket: QuickBuildAgeBucket;
@@ -246,6 +255,7 @@ export type QuickBuildsSearchCompletedProperties = {
 export type QuickBuildsHandoffCompletedProperties = {
   sportsbook: QuickBuildAnalyticsSportsbook;
   preset: QuickBuildAnalyticsPreset;
+  leg_count: QuickBuildAnalyticsLegCount;
   result: 'successful_handoff';
 };
 

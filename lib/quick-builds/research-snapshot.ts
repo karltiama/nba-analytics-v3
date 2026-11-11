@@ -9,13 +9,16 @@ import { XRAY_CANONICAL_MARKETS } from '@/lib/parlay-xray/resolution/types';
 import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook';
 import { compareAttempts, isCompleteSuccess } from './eligibility';
 import { attachQuickBuildDisplay, QUICK_BUILD_PLAYERS_SQL, type PlayerNameRow, type QuickBuildDisplayed } from './display';
-import { generateQuickBuilds, presetRange } from './index';
+import { generateQuickBuilds } from './index';
 import {
   QUICK_BUILD_MAX_ATTEMPTS,
   QUICK_BUILD_MAX_GAMES,
   QUICK_BUILD_MAX_OBSERVATIONS,
   QUICK_BUILD_PRESETS,
   QUICK_BUILD_PRICE_NOTICE,
+  QUICK_BUILD_SEARCH_BUDGET_NOTE,
+  QUICK_BUILD_THREE_LEG_PRESETS,
+  QUICK_BUILD_THREE_LEG_PRICE_NOTICE,
   QuickBuildInputError,
   type GamePullAttempt,
   type MarketObservationInput,
@@ -23,6 +26,7 @@ import {
   type QuickBuildPresetName,
   type QuickBuildRequest,
   type QuickBuildResult,
+  type QuickBuildThreeLegPresetName,
 } from './types';
 
 export const QUICK_BUILD_RESEARCH_LIMITATION =
@@ -124,9 +128,9 @@ export type QuickBuildReader = (sql: string, params?: unknown[]) => Promise<read
 
 export type QuickBuildApiBody = Omit<QuickBuildResult, 'builds'> & {
   generatedAt: string;
-  preset: QuickBuildPresetName;
+  preset: QuickBuildPresetName | QuickBuildThreeLegPresetName;
   snapshotClass: 'research_snapshot';
-  limitations: readonly [string, typeof QUICK_BUILD_PRICE_NOTICE];
+  limitations: readonly string[];
   builds: QuickBuildDisplayed[];
 };
 
@@ -149,7 +153,7 @@ export type ResearchSlateGame = {
 
 export type SelectedGameIdParse =
   | { ok: true; ids: string[] }
-  | { ok: false; status: 400 | 422; code: 'INVALID_GAME_SELECTION' | 'NEED_TWO_GAMES' | 'LIMIT_EXCEEDED' };
+  | { ok: false; status: 400 | 422; code: 'INVALID_GAME_SELECTION' | 'NEED_TWO_GAMES' | 'NEED_THREE_GAMES' | 'LIMIT_EXCEEDED' };
 
 type AttemptRow = {
   pull_run_id: unknown;
@@ -245,7 +249,7 @@ export function matchupLabel(away: string | null, home: string | null): string |
  * Comma-separated game ids for Select Games.
  * Absent means All Games. Duplicates and non-numeric ids are rejected, not dropped.
  */
-export function parseSelectedGameIds(raw: string): SelectedGameIdParse {
+export function parseSelectedGameIds(raw: string, minimum = 2): SelectedGameIdParse {
   const parts = raw.split(',');
   if (parts.length === 0 || parts.some((part) => part.trim() === '')) {
     return { ok: false, status: 400, code: 'INVALID_GAME_SELECTION' };
@@ -260,18 +264,25 @@ export function parseSelectedGameIds(raw: string): SelectedGameIdParse {
   if (ids.length > QUICK_BUILD_MAX_GAMES) {
     return { ok: false, status: 422, code: 'LIMIT_EXCEEDED' };
   }
-  if (ids.length < 2) {
-    return { ok: false, status: 400, code: 'NEED_TWO_GAMES' };
+  if (ids.length < minimum) {
+    return { ok: false, status: 400, code: minimum > 2 ? 'NEED_THREE_GAMES' : 'NEED_TWO_GAMES' };
   }
   return { ok: true, ids };
 }
 
-function restrictToSelectedGames(games: QuickBuildGameInput[], selected: readonly string[]): QuickBuildGameInput[] {
+function restrictToSelectedGames(
+  games: QuickBuildGameInput[],
+  selected: readonly string[],
+  minimum = 2,
+): QuickBuildGameInput[] {
   if (selected.length > QUICK_BUILD_MAX_GAMES) {
     throw new QuickBuildInputError('LIMIT_EXCEEDED', `games exceed ${QUICK_BUILD_MAX_GAMES}`);
   }
-  if (selected.length < 2) {
-    throw new QuickBuildInputError('NEED_TWO_GAMES', 'at least two games are required');
+  if (selected.length < minimum) {
+    throw new QuickBuildInputError(
+      minimum > 2 ? 'NEED_THREE_GAMES' : 'NEED_TWO_GAMES',
+      minimum > 2 ? 'at least three games are required' : 'at least two games are required',
+    );
   }
   if (new Set(selected).size !== selected.length) {
     throw new QuickBuildInputError('INELIGIBLE_GAME', 'selected games contain a duplicate');
@@ -478,9 +489,11 @@ export async function loadResearchSlate(args: {
 
 export async function buildResearchQuickBuildRequest(args: {
   sportsbook: string;
-  preset: QuickBuildPresetName;
+  preset: QuickBuildPresetName | QuickBuildThreeLegPresetName;
   now: Date;
   query: QuickBuildReader;
+  /** Omitted means two legs. */
+  legCount?: 2 | 3;
   /** Omitted for All Games. When present, attempts and observations use only these ids. */
   gameIds?: readonly string[];
 }): Promise<QuickBuildRequest> {
@@ -491,15 +504,25 @@ export async function buildResearchQuickBuildRequest(args: {
   if (!book) {
     throw new QuickBuildInputError('MALFORMED_INPUT', 'sportsbook is not a supported parlay book');
   }
-  if (!(args.preset in QUICK_BUILD_PRESETS)) {
-    throw new QuickBuildInputError('MALFORMED_INPUT', 'preset is invalid');
+  const legCount = args.legCount ?? 2;
+  if (legCount !== 2 && legCount !== 3) {
+    throw new QuickBuildInputError('MALFORMED_INPUT', 'leg count must be 2 or 3');
+  }
+  const presetRangeRow = legCount === 3
+    ? QUICK_BUILD_THREE_LEG_PRESETS[args.preset as QuickBuildThreeLegPresetName]
+    : QUICK_BUILD_PRESETS[args.preset as QuickBuildPresetName];
+  if (presetRangeRow == null) {
+    throw new QuickBuildInputError('MALFORMED_INPUT', 'preset does not match the leg count');
   }
   const asOf = args.now.toISOString();
   const gameRows = requireRows(
     await args.query(QUICK_BUILD_GAMES_SQL, [etDateKey(args.now), asOf]),
     'games'
   ) as GameRow[];
-  const games = args.gameIds == null ? mapGames(gameRows, args.now) : restrictToSelectedGames(mapGames(gameRows, args.now), args.gameIds);
+  const minimumGames = legCount === 3 ? 3 : 2;
+  const games = args.gameIds == null
+    ? mapGames(gameRows, args.now)
+    : restrictToSelectedGames(mapGames(gameRows, args.now), args.gameIds, minimumGames);
   const gameIds = games.map((game) => game.gameId);
 
   let attempts: GamePullAttempt[] = [];
@@ -551,19 +574,21 @@ export async function buildResearchQuickBuildRequest(args: {
 
   return {
     sportsbook: book.vendor,
-    range: presetRange(args.preset),
+    range: { minAmerican: presetRangeRow.minAmerican, maxAmerican: presetRangeRow.maxAmerican },
     policy: { mode: 'research_snapshot', asOf },
     games,
     attempts,
     observations,
+    legCount,
   };
 }
 
 export async function loadResearchQuickBuilds(args: {
   sportsbook: string;
-  preset: QuickBuildPresetName;
+  preset: QuickBuildPresetName | QuickBuildThreeLegPresetName;
   now: Date;
   query: QuickBuildReader;
+  legCount?: 2 | 3;
   gameIds?: readonly string[];
 }): Promise<QuickBuildApiBody> {
   const request = await buildResearchQuickBuildRequest(args);
@@ -580,12 +605,16 @@ export async function loadResearchQuickBuilds(args: {
       fullName: typeof row.full_name === 'string' ? row.full_name : null,
     }));
   }
+  const notice = request.legCount === 3 ? QUICK_BUILD_THREE_LEG_PRICE_NOTICE : QUICK_BUILD_PRICE_NOTICE;
+  const limitations = result.searchComplete === false
+    ? [QUICK_BUILD_RESEARCH_LIMITATION, notice, QUICK_BUILD_SEARCH_BUDGET_NOTE]
+    : [QUICK_BUILD_RESEARCH_LIMITATION, notice];
   return {
     ...result,
     builds: attachQuickBuildDisplay({ builds: result.builds, games: request.games, playerRows }),
     generatedAt: request.policy.asOf,
     preset: args.preset,
     snapshotClass: 'research_snapshot',
-    limitations: [QUICK_BUILD_RESEARCH_LIMITATION, QUICK_BUILD_PRICE_NOTICE],
+    limitations,
   };
 }

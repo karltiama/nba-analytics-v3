@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Info } from 'lucide-react';
-import type { QuickBuildHandoffLeg, QuickBuildHandoffResult } from '@/lib/parlay/adapt-quick-build';
+import type { QuickBuildHandoffLegs, QuickBuildSelectionHandoffResult } from '@/lib/parlay/adapt-quick-build';
 import type { PlayerPropV1Vendor } from '@/lib/betting/market-movement';
 import {
   QUICK_BUILD_AGE_AT_SEARCH_NOTE,
   QUICK_BUILD_BOOK_OPTIONS,
   QUICK_BUILD_BREAK_EVEN_COPY,
   QUICK_BUILD_COMBINED_ODDS_COPY,
-  QUICK_BUILD_PAYOUT_OPTIONS,
   QUICK_BUILD_PRESET_EXPLANATION,
   QUICK_BUILD_RESEARCH_SNAPSHOT_COPY,
   QUICK_BUILD_GAMES_PATH,
@@ -22,13 +21,16 @@ import {
   invalidatePreview,
   parseSlateGames,
   previewScopeKey,
+  payoutOptionsFor,
   searchBlockReason,
+  selectLegCount,
   toggleSelectedGame,
   type PreviewModel,
+  type QuickBuildAnyPresetName,
+  type QuickBuildLegCount,
   type QuickBuildPreviewCard,
   type QuickBuildPreviewView,
 } from '@/lib/quick-builds/preview';
-import type { QuickBuildPresetName } from '@/lib/quick-builds/types';
 import {
   QUICK_BUILDS_HANDOFF_COMPLETED,
   QUICK_BUILDS_SEARCH_COMPLETED,
@@ -40,11 +42,12 @@ import { trackEvent } from '@/lib/product-analytics/track-event';
 
 type QuickBuildSearchAttribution = {
   sportsbook: PlayerPropV1Vendor;
-  preset: QuickBuildPresetName;
+  preset: QuickBuildAnyPresetName;
+  legCount: QuickBuildLegCount;
 };
 
 type PendingQuickBuild = {
-  legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg];
+  legs: QuickBuildHandoffLegs;
   attribution: QuickBuildSearchAttribution | null;
 };
 
@@ -98,6 +101,8 @@ function ModeButton({
 export const QUICK_BUILD_REPLACE_TITLE = 'Replace My Parlay?';
 export const QUICK_BUILD_REPLACE_COPY =
   'Your current ticket will be replaced with this two-leg Research Snapshot. The legs already on My Parlay will be removed.';
+export const QUICK_BUILD_REPLACE_THREE_COPY =
+  'Your current ticket will be replaced with this three-leg Research Snapshot. The legs already on My Parlay will be removed.';
 export const QUICK_BUILD_TIPPED_COPY =
   'This build includes a game that has already tipped, so it was not added.';
 export const QUICK_BUILD_UNAVAILABLE_TITLE = 'Build unavailable for Workspace';
@@ -112,14 +117,16 @@ export function QuickBuildsPreview({
 }: {
   model: PreviewModel;
   onModelChange: Dispatch<SetStateAction<PreviewModel>>;
-  onUseBuild?: (legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg], confirmed: boolean) => QuickBuildHandoffResult;
+  onUseBuild?: (legs: QuickBuildHandoffLegs, confirmed: boolean) => QuickBuildSelectionHandoffResult;
 }) {
   const modelRef = useRef(model);
   const abortRef = useRef<AbortController | null>(null);
   const slateAbortRef = useRef<AbortController | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const acceptedSearchRef = useRef<QuickBuildSearchAttribution | null>(
-    model.phase === 'ready' && model.view ? { sportsbook: model.sportsbook, preset: model.preset } : null,
+    model.phase === 'ready' && model.view
+      ? { sportsbook: model.sportsbook, preset: model.preset, legCount: model.legCount }
+      : null,
   );
   const [pending, setPending] = useState<PendingQuickBuild | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -138,7 +145,7 @@ export function QuickBuildsPreview({
     onModelChange(resolved);
   }
 
-  function changeFilters(patch: { sportsbook?: PlayerPropV1Vendor; preset?: QuickBuildPresetName }) {
+  function changeFilters(patch: { sportsbook?: PlayerPropV1Vendor; preset?: QuickBuildAnyPresetName }) {
     abortRef.current?.abort();
     abortRef.current = null;
     commit((current) => invalidatePreview(current, patch));
@@ -178,6 +185,13 @@ export function QuickBuildsPreview({
       });
   }
 
+  function chooseLegCount(legCount: QuickBuildLegCount) {
+    if (modelRef.current.legCount === legCount) return;
+    abortRef.current?.abort();
+    abortRef.current = null;
+    commit((current) => selectLegCount(current, legCount));
+  }
+
   function chooseAllGames() {
     if (modelRef.current.scope === 'all') return;
     abortRef.current?.abort();
@@ -209,6 +223,7 @@ export function QuickBuildsPreview({
       requestId: next.requestId,
       sportsbook: next.state.sportsbook,
       preset: next.state.preset,
+      legCount: next.state.legCount,
       scopeKey: previewScopeKey(next.state.scope, next.state.selectedGameIds),
     };
     const observed = { ageMs: null as number | null };
@@ -216,6 +231,7 @@ export function QuickBuildsPreview({
     void fetchQuickBuilds({
       sportsbook: captured.sportsbook,
       preset: captured.preset,
+      legCount: captured.legCount,
       gameIds: next.state.scope === 'select' ? next.state.selectedGameIds : undefined,
       signal: controller.signal,
       fetchImpl: async (input, init) => {
@@ -231,14 +247,15 @@ export function QuickBuildsPreview({
       commit((current) => {
         const accepted = acceptPreviewResult(current, captured, result);
         if (accepted !== current && (result.kind === 'ok' || result.kind === 'empty')) {
-          acceptedSearchRef.current = { sportsbook: captured.sportsbook, preset: captured.preset };
+          acceptedSearchRef.current = { sportsbook: captured.sportsbook, preset: captured.preset, legCount: captured.legCount };
         }
         try {
           const properties = quickBuildsSearchEvent({
             accepted: accepted !== current,
             sportsbook: captured.sportsbook,
             preset: captured.preset,
-            kind: result.kind === 'ineligible' || result.kind === 'need_two' ? 'invalid' : result.kind,
+            legCount: captured.legCount,
+            kind: result.kind === 'ineligible' || result.kind === 'need_two' || result.kind === 'need_three' ? 'invalid' : result.kind,
             buildCount: result.kind === 'ok' ? result.view.builds.length : 0,
             emptyReason: result.kind === 'empty' ? result.view.emptyReason : null,
             ageMs: result.kind === 'ok' ? observed.ageMs : null,
@@ -253,7 +270,7 @@ export function QuickBuildsPreview({
   }
 
   function applyBuild(
-    legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg],
+    legs: QuickBuildHandoffLegs,
     confirmed: boolean,
     attribution: QuickBuildSearchAttribution | null,
   ) {
@@ -275,6 +292,7 @@ export function QuickBuildsPreview({
               status: 'replaced',
               sportsbook: attribution.sportsbook,
               preset: attribution.preset,
+              legCount: attribution.legCount,
             })
           : null;
         if (properties) trackEvent(QUICK_BUILDS_HANDOFF_COMPLETED, properties);
@@ -302,6 +320,17 @@ export function QuickBuildsPreview({
         <p className="type-body mt-1 text-cc-secondary">
           Find possible parlay combinations without manually researching every player. Use This Build replaces your current ticket with that Research Snapshot.
         </p>
+        <fieldset className="mt-4">
+          <legend className="type-metadata">Legs</legend>
+          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Leg count">
+            <ChoiceButton pressed={model.legCount === 2} onClick={() => chooseLegCount(2)}>
+              2 Legs
+            </ChoiceButton>
+            <ChoiceButton pressed={model.legCount === 3} onClick={() => chooseLegCount(3)}>
+              3 Legs
+            </ChoiceButton>
+          </div>
+        </fieldset>
         <fieldset className="mt-4">
           <legend className="type-metadata">Games</legend>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -337,7 +366,7 @@ export function QuickBuildsPreview({
         <fieldset className="mt-4">
           <legend className="type-metadata">Target combined odds</legend>
           <div className="mt-2 flex flex-wrap gap-2">
-            {QUICK_BUILD_PAYOUT_OPTIONS.map((option) => (
+            {payoutOptionsFor(model.legCount).map((option) => (
               <ChoiceButton
                 key={option.preset}
                 pressed={model.preset === option.preset}
@@ -380,6 +409,7 @@ export function QuickBuildsPreview({
       <QuickBuildReplaceDialog
         dialogRef={dialogRef}
         pending={pending != null}
+        legCount={pending?.legs.length === 3 ? 3 : 2}
         onCancel={cancelReplace}
         onConfirm={() => {
           if (pending) applyBuild(pending.legs, true, pending.attribution);
@@ -476,7 +506,7 @@ export function QuickBuildsStatus({
   onUseBuild,
 }: {
   model: PreviewModel;
-  onUseBuild?: (legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg]) => void;
+  onUseBuild?: (legs: QuickBuildHandoffLegs) => void;
 }) {
   if (model.phase === 'idle') {
     return (
@@ -516,7 +546,7 @@ export function QuickBuildsResults({
 }: {
   view: QuickBuildPreviewView;
   emptySuggestion?: string | null;
-  onUseBuild?: (legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg]) => void;
+  onUseBuild?: (legs: QuickBuildHandoffLegs) => void;
 }) {
   return (
     <div className="space-y-3">
@@ -550,6 +580,7 @@ function Disclosure({ view }: { view: QuickBuildPreviewView }) {
         <li>{QUICK_BUILD_COMBINED_ODDS_COPY}</li>
         <li>{QUICK_BUILD_BREAK_EVEN_COPY}</li>
         {view.researchLimitation ? <li>{view.researchLimitation}</li> : null}
+        {view.boundedSearchNote ? <li>{view.boundedSearchNote}</li> : null}
       </ul>
     </aside>
   );
@@ -562,14 +593,14 @@ function BuildCard({
 }: {
   build: QuickBuildPreviewCard;
   sportsbookLabel: string;
-  onUseBuild?: (legs: [QuickBuildHandoffLeg, QuickBuildHandoffLeg]) => void;
+  onUseBuild?: (legs: QuickBuildHandoffLegs) => void;
 }) {
   return (
     <article className="rounded-2xl border border-[#DCE9EA] bg-white p-4 shadow-sm" data-quick-build={build.id}>
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="type-section-heading text-[#063f46]">Build {build.number}</h3>
         <p className="type-metadata">
-          {sportsbookLabel} · Two-leg · Research Snapshot
+          {sportsbookLabel} · {build.legs.length === 3 ? 'Three-leg' : 'Two-leg'} · Research Snapshot
         </p>
       </header>
       {build.displayReady ? null : (
@@ -616,7 +647,7 @@ function BuildCard({
         <button
           type="button"
           className="type-interactive mt-4 inline-flex min-h-11 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-4 text-white hover:opacity-90"
-          onClick={() => onUseBuild?.(build.handoff as [QuickBuildHandoffLeg, QuickBuildHandoffLeg])}
+          onClick={() => { if (build.handoff) onUseBuild?.(build.handoff); }}
         >
           Use This Build
         </button>
@@ -636,11 +667,13 @@ function BuildCard({
 export function QuickBuildReplaceDialog({
   dialogRef,
   pending,
+  legCount = 2,
   onCancel,
   onConfirm,
 }: {
   dialogRef?: { current: HTMLDialogElement | null };
   pending: boolean;
+  legCount?: 2 | 3;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -658,7 +691,7 @@ export function QuickBuildReplaceDialog({
       <h2 id="quick-build-replace-title" className="type-section-heading text-[#063f46]">
         {QUICK_BUILD_REPLACE_TITLE}
       </h2>
-      <p className="type-body mt-2 text-cc-secondary">{QUICK_BUILD_REPLACE_COPY}</p>
+      <p className="type-body mt-2 text-cc-secondary">{legCount === 3 ? QUICK_BUILD_REPLACE_THREE_COPY : QUICK_BUILD_REPLACE_COPY}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"

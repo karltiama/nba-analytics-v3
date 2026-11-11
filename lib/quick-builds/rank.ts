@@ -46,7 +46,7 @@ export function bandMidpointDecimal(range: AmericanOddsRange): number {
 export function diversityQualitySlack(range: AmericanOddsRange): number {
   const low = americanToDecimal(range.minAmerican);
   const high = americanToDecimal(range.maxAmerican);
-  if (low == null || high == null || !(high > low)) {
+  if (low == null || high == null || high < low) {
     throw new QuickBuildInputError('MALFORMED_INPUT', 'range bounds are not American odds');
   }
   return (high - low) / 8;
@@ -155,6 +155,92 @@ export function selectShortlist(
   take(competitive, (pair) => freshExact(pair) && freshPlayers(pair));
   take(competitive, (pair) => freshExact(pair) && addsMarket(pair));
   take(competitive, (pair) => freshExact(pair));
+  take(competitive, () => true);
+  take(remainder, () => true);
+  return selected;
+}
+
+export type RankedTriple = {
+  id: string;
+  legs: [SideQuote, SideQuote, SideQuote];
+  combinedAmerican: number;
+  breakEvenProbability: number;
+  distanceToMidpoint: number;
+  nearKey: string;
+  gameSet: string;
+  tieKey: string;
+};
+
+function compareTriples(a: RankedTriple, b: RankedTriple): number {
+  if (a.distanceToMidpoint !== b.distanceToMidpoint) return a.distanceToMidpoint - b.distanceToMidpoint;
+  if (a.combinedAmerican !== b.combinedAmerican) return a.combinedAmerican - b.combinedAmerican;
+  if (a.tieKey !== b.tieKey) return a.tieKey < b.tieKey ? -1 : 1;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/** One representative per player/market/side triple. Alternate lines stay until this step. */
+export function collapseTripleNearDuplicates(triples: RankedTriple[]): RankedTriple[] {
+  const groups = new Map<string, RankedTriple>();
+  const sorted = triples.slice().sort(compareTriples);
+  for (const triple of sorted) {
+    if (!groups.has(triple.nearKey)) groups.set(triple.nearKey, triple);
+  }
+  return [...groups.values()].sort(compareTriples);
+}
+
+/**
+ * Up to five three-leg builds. Same quality window and pass order as pairs.
+ * The game identity is the sorted three-game set. Two-leg ranking is untouched.
+ */
+export function selectTripleShortlist(
+  triples: RankedTriple[],
+  cap = QUICK_BUILD_SHORTLIST_CAP,
+  range?: AmericanOddsRange,
+): RankedTriple[] {
+  const sorted = triples.slice().sort(compareTriples);
+  if (sorted.length === 0 || cap <= 0) return [];
+  const best = sorted[0]!.distanceToMidpoint;
+  const limit = range == null ? Number.POSITIVE_INFINITY : best + diversityQualitySlack(range);
+  const competitive: RankedTriple[] = [];
+  const remainder: RankedTriple[] = [];
+  for (const triple of sorted) {
+    if (triple.distanceToMidpoint <= limit + 1e-9) competitive.push(triple);
+    else remainder.push(triple);
+  }
+
+  const selected: RankedTriple[] = [];
+  const used = new Set<string>();
+  const exactLegs = new Set<string>();
+  const players = new Set<string>();
+  const markets = new Set<string>();
+  const gameSets = new Set<string>();
+
+  const freshExact = (triple: RankedTriple) => triple.legs.every((leg) => !exactLegs.has(exactLegKey(leg)));
+  const freshPlayers = (triple: RankedTriple) => triple.legs.every((leg) => !players.has(leg.playerId));
+  const addsMarket = (triple: RankedTriple) => triple.legs.some((leg) => !markets.has(leg.market));
+  const freshGames = (triple: RankedTriple) => !gameSets.has(triple.gameSet);
+
+  const take = (pool: readonly RankedTriple[], allow: (triple: RankedTriple) => boolean) => {
+    for (const triple of pool) {
+      if (selected.length >= cap) return;
+      if (used.has(triple.id) || !allow(triple)) continue;
+      selected.push(triple);
+      used.add(triple.id);
+      for (const leg of triple.legs) {
+        exactLegs.add(exactLegKey(leg));
+        players.add(leg.playerId);
+        markets.add(leg.market);
+      }
+      gameSets.add(triple.gameSet);
+    }
+  };
+
+  take(competitive, (triple) => freshExact(triple) && freshPlayers(triple) && addsMarket(triple) && freshGames(triple));
+  take(competitive, (triple) => freshExact(triple) && freshPlayers(triple) && addsMarket(triple));
+  take(competitive, (triple) => freshExact(triple) && freshPlayers(triple) && freshGames(triple));
+  take(competitive, (triple) => freshExact(triple) && freshPlayers(triple));
+  take(competitive, (triple) => freshExact(triple) && addsMarket(triple));
+  take(competitive, (triple) => freshExact(triple));
   take(competitive, () => true);
   take(remainder, () => true);
   return selected;

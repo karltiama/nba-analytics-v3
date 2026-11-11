@@ -6,8 +6,9 @@ import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook'
 import { isPlayerPropV1Vendor, type PlayerPropV1Vendor } from '@/lib/betting/market-movement';
 import { selectEligibleObservations } from './eligibility';
 import { generateBandPairs } from './generate';
+import { searchThreeLegCandidates } from './generate-triples';
 import { buildTwoSidedMarkets } from './markets';
-import { emptyQuickBuildResult, presentBuilds } from './present';
+import { emptyQuickBuildResult, presentBuilds, presentTriples } from './present';
 import { collapseNearDuplicates, selectShortlist } from './rank';
 import {
   QUICK_BUILD_PRESETS,
@@ -28,7 +29,12 @@ export {
   QUICK_BUILD_MAX_TWO_SIDED_MARKETS,
   QUICK_BUILD_PRESETS,
   QUICK_BUILD_PRICE_NOTICE,
+  QUICK_BUILD_SEARCH_BUDGET_NOTE,
   QUICK_BUILD_SHORTLIST_CAP,
+  QUICK_BUILD_THREE_LEG_PRESETS,
+  QUICK_BUILD_THREE_LEG_PRICE_NOTICE,
+  QUICK_BUILD_TRIPLE_PROBE_BUDGET,
+  QUICK_BUILD_TRIPLE_RETAIN,
   QuickBuildInputError,
 } from './types';
 export type {
@@ -44,6 +50,7 @@ export type {
   QuickBuildLeg,
   QuickBuildPolicy,
   QuickBuildPresetName,
+  QuickBuildThreeLegPresetName,
   QuickBuildRequest,
   QuickBuildResult,
 } from './types';
@@ -85,6 +92,10 @@ function assertRequest(input: QuickBuildRequest): void {
 
 export function generateQuickBuilds(input: QuickBuildRequest): QuickBuildResult {
   assertRequest(input);
+  if (input.legCount === 3) return generateThreeLegQuickBuilds(input);
+  if (input.legCount != null && input.legCount !== 2) {
+    throw new QuickBuildInputError('MALFORMED_INPUT', 'leg count must be 2 or 3');
+  }
   const sportsbook = requireSportsbook(input.sportsbook);
   const range = requireRange(input.range);
   const selected = selectEligibleObservations({
@@ -144,4 +155,50 @@ export function generateQuickBuilds(input: QuickBuildRequest): QuickBuildResult 
     return emptyQuickBuildResult({ ...base, reason: 'NO_PAIRS_IN_BAND' satisfies QuickBuildEmptyReason });
   }
   return presentBuilds({ ...base, builds: shortlist });
+}
+
+function generateThreeLegQuickBuilds(input: QuickBuildRequest): QuickBuildResult {
+  const sportsbook = requireSportsbook(input.sportsbook);
+  const range = requireRange(input.range);
+  const selected = selectEligibleObservations({
+    policy: input.policy,
+    games: input.games,
+    attempts: input.attempts,
+    observations: input.observations,
+  });
+  const base = {
+    sportsbook,
+    range,
+    policy: input.policy,
+    games: selected.games,
+  };
+  if (selected.upcomingCount === 0) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_UPCOMING_GAMES', legCount: 3 });
+  }
+  const contributing = selected.games.filter((game) => game.eligiblePullRunId != null);
+  if (contributing.length === 0) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_SUCCESSFUL_PULL', legCount: 3 });
+  }
+  const markets = buildTwoSidedMarkets({
+    observations: selected.observations,
+    sportsbook,
+    asOfMs: selected.asOfMs,
+  });
+  if (markets.length === 0) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_ELIGIBLE_MARKETS', legCount: 3 });
+  }
+  const gameIds = new Set(markets.map((market) => market.over.gameId));
+  if (gameIds.size < 3) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_CROSS_GAME', legCount: 3 });
+  }
+  const search = searchThreeLegCandidates(markets, range);
+  if (search.triples.length === 0) {
+    return emptyQuickBuildResult({
+      ...base,
+      reason: search.complete ? 'NO_COMBINATIONS_IN_BAND' : 'SEARCH_BUDGET_REACHED',
+      legCount: 3,
+      searchComplete: search.complete,
+    });
+  }
+  return presentTriples({ ...base, builds: search.triples, searchComplete: search.complete });
 }
