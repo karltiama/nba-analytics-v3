@@ -44,6 +44,21 @@ export type QuickBuildDisplayed =
     })
   | (Omit<Extract<QuickBuild, { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] }>, 'legs'> & {
       legs: [QuickBuildDisplayedLeg, QuickBuildDisplayedLeg, QuickBuildDisplayedLeg];
+    })
+  | (Omit<Extract<QuickBuild, { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] }>, 'legs'> & {
+      legs: [QuickBuildDisplayedLeg, QuickBuildDisplayedLeg, QuickBuildDisplayedLeg, QuickBuildDisplayedLeg];
+    })
+  | (Omit<
+      Extract<QuickBuild, { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] }>,
+      'legs'
+    > & {
+      legs: [
+        QuickBuildDisplayedLeg,
+        QuickBuildDisplayedLeg,
+        QuickBuildDisplayedLeg,
+        QuickBuildDisplayedLeg,
+        QuickBuildDisplayedLeg,
+      ];
     });
 
 export type PlayerNameRow = {
@@ -111,6 +126,12 @@ export function attachQuickBuildDisplay(input: {
       ...leg,
       display: displayFor(leg, input.games, input.playerRows),
     }));
+    if (legs.length === 5) {
+      return { ...build, legs: [legs[0]!, legs[1]!, legs[2]!, legs[3]!, legs[4]!] } as QuickBuildDisplayed;
+    }
+    if (legs.length === 4) {
+      return { ...build, legs: [legs[0]!, legs[1]!, legs[2]!, legs[3]!] } as QuickBuildDisplayed;
+    }
     if (legs.length === 3) {
       return { ...build, legs: [legs[0]!, legs[1]!, legs[2]!] } as QuickBuildDisplayed;
     }

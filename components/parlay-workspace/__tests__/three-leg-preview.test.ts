@@ -4,12 +4,19 @@ import { describe, expect, it } from 'vitest';
 import {
   QuickBuildReplaceDialog,
   QUICK_BUILD_REPLACE_COPY,
+  QUICK_BUILD_REPLACE_FOUR_COPY,
   QUICK_BUILD_REPLACE_THREE_COPY,
   QuickBuildsPreview,
   QuickBuildsResults,
 } from '@/components/parlay-workspace/QuickBuildsPreview';
 import {
+  QUICK_BUILD_FOUR_LEG_PAYOUT_OPTIONS,
+  QUICK_BUILD_FIVE_LEG_PAYOUT_OPTIONS,
+  QUICK_BUILD_NEED_FIVE_GAMES_COPY,
+  QUICK_BUILD_NEED_FOUR_GAMES_COPY,
   QUICK_BUILD_NEED_THREE_GAMES_COPY,
+  QUICK_BUILD_SELECT_FIVE_COPY,
+  QUICK_BUILD_SELECT_FOUR_COPY,
   QUICK_BUILD_PAYOUT_OPTIONS,
   QUICK_BUILD_SELECT_THREE_COPY,
   QUICK_BUILD_THREE_LEG_PAYOUT_OPTIONS,
@@ -217,5 +224,53 @@ describe('three-leg preview controls', () => {
     }));
     expect(two).toContain(QUICK_BUILD_REPLACE_COPY);
     expect(BUDGET_NOTE).toContain('bounded search');
+  });
+
+  it('switches to four and five legs without searching and enforces the game minimum', () => {
+    const start = initialPreviewModel();
+    const four = selectLegCount(start, 4);
+    expect(four.legCount).toBe(4);
+    expect(four.preset).toBe('four_middle');
+    expect(four.view).toBeNull();
+    expect(four.phase).toBe('idle');
+    expect(payoutOptionsFor(4)).toEqual(QUICK_BUILD_FOUR_LEG_PAYOUT_OPTIONS);
+    expect(previewRequestPath('draftkings', 'four_longer', undefined, 4)).toContain('legs=4');
+    expect(previewRequestPath('draftkings', 'balanced')).not.toContain('legs=');
+    const html = renderToStaticMarkup(createElement(QuickBuildsPreview, { model: four, onModelChange: () => undefined }));
+    expect(html).toContain('4 Legs');
+    expect(html).not.toContain('5 Legs');
+    expect(html).toContain('+1,000 to +1,399');
+    expect(html).not.toContain('Balanced');
+    expect(html).toContain('flex-wrap');
+
+    const five = selectLegCount(four, 5);
+    expect(five.preset).toBe('five_middle');
+    expect(five.view).toBeNull();
+    expect(payoutOptionsFor(5).map((option) => option.rangeLabel)).toEqual(QUICK_BUILD_FIVE_LEG_PAYOUT_OPTIONS.map((option) => option.rangeLabel));
+    const slate = ['1', '2', '3', '4'].map((gameId) => ({
+      gameId,
+      startTime: GAME_START,
+      label: 'BOS @ NYK',
+      startLabel: 'Nov 10, 7:30 PM ET',
+    }));
+    expect(searchBlockReason({ ...five, scope: 'select', slatePhase: 'ready', slateGames: [...slate, { gameId: '5', startTime: GAME_START, label: 'BOS @ NYK', startLabel: 'Nov 10, 7:30 PM ET' }], selectedGameIds: ['1', '2', '3', '4'] })).toBe(QUICK_BUILD_SELECT_FIVE_COPY);
+    expect(searchBlockReason({ ...four, scope: 'select', slatePhase: 'ready', slateGames: slate.slice(0, 3), selectedGameIds: ['1', '2', '3'] })).toBe(QUICK_BUILD_NEED_FOUR_GAMES_COPY);
+    expect(searchBlockReason({ ...five, scope: 'all', slatePhase: 'ready', slateGames: slate, selectedGameIds: [] })).toBe(QUICK_BUILD_NEED_FIVE_GAMES_COPY);
+
+    const stale = acceptPreviewResult(
+      five,
+      { requestId: four.requestId, sportsbook: 'draftkings', preset: 'four_middle', legCount: 4 },
+      { kind: 'ok', view: { generatedAtLabel: 'Nov 10', sportsbookLabel: 'DraftKings', emptyReason: null, emptyMessage: null, researchLimitation: null, boundedSearchNote: null, builds: [] } },
+    );
+    expect(stale.view).toBeNull();
+    expect(stale.legCount).toBe(5);
+    const dialog = renderToStaticMarkup(createElement(QuickBuildReplaceDialog, {
+      pending: true,
+      legCount: 4,
+      onCancel: () => undefined,
+      onConfirm: () => undefined,
+    }));
+    expect(dialog).toContain(QUICK_BUILD_REPLACE_FOUR_COPY);
+    expect(QUICK_BUILD_SELECT_FOUR_COPY).toContain('four');
   });
 });

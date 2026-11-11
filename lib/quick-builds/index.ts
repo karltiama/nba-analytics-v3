@@ -7,8 +7,9 @@ import { isPlayerPropV1Vendor, type PlayerPropV1Vendor } from '@/lib/betting/mar
 import { selectEligibleObservations } from './eligibility';
 import { generateBandPairs } from './generate';
 import { searchThreeLegCandidates } from './generate-triples';
+import { searchTupleCandidates } from './generate-tuples';
 import { buildTwoSidedMarkets } from './markets';
-import { emptyQuickBuildResult, presentBuilds, presentTriples } from './present';
+import { emptyQuickBuildResult, presentBuilds, presentTriples, presentTuples } from './present';
 import { collapseNearDuplicates, selectShortlist } from './rank';
 import {
   QUICK_BUILD_PRESETS,
@@ -93,8 +94,9 @@ function assertRequest(input: QuickBuildRequest): void {
 export function generateQuickBuilds(input: QuickBuildRequest): QuickBuildResult {
   assertRequest(input);
   if (input.legCount === 3) return generateThreeLegQuickBuilds(input);
+  if (input.legCount === 4 || input.legCount === 5) return generateTupleQuickBuilds(input, input.legCount);
   if (input.legCount != null && input.legCount !== 2) {
-    throw new QuickBuildInputError('MALFORMED_INPUT', 'leg count must be 2 or 3');
+    throw new QuickBuildInputError('MALFORMED_INPUT', 'leg count must be 2, 3, 4, or 5');
   }
   const sportsbook = requireSportsbook(input.sportsbook);
   const range = requireRange(input.range);
@@ -201,4 +203,62 @@ function generateThreeLegQuickBuilds(input: QuickBuildRequest): QuickBuildResult
     });
   }
   return presentTriples({ ...base, builds: search.triples, searchComplete: search.complete });
+}
+
+function generateTupleQuickBuilds(input: QuickBuildRequest, legCount: 4 | 5): QuickBuildResult {
+  const sportsbook = requireSportsbook(input.sportsbook);
+  const range = requireRange(input.range);
+  const selected = selectEligibleObservations({
+    policy: input.policy,
+    games: input.games,
+    attempts: input.attempts,
+    observations: input.observations,
+  });
+  const base = {
+    sportsbook,
+    range,
+    policy: input.policy,
+    games: selected.games,
+  };
+  if (selected.upcomingCount === 0) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_UPCOMING_GAMES', legCount });
+  }
+  const contributing = selected.games.filter((game) => game.eligiblePullRunId != null);
+  if (contributing.length === 0) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_SUCCESSFUL_PULL', legCount });
+  }
+  const markets = buildTwoSidedMarkets({
+    observations: selected.observations,
+    sportsbook,
+    asOfMs: selected.asOfMs,
+  });
+  if (markets.length === 0) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_ELIGIBLE_MARKETS', legCount });
+  }
+  const gameIds = new Set(markets.map((market) => market.over.gameId));
+  if (gameIds.size < legCount) {
+    return emptyQuickBuildResult({ ...base, reason: 'NO_CROSS_GAME', legCount });
+  }
+  const search = searchTupleCandidates(markets, range, legCount);
+  const searchStats = {
+    probes: search.probes,
+    candidates: search.retained,
+    tuplesVisited: search.tuplesVisited,
+    tuplesAvailable: search.tuplesAvailable,
+  };
+  if (search.tuples.length === 0) {
+    return {
+      ...emptyQuickBuildResult({
+        ...base,
+        reason: search.complete ? 'NO_COMBINATIONS_IN_BAND' : 'SEARCH_BUDGET_REACHED',
+        legCount,
+        searchComplete: search.complete,
+      }),
+      searchStats,
+    };
+  }
+  return {
+    ...presentTuples({ ...base, builds: search.tuples, legCount, searchComplete: search.complete }),
+    searchStats,
+  };
 }

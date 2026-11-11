@@ -57,7 +57,15 @@ export type AdaptQuickBuildLegResult =
 
 export type QuickBuildHandoffLegs =
   | readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg]
-  | readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg, QuickBuildHandoffLeg];
+  | readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg, QuickBuildHandoffLeg]
+  | readonly [QuickBuildHandoffLeg, QuickBuildHandoffLeg, QuickBuildHandoffLeg, QuickBuildHandoffLeg]
+  | readonly [
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+      QuickBuildHandoffLeg,
+    ];
 
 export type QuickBuildHandoffResult =
   | { status: 'replaced'; legs: [SelectedParlayLeg, SelectedParlayLeg] }
@@ -65,8 +73,14 @@ export type QuickBuildHandoffResult =
   | { status: 'tipped' }
   | { status: 'rejected'; code: QuickBuildHandoffCode };
 
+type SelectedBuildLegs =
+  | [SelectedParlayLeg, SelectedParlayLeg]
+  | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg]
+  | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg]
+  | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg];
+
 export type QuickBuildSelectionHandoffResult =
-  | { status: 'replaced'; legs: [SelectedParlayLeg, SelectedParlayLeg] | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg] }
+  | { status: 'replaced'; legs: SelectedBuildLegs }
   | { status: 'needs_confirmation' }
   | { status: 'tipped' }
   | { status: 'rejected'; code: QuickBuildHandoffCode };
@@ -165,22 +179,26 @@ export function assessQuickBuildPair(
 /** Validates every leg before any replacement. One failure rejects the whole build. */
 export function assessQuickBuildSelection(
   legs: QuickBuildHandoffLegs,
-): { ok: true; legs: [SelectedParlayLeg, SelectedParlayLeg] | [SelectedParlayLeg, SelectedParlayLeg, SelectedParlayLeg] } | { ok: false; code: QuickBuildHandoffCode } {
+): { ok: true; legs: SelectedBuildLegs } | { ok: false; code: QuickBuildHandoffCode } {
   const adapted = legs.map((leg) => adaptQuickBuildLeg(leg));
   for (const result of adapted) {
     if (!result.ok) return result;
   }
   const ready = adapted.map((result) => (result.ok ? result.leg : null));
   const identities = new Set<string>();
+  const players = new Set<string>();
   for (const leg of ready) {
     if (leg == null) return { ok: false, code: 'NOT_DISPLAY_READY' };
-    if (identities.has(leg.offer.wagerIdentity)) return { ok: false, code: 'DUPLICATE_LEG' };
+    if (players.has(leg.offer.playerId) || identities.has(leg.offer.wagerIdentity)) {
+      return { ok: false, code: 'DUPLICATE_LEG' };
+    }
+    players.add(leg.offer.playerId);
     identities.add(leg.offer.wagerIdentity);
   }
   if (!gameStarts(legs)) return { ok: false, code: 'MISSING_GAME_START' };
-  if (legs.length === 3) {
-    return { ok: true, legs: [ready[0]!, ready[1]!, ready[2]!] };
-  }
+  if (legs.length === 5) return { ok: true, legs: [ready[0]!, ready[1]!, ready[2]!, ready[3]!, ready[4]!] };
+  if (legs.length === 4) return { ok: true, legs: [ready[0]!, ready[1]!, ready[2]!, ready[3]!] };
+  if (legs.length === 3) return { ok: true, legs: [ready[0]!, ready[1]!, ready[2]!] };
   return { ok: true, legs: [ready[0]!, ready[1]!] };
 }
 

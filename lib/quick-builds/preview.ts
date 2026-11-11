@@ -18,6 +18,8 @@ import {
   QUICK_BUILD_SEARCH_BUDGET_NOTE,
   type BlockingAttemptKind,
   type QuickBuildEmptyReason,
+  type QuickBuildFiveLegPresetName,
+  type QuickBuildFourLegPresetName,
   type QuickBuildPresetName,
   type QuickBuildThreeLegPresetName,
 } from './types';
@@ -49,19 +51,58 @@ export const QUICK_BUILD_THREE_LEG_PAYOUT_OPTIONS = [
   rangeLabel: string;
 }[];
 
-export type QuickBuildLegCount = 2 | 3;
-export type QuickBuildAnyPresetName = QuickBuildPresetName | QuickBuildThreeLegPresetName;
+export const QUICK_BUILD_FOUR_LEG_PAYOUT_OPTIONS = [
+  { preset: 'four_shorter', label: 'Shorter', rangeLabel: '+800 to +999' },
+  { preset: 'four_middle', label: 'Middle', rangeLabel: '+1,000 to +1,399' },
+  { preset: 'four_longer', label: 'Longer', rangeLabel: '+1,400 to +1,699' },
+] as const satisfies readonly {
+  preset: QuickBuildFourLegPresetName;
+  label: string;
+  rangeLabel: string;
+}[];
+
+export const QUICK_BUILD_FIVE_LEG_PAYOUT_OPTIONS = [
+  { preset: 'five_shorter', label: 'Shorter', rangeLabel: '+1,600 to +1,999' },
+  { preset: 'five_middle', label: 'Middle', rangeLabel: '+2,000 to +2,599' },
+  { preset: 'five_longer', label: 'Longer', rangeLabel: '+2,600 to +3,499' },
+] as const satisfies readonly {
+  preset: QuickBuildFiveLegPresetName;
+  label: string;
+  rangeLabel: string;
+}[];
+
+export type QuickBuildLegCount = 2 | 3 | 4 | 5;
+export type QuickBuildAnyPresetName =
+  | QuickBuildPresetName
+  | QuickBuildThreeLegPresetName
+  | QuickBuildFourLegPresetName
+  | QuickBuildFiveLegPresetName;
 
 export const QUICK_BUILD_DEFAULT_BOOK: PlayerPropV1Vendor = 'draftkings';
 export const QUICK_BUILD_DEFAULT_PRESET: QuickBuildPresetName = 'balanced';
 export const QUICK_BUILD_DEFAULT_THREE_LEG_PRESET: QuickBuildThreeLegPresetName = 'midrange';
+export const QUICK_BUILD_DEFAULT_FOUR_LEG_PRESET: QuickBuildFourLegPresetName = 'four_middle';
+export const QUICK_BUILD_DEFAULT_FIVE_LEG_PRESET: QuickBuildFiveLegPresetName = 'five_middle';
 
 export function payoutOptionsFor(legCount: QuickBuildLegCount) {
-  return legCount === 3 ? QUICK_BUILD_THREE_LEG_PAYOUT_OPTIONS : QUICK_BUILD_PAYOUT_OPTIONS;
+  if (legCount === 5) return QUICK_BUILD_FIVE_LEG_PAYOUT_OPTIONS;
+  if (legCount === 4) return QUICK_BUILD_FOUR_LEG_PAYOUT_OPTIONS;
+  if (legCount === 3) return QUICK_BUILD_THREE_LEG_PAYOUT_OPTIONS;
+  return QUICK_BUILD_PAYOUT_OPTIONS;
 }
 
 export function defaultPresetFor(legCount: QuickBuildLegCount): QuickBuildAnyPresetName {
-  return legCount === 3 ? QUICK_BUILD_DEFAULT_THREE_LEG_PRESET : QUICK_BUILD_DEFAULT_PRESET;
+  if (legCount === 5) return QUICK_BUILD_DEFAULT_FIVE_LEG_PRESET;
+  if (legCount === 4) return QUICK_BUILD_DEFAULT_FOUR_LEG_PRESET;
+  if (legCount === 3) return QUICK_BUILD_DEFAULT_THREE_LEG_PRESET;
+  return QUICK_BUILD_DEFAULT_PRESET;
+}
+
+export function legModeLabel(legCount: number): string {
+  if (legCount === 5) return 'Five-leg';
+  if (legCount === 4) return 'Four-leg';
+  if (legCount === 3) return 'Three-leg';
+  return 'Two-leg';
 }
 
 export const QUICK_BUILD_RESEARCH_SNAPSHOT_COPY =
@@ -89,8 +130,20 @@ export const QUICK_BUILD_EMPTY_COPY: Record<QuickBuildEmptyReason, string> = {
 };
 
 export function emptyCopyFor(reason: QuickBuildEmptyReason, legCount: QuickBuildLegCount): string {
+  if (reason === 'NO_CROSS_GAME' && legCount === 5) {
+    return 'At least five eligible games are needed to construct a five-leg Quick Build.';
+  }
+  if (reason === 'NO_CROSS_GAME' && legCount === 4) {
+    return 'At least four eligible games are needed to construct a four-leg Quick Build.';
+  }
   if (reason === 'NO_CROSS_GAME' && legCount === 3) {
     return 'At least three eligible games are needed to construct a three-leg Quick Build.';
+  }
+  if (reason === 'NO_COMBINATIONS_IN_BAND' && legCount === 5) {
+    return 'No observed five-leg combinations matched this payout range.';
+  }
+  if (reason === 'NO_COMBINATIONS_IN_BAND' && legCount === 4) {
+    return 'No observed four-leg combinations matched this payout range.';
   }
   return QUICK_BUILD_EMPTY_COPY[reason];
 }
@@ -144,7 +197,11 @@ export type QuickBuildPreviewCard = {
   newestObservedLabel: string;
   oldestAgeLabel: string;
   warning: string | null;
-  legs: [QuickBuildPreviewLeg, QuickBuildPreviewLeg] | [QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg];
+  legs:
+    | [QuickBuildPreviewLeg, QuickBuildPreviewLeg]
+    | [QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg]
+    | [QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg]
+    | [QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg, QuickBuildPreviewLeg];
   /**
    * Present only when every leg passes canonical handoff validation.
    * Display-ready cards can still omit this when a market, book, or price cannot be transferred.
@@ -170,6 +227,8 @@ export type QuickBuildFetchResult =
   | { kind: 'invalid' }
   | { kind: 'need_two' }
   | { kind: 'need_three' }
+  | { kind: 'need_four' }
+  | { kind: 'need_five' }
   | { kind: 'ineligible' }
   | { kind: 'limit' }
   | { kind: 'server' }
@@ -224,8 +283,12 @@ export const QUICK_BUILD_GAMES_PATH = '/api/parlay-workspace/quick-builds/games'
 
 export const QUICK_BUILD_SELECT_TWO_COPY = 'Select at least two matchups.';
 export const QUICK_BUILD_SELECT_THREE_COPY = 'Select at least three matchups.';
+export const QUICK_BUILD_SELECT_FOUR_COPY = 'Select at least four matchups.';
+export const QUICK_BUILD_SELECT_FIVE_COPY = 'Select at least five matchups.';
 export const QUICK_BUILD_ONE_GAME_COPY = 'Cross-game Quick Builds need at least two games.';
 export const QUICK_BUILD_NEED_THREE_GAMES_COPY = 'Three-leg Quick Builds need at least three eligible games.';
+export const QUICK_BUILD_NEED_FOUR_GAMES_COPY = 'Four-leg Quick Builds need at least four eligible games.';
+export const QUICK_BUILD_NEED_FIVE_GAMES_COPY = 'Five-leg Quick Builds need at least five eligible games.';
 export const QUICK_BUILD_NO_GAMES_COPY = 'There are no upcoming eligible NBA games in this slate.';
 export const QUICK_BUILD_REFRESH_GAMES_COPY = 'A selected game is no longer eligible. Refresh the game list and choose again.';
 export const QUICK_BUILD_MATCHUP_UNAVAILABLE = 'Matchup unavailable';
@@ -242,21 +305,35 @@ export function toggleSelectedGame(ids: readonly string[], gameId: string): stri
 export function searchBlockReason(
   model: Pick<PreviewModel, 'scope' | 'selectedGameIds' | 'slatePhase' | 'slateGames' | 'legCount'>,
 ): string | null {
-  const required = model.legCount === 3 ? 3 : 2;
+  const required = model.legCount;
   if (model.scope !== 'select') {
-    if (model.legCount === 3 && model.slatePhase === 'ready' && model.slateGames.length > 0 && model.slateGames.length < 3) {
-      return QUICK_BUILD_NEED_THREE_GAMES_COPY;
+    if (model.legCount > 2 && model.slatePhase === 'ready' && model.slateGames.length > 0 && model.slateGames.length < required) {
+      return insufficientSlateCopy(model.legCount);
     }
     return null;
   }
   if (model.slatePhase === 'ready' && model.slateGames.length === 0) return QUICK_BUILD_NO_GAMES_COPY;
   if (model.slatePhase === 'ready' && model.slateGames.length < required) {
-    return model.legCount === 3 ? QUICK_BUILD_NEED_THREE_GAMES_COPY : QUICK_BUILD_ONE_GAME_COPY;
+    return insufficientSlateCopy(model.legCount);
   }
   if (model.selectedGameIds.length < required) {
-    return model.legCount === 3 ? QUICK_BUILD_SELECT_THREE_COPY : QUICK_BUILD_SELECT_TWO_COPY;
+    return selectCopy(model.legCount);
   }
   return null;
+}
+
+function insufficientSlateCopy(legCount: QuickBuildLegCount): string {
+  if (legCount === 5) return QUICK_BUILD_NEED_FIVE_GAMES_COPY;
+  if (legCount === 4) return QUICK_BUILD_NEED_FOUR_GAMES_COPY;
+  if (legCount === 3) return QUICK_BUILD_NEED_THREE_GAMES_COPY;
+  return QUICK_BUILD_ONE_GAME_COPY;
+}
+
+function selectCopy(legCount: QuickBuildLegCount): string {
+  if (legCount === 5) return QUICK_BUILD_SELECT_FIVE_COPY;
+  if (legCount === 4) return QUICK_BUILD_SELECT_FOUR_COPY;
+  if (legCount === 3) return QUICK_BUILD_SELECT_THREE_COPY;
+  return QUICK_BUILD_SELECT_TWO_COPY;
 }
 
 export function selectLegCount(state: PreviewModel, legCount: QuickBuildLegCount): PreviewModel {
@@ -271,7 +348,7 @@ export function previewRequestPath(
   legCount: QuickBuildLegCount = 2,
 ): string {
   const base = `/api/parlay-workspace/quick-builds?sportsbook=${encodeURIComponent(sportsbook)}&preset=${encodeURIComponent(preset)}`;
-  const withLegs = legCount === 3 ? `${base}&legs=3` : base;
+  const withLegs = legCount === 2 ? base : `${base}&legs=${legCount}`;
   if (gameIds == null) return withLegs;
   return `${withLegs}&games=${encodeURIComponent(gameIds.join(','))}`;
 }
@@ -379,6 +456,10 @@ export function previewErrorMessage(kind: Exclude<QuickBuildFetchResult['kind'],
       return QUICK_BUILD_SELECT_TWO_COPY;
     case 'need_three':
       return QUICK_BUILD_SELECT_THREE_COPY;
+    case 'need_four':
+      return QUICK_BUILD_SELECT_FOUR_COPY;
+    case 'need_five':
+      return QUICK_BUILD_SELECT_FIVE_COPY;
     case 'ineligible':
       return QUICK_BUILD_REFRESH_GAMES_COPY;
     case 'limit':
@@ -420,6 +501,8 @@ export async function fetchQuickBuilds(args: {
     }
     if (response.status === 400) {
       const body = await readJson(response);
+      if (isRecord(body) && body.code === 'NEED_FIVE_GAMES') return { kind: 'need_five' };
+      if (isRecord(body) && body.code === 'NEED_FOUR_GAMES') return { kind: 'need_four' };
       if (isRecord(body) && body.code === 'NEED_THREE_GAMES') return { kind: 'need_three' };
       return isRecord(body) && body.code === 'NEED_TWO_GAMES' ? { kind: 'need_two' } : { kind: 'invalid' };
     }
@@ -494,7 +577,7 @@ function parseBuild(raw: unknown, number: number, games: Map<string, NewerAttemp
   if (typeof raw.oldestObservedAt !== 'string' || formatEtTimestamp(raw.oldestObservedAt) == null) return null;
   if (typeof raw.newestObservedAt !== 'string' || formatEtTimestamp(raw.newestObservedAt) == null) return null;
   if (!isFiniteNumber(raw.maxAgeMs) || raw.maxAgeMs < 0) return null;
-  if (!Array.isArray(raw.legs) || (raw.legs.length !== 2 && raw.legs.length !== 3)) return null;
+  if (!Array.isArray(raw.legs) || raw.legs.length < 2 || raw.legs.length > 5) return null;
   const parsed = raw.legs.map((entry) => parseLeg(entry));
   if (parsed.some((entry) => entry == null)) return null;
   const readyLegs = parsed as NonNullable<(typeof parsed)[number]>[];
@@ -503,7 +586,8 @@ function parseBuild(raw: unknown, number: number, games: Map<string, NewerAttemp
   const displayReady = readyLegs.every((entry) => entry.ready);
   const candidate = displayReady ? handoffLegs(raw.legs) : null;
   const handoff = candidate && assessQuickBuildSelection(candidate).ok ? candidate : null;
-  const previewLegs = readyLegs.map((entry) => entry.leg);
+  const previewLegs = asPreviewLegs(readyLegs.map((entry) => entry.leg));
+  if (previewLegs == null) return null;
   return {
     id: raw.id,
     number,
@@ -514,17 +598,25 @@ function parseBuild(raw: unknown, number: number, games: Map<string, NewerAttemp
     newestObservedLabel: formatEtTimestamp(raw.newestObservedAt) as string,
     oldestAgeLabel: age,
     warning: warningFor(readyLegs.map((entry) => entry.gameId), games),
-    legs: previewLegs.length === 3
-      ? [previewLegs[0]!, previewLegs[1]!, previewLegs[2]!]
-      : [previewLegs[0]!, previewLegs[1]!],
+    legs: previewLegs,
     handoff,
   };
+}
+
+function asPreviewLegs(legs: QuickBuildPreviewLeg[]): QuickBuildPreviewCard['legs'] | null {
+  if (legs.length === 5) return [legs[0]!, legs[1]!, legs[2]!, legs[3]!, legs[4]!];
+  if (legs.length === 4) return [legs[0]!, legs[1]!, legs[2]!, legs[3]!];
+  if (legs.length === 3) return [legs[0]!, legs[1]!, legs[2]!];
+  if (legs.length === 2) return [legs[0]!, legs[1]!];
+  return null;
 }
 
 function handoffLegs(rawLegs: unknown[]): QuickBuildHandoffLegs | null {
   const adapted = rawLegs.map((raw) => handoffLeg(raw));
   if (adapted.some((leg) => leg == null)) return null;
   const legs = adapted as QuickBuildHandoffLeg[];
+  if (legs.length === 5) return [legs[0]!, legs[1]!, legs[2]!, legs[3]!, legs[4]!];
+  if (legs.length === 4) return [legs[0]!, legs[1]!, legs[2]!, legs[3]!];
   if (legs.length === 3) return [legs[0]!, legs[1]!, legs[2]!];
   if (legs.length === 2) return [legs[0]!, legs[1]!];
   return null;

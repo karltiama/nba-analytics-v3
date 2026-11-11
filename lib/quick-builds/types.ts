@@ -20,6 +20,14 @@ export const QUICK_BUILD_PRICE_NOTICE =
 export const QUICK_BUILD_THREE_LEG_PRICE_NOTICE =
   'Calculated combined odds are the product of the three leg prices. They are not a sportsbook parlay quote.';
 
+/** Product of the four leg decimals, rounded with the shared American converter. Not a book quote. */
+export const QUICK_BUILD_FOUR_LEG_PRICE_NOTICE =
+  'Calculated combined odds are the product of the four leg prices. They are not a sportsbook parlay quote.';
+
+/** Product of the five leg decimals, rounded with the shared American converter. Not a book quote. */
+export const QUICK_BUILD_FIVE_LEG_PRICE_NOTICE =
+  'Calculated combined odds are the product of the five leg prices. They are not a sportsbook parlay quote.';
+
 /** Shown when a three-leg search stops at its work bound after finding candidates. */
 export const QUICK_BUILD_SEARCH_BUDGET_NOTE =
   'This shortlist came from a bounded search. More combinations may exist outside the candidates that were kept.';
@@ -37,6 +45,25 @@ export const QUICK_BUILD_TRIPLE_RETAIN = 1_500;
  * Games are ordered by id, and a slate wider than this seed is incomplete.
  */
 export const QUICK_BUILD_TRIPLE_SEED_PLAYERS = 12;
+
+/** Exact combined-odds checks a four- or five-leg search may perform before it stops. */
+export const QUICK_BUILD_TUPLE_PROBE_BUDGET = 80_000;
+
+/** Closest in-band four- and five-leg candidates retained for the diversity shortlist. */
+export const QUICK_BUILD_TUPLE_RETAIN = 1_500;
+
+/**
+ * Game tuples visited on a wide slate. Indexes are evenly spaced through the
+ * lexicographic combination list, so the traversal itself stays bounded when
+ * a 32-game slate has hundreds of thousands of tuples.
+ */
+export const QUICK_BUILD_TUPLE_VISIT_CAP = 256;
+
+/** One closest side per player on the seeded legs of a four-leg tuple. */
+export const QUICK_BUILD_FOUR_LEG_SEED_PLAYERS = 8;
+
+/** One closest side per player on the seeded legs of a five-leg tuple. */
+export const QUICK_BUILD_FIVE_LEG_SEED_PLAYERS = 6;
 
 export const QUICK_BUILD_EMPTY_REASONS = [
   'NO_UPCOMING_GAMES',
@@ -68,6 +95,22 @@ export const QUICK_BUILD_THREE_LEG_PRESETS = {
   longer_payout: { minAmerican: 700, maxAmerican: 999 },
 } as const;
 export type QuickBuildThreeLegPresetName = keyof typeof QUICK_BUILD_THREE_LEG_PRESETS;
+
+/** Inclusive American bounds for optional four-leg builds. Not a three-leg preset. */
+export const QUICK_BUILD_FOUR_LEG_PRESETS = {
+  four_shorter: { minAmerican: 800, maxAmerican: 999 },
+  four_middle: { minAmerican: 1000, maxAmerican: 1399 },
+  four_longer: { minAmerican: 1400, maxAmerican: 1699 },
+} as const;
+export type QuickBuildFourLegPresetName = keyof typeof QUICK_BUILD_FOUR_LEG_PRESETS;
+
+/** Inclusive American bounds for optional five-leg builds. Not a four-leg preset. */
+export const QUICK_BUILD_FIVE_LEG_PRESETS = {
+  five_shorter: { minAmerican: 1600, maxAmerican: 1999 },
+  five_middle: { minAmerican: 2000, maxAmerican: 2599 },
+  five_longer: { minAmerican: 2600, maxAmerican: 3499 },
+} as const;
+export type QuickBuildFiveLegPresetName = keyof typeof QUICK_BUILD_FIVE_LEG_PRESETS;
 
 export type AmericanOddsRange = {
   minAmerican: number;
@@ -128,8 +171,8 @@ export type QuickBuildRequest = {
   games: QuickBuildGameInput[];
   attempts: GamePullAttempt[];
   observations: MarketObservationInput[];
-  /** Omitted means two legs. Three legs uses the separate generator. */
-  legCount?: 2 | 3;
+  /** Omitted means two legs. Three, four, and five legs use their own generators. */
+  legCount?: 2 | 3 | 4 | 5;
 };
 
 export type BlockingAttemptKind = 'failed' | 'zero_row' | 'invalid_clock' | 'in_progress' | 'incomplete';
@@ -192,7 +235,9 @@ type QuickBuildCommon = {
 
 export type QuickBuild =
   | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg] })
-  | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] });
+  | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] })
+  | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] })
+  | (QuickBuildCommon & { legs: [QuickBuildLeg, QuickBuildLeg, QuickBuildLeg, QuickBuildLeg, QuickBuildLeg] });
 
 export type QuickBuildResult = {
   status: 'ok' | 'empty';
@@ -200,21 +245,50 @@ export type QuickBuildResult = {
   sportsbook: PlayerPropV1Vendor | null;
   range: AmericanOddsRange | null;
   policy: QuickBuildPolicy | null;
-  priceNotice: typeof QUICK_BUILD_PRICE_NOTICE | typeof QUICK_BUILD_THREE_LEG_PRICE_NOTICE;
+  priceNotice:
+    | typeof QUICK_BUILD_PRICE_NOTICE
+    | typeof QUICK_BUILD_THREE_LEG_PRICE_NOTICE
+    | typeof QUICK_BUILD_FOUR_LEG_PRICE_NOTICE
+    | typeof QUICK_BUILD_FIVE_LEG_PRICE_NOTICE;
   games: GameEligibility[];
   builds: QuickBuild[];
   /**
-   * Three-leg searches only. False means the work bound stopped the search
-   * before every legal triple was assessed. Absent on two-leg results.
+   * Three-, four-, and five-leg searches. False means seeding, tuple coverage,
+   * or the work bound stopped the search before every legal combination was
+   * assessed. Absent on two-leg results.
    */
   searchComplete?: boolean;
+  /**
+   * Local measurement for the four- and five-leg generator. Removed before the
+   * API response is returned.
+   */
+  searchStats?: {
+    probes: number;
+    candidates: number;
+    tuplesVisited: number;
+    tuplesAvailable: number;
+  };
 };
 
 export class QuickBuildInputError extends Error {
-  readonly code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES' | 'NEED_THREE_GAMES';
+  readonly code:
+    | 'MALFORMED_INPUT'
+    | 'LIMIT_EXCEEDED'
+    | 'INELIGIBLE_GAME'
+    | 'NEED_TWO_GAMES'
+    | 'NEED_THREE_GAMES'
+    | 'NEED_FOUR_GAMES'
+    | 'NEED_FIVE_GAMES';
 
   constructor(
-    code: 'MALFORMED_INPUT' | 'LIMIT_EXCEEDED' | 'INELIGIBLE_GAME' | 'NEED_TWO_GAMES' | 'NEED_THREE_GAMES',
+    code:
+      | 'MALFORMED_INPUT'
+      | 'LIMIT_EXCEEDED'
+      | 'INELIGIBLE_GAME'
+      | 'NEED_TWO_GAMES'
+      | 'NEED_THREE_GAMES'
+      | 'NEED_FOUR_GAMES'
+      | 'NEED_FIVE_GAMES',
     message: string,
   ) {
     super(message);

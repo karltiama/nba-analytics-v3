@@ -32,6 +32,12 @@ const PRESETS = new Set<string>([
   'shorter_payout',
   'midrange',
   'longer_payout',
+  'four_shorter',
+  'four_middle',
+  'four_longer',
+  'five_shorter',
+  'five_middle',
+  'five_longer',
 ]);
 const EMPTY_REASONS = new Set<string>(QUICK_BUILD_EMPTY_REASONS);
 
@@ -99,8 +105,8 @@ export function quickBuildsSearchEvent(input: {
   accepted: boolean;
   sportsbook: string;
   preset: string;
-  /** Omitted means the historical two-leg event. New events pass 2 or 3. */
-  legCount?: 2 | 3;
+  /** Omitted means the historical two-leg event. New events pass 2, 3, 4, or 5. */
+  legCount?: 2 | 3 | 4 | 5;
   kind: QuickBuildSearchKind;
   buildCount: number;
   emptyReason: string | null;
@@ -110,7 +116,7 @@ export function quickBuildsSearchEvent(input: {
   const sportsbook = closedSportsbook(input.sportsbook);
   const preset = closedPreset(input.preset);
   const legCount = input.legCount ?? 2;
-  if (!sportsbook || !preset || (legCount !== 2 && legCount !== 3)) return null;
+  if (!sportsbook || !preset || (legCount !== 2 && legCount !== 3 && legCount !== 4 && legCount !== 5)) return null;
   if (input.kind === 'ok') {
     if (!Number.isInteger(input.buildCount) || input.buildCount < 1 || input.buildCount > QUICK_BUILD_SHORTLIST_EVENT_CAP) {
       return null;
@@ -152,12 +158,12 @@ export function quickBuildsHandoffEvent(input: {
   sportsbook: string;
   preset: string;
   /** Omitted means the historical two-leg event. */
-  legCount?: 2 | 3;
+  legCount?: 2 | 3 | 4 | 5;
 }): QuickBuildsHandoffCompletedProperties | null {
   if (input.status !== 'replaced') return null;
   const sportsbook = closedSportsbook(input.sportsbook);
   const preset = closedPreset(input.preset);
   const legCount = input.legCount ?? 2;
-  if (!sportsbook || !preset || (legCount !== 2 && legCount !== 3)) return null;
+  if (!sportsbook || !preset || (legCount !== 2 && legCount !== 3 && legCount !== 4 && legCount !== 5)) return null;
   return { sportsbook, preset, leg_count: legCount, result: 'successful_handoff' };
 }
