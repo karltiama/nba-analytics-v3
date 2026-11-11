@@ -26,6 +26,7 @@ import {
   searchBlockReason,
   selectLegCount,
   toggleSelectedGame,
+  withGameStartPrefix,
   type PreviewModel,
   type QuickBuildAnyPresetName,
   type QuickBuildLegCount,
@@ -625,7 +626,7 @@ function BuildCard({
               <span className="type-metadata"> · {leg.oddsLabel}</span>
             </p>
             <p className="type-metadata mt-1">
-              {leg.gameStartLabel ? `Game start ${leg.gameStartLabel}` : 'Game start unavailable'}
+              {leg.gameStartLabel ? withGameStartPrefix(leg.gameStartLabel) : 'Game start unavailable'}
               {leg.gameStatus ? ` · Snapshot game status: ${leg.gameStatus}` : ''}
             </p>
             <p className="type-metadata mt-1">Price observed {leg.observedLabel}</p>
