@@ -14,6 +14,7 @@ import {
   type QuickBuildPolicy,
   type QuickBuildRequest,
 } from '../index';
+import { selectEligibleObservations } from '../eligibility';
 
 const ASOF = '2026-11-09T18:45:00.000Z';
 const OBS = '2026-11-09T17:01:00.000Z';
@@ -101,6 +102,27 @@ describe('generateQuickBuilds', () => {
     expect(leg.sportsbook).toBe('draftkings');
     expect(leg.pullRunId).toBe('2');
     expect(JSON.stringify(result)).not.toMatch(/jointFair|expectedValue|modelEv/i);
+  });
+
+  it('does not treat a future bare clock as an upcoming game', () => {
+    const selected = selectEligibleObservations({
+      policy: research(),
+      games: [
+        { gameId: 'g1', startTime: TIP, status: '5:43' },
+        { gameId: 'g2', startTime: TIP, status: TIP },
+      ],
+      attempts: [success('2', 'g1', OBS), success('2', 'g2', OBS)],
+      observations: [
+        ...ou({ playerId: 'a', gameId: 'g1', line: 20.5, over: -110, under: -110 }),
+        ...ou({ playerId: 'b', gameId: 'g2', line: 18.5, over: -110, under: -110 }),
+      ],
+    });
+    expect(selected.games.find((game) => game.gameId === 'g1')).toMatchObject({
+      upcoming: false,
+      rejection: 'NOT_UPCOMING',
+    });
+    expect(selected.games.find((game) => game.gameId === 'g2')?.upcoming).toBe(true);
+    expect(selected.observations.every((row) => row.gameId === 'g2')).toBe(true);
   });
 
   it('rejects two legs from the same game', () => {

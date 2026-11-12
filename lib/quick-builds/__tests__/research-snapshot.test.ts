@@ -16,13 +16,21 @@ import {
   parseSelectedGameIds,
   type QuickBuildReader,
 } from '../research-snapshot';
+import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
 import { QUICK_BUILD_PLAYERS_SQL } from '../display';
 
 const NOW = new Date('2026-11-09T18:00:00.000Z');
 const TIP = '2026-11-10T00:00:00.000Z';
 const OBS = '2026-11-09T17:00:00.000Z';
 
-type Game = { gameId: string; startTime: string; status: string | null };
+type Game = {
+  gameId: string;
+  startTime: string;
+  status: string | null;
+  awayAbbreviation?: string | null;
+  homeAbbreviation?: string | null;
+};
+type NamedPlayer = { playerId: string; fullName: string; nbaPlayerId?: string | null };
 type Run = {
   pullRunId: string;
   gameId: string;
@@ -45,7 +53,7 @@ type Snap = {
   clock: 'RESPONSE_RECEIVED' | null;
 };
 
-type Mem = { games: Game[]; runs: Run[]; snaps: Snap[] };
+type Mem = { games: Game[]; runs: Run[]; snaps: Snap[]; players?: NamedPlayer[] };
 
 function success(pullRunId: string, gameId: string, completedAt: string, rowsStored = 4): Run {
   return { pullRunId, gameId, status: 'success', rowsStored, completedAt };
@@ -102,6 +110,8 @@ function reader(mem: Mem, calls: { sql: string; params: unknown[] }[] = []): Qui
         game_id: game.gameId,
         start_time: game.startTime,
         status: game.status,
+        away_abbr: game.awayAbbreviation ?? null,
+        home_abbr: game.homeAbbreviation ?? null,
       }));
     }
     if (sql === QUICK_BUILD_ATTEMPTS_SQL) {
@@ -166,7 +176,13 @@ function reader(mem: Mem, calls: { sql: string; params: unknown[] }[] = []): Qui
     }
     if (sql === QUICK_BUILD_PLAYERS_SQL) {
       const ids = (params[0] as string[]) ?? [];
-      return ids.map((playerId) => ({ player_id: playerId, full_name: `Player ${playerId}` }));
+      const named = mem.players?.filter((player) => ids.includes(player.playerId));
+      const rows = named && named.length > 0 ? named : ids.map((playerId) => ({ playerId, fullName: `Player ${playerId}`, nbaPlayerId: null }));
+      return rows.map((player) => ({
+        player_id: player.playerId,
+        full_name: player.fullName,
+        nba_player_id: player.nbaPlayerId ?? null,
+      }));
     }
     throw new Error(`unexpected sql: ${sql}`);
   };
@@ -186,7 +202,9 @@ describe('research snapshot adapter', () => {
     expect(text).toContain('raw.player_prop_snapshots_v2');
     expect(text).toContain('analytics.games');
     expect(text).toContain('analytics.players');
-    expect(text).not.toContain('analytics.teams');
+    expect(QUICK_BUILD_GAMES_SQL).toContain('analytics.teams');
+    expect(QUICK_BUILD_OBSERVATION_ROWS_SQL).not.toContain('analytics.teams');
+    expect(QUICK_BUILD_OBSERVATION_COUNT_SQL).not.toContain('analytics.teams');
     expect(QUICK_BUILD_OBSERVATION_ROWS_SQL).toContain("IN ('over', 'under')");
   });
 
@@ -199,6 +217,27 @@ describe('research snapshot adapter', () => {
     for (const status of ['Final', 'In Progress', 'live', 'Postponed', 'Canceled', 'Cancelled', '', 'delayed']) {
       expect(isResearchSlateGame({ startTime: TIP, status }, NOW)).toBe(false);
     }
+  });
+
+  it('rejects a bare clock, a past tip, and non-pregame statuses', () => {
+    const pastIso = '2026-11-09T17:00:00.000Z';
+    expect(normalizeGameStatus('5:43')).toBe('Scheduled');
+    expect(isResearchSlateGame({ startTime: TIP, status: '5:43' }, NOW)).toBe(false);
+    expect(isResearchSlateGame({ startTime: TIP, status: '19:00' }, NOW)).toBe(false);
+    expect(isResearchSlateGame({ startTime: TIP, status: '7:00' }, NOW)).toBe(false);
+
+    expect(isResearchSlateGame({ startTime: TIP, status: TIP }, NOW)).toBe(true);
+    expect(isResearchSlateGame({ startTime: TIP, status: '7:30 PM ET' }, NOW)).toBe(true);
+    expect(isResearchSlateGame({ startTime: pastIso, status: pastIso }, NOW)).toBe(false);
+    expect(isResearchSlateGame({ startTime: pastIso, status: '7:00 pm' }, NOW)).toBe(false);
+
+    for (const status of ['Postponed', 'Delayed', 'live', 'Halftime', 'OT', 'Final', 'Final/OT']) {
+      expect(isResearchSlateGame({ startTime: TIP, status }, NOW)).toBe(false);
+    }
+    expect(isResearchSlateGame({ startTime: TIP, status: 'not a status' }, NOW)).toBe(false);
+    expect(isResearchSlateGame({ startTime: TIP, status: '' }, NOW)).toBe(false);
+    expect(isResearchSlateGame({ startTime: TIP, status: null }, NOW)).toBe(false);
+    expect(isResearchSlateGame({ startTime: TIP }, NOW)).toBe(false);
   });
 
   it('builds from the latest complete pull on each game', async () => {
@@ -251,6 +290,8 @@ describe('research snapshot adapter', () => {
     expect(result.builds[0]?.legs.map((leg) => leg.display.playerName).sort()).toEqual(['Player 11', 'Player 22']);
     expect(result.builds[0]?.legs.every((leg) => leg.display.teamAbbreviation == null)).toBe(true);
     expect(result.builds[0]?.legs.every((leg) => leg.display.opponentAbbreviation == null)).toBe(true);
+    expect(result.builds[0]?.legs.every((leg) => leg.display.scheduledAwayAbbreviation == null)).toBe(true);
+    expect(result.builds[0]?.legs.every((leg) => leg.display.nbaPlayerId == null)).toBe(true);
     expect(result.builds[0]?.legs.every((leg) => leg.display.gameStartTime != null)).toBe(true);
     expect(result.priceNotice).toBe(QUICK_BUILD_PRICE_NOTICE);
     expect(result.limitations[1]).toBe(QUICK_BUILD_PRICE_NOTICE);
@@ -268,6 +309,45 @@ describe('research snapshot adapter', () => {
       }),
     });
     expect(again.builds.map((build) => build.id)).toEqual(result.builds.map((build) => build.id));
+  });
+
+  it('attaches the scheduled matchup and NBA provider id without a player team', async () => {
+    const base = slate();
+    const result = await loadResearchQuickBuilds({
+      sportsbook: 'fanduel',
+      preset: 'higher_payout',
+      now: NOW,
+      query: reader({
+        ...base,
+        games: [
+          { ...base.games[0]!, awayAbbreviation: 'por', homeAbbreviation: 'bos' },
+          { ...base.games[1]!, awayAbbreviation: 'lal', homeAbbreviation: '' },
+        ],
+        players: [
+          { playerId: '11', fullName: 'Donovan Clingan', nbaPlayerId: '1631210' },
+          { playerId: '22', fullName: 'Player 22', nbaPlayerId: 'not-an-id' },
+        ],
+        snaps: [
+          ...bothSides({ pullRunId: '2', gameId: '101', playerId: '11', sportsbook: 'fanduel' }),
+          ...bothSides({ pullRunId: '8', gameId: '102', playerId: '22', sportsbook: 'fanduel', line: '8.5' }),
+        ],
+      }),
+    });
+    const clingan = result.builds[0]?.legs.find((leg) => leg.playerId === '11');
+    const other = result.builds[0]?.legs.find((leg) => leg.playerId === '22');
+    expect(clingan?.display).toMatchObject({
+      playerName: 'Donovan Clingan',
+      scheduledAwayAbbreviation: 'POR',
+      scheduledHomeAbbreviation: 'BOS',
+      nbaPlayerId: '1631210',
+      teamAbbreviation: null,
+      opponentAbbreviation: null,
+      homeAway: null,
+    });
+    expect(other?.display.scheduledAwayAbbreviation).toBeNull();
+    expect(other?.display.scheduledHomeAbbreviation).toBeNull();
+    expect(other?.display.nbaPlayerId).toBeNull();
+    expect(clingan?.oddsAmerican).toBe(-200);
   });
 
   it('does not resurrect a line that is absent from the latest complete pull', async () => {
@@ -767,6 +847,30 @@ describe('eligible game discovery', () => {
     expect(slate.games[2]).toMatchObject({ label: null, awayAbbreviation: null, homeAbbreviation: 'GSW' });
     expect(JSON.stringify(slate)).not.toContain('MIA');
     expect(JSON.stringify(slate)).not.toContain('not-a-team');
+  });
+
+  it('keeps a future tip timestamp eligible and rejects live, final, and already-started games', async () => {
+    const pastIso = '2026-11-09T17:00:00.000Z';
+    expect(normalizeGameStatus(pastIso)).toBe('Scheduled');
+    expect(normalizeGameStatus('1st Qtr')).toBe('In Progress');
+    expect(normalizeGameStatus('Final/OT')).toBe('Unknown');
+    const slate = await loadResearchSlate({
+      now: NOW,
+      query: slateReader([
+        { game_id: '101', start_time: TIP, status: TIP, away_abbr: 'LAL', home_abbr: 'DEN' },
+        { game_id: '401', start_time: pastIso, status: pastIso, away_abbr: 'DAL', home_abbr: 'MIN' },
+        { game_id: '402', start_time: TIP, status: 'Halftime', away_abbr: 'TOR', home_abbr: 'PHI' },
+        { game_id: '403', start_time: TIP, status: '1st Qtr', away_abbr: 'BOS', home_abbr: 'NYK' },
+        { game_id: '404', start_time: TIP, status: 'End of 3rd Qtr', away_abbr: 'CHI', home_abbr: 'MIL' },
+        { game_id: '405', start_time: TIP, status: 'OT', away_abbr: 'MIA', home_abbr: 'ORL' },
+        { game_id: '406', start_time: TIP, status: '2OT', away_abbr: 'GSW', home_abbr: 'LAC' },
+        { game_id: '407', start_time: TIP, status: 'Final/OT', away_abbr: 'DEN', home_abbr: 'UTA' },
+        { game_id: '408', start_time: TIP, status: 'Postponed', away_abbr: 'SAS', home_abbr: 'HOU' },
+        { game_id: '409', start_time: TIP, status: 'Delayed', away_abbr: 'ATL', home_abbr: 'WAS' },
+        { game_id: '410', start_time: TIP, status: '5:43', away_abbr: 'DAL', home_abbr: 'MIN' },
+      ]),
+    });
+    expect(slate.games.map((game) => game.gameId)).toEqual(['101']);
   });
 
   it('returns no games when the slate has none and rejects a slate over the cap', async () => {

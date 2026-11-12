@@ -624,10 +624,13 @@ function BuildCard({
               {leg.marketLabel} {leg.sideLabel} {leg.lineLabel}
               <span className="type-metadata"> · {leg.oddsLabel}</span>
             </p>
-            <p className="type-metadata mt-1">
-              {leg.gameStartLabel ? `Game start ${leg.gameStartLabel}` : 'Game start unavailable'}
-              {leg.gameStatus ? ` · Snapshot game status: ${leg.gameStatus}` : ''}
+            <p className="type-metadata mt-1 break-words">
+              {leg.matchupLabel ?? QUICK_BUILD_MATCHUP_UNAVAILABLE}
             </p>
+            <p className="type-metadata mt-1 break-words">
+              {leg.gameStartLabel ? `Game start ${leg.gameStartLabel}` : 'Game start unavailable'}
+            </p>
+            {leg.gameStatus ? <p className="type-metadata mt-1">Game status: {leg.gameStatus}</p> : null}
             <p className="type-metadata mt-1">Price observed {leg.observedLabel}</p>
             {leg.noVigLabel ? <p className="type-metadata mt-1">{leg.noVigLabel}. Not a predicted chance of winning.</p> : null}
           </li>

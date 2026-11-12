@@ -6,6 +6,9 @@ import { trackEvent, type UpgradeClickedSurface } from '@/lib/product-analytics/
 
 export { FOUNDING_PRO_UPGRADE_HREF };
 
+/** Limited launch: product surfaces do not invite a Founding Pro purchase. */
+const PUBLIC_FOUNDING_PRO_PURCHASE_CTA = false;
+
 /** Routes Upgrade through /billing. Does not start Checkout. */
 export function FoundingProUpgradeLink({
   className,
@@ -19,6 +22,14 @@ export function FoundingProUpgradeLink({
   /** Omit on Market Movement, which keeps its own historical event. */
   analyticsSurface?: UpgradeClickedSurface;
 }) {
+  if (!PUBLIC_FOUNDING_PRO_PURCHASE_CTA) {
+    return (
+      <p className={cn('type-metadata text-cc-secondary', className)}>
+        Founding Pro purchase is not open yet.
+      </p>
+    );
+  }
+
   return (
     <Link
       href={FOUNDING_PRO_UPGRADE_HREF}

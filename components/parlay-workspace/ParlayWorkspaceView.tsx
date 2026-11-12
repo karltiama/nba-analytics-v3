@@ -4,12 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { AlignJustify, BarChart3, Link2, X, type LucideIcon } from 'lucide-react';
 import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
-import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
 import { PostToFeedControls } from '@/components/feed/PostToFeedControls';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { canonicalBetLegFromSelectedParlayLeg } from '@/lib/bet-slip/adapt-parlay-leg';
 import { shouldShowXrayOcrProvenance } from '@/lib/parlay/adapt-xray-confirmed';
 import {
   marketDisplayLabel,
@@ -42,10 +40,15 @@ import {
   type WorkspaceSignalTone,
 } from '@/lib/parlay/workspace-presentation';
 import { formatAvg } from '@/lib/parlay-xray/interpretation/display';
+import { formatEtTimestamp } from '@/lib/quick-builds/preview';
 import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
-import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
 import { WorkspaceTrueCost } from '@/components/parlay/WorkspaceTrueCost';
+import { ResearchSnapshotFormPanel } from '@/components/parlay-workspace/ResearchSnapshotFormPanel';
+import {
+  FULL_COURT_CONTEXT_UNAVAILABLE_HEADING,
+  RESEARCH_SNAPSHOT_WORKSPACE_NOTE,
+} from '@/lib/parlay/research-snapshot-form';
 import { LegContextBody, WorkspaceDrawer } from './WorkspaceDrawer';
 import { handoffQuickBuildSelection, type QuickBuildHandoffLegs } from '@/lib/parlay/adapt-quick-build';
 import { initialPreviewModel, type PreviewModel } from '@/lib/quick-builds/preview';
@@ -169,6 +172,7 @@ export function ParlayWorkspaceView({
   ) : null;
 
   const researchSnapshot = legs.some((leg) => leg.offer.snapshotKind === 'research_snapshot');
+  const researchSnapshotTicket = legs.length > 0 && legs.every((leg) => leg.offer.snapshotKind === 'research_snapshot');
   const share = researchSnapshot ? null : (
     <ShareParlayControls
       legs={legs}
@@ -342,9 +346,11 @@ export function ParlayWorkspaceView({
           {analysisError}
         </p>
       ) : null}
-      {eligibility.status === 'UNAVAILABLE' ? (
+      {eligibility.status === 'UNAVAILABLE' && !researchSnapshotTicket ? (
         <section className="mb-3 rounded-2xl border border-amber-200 bg-[#fff8ee] px-4 py-3">
-          <h2 className="type-section-heading text-[#063f46]">Historical analysis is not available</h2>
+          <h2 className="type-section-heading text-[#063f46]">
+            {researchSnapshot ? FULL_COURT_CONTEXT_UNAVAILABLE_HEADING : 'Historical analysis is not available'}
+          </h2>
           <ul className="type-body mt-1 space-y-1 text-cc-secondary">
             {eligibility.reasons.map((reason) => (
               <li key={reason.code}>{reason.message}</li>
@@ -353,7 +359,7 @@ export function ParlayWorkspaceView({
         </section>
       ) : null}
 
-      <div className="mb-4 grid gap-3 lg:grid-cols-2">
+      <div className={researchSnapshotTicket ? 'mb-4' : 'mb-4 grid gap-3 lg:grid-cols-2'}>
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
             <h2 className="type-section-heading text-[#063f46]">Parlay summary</h2>
@@ -373,21 +379,23 @@ export function ParlayWorkspaceView({
           </div>
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <p className="type-secondary min-w-0 flex-1 sm:max-w-xl">{summarySentence}</p>
-            <div className="flex shrink-0 items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-full border border-[#bfe8d2] bg-[#f3fbf7]">
-                <span className="type-card-data leading-none text-[#063f46]">
-                  {analyzed ? `${counts.supported}/${structure.legCount}` : '—'}
-                </span>
-                <span className="type-metadata leading-none">Supported</span>
+            {researchSnapshotTicket ? null : (
+              <div className="flex shrink-0 items-center gap-4">
+                <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-full border border-[#bfe8d2] bg-[#f3fbf7]">
+                  <span className="type-card-data leading-none text-[#063f46]">
+                    {analyzed ? `${counts.supported}/${structure.legCount}` : '—'}
+                  </span>
+                  <span className="type-metadata leading-none">Supported</span>
+                </div>
+                <ul className="type-secondary flex flex-col gap-0.5 sm:min-w-[7.5rem]">
+                  <li>{analyzed ? counts.supported : '—'} Supported</li>
+                  <li>{analyzed ? counts.mixed : '—'} Mixed</li>
+                  <li>{analyzed ? counts.needs_review : '—'} Needs Review</li>
+                </ul>
               </div>
-              <ul className="type-secondary flex flex-col gap-0.5 sm:min-w-[7.5rem]">
-                <li>{analyzed ? counts.supported : '—'} Supported</li>
-                <li>{analyzed ? counts.mixed : '—'} Mixed</li>
-                <li>{analyzed ? counts.needs_review : '—'} Needs Review</li>
-              </ul>
-            </div>
+            )}
           </div>
-          {!analyzed && !analysisBusy ? (
+          {!analyzed && !analysisBusy && !researchSnapshotTicket ? (
             <p className="type-metadata mt-2">
               {eligibility.status === 'READY'
                 ? 'Court Context analysis will appear for this slip shortly.'
@@ -396,6 +404,7 @@ export function ParlayWorkspaceView({
           ) : null}
         </section>
 
+        {researchSnapshotTicket ? null : (
         <section className="rounded-2xl border border-[#DCE9EA] bg-white p-4 shadow-sm" aria-label="Key signals">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#e7f8ef] text-[#0f6b45]" aria-hidden>
@@ -427,6 +436,7 @@ export function ParlayWorkspaceView({
             </ul>
           )}
         </section>
+        )}
       </div>
 
       <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
@@ -471,7 +481,7 @@ export function ParlayWorkspaceView({
                       {sideLabel} {leg.offer.line} {marketDisplayLabel(leg.offer.market)}
                     </p>
                     {leg.awayAbbr && leg.homeAbbr ? (
-                      <p className="type-metadata flex min-w-0 items-center gap-1 leading-4">
+                      <p className="type-metadata flex min-w-0 flex-wrap items-center gap-1 leading-4">
                         <TeamLogo team={leg.awayAbbr} size="xs" decorative />
                         <span>{leg.awayAbbr}</span>
                         <span>@</span>
@@ -479,13 +489,17 @@ export function ParlayWorkspaceView({
                         <span>{leg.homeAbbr}</span>
                       </p>
                     ) : (
-                      <p className="type-metadata truncate leading-4">
+                      <p className="type-metadata break-words leading-4">
                         {leg.gameLabel ?? 'Matchup unavailable'}
                       </p>
                     )}
+                    {leg.offer.snapshotKind === 'research_snapshot' ? (
+                      <SnapshotGameFacts leg={leg} />
+                    ) : null}
                   </div>
                   <div className="hidden min-w-0 self-center md:block">
-                    <div className="mx-auto grid w-fit grid-cols-3 justify-items-center gap-x-8 gap-y-1 text-center lg:grid-cols-4 lg:gap-x-10">
+                    <div className={cn('mx-auto grid w-fit justify-items-center gap-x-8 gap-y-1 text-center lg:gap-x-10', researchSnapshotTicket ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4')}>
+                      {researchSnapshotTicket ? null : (
                       <p className="min-w-0">
                         <span className="type-secondary block">{showProjection ? 'Projection' : 'Season avg'}</span>
                         <span className="type-card-data text-[#063f46]">
@@ -494,6 +508,7 @@ export function ParlayWorkspaceView({
                             : formatAvg(interp?.recentForm.seasonAverage ?? null)}
                         </span>
                       </p>
+                      )}
                       <p className="min-w-0">
                         <span className="type-secondary block">Line</span>
                         <span className="type-card-data text-[#063f46]">{leg.offer.line}</span>
@@ -530,7 +545,8 @@ export function ParlayWorkspaceView({
                     </button>
                   </div>
                   <div className="col-span-full flex min-w-0 flex-col gap-1.5 md:col-span-3 md:col-start-3">
-                    <div className="grid grid-cols-3 gap-2 md:hidden">
+                    <div className={cn('grid gap-2 md:hidden', researchSnapshotTicket ? 'grid-cols-2' : 'grid-cols-3')}>
+                      {researchSnapshotTicket ? null : (
                       <p className="min-w-0">
                         <span className="type-secondary block">{showProjection ? 'Projection' : 'Season avg'}</span>
                         <span className="type-card-data text-[#063f46]">
@@ -539,6 +555,7 @@ export function ParlayWorkspaceView({
                             : formatAvg(interp?.recentForm.seasonAverage ?? null)}
                         </span>
                       </p>
+                      )}
                       <p className="min-w-0">
                         <span className="type-secondary block">Line</span>
                         <span className="type-card-data text-[#063f46]">{leg.offer.line}</span>
@@ -567,6 +584,7 @@ export function ParlayWorkspaceView({
                           </li>
                         ))}
                       </ul>
+                      {researchSnapshotTicket ? null : (
                       <button
                         type="button"
                         className="type-interactive text-[#075B5C]"
@@ -574,6 +592,7 @@ export function ParlayWorkspaceView({
                       >
                         View Context →
                       </button>
+                      )}
                     </div>
                   </div>
                 </article>
@@ -583,6 +602,12 @@ export function ParlayWorkspaceView({
         </section>
 
         <WorkspaceTrueCost legs={legs} />
+        {researchSnapshotTicket ? (
+          <>
+            <p className="type-body text-cc-secondary">{RESEARCH_SNAPSHOT_WORKSPACE_NOTE}</p>
+            <ResearchSnapshotFormPanel legs={legs} />
+          </>
+        ) : null}
 
         {formRows.length > 0 || projectionRows.length > 0 ? (
           <section className="rounded-2xl border border-[#DCE9EA] bg-white p-3 shadow-sm sm:p-4">
@@ -671,6 +696,8 @@ export function ParlayWorkspaceView({
             </dl>
           </section>
 
+          {researchSnapshotTicket ? null : (
+          <>
           <section className="rounded-2xl border border-[#DCE9EA] bg-white p-3 shadow-sm">
             <h2 className="type-section-heading text-[#063f46]">Parlay relationships</h2>
             <p className="type-metadata mt-1">Structural dependencies from identity and packets.</p>
@@ -714,15 +741,10 @@ export function ParlayWorkspaceView({
               </ol>
             )}
           </section>
+          </>
+          )}
 
           <div className="flex flex-col gap-2">
-            <SendToSportsbookControls
-              legs={legs.map(handoffSheetLegFromSelected)}
-              spikeLegs={legs.map((leg) => canonicalBetLegFromSelectedParlayLeg(leg))}
-              surface="parlay_workspace"
-              fromSharedSnapshot={legs.some((leg) => leg.offer.snapshotKind === 'shared_snapshot')}
-              className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
-            />
             <Link
               href={explorerHref}
               className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20"
@@ -769,5 +791,17 @@ export function ParlayWorkspaceView({
       </WorkspaceDrawer>
       </div>
     </main>
+  );
+}
+
+function SnapshotGameFacts({ leg }: { leg: SelectedParlayLeg }) {
+  const start = leg.gameStartTime ? formatEtTimestamp(leg.gameStartTime) : null;
+  return (
+    <>
+      <p className="type-metadata break-words leading-4">
+        {start ? `Game start ${start}` : 'Game start unavailable'}
+      </p>
+      {leg.gameStatus ? <p className="type-metadata break-words leading-4">Game status: {leg.gameStatus}</p> : null}
+    </>
   );
 }

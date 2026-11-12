@@ -1,5 +1,5 @@
 /**
- * Fail-closed staff allowlist for private admin surfaces (Model Lab).
+ * Fail-closed staff allowlist for private admin surfaces.
  * Empty or unset ADMIN_EMAILS (or alias ADMIN_EMAIL) admits nobody.
  */
 

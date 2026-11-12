@@ -12,7 +12,7 @@ const ROOT = join(__dirname, '../../../');
 describe('Parlay XRay page contract', () => {
   it('is routed at /parlay-xray with Court Context shell and primary nav', () => {
     expect(shouldShowLayoutHeader('/parlay-xray')).toBe(true);
-    expect(PRIMARY_NAV.some((n) => n.href === '/parlay-xray' && n.label === 'Parlay XRay')).toBe(true);
+    expect(PRIMARY_NAV.some((n) => n.href === '/parlay-xray')).toBe(false);
     const layout = readFileSync(join(ROOT, 'app/parlay-xray/layout.tsx'), 'utf8');
     expect(layout).toMatch(/BettingAppShell/);
   });

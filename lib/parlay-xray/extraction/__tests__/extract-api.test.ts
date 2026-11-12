@@ -4,7 +4,7 @@ import { freeEntitlement } from '@/lib/entitlements/resolve';
 import { createMemoryXrayStore } from '@/lib/parlay-xray/extraction/memory-store';
 import { resetXrayExtractionRuntimeForTests, setXrayExtractionRuntimeForTests } from '@/lib/parlay-xray/extraction/runtime';
 import type { XrayVisionProvider } from '@/lib/parlay-xray/extraction/provider';
-import { MIN_PNG, sampleVision, testConfig } from '@/lib/parlay-xray/extraction/__tests__/fixtures';
+import { MIN_PNG, testConfig } from '@/lib/parlay-xray/extraction/__tests__/fixtures';
 
 const requireBettingAuth = vi.fn();
 const getUserEntitlements = vi.fn();
@@ -82,26 +82,35 @@ describe('POST /api/parlay-xray/extract', () => {
     expect(provider).not.toHaveBeenCalled();
   });
 
-  it('extracts once when enabled and authorized', async () => {
-    const provider: XrayVisionProvider = vi.fn(async () => ({
-      output: sampleVision(),
-      requestId: 'req-1',
-      promptTokens: 10,
-      completionTokens: 5,
-      totalTokens: 15,
-    }));
+  it('does not call the provider or consume quota for a signed-in user while launch extraction is off', async () => {
+    const { isPublicXrayExtractionReady } = await import('@/lib/onboarding/contract');
+    expect(isPublicXrayExtractionReady()).toBe(false);
+    const provider: XrayVisionProvider = vi.fn(async () => {
+      throw new Error('should not run');
+    });
+    const store = createMemoryXrayStore();
+    const getQuota = vi.spyOn(store, 'getQuota');
+    const reserve = vi.spyOn(store, 'reserve');
+    const finalizeAttempt = vi.spyOn(store, 'finalizeAttempt');
+    const recordCacheHitUsage = vi.spyOn(store, 'recordCacheHitUsage');
     setXrayExtractionRuntimeForTests({
       config: testConfig({ enabled: true }),
-      store: createMemoryXrayStore(),
+      store,
       provider,
     });
     requireBettingAuth.mockResolvedValue(authed());
     const res = await POST(pngRequest());
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(503);
     const body = await res.json();
-    expect(body.result).toBe('SUCCESS');
-    expect(body.legs).toHaveLength(1);
-    expect(provider).toHaveBeenCalledTimes(1);
+    expect(body.result).toBe('EXTRACTION_DISABLED');
+    expect(body.providerAttempted).toBe(false);
+    expect(body.quota).toBeNull();
+    expect(provider).not.toHaveBeenCalled();
+    expect(getQuota).not.toHaveBeenCalled();
+    expect(reserve).not.toHaveBeenCalled();
+    expect(finalizeAttempt).not.toHaveBeenCalled();
+    expect(recordCacheHitUsage).not.toHaveBeenCalled();
+    expect(getUserEntitlements).not.toHaveBeenCalled();
   });
 });
 

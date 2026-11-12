@@ -1,17 +1,37 @@
 /**
  * Display labels for an already ranked shortlist.
  * Names come from analytics.players. Prices and eligibility are not recomputed.
- * Team and opponent stay empty: the prop snapshot does not record a team,
- * and a current roster is not a verified team for this game.
+ * The player's team and opponent stay empty: the prop snapshot does not record a
+ * team, and a current roster is not a verified team for this game.
+ * The scheduled game's away and home abbreviations are the matchup. Game status
+ * is the normalized label. A tip clock or ISO string in the provider status is
+ * not the status, and it is not substituted for the start time. The NBA
+ * headshot id comes from the nba provider id. When that id is missing, a unique
+ * exact name on the latest NBA roster snapshot supplies the CDN id. The prop
+ * player id is never used as a headshot id, and the roster row is not a team.
  */
 
+import { quickBuildStatusLabel } from './slate-status';
 import type { QuickBuild, QuickBuildGameInput, QuickBuildLeg } from './types';
 
 export const QUICK_BUILD_PLAYERS_SQL = `
-SELECT player_id::text AS player_id,
-       full_name
-  FROM analytics.players
- WHERE player_id = ANY($1::text[])
+SELECT p.player_id::text AS player_id,
+       p.full_name,
+       COALESCE(nba.provider_player_id, roster.nba_player_id) AS nba_player_id
+  FROM analytics.players p
+  LEFT JOIN analytics.player_provider_ids nba
+    ON nba.player_entity_id = p.player_entity_id
+   AND nba.provider = 'nba'
+  LEFT JOIN (
+    SELECT lower(btrim(player_name)) AS name_key,
+           min(nba_player_id) AS nba_player_id
+      FROM raw.nba_roster_snapshots
+     WHERE snapshot_date = (SELECT max(snapshot_date) FROM raw.nba_roster_snapshots)
+     GROUP BY lower(btrim(player_name))
+    HAVING count(DISTINCT nba_player_id) = 1
+  ) roster
+    ON roster.name_key = lower(btrim(p.full_name))
+ WHERE p.player_id = ANY($1::text[])
 `;
 
 export const QUICK_BUILD_DISPLAY_GAPS = [
@@ -30,6 +50,11 @@ export type QuickBuildLegDisplay = {
   teamAbbreviation: null;
   opponentAbbreviation: null;
   homeAway: null;
+  /** Scheduled game only. Null unless both abbreviations are present. */
+  scheduledAwayAbbreviation: string | null;
+  scheduledHomeAbbreviation: string | null;
+  /** NBA CDN id. Null when the provider id is missing or ambiguous. */
+  nbaPlayerId: string | null;
   displayReady: boolean;
   unavailableReason: QuickBuildDisplayGap | null;
 };
@@ -64,6 +89,7 @@ export type QuickBuildDisplayed =
 export type PlayerNameRow = {
   playerId: string;
   fullName: string | null;
+  nbaPlayerId?: string | null;
 };
 
 /** A numeric id stored in full_name is the transform fallback, not a display name. */
@@ -92,12 +118,52 @@ function nameFor(playerId: string, rows: PlayerNameRow[]): { playerName: string 
   return { playerName, reason: null };
 }
 
-function gameFor(gameId: string, games: QuickBuildGameInput[]): { gameStartTime: string | null; gameStatus: string | null } {
+function cleanAbbreviation(value: string | null | undefined): string | null {
+  if (typeof value !== 'string') return null;
+  const text = value.trim().toUpperCase();
+  return /^[A-Z]{2,4}$/.test(text) ? text : null;
+}
+
+function cleanNbaPlayerId(value: string | null | undefined): string | null {
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  return /^\d{1,10}$/.test(text) ? text : null;
+}
+
+function nbaPlayerIdFor(playerId: string, rows: PlayerNameRow[]): string | null {
+  const ids = new Set<string>();
+  for (const row of rows) {
+    if (row.playerId !== playerId) continue;
+    const id = cleanNbaPlayerId(row.nbaPlayerId);
+    if (id) ids.add(id);
+  }
+  if (ids.size !== 1) return null;
+  return [...ids][0] ?? null;
+}
+
+function gameFor(
+  gameId: string,
+  games: QuickBuildGameInput[]
+): {
+  gameStartTime: string | null;
+  gameStatus: string | null;
+  scheduledAwayAbbreviation: string | null;
+  scheduledHomeAbbreviation: string | null;
+} {
   const game = games.find((row) => row.gameId === gameId);
-  if (game == null) return { gameStartTime: null, gameStatus: null };
+  const away = cleanAbbreviation(game?.awayAbbreviation);
+  const home = cleanAbbreviation(game?.homeAbbreviation);
+  const matchup = away && home ? { scheduledAwayAbbreviation: away, scheduledHomeAbbreviation: home } : { scheduledAwayAbbreviation: null, scheduledHomeAbbreviation: null };
+  const gameStatus = game == null ? null : displayGameStatus(game.status);
+  if (game == null) return { gameStartTime: null, gameStatus, ...matchup };
   const startMs = Date.parse(game.startTime);
-  if (!Number.isFinite(startMs)) return { gameStartTime: null, gameStatus: game.status ?? null };
-  return { gameStartTime: new Date(startMs).toISOString(), gameStatus: game.status ?? null };
+  if (!Number.isFinite(startMs)) return { gameStartTime: null, gameStatus, ...matchup };
+  return { gameStartTime: new Date(startMs).toISOString(), gameStatus, ...matchup };
+}
+
+/** The start time stays on startTime. Final/OT is Final. A blank status stays empty. */
+function displayGameStatus(status: string | null | undefined): string | null {
+  return quickBuildStatusLabel(status);
 }
 
 function displayFor(leg: QuickBuildLeg, games: QuickBuildGameInput[], players: PlayerNameRow[]): QuickBuildLegDisplay {
@@ -111,6 +177,9 @@ function displayFor(leg: QuickBuildLeg, games: QuickBuildGameInput[], players: P
     teamAbbreviation: null,
     opponentAbbreviation: null,
     homeAway: null,
+    scheduledAwayAbbreviation: game.scheduledAwayAbbreviation,
+    scheduledHomeAbbreviation: game.scheduledHomeAbbreviation,
+    nbaPlayerId: nbaPlayerIdFor(leg.playerId, players),
     displayReady: unavailableReason == null,
     unavailableReason,
   };

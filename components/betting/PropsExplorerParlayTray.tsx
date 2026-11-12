@@ -4,10 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Maximize2, Minus, X } from 'lucide-react';
 import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
-import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { TeamLogo } from '@/components/nba/TeamLogo';
-import { canonicalBetLegFromSelectedParlayLeg } from '@/lib/bet-slip/adapt-parlay-leg';
 import { mobileParlayBarCopy } from '@/lib/parlay/mobile-bar-copy';
 import {
   PARLAY_WORKSPACE_HREF,
@@ -15,8 +13,6 @@ import {
   summarizeCanonicalSelection,
   type SelectedParlayLeg,
 } from '@/lib/parlay/selection';
-import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
-
 function OpenWorkspaceLink({ className, children }: { className?: string; children?: string }) {
   return (
     <Link
@@ -182,12 +178,6 @@ function TrayBody({
             className="type-interactive flex min-h-[44px] flex-1 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-3 py-2.5 text-center text-white hover:opacity-90 disabled:opacity-40"
           />
         </div>
-        <SendToSportsbookControls
-          legs={legs.map(handoffSheetLegFromSelected)}
-          spikeLegs={legs.map((leg) => canonicalBetLegFromSelectedParlayLeg(leg))}
-          surface="props_explorer"
-          className="type-interactive flex min-h-[44px] w-full items-center justify-center rounded-lg border border-[#075B5C] px-3 py-2.5 text-center text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
-        />
       </div>
     </div>
   );

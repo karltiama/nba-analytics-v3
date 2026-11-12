@@ -4,6 +4,7 @@
  */
 
 import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { quickBuildStatusLabel } from '@/lib/quick-builds/slate-status';
 import { parseLineValue, parsePropSide } from '@/lib/betting/prop-market-compare';
 import { usableAmerican } from '@/lib/quick-builds/markets';
 import { canonicalizeXrayMarket } from '@/lib/parlay-xray/resolution/market';
@@ -49,6 +50,11 @@ export type QuickBuildHandoffLeg = {
   observedAt: string | null;
   gameStartTime: string | null;
   gameStatus: string | null;
+  /** Scheduled game teams. Missing values leave the card matchup empty. */
+  awayAbbr?: string | null;
+  homeAbbr?: string | null;
+  /** NBA CDN id. The prop player id is not a substitute. */
+  nbaPlayerId?: string | null;
 };
 
 export type AdaptQuickBuildLegResult =
@@ -153,15 +159,48 @@ export function adaptQuickBuildLeg(input: QuickBuildHandoffLeg): AdaptQuickBuild
     sportsbookVendor: sportsbook.vendor,
   });
 
+  const matchup = scheduledMatchup(input.awayAbbr, input.homeAbbr);
+  const nbaPlayerId = cleanNbaPlayerId(input.nbaPlayerId);
+  const gameStartTime = observedTimestamp(input.gameStartTime);
+  const gameStatus = displayGameStatus(input.gameStatus);
   return {
     ok: true,
     leg: {
       offer,
-      gameLabel: null,
-      awayAbbr: null,
-      homeAbbr: null,
+      gameLabel: matchup.awayAbbr && matchup.homeAbbr ? `${matchup.awayAbbr} @ ${matchup.homeAbbr}` : null,
+      awayAbbr: matchup.awayAbbr,
+      homeAbbr: matchup.homeAbbr,
+      gameStartTime,
+      gameStatus,
+      ...(nbaPlayerId ? { nbaPlayerId } : {}),
     },
   };
+}
+
+function displayGameStatus(status: string | null): string | null {
+  return quickBuildStatusLabel(status);
+}
+
+function cleanAbbreviation(value: string | null | undefined): string | null {
+  if (typeof value !== 'string') return null;
+  const text = value.trim().toUpperCase();
+  return /^[A-Z]{2,4}$/.test(text) ? text : null;
+}
+
+function cleanNbaPlayerId(value: string | null | undefined): string | null {
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  return /^\d{1,10}$/.test(text) ? text : null;
+}
+
+function scheduledMatchup(
+  away: string | null | undefined,
+  home: string | null | undefined
+): { awayAbbr: string | null; homeAbbr: string | null } {
+  const awayAbbr = cleanAbbreviation(away);
+  const homeAbbr = cleanAbbreviation(home);
+  if (awayAbbr == null || homeAbbr == null) return { awayAbbr: null, homeAbbr: null };
+  return { awayAbbr, homeAbbr };
 }
 
 /**

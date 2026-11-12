@@ -90,12 +90,12 @@ export function TrueCostPanel({
         <>
           <dl className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
             <Stat
-              label="Book payout on $100"
+              label="Net profit on $100"
               value={formatDollars(profitPer100(book.decimal))}
-              hint={`${odds(book.american)} · break-even ${formatPercent(book.breakEvenHitRate)}`}
+              hint={`${odds(book.american)} · break-even ${formatPercent(book.breakEvenHitRate)} · total return ${formatDollars(profitPer100(book.decimal) + 100)}`}
             />
             <Stat
-              label="Fair payout on $100"
+              label="Fair net profit on $100"
               value={fair.status === 'known' ? formatDollars(profitPer100(fair.decimal)) : 'Unknown'}
               hint={
                 fair.status === 'known'
@@ -224,7 +224,7 @@ function BestBookSection({
             ? ` House edge ${formatPercent(Math.abs(houseEdgeDifference))} ${houseEdgeDifference >= 0 ? 'lower' : 'higher'} than your book.`
             : ''}
           {!sameAsCurrent && best.extraPayoutPer100 != null && best.extraPayoutPer100 > 0
-            ? ` Pays ${formatDollars(best.extraPayoutPer100)} more on $100.`
+            ? ` ${formatDollars(best.extraPayoutPer100)} more net profit on $100.`
             : ''}
         </p>
         <table className="mt-2 w-full text-left">
@@ -232,7 +232,7 @@ function BestBookSection({
             <tr className="type-metadata">
               <th className="py-1 pr-2 font-medium">Book</th>
               <th className="py-1 pr-2 font-medium">Parlay odds</th>
-              <th className="py-1 pr-2 font-medium">Payout on $100</th>
+              <th className="py-1 pr-2 font-medium">Net profit on $100</th>
               <th className="py-1 font-medium">House edge</th>
             </tr>
           </thead>
@@ -258,8 +258,9 @@ function BestBookSection({
     <div className="mt-4 rounded-xl border border-[#DCE9EA] p-3">
       <h3 className="type-metadata mb-1 uppercase tracking-wide">Same parlay at one book</h3>
       {body}
-      <p className="type-metadata mt-1">
+        <p className="type-metadata mt-1">
         A parlay is placed at one book, so this compares whole parlays per book using current prices.
+        Net profit is winnings only. Total return is that profit plus the $100 stake.
       </p>
     </div>
   );

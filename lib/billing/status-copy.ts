@@ -46,6 +46,7 @@ export function billingStatusLine(status: BillingStatusCopyInput): string {
 export function billingRetentionCopy(status: BillingStatusCopyInput): string | null {
   if (status.isPro && status.status === 'canceled') return null;
   if (status.status === 'past_due' || status.status === 'expired' || status.status === 'canceled') {
+    if (status.checkoutEnabled === false) return 'Your research is still saved.';
     return 'Your research is still saved. Renew Founding Pro to restore deeper market research.';
   }
   return null;

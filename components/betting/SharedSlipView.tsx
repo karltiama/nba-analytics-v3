@@ -12,10 +12,8 @@ import {
   sharedLegHeadline,
 } from '@/lib/bet-slip/shared-slip-present';
 import type { PublicSharedBetSlip } from '@/lib/bet-slip/types';
-import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
 import { displayVendor } from '@/lib/betting/market-movement';
 import { PARLAY_WORKSPACE_HREF } from '@/lib/parlay/selection';
-import { handoffSheetLegFromCanonical } from '@/lib/sportsbook-handoff';
 import { PRODUCT_EVENTS, trackEvent } from '@/lib/product-analytics/track-event';
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -193,18 +191,6 @@ export function SharedSlipView({
         >
           Open Props Explorer
         </button>
-        <SendToSportsbookControls
-          legs={share.legs.map(handoffSheetLegFromCanonical)}
-          spikeLegs={share.legs}
-          slip={{
-            legs: share.legs,
-            source: 'shared_slip',
-            title: share.title,
-          }}
-          surface="shared_slip"
-          fromSharedSnapshot
-          className="type-interactive inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[#075B5C] px-4 text-[#075B5C] hover:bg-[#55ddb1]/20"
-        />
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
           <button
             type="button"

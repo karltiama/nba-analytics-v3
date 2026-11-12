@@ -1,6 +1,7 @@
 /**
- * Admin gate for `/admin/model-lab`, `/admin/product-preview`, and `/api/admin/model-lab/*`.
- * Session required, then ADMIN_EMAILS allowlist (fail-closed if empty).
+ * Admin gate for `/admin/model-lab`, `/admin/product-preview`, `/admin/content/preseason`,
+ * `/ops`, `/api/admin/model-lab/*`, and `/api/ops/health`.
+ * Session required, then ADMIN_EMAILS allowlist (fail-closed if empty or unset).
  */
 
 import { NextResponse, type NextRequest } from 'next/server';

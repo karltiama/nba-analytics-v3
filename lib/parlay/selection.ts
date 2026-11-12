@@ -48,6 +48,10 @@ export type SelectedParlayLeg = {
   nbaPlayerId?: string | null;
   awayAbbr?: string | null;
   homeAbbr?: string | null;
+  /** Scheduled tip, ISO. Display only. Not part of wager identity. */
+  gameStartTime?: string | null;
+  /** Normalized status label. A tip clock is not stored here. */
+  gameStatus?: string | null;
   xrayProvenance?: XrayLegProvenance | null;
 };
 

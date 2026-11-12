@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { attachQuickBuildDisplay, usablePlayerName, type PlayerNameRow } from '../display';
+import { attachQuickBuildDisplay, QUICK_BUILD_PLAYERS_SQL, usablePlayerName, type PlayerNameRow } from '../display';
 import type { QuickBuild, QuickBuildGameInput } from '../types';
 
 const TIP = '2026-11-10T00:00:00.000Z';
@@ -44,6 +44,14 @@ const games: QuickBuildGameInput[] = [
 ];
 
 describe('attachQuickBuildDisplay', () => {
+  it('prefers the provider headshot id and otherwise requires one roster name', () => {
+    expect(QUICK_BUILD_PLAYERS_SQL).toContain('COALESCE(nba.provider_player_id, roster.nba_player_id)');
+    expect(QUICK_BUILD_PLAYERS_SQL).toContain("nba.provider = 'nba'");
+    expect(QUICK_BUILD_PLAYERS_SQL).toContain('raw.nba_roster_snapshots');
+    expect(QUICK_BUILD_PLAYERS_SQL).toContain('HAVING count(DISTINCT nba_player_id) = 1');
+    expect(QUICK_BUILD_PLAYERS_SQL).not.toMatch(/player_props_current/i);
+  });
+
   it('joins each canonical id to its own name and keeps the price', () => {
     const players: PlayerNameRow[] = [
       { playerId: '11', fullName: 'Jayson Tatum' },
@@ -72,7 +80,7 @@ describe('attachQuickBuildDisplay', () => {
     expect(shown?.legs[1].display).toMatchObject({
       playerName: 'Jayson Tatum',
       gameStartTime: '2026-11-10T01:00:00.000Z',
-      gameStatus: '7:00 pm',
+      gameStatus: 'Scheduled',
       displayReady: true,
     });
     expect(shown?.legs[0].playerId).toBe('11');
@@ -150,5 +158,83 @@ describe('attachQuickBuildDisplay', () => {
       gameStartTime: null,
     });
     expect(started[0]?.legs[1].oddsAmerican).toBe(-200);
+  });
+
+  it('keeps a provider tip timestamp out of game status and off the start time', () => {
+    const [shown] = attachQuickBuildDisplay({
+      builds: [build()],
+      games: [
+        { gameId: '101', startTime: TIP, status: '2026-11-10T00:00:00.000Z' },
+        { gameId: '102', startTime: '2026-11-10T01:00:00.000Z', status: '7:00 pm' },
+      ],
+      playerRows: [
+        { playerId: '11', fullName: 'Jayson Tatum' },
+        { playerId: '22', fullName: 'Jaylen Brown' },
+      ],
+    });
+    expect(shown?.legs[0].display).toMatchObject({
+      gameStartTime: TIP,
+      gameStatus: 'Scheduled',
+    });
+    expect(shown?.legs[1].display).toMatchObject({
+      gameStartTime: '2026-11-10T01:00:00.000Z',
+      gameStatus: 'Scheduled',
+    });
+    expect(shown?.legs[0].display.gameStatus).not.toContain('2026-11-10');
+    expect(shown?.legs[1].display.gameStatus).not.toContain('7:00');
+  });
+
+  it('keeps live, overtime, and final statuses distinct from a scheduled tip', () => {
+    const [shown] = attachQuickBuildDisplay({
+      builds: [build()],
+      games: [
+        { gameId: '101', startTime: TIP, status: 'Halftime' },
+        { gameId: '102', startTime: '2026-11-10T01:00:00.000Z', status: 'Final/OT' },
+      ],
+      playerRows: [
+        { playerId: '11', fullName: 'Jayson Tatum' },
+        { playerId: '22', fullName: 'Jaylen Brown' },
+      ],
+    });
+    expect(shown?.legs[0].display).toMatchObject({
+      gameStartTime: TIP,
+      gameStatus: 'In Progress',
+    });
+    expect(shown?.legs[1].display).toMatchObject({
+      gameStartTime: '2026-11-10T01:00:00.000Z',
+      gameStatus: 'Final',
+    });
+    expect(shown?.legs[0].display.gameStatus).not.toBe('Scheduled');
+  });
+
+  it('shows the scheduled game matchup and one NBA headshot id without assigning a player team', () => {
+    const [shown] = attachQuickBuildDisplay({
+      builds: [build()],
+      games: [
+        { gameId: '101', startTime: TIP, status: 'Scheduled', awayAbbreviation: 'por', homeAbbreviation: 'BOS' },
+        { gameId: '102', startTime: '2026-11-10T01:00:00.000Z', status: 'Scheduled', awayAbbreviation: 'LAL' },
+      ],
+      playerRows: [
+        { playerId: '11', fullName: 'Jayson Tatum', nbaPlayerId: '1628369' },
+        { playerId: '22', fullName: 'Jaylen Brown', nbaPlayerId: '1627759' },
+        { playerId: '22', fullName: 'Jaylen Brown', nbaPlayerId: '999' },
+      ],
+    });
+    expect(shown?.legs[0].display).toMatchObject({
+      scheduledAwayAbbreviation: 'POR',
+      scheduledHomeAbbreviation: 'BOS',
+      nbaPlayerId: '1628369',
+      teamAbbreviation: null,
+      opponentAbbreviation: null,
+      homeAway: null,
+      displayReady: true,
+    });
+    expect(shown?.legs[1].display).toMatchObject({
+      scheduledAwayAbbreviation: null,
+      scheduledHomeAbbreviation: null,
+      nbaPlayerId: null,
+      teamAbbreviation: null,
+    });
+    expect(shown?.legs[0].oddsAmerican).toBe(-200);
   });
 });

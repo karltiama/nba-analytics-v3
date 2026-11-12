@@ -11,6 +11,7 @@ import {
   QUICK_BUILD_DISPLAY_GAPS,
   type QuickBuildDisplayGap,
 } from './display';
+import { quickBuildStatusLabel } from './slate-status';
 import {
   QUICK_BUILD_EMPTY_REASONS,
   QUICK_BUILD_PRESETS,
@@ -182,7 +183,10 @@ export type QuickBuildPreviewLeg = {
   lineLabel: string;
   oddsLabel: string;
   gameStartLabel: string | null;
+  /** Normalized status. Null when the API omitted it. Never a tip clock. */
   gameStatus: string | null;
+  /** Both scheduled abbreviations, or null. */
+  matchupLabel: string | null;
   observedLabel: string;
   noVigLabel: string | null;
 };
@@ -634,6 +638,7 @@ function handoffLeg(raw: unknown): QuickBuildHandoffLeg | null {
   const name = typeof raw.display.playerName === 'string' ? raw.display.playerName.trim() : '';
   const start = typeof raw.display.gameStartTime === 'string' ? raw.display.gameStartTime : '';
   if (!name || !start) return null;
+  const matchup = scheduledMatchup(raw.display);
   return {
     displayReady: true,
     playerId: id,
@@ -646,8 +651,32 @@ function handoffLeg(raw: unknown): QuickBuildHandoffLeg | null {
     oddsAmerican: raw.oddsAmerican,
     observedAt: raw.observedAt,
     gameStartTime: start,
-    gameStatus: typeof raw.display.gameStatus === 'string' ? raw.display.gameStatus : null,
+    gameStatus: displayGameStatus(raw.display.gameStatus),
+    awayAbbr: matchup.awayAbbr,
+    homeAbbr: matchup.homeAbbr,
+    nbaPlayerId: cleanNbaPlayerId(raw.display.nbaPlayerId),
   };
+}
+
+function cleanAbbreviation(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const text = value.trim().toUpperCase();
+  return /^[A-Z]{2,4}$/.test(text) ? text : null;
+}
+
+function cleanNbaPlayerId(value: unknown): string | null {
+  if (typeof value === 'number' && Number.isInteger(value) && value > 0) value = String(value);
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  return /^\d{1,10}$/.test(text) ? text : null;
+}
+
+/** Both teams or neither. A one-sided abbreviation is not a matchup. */
+function scheduledMatchup(display: Record<string, unknown>): { awayAbbr: string | null; homeAbbr: string | null } {
+  const away = cleanAbbreviation(display.scheduledAwayAbbreviation);
+  const home = cleanAbbreviation(display.scheduledHomeAbbreviation);
+  if (away == null || home == null) return { awayAbbr: null, homeAbbr: null };
+  return { awayAbbr: away, homeAbbr: home };
 }
 
 function parseLeg(raw: unknown): { leg: QuickBuildPreviewLeg; ready: boolean; gameId: string } | null {
@@ -665,7 +694,7 @@ function parseLeg(raw: unknown): { leg: QuickBuildPreviewLeg; ready: boolean; ga
   const usableName = name.length > 0 && name !== raw.playerId && !/^\d+$/.test(name) ? name : null;
   const start = typeof raw.display.gameStartTime === 'string' ? formatEtTimestamp(raw.display.gameStartTime) : null;
   const ready = raw.display.displayReady === true && usableName != null && start != null;
-  const status = typeof raw.display.gameStatus === 'string' && raw.display.gameStatus.trim() ? raw.display.gameStatus.trim() : null;
+  const status = displayGameStatus(raw.display.gameStatus);
   return {
     gameId: raw.gameId,
     ready,
@@ -678,10 +707,22 @@ function parseLeg(raw: unknown): { leg: QuickBuildPreviewLeg; ready: boolean; ga
       oddsLabel: formatAmericanOdds(raw.oddsAmerican),
       gameStartLabel: start,
       gameStatus: status,
+      matchupLabel: matchupLabelFromDisplay(raw.display),
       observedLabel,
       noVigLabel: isFiniteNumber(raw.noVigProbability) ? `Market-derived no-vig estimate ${percentLabel(raw.noVigProbability)}` : null,
     },
   };
+}
+
+function displayGameStatus(value: unknown): string | null {
+  return typeof value === 'string' ? quickBuildStatusLabel(value) : null;
+}
+
+function matchupLabelFromDisplay(display: Record<string, unknown>): string | null {
+  const away = cleanAbbreviation(display.scheduledAwayAbbreviation);
+  const home = cleanAbbreviation(display.scheduledHomeAbbreviation);
+  if (away == null || home == null) return null;
+  return `${away} @ ${home}`;
 }
 
 function gapCopy(gap: QuickBuildDisplayGap | null, name: string | null, start: string | null): string {

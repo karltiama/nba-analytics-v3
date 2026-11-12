@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { AdminForbidden } from '@/components/admin/AdminForbidden';
+import { requireAdminPage } from '@/lib/auth/require-admin';
 import { listPreseasonDrafts } from '@/lib/teams/preseason-preview/automation/storage';
 
 export const metadata: Metadata = {
@@ -9,6 +12,9 @@ export const metadata: Metadata = {
 };
 
 const SEASON = '2026';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 /** Static team list for generation status — not a CMS. */
 const TEAMS: Array<{ slug: string; name: string }> = [
@@ -45,6 +51,14 @@ const TEAMS: Array<{ slug: string; name: string }> = [
 ];
 
 export default async function PreseasonContentAdminPage() {
+  const auth = await requireAdminPage();
+  if (!auth.ok) {
+    if (auth.reason === 'unauthenticated') {
+      redirect('/login?next=%2Fadmin%2Fcontent%2Fpreseason');
+    }
+    return <AdminForbidden reason={auth.reason} email={auth.email} />;
+  }
+
   const drafts = await listPreseasonDrafts(SEASON);
   const bySlug = new Map(drafts.map((d) => [d.slug.toUpperCase(), d]));
 

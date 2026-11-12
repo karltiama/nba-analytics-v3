@@ -143,6 +143,7 @@ export default function BillingPage() {
   const showUpgrade = Boolean(status && showUpgradeCheckout(status));
   const showPortal = Boolean(status && showManageBilling(status));
   const manualPro = Boolean(status && isManualProWithoutStripe(status));
+  const purchasesOpen = Boolean(status?.checkoutEnabled);
   const priceLabel = status?.priceLabel || FOUNDING_PRO_PRICE_CONCEPT;
 
   return (
@@ -155,7 +156,11 @@ export default function BillingPage() {
       </Link>
 
       <h1 className="type-page-title text-[#063f46] mb-1">Billing</h1>
-      <p className="type-secondary mb-8">Founding Pro plan and Stripe-hosted billing.</p>
+      <p className="type-secondary mb-8">
+        {purchasesOpen
+          ? 'Founding Pro plan and Stripe-hosted billing.'
+          : 'Founding Pro purchase is not open. Free research stays available.'}
+      </p>
 
       {error ? <p className="type-body text-red-700 mb-4">{error}</p> : null}
 
@@ -213,19 +218,29 @@ export default function BillingPage() {
 
       <section className={cardCls}>
         <h2 className="type-section-heading text-[#063f46] mb-1">Founding Pro</h2>
-        <p className="text-lg font-semibold text-[#063f46] mb-1">{priceLabel}</p>
-        <p className="type-secondary mb-4">{FOUNDING_PRICE_LOCK_COPY}</p>
+        {purchasesOpen ? (
+          <>
+            <p className="text-lg font-semibold text-[#063f46] mb-1">{priceLabel}</p>
+            <p className="type-secondary mb-4">{FOUNDING_PRICE_LOCK_COPY}</p>
+          </>
+        ) : (
+          <p className="type-secondary mb-4">Checkout is not available on this page.</p>
+        )}
         <p className="type-body text-[#063f46] mb-4">
           Court Context Free is {FREE_PRICE_DISPLAY}. It includes Props Explorer, Add to Parlay, Workspace, supported
-          Court Context analysis, and Why this parlay could fail. Founding Pro adds deeper market comparison and
-          research on top of that. It does not sell locks or win calls.
+          Court Context analysis, and Why this parlay could fail.
+          {purchasesOpen
+            ? ' Founding Pro adds deeper market comparison and research on top of that. It does not sell locks or win calls.'
+            : ' It does not sell locks or win calls.'}
         </p>
+        {purchasesOpen ? (
         <ul className="type-secondary space-y-1.5 list-disc pl-5">
           <li>Exact best sportsbook for the selected market</li>
           <li>Best available Over/Under line and best same-line price</li>
           <li>3-Hour Pre-Tip to Decision Close movement, including per-book history when snapshots exist</li>
           <li>AI research briefings as supporting context, not picks</li>
         </ul>
+        ) : null}
         <p className="type-secondary mt-4">
           Historical WOWY research stays on the WOWY page for everyone. Saved parlays, live current analysis, alerts,
           and screenshot extraction are not part of Founding Pro yet.

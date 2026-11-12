@@ -31,7 +31,7 @@ describe('landing honesty contract (E10)', () => {
     expect(featured).toMatch(/Illustration only/);
     expect(featured).not.toMatch(/View Full Terminal/);
     expect(featured).not.toMatch(/live odds and analysis/);
-    expect(cards).toMatch(/samplePreview \? '\/dashboard'/);
+    expect(cards).toMatch(/samplePreview\s*\?\s*'\/dashboard'/);
   });
 
   it('frames teammate impact as historical context, not a prediction or tip', () => {
@@ -58,10 +58,13 @@ describe('landing honesty contract (E10)', () => {
     const demo = read('lib/landing/parlay-xray-demo.ts');
     expect(page).toMatch(/LandingParlayXrayPreview/);
     expect(section).toMatch(/illustration only/i);
+    expect(section).toMatch(/Screenshot reading is not available yet/);
     expect(section).toMatch(/Design preview — fictional layout data/);
     expect(section).toMatch(/ExtractedLegsPanel/);
     expect(section).toMatch(/XrayAnalysisPanel/);
-    expect(section).toMatch(/href="\/parlay-xray"/);
+    expect(section).toMatch(/href="\/betting\/props-explorer"/);
+    expect(section).not.toMatch(/href="\/parlay-xray"/);
+    expect(section).not.toMatch(/UploadDropzone/);
     expect(section).not.toMatch(/Start winning/i);
     expect(demo).toMatch(/Illustration only/);
     expect(demo).toMatch(/buildFullPreviewFixture/);

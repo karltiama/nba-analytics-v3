@@ -4,7 +4,7 @@
  * not treat an observation timestamp as a live sportsbook quote.
  */
 
-import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { isQuickBuildPregameStatus } from './slate-status';
 import { XRAY_CANONICAL_MARKETS } from '@/lib/parlay-xray/resolution/types';
 import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook';
 import { compareAttempts, isCompleteSuccess } from './eligibility';
@@ -45,8 +45,12 @@ const QUICK_BUILD_GAMES_WHERE = `
 `;
 
 export const QUICK_BUILD_GAMES_SQL = `
-SELECT g.game_id, g.start_time, g.status
+SELECT g.game_id, g.start_time, g.status,
+       ht.abbreviation AS home_abbr,
+       at.abbreviation AS away_abbr
   FROM analytics.games g
+  LEFT JOIN analytics.teams ht ON ht.team_id = g.home_team_id
+  LEFT JOIN analytics.teams at ON at.team_id = g.away_team_id
 ${QUICK_BUILD_GAMES_WHERE}
 `;
 
@@ -302,7 +306,11 @@ function restrictToSelectedGames(
   return games.filter((game) => want.has(game.gameId));
 }
 
-/** Upcoming game on the ET slate the props pipeline actually collects. */
+/**
+ * Upcoming game on the ET slate the props pipeline actually collects.
+ * A bare clock does not qualify. A postponement that is absent from every
+ * stored field cannot be inferred here.
+ */
 export function isResearchSlateGame(
   game: { startTime: string; status?: string | null },
   now: Date
@@ -310,7 +318,7 @@ export function isResearchSlateGame(
   const startMs = Date.parse(game.startTime);
   if (!Number.isFinite(startMs) || startMs <= now.getTime()) return false;
   if (etDateKey(new Date(startMs)) !== etDateKey(now)) return false;
-  return normalizeGameStatus(game.status) === 'Scheduled';
+  return isQuickBuildPregameStatus(game.status);
 }
 
 function limit(code: string): never {
@@ -333,7 +341,13 @@ function mapGames(rows: GameRow[], now: Date): QuickBuildGameInput[] {
       throw new QuickBuildInputError('MALFORMED_INPUT', 'game status is invalid');
     }
     if (!isResearchSlateGame({ startTime, status }, now)) continue;
-    games.push({ gameId, startTime, status });
+    games.push({
+      gameId,
+      startTime,
+      status,
+      awayAbbreviation: cleanAbbreviation(row.away_abbr),
+      homeAbbreviation: cleanAbbreviation(row.home_abbr),
+    });
   }
   games.sort((a, b) => a.startTime.localeCompare(b.startTime) || a.gameId.localeCompare(b.gameId));
   if (games.length > QUICK_BUILD_MAX_GAMES) limit(`games exceed ${QUICK_BUILD_MAX_GAMES}`);
@@ -633,10 +647,12 @@ export async function loadResearchQuickBuilds(args: {
     const rows = requireRows(await args.query(QUICK_BUILD_PLAYERS_SQL, [playerIds]), 'players') as Array<{
       player_id: unknown;
       full_name: unknown;
+      nba_player_id: unknown;
     }>;
     playerRows = rows.map((row) => ({
       playerId: asId(row.player_id, 'player_id'),
       fullName: typeof row.full_name === 'string' ? row.full_name : null,
+      nbaPlayerId: typeof row.nba_player_id === 'string' || typeof row.nba_player_id === 'number' ? String(row.nba_player_id) : null,
     }));
   }
   const notice = researchPriceNotice(request.legCount ?? 2);

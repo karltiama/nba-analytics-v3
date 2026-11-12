@@ -104,6 +104,7 @@ export function evaluateWorkspaceAnalysisEligibility(
   const gameIds = new Set(legs.map((leg) => leg.offer.gameId));
   const gameId = [...gameIds][0] ?? '';
 
+  // Research Snapshot tickets stay blocked here. Player form uses a separate observation-time read.
   if (snapshots.has('research_snapshot')) {
     reasons.push({
       code: 'RESEARCH_SNAPSHOT',

@@ -79,16 +79,32 @@ export function ParlayXrayView({
   const publicExtractionOff =
     !extractionAvailable && !historicalReplay && !state.designPreview;
 
-  return (
-    <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
-      {publicExtractionOff ? (
+  if (publicExtractionOff) {
+    return (
+      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4 overflow-x-hidden">
+        <h1 className="text-4xl font-black tracking-tight text-[#063f46] sm:text-5xl">Parlay XRay</h1>
         <p
           className="type-body rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-[#063f46]"
           role="status"
         >
-          Screenshot reading is not available yet. Research a prop, add it to a parlay, then review it in Workspace.
+          Screenshot reading is not available yet.
         </p>
-      ) : historicalReplay ? (
+        <p className="type-body text-[#063f46]">
+          <Link href="/betting/props-explorer" className="text-[#075B5C] underline">
+            Props Explorer
+          </Link>
+          {' · '}
+          <Link href="/parlay-workspace" className="text-[#075B5C] underline">
+            Parlay Workspace
+          </Link>
+        </p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
+      {historicalReplay ? (
         <p
           className="type-body rounded-xl border border-[#cfeee3] bg-[#f3fbf7] px-4 py-3 text-[#063f46]"
           role="status"

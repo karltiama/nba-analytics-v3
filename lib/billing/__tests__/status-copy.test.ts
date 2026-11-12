@@ -66,4 +66,16 @@ describe('billing status copy', () => {
     expect(showManageBilling(status)).toBe(false);
     expect(showUpgradeCheckout(status)).toBe(false);
   });
+
+  it('does not tell a canceled account to renew when checkout is disabled', () => {
+    const status = {
+      isPro: false,
+      status: 'canceled',
+      currentPeriodEnd: PERIOD_END,
+      canManageBilling: true,
+      checkoutEnabled: false,
+    };
+    expect(billingRetentionCopy(status)).toBe('Your research is still saved.');
+    expect(showUpgradeCheckout(status)).toBe(false);
+  });
 });

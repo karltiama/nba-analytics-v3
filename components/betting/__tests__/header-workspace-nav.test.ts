@@ -10,12 +10,11 @@ describe('authenticated primary navigation', () => {
   const labels = PRIMARY_NAV.map((item) => item.label);
   const hrefs = PRIMARY_NAV.map((item) => item.href);
 
-  it('uses the approved nine-destination order', () => {
+  it('uses the approved launch destinations', () => {
     expect(labels).toEqual([
       'Dashboard',
       'Props Explorer',
       'Parlay Workspace',
-      'Parlay XRay',
       'WOWY',
       'Teams',
       'Saved',
@@ -26,7 +25,6 @@ describe('authenticated primary navigation', () => {
       '/dashboard',
       '/betting/props-explorer',
       PARLAY_WORKSPACE_HREF,
-      '/parlay-xray',
       '/wowy',
       '/teams',
       '/betting/saved',
@@ -39,7 +37,8 @@ describe('authenticated primary navigation', () => {
     expect(PRIMARY_NAV.filter((item) => item.label === 'Parlay Workspace')).toHaveLength(1);
     expect(PRIMARY_NAV.filter((item) => item.href === PARLAY_WORKSPACE_HREF)).toHaveLength(1);
     expect(labels.indexOf('Parlay Workspace')).toBe(labels.indexOf('Props Explorer') + 1);
-    expect(labels.indexOf('Parlay XRay')).toBe(labels.indexOf('Parlay Workspace') + 1);
+    expect(labels.indexOf('WOWY')).toBe(labels.indexOf('Parlay Workspace') + 1);
+    expect(labels).not.toContain('Parlay XRay');
     expect(header.match(/PRIMARY_NAV\.map/g)).toHaveLength(2);
     expect(header).not.toMatch(/ContextualParlayNav|variant="mobile-badge"|Parlay ·/);
     expect(header).not.toMatch(/if \(!label\) return null/);
