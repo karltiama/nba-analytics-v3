@@ -173,8 +173,8 @@ describe('team directory (Phase 2.T.4B)', () => {
       'Dashboard',
       'Props Explorer',
       'Parlay Workspace',
-      'Parlay XRay',
       'WOWY',
+      'Teams',
     ]);
 
     const headerSrc = readFileSync(

@@ -19,7 +19,7 @@ import {
   formatFairProbability,
 } from '@/lib/betting/props-explorer-row-display';
 import { PREGAME_LINE_LABEL, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
-import { ARB_TITLE, arbInstructions, formatArbProfit, type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
+import { type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
 import {
   MOVEMENT_TITLE,
   formatMovementLine,
@@ -158,20 +158,7 @@ export function PropsExplorerPropDetailSheet({
                   label={row.bestPrice?.marketWide ? 'vs market (all books)' : 'vs average book'}
                   value={formatVsAverage(row.bestPrice?.vsAverage)}
                 />
-                {row.arb ? <Fact label="Arbitrage" value={formatArbProfit(row.arb.profit)} emphasize /> : null}
               </dl>
-              {row.arb ? (
-                <p className="type-metadata mt-2 rounded-lg bg-[#e7f8ef] px-3 py-2 text-[#063f46]" title={ARB_TITLE}>
-                  {arbInstructions({
-                    arb: row.arb,
-                    side: row.side,
-                    sportsbook: row.sportsbook,
-                    bookName: explorerBookDisplayName,
-                    formatOdds: formatExplorerOdds,
-                  })}{' '}
-                  Confirm both prices before betting; they move fast.
-                </p>
-              ) : null}
               {!historical ? (
                 <section className="mt-3" aria-label="Line movement" title={MOVEMENT_TITLE}>
                   <p className="type-metadata font-medium text-[#063f46]">Line movement at {explorerBookDisplayName(row.sportsbook)}</p>

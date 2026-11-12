@@ -40,7 +40,6 @@ export function PropsExplorerMobileControls({
   side,
   minEv,
   sportsbook,
-  arbOnly = false,
   sort,
   dir,
   marketContext,
@@ -67,7 +66,6 @@ export function PropsExplorerMobileControls({
   side: string;
   minEv: string;
   sportsbook: string;
-  arbOnly?: boolean;
   sort: string;
   dir: 'asc' | 'desc';
   marketContext: 'live' | 'historical';
@@ -419,17 +417,6 @@ export function PropsExplorerMobileControls({
                 })}
               </div>
             </div>
-
-            <button
-              type="button"
-              aria-pressed={arbOnly}
-              onClick={() => onUpdate({ arb: arbOnly ? null : '1', offset: '0' })}
-              className={`type-interactive inline-flex min-h-11 w-full items-center justify-center rounded-xl border px-3 ${
-                arbOnly ? 'border-[#178A45] bg-[#178A45] text-white' : 'border-[#DCE9EA] bg-white text-[#063f46]'
-              }`}
-            >
-              {arbOnly ? 'Showing arbs only' : 'Arbs only'}
-            </button>
 
             <button
               type="button"

@@ -56,7 +56,7 @@ describe('typography phase 6 auth billing landing', () => {
     expect(trending).toContain('type-metadata');
     expect(trending).not.toContain('#72869A');
     expect(xray).toContain('text-4xl sm:text-5xl font-black');
-    expect(xray).toContain('Upload your slip.');
+    expect(xray).toContain('Screenshot import is closed.');
     expect(xray).toContain('text-cc-secondary');
     expect(xray).not.toContain('#8aa0a3');
   });

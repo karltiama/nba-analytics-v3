@@ -104,6 +104,19 @@ describe('createFoundingProCheckout', () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.code).toBe('BILLING_NOT_PUBLIC');
+    expect(getStripeClient).not.toHaveBeenCalled();
+    expect(sessionsCreate).not.toHaveBeenCalled();
+  });
+
+  it('does not create a Stripe Checkout session for a live secret key', async () => {
+    vi.stubEnv('STRIPE_SECRET_KEY', 'sk_live_not_allowed');
+    getUserEntitlements.mockResolvedValue(freeEntitlement());
+    const result = await createFoundingProCheckout({ userId: USER_A });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.code).toBe('BILLING_NOT_PUBLIC');
+    expect(getStripeClient).not.toHaveBeenCalled();
+    expect(getOrCreateStripeCustomer).not.toHaveBeenCalled();
     expect(sessionsCreate).not.toHaveBeenCalled();
   });
 });

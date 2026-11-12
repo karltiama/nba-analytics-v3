@@ -4,12 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { AlignJustify, BarChart3, Link2, X, type LucideIcon } from 'lucide-react';
 import { ShareParlayControls } from '@/components/betting/ShareParlayControls';
-import { SendToSportsbookControls } from '@/components/betting/SendToSportsbookControls';
 import { PostToFeedControls } from '@/components/feed/PostToFeedControls';
 import { PlayerHeadshot } from '@/components/nba/PlayerHeadshot';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { canonicalBetLegFromSelectedParlayLeg } from '@/lib/bet-slip/adapt-parlay-leg';
 import { shouldShowXrayOcrProvenance } from '@/lib/parlay/adapt-xray-confirmed';
 import {
   marketDisplayLabel,
@@ -44,7 +42,6 @@ import {
 import { formatAvg } from '@/lib/parlay-xray/interpretation/display';
 import { formatEtTimestamp } from '@/lib/quick-builds/preview';
 import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
-import { handoffSheetLegFromSelected } from '@/lib/sportsbook-handoff';
 import { cn } from '@/lib/utils';
 import { WorkspaceTrueCost } from '@/components/parlay/WorkspaceTrueCost';
 import { ResearchSnapshotFormPanel } from '@/components/parlay-workspace/ResearchSnapshotFormPanel';
@@ -748,13 +745,6 @@ export function ParlayWorkspaceView({
           )}
 
           <div className="flex flex-col gap-2">
-            <SendToSportsbookControls
-              legs={legs.map(handoffSheetLegFromSelected)}
-              spikeLegs={legs.map((leg) => canonicalBetLegFromSelectedParlayLeg(leg))}
-              surface="parlay_workspace"
-              fromSharedSnapshot={legs.some((leg) => leg.offer.snapshotKind === 'shared_snapshot')}
-              className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20 disabled:opacity-40"
-            />
             <Link
               href={explorerHref}
               className="type-interactive inline-flex min-h-9 items-center justify-center rounded-lg border border-[#075B5C] px-3 text-[#075B5C] hover:bg-[#55ddb1]/20"

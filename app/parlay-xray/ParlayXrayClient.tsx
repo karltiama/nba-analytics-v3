@@ -73,6 +73,7 @@ export function ParlayXrayClient({ extractionAvailable = false }: { extractionAv
   }, []);
 
   useEffect(() => {
+    if (!extractionAvailable) return;
     let cancelled = false;
     void fetch('/api/parlay-xray/quota')
       .then(async (res) => {
@@ -87,7 +88,7 @@ export function ParlayXrayClient({ extractionAvailable = false }: { extractionAv
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [extractionAvailable]);
 
   useEffect(() => {
     const previewFlag = new URLSearchParams(window.location.search).get('preview');

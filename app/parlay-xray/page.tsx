@@ -1,3 +1,4 @@
+import { isPublicXrayExtractionReady } from '@/lib/onboarding/contract';
 import { isXrayExtractionLive } from '@/lib/parlay-xray/extraction/config';
 import { ParlayXrayClient } from './ParlayXrayClient';
 
@@ -11,5 +12,9 @@ export const metadata = {
 };
 
 export default function ParlayXrayPage() {
-  return <ParlayXrayClient extractionAvailable={isXrayExtractionLive()} />;
+  return (
+    <ParlayXrayClient
+      extractionAvailable={isPublicXrayExtractionReady() && isXrayExtractionLive()}
+    />
+  );
 }

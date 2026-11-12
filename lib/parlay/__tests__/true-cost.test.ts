@@ -4,6 +4,7 @@ import {
   computeParlayTrueCost,
   computeTrueCostLeg,
   formatDollars,
+  profitPer100,
   type BookLegQuote,
 } from '../true-cost';
 import { isBestBookViewEnabled, quotesForLegs } from '../true-cost-quotes';
@@ -251,6 +252,14 @@ describe('quotesForLegs', () => {
     );
     expect(quotes[0]!.map((q) => q.vendor)).toEqual(['caesars']);
     expect(quotes[1]).toEqual([]);
+  });
+});
+
+describe('profitPer100', () => {
+  it('treats +124 on a $100 stake as $124 net profit, not $224 total return', () => {
+    const decimal = 1 + 124 / 100;
+    expect(profitPer100(decimal)).toBeCloseTo(124, 8);
+    expect(profitPer100(decimal) + 100).toBeCloseTo(224, 8);
   });
 });
 
