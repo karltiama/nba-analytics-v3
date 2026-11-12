@@ -75,9 +75,47 @@ describe('adaptQuickBuildLeg', () => {
       );
       expect(row.awayAbbr).toBeNull();
       expect(row.homeAbbr).toBeNull();
+      expect(row.nbaPlayerId).toBeUndefined();
     }
     expect(snapshotDisplayLabel('research_snapshot')).toBe('Research Snapshot');
     expect(workspaceSourceLabel(result.legs)).toBe('Research Snapshot from Quick Builds');
+  });
+
+  it('copies a verified scheduled matchup and NBA headshot id without changing the wager', () => {
+    const result = adaptQuickBuildLeg(leg({ awayAbbr: ' por ', homeAbbr: 'bos', nbaPlayerId: '1631210' }));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.leg.awayAbbr).toBe('POR');
+    expect(result.leg.gameStartTime).toBe(START);
+    expect(result.leg.gameStatus).toBe('Scheduled');
+    expect(result.leg.homeAbbr).toBe('BOS');
+    expect(result.leg.gameLabel).toBe('POR @ BOS');
+    expect(result.leg.nbaPlayerId).toBe('1631210');
+    expect(result.leg.offer.playerId).toBe('11');
+    expect(result.leg.offer.oddsAmerican).toBe(-115);
+    expect(result.leg.offer.line).toBe(22.5);
+
+    const bare = adaptQuickBuildLeg(leg());
+    expect(bare.ok).toBe(true);
+    if (!bare.ok) return;
+    expect(bare.leg.nbaPlayerId).toBeUndefined();
+    expect(bare.leg.awayAbbr).toBeNull();
+    expect(bare.leg.gameLabel).toBeNull();
+
+    const clock = adaptQuickBuildLeg(leg({ gameStatus: START, awayAbbr: null, homeAbbr: 'BOS' }));
+    expect(clock.ok).toBe(true);
+    if (!clock.ok) return;
+    expect(clock.leg.gameStatus).toBe('Scheduled');
+    expect(clock.leg.gameStartTime).toBe(START);
+    expect(clock.leg.gameStatus).not.toBe(START);
+    expect(clock.leg.gameLabel).toBeNull();
+    expect(clock.leg.awayAbbr).toBeNull();
+
+    const half = adaptQuickBuildLeg(leg({ awayAbbr: 'POR' }));
+    expect(half.ok).toBe(true);
+    if (!half.ok) return;
+    expect(half.leg.awayAbbr).toBeNull();
+    expect(half.leg.homeAbbr).toBeNull();
   });
 
   it('assesses the whole pair without mutating the selection or reading the clock', () => {

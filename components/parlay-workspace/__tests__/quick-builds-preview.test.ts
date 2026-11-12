@@ -154,6 +154,26 @@ function panelTag(html: string, name: 'mine' | 'quick'): string {
 }
 
 describe('quick builds preview contract', () => {
+  it('passes the scheduled matchup and NBA headshot id through Use This Build', () => {
+    const payload = body();
+    const builds = payload.builds as Array<{ legs: Array<{ display: Record<string, unknown>; playerId: string }> }>;
+    builds[0]!.legs[0]!.display.scheduledAwayAbbreviation = 'por';
+    builds[0]!.legs[0]!.display.scheduledHomeAbbreviation = 'bos';
+    builds[0]!.legs[0]!.display.nbaPlayerId = '1631210';
+    builds[0]!.legs[1]!.display.scheduledAwayAbbreviation = 'LAL';
+    builds[0]!.legs[1]!.display.nbaPlayerId = 'current';
+    const handoff = viewOf(payload).builds[0]?.handoff;
+    expect(handoff?.[0]).toMatchObject({
+      playerId: '11',
+      awayAbbr: 'POR',
+      homeAbbr: 'BOS',
+      nbaPlayerId: '1631210',
+      oddsAmerican: -115,
+      line: 22.5,
+    });
+    expect(handoff?.[1]).toMatchObject({ awayAbbr: null, homeAbbr: null, nbaPlayerId: null });
+  });
+
   it('offers the four canonical books and three existing preset keys', () => {
     expect(QUICK_BUILD_BOOK_OPTIONS.map((book) => book.vendor)).toEqual(['draftkings', 'fanduel', 'betmgm', 'caesars']);
     expect(QUICK_BUILD_PAYOUT_OPTIONS.map((option) => option.preset)).toEqual(['higher_hit_chance', 'balanced', 'higher_payout']);
@@ -191,7 +211,9 @@ describe('quick builds preview contract', () => {
     expect(html).toContain('-115');
     expect(html).toContain('Rebounds Under 8.5');
     expect(html).toContain('Game start Nov 9, 7:30 PM EST');
-    expect(html).toContain('Snapshot game status: Scheduled');
+    expect(html).toContain('Game status: Scheduled');
+    expect(html).toContain('Matchup unavailable');
+    expect(html).not.toContain('Snapshot game status');
     expect(html).toContain('Price observed Nov 9, 4:00 PM EST');
     expect(html).toContain('Search generated Nov 9, 5:00 PM EST');
     expect(html).toContain('+125');
@@ -209,6 +231,21 @@ describe('quick builds preview contract', () => {
     expect(html).toContain('Use This Build');
     expect(html).not.toContain('>11<');
     expect(html).not.toContain('>22<');
+  });
+
+  it('shows the matchup and a readable tip without using a timestamp as the status', () => {
+    const payload = body();
+    const builds = payload.builds as Array<{ legs: Array<{ display: Record<string, unknown> }> }>;
+    builds[0]!.legs[0]!.display.scheduledAwayAbbreviation = 'nyk';
+    builds[0]!.legs[0]!.display.scheduledHomeAbbreviation = 'bos';
+    builds[0]!.legs[0]!.display.gameStatus = GAME_START;
+    const html = markup(viewOf(payload));
+    expect(html).toContain('NYK @ BOS');
+    expect(html).toContain('Game start Nov 9, 7:30 PM EST');
+    expect(html).toContain('Game status: Scheduled');
+    expect(html).not.toContain('Snapshot game status');
+    expect(html).not.toContain(`Game status: ${GAME_START}`);
+    expect(html).not.toContain('Game status: Nov 9');
   });
 
   it('keeps a display-ready result when team and opponent are absent', () => {

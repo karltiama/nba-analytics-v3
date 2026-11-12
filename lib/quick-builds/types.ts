@@ -137,6 +137,9 @@ export type QuickBuildGameInput = {
   gameId: string;
   startTime: string;
   status?: string | null;
+  /** Scheduled game teams. Omitted values do not change eligibility. */
+  awayAbbreviation?: string | null;
+  homeAbbreviation?: string | null;
 };
 
 export type PullAttemptStatus = 'started' | 'success' | 'error';

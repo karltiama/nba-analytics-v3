@@ -4,7 +4,7 @@
  * confirmation that an older snapshot is still the board.
  */
 
-import { normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { isQuickBuildPregameStatus } from './slate-status';
 import {
   QUICK_BUILD_MAX_ATTEMPTS,
   QUICK_BUILD_MAX_GAMES,
@@ -193,7 +193,7 @@ export function parsePolicy(policy: QuickBuildPolicy): { asOfMs: number; maxObse
 function isUpcoming(game: QuickBuildGameInput, asOfMs: number): boolean {
   const start = Date.parse(game.startTime);
   if (!Number.isFinite(start) || start <= asOfMs) return false;
-  return normalizeGameStatus(game.status) === 'Scheduled';
+  return isQuickBuildPregameStatus(game.status);
 }
 
 function newestUnsuccessfulAfter(attempts: GamePullAttempt[], success: GamePullAttempt | null): GamePullAttempt | null {
