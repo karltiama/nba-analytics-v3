@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { AdminForbidden } from '@/components/admin/AdminForbidden';
+import { requireAdminPage } from '@/lib/auth/require-admin';
 import {
   draftPath,
   packetPath,
@@ -16,6 +18,9 @@ export const metadata: Metadata = {
 };
 
 const SEASON = '2026';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 async function readPacket(
   slug: string
@@ -35,6 +40,14 @@ export default async function PreseasonDraftDetailPage({
 }) {
   const { slug: rawSlug } = await params;
   const slug = rawSlug.toUpperCase();
+  const auth = await requireAdminPage();
+  if (!auth.ok) {
+    if (auth.reason === 'unauthenticated') {
+      redirect(`/login?next=${encodeURIComponent(`/admin/content/preseason/${slug}`)}`);
+    }
+    return <AdminForbidden reason={auth.reason} email={auth.email} />;
+  }
+
   const draft = await readPreseasonDraft(SEASON, slug);
   if (!draft) notFound();
   const packet = await readPacket(slug);
