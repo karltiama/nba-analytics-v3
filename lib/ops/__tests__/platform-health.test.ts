@@ -109,6 +109,9 @@ describe('collectPlatformHealth', () => {
       if (sql.includes('pg_database_size')) {
         return { pretty: '293 MB', bytes: '307000000' };
       }
+      if (sql.includes('player_injury_status_current')) {
+        return { snapshot_at: '2026-05-06T18:00:00.000Z', pulled_at: '2026-05-06T18:00:00.000Z' };
+      }
       if (sql.includes("status = 'success'")) {
         return { pulled_at: '2026-05-06T18:00:00.000Z' };
       }
@@ -120,28 +123,29 @@ describe('collectPlatformHealth', () => {
           rows_stored: 1,
         };
       }
-      if (sql.includes('player_injury_status_current')) {
-        return { snapshot_at: '2026-05-06T18:00:00.000Z', pulled_at: '2026-05-06T18:00:00.000Z' };
-      }
       return null;
     });
 
     const report = await collectPlatformHealth({ env: freezeEnv, now, s3: null });
     expect(report.freeze.frozen).toBe(true);
-    expect(report.ingestion.find((s) => s.source === 'props')?.status).toBe('FROZEN_EXPECTED');
-    expect(report.ingestion.find((s) => s.source === 'odds')?.status).toBe('FROZEN_EXPECTED');
-    expect(report.ingestion.find((s) => s.source === 'injuries')?.status).toBe('FROZEN_EXPECTED');
+    expect(report.webIngestion.state).toBe('RESTRICTED');
+    expect(report.ingestion.find((s) => s.source === 'props')?.status).toBe('STALE');
+    expect(report.ingestion.find((s) => s.source === 'odds')?.status).toBe('STALE');
+    expect(report.ingestion.find((s) => s.source === 'injuries')?.status).toBe('STALE');
+    expect(report.ingestion.find((s) => s.source === 'props')?.status).not.toBe('FROZEN_EXPECTED');
     expect(report.injuryServing.authoritative).toBe(false);
-    expect(report.injuryServing.status).toBe('FROZEN_EXPECTED');
+    expect(report.injuryServing.servingRestricted).toBe(true);
+    expect(report.injuryServing.status).toBe('STALE');
     expect(report.overall).not.toBe('FAILED');
-    expect(report.overall).not.toBe('STALE');
     expect(report.freeze.liveIngestionEnabled).toBe(false);
     expect(report.identity.alert).toBe(false);
     expect(report.identity.status).toBe('HEALTHY');
-    expect(report.postgame.status).toBe('FROZEN_EXPECTED');
-    expect(report.families.every((f) => f.config === 'FROZEN' || f.config === 'MANUAL_ONLY' || f.config === 'NOT_DEPLOYED')).toBe(
+    expect(report.postgame.status).toBe('UNKNOWN');
+    expect(report.postgame.reason).toMatch(/not queried/);
+    expect(report.families.every((f) => f.collectorStatus !== 'FROZEN' || f.scheduleLabel === 'DISABLED' || f.scheduleLabel === 'NOT_DEPLOYED')).toBe(
       true
     );
+    expect(report.families.every((f) => f.scheduleLabel !== 'DISABLED')).toBe(true);
   });
 
   it('live + stale ingest and failed archive surface as stale/failed', async () => {
@@ -415,7 +419,7 @@ describe('collectPlatformHealth', () => {
     expect(report.families.find((f) => f.id === 'schedule_nightly_bdl')?.missedRun).toBe('MISSED');
   });
 
-  it('ACTIVE + schedule disabled is FAILED config mismatch', async () => {
+  it('a disabled AWS schedule is frozen, not a web-intent failure', async () => {
     const report = await collectPlatformHealth({
       env: liveEnv,
       now,
@@ -424,21 +428,31 @@ describe('collectPlatformHealth', () => {
       goatSubscriptionActive: true,
       aws: { queried: true, scheduleObserved: 'DISABLED' },
     });
-    expect(report.scheduleMismatch.status).toBe('FAILED');
+    expect(report.scheduleMismatch.status).toBe('FROZEN_EXPECTED');
+    expect(report.scheduleMismatch.reason).not.toMatch(/assume DISABLED/);
+    expect(report.families.find((f) => f.id === 'schedule_nightly_bdl')?.collectorStatus).toBe(
+      'FROZEN'
+    );
     expect(report.families.find((f) => f.id === 'schedule_nightly_bdl')?.missedRun).toBe(
-      'CONFIG_MISMATCH'
+      'NOT_EXPECTED'
     );
   });
 
-  it('frozen + AWS schedule unexpectedly enabled is DEGRADED', async () => {
+  it('an enabled AWS schedule is not degraded just because the web process is frozen', async () => {
     const report = await collectPlatformHealth({
       env: freezeEnv,
       now,
       s3: null,
       aws: { queried: true, scheduleObserved: 'ENABLED' },
     });
-    expect(report.scheduleMismatch.status).toBe('DEGRADED');
-    expect(report.families.every((f) => f.missedRun === 'NOT_EXPECTED')).toBe(true);
+    expect(report.webIngestion.state).toBe('RESTRICTED');
+    expect(report.scheduleMismatch.status).toBe('HEALTHY');
+    expect(
+      report.families
+        .filter((f) => f.scheduleLabel === 'ENABLED')
+        .every((f) => f.collectorStatus !== 'FROZEN')
+    ).toBe(true);
+    expect(report.scheduleMismatch.reason).not.toMatch(/assume DISABLED/);
   });
 
   it('AWS unavailable is UNKNOWN and /ops still renders', async () => {
@@ -451,6 +465,152 @@ describe('collectPlatformHealth', () => {
     expect(report.aws.status).toBe('UNKNOWN');
     expect(report.overall).toBeTruthy();
     expect(report.families.length).toBeGreaterThan(0);
+    expect(report.families.every((f) => f.scheduleLabel !== 'DISABLED')).toBe(true);
+    expect(report.scheduleMismatch.reason).not.toMatch(/DISABLED/);
+  });
+
+  it('a failed AWS read is BLOCKED and is not shown as DISABLED', async () => {
+    const report = await collectPlatformHealth({
+      env: freezeEnv,
+      now,
+      s3: null,
+      aws: { queried: false, scheduleObserved: 'UNKNOWN' },
+    });
+    expect(report.aws.status).toBe('BLOCKED');
+    expect(report.families.every((f) => f.scheduleLabel !== 'DISABLED')).toBe(true);
+    expect(report.families.some((f) => f.collectorStatus === 'BLOCKED')).toBe(true);
+  });
+
+  it('web restriction plus a verified AWS collector is HEALTHY', async () => {
+    mockQueryOne.mockImplementation(async (sql: string) => {
+      if (String(sql).includes('display.scoreboard_collector_state')) {
+        return { ts: '2026-09-06T17:30:00.000Z' };
+      }
+      return null;
+    });
+    const report = await collectPlatformHealth({
+      env: freezeEnv,
+      now,
+      s3: null,
+      aws: {
+        queried: true,
+        scheduleObserved: 'ENABLED',
+        lambdas: [
+          {
+            id: 'scoreboard',
+            familyId: 'scoreboard',
+            functionName: 'scoreboard-collector',
+            optional: false,
+            exists: true,
+            state: 'Active',
+            lastInvocationAt: '2026-09-06T17:30:00.000Z',
+            lastInvocationSuccess: 'UNKNOWN',
+            errors24h: 0,
+            throttles24h: 0,
+            durationMs: 100,
+            reservedConcurrencyApplied: null,
+            scheduleObserved: 'ENABLED',
+            queried: true,
+            deployState: 'DEPLOYED',
+          },
+        ],
+      },
+    });
+    const scoreboard = report.families.find((f) => f.id === 'scoreboard')!;
+    expect(report.webIngestion.state).toBe('RESTRICTED');
+    expect(scoreboard.collectorStatus).toBe('HEALTHY');
+    expect(scoreboard.freshness).toBe('FRESH');
+    expect(scoreboard.scheduleLabel).toBe('ENABLED');
+    expect(scoreboard.status).not.toBe('FROZEN_EXPECTED');
+  });
+
+  it('a recent Lambda invocation without a database write is DEGRADED', async () => {
+    const report = await collectPlatformHealth({
+      env: liveEnv,
+      now,
+      s3: null,
+      liveIngestionEnabled: true,
+      goatSubscriptionActive: true,
+      aws: {
+        queried: true,
+        scheduleObserved: 'ENABLED',
+        lambdas: [
+          {
+            id: 'schedule_nightly_bdl',
+            familyId: 'schedule_nightly_bdl',
+            functionName: 'nightly-bdl-updater',
+            optional: false,
+            exists: true,
+            state: 'Active',
+            lastInvocationAt: '2026-09-06T17:00:00.000Z',
+            lastInvocationSuccess: 'UNKNOWN',
+            errors24h: 0,
+            throttles24h: 0,
+            durationMs: 100,
+            reservedConcurrencyApplied: null,
+            scheduleObserved: 'ENABLED',
+            queried: true,
+            deployState: 'DEPLOYED',
+          },
+        ],
+      },
+    });
+    const nightly = report.families.find((f) => f.id === 'schedule_nightly_bdl')!;
+    expect(nightly.collectorStatus).toBe('DEGRADED');
+    expect(nightly.freshness).not.toBe('FRESH');
+    expect(nightly.reason).toMatch(/database write/);
+  });
+
+  it('a skipped pull with no eligible work is not DEGRADED', async () => {
+    mockQueryOne.mockImplementation(async (sql: string) => {
+      const text = String(sql);
+      if (text.includes('player_prop_pull_runs') && text.includes("status = 'success'")) {
+        return { pulled_at: '2026-05-06T18:00:00.000Z' };
+      }
+      if (text.includes('player_prop_pull_runs')) {
+        return {
+          status: 'skipped',
+          pulled_at: '2026-09-06T17:50:00.000Z',
+          completed_at: '2026-09-06T17:50:00.000Z',
+          rows_stored: 0,
+        };
+      }
+      return null;
+    });
+    const report = await collectPlatformHealth({
+      env: liveEnv,
+      now,
+      s3: null,
+      liveIngestionEnabled: true,
+      goatSubscriptionActive: true,
+      aws: {
+        queried: true,
+        scheduleObserved: 'ENABLED',
+        lambdas: [
+          {
+            id: 'player_props_controller',
+            familyId: 'player_props_controller',
+            functionName: 'nba-player-props-controller-lambda',
+            optional: false,
+            exists: true,
+            state: 'Active',
+            lastInvocationAt: '2026-09-06T17:50:00.000Z',
+            lastInvocationSuccess: 'UNKNOWN',
+            errors24h: 0,
+            throttles24h: 0,
+            durationMs: 100,
+            reservedConcurrencyApplied: null,
+            scheduleObserved: 'ENABLED',
+            queried: true,
+            deployState: 'DEPLOYED',
+          },
+        ],
+      },
+    });
+    const props = report.families.find((f) => f.id === 'player_props_controller')!;
+    expect(props.collectorStatus).toBe('HEALTHY');
+    expect(props.collectorStatus).not.toBe('DEGRADED');
+    expect(props.freshness).toBe('STALE');
   });
 
   it('postgame NOT_DEPLOYED is not an incident; provider block is not FAILED', async () => {
@@ -541,7 +701,10 @@ describe('collectPlatformHealth', () => {
       },
     });
     expect(missing.postgame.schemaState).toBe('NOT_APPLIED');
-    expect(missing.postgame.status).toBe('FROZEN_EXPECTED');
+    expect(missing.postgame.status).toBe('UNKNOWN');
+    expect(missing.postgame.badgeLabel).toBe('NOT DEPLOYED');
+    expect(missing.postgame.reason).toMatch(/not deployed/);
+    expect(missing.postgame.reason).not.toMatch(/freeze/);
     expect(missing.queueCards.find((q) => q.id === 'postgame_stage')?.deployState).toBe(
       'NOT_DEPLOYED'
     );

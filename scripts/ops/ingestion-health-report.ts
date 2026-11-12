@@ -15,9 +15,15 @@ async function main() {
     report.families.map((family) => [
       family.id,
       {
-        config: family.config,
+        webFeedConfig: family.webFeedConfig,
+        configScope: family.configScope,
+        collectorStatus: family.collectorStatus,
+        schedule: family.scheduleLabel,
         freshness: family.freshness,
-        grade: freshnessToReadiness(family.freshness, family.status),
+        grade:
+          family.freshness === 'STALE'
+            ? 'PARTIAL'
+            : freshnessToReadiness(family.freshness, family.status),
         reason: family.reason,
       },
     ])

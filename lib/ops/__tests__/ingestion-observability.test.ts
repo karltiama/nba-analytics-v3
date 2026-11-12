@@ -213,28 +213,35 @@ describe('job partial / queues / schedule mismatch', () => {
     ).toBe('DEGRADED');
   });
 
-  it('schedule mismatch health is accurate', () => {
+  it('AWS schedule observation does not invent a disabled state', () => {
     expect(
       classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'DISABLED' })
-    ).toEqual({ health: 'FROZEN_EXPECTED', reason: 'intended frozen + actually disabled' });
+    ).toEqual({ health: 'FROZEN_EXPECTED', reason: 'observed AWS schedule is disabled' });
     expect(
       classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'DISABLED' })
-    ).toEqual({ health: 'FAILED', reason: 'intended active + actually disabled' });
+    ).toEqual({ health: 'FROZEN_EXPECTED', reason: 'observed AWS schedule is disabled' });
     expect(
       classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'ENABLED' })
-    ).toEqual({ health: 'DEGRADED', reason: 'intended frozen in web env; AWS schedule enabled' });
+    ).toEqual({ health: 'HEALTHY', reason: 'observed AWS schedule is enabled' });
     expect(
       classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'ENABLED' })
-    ).toEqual({ health: 'HEALTHY', reason: 'intended active + actually enabled' });
+    ).toEqual({ health: 'HEALTHY', reason: 'observed AWS schedule is enabled' });
     expect(
       classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'UNKNOWN' })
     ).toEqual({
-      health: 'FROZEN_EXPECTED',
-      reason: 'intended frozen; AWS schedule state not queried (assume DISABLED)',
+      health: 'UNKNOWN',
+      reason: 'AWS schedule state was not established',
     });
     expect(
-      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'UNKNOWN' })
-    ).toEqual({ health: 'UNKNOWN', reason: 'intended active; AWS schedule state not queried' });
+      classifyScheduleMismatch({
+        liveIngestionEnabled: false,
+        observed: 'UNKNOWN',
+        awsAccess: 'UNAVAILABLE',
+      })
+    ).toEqual({ health: 'BLOCKED', reason: 'AWS schedule state could not be read' });
+    expect(
+      classifyScheduleMismatch({ liveIngestionEnabled: true, observed: 'UNKNOWN' }).reason
+    ).not.toMatch(/DISABLED/);
   });
 
   it('non-zero DLQ is visible even while frozen', () => {
@@ -385,10 +392,10 @@ describe('activation-aware missed-run', () => {
     expect(r.health).toBe('UNKNOWN');
   });
 
-  it('frozen + AWS schedule ENABLED stays a schedule mismatch, not missed-run', () => {
+  it('web freeze does not turn an enabled AWS schedule into a missed-run freeze', () => {
     expect(
       classifyScheduleMismatch({ liveIngestionEnabled: false, observed: 'ENABLED' }).health
-    ).toBe('DEGRADED');
+    ).toBe('HEALTHY');
     expect(
       classifyMissedRun({
         config: 'FROZEN',
