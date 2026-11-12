@@ -277,27 +277,22 @@ export function resolveFeedConfig(input: {
 }
 
 export function classifyScheduleMismatch(input: {
+  /** Retained for callers. Web permission is not AWS schedule evidence. */
   liveIngestionEnabled: boolean;
   observed: AwsScheduleObserved;
+  awsAccess?: 'QUERIED' | 'UNAVAILABLE' | 'NOT_QUERIED';
 }): { health: HealthStatus; reason: string } {
+  void input.liveIngestionEnabled;
   if (input.observed === 'UNKNOWN') {
-    return {
-      health: input.liveIngestionEnabled ? 'UNKNOWN' : 'FROZEN_EXPECTED',
-      reason: input.liveIngestionEnabled
-        ? 'intended active; AWS schedule state not queried'
-        : 'intended frozen; AWS schedule state not queried (assume DISABLED)',
-    };
+    if (input.awsAccess === 'UNAVAILABLE') {
+      return { health: 'BLOCKED', reason: 'AWS schedule state could not be read' };
+    }
+    return { health: 'UNKNOWN', reason: 'AWS schedule state was not established' };
   }
-  if (!input.liveIngestionEnabled && input.observed === 'DISABLED') {
-    return { health: 'FROZEN_EXPECTED', reason: 'intended frozen + actually disabled' };
+  if (input.observed === 'DISABLED') {
+    return { health: 'FROZEN_EXPECTED', reason: 'observed AWS schedule is disabled' };
   }
-  if (!input.liveIngestionEnabled && input.observed === 'ENABLED') {
-    return { health: 'DEGRADED', reason: 'intended frozen in web env; AWS schedule enabled' };
-  }
-  if (input.liveIngestionEnabled && input.observed === 'DISABLED') {
-    return { health: 'FAILED', reason: 'intended active + actually disabled' };
-  }
-  return { health: 'HEALTHY', reason: 'intended active + actually enabled' };
+  return { health: 'HEALTHY', reason: 'observed AWS schedule is enabled' };
 }
 
 export function classifyIdentityObservability(input: {

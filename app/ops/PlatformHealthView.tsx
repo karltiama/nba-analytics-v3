@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { rollupEnabledCollectors } from '@/lib/ops/collector-status';
 import { rollupHealthStatus } from '@/lib/ops/health-status';
 import type { HealthStatus } from '@/lib/ops/health-status';
+import type { CollectorStatus } from '@/lib/ops/collector-status';
 import type { PlatformHealthReport } from '@/lib/ops/platform-health';
 
 const STATUS_CLASS: Record<HealthStatus, string> = {
@@ -13,30 +15,38 @@ const STATUS_CLASS: Record<HealthStatus, string> = {
   FAILED: 'text-red-400 border-red-500/30 bg-red-500/10',
 };
 
-function Badge({ status }: { status: HealthStatus }) {
+function Badge({ status, label }: { status: HealthStatus; label?: string }) {
   return (
     <span
       className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-wide ${STATUS_CLASS[status]}`}
     >
-      {status.replaceAll('_', ' ')}
+      {label ?? status.replaceAll('_', ' ')}
     </span>
   );
+}
+
+function CollectorBadge({ status, label }: { status: CollectorStatus; label?: string }) {
+  const health: HealthStatus = status === 'FROZEN' ? 'FROZEN_EXPECTED' : status;
+  const shown = label ?? (status === 'FROZEN' ? 'FROZEN' : status);
+  return <Badge status={health} label={shown} />;
 }
 
 function Card({
   title,
   status,
+  badgeLabel,
   children,
 }: {
   title: string;
   status: HealthStatus;
+  badgeLabel?: string;
   children: ReactNode;
 }) {
   return (
     <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4 space-y-3">
       <header className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-white">{title}</h2>
-        <Badge status={status} />
+        <Badge status={status} label={badgeLabel} />
       </header>
       {children}
     </section>
@@ -59,12 +69,30 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
           <Badge status={report.overall} />
         </div>
         <p className="text-sm text-muted-foreground">
-          Generated {report.generatedAt}. Freeze: DATA_MODE={report.freeze.dataMode},
-          OFFSEASON={report.freeze.offseason ? '1' : '0'}, CRON_DRY_RUN=
-          {report.freeze.cronDryRun ? '1' : '0'}, live_ingestion_enabled=
-          {report.freeze.liveIngestionEnabled ? 'true' : 'false'}.
+          Generated {report.generatedAt}. Web ingestion is {report.webIngestion.state}. AWS collector
+          status is classified separately and is not inferred from that web setting.
         </p>
       </header>
+
+      <Card
+        title="Web ingestion permissions"
+        status={report.webIngestion.state === 'ALLOWED' ? 'HEALTHY' : 'UNKNOWN'}
+        badgeLabel={report.webIngestion.state}
+      >
+        <p className="text-sm text-white/80">
+          <Badge
+            status={report.webIngestion.state === 'ALLOWED' ? 'HEALTHY' : 'UNKNOWN'}
+            label={report.webIngestion.state}
+          />
+        </p>
+        <p className="text-sm text-white/80">{report.webIngestion.reason}</p>
+        <p className="text-xs text-muted-foreground">
+          DATA_MODE={report.freeze.dataMode}, OFFSEASON={report.freeze.offseason ? '1' : '0'},
+          CRON_DRY_RUN={report.freeze.cronDryRun ? '1' : '0'}, LIVE_INGESTION_ENABLED=
+          {report.freeze.liveIngestionEnabled ? 'enabled' : 'unset or not enabled'}. webFeedConfig
+          is this web or catalog value. The collector badge is the AWS state.
+        </p>
+      </Card>
 
       <Card title="Database" status={report.database.status}>
         <p className="text-sm text-white/80">
@@ -81,11 +109,15 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
       </Card>
 
       <Card
-        title="Ingestion"
+        title="Database pull runs"
         status={rollupHealthStatus(
           report.ingestion.filter((row) => row.tracked).map((row) => row.status)
         )}
       >
+        <p className="text-xs text-muted-foreground">
+          Pull-run freshness only. A stale or missing row is not a fresh write, and this card does
+          not copy the web permission flag.
+        </p>
         <ul className="space-y-2 text-sm">
           {report.ingestion.map((row) => (
             <li key={row.source} className="flex flex-wrap items-baseline justify-between gap-2">
@@ -101,7 +133,8 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
 
       <Card title="Injury serving" status={report.injuryServing.status}>
         <p className="text-sm text-white/80">
-          Latest snapshot: {report.injuryServing.latestSnapshotAt ?? '—'} · age{' '}
+          Web serving: {report.injuryServing.servingRestricted ? 'RESTRICTED' : 'ALLOWED'} · Latest
+          snapshot: {report.injuryServing.latestSnapshotAt ?? '—'} · age{' '}
           {fmtHours(report.injuryServing.ageHours)} ·{' '}
           {report.injuryServing.authoritative ? 'authoritative' : 'not authoritative'}
         </p>
@@ -121,24 +154,35 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
       </Card>
 
       <Card
-        title="Ingestion families"
-        status={rollupHealthStatus(report.families.map((row) => row.status))}
+        title="AWS collectors"
+        status={rollupEnabledCollectors(report.families)}
       >
-        <ul className="space-y-2 text-sm">
+        <p className="text-xs text-muted-foreground">
+          Each row is that collector&apos;s AWS schedule, executions, and database writes. An unset
+          web flag does not mark a collector frozen. Checked {report.generatedAt}.
+        </p>
+        <ul className="space-y-3 text-sm">
           {report.families.map((row) => (
             <li key={row.id} className="space-y-0.5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-white">{row.label}</span>
-                <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{row.config}</span>
-                  <span>AWS {row.awsState}</span>
-                  <span>{row.missedRun}</span>
-                  <Badge status={row.status} />
-                </span>
+                <CollectorBadge
+                  status={row.collectorStatus}
+                  label={row.scheduleLabel === 'NOT_DEPLOYED' ? 'NOT DEPLOYED' : row.collectorStatus}
+                />
               </div>
               <p className="text-xs text-muted-foreground">
-                freshness {row.freshness} · last inv {row.lastInvocationAt ?? '—'} · data{' '}
-                {row.lastSuccessAt ?? '—'} · {row.correlation}
+                AWS schedule {row.scheduleLabel} · cadence {row.expectedCadence}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Last execution {row.lastInvocationAt ?? '—'} · last database write{' '}
+                {row.lastSuccessAt ?? '—'} · freshness {row.freshness}
+                {row.collectorStatus === 'HEALTHY' && row.freshness === 'STALE'
+                  ? ' · collector is healthy for its schedule; the stored record is stale'
+                  : ''}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {row.warning ?? 'No collector warning.'} · checked {report.generatedAt}
               </p>
             </li>
           ))}
@@ -157,9 +201,12 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
         </p>
       </Card>
 
-      <Card title="Schedule intent vs AWS" status={report.scheduleMismatch.status}>
+      <Card title="AWS schedule observation" status={report.scheduleMismatch.status}>
         <p className="text-sm text-white/80">
           Observed {report.scheduleMismatch.observed} · {report.scheduleMismatch.reason}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          UNKNOWN and BLOCKED mean the schedule was not read. They are not DISABLED.
         </p>
       </Card>
 
@@ -217,7 +264,11 @@ export function PlatformHealthView({ report }: { report: PlatformHealthReport })
         </p>
       </Card>
 
-      <Card title="Postgame stages" status={report.postgame.status}>
+      <Card
+        title="Postgame stages"
+        status={report.postgame.status}
+        badgeLabel={report.postgame.badgeLabel ?? undefined}
+      >
         <p className="text-sm text-white/80">
           schema {report.postgame.schemaState} · queue{' '}
           {report.postgame.queueDeployed == null

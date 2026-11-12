@@ -29,7 +29,6 @@ import {
   classifyArchiveManifest,
   classifyCoverage,
   classifyIngestionSource,
-  classifyInjuryServing,
   classifyPruneOutcome,
   HEALTH_WARNING_THRESHOLDS,
   LIVE_INGEST_STALE_HOURS,
@@ -37,7 +36,6 @@ import {
   type HealthStatus,
 } from './health-status';
 import {
-  classifyFeedFreshness,
   classifyIdentityObservability,
   classifyMissedRun,
   classifyQueueHealth,
@@ -60,12 +58,26 @@ import {
 } from './ingestion-observability';
 import { INGESTION_CADENCE } from './ingestion-cadence';
 import {
+  classifyCollectorOperations,
+  classifyObservedFreshness,
+  classifyWebIngestion,
+  collectorToHealth,
+  deriveExecutionEvidence,
+  formatScheduleEvidence,
+  isIdlePullStatus,
+  isPropsControllerScheduled,
+  scheduleEvidenceForFamily,
+  type AwsAccess,
+  type CollectorStatus,
+  type ScheduleLabel,
+  type WebIngestionState,
+} from './collector-status';
+import {
   classifyProviderCapabilityHealth,
   PROVIDER_CAPABILITY_CATALOG,
   type ProviderCapabilityState,
 } from './provider-capability';
 import type { AwsLambdaLiveStatus, AwsQueueLiveStatus } from './aws-ingestion-status';
-import { classifyPostgameOpsHealth } from '@/lib/postgame';
 import { summarizeShadowHealth, type ShadowHealthSummary } from '@/lib/betting/player-projection-shadow-health';
 
 export const PRIORITY_RELATIONS = [
@@ -120,12 +132,19 @@ export type IngestionFamilyHealth = HealthSection & {
   id: string;
   label: string;
   config: FeedConfigState;
+  /** Same value as config. Named so API readers do not treat it as the AWS collector. */
+  webFeedConfig: FeedConfigState;
+  configScope: 'web_process_or_catalog';
+  collectorStatus: CollectorStatus;
   freshness: FreshnessState;
   freshnessSource: string;
   lastSuccessAt: string | null;
   lastInvocationAt: string | null;
   lastInvocationSuccess: 'UNKNOWN' | null;
   awsState: AwsScheduleObserved | 'NOT_DEPLOYED' | 'UNKNOWN';
+  scheduleLabel: ScheduleLabel;
+  expectedCadence: string;
+  warning: string | null;
   missedRun: MissedRunStatus;
   correlation: ExecutionCorrelation;
 };
@@ -168,6 +187,7 @@ export type PostgameOpsHealth = HealthSection & {
   readyCount: number;
   byStage: Array<{ stage: string; status: string; n: number }>;
   boxProvider: ProviderCapabilityState;
+  badgeLabel: string | null;
 };
 
 export type OpsAwsSnapshot = {
@@ -191,6 +211,10 @@ export type PlatformHealthReport = {
     frozen: boolean;
     liveIngestionEnabled: boolean;
   };
+  webIngestion: {
+    state: WebIngestionState;
+    reason: string;
+  };
   database: HealthSection & {
     sizePretty: string | null;
     sizeBytes: number | null;
@@ -211,6 +235,7 @@ export type PlatformHealthReport = {
     latestSnapshotAt: string | null;
     ageHours: number | null;
     authoritative: boolean;
+    servingRestricted: boolean;
   };
   shadow: ShadowHealthSummary;
   archives: ArchiveEntityHealth[];
@@ -449,10 +474,8 @@ export async function collectPlatformHealth(opts?: {
         lastSuccessAt: null,
         lastStartedAt: null,
         rowsStored: null,
-        status: frozen ? 'FROZEN_EXPECTED' : 'UNKNOWN',
-        reason: frozen
-          ? 'frozen: no pull-run table; live ingest not expected'
-          : 'no pull-run table for this source',
+        status: 'UNKNOWN',
+        reason: 'no pull-run table for this source',
       });
       continue;
     }
@@ -466,7 +489,7 @@ export async function collectPlatformHealth(opts?: {
       }
     );
     const classified = classifyIngestionSource({
-      frozen,
+      frozen: false,
       latestStatus: loaded.latestStatus,
       lastSuccessAt: toDate(loaded.lastSuccessAt),
       lastStartedAt: toDate(loaded.lastStartedAt),
@@ -495,20 +518,25 @@ export async function collectPlatformHealth(opts?: {
   const latestInjuryAt = injurySnap?.snapshot_at
     ? new Date(injurySnap.snapshot_at)
     : null;
-  const injuryClass = classifyInjuryServing({
-    frozen: frozen || isFrozenInjuryServing(env),
-    snapshotAt: latestInjuryAt && !Number.isNaN(latestInjuryAt.getTime()) ? latestInjuryAt : null,
+  const injurySnapshot =
+    latestInjuryAt && !Number.isNaN(latestInjuryAt.getTime()) ? latestInjuryAt : null;
+  const injuryFreshnessHours = resolveInjuryFreshnessHours(env.INJURY_FRESHNESS_HOURS);
+  const injuryFresh = classifyObservedFreshness({
+    lastWriteAt: injurySnapshot,
     now,
-    freshnessHours: resolveInjuryFreshnessHours(env.INJURY_FRESHNESS_HOURS),
+    slaHours: injuryFreshnessHours,
   });
-  const ageHours =
-    latestInjuryAt && !Number.isNaN(latestInjuryAt.getTime())
-      ? (now.getTime() - latestInjuryAt.getTime()) / (60 * 60 * 1000)
-      : null;
+  const servingRestricted = isFrozenInjuryServing(env);
   const injuryServing: PlatformHealthReport['injuryServing'] = {
-    ...injuryClass,
-    latestSnapshotAt: latestInjuryAt ? latestInjuryAt.toISOString() : null,
-    ageHours,
+    status:
+      injuryFresh.state === 'FRESH' ? 'HEALTHY' : injuryFresh.state === 'STALE' ? 'STALE' : 'UNKNOWN',
+    authoritative: !servingRestricted && injuryFresh.state === 'FRESH',
+    servingRestricted,
+    reason: servingRestricted
+      ? `Web injury serving is restricted. Snapshot ${injuryFresh.reason}.`
+      : injuryFresh.reason,
+    latestSnapshotAt: injurySnapshot ? injurySnapshot.toISOString() : null,
+    ageHours: injuryFresh.ageHours,
   };
 
   const s3 =
@@ -658,6 +686,8 @@ export async function collectPlatformHealth(opts?: {
   );
   const awsLambdas = opts?.aws?.lambdas ?? [];
   const awsQueues = opts?.aws?.queues ?? [];
+  const awsAccess: AwsAccess =
+    opts?.aws == null ? 'NOT_QUERIED' : opts.aws.queried === false ? 'UNAVAILABLE' : 'QUERIED';
   const families: IngestionFamilyHealth[] = INGESTION_FAMILY_CATALOG.map((family) => {
     const config = resolveFeedConfig({
       family,
@@ -681,9 +711,8 @@ export async function collectPlatformHealth(opts?: {
               : family.id === 'player_props_controller' || family.id === 'player_props_worker'
                 ? lastSuccessBySource.get('props')
                 : null;
-    const freshness = classifyFeedFreshness({
-      config,
-      lastSuccessAt: toDate(last ?? null),
+    const observedFreshness = classifyObservedFreshness({
+      lastWriteAt: toDate(last ?? null),
       now,
       slaHours: FEED_SLA_HOURS[family.id],
     });
@@ -691,9 +720,24 @@ export async function collectPlatformHealth(opts?: {
     const cadence = INGESTION_CADENCE[family.id];
     const invocationQueried = Boolean(lambda?.queried);
     const lastInvocationAt = toDate(lambda?.lastInvocationAt ?? null);
-    const familySchedule = lambda?.scheduleObserved ?? (opts?.aws?.scheduleObserved ?? 'UNKNOWN');
+    const schedule = scheduleEvidenceForFamily({
+      lambdaDeployState: lambda?.deployState ?? null,
+      lambdaSchedule: lambda?.scheduleObserved ?? null,
+      lambdaListed: lambda != null,
+      anyLambdaListed: awsLambdas.length > 0,
+      globalSchedule: opts?.aws?.scheduleObserved ?? null,
+      defaultConfig: family.defaultConfig,
+    });
+    const familySchedule: AwsScheduleObserved =
+      schedule === 'ENABLED' || schedule === 'DISABLED' ? schedule : 'UNKNOWN';
+    const missedConfig: FeedConfigState =
+      schedule === 'ENABLED'
+        ? 'ACTIVE'
+        : schedule === 'DISABLED' || schedule === 'NOT_DEPLOYED'
+          ? 'FROZEN'
+          : config;
     const missed = classifyMissedRun({
-      config,
+      config: missedConfig,
       scheduleObserved: familySchedule,
       intervalHours: cadence.intervalHours,
       graceHours: cadence.graceHours,
@@ -720,32 +764,60 @@ export async function collectPlatformHealth(opts?: {
           : null,
     });
     const correlated = correlateExecutionAndFreshness({
-      config,
+      config: missedConfig,
       missedRun: missed.status,
-      freshness: freshness.state,
+      freshness: observedFreshness.state,
       lastInvocationAt,
       invocationQueried,
       volumeHealth: volume.health,
     });
-    const status = rollupHealthStatus([
-      freshness.health,
-      correlated.health,
-      ...(missed.status === 'CADENCE_UNSET' || missed.status === 'UNKNOWN' ? [] : [missed.health]),
-    ]);
+    const execution = deriveExecutionEvidence({
+      queried: invocationQueried,
+      lastInvocationAt,
+      errors24h: lambda?.errors24h ?? null,
+      now,
+      intervalHours: cadence.intervalHours,
+      graceHours: cadence.graceHours,
+      slaHours: FEED_SLA_HOURS[family.id],
+    });
+    const writes =
+      observedFreshness.state === 'FRESH'
+        ? 'RECENT'
+        : observedFreshness.state === 'STALE'
+          ? 'STALE'
+          : 'MISSING';
+    const collector = classifyCollectorOperations({
+      awsAccess,
+      schedule,
+      execution,
+      writes,
+      idleNoEligibleWork:
+        isIdlePullStatus(ingestRow?.latestStatus) ||
+        ((family.id === 'player_props_controller' || family.id === 'player_props_worker') &&
+          !isPropsControllerScheduled(now)),
+      recentErrorCount: lambda?.errors24h ?? null,
+    });
+    const scheduleLabel = formatScheduleEvidence({ schedule, awsAccess });
     return {
       id: family.id,
       label: family.label,
       config,
-      freshness: freshness.state,
+      webFeedConfig: config,
+      configScope: 'web_process_or_catalog',
+      collectorStatus: collector.status,
+      freshness: observedFreshness.state,
       freshnessSource: family.freshnessSource,
       lastSuccessAt: last ?? null,
       lastInvocationAt: lambda?.lastInvocationAt ?? null,
       lastInvocationSuccess: lambda ? 'UNKNOWN' : null,
-      awsState: lambda?.deployState === 'NOT_DEPLOYED' ? 'NOT_DEPLOYED' : familySchedule,
+      awsState: schedule === 'NOT_DEPLOYED' ? 'NOT_DEPLOYED' : familySchedule,
+      scheduleLabel,
+      expectedCadence: cadence.source,
+      warning: collector.warning,
       missedRun: missed.status,
       correlation: correlated.grade,
-      status,
-      reason: [correlated.reason, missed.reason, freshness.reason].filter(Boolean).join(' · '),
+      status: collectorToHealth(collector.status),
+      reason: collector.reason,
     };
   });
 
@@ -774,6 +846,7 @@ export async function collectPlatformHealth(opts?: {
   const mismatchClass = classifyScheduleMismatch({
     liveIngestionEnabled,
     observed,
+    awsAccess,
   });
   const scheduleMismatch: PlatformHealthReport['scheduleMismatch'] = {
     status: mismatchClass.health,
@@ -781,7 +854,18 @@ export async function collectPlatformHealth(opts?: {
     observed,
   };
 
-  const propsFamily = families.find((f) => f.id === 'player_props_worker');
+  const propsSchedule = awsLambdas.find(
+    (row) => row.familyId === 'player_props_controller' || row.familyId === 'player_props_worker'
+  )?.scheduleObserved;
+  const propsScheduleKnown =
+    propsSchedule === 'ENABLED' ||
+    propsSchedule === 'DISABLED' ||
+    (awsLambdas.length === 0 &&
+      (opts?.aws?.scheduleObserved === 'ENABLED' || opts?.aws?.scheduleObserved === 'DISABLED'));
+  const propsQueueConfig: FeedConfigState =
+    propsSchedule === 'ENABLED' || (awsLambdas.length === 0 && opts?.aws?.scheduleObserved === 'ENABLED')
+      ? 'ACTIVE'
+      : 'FROZEN';
   const makeQueueCard = (
     id: string,
     label: string,
@@ -789,7 +873,7 @@ export async function collectPlatformHealth(opts?: {
     config: FeedConfigState,
     reservedApplied: boolean | null
   ): QueueHealth => {
-    const deployed = live?.deployed ?? (id === 'postgame_stage' ? false : null);
+    const deployed = live?.deployed ?? (id === 'postgame_stage' && awsAccess === 'QUERIED' ? false : null);
     const classified = classifyQueueHealth({
       config,
       queueDepth: live?.visible ?? (id === 'player_props' ? opts?.aws?.queueDepth ?? null : null),
@@ -823,9 +907,13 @@ export async function collectPlatformHealth(opts?: {
     'player_props',
     'Player props',
     propsLive,
-    propsFamily?.config ?? 'FROZEN',
+    propsQueueConfig,
     opts?.aws?.reservedConcurrencyApplied ?? null
   );
+  if (!propsScheduleKnown && !(queueHealth.dlqDepth != null && queueHealth.dlqDepth > 0)) {
+    queueHealth.status = 'UNKNOWN';
+    queueHealth.reason = 'Player props schedule was not read. Queue depth is not a freeze signal.';
+  }
   const postgameQueueHealth = makeQueueCard(
     'postgame_stage',
     'Postgame stages',
@@ -843,26 +931,29 @@ export async function collectPlatformHealth(opts?: {
   const countStatus = (status: string) =>
     postgameRows.filter((row) => row.status === status).reduce((sum, row) => sum + row.n, 0);
   const postgameWorker = awsLambdas.find((row) => row.id === 'postgame_stage_worker');
-  const postgameClass = classifyPostgameOpsHealth({
-    tablePresent: postgameLoaded.schemaState === 'PRESENT',
-    frozen,
-    failedCount: countStatus('FAILED'),
-  });
+  const workerState = postgameWorker?.deployState ?? null;
   const queueNotDeployed = postgameQueueHealth.deployState === 'NOT_DEPLOYED';
-  const workerNotDeployed = postgameWorker?.deployState === 'NOT_DEPLOYED' || postgameWorker == null;
   const schemaNotApplied = postgameLoaded.schemaState === 'NOT_APPLIED';
-  const postgameNotDeployed = queueNotDeployed && workerNotDeployed && schemaNotApplied;
+  const workerNotDeployed = workerState === 'NOT_DEPLOYED';
+  const observedNotDeployed =
+    awsAccess === 'QUERIED' &&
+    (workerNotDeployed || (queueNotDeployed && schemaNotApplied));
+  const postgameStatus: HealthStatus = !observedNotDeployed && countStatus('FAILED') > 0 && workerState === 'DEPLOYED'
+    ? 'DEGRADED'
+    : 'UNKNOWN';
+  const postgameReason = observedNotDeployed
+    ? 'Postgame worker is not deployed.'
+    : awsAccess !== 'QUERIED'
+      ? 'Postgame worker was not queried.'
+      : workerState === 'DEPLOYED' && countStatus('FAILED') > 0
+        ? `${countStatus('FAILED')} FAILED postgame stage(s).`
+        : workerState === 'DEPLOYED'
+          ? 'Postgame worker is deployed. This check does not call it healthy without a certified execution SLA.'
+          : 'Postgame worker deployment was not established.';
   const postgame: PostgameOpsHealth = {
-    status: postgameNotDeployed
-      ? 'FROZEN_EXPECTED'
-      : postgameLoaded.schemaState === 'NOT_APPLIED'
-        ? 'FROZEN_EXPECTED'
-        : postgameClass.health,
-    reason: postgameNotDeployed
-      ? 'postgame queue/worker/schema NOT_DEPLOYED'
-      : postgameLoaded.schemaState === 'NOT_APPLIED'
-        ? 'analytics.postgame_game_stages NOT_APPLIED'
-        : postgameClass.reason,
+    status: postgameStatus,
+    reason: postgameReason,
+    badgeLabel: observedNotDeployed ? 'NOT DEPLOYED' : null,
     tablePresent: postgameLoaded.schemaState === 'PRESENT',
     schemaState: postgameLoaded.schemaState,
     queueDeployed: postgameQueueHealth.deployed,
@@ -887,31 +978,33 @@ export async function collectPlatformHealth(opts?: {
   });
 
   const awsSection = {
-    status: opts?.aws?.queried === false || opts?.aws == null
-      ? ('UNKNOWN' as const)
-      : opts.aws.scheduleObserved === 'UNKNOWN' && !awsLambdas.some((row) => row.queried)
+    status: opts?.aws?.queried === false
+      ? ('BLOCKED' as const)
+      : opts?.aws == null ||
+          (opts.aws.scheduleObserved === 'UNKNOWN' && !awsLambdas.some((row) => row.queried))
         ? ('UNKNOWN' as const)
         : ('HEALTHY' as const),
     reason:
       opts?.aws == null
         ? 'AWS snapshot not queried'
         : opts.aws.queried === false
-          ? 'AWS snapshot skipped or unavailable'
-          : 'bounded Court Context AWS snapshot',
+          ? 'AWS snapshot could not be read'
+          : opts.aws.scheduleObserved === 'UNKNOWN' && !awsLambdas.some((row) => row.queried)
+            ? 'AWS schedule state was not established'
+            : 'bounded Court Context AWS snapshot',
     queried: Boolean(opts?.aws?.queried),
     available: Boolean(awsLambdas.length || awsQueues.length),
   };
 
-  const shadowFamily = INGESTION_FAMILY_CATALOG.find((f) => f.id === 'shadow_projection')!;
-  const shadowConfig = resolveFeedConfig({
-    family: shadowFamily,
-    liveIngestionEnabled,
-    freezeSkipsMutations: frozen,
-    goatSubscriptionActive,
-  });
+  const shadowLambda = awsLambdas.find((row) => row.id === 'shadow_projection');
   const shadowFallback: ShadowHealthSummary = {
-    status: frozen ? 'FROZEN_EXPECTED' : 'UNKNOWN',
-    reason: 'shadow health not queried',
+    status: 'UNKNOWN',
+    reason:
+      shadowLambda?.deployState === 'NOT_DEPLOYED'
+        ? 'Shadow worker is not deployed.'
+        : awsAccess === 'QUERIED'
+          ? 'Shadow worker deployment was not established.'
+          : 'Shadow worker was not queried.',
     schemaEnrichment: 'unavailable',
     lastSuccessfulCollectionAt: null,
     lastSuccessfulCollectionAgeHours: null,
@@ -929,18 +1022,33 @@ export async function collectPlatformHealth(opts?: {
     alertsPrepared: false,
     notificationDestination: null,
   };
-  const shadow = await safeSection(
-    () =>
-      summarizeShadowHealth({
-        db: {
-          query: async (sql, params) => ({ rows: await query(sql, params) }),
-        },
-        now,
-        config: shadowConfig,
-        env,
-      }),
-    shadowFallback
-  );
+  const shadowSchedule = shadowLambda?.scheduleObserved;
+  const shadowConfig: FeedConfigState =
+    shadowLambda?.deployState === 'NOT_DEPLOYED'
+      ? 'NOT_DEPLOYED'
+      : shadowSchedule === 'DISABLED'
+        ? 'FROZEN'
+        : shadowSchedule === 'ENABLED'
+          ? 'ACTIVE'
+          : 'MANUAL_ONLY';
+  const shadow = shadowLambda?.deployState === 'NOT_DEPLOYED' || awsAccess !== 'QUERIED' || shadowLambda?.exists !== true
+    ? shadowFallback
+    : await safeSection(
+        () =>
+          summarizeShadowHealth({
+            db: {
+              query: async (sql, params) => ({ rows: await query(sql, params) }),
+            },
+            now,
+            config: shadowConfig,
+            env,
+          }),
+        shadowFallback
+      );
+  const shadowReport =
+    shadow.status === 'FROZEN_EXPECTED' && shadowSchedule !== 'DISABLED'
+      ? { ...shadow, status: 'UNKNOWN' as const, reason: 'Shadow status is not taken from the web ingestion flag.' }
+      : shadow;
   const overall = rollupHealthStatus([
     database.status,
     ...ingestion.filter((i) => i.tracked).map((i) => i.status),
@@ -958,8 +1066,8 @@ export async function collectPlatformHealth(opts?: {
       ? [postgameQueueHealth.status]
       : []),
     ...(postgame.status === 'UNKNOWN' || postgame.status === 'FROZEN_EXPECTED' ? [] : [postgame.status]),
-    ...(shadow.status === 'STALE' || shadow.status === 'DEGRADED' || shadow.status === 'FAILED'
-      ? [shadow.status]
+    ...(shadowReport.status === 'STALE' || shadowReport.status === 'DEGRADED' || shadowReport.status === 'FAILED'
+      ? [shadowReport.status]
       : []),
     ...families
       .map((f) => f.status)
@@ -968,7 +1076,7 @@ export async function collectPlatformHealth(opts?: {
 
   return {
     generatedAt: now.toISOString(),
-    overall: frozen && overall === 'HEALTHY' ? 'FROZEN_EXPECTED' : overall,
+    overall,
     freeze: {
       dataMode: mode.dataMode || '(missing)',
       offseason: mode.offseason,
@@ -976,6 +1084,10 @@ export async function collectPlatformHealth(opts?: {
       frozen,
       liveIngestionEnabled,
     },
+    webIngestion: classifyWebIngestion({
+      liveIngestionEnabled,
+      freezeSkipsMutations: frozen,
+    }),
     database,
     ingestion,
     families,
@@ -988,7 +1100,7 @@ export async function collectPlatformHealth(opts?: {
     aws: awsSection,
     postgame,
     injuryServing,
-    shadow,
+    shadow: shadowReport,
     archives,
     coverage,
     prune,
