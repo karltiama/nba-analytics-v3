@@ -62,7 +62,11 @@ export function WorkspaceModeSwitch({
   onMode: (mode: WorkspaceMode) => void;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="Workspace mode">
+    <div
+      className="inline-flex w-full rounded-xl border border-[#DCE9EA] bg-[#eef4f4] p-1 sm:w-auto"
+      role="tablist"
+      aria-label="Workspace mode"
+    >
       <ModeButton active={mode === 'mine'} onClick={() => onMode('mine')}>
         My Parlay
       </ModeButton>
@@ -89,8 +93,8 @@ function ModeButton({
       aria-selected={active}
       className={
         active
-          ? 'type-interactive inline-flex min-h-11 items-center justify-center rounded-lg border border-[#075B5C] bg-[#075B5C] px-4 text-white'
-          : 'type-interactive inline-flex min-h-11 items-center justify-center rounded-lg border border-[#DCE9EA] bg-white px-4 text-[#063f46] hover:bg-[#f7f9f7]'
+          ? 'type-interactive inline-flex min-h-10 flex-1 items-center justify-center rounded-lg bg-white px-4 text-[#063f46] shadow-sm sm:flex-none'
+          : 'type-interactive inline-flex min-h-10 flex-1 items-center justify-center rounded-lg px-4 text-cc-secondary hover:text-[#063f46] sm:flex-none'
       }
       onClick={onClick}
     >

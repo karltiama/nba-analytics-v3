@@ -35,8 +35,9 @@ export function ParlayWorkspaceClient({
     useParlaySelection();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [reviewMode, setReviewMode] = useState(false);
   const inFlightFingerprint = useRef<string | null>(null);
+  // Auto-analysis does not retry a slip that just failed; "Try again" clears this.
+  const failedFingerprint = useRef<string | null>(null);
   const eligibility = useMemo(
     () => evaluateWorkspaceAnalysisEligibility(legs, { currentAnalysisEnabled }),
     [legs, currentAnalysisEnabled]
@@ -68,9 +69,9 @@ export function ParlayWorkspaceClient({
         result = runWorkspaceHistoricalAnalysis(legs, buildX3fReplayContext(), buildX3fReplayDeps());
       }
       setAnalysis({ fingerprint, result });
-      setReviewMode(false);
       completeChecklistItem('workspace_analyzed');
     } catch {
+      failedFingerprint.current = fingerprint;
       setError(
         eligibility.status === 'READY' && eligibility.mode === 'current'
           ? 'Court Context could not load current context for this selection.'
@@ -83,17 +84,13 @@ export function ParlayWorkspaceClient({
   }
 
   useEffect(() => {
-    setReviewMode(false);
-  }, [fingerprint]);
-
-  useEffect(() => {
-    if (reviewMode) return;
+    if (failedFingerprint.current === fingerprint) return;
     if (eligibility.status !== 'READY') return;
     if (analysisCurrent || busy) return;
     void runAnalyze();
     // Intentionally keyed to slip identity + eligibility, not runAnalyze identity.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fingerprint, eligibility.status, analysisCurrent, reviewMode, busy]);
+  }, [fingerprint, eligibility.status, analysisCurrent, busy]);
 
   return (
     <ParlayWorkspaceView
@@ -105,9 +102,11 @@ export function ParlayWorkspaceClient({
       analysis={analysisCurrent ? analysis : null}
       analysisBusy={busy}
       analysisError={error}
-      showingResults={analysisCurrent && !reviewMode}
-      onAnalyze={() => void runAnalyze()}
-      onShowReview={() => setReviewMode(true)}
+      showingResults={analysisCurrent}
+      onAnalyze={() => {
+        failedFingerprint.current = null;
+        void runAnalyze();
+      }}
       editedAfterXrayImport={editedAfterXrayImport}
       xrayImportAvailable={xrayImportAvailable}
       onReplaceQuickBuild={(next) => {

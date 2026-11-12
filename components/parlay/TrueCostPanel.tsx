@@ -47,13 +47,17 @@ export function TrueCostPanel({
   pricesStatus,
   unknownHint,
   className,
+  layout = 'wide',
 }: {
   view: TrueCostView;
   pricesStatus: TrueCostPricesStatus;
   /** Shown when fair odds are unknown, e.g. how to get the other side's price. */
   unknownHint?: string;
   className?: string;
+  /** `rail` fits a narrow sidebar: two-column stats, per-leg and per-book tables behind a disclosure. */
+  layout?: 'wide' | 'rail';
 }) {
+  const rail = layout === 'rail';
   const { result, bestBook, linkedLegs } = view;
   const { book, fair } = result;
   const labels = new Map(view.legs.map((leg) => [leg.id, leg]));
@@ -61,73 +65,8 @@ export function TrueCostPanel({
   const houseEdge = fair.status === 'known' ? fair.houseEdge : null;
   const lossPer100 = houseEdge != null ? houseEdge * 100 : null;
 
-  return (
-    <section
-      className={cn('rounded-2xl border border-[#DCE9EA] bg-white p-3 shadow-sm sm:p-4', className)}
-      aria-labelledby="true-cost-heading"
-      data-testid="true-cost-panel"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#e7f8ef] text-[#0f6b45]" aria-hidden>
-            <Calculator className="h-3.5 w-3.5" />
-          </span>
-          <h2 id="true-cost-heading" className="type-section-heading text-[#063f46]">
-            True cost
-          </h2>
-        </div>
-        <p className="type-badge rounded-full border border-[#DCE9EA] px-2 py-0.5 text-[#4a6366]">{TRUE_COST_DISCLAIMER}</p>
-      </div>
-      <p className="type-secondary mt-1">
-        What the book pays for this parlay compared with the payout at no-vig prices.
-      </p>
-
-      {book.status !== 'known' ? (
-        <p className="type-body mt-3 text-cc-secondary" role="status">
-          {TRUE_COST_UNKNOWN_COPY[book.reason]}
-        </p>
-      ) : (
-        <>
-          <dl className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
-            <Stat
-              label="Net profit on $100"
-              value={formatDollars(profitPer100(book.decimal))}
-              hint={`${odds(book.american)} · break-even ${formatPercent(book.breakEvenHitRate)} · total return ${formatDollars(profitPer100(book.decimal) + 100)}`}
-            />
-            <Stat
-              label="Fair net profit on $100"
-              value={fair.status === 'known' ? formatDollars(profitPer100(fair.decimal)) : 'Unknown'}
-              hint={
-                fair.status === 'known'
-                  ? `${odds(fair.american)} · fair chance ${formatPercent(fair.probability)}`
-                  : 'Needs both sides of every leg'
-              }
-            />
-            <Stat
-              label="House edge"
-              value={houseEdge != null ? formatPercent(houseEdge) : 'Unknown'}
-              hint="1 − fair chance × book payout"
-              tone={houseEdge != null && houseEdge > 0 ? 'cost' : 'default'}
-            />
-            <Stat
-              label={lossPer100 != null && lossPer100 < 0 ? 'Expected gain per $100' : 'Expected loss per $100'}
-              value={lossPer100 != null ? formatDollars(Math.abs(lossPer100)) : 'Unknown'}
-              hint="Average over many bets at fair prices"
-              tone={lossPer100 != null && lossPer100 > 0 ? 'cost' : 'default'}
-            />
-          </dl>
-          {fair.status !== 'known' ? (
-            <p className="type-secondary mt-2" role="status">
-              {TRUE_COST_UNKNOWN_COPY[fair.reason]}
-              {fair.legIds.length > 0
-                ? ` Missing: ${fair.legIds.map((id) => labels.get(id)?.label ?? id).join('; ')}.`
-                : ''}
-              {unknownHint ? ` ${unknownHint}` : ''}
-            </p>
-          ) : null}
-        </>
-      )}
-
+  const breakdown = (
+    <>
       {result.legs.length > 0 ? (
         <div className="mt-4 overflow-x-auto">
           <h3 className="type-metadata mb-1 uppercase tracking-wide">Vig by leg</h3>
@@ -174,6 +113,89 @@ export function TrueCostPanel({
       ) : null}
 
       <BestBookSection bestBook={bestBook} pricesStatus={pricesStatus} />
+    </>
+  );
+
+  return (
+    <section
+      className={cn('rounded-2xl border border-[#DCE9EA] bg-white p-3 shadow-sm sm:p-4', className)}
+      aria-labelledby="true-cost-heading"
+      data-testid="true-cost-panel"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#e7f8ef] text-[#0f6b45]" aria-hidden>
+            <Calculator className="h-3.5 w-3.5" />
+          </span>
+          <h2 id="true-cost-heading" className="type-section-heading text-[#063f46]">
+            True cost
+          </h2>
+        </div>
+        <p className="type-badge rounded-full border border-[#DCE9EA] px-2 py-0.5 text-[#4a6366]">{TRUE_COST_DISCLAIMER}</p>
+      </div>
+      <p className="type-secondary mt-1">
+        What the book pays for this parlay compared with the payout at no-vig prices.
+      </p>
+
+      {book.status !== 'known' ? (
+        <p className="type-body mt-3 text-cc-secondary" role="status">
+          {TRUE_COST_UNKNOWN_COPY[book.reason]}
+        </p>
+      ) : (
+        <>
+          <dl className={cn('mt-3 grid grid-cols-2 gap-2', rail ? null : 'lg:grid-cols-4')}>
+            <Stat
+              label="Net profit on $100"
+              value={formatDollars(profitPer100(book.decimal))}
+              hint={`${odds(book.american)} · break-even ${formatPercent(book.breakEvenHitRate)} · total return ${formatDollars(profitPer100(book.decimal) + 100)}`}
+            />
+            <Stat
+              label="Fair net profit on $100"
+              value={fair.status === 'known' ? formatDollars(profitPer100(fair.decimal)) : 'Unknown'}
+              hint={
+                fair.status === 'known'
+                  ? `${odds(fair.american)} · fair chance ${formatPercent(fair.probability)}`
+                  : 'Needs both sides of every leg'
+              }
+            />
+            <Stat
+              label="House edge"
+              value={houseEdge != null ? formatPercent(houseEdge) : 'Unknown'}
+              hint="1 − fair chance × book payout"
+              tone={houseEdge != null && houseEdge > 0 ? 'cost' : 'default'}
+            />
+            <Stat
+              label={lossPer100 != null && lossPer100 < 0 ? 'Expected gain per $100' : 'Expected loss per $100'}
+              value={lossPer100 != null ? formatDollars(Math.abs(lossPer100)) : 'Unknown'}
+              hint="Average over many bets at fair prices"
+              tone={lossPer100 != null && lossPer100 > 0 ? 'cost' : 'default'}
+            />
+          </dl>
+          {fair.status !== 'known' ? (
+            <p className="type-secondary mt-2" role="status">
+              {TRUE_COST_UNKNOWN_COPY[fair.reason]}
+              {fair.legIds.length > 0
+                ? ` Missing: ${fair.legIds.map((id) => labels.get(id)?.label ?? id).join('; ')}.`
+                : ''}
+              {unknownHint ? ` ${unknownHint}` : ''}
+            </p>
+          ) : null}
+        </>
+      )}
+
+      {rail ? (
+        <details className="group mt-3 rounded-xl border border-[#DCE9EA]">
+          <summary className="type-interactive flex min-h-10 cursor-pointer list-none items-center justify-between gap-2 px-3 text-[#075B5C]">
+            Vig by leg and other books
+            <span aria-hidden className="transition-transform group-open:rotate-90">
+              ›
+            </span>
+          </summary>
+          <div className="border-t border-[#DCE9EA] px-3 pb-3">{breakdown}</div>
+        </details>
+      ) : (
+        breakdown
+      )}
 
       {linkedLegs ? (
         <p className="type-secondary mt-3 flex gap-2 rounded-xl border border-amber-200 bg-[#fff8ee] p-3" role="note">

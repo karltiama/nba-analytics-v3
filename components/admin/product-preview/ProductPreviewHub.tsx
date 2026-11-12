@@ -34,7 +34,7 @@ const CARDS = [
   },
   {
     title: 'Parlay Workspace Preview',
-    purpose: 'Review seeded legs → Analyze with Court Context',
+    purpose: 'Review seeded legs → Court Context analysis',
     status: [
       `Canonical ${PRODUCT_PREVIEW_FIXTURE.legCount}-leg fixture`,
       'Isolated from live parlay state',

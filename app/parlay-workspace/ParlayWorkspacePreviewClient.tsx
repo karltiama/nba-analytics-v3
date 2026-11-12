@@ -25,8 +25,9 @@ export function ParlayWorkspacePreviewClient({ scenario }: { scenario?: PreviewS
   const [error, setError] = useState<string | null>(
     scenario === 'error' ? 'Preview analysis could not run for this selection.' : null
   );
-  const [reviewMode, setReviewMode] = useState(false);
   const inFlightFingerprint = useRef<string | null>(null);
+  // Auto-analysis does not retry a slip that just failed; "Try again" clears this.
+  const failedFingerprint = useRef<string | null>(null);
   const eligibility = useMemo(() => evaluateWorkspaceAnalysisEligibility(legs), [legs]);
   const fingerprint = useMemo(() => selectionFingerprint(legs), [legs]);
   const analysisCurrent = Boolean(analysis && analysis.fingerprint === fingerprint);
@@ -47,8 +48,8 @@ export function ParlayWorkspacePreviewClient({ scenario }: { scenario?: PreviewS
       const { buildX3fReplayContext, buildX3fReplayDeps } = await import('@/lib/parlay-xray/e2e/fixture');
       const result = runWorkspaceHistoricalAnalysis(legs, buildX3fReplayContext(), buildX3fReplayDeps());
       setAnalysis({ fingerprint, result });
-      setReviewMode(false);
     } catch {
+      failedFingerprint.current = fingerprint;
       setError('Historical analysis could not run for this selection.');
     } finally {
       if (inFlightFingerprint.current === fingerprint) inFlightFingerprint.current = null;
@@ -57,17 +58,13 @@ export function ParlayWorkspacePreviewClient({ scenario }: { scenario?: PreviewS
   }
 
   useEffect(() => {
-    setReviewMode(false);
-  }, [fingerprint]);
-
-  useEffect(() => {
     if (scenario === 'error') return;
-    if (reviewMode) return;
+    if (failedFingerprint.current === fingerprint) return;
     if (eligibility.status !== 'READY') return;
     if (analysisCurrent || busy) return;
     void runAnalyze();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fingerprint, eligibility.status, analysisCurrent, reviewMode, busy, scenario]);
+  }, [fingerprint, eligibility.status, analysisCurrent, busy, scenario]);
 
   return (
     <ParlayWorkspaceView
@@ -77,20 +74,20 @@ export function ParlayWorkspacePreviewClient({ scenario }: { scenario?: PreviewS
       onClear={() => {
         setLegs([]);
         setAnalysis(null);
-        setReviewMode(false);
       }}
       eligibility={eligibility}
       analysis={analysisCurrent ? analysis : null}
       analysisBusy={busy}
       analysisError={error}
-      showingResults={analysisCurrent && !reviewMode}
-      onAnalyze={() => void runAnalyze()}
-      onShowReview={() => setReviewMode(true)}
+      showingResults={analysisCurrent}
+      onAnalyze={() => {
+        failedFingerprint.current = null;
+        void runAnalyze();
+      }}
       previewLabel={scenario ? null : 'Historical Preview'}
       onReplaceQuickBuild={(next) => {
         setLegs(next);
         setAnalysis(null);
-        setReviewMode(false);
       }}
     />
   );

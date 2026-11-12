@@ -69,7 +69,7 @@ Phase 6 — COMPLETE. Auth, billing, landing product previews, header polish, pr
 
 Ordinary app titles use `type-page-title`. True groups use `type-section-heading`. Sentence copy uses `type-body`. Short support uses `type-secondary`. Timestamps and compact labels use `type-metadata`. Important card values use `type-card-data`. Dense rows use `type-table-data`. Actions use `type-interactive`. Status chips use `type-badge`.
 
-Intentionally larger titles stay outside `type-page-title`: the landing hero, auth “Welcome back” / “Create account”, the auth brand panel, “Upload your slip.”, “WOWY Impact”, player names, the team-page name, and the NBA Teams directory title.
+Intentionally larger titles stay outside `type-page-title`: the landing hero, auth “Welcome back” / “Create account”, the auth brand panel, “Upload your slip.”, the two-tone tool titles (“WOWY Impact”, “Props Explorer”, “Parlay Workspace”: first word `#55ddb1`, second `#063f46`, `text-4xl sm:text-5xl font-black tracking-tight`), player names, the team-page name, and the NBA Teams directory title.
 
 ## Approved exceptions
 

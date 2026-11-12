@@ -16,7 +16,15 @@ import { TrueCostPanel, type TrueCostPricesStatus } from './TrueCostPanel';
 type PricesState = { key: string; status: TrueCostPricesStatus; quotesPerLeg: BookLegQuote[][] | null };
 
 /** Workspace True cost panel: loads current prices for the legs, then renders the price math. */
-export function WorkspaceTrueCost({ legs, className }: { legs: SelectedParlayLeg[]; className?: string }) {
+export function WorkspaceTrueCost({
+  legs,
+  className,
+  layout,
+}: {
+  legs: SelectedParlayLeg[];
+  className?: string;
+  layout?: 'wide' | 'rail';
+}) {
   const keys = useMemo(() => legKeysFromSelected(legs), [legs]);
   const requestKey = useMemo(() => JSON.stringify(keys), [keys]);
   const requestCurrent = shouldRequestCurrentParlayPrices(legs);
@@ -64,6 +72,7 @@ export function WorkspaceTrueCost({ legs, className }: { legs: SelectedParlayLeg
           : 'The other side comes from current prices at the same book and line.'
       }
       className={className}
+      layout={layout}
     />
   );
 }

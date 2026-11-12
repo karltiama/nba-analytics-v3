@@ -19,7 +19,13 @@ describe('E9 first-run page contract', () => {
   const checklist = read('components/onboarding/GettingStartedChecklist.tsx');
   const dashboard = read('app/dashboard/page.tsx');
   const explorer = read('app/betting/props-explorer/page.tsx');
-  const workspace = read('components/parlay-workspace/ParlayWorkspaceView.tsx');
+  const workspace = [
+    'components/parlay-workspace/ParlayWorkspaceView.tsx',
+    'components/parlay-workspace/WorkspaceHeader.tsx',
+    'components/parlay-workspace/WorkspaceParlayRead.tsx',
+  ]
+    .map((path) => read(path))
+    .join('\n');
   const summary = read('components/parlay-xray/XrayParlaySummary.tsx');
 
   it('is a short skippable page, not a modal, asking only what changes the product', () => {

@@ -58,7 +58,6 @@ function Host({ model }: { model: PreviewModel }) {
     analysisError: null,
     showingResults: false,
     onAnalyze: () => undefined,
-    onShowReview: () => undefined,
     initialQuickModel: model,
     onReplaceQuickBuild: (next: SelectedParlayLeg[]) => setLegs(next),
   });
@@ -231,9 +230,8 @@ function selectedTab(): string {
 
 const FULL_ANALYSIS_PLACEHOLDERS = [
   'Evidence alignment appears when Court Context analysis is available.',
-  'Projection, role, relationships, and data coverage appear after analysis.',
-  'Shared groups appear after analysis.',
-  'Risk notes appear after analysis.',
+  'Court Context analysis will appear for this slip shortly.',
+  'How the legs fit together',
   'Run Court Context',
   'Season avg',
   'Projection',
@@ -244,11 +242,12 @@ const FULL_ANALYSIS_PLACEHOLDERS = [
 
 function expectSnapshotResearchLayout(ticket: HTMLElement) {
   const text = ticket.textContent ?? '';
+  // Legs, note and player form fill the main column; True cost sits in the ticket rail.
   const costAt = text.indexOf('True cost');
   const noteAt = text.indexOf(RESEARCH_SNAPSHOT_WORKSPACE_NOTE);
   const formAt = text.indexOf(HISTORICAL_PLAYER_FORM_TITLE);
   expect(costAt).toBeGreaterThanOrEqual(0);
-  expect(noteAt).toBeGreaterThan(costAt);
+  expect(noteAt).toBeGreaterThanOrEqual(0);
   expect(formAt).toBeGreaterThan(noteAt);
   expect(text).not.toContain('Historical analysis is not available');
   for (const phrase of FULL_ANALYSIS_PLACEHOLDERS) expect(text).not.toContain(phrase);
@@ -528,7 +527,6 @@ describe('quick builds handoff to historical player form', () => {
           analysisError: null,
           showingResults: false,
           onAnalyze: () => undefined,
-          onShowReview: () => undefined,
           workspaceMode: 'mine',
         }),
       );
@@ -537,16 +535,11 @@ describe('quick builds handoff to historical player form', () => {
     const text = ticket.textContent ?? '';
     expect(text).toContain('Historical analysis is not available');
     expect(text).toContain('Shai Gilgeous-Alexander');
-    expect(text).toContain('Projection');
     expect(text).toContain('View Context');
-    for (const phrase of FULL_ANALYSIS_PLACEHOLDERS) {
-      if (
-        phrase === 'Current contextual analysis is unavailable for a Research Snapshot.' ||
-        phrase === 'Run Court Context' ||
-        phrase === 'Season avg'
-      ) continue;
-      expect(text).toContain(phrase);
-    }
+    expect(text).toContain('Projection');
+    expect(text).toContain('How the legs fit together');
+    expect(text).toContain('Evidence alignment appears when Court Context analysis is available.');
+    expect(text).not.toContain('Court Context analysis will appear for this slip shortly.');
     await clickButton('View Context →');
     expect(panel('mine').textContent).toContain('Run Court Context');
     expect(text).not.toContain(HISTORICAL_PLAYER_FORM_TITLE);
@@ -590,7 +583,6 @@ describe('quick builds handoff to historical player form', () => {
             analysisError: null,
             showingResults: false,
             onAnalyze: () => undefined,
-            onShowReview: () => undefined,
             workspaceMode: 'mine',
           })
         );
@@ -647,7 +639,6 @@ describe('quick builds handoff to historical player form', () => {
           analysisError: null,
           showingResults: false,
           onAnalyze: () => undefined,
-          onShowReview: () => undefined,
           workspaceMode: 'mine',
         })
       );

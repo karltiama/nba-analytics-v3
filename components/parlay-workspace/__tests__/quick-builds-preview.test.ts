@@ -505,7 +505,6 @@ describe('workspace quick builds mode', () => {
         onAnalyze: () => {
           calls.analyze += 1;
         },
-        onShowReview: () => undefined,
         workspaceMode,
         initialQuickModel,
       }),

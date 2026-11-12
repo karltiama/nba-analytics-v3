@@ -60,7 +60,7 @@ export const COACHMARK_COPY: Record<CoachmarkId, { title: string; body: string }
   },
   'workspace-analyze': {
     title: 'Court Context analysis',
-    body: 'Analysis runs automatically in Parlay Workspace when the slip is eligible. Use Edit Parlay to adjust legs.',
+    body: 'Analysis runs automatically in Parlay Workspace when the slip is eligible, and refreshes when you add or remove legs.',
   },
   'why-fail': {
     title: 'Why this parlay could fail',

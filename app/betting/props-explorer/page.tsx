@@ -698,7 +698,9 @@ export default function PropsExplorerPage(props: PageProps) {
     >
       <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mb-6">
         <div>
-          <h1 className="type-page-title text-[#063f46]">Props Explorer</h1>
+          <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+            <span className="text-[#55ddb1]">Props</span> <span className="text-[#063f46]">Explorer</span>
+          </h1>
           {lineLabel ? (
           <p
             className={`type-body mt-1 text-cc-secondary ${

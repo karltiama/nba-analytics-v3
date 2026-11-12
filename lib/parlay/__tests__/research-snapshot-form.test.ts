@@ -405,7 +405,6 @@ function renderTicket(
       analysisError: null,
       showingResults: false,
       onAnalyze: () => undefined,
-      onShowReview: () => undefined,
       workspaceMode: 'mine',
     })
   );
