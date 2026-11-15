@@ -73,6 +73,22 @@ function singleVendor(legs: SelectedParlayLeg[]): string | null {
 }
 
 /**
+ * The slip's American price is the offered price. A current-board quote may supply
+ * only the opposite side at that same book. A research closing line is not an input.
+ */
+export function savedOfferTrueCostInput(
+  leg: SelectedParlayLeg,
+  boardQuotes: BookLegQuote[] | null | undefined
+): { id: string; priceAmerican: number | null; oppositeAmerican: number | null } {
+  const sameBook = boardQuotes?.find((quote) => quote.vendor === leg.offer.sportsbook.vendor) ?? null;
+  return {
+    id: leg.offer.offerIdentity,
+    priceAmerican: leg.offer.oddsAmerican,
+    oppositeAmerican: sameBook?.oppositeAmerican ?? null,
+  };
+}
+
+/**
  * Workspace view. `quotesPerLeg` is null while prices load or when they are unavailable;
  * then fair odds stay unknown (the slip carries only the chosen side).
  */
@@ -80,14 +96,7 @@ export function buildWorkspaceTrueCost(
   legs: SelectedParlayLeg[],
   quotesPerLeg: BookLegQuote[][] | null
 ): TrueCostView {
-  const inputs = legs.map((leg, i) => {
-    const sameBook = quotesPerLeg?.[i]?.find((q) => q.vendor === leg.offer.sportsbook.vendor) ?? null;
-    return {
-      id: leg.offer.offerIdentity,
-      priceAmerican: leg.offer.oddsAmerican,
-      oppositeAmerican: sameBook?.oppositeAmerican ?? null,
-    };
-  });
+  const inputs = legs.map((leg, i) => savedOfferTrueCostInput(leg, quotesPerLeg?.[i]));
   const result = computeParlayTrueCost(inputs);
 
   let bestBook: BestBookResult | null = null;
