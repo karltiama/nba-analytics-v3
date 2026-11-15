@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { parseLineValue, parsePropSide } from '@/lib/betting/prop-market-compare';
 import { PARLAY_SELECTION_SOFT_CAP } from '@/lib/parlay/selection';
+import { archiveQuotesForEmptyLegs } from '@/lib/parlay/historical-board-quotes';
 import { isBestBookViewEnabled, type TrueCostLegKey } from '@/lib/parlay/true-cost-quotes';
 import { loadCurrentLegQuotes } from '@/lib/parlay/true-cost-server';
+import { historicalBoardSourceFromEnv } from '@/lib/props/historical-board-config';
 
 type LegBody = {
   gameId?: unknown;
@@ -60,14 +62,27 @@ export async function POST(request: NextRequest) {
 
   try {
     const bestBookEnabled = isBestBookViewEnabled(process.env.PARLAY_TRUE_COST_BEST_BOOK);
-    const all = await loadCurrentLegQuotes(legs);
+    const sqlQuotes = await loadCurrentLegQuotes(legs);
+    const source = historicalBoardSourceFromEnv();
+    const archiveQuotes = await archiveQuotesForEmptyLegs(source, legs, sqlQuotes);
+    const all = sqlQuotes.map((quotes, index) => (quotes.length > 0 ? quotes : archiveQuotes[index] ?? []));
     const quotesPerLeg = bestBookEnabled
       ? all
       : all.map((quotes, i) => quotes.filter((q) => q.vendor === vendors[i]));
+    const usedArchive = source.mode !== 'off' && sqlQuotes.some((quotes, index) => quotes.length === 0 && (all[index]?.length ?? 0) > 0);
     return gate.withAuthCookies(
-      NextResponse.json({ quotesPerLeg, bestBookEnabled, source: 'analytics.player_props_current' })
+      NextResponse.json({
+        quotesPerLeg,
+        bestBookEnabled,
+        source: usedArchive ? 'historical-board-archive' : 'analytics.player_props_current',
+      })
     );
   } catch (error) {
+    const code = error instanceof Error ? error.message : '';
+    if (code.startsWith('archive_')) {
+      console.error('[parlay-prices]', code);
+      return gate.withAuthCookies(NextResponse.json({ error: 'Historical prices unavailable' }, { status: 500 }));
+    }
     console.error('[parlay-prices]', error);
     return gate.withAuthCookies(NextResponse.json({ error: 'Prices unavailable' }, { status: 500 }));
   }
