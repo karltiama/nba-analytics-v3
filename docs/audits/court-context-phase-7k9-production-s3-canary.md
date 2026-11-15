@@ -79,7 +79,7 @@ Phase 7K.8 reported 782,986,387 bytes as the cluster. That number is `pg_databas
 
 ## K. Canary removal
 
-Recorded in the cleanup pull request that deletes the route, the report module, its test, and `@aws-sdk/client-sts`. The historical-board reader from `4a8cd44` stays. This section is completed when that deployment is Ready and the URL returns 404.
+[Pull request 64](https://github.com/karltiama/nba-analytics-v3/pull/64) deletes the route, the report module, its test, and `@aws-sdk/client-sts`. The historical-board reader from `4a8cd44` stays. The cleanup commits on that branch are `d5f5bd36ed5057aa2685c34992009a5d744609cc` and `60df9ce`. The production deployment id is recorded after that merge is Ready.
 
 ## L. Endpoint after removal
 
