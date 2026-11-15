@@ -42,7 +42,7 @@ function toPrice(value: number | string | null | undefined): number | null {
 }
 
 /** Per leg (same order as `legs`), one quote per supported book that prices the chosen side. */
-export function quotesForLegs(legs: TrueCostLegKey[], rows: CurrentPropPriceRow[]): BookLegQuote[][] {
+export function quotesForLegs(legs: readonly TrueCostLegKey[], rows: CurrentPropPriceRow[]): BookLegQuote[][] {
   type Cell = { vendor: string; displayName: string; over: number | null; under: number | null };
   const cells = new Map<string, Cell>();
   const keyOf = (gameId: string, playerId: string, market: string, line: number, vendor: string) =>

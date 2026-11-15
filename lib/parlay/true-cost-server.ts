@@ -12,7 +12,7 @@ import {
 } from './true-cost-quotes';
 import type { BookLegQuote } from './true-cost';
 
-export async function loadCurrentLegQuotes(legs: TrueCostLegKey[]): Promise<BookLegQuote[][]> {
+export async function loadCurrentLegQuotes(legs: readonly TrueCostLegKey[]): Promise<BookLegQuote[][]> {
   if (legs.length === 0) return [];
   const gameIds = [...new Set(legs.map((l) => l.gameId))];
   const playerIds = [...new Set(legs.map((l) => l.playerId))];
