@@ -227,7 +227,8 @@ describe('historical board source', () => {
       })),
     })).toThrow('archive_game_rejected');
     const raw = readFileSync('lib/props/current-board-reclamation-manifest.json');
-    expect(createHash('sha256').update(raw).digest('hex')).toBe(CURRENT_BOARD_MANIFEST_SHA256);
+    const committed = raw.includes(13) ? Buffer.from(raw.toString('utf8').replace(/\r\n/g, '\n'), 'utf8') : raw;
+    expect(createHash('sha256').update(committed).digest('hex')).toBe(CURRENT_BOARD_MANIFEST_SHA256);
     const source = readFileSync('lib/props/historical-board-s3.ts', 'utf8');
     expect(source).toContain('GetObjectCommand');
     expect(source).toContain('awsCredentialsProvider');

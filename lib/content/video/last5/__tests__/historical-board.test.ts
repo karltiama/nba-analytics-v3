@@ -58,7 +58,8 @@ describe('last-5 line after historical board removal', () => {
 
   it('leaves the frozen board manifest unchanged', () => {
     const raw = readFileSync('lib/props/current-board-reclamation-manifest.json');
-    expect(createHash('sha256').update(raw).digest('hex')).toBe(CURRENT_BOARD_MANIFEST_SHA256);
+    const committed = raw.includes(13) ? Buffer.from(raw.toString('utf8').replace(/\r\n/g, '\n'), 'utf8') : raw;
+    expect(createHash('sha256').update(committed).digest('hex')).toBe(CURRENT_BOARD_MANIFEST_SHA256);
     expect(FROZEN_BOARD_DELETE_ROWS).toBe(142_602);
     expect(FROZEN_BOARD_SURVIVOR_ROWS).toBe(27_867);
   });

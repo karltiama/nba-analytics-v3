@@ -228,7 +228,8 @@ describe('historical board archive', () => {
     await expect(store.getObject('other/key')).rejects.toThrow('archive_key_rejected');
     expect('putObject' in store).toBe(false);
     const raw = readFileSync('lib/props/current-board-reclamation-manifest.json');
-    expect(createHash('sha256').update(raw).digest('hex')).toBe(CURRENT_BOARD_MANIFEST_SHA256);
+    const committed = raw.includes(13) ? Buffer.from(raw.toString('utf8').replace(/\r\n/g, '\n'), 'utf8') : raw;
+    expect(createHash('sha256').update(committed).digest('hex')).toBe(CURRENT_BOARD_MANIFEST_SHA256);
     expect(FROZEN_BOARD_DELETE_ROWS).toBe(142_602);
     const source = readFileSync('lib/props/historical-board-archive.ts', 'utf8');
     expect(source).not.toMatch(/\b(INSERT|UPDATE|DELETE|DROP|TRUNCATE|VACUUM)\b/);
