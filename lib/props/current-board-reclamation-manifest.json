@@ -1,0 +1,461 @@
+{
+  "version": "current-board-reclamation.v1",
+  "backupId": "cc-pg-logical-20261114T191459Z",
+  "backupSha256": "5794d3c86dc6bd154dbaa41d652d8329d6307f8b3ea87996db081d22da4e9cad",
+  "selection": "game_id",
+  "uniqueKey": [
+    "game_id",
+    "player_id",
+    "sportsbook",
+    "prop_type",
+    "side",
+    "line_value"
+  ],
+  "maxDeleteBatchRows": 20000,
+  "expectedDeleteRows": 142602,
+  "expectedSurvivorRows": 27867,
+  "games": [
+    {
+      "gameId": 21717856,
+      "rows": 462
+    },
+    {
+      "gameId": 21717857,
+      "rows": 461
+    },
+    {
+      "gameId": 21717858,
+      "rows": 701
+    },
+    {
+      "gameId": 21717859,
+      "rows": 658
+    },
+    {
+      "gameId": 21717860,
+      "rows": 873
+    },
+    {
+      "gameId": 21717861,
+      "rows": 880
+    },
+    {
+      "gameId": 21717923,
+      "rows": 650
+    },
+    {
+      "gameId": 21717924,
+      "rows": 575
+    },
+    {
+      "gameId": 21717926,
+      "rows": 662
+    },
+    {
+      "gameId": 21717927,
+      "rows": 584
+    },
+    {
+      "gameId": 21717928,
+      "rows": 706
+    },
+    {
+      "gameId": 21717929,
+      "rows": 715
+    },
+    {
+      "gameId": 21717930,
+      "rows": 702
+    },
+    {
+      "gameId": 21717931,
+      "rows": 561
+    },
+    {
+      "gameId": 21718012,
+      "rows": 708
+    },
+    {
+      "gameId": 21718013,
+      "rows": 754
+    },
+    {
+      "gameId": 21718014,
+      "rows": 754
+    },
+    {
+      "gameId": 21718015,
+      "rows": 705
+    },
+    {
+      "gameId": 21718016,
+      "rows": 711
+    },
+    {
+      "gameId": 21718017,
+      "rows": 817
+    },
+    {
+      "gameId": 21718018,
+      "rows": 645
+    },
+    {
+      "gameId": 21718019,
+      "rows": 897
+    },
+    {
+      "gameId": 21718020,
+      "rows": 866
+    },
+    {
+      "gameId": 21718021,
+      "rows": 740
+    },
+    {
+      "gameId": 21718022,
+      "rows": 781
+    },
+    {
+      "gameId": 21718023,
+      "rows": 863
+    },
+    {
+      "gameId": 21718024,
+      "rows": 718
+    },
+    {
+      "gameId": 21718025,
+      "rows": 725
+    },
+    {
+      "gameId": 21718026,
+      "rows": 813
+    },
+    {
+      "gameId": 21718027,
+      "rows": 894
+    },
+    {
+      "gameId": 21718028,
+      "rows": 988
+    },
+    {
+      "gameId": 21718029,
+      "rows": 1043
+    },
+    {
+      "gameId": 21718030,
+      "rows": 924
+    },
+    {
+      "gameId": 21718031,
+      "rows": 906
+    },
+    {
+      "gameId": 21718032,
+      "rows": 786
+    },
+    {
+      "gameId": 21718033,
+      "rows": 920
+    },
+    {
+      "gameId": 21718034,
+      "rows": 954
+    },
+    {
+      "gameId": 21718035,
+      "rows": 881
+    },
+    {
+      "gameId": 21718036,
+      "rows": 931
+    },
+    {
+      "gameId": 21718037,
+      "rows": 899
+    },
+    {
+      "gameId": 21718038,
+      "rows": 918
+    },
+    {
+      "gameId": 21718039,
+      "rows": 796
+    },
+    {
+      "gameId": 21718040,
+      "rows": 1004
+    },
+    {
+      "gameId": 21718041,
+      "rows": 962
+    },
+    {
+      "gameId": 21718042,
+      "rows": 956
+    },
+    {
+      "gameId": 21718043,
+      "rows": 1113
+    },
+    {
+      "gameId": 21718044,
+      "rows": 882
+    },
+    {
+      "gameId": 21718045,
+      "rows": 925
+    },
+    {
+      "gameId": 21718046,
+      "rows": 877
+    },
+    {
+      "gameId": 21718047,
+      "rows": 902
+    },
+    {
+      "gameId": 21718048,
+      "rows": 1232
+    },
+    {
+      "gameId": 21718049,
+      "rows": 1017
+    },
+    {
+      "gameId": 21718050,
+      "rows": 935
+    },
+    {
+      "gameId": 21718051,
+      "rows": 934
+    },
+    {
+      "gameId": 21718052,
+      "rows": 862
+    },
+    {
+      "gameId": 21718053,
+      "rows": 934
+    },
+    {
+      "gameId": 21718054,
+      "rows": 948
+    },
+    {
+      "gameId": 21718055,
+      "rows": 1049
+    },
+    {
+      "gameId": 21718056,
+      "rows": 940
+    },
+    {
+      "gameId": 21718057,
+      "rows": 912
+    },
+    {
+      "gameId": 21718058,
+      "rows": 1034
+    },
+    {
+      "gameId": 21718059,
+      "rows": 1010
+    },
+    {
+      "gameId": 21718060,
+      "rows": 1011
+    },
+    {
+      "gameId": 21718061,
+      "rows": 956
+    },
+    {
+      "gameId": 21718062,
+      "rows": 823
+    },
+    {
+      "gameId": 21718063,
+      "rows": 854
+    },
+    {
+      "gameId": 21718064,
+      "rows": 889
+    },
+    {
+      "gameId": 21718065,
+      "rows": 986
+    },
+    {
+      "gameId": 21718066,
+      "rows": 1009
+    },
+    {
+      "gameId": 21718067,
+      "rows": 841
+    },
+    {
+      "gameId": 21718068,
+      "rows": 914
+    },
+    {
+      "gameId": 21718069,
+      "rows": 1026
+    },
+    {
+      "gameId": 21718070,
+      "rows": 710
+    },
+    {
+      "gameId": 21718071,
+      "rows": 942
+    },
+    {
+      "gameId": 21718072,
+      "rows": 924
+    },
+    {
+      "gameId": 21718073,
+      "rows": 983
+    },
+    {
+      "gameId": 21718074,
+      "rows": 4313
+    },
+    {
+      "gameId": 21718075,
+      "rows": 3887
+    },
+    {
+      "gameId": 21718076,
+      "rows": 3965
+    },
+    {
+      "gameId": 21718078,
+      "rows": 4547
+    },
+    {
+      "gameId": 21718079,
+      "rows": 3980
+    },
+    {
+      "gameId": 21718080,
+      "rows": 4290
+    },
+    {
+      "gameId": 21718081,
+      "rows": 3561
+    },
+    {
+      "gameId": 21718082,
+      "rows": 4137
+    },
+    {
+      "gameId": 21718083,
+      "rows": 4264
+    },
+    {
+      "gameId": 21718084,
+      "rows": 4141
+    },
+    {
+      "gameId": 21718085,
+      "rows": 3875
+    },
+    {
+      "gameId": 21718086,
+      "rows": 4227
+    },
+    {
+      "gameId": 21718087,
+      "rows": 4902
+    },
+    {
+      "gameId": 21718088,
+      "rows": 3460
+    },
+    {
+      "gameId": 21718089,
+      "rows": 4110
+    },
+    {
+      "gameId": 21718090,
+      "rows": 4186
+    },
+    {
+      "gameId": 21718091,
+      "rows": 4222
+    },
+    {
+      "gameId": 21718092,
+      "rows": 3870
+    },
+    {
+      "gameId": 21718093,
+      "rows": 3842
+    }
+  ],
+  "exclusions": [
+    {
+      "gameId": 21717855,
+      "rows": 459,
+      "reason": "protected_final_game"
+    },
+    {
+      "gameId": 21717922,
+      "rows": 718,
+      "reason": "protected_final_game"
+    },
+    {
+      "gameId": 21718094,
+      "rows": 4077,
+      "reason": "protected_final_game"
+    },
+    {
+      "gameId": 21718095,
+      "rows": 2584,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718096,
+      "rows": 2273,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718097,
+      "rows": 2930,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718098,
+      "rows": 2563,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718099,
+      "rows": 2480,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718100,
+      "rows": 2706,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718101,
+      "rows": 2785,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718102,
+      "rows": 2035,
+      "reason": "open_game"
+    },
+    {
+      "gameId": 21718103,
+      "rows": 2257,
+      "reason": "open_game"
+    }
+  ]
+}
