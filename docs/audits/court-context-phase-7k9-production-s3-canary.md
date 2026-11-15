@@ -79,11 +79,21 @@ Phase 7K.8 reported 782,986,387 bytes as the cluster. That number is `pg_databas
 
 ## K. Canary removal
 
-[Pull request 64](https://github.com/karltiama/nba-analytics-v3/pull/64) deletes the route, the report module, its test, and `@aws-sdk/client-sts`. The historical-board reader from `4a8cd44` stays. The cleanup commits on that branch are `d5f5bd36ed5057aa2685c34992009a5d744609cc`, `60df9ce4aafe165b2cd79654eaa0886ef7bf3a5c`, and `b7767d7`. The production deployment id is recorded after that merge is Ready.
+[Pull request 64](https://github.com/karltiama/nba-analytics-v3/pull/64) merged as `5369d406d8a70a7c30b17379cd05e3c7f2875a19`. It deletes the route, the report module, its test, and `@aws-sdk/client-sts`. The historical-board reader from `4a8cd44` stays. `lib/props/historical-board-s3.ts` is still on `master`. No route file matches `historical-board-canary`.
+
+The first production build of that merge, `dpl_w2ZwdHGMfvuvYSekFSCVt8vHd8CJ`, failed in 43 seconds on the existing Next.js Turbopack Google Fonts lookup in `components/content/context-check/instagram-fonts.ts`. The preview build of the same commit, `dpl_73B8KYxXu1DDZh4ibgLstLbTH9aA`, was Ready. One rebuild of that failed production deployment completed Ready as `dpl_7ytwLC2DfFbSHbNoGhjvA13vJ8yg` and is the deployment `courtcontext.com` serves. No application source changed between the failure and the rebuild.
 
 ## L. Endpoint after removal
 
-Filled in after the cleanup deployment is Ready.
+On `dpl_7ytwLC2DfFbSHbNoGhjvA13vJ8yg`:
+
+| Request | Status |
+|---|---|
+| `GET /api/admin/historical-board-canary` | 404 |
+| `POST /api/admin/historical-board-canary` | 404 |
+| `GET /` | 200 |
+
+Today's Games still rendered DEN/NOP, DAL/CLE, DET/MIA, BKN/MEM, and CHI/MIN after this deployment.
 
 ## M. Archive flag
 
