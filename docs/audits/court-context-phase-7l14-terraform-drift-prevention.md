@@ -57,7 +57,9 @@ The tfvars execution flags were left true. Setting them false would also rewrite
 
 ## F. Source diff
 
-Not committed in this file's draft. The commit SHA is recorded after the commit, in the closing note of this audit if the commit succeeds. The intended files are `infra/lambda.tf`, `infra/variables.tf`, `infra/postgame-worker.tf`, `infra/context-prospective-shadow.tf`, `scripts/ops/check-nightly-code-sha.mjs`, and this audit. `terraform.tfvars` is not committed. Unrelated season-boundary edits were not staged.
+Commit `1aefe4eb3134442fd27e37a4d50037931e446eb2` on `fix/ops-collector-health`. It is not pushed.
+
+Files: `infra/lambda.tf`, `infra/variables.tf`, `infra/postgame-worker.tf`, `infra/context-prospective-shadow.tf`, `scripts/ops/check-nightly-code-sha.mjs`, and this audit. `terraform.tfvars` is not in the commit. Unrelated season-boundary edits were not staged.
 
 `terraform fmt` and `terraform validate` succeeded. Validate reported the configuration valid.
 
