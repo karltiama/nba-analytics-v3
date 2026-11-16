@@ -123,6 +123,6 @@ resource "aws_lambda_event_source_mapping" "postgame_stage_worker_queue" {
   function_name                      = aws_lambda_function.postgame_stage_worker[0].arn
   batch_size                         = 1
   maximum_batching_window_in_seconds = 0
-  enabled                            = local.family_schedule_enabled.postgame
+  enabled                            = local.ingestion_schedule_lock ? false : local.family_schedule_enabled.postgame
   function_response_types            = ["ReportBatchItemFailures"]
 }
