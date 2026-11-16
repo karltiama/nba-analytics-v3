@@ -8,6 +8,10 @@ locals {
   }
 
   # Per-family activation. Global live alone cannot ENABLED-thaw any family.
+  # Phase 7L.14: schedule resources and queue mappings stay disabled even when
+  # these flags are true. The flags still select Lambda mode values. A thaw
+  # requires this constant to change in a reviewed source edit.
+  ingestion_schedule_lock = true
   family_schedule_enabled = {
     nightly          = var.live_ingestion_enabled && var.nightly_execution_enabled
     odds             = var.live_ingestion_enabled && var.odds_execution_enabled
@@ -20,14 +24,15 @@ locals {
     scoreboard       = var.live_ingestion_enabled && var.scoreboard_execution_enabled
   }
 
-  nightly_schedule_state          = local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED"
-  odds_schedule_state             = local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED"
-  injuries_schedule_state         = local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED"
-  player_props_schedule_state     = local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED"
-  boxscore_schedule_state         = local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED"
-  game_status_sync_schedule_state = local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED"
-  shadow_schedule_state           = local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED"
-  scoreboard_schedule_state       = local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED"
+  nightly_schedule_state            = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED")
+  odds_schedule_state               = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED")
+  injuries_schedule_state           = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED")
+  player_props_schedule_state       = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED")
+  boxscore_schedule_state           = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED")
+  game_status_sync_schedule_state   = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED")
+  shadow_schedule_state             = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED")
+  scoreboard_schedule_state         = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED")
+  nightly_bdl_certified_code_sha256 = "mSJRZCHC0OmR4O7kx++30+gF7Y1GslxWcFABHSfmBBA="
 
   player_props_bundle_hash = data.archive_file.player_props.output_base64sha256
 }
@@ -41,6 +46,10 @@ data "archive_file" "nightly_bdl" {
   excludes    = ["*.zip", "*.map", "rollback", "rollback/**", "node_modules", "node_modules/**"]
 }
 
+data "aws_lambda_function" "nightly_bdl_live" {
+  function_name = var.lambda_function_name
+}
+
 resource "aws_lambda_function" "nightly_bdl_updater" {
   filename         = data.archive_file.nightly_bdl.output_path
   function_name    = var.lambda_function_name
@@ -51,6 +60,17 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
   memory_size      = var.lambda_memory_size
   source_code_hash = filebase64sha256("${path.module}/../lambda/nightly-bdl-updater/.package/dist/index.js")
 
+  # Code is published by the reviewed update-function-code release, not by
+  # this package directory. The live hash check below fails the plan when
+  # that release is no longer the certified writer.
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+    precondition {
+      condition     = data.aws_lambda_function.nightly_bdl_live.code_sha256 == local.nightly_bdl_certified_code_sha256
+      error_message = "nightly-bdl-updater CodeSha256 is not the certified normalized writer."
+    }
+  }
+
   environment {
     variables = merge(
       local.ingestion_freeze_defaults,
@@ -60,6 +80,7 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
         BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
         BDL_RATE_LIMIT_BACKEND = "dynamodb"
         BDL_RATE_LIMIT_WORKER  = "nightly-bdl-updater"
+        PGS_NORMALIZED_STORAGE = "1"
       }
     )
   }
@@ -365,7 +386,7 @@ resource "aws_lambda_event_source_mapping" "player_props_worker_queue" {
   function_name                      = aws_lambda_function.player_props_worker.arn
   batch_size                         = 1
   maximum_batching_window_in_seconds = 0
-  enabled                            = local.family_schedule_enabled.player_props
+  enabled                            = local.ingestion_schedule_lock ? false : local.family_schedule_enabled.player_props
 
   # Queue-native shaping: Lambda stops polling at this many in-flight workers instead of
   # starting one worker per game that then blocks on the shared BDL permit.

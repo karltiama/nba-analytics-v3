@@ -38,12 +38,12 @@ variable "lambda_env" {
 # -----------------------------------------------------------------------------
 # Master ingestion schedule switch (Step 13C.1)
 # Per-family enable_* flags / cron lists may still CREATE schedule resources.
-# This flag is the only source of truth for ENABLED vs DISABLED.
-# Frozen apply must keep all ingestion schedules DISABLED even if stale tfvars
-# still say enable_schedule = true.
+# This flag selects family Lambda mode values. It does not enable schedules
+# while local.ingestion_schedule_lock is true. Frozen apply must keep all
+# ingestion schedules DISABLED even if stale tfvars still say enable_schedule = true.
 # -----------------------------------------------------------------------------
 variable "live_ingestion_enabled" {
-  description = "Master safety gate. When false, no family schedule/ESM can be ENABLED. When true, each family still requires its own *_execution_enabled flag. Not a resource-creation flag."
+  description = "Selects family Lambda mode values. Schedule state and queue mappings stay disabled while ingestion_schedule_lock is true. Not a resource-creation flag."
   type        = bool
   default     = false
 }

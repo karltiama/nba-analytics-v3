@@ -58,12 +58,14 @@ variable "context_prospective_lambda_env" {
 }
 
 locals {
-  context_prospective_schedule_state = (
-    var.context_prospective_create &&
-    var.context_prospective_enable_schedule &&
-    var.live_ingestion_enabled &&
-    var.context_prospective_execution_enabled
-  ) ? "ENABLED" : "DISABLED"
+  context_prospective_schedule_state = local.ingestion_schedule_lock ? "DISABLED" : (
+    (
+      var.context_prospective_create &&
+      var.context_prospective_enable_schedule &&
+      var.live_ingestion_enabled &&
+      var.context_prospective_execution_enabled
+    ) ? "ENABLED" : "DISABLED"
+  )
 }
 
 data "archive_file" "context_prospective_shadow" {
@@ -98,11 +100,11 @@ resource "aws_lambda_function" "context_prospective_shadow" {
   function_name = var.context_prospective_lambda_function_name
   role          = aws_iam_role.lambda_context_prospective_execution[0].arn
   # The esbuild bundle writes dist/index.js (target node22), like the other ingestion functions.
-  handler       = "dist/index.handler"
-  runtime       = "nodejs22.x"
-  timeout       = var.context_prospective_lambda_timeout
-  memory_size   = var.context_prospective_lambda_memory_size
-  filename      = data.archive_file.context_prospective_shadow[0].output_path
+  handler          = "dist/index.handler"
+  runtime          = "nodejs22.x"
+  timeout          = var.context_prospective_lambda_timeout
+  memory_size      = var.context_prospective_lambda_memory_size
+  filename         = data.archive_file.context_prospective_shadow[0].output_path
   source_code_hash = data.archive_file.context_prospective_shadow[0].output_base64sha256
 
   environment {
@@ -111,8 +113,8 @@ resource "aws_lambda_function" "context_prospective_shadow" {
       {
         CONTEXT_PROSPECTIVE_SCHEDULE_CONFIGURED = "1"
         # Freeze defaults — override via context_prospective_lambda_env when activating.
-        CONTEXT_PTS_SHADOW_WRITES  = lookup(var.context_prospective_lambda_env, "CONTEXT_PTS_SHADOW_WRITES", "0")
-        CONTEXT_MIN_SHADOW_WRITES  = lookup(var.context_prospective_lambda_env, "CONTEXT_MIN_SHADOW_WRITES", "0")
+        CONTEXT_PTS_SHADOW_WRITES = lookup(var.context_prospective_lambda_env, "CONTEXT_PTS_SHADOW_WRITES", "0")
+        CONTEXT_MIN_SHADOW_WRITES = lookup(var.context_prospective_lambda_env, "CONTEXT_MIN_SHADOW_WRITES", "0")
       }
     )
   }
