@@ -43,6 +43,7 @@ import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
 import { playerGameStatWriteSql } from './player-game-stat-documents';
+import { assertCurrentSeasonStatBatch } from './raw-stat-season-boundary';
 import { executeRecovery } from './recovery-execute';
 import {
   BDL_PLAYS_URL,
@@ -836,6 +837,31 @@ async function runPipeline(): Promise<PipelineResult> {
     console.log(`  Game ${g.id}: ${away} @ ${home} (${g.home_team_score}-${g.visitor_team_score})`);
   }
 
+  assertCurrentSeasonStatBatch({
+    liveSeasonStartYear: season,
+    games: finalGames,
+    stats: [],
+  });
+
+  const gameIds = finalGames.map((g: any) => g.id);
+  console.log(`[3/9] Fetching box scores for ${gameIds.length} games...`);
+  const allStats: any[] = [];
+  const BATCH_SIZE = 25;
+  for (let i = 0; i < gameIds.length; i += BATCH_SIZE) {
+    const batch = gameIds.slice(i, i + BATCH_SIZE);
+    const stats = await fetchStatsByGameIds(batch);
+    allStats.push(...stats);
+    console.log(`  Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${stats.length} stat lines.`);
+    if (i + BATCH_SIZE < gameIds.length) await sleep(REQUEST_DELAY_MS);
+  }
+  console.log(`  Total stat lines fetched: ${allStats.length}`);
+
+  assertCurrentSeasonStatBatch({
+    liveSeasonStartYear: season,
+    games: finalGames,
+    stats: allStats,
+  });
+
   const client = await pool.connect();
   try {
     // Step 2: Upsert raw.games
@@ -873,20 +899,6 @@ async function runPipeline(): Promise<PipelineResult> {
         (periodUnreconciled ? ` (${periodUnreconciled} not matching final)` : '') +
         '.'
     );
-
-    // Step 3: Fetch box scores
-    const gameIds = finalGames.map((g: any) => g.id);
-    console.log(`[3/9] Fetching box scores for ${gameIds.length} games...`);
-    let allStats: any[] = [];
-    const BATCH_SIZE = 25;
-    for (let i = 0; i < gameIds.length; i += BATCH_SIZE) {
-      const batch = gameIds.slice(i, i + BATCH_SIZE);
-      const stats = await fetchStatsByGameIds(batch);
-      allStats.push(...stats);
-      console.log(`  Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${stats.length} stat lines.`);
-      if (i + BATCH_SIZE < gameIds.length) await sleep(REQUEST_DELAY_MS);
-    }
-    console.log(`  Total stat lines fetched: ${allStats.length}`);
 
     // Step 4: Upsert raw.player_game_stats
     console.log(`[4/9] Upserting ${allStats.length} stat lines into raw.player_game_stats...`);

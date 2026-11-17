@@ -378,6 +378,45 @@ describe('recovery on disposable Postgres', () => {
     expect(kept.rows).toEqual([{ first_name: 'Keep', team_id: 99 }]);
   });
 
+  it('rejects a prior season, a missing season, and a date string before any write', async () => {
+    for (const season of [2025, null, '2026-11-13'] as const) {
+      const result = await executeRecovery({
+        event: { recovery: { seasonStartYear: 2026, startDate: '2026-10-21', endDate: '2026-10-21', gameIds: [21717922] } },
+        env: { INGESTION_SEASON_START_YEAR: '2026', DATA_MODE: 'replay', OFFSEASON_MODE: '1', CRON_DRY_RUN: '1' },
+        maxRetries: 3,
+        requestDelayMs: 0,
+        baseUrl: 'https://example.test/v1',
+        sleep: async () => {},
+        connect: () => pool.connect() as Promise<PoolClient>,
+        upserts,
+        fetchPage: async (url, _retries, onAttempt, _onHttp, beforeHttp) => {
+          onAttempt();
+          beforeHttp();
+          const stats = url.includes('/stats');
+          const data = stats ? box(21717922) : [{ ...providerGame(21717922), season }];
+          return new Response(JSON.stringify({ data, meta: { next_cursor: null } }), { status: 200 });
+        },
+      });
+      expect(result.writesCommitted).toBe(false);
+      expect(result.rejected.map((row) => row.reason)).toContain('season_mismatch');
+      const games = await pool.query<{ n: number }>('select count(*)::int as n from raw.games');
+      const stats = await pool.query<{ n: number }>('select count(*)::int as n from raw.player_game_stats');
+      expect(games.rows[0].n).toBe(0);
+      expect(stats.rows[0].n).toBe(0);
+    }
+  });
+
+  it('stores the recovery plan season and repeats without a second game row', async () => {
+    const first = await runRecovery();
+    expect(first.writesCommitted).toBe(true);
+    const season = await pool.query<{ season: number }>('select season from raw.games');
+    expect(season.rows).toEqual([{ season: 2026 }]);
+    const second = await runRecovery();
+    expect(second.writesCommitted).toBe(true);
+    const games = await pool.query<{ n: number }>('select count(*)::int as n from raw.games');
+    expect(games.rows[0].n).toBe(1);
+  });
+
   it('rejects a conflicting raw stat id and does not leave a partial analytics write', async () => {
     await pool.query('insert into raw.player_game_stats (id, player_id, game_id) values (999, $1, 21717922)', [21717922 * 100 + 1]);
     await expect(runRecovery()).rejects.toThrow(/does not match this payload/);

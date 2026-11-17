@@ -16,6 +16,7 @@ import {
 } from './recovery-fetch';
 import { planRecovery, recoveryAttemptBudget, type RecoveryPlan } from './recovery-plan';
 import { expectedFinalMismatch, selectRecoveryGames, type GameRejection, type ProviderGame } from './recovery-select';
+import { assertCurrentSeasonRawStat } from './raw-stat-season-boundary';
 import { etDateOfProviderGame, regularSeasonOpenEt } from './season-eligibility';
 
 export class RecoveryWriteError extends Error {
@@ -178,7 +179,8 @@ async function writeBoxes(
   client: QueryClient,
   boxes: ValidatedBox[],
   upserts: RecoveryUpserts,
-  openDate: string
+  openDate: string,
+  liveSeasonStartYear: number
 ): Promise<{ stats: number; logs: number; teamRows: number; teamSeason: number; playerSeason: number }> {
   const teamRes = await client.query('select id, abbreviation from raw.teams');
   const byAbbrev = new Map<string, number>();
@@ -209,6 +211,11 @@ async function writeBoxes(
   for (const box of boxes) {
     const game = box.game;
     const gameKey = String(box.gameId);
+    assertCurrentSeasonRawStat({
+      liveSeasonStartYear,
+      gameSeason: game.season,
+      gameId: box.gameId,
+    });
     const existingRaw = await client.query(
       'select id, player_id from raw.player_game_stats where game_id = $1',
       [box.gameId]
@@ -227,7 +234,7 @@ async function writeBoxes(
     }
     const existingLogs = await client.query(
       `select player_id from analytics.player_game_logs where game_id = $1 and season = $2`,
-      [gameKey, '2026']
+      [gameKey, String(liveSeasonStartYear)]
     );
     const incomingPlayers = new Set(box.lines.map((line) => String(line.playerId)));
     for (const row of existingLogs.rows) {
@@ -246,7 +253,7 @@ async function writeBoxes(
     await client.query(upserts.rawGame, [
       box.gameId,
       game.date ?? null,
-      2026,
+      liveSeasonStartYear,
       'Final',
       game.period ?? null,
       game.time ?? null,
@@ -560,7 +567,7 @@ export async function executeRecovery(deps: {
   };
   try {
     await client.query('begin');
-    const wrote = await writeBoxes(client, boxes, deps.upserts, openDate);
+    const wrote = await writeBoxes(client, boxes, deps.upserts, openDate, plan.seasonStartYear);
     await client.query('commit');
     result.recoveryStatus = 'committed';
     result.writesCommitted = true;
