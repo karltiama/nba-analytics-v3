@@ -28,9 +28,10 @@ export const INGESTION_CADENCE: Record<IngestionFamilyId, CadenceSpec> = {
     source: 'multi-cron morning window; CADENCE_UNSET',
   },
   player_props_controller: {
-    intervalHours: 0.5,
-    graceHours: 0.5,
-    source: 'EventBridge Scheduler default rate(30 minutes)',
+    intervalHours: null,
+    graceHours: 1,
+    source:
+      'Broad crons when configured; rate(30 minutes) only if that list is empty. Near-tip every 15 min and closing every 5 min, 08:00–23:59 America/New_York, and only when a game is in the window. No run is scheduled 00:00–07:59 ET.',
   },
   player_props_worker: {
     intervalHours: null,

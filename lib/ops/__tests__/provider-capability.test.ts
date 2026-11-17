@@ -25,7 +25,7 @@ describe('provider capability catalog', () => {
 describe('ingestion cadence', () => {
   it('certifies nightly and props controller; leaves injuries/odds unset', () => {
     expect(INGESTION_CADENCE.schedule_nightly_bdl.intervalHours).toBe(24);
-    expect(INGESTION_CADENCE.player_props_controller.intervalHours).toBe(0.5);
+    expect(INGESTION_CADENCE.player_props_controller.intervalHours).toBeNull();
     expect(INGESTION_CADENCE.injuries.intervalHours).toBeNull();
     expect(INGESTION_CADENCE.game_odds.intervalHours).toBeNull();
     expect(INGESTION_CADENCE.game_status_sync.intervalHours).toBe(0.25);
