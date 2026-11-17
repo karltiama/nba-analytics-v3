@@ -14,7 +14,9 @@ describe('landing honesty contract (E10)', () => {
     const layout = read('app/layout.tsx');
     const hero = read('components/landing/LandingHero.tsx');
     expect(layout).toMatch(/title: "Court Context"/);
-    expect(page).toMatch(/Court Context/);
+    const footer = read('components/layout/SiteFooter.tsx');
+    expect(page).toMatch(/<SiteFooter \/>/);
+    expect(footer).toMatch(/Court Context/);
     expect(page).not.toMatch(/NBAEdge/);
     expect(hero).toMatch(/Explore Court Context/);
     expect(hero).not.toMatch(/Start Winning/);

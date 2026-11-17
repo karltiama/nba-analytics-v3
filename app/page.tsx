@@ -1,9 +1,9 @@
-import { Activity } from 'lucide-react';
 import { FeaturedGames } from '@/components/landing/FeaturedGames';
 import { LandingHero } from '@/components/landing/LandingHero';
 import { LandingParlayXrayPreview } from '@/components/landing/LandingParlayXrayPreview';
 import { LandingPropsTablePreview } from '@/components/landing/LandingPropsTablePreview';
 import { LandingTrendingPlayerStripPreview } from '@/components/landing/LandingTrendingPlayerStripPreview';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import { MarketingHeader } from '@/components/landing/MarketingHeader';
 import { WowyImpactSection } from '@/components/landing/WowyImpactSection';
 import {
@@ -30,7 +30,7 @@ export default async function LandingPage({
   const previewXray = scenario ? landingPreviewXray(scenario) : undefined;
 
   return (
-    <div className="min-h-screen bg-[#f7f9f7] text-[#063f46] relative overflow-hidden">
+    <div className="min-h-screen bg-[#f7f9f7] text-[#063f46] relative overflow-hidden flex flex-col">
       <MarketingHeader />
 
       <main className="relative z-10">
@@ -55,16 +55,7 @@ export default async function LandingPage({
         </div>
       </main>
       
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-[#d7e2de] py-10 bg-[#063f46]">
-        <div className="max-w-[1280px] mx-auto px-6 text-center text-sm text-white/70 flex flex-col items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4" />
-            <span className="font-bold tracking-tight text-white">Court Context</span>
-          </div>
-          <p>© {new Date().getFullYear()} Court Context. Research only — not betting advice.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
