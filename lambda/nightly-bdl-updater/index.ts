@@ -42,6 +42,7 @@ try {
 import { Pool, PoolClient } from 'pg';
 import { fetchBdlLive } from './bdl-live-rate-limit';
 import { requireLiveIngestionSeasonStartYear } from './ingestion-season';
+import { playerGameStatWriteSql } from './player-game-stat-documents';
 import { executeRecovery } from './recovery-execute';
 import {
   BDL_PLAYS_URL,
@@ -371,22 +372,6 @@ const upsertRawGame = `
     visitor_team = excluded.visitor_team;
 `;
 
-const upsertRawStat = `
-  insert into raw.player_game_stats (
-    id, min, fgm, fga, fg_pct, fg3m, fg3a, fg3_pct, ftm, fta, ft_pct,
-    oreb, dreb, reb, ast, stl, blk, turnover, pf, pts, plus_minus,
-    player_id, team_id, game_id, player, team, game
-  ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25::jsonb, $26::jsonb, $27::jsonb)
-  on conflict (id) do update set
-    min = excluded.min, fgm = excluded.fgm, fga = excluded.fga, fg_pct = excluded.fg_pct,
-    fg3m = excluded.fg3m, fg3a = excluded.fg3a, fg3_pct = excluded.fg3_pct,
-    ftm = excluded.ftm, fta = excluded.fta, ft_pct = excluded.ft_pct,
-    oreb = excluded.oreb, dreb = excluded.dreb, reb = excluded.reb,
-    ast = excluded.ast, stl = excluded.stl, blk = excluded.blk,
-    turnover = excluded.turnover, pf = excluded.pf, pts = excluded.pts, plus_minus = excluded.plus_minus,
-    player_id = excluded.player_id, team_id = excluded.team_id, game_id = excluded.game_id,
-    player = excluded.player, team = excluded.team, game = excluded.game;
-`;
 
 const upsertRawPlayer = `
   insert into raw.players (id, first_name, last_name, position, height, weight, jersey_number, college, country, draft_year, draft_round, draft_number, team_id)
@@ -624,7 +609,9 @@ const upsertPlayerSeasonAverages = `
 
 export const nightlyRecoveryUpserts = {
   rawGame: upsertRawGame,
-  rawStat: upsertRawStat,
+  get rawStat() {
+    return playerGameStatWriteSql();
+  },
   analyticsGame: upsertAnalyticsGame,
   analyticsLog: upsertAnalyticsPlayerGameLog,
   teamGame: upsertTeamGameStats,
@@ -905,7 +892,7 @@ async function runPipeline(): Promise<PipelineResult> {
     console.log(`[4/9] Upserting ${allStats.length} stat lines into raw.player_game_stats...`);
     await client.query('begin');
     for (const s of allStats) {
-      await client.query(upsertRawStat, [
+      await client.query(playerGameStatWriteSql(), [
         s.id,
         s.min ?? null,
         s.fgm ?? null,

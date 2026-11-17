@@ -18,6 +18,10 @@ import {
   DO_NOT_TOUCH_LOCAL_ONLY_ID,
   GOAT_STATS_REPAIR_IDS,
 } from '@/lib/ingestion/goat-stats-repair-queue';
+import {
+  playerGameStatDeleteSql,
+  playerGameStatWriteSql,
+} from '../../lambda/nightly-bdl-updater/player-game-stat-documents';
 import { readIngestionMode } from '@/lib/runtime/ingestion-mode';
 import { getAnalyticsSeason } from '@/lib/season';
 import pool from '@/lib/db';
@@ -208,22 +212,6 @@ function validateBox(args: {
   };
 }
 
-const UPSERT_RAW_STAT = `
-  insert into raw.player_game_stats (
-    id, min, fgm, fga, fg_pct, fg3m, fg3a, fg3_pct, ftm, fta, ft_pct,
-    oreb, dreb, reb, ast, stl, blk, turnover, pf, pts, plus_minus,
-    player_id, team_id, game_id, player, team, game
-  ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25::jsonb, $26::jsonb, $27::jsonb)
-  on conflict (id) do update set
-    min = excluded.min, fgm = excluded.fgm, fga = excluded.fga, fg_pct = excluded.fg_pct,
-    fg3m = excluded.fg3m, fg3a = excluded.fg3a, fg3_pct = excluded.fg3_pct,
-    ftm = excluded.ftm, fta = excluded.fta, ft_pct = excluded.ft_pct,
-    oreb = excluded.oreb, dreb = excluded.dreb, reb = excluded.reb,
-    ast = excluded.ast, stl = excluded.stl, blk = excluded.blk,
-    turnover = excluded.turnover, pf = excluded.pf, pts = excluded.pts, plus_minus = excluded.plus_minus,
-    player_id = excluded.player_id, team_id = excluded.team_id, game_id = excluded.game_id,
-    player = excluded.player, team = excluded.team, game = excluded.game
-`;
 
 const UPSERT_RAW_GAME = `
   insert into raw.games (id, date, season, status, period, time, period_detail, datetime, postseason, home_team_score, visitor_team_score, home_team, visitor_team)
@@ -714,7 +702,7 @@ async function main() {
         JSON.stringify(official.visitor_team ?? null),
       ]);
 
-      await client.query(`delete from raw.player_game_stats where game_id = $1`, [Number(box.gameId)]);
+      await client.query(playerGameStatDeleteSql(), [Number(box.gameId)]);
       const leftoverLogs = await client.query(
         `select count(*)::int as n from analytics.player_game_logs where game_id = $1 and season <> $2`,
         [box.gameId, SEASON]
@@ -772,7 +760,7 @@ async function main() {
           player.height ?? null,
           player.weight ?? null,
         ]);
-        await client.query(UPSERT_RAW_STAT, [
+        await client.query(playerGameStatWriteSql(), [
           toInt(row.id),
           row.min ?? null,
           row.fgm ?? null,
