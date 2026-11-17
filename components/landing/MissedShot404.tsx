@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, BarChart3, Trophy, Users } from 'lucide-react';
 import { MarketingHeader } from '@/components/landing/MarketingHeader';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 
 const COURT_MOTIF_SRC = '/landing/hero-court-right.png';
 
@@ -90,17 +91,7 @@ export function MissedShot404({ chrome }: { chrome: 'marketing' | 'app' }) {
       <CourtMotif />
       <MarketingHeader />
       <main className="relative z-10 flex-1 pt-24 sm:pt-28 pb-10">{body}</main>
-      <footer className="relative z-10 mt-auto bg-[#063f46] text-white">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2 min-w-0" aria-label="Court Context home">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/court-context-logo.png" alt="" className="h-8 w-auto brightness-0 invert" />
-            <span className="font-bold tracking-tight">Court Context</span>
-          </Link>
-          <p className="text-sm text-white/70">More than the trend.</p>
-          <p className="text-sm text-white/60">© {new Date().getFullYear()} Court Context. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

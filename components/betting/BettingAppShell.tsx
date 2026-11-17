@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Header } from '@/components/betting/Header';
 import { OnboardingGate } from '@/components/betting/OnboardingGate';
 import { GuidanceHost } from '@/components/onboarding/GuidanceHost';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import { shouldShowLayoutHeader } from '@/components/betting/betting-shell-paths';
 
 /**
@@ -37,7 +38,7 @@ export function BettingAppShell({ children }: { children: React.ReactNode }) {
   const showLayoutHeader = shouldShowLayoutHeader(pathname);
 
   return (
-    <div className="min-h-screen bg-[#f7f9f7] text-[#063f46]">
+    <div className="min-h-screen bg-[#f7f9f7] text-[#063f46] flex flex-col">
       {offseason ? (
         <div className="border-b border-[#DCE9EA] bg-[#55ddb1]/20" data-season-notice="offseason">
           <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-2">
@@ -51,7 +52,8 @@ export function BettingAppShell({ children }: { children: React.ReactNode }) {
       {showLayoutHeader && (
         <Header />
       )}
-      {children}
+      <div className="flex-1 min-w-0">{children}</div>
+      <SiteFooter />
       <Suspense fallback={null}>
         <OnboardingGate />
         <GuidanceHost />
