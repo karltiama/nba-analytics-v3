@@ -1,19 +1,30 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Barlow_Condensed, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { PreviewModeBridge } from "@/components/preview/PreviewModeBridge";
 import { UmamiScript } from "@/components/product-analytics/UmamiScript";
 import "./globals.css";
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "./fonts/geist-mono-latin-wght.woff2",
+  weight: "100 900",
+  style: "normal",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: "Arial",
 });
 
-const barlowCondensed = Barlow_Condensed({
+const barlowCondensed = localFont({
+  src: [
+    { path: "./fonts/barlow-condensed-latin-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/barlow-condensed-latin-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/barlow-condensed-latin-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/barlow-condensed-latin-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/barlow-condensed-latin-800.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-barlow-condensed",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  adjustFontFallback: "Arial",
 });
 
 export const metadata: Metadata = {

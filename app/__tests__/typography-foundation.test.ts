@@ -31,7 +31,10 @@ describe('typography foundation', () => {
     expect(css).not.toMatch(/html\s*\{[^}]*font-size/);
     expect(css).toMatch(/--font-sans:\s*var\(--font-barlow-condensed\)/);
     expect(css).toMatch(/--font-display:\s*var\(--font-barlow-condensed\)/);
-    expect(layout).toMatch(/Barlow_Condensed/);
+    expect(layout).toMatch(/--font-barlow-condensed/);
+    expect(layout).toMatch(/barlow-condensed-latin-400\.woff2/);
+    expect(layout).not.toMatch(/from ["']next\/font\/google["']/);
+    expect(read('components/content/context-check/instagram-fonts.ts')).not.toMatch(/from ["']next\/font\/google["']/);
     expect(layout).not.toMatch(/type-page-title/);
     expect(hero).toMatch(/text-5xl/);
     expect(hero).toMatch(/font-extrabold/);
