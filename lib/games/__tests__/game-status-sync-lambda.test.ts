@@ -11,6 +11,8 @@ import {
   STATUS_SYNC_MANUAL_CANARY_CONFIRM,
   STATUS_SYNC_MANUAL_CANARY_MAX_DAYS,
 } from '@/lib/games/status-sync-lambda';
+import { localFreshAdmission, MemoryStorageReservationStore } from '@/lib/ops/storage-admission';
+import { GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES } from '@/lib/ops/storage-growth-bounds';
 import { createFixtureFetchPage, createMemoryGameStore, type ProviderGame } from '@/lib/games/status-sync';
 
 /** Deployed game-status-sync freeze env (Terraform last merge), with a memory limiter for tests. */
@@ -285,6 +287,7 @@ describe('game-status-sync Lambda freeze + env contract', () => {
       endDate: '2026-10-22',
       store,
       fetchPage: createFixtureFetchPage([game]),
+      storage: localFreshAdmission('status-canary-write'),
     });
     expect(result.status).toBe('success');
     expect(result.skipped).toBe(false);
@@ -333,6 +336,7 @@ describe('game-status-sync Lambda freeze + env contract', () => {
       store,
       archiveStore: archive,
       ledger,
+      storage: localFreshAdmission('status-canary-archive'),
     });
 
     expect(result.status).toBe('success');
@@ -396,6 +400,7 @@ describe('game-status-sync Lambda freeze + env contract', () => {
       store,
       archiveStore: archive,
       ledger: createMemoryAcqLedgerWriter(),
+      storage: localFreshAdmission('status-canary-2027'),
     });
 
     expect(result.status).toBe('success');
@@ -425,5 +430,126 @@ describe('game-status-sync Lambda freeze + env contract', () => {
     expect(result.wroteDb).toBe(false);
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(archive.objects.size).toBe(0);
+  });
+
+  it('ignores a truthy AWS callback and fails closed without the reservation table', async () => {
+    const callback = Object.assign(() => undefined, {
+      env: {
+        DATA_MODE: 'live_api',
+        OFFSEASON_MODE: '0',
+        CRON_DRY_RUN: '0',
+        LIVE_INGESTION_ENABLED: '1',
+        STATUS_SYNC_TARGET_SEASON: '2026',
+        STORAGE_RESERVATION_TABLE: 'nba-storage-admission',
+        SUPABASE_DB_URL: 'postgresql://callback.example/db',
+      },
+      invocationId: 'callback-id',
+      store: createMemoryGameStore([]),
+      fetchPage: createFixtureFetchPage([]),
+      reservations: new MemoryStorageReservationStore(),
+    });
+    const prev = { ...process.env };
+    process.env.DATA_MODE = 'live_api';
+    process.env.OFFSEASON_MODE = '0';
+    process.env.CRON_DRY_RUN = '0';
+    process.env.LIVE_INGESTION_ENABLED = '1';
+    process.env.STATUS_SYNC_TARGET_SEASON = '2026';
+    process.env.BALLDONTLIE_API_KEY = 'test-not-a-real-key';
+    process.env.BDL_RATE_LIMIT_MAX_RETRIES = '0';
+    process.env.SUPABASE_DB_URL = 'postgresql://example.invalid/db';
+    process.env.NBA_DATA_BUCKET = 'test-bucket';
+    delete process.env.STORAGE_RESERVATION_TABLE;
+    try {
+      const result = await handler({}, { awsRequestId: 'aws-request' }, callback);
+      expect(result.status).toBe('failed');
+      expect(result.reason).toBe('storage reservation table is not configured');
+      expect(result.bdlHttp).toBe(0);
+      expect(result.wroteDb).toBe(false);
+    } finally {
+      for (const key of ['DATA_MODE', 'OFFSEASON_MODE', 'CRON_DRY_RUN', 'LIVE_INGESTION_ENABLED', 'STATUS_SYNC_TARGET_SEASON', 'BALLDONTLIE_API_KEY', 'BDL_RATE_LIMIT_MAX_RETRIES', 'SUPABASE_DB_URL', 'NBA_DATA_BUCKET', 'STORAGE_RESERVATION_TABLE']) {
+        if (prev[key] === undefined) delete process.env[key];
+        else process.env[key] = prev[key];
+      }
+    }
+  });
+
+  it('settles only after a later PostgreSQL observation and keeps the hold if that observation is missing', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    const pre = '2026-11-20T15:59:00.000Z';
+    const post = '2026-11-20T15:59:02.000Z';
+    let reads = 0;
+    const game: ProviderGame = {
+      id: 21718147,
+      season: 2026,
+      status: 'Scheduled',
+      datetime: '2026-11-21T00:00:00.000Z',
+      date: '2026-11-20',
+      home_team_score: 0,
+      visitor_team_score: 0,
+      home_team: { id: 1 },
+      visitor_team: { id: 4 },
+    };
+    const result = await runLambdaGameStatusSync({
+      env: {
+        DATA_MODE: 'live_api',
+        OFFSEASON_MODE: '0',
+        CRON_DRY_RUN: '0',
+        LIVE_INGESTION_ENABLED: '1',
+        STATUS_SYNC_TARGET_SEASON: '2026',
+        BDL_RATE_LIMIT_BACKEND: 'memory',
+        BDL_RATE_LIMIT_MAX_RETRIES: '0',
+      },
+      now: new Date('2026-11-20T16:00:00.000Z'),
+      store: createMemoryGameStore([]),
+      fetchPage: createFixtureFetchPage([game]),
+      invocationId: 'game-status-clock',
+      reservations,
+      measureCluster: async () => {
+        reads += 1;
+        return {
+          clusterBytes: 1_000_000,
+          measuredAt: reads === 1 ? pre : post,
+          databaseObservedAt: reads === 1 ? pre : post,
+          source: 'game-status-sync:pg_database',
+          valid: true,
+          complete: true,
+        };
+      },
+    });
+    expect(result.status).toBe('success');
+    expect(result.wroteDb).toBe(true);
+    expect(reservations.snapshot().settled['game-status-clock']?.observedThrough).toBe(post);
+    expect(reservations.snapshot().protectedBytes).toBe(GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES);
+    expect(reads).toBe(2);
+
+    const held = new MemoryStorageReservationStore();
+    const unfinished = await runLambdaGameStatusSync({
+      env: {
+        DATA_MODE: 'live_api',
+        OFFSEASON_MODE: '0',
+        CRON_DRY_RUN: '0',
+        LIVE_INGESTION_ENABLED: '1',
+        STATUS_SYNC_TARGET_SEASON: '2026',
+        BDL_RATE_LIMIT_BACKEND: 'memory',
+        BDL_RATE_LIMIT_MAX_RETRIES: '0',
+      },
+      now: new Date('2026-11-20T16:00:00.000Z'),
+      store: createMemoryGameStore([]),
+      fetchPage: createFixtureFetchPage([game]),
+      invocationId: 'game-status-stale',
+      reservations: held,
+      measureCluster: async () => ({
+        clusterBytes: 1_000_000,
+        measuredAt: pre,
+        databaseObservedAt: pre,
+        source: 'game-status-sync:pg_database',
+        valid: true,
+        complete: true,
+      }),
+    });
+    expect(unfinished.status).toBe('failed');
+    expect(unfinished.reason).toMatch(/not fresh/);
+    expect(held.snapshot().active['game-status-stale']?.boundBytes).toBe(GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES);
+    expect(held.snapshot().settled['game-status-stale']).toBeUndefined();
   });
 });

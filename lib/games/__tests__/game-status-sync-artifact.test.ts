@@ -10,6 +10,7 @@ import {
   type LocalGameRow,
   type ProviderGame,
 } from '@/lib/games/status-sync';
+import { localFreshAdmission } from '@/lib/ops/storage-admission';
 import { PINNED_ANALYTICS_SEASON } from '@/lib/season';
 
 const root = path.resolve(__dirname, '../../..');
@@ -222,6 +223,7 @@ describe('game-status-sync built artifact (13C.3)', () => {
       fetchPage: createFixtureFetchPage([
         provider({ id: 2, status: 'Final', home_team_score: 101, visitor_team_score: 90 }),
       ]),
+      storage: localFreshAdmission('artifact-final-correction'),
     });
     expect(result.updated).toBe(1);
     expect(result.finalPreserved).toBe(0);
@@ -238,6 +240,7 @@ describe('game-status-sync built artifact (13C.3)', () => {
       dryRun: false,
       store,
       fetchPage: createFixtureFetchPage([provider({ id: 999001 })]),
+      storage: localFreshAdmission('artifact-insert'),
     });
     expect(result.inserted).toBe(1);
     expect(store.rows.get('999001')?.homeTeamId).toBe('13');
@@ -256,6 +259,7 @@ describe('game-status-sync built artifact (13C.3)', () => {
       fetchPage: createFixtureFetchPage([
         provider({ id: 999002, home_team: { id: null }, visitor_team: { id: 14 } }),
       ]),
+      storage: localFreshAdmission('artifact-reject-insert'),
     });
     expect(result.inserted).toBe(0);
     expect(result.rejected).toBe(1);

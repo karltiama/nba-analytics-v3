@@ -18,6 +18,20 @@ import {
 import { bdlApiKey } from './status-sync-fetch';
 import type { AcqArchiveStore } from '@/lib/acquisition/archive';
 import type { AcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
+import { parseBdlMaxRetries } from '@/lib/balldontlie/live-rate-limit';
+import {
+  admitPersistentWrite,
+  type AdmissionMeasurement,
+  type StorageAdmissionConfig,
+  type StorageReservationStore,
+} from '@/lib/ops/storage-admission';
+import { wireProductionGameStatus } from './status-sync-production';
+import {
+  GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+  MAX_ACCEPTED_RATE_LIMIT_RETRIES,
+  guardAcqLedger,
+  observedGrowthVerdict,
+} from '@/lib/ops/storage-growth-bounds';
 import { SEASON_PHASES, type SeasonPhase } from './season-phase';
 import { regularSeasonOpenEt } from './season-eligibility';
 
@@ -129,7 +143,16 @@ export type LambdaGameStatusSyncDeps = {
   startDate?: string;
   endDate?: string;
   emit?: (event: GameStatusSyncEvent) => void;
+  /** Omitted in production until a measured bound and reservation table are injected. */
+  storage?: StorageAdmissionConfig;
+  /** Set by production wiring. A live write measures PostgreSQL instead of trusting an injected row. */
+  measureCluster?: () => Promise<AdmissionMeasurement>;
+  invocationId?: string;
+  reservations?: StorageReservationStore;
+  reservationRefusal?: string;
 };
+
+const GAME_STATUS_ADMISSION_TABLES = ['raw.acquisition_requests', 'analytics.games'] as const;
 
 function logEvent(event: GameStatusSyncEvent): void {
   console.log(JSON.stringify({ job: STATUS_SYNC_JOB, ...event }));
@@ -141,10 +164,11 @@ function failed(
   extra?: Partial<GameStatusSyncResult>
 ): LambdaGameStatusSyncResult {
   const target = (env.STATUS_SYNC_TARGET_SEASON ?? '').trim() || 'invalid';
-  logEvent({ event: 'game_status_sync_failed', reason });
+  const status = extra?.status ?? 'failed';
+  logEvent({ event: status === 'success' ? 'game_status_sync_completed' : 'game_status_sync_failed', reason });
   return {
     job: STATUS_SYNC_JOB,
-    status: 'failed',
+    status,
     skipped: false,
     targetSeason: target,
     productPin: extra?.productPin ?? PINNED_ANALYTICS_SEASON,
@@ -165,7 +189,7 @@ function failed(
     dryRun: extra?.dryRun ?? false,
     wroteDb: false,
     bdlHttp: extra?.bdlHttp ?? 0,
-    events: extra?.events ?? [{ event: 'game_status_sync_failed', reason }],
+    events: extra?.events ?? [{ event: status === 'success' ? 'game_status_sync_completed' : 'game_status_sync_failed', reason }],
     transitions: [],
     queries: [],
     acquisition: { required: false, archivedRequests: 0, blockedReason: null },
@@ -221,6 +245,51 @@ export async function runLambdaGameStatusSync(
     return failed(env, 'missing NBA_DATA_BUCKET: immutable archive is required before any provider call');
   }
 
+  const dryRun = deps.dryRun ?? false;
+  const writesDatabase = !dryRun || acquiring;
+  let settleAdmission: ((evidence?: { databaseObservedAt: string }) => Promise<void>) | null = null;
+  if (writesDatabase) {
+    const retries = parseBdlMaxRetries(env.BDL_RATE_LIMIT_MAX_RETRIES);
+    if (retries.error || retries.value > MAX_ACCEPTED_RATE_LIMIT_RETRIES) {
+      return failed(
+        env,
+        retries.error ??
+          `BDL_RATE_LIMIT_MAX_RETRIES exceeds the physical envelope of ${MAX_ACCEPTED_RATE_LIMIT_RETRIES}`
+      );
+    }
+    if (deps.reservationRefusal) return failed(env, deps.reservationRefusal);
+    const storage = await loadGameStatusStorage(deps);
+    if (!storage) return failed(env, 'storage admission is not configured');
+    deps.storage = storage;
+    const admission = await admitPersistentWrite({
+      writerId: 'game-status-sync',
+      kind: 'game_status',
+      invocationId: storage.invocationId,
+      now: storage.now,
+      measurement: storage.measurement,
+      physicalGrowthBoundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+      tables: GAME_STATUS_ADMISSION_TABLES,
+      reservations: storage.reservations,
+    });
+    if (!admission.allowed) return failed(env, admission.reason);
+    if (admission.alreadySettled) {
+      return failed(env, 'invocation already settled this reservation', { status: 'success', skipped: true });
+    }
+    try {
+      const noted = await deps.storage.reservations.noteWriteIntent({
+        invocationId: deps.storage.invocationId,
+        writerId: 'game-status-sync',
+        boundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+        intentAt: deps.storage.now,
+        inWrite: true,
+      });
+      if (!noted.ok) return failed(env, noted.reason);
+    } catch {
+      return failed(env, 'reservation service failed; refusing the write');
+    }
+    settleAdmission = admission.settle;
+  }
+
   let pool: import('pg').Pool | undefined;
   if (needsPool) {
     const { createStatusSyncPool } = await import('./status-sync-db');
@@ -242,6 +311,7 @@ export async function runLambdaGameStatusSync(
         const { createPgAcqLedgerWriter } = await import('@/lib/acquisition/ledger-pg');
         ledger = createPgAcqLedgerWriter(pool!);
       }
+      ledger = guardAcqLedger(ledger);
       let archiveStore = deps.archiveStore;
       if (!archiveStore) {
         const { S3AcqArchiveStore } = await import('@/lib/acquisition/s3-store');
@@ -271,32 +341,139 @@ export async function runLambdaGameStatusSync(
       store,
       fetchPage,
       requireAcquisition: acquiring,
-      dryRun: deps.dryRun ?? false,
+      dryRun,
       allowFrozenSimulation: deps.allowFrozenSimulation,
       manualCanary: deps.manualCanary,
       startDate: deps.startDate,
       endDate: deps.endDate,
       emit,
     });
+    if (result.status === 'success' && settleAdmission && deps.measureCluster && deps.storage) {
+      const settled = await settleMeasuredGameStatus(deps, deps.storage, settleAdmission);
+      if (!settled.ok) return { ...result, status: 'failed', skipped: false, reason: settled.reason, wroteDb: result.wroteDb };
+    } else {
+      const growth = deps.storage?.observedDatabaseGrowth;
+      if (result.status === 'success' && settleAdmission && growth) {
+        const verdict = observedGrowthVerdict(growth.beforeBytes, growth.afterBytes, GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES);
+        if (!verdict.ok) return { ...result, status: 'failed', skipped: false, reason: verdict.reason, wroteDb: result.wroteDb };
+      }
+      if (result.status === 'success' && settleAdmission) await settleAdmission();
+    }
+    if (result.status !== 'success' && settleAdmission && deps.storage) {
+      try {
+        await deps.storage.reservations.noteWriteIntent({
+          invocationId: deps.storage.invocationId,
+          writerId: 'game-status-sync',
+          boundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+          intentAt: deps.storage.now,
+          inWrite: false,
+        });
+      } catch {
+        /* the active hold stays */
+      }
+    }
     return { ...result, skipped: result.status === 'skipped' };
   } finally {
     if (pool) await pool.end();
   }
 }
 
-export async function handler(event?: unknown): Promise<LambdaGameStatusSyncResult> {
+export async function handler(
+  event?: unknown,
+  context?: { awsRequestId?: string },
+  _callback?: unknown
+): Promise<LambdaGameStatusSyncResult> {
   const target = parseRequiredStatusSyncTargetSeason(process.env, PROTECTED_HISTORY_SEASONS);
   const canary = classifyManualStatusSyncCanaryEvent(event, target.ok ? target.season : null);
   if (canary.kind === 'invalid') {
     return failed(process.env, canary.reason);
   }
+  const wired = wireProductionGameStatus(process.env, context);
   if (canary.kind === 'none') {
-    return runLambdaGameStatusSync();
+    return runLambdaGameStatusSync(wired);
   }
   return runLambdaGameStatusSync({
+    ...wired,
     manualCanary: true,
     dryRun: false,
     startDate: canary.startDate,
     endDate: canary.endDate,
   });
+}
+
+function admissionClock(requested: Date, measuredAt: string | null): string {
+  const requestedMs = requested.getTime();
+  const measuredMs = typeof measuredAt === 'string' ? Date.parse(measuredAt) : Number.NaN;
+  if (Number.isFinite(measuredMs) && measuredMs > requestedMs) return new Date(measuredMs).toISOString();
+  return requested.toISOString();
+}
+
+async function loadGameStatusStorage(deps: LambdaGameStatusSyncDeps): Promise<StorageAdmissionConfig | null> {
+  if (deps.storage) return deps.storage;
+  if (!deps.measureCluster || !deps.reservations || !deps.invocationId) return null;
+  let measurement: AdmissionMeasurement;
+  try {
+    measurement = await deps.measureCluster();
+  } catch {
+    return null;
+  }
+  return {
+    now: admissionClock(deps.now ?? new Date(), measurement.measuredAt),
+    invocationId: deps.invocationId,
+    measurement,
+    physicalGrowthBoundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+    reservations: deps.reservations,
+  };
+}
+
+async function retainGameStatus(storage: StorageAdmissionConfig): Promise<void> {
+  try {
+    await storage.reservations.noteWriteIntent({
+      invocationId: storage.invocationId,
+      writerId: 'game-status-sync',
+      boundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+      intentAt: storage.now,
+      inWrite: false,
+    });
+  } catch {
+    /* the active hold stays */
+  }
+}
+
+async function settleMeasuredGameStatus(
+  deps: LambdaGameStatusSyncDeps,
+  storage: StorageAdmissionConfig,
+  settle: (evidence?: { databaseObservedAt: string }) => Promise<void>
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  let after: AdmissionMeasurement;
+  try {
+    after = await deps.measureCluster!();
+  } catch {
+    await retainGameStatus(storage);
+    return { ok: false, reason: 'post-write cluster measurement failed' };
+  }
+  const beforeDb = Date.parse(storage.measurement.databaseObservedAt ?? '');
+  const afterDb = Date.parse(after.databaseObservedAt ?? '');
+  if (
+    after.valid !== true ||
+    after.complete !== true ||
+    typeof after.clusterBytes !== 'number' ||
+    !Number.isFinite(beforeDb) ||
+    !Number.isFinite(afterDb) ||
+    afterDb <= beforeDb
+  ) {
+    await retainGameStatus(storage);
+    return { ok: false, reason: 'post-write cluster measurement is missing or not fresh' };
+  }
+  const verdict = observedGrowthVerdict(
+    storage.measurement.clusterBytes ?? -1,
+    after.clusterBytes,
+    GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES
+  );
+  if (!verdict.ok) {
+    await retainGameStatus(storage);
+    return { ok: false, reason: verdict.reason };
+  }
+  await settle({ databaseObservedAt: after.databaseObservedAt! });
+  return { ok: true };
 }

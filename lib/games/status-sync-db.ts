@@ -7,6 +7,7 @@
 
 import { Pool } from 'pg';
 import { ANALYTICS_GAMES_FINAL_PRESERVE_UPSERT_SQL } from '@/lib/betting/final-preserve';
+import { classifyAuthoritativeGameState, FINALIZATION_CLOCK_UPSERT_SQL } from '@/lib/games/finalization-clock';
 import { createLambdaPgPool } from '@/lib/runtime/lambda-pg-pool';
 import type { GameStatusStore, LocalGameRow } from './status-sync';
 import type { ReadinessGameRow } from './season-phase-readiness';
@@ -19,6 +20,21 @@ const SELECT_GAME_SQL = `
   select game_id, season, start_time, status, home_team_id, away_team_id, home_score, away_score, venue
   from analytics.games
   where game_id = $1
+`;
+
+const SELECT_FINALIZATION_SQL = `
+  select game_id, season, start_time, status, home_team_id, away_team_id, home_score, away_score, venue,
+         finalized_at, status_observed_at
+  from analytics.games
+  where game_id = $1
+`;
+
+/** All three columns from MIGRATION_analytics_games_finalization_clock.sql must exist. */
+export const FINALIZATION_COLUMNS_SQL = `
+  select count(*)::int as n
+  from information_schema.columns
+  where table_schema = 'analytics' and table_name = 'games'
+    and column_name in ('finalized_at', 'status_observed_at', 'finalization_state')
 `;
 
 /** Both columns from db/schemas/MIGRATION_analytics_games_season_phase.sql must exist. */
@@ -62,7 +78,10 @@ function mapRow(row: {
   home_score: number | null;
   away_score: number | null;
   venue: string | null;
+  finalized_at?: unknown;
+  status_observed_at?: unknown;
 }): LocalGameRow {
+  const clockPresent = 'finalized_at' in row || 'status_observed_at' in row;
   return {
     gameId: String(row.game_id),
     season: String(row.season),
@@ -73,6 +92,13 @@ function mapRow(row: {
     homeScore: row.home_score == null ? null : Number(row.home_score),
     awayScore: row.away_score == null ? null : Number(row.away_score),
     venue: row.venue,
+    ...(clockPresent
+      ? {
+          finalizedAt: toIso(row.finalized_at),
+          statusObservedAt: toIso(row.status_observed_at),
+          finalizationClock: row.finalized_at == null ? ('missing' as const) : ('recorded' as const),
+        }
+      : {}),
   };
 }
 
@@ -89,6 +115,11 @@ export function createPostgresGameStatusStore(
   const ownsPool = !pool;
   const db = pool ?? createStatusSyncPool(env);
   let seasonPhaseSupport: Promise<boolean> | null = null;
+  let finalizationSupport: Promise<boolean> | null = null;
+  const supportsFinalization = () => {
+    finalizationSupport ??= db.query(FINALIZATION_COLUMNS_SQL).then((r) => Number(r.rows[0]?.n ?? 0) === 3);
+    return finalizationSupport;
+  };
   const supportsSeasonPhase = () => {
     seasonPhaseSupport ??= db.query(SEASON_PHASE_COLUMNS_SQL).then((r) => Number(r.rows[0]?.n ?? 0) === 2);
     return seasonPhaseSupport;
@@ -96,11 +127,28 @@ export function createPostgresGameStatusStore(
 
   return {
     async getById(gameId) {
-      const result = await db.query(SELECT_GAME_SQL, [gameId]);
+      const clock = await supportsFinalization();
+      const result = await db.query(clock ? SELECT_FINALIZATION_SQL : SELECT_GAME_SQL, [gameId]);
       if (result.rowCount === 0) return null;
       return mapRow(result.rows[0]);
     },
     async upsert(row) {
+      if (await supportsFinalization()) {
+        await db.query(FINALIZATION_CLOCK_UPSERT_SQL, [
+          row.gameId,
+          row.season,
+          row.startTime,
+          row.status,
+          row.homeTeamId,
+          row.awayTeamId,
+          row.homeScore,
+          row.awayScore,
+          row.venue,
+          row.observedAt ?? null,
+          classifyAuthoritativeGameState(row.status),
+        ]);
+        return;
+      }
       await db.query(ANALYTICS_GAMES_FINAL_PRESERVE_UPSERT_SQL, [
         row.gameId,
         row.season,
