@@ -6,6 +6,8 @@ import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { InMemoryAcqArchiveStore } from '@/lib/acquisition/archive';
 import { createMemoryAcqLedgerWriter } from '@/lib/acquisition/ledger-pg';
+import { localFreshAdmission, MemoryStorageReservationStore } from '@/lib/ops/storage-admission';
+import { SCOREBOARD_PHYSICAL_GROWTH_BOUND_BYTES } from '@/lib/ops/storage-growth-bounds';
 import { createMemoryScoreboardStore } from '@/lib/scoreboard/store';
 
 const root = path.resolve(__dirname, '../../..');
@@ -15,7 +17,10 @@ const packageDir = path.join(outRoot, 'scoreboard/.package');
 const artifactPath = path.join(packageDir, 'dist/index.js');
 const require = createRequire(import.meta.url);
 
-type Artifact = { runLambdaScoreboard: (deps?: Record<string, unknown>) => Promise<Record<string, any>> };
+type Artifact = {
+  handler: (event?: unknown, context?: { awsRequestId?: string }, callback?: unknown) => Promise<Record<string, any>>;
+  runLambdaScoreboard: (deps?: Record<string, unknown>) => Promise<Record<string, any>>;
+};
 const loadArtifact = (): Artifact => require(artifactPath);
 
 const FROZEN = { DATA_MODE: 'replay', OFFSEASON_MODE: '1', CRON_DRY_RUN: '1', LIVE_INGESTION_ENABLED: '0' };
@@ -57,6 +62,9 @@ describe('scoreboard built artifact', () => {
     expect(src).toContain('acq_envelope.v1');
     expect(src).toContain('IfNoneMatch');
     expect(src).toContain('fetchBdlLive');
+    expect(src).toContain('nba-storage-admission');
+    expect(src).toContain('sum(pg_database_size');
+    expect(src).toContain('storage admission is not configured');
     expect(src).not.toMatch(/\banalytics\.[a-z_]+/i);
     expect(src).not.toMatch(/\braw\.(games|players|teams|player_\w+)\b/i);
     expect(src).not.toMatch(/player_game_logs|projection_ledger|player_injur/i);
@@ -103,7 +111,17 @@ describe('scoreboard built artifact', () => {
     const ledger = createMemoryAcqLedgerWriter();
     const store = createMemoryScoreboardStore();
     const { runLambdaScoreboard } = loadArtifact();
-    const r = await runLambdaScoreboard({ env: LIVE, now: new Date('2026-10-10T00:06:00.000Z'), store, archiveStore, ledger });
+    const r = await runLambdaScoreboard({
+      env: LIVE,
+      now: new Date('2026-10-10T00:06:00.000Z'),
+      store,
+      archiveStore,
+      ledger,
+      storage: {
+        ...localFreshAdmission('scoreboard-artifact'),
+        observedDatabaseGrowth: { beforeBytes: 1_000_000, afterBytes: 1_000_000 },
+      },
+    });
     expect(r).toMatchObject({ status: 'success', bdlRequests: 2 });
     expect(urls.every((u) => u.startsWith('https://api.balldontlie.io/v1/') && u.includes('season_type=preseason'))).toBe(true);
     const keys = [...archiveStore.objects.keys()];
@@ -113,4 +131,113 @@ describe('scoreboard built artifact', () => {
     expect(ledger.rows.size).toBe(2);
     expect(store.games.get('5001')).toMatchObject({ seasonType: 'preseason', lifecycle: 'live' });
   });
+
+  it('the packaged handler receives a measurement and reservation store before it writes', async () => {
+    vi.stubGlobal('fetch', async () => new Response(JSON.stringify({
+      data: [{
+        id: 5001, date: '2026-10-09', datetime: '2026-10-10T00:00:00.000Z', season: 2026, status: 'Scheduled',
+        period: 0, postseason: false, home_team_score: 0, visitor_team_score: 0,
+        home_team: { id: 5, abbreviation: 'CHI' }, visitor_team: { id: 15, abbreviation: 'MEM' },
+      }],
+      meta: { next_cursor: null },
+    }), { status: 200, headers: { 'content-type': 'application/json' } }));
+    const { runLambdaScoreboard } = loadArtifact();
+    const reservations = new MemoryStorageReservationStore();
+    const store = createMemoryScoreboardStore();
+    let reads = 0;
+    const result = await runLambdaScoreboard({
+      env: LIVE,
+      now: new Date('2026-10-10T00:06:00.000Z'),
+      store,
+      archiveStore: new InMemoryAcqArchiveStore(),
+      ledger: createMemoryAcqLedgerWriter(),
+      invocationId: 'artifact-canary',
+      reservations,
+      measureCluster: async () => {
+        reads += 1;
+        return {
+          clusterBytes: reads === 1 ? 399_110_321 : 399_111_321,
+          measuredAt: new Date(Date.now() + reads * 1000).toISOString(),
+          source: 'scoreboard-collector:pg_database',
+          valid: true,
+          complete: true,
+        };
+      },
+    });
+    expect(result.status).toBe('success');
+    expect(reads).toBe(2);
+    expect(reservations.snapshot().settled['artifact-canary']?.boundBytes).toBe(SCOREBOARD_PHYSICAL_GROWTH_BOUND_BYTES);
+    expect(store.games.size).toBeGreaterThan(0);
+  });
+
+  it('treats the AWS callback as a callback and selects production wiring', async () => {
+    const { handler } = loadArtifact();
+    const writes: string[] = [];
+    const store = createMemoryScoreboardStore();
+    const record = store.recordGamesRequest.bind(store);
+    store.recordGamesRequest = async (...args) => {
+      writes.push('record');
+      return record(...args);
+    };
+    const callback = Object.assign(() => undefined, {
+      env: {
+        ...LIVE,
+        NBA_DATA_BUCKET: 'callback-bucket',
+        SUPABASE_DB_URL: 'postgresql://callback.example/db',
+        STORAGE_RESERVATION_TABLE: 'nba-storage-admission',
+      },
+      invocationId: 'callback-id',
+      store,
+      archiveStore: new InMemoryAcqArchiveStore(),
+      ledger: createMemoryAcqLedgerWriter(),
+      reservations: new MemoryStorageReservationStore(),
+      measureCluster: async () => ({
+        clusterBytes: 399_110_321,
+        measuredAt: new Date().toISOString(),
+        source: 'callback',
+        valid: true,
+        complete: true,
+      }),
+    });
+    const snapshot = { ...process.env };
+    const restore = () => {
+      for (const key of Object.keys(process.env)) delete process.env[key];
+      Object.assign(process.env, snapshot);
+    };
+    const disposable = {
+      ...LIVE,
+      NBA_DATA_BUCKET: 'scoreboard-hotfix-unused',
+      SUPABASE_DB_URL: 'postgresql://scoreboard-hotfix:unused@127.0.0.1:1/none',
+      DB_CONNECTION_TIMEOUT_MS: '300',
+      BDL_RATE_LIMIT_MAX_RETRIES: '0',
+    };
+    try {
+      for (const key of Object.keys(process.env)) delete process.env[key];
+      Object.assign(process.env, disposable);
+      const event = { source: 'aws.lambda' };
+      const withCallback = await handler(event, { awsRequestId: 'aws-request-1' }, callback);
+      const withoutCallback = await handler(event, { awsRequestId: 'aws-request-1' });
+      expect(withCallback).toMatchObject({
+        status: 'failed',
+        reason: 'storage reservation table is not configured',
+        bdlRequests: 0,
+      });
+      expect(withoutCallback.reason).toBe(withCallback.reason);
+      expect(writes).toEqual([]);
+
+      process.env.STORAGE_RESERVATION_TABLE = 'nba-storage-admission';
+      const missingId = await handler(event, {}, callback);
+      expect(missingId.reason).toBe('invocation id is missing');
+      expect(writes).toEqual([]);
+
+      const acceptedId = await handler(event, { awsRequestId: 'aws-request-1' }, callback);
+      expect(acceptedId.status).toBe('failed');
+      expect(acceptedId.reason).not.toBe('storage admission is not configured');
+      expect(acceptedId.reason).not.toBe('invocation id is missing');
+      expect(acceptedId.bdlRequests).toBe(0);
+      expect(writes).toEqual([]);
+    } finally {
+      restore();
+    }
+  }, 20_000);
 });
