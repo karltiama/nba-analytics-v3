@@ -56,6 +56,27 @@ import {
 } from './player-period-scoring';
 import { extractPeriodScores, periodScoresParams, upsertGamePeriodScoresSql } from './period-scores';
 import { isExplicitRecoveryEvent, recoveryOnlyEnabled } from './recovery-plan';
+import { readClusterMeasurement } from '../../lib/ops/cluster-measurement';
+import { admitPersistentWrite, type StorageAdmissionDecision } from '../../lib/ops/storage-admission';
+import { CURRENT_SEASON_BOX_OPERATION_CAP_BYTES } from '../../lib/ops/storage-budget';
+import {
+  NIGHTLY_MAX_FORWARD_DAYS,
+  NIGHTLY_MAX_PERIOD_LINES_PER_GAME,
+  NIGHTLY_PHYSICAL_GROWTH_BOUND_BYTES,
+  observedGrowthVerdict,
+} from '../../lib/ops/storage-growth-bounds';
+import {
+  admitNightlyStorage,
+  estimateNightlyWindowPayloadBytes,
+  NIGHTLY_ADMISSION_TABLES,
+  NIGHTLY_MAX_PAGES_PER_QUERY,
+  nightlyBatchRefusal,
+  productionMeasurementReader,
+  scheduledNightlyWindowRefusal,
+  scheduledNormalizedStorageEnabled,
+  wireProductionNightly,
+  type NightlyAdmissionDeps,
+} from './storage-admission';
 import {
   partitionServingGames,
   providerSeasonTypesForWindow,
@@ -207,6 +228,15 @@ async function syncPlayerPeriodScoring(
     try {
       const rows = await fetchPlaysForGame(g.id);
       const lines = playerPeriodLinesFromPlays(rows);
+      if (lines.length > NIGHTLY_MAX_PERIOD_LINES_PER_GAME) {
+        result.playerPeriodFailed++;
+        console.error(JSON.stringify({
+          evt: 'player_period_scoring_failed',
+          game_id: gameId,
+          error: `period lines exceed the physical envelope of ${NIGHTLY_MAX_PERIOD_LINES_PER_GAME}`,
+        }));
+        continue;
+      }
       const rec = reconcileGameWithBox(lines, gameBox.box);
       const client = await pool.connect();
       try {
@@ -244,10 +274,19 @@ async function syncPlayerPeriodScoring(
   );
 }
 
+class NightlyWindowRefusal extends Error {}
+
 async function fetchGames(startDate: string, endDate: string, season: number, seasonType: string): Promise<any[]> {
   const out: any[] = [];
   let cursor: number | null = null;
+  let pages = 0;
   while (true) {
+    pages += 1;
+    if (pages > NIGHTLY_MAX_PAGES_PER_QUERY) {
+      throw new NightlyWindowRefusal(
+        `nightly games query exceeded ${NIGHTLY_MAX_PAGES_PER_QUERY} pages`
+      );
+    }
     const params = new URLSearchParams({
       start_date: startDate,
       end_date: endDate,
@@ -411,6 +450,8 @@ const upsertAnalyticsPlayer = `
     updated_at = now();
 `;
 
+// This statement does not assign finalized_at or status_observed_at. Omitting those
+// columns keeps a recorded finalization clock in place and does not invent one.
 const upsertAnalyticsGame = `
   insert into analytics.games (game_id, season, start_time, status, home_team_id, away_team_id, home_score, away_score, venue)
   values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -699,22 +740,8 @@ async function upsertBdlGameRawAndAnalytics(
   ]);
 }
 
-/**
- * Fetch BDL games for inclusive ET date range and upsert raw + analytics for every row (Scheduled, Final, …).
- */
-async function syncUpcomingScheduleFromBdl(
-  startDateET: string,
-  endDateET: string,
-  season: number,
-): Promise<number> {
-  console.log(`[0/9] Schedule sync (all statuses): BDL ${startDateET} .. ${endDateET}, season ${season}...`);
-  const { eligible: games, fenced } = await fetchServingGames(startDateET, endDateET, season);
-  if (fenced > 0) console.log(`  Fenced ${fenced} ineligible game rows (not written).`);
-  if (games.length === 0) {
-    console.log('  No games in window; nothing to upsert.');
-    return 0;
-  }
-
+/** Persists a schedule cohort that has already passed admission. */
+async function writeScheduleGames(games: any[]): Promise<number> {
   const client = await pool.connect();
   try {
     await client.query('begin');
@@ -755,6 +782,227 @@ interface PipelineResult {
   playerPeriodGames: number;
   playerPeriodNotReconciled: number;
   playerPeriodFailed: number;
+  storageDenied?: boolean;
+  admissionReason?: string;
+}
+
+let nightlyAdmissionDeps: NightlyAdmissionDeps | null = null;
+let activeNightlyAdmission: StorageAdmissionDecision | null = null;
+
+/** Test seam. Production leaves this unset and reads the measurement table. */
+export function setNightlyRunDepsForTests(deps: NightlyAdmissionDeps | null): void {
+  nightlyAdmissionDeps = deps;
+}
+
+function emptyPipeline(denied: { storageDenied: boolean; admissionReason: string } | null = null): PipelineResult {
+  return {
+    dataMode: DATA_MODE,
+    offseasonMode: OFFSEASON_MODE,
+    skippedProviderCalls: denied != null,
+    scheduleGamesSynced: 0,
+    gamesFound: 0,
+    gamesFenced: 0,
+    finalGames: 0,
+    statsUpserted: 0,
+    playersUpserted: 0,
+    analyticsGames: 0,
+    analyticsLogs: 0,
+    teamGameStats: 0,
+    teamSeasonAvgs: 0,
+    playerSeasonAvgs: 0,
+    playerPeriodGames: 0,
+    playerPeriodNotReconciled: 0,
+    playerPeriodFailed: 0,
+    storageDenied: denied?.storageDenied,
+    admissionReason: denied?.admissionReason,
+  };
+}
+
+function nightlyDeps(): NightlyAdmissionDeps {
+  return nightlyAdmissionDeps ?? {
+    measurementReader: productionMeasurementReader(process.env),
+    now: new Date().toISOString(),
+  };
+}
+
+async function admitScheduledWrite(estimatedPayloadBytes: number): Promise<PipelineResult | null> {
+  const deps = nightlyDeps();
+  if (deps.measureCluster) {
+    if (!Number.isSafeInteger(estimatedPayloadBytes) || estimatedPayloadBytes < 0) {
+      return emptyPipeline({
+        storageDenied: true,
+        admissionReason: 'current-season box writes require a non-negative integer payload estimate',
+      });
+    }
+    if (estimatedPayloadBytes > CURRENT_SEASON_BOX_OPERATION_CAP_BYTES) {
+      return emptyPipeline({
+        storageDenied: true,
+        admissionReason: 'current-season box payload exceeds the 2,000,000 byte per-operation cap',
+      });
+    }
+    return null;
+  }
+  const decision = await admitNightlyStorage({
+    reader: deps.measurementReader,
+    now: deps.now,
+    estimatedPayloadBytes,
+  });
+  if (decision.allowed) return null;
+  console.log(`[storage] Nightly writes denied: ${decision.reason}`);
+  return emptyPipeline({ storageDenied: true, admissionReason: decision.reason });
+}
+
+async function clearNightlyIntent(): Promise<void> {
+  const deps = nightlyAdmissionDeps;
+  const admission = activeNightlyAdmission;
+  if (!deps?.reservations || !deps.invocationId || !admission?.allowed) return;
+  try {
+    await deps.reservations.noteWriteIntent({
+      invocationId: deps.invocationId,
+      writerId: 'nightly-bdl-updater',
+      boundBytes: NIGHTLY_PHYSICAL_GROWTH_BOUND_BYTES,
+      intentAt: deps.now,
+      inWrite: false,
+    });
+  } catch {
+    /* the active hold stays; a failed clear must not start another write */
+  }
+}
+
+/**
+ * The pre-call clock is captured before PostgreSQL returns. A measurement
+ * taken during this call can be newer than that clock and still be fresh.
+ * The reference used for the future-date check is captured only after the
+ * measurement returns, and it never moves past that moment or past a
+ * caller-supplied timestamp.
+ */
+function admissionNowAfterMeasurement(preCallNow: string, measuredAt: string | null, capturedAfter: Date): string {
+  const capturedMs = capturedAfter.getTime();
+  const preMs = Date.parse(preCallNow);
+  const baselineMs = Number.isFinite(preMs) && preMs <= capturedMs ? preMs : capturedMs;
+  const measuredMs = typeof measuredAt === 'string' ? Date.parse(measuredAt) : Number.NaN;
+  if (Number.isFinite(measuredMs) && measuredMs > baselineMs && measuredMs <= capturedMs) {
+    return new Date(measuredMs).toISOString();
+  }
+  return new Date(baselineMs).toISOString();
+}
+
+async function reserveNightly(estimatedPayloadBytes: number): Promise<PipelineResult | null> {
+  const deps = nightlyDeps();
+  if (!deps.reservations || !deps.invocationId?.trim()) {
+    return emptyPipeline({ storageDenied: true, admissionReason: 'storage admission is not configured' });
+  }
+  let measuredDirect: Awaited<ReturnType<NonNullable<NightlyAdmissionDeps['measureCluster']>>> | null = null;
+  if (deps.measureCluster) {
+    try {
+      measuredDirect = await deps.measureCluster();
+    } catch {
+      return emptyPipeline({ storageDenied: true, admissionReason: 'cluster measurement failed; refusing the write' });
+    }
+  }
+  const admissionNow = measuredDirect
+    ? admissionNowAfterMeasurement(deps.now, measuredDirect.measuredAt, new Date())
+    : deps.now;
+  let record: unknown = null;
+  if (!measuredDirect) {
+    try {
+      record = await deps.measurementReader.get();
+    } catch {
+      return emptyPipeline({ storageDenied: true, admissionReason: 'cluster measurement store read failed' });
+    }
+  }
+  const measurement = measuredDirect ?? readClusterMeasurement(record, admissionNow);
+  const admission = await admitPersistentWrite({
+    writerId: 'nightly-bdl-updater',
+    kind: 'current_season_ingestion',
+    invocationId: deps.invocationId,
+    now: admissionNow,
+    measurement: measuredDirect
+      ? measuredDirect
+      : {
+          clusterBytes: typeof measurement.clusterBytes === 'number' ? measurement.clusterBytes : null,
+          measuredAt: measurement.measuredAt ?? null,
+          valid: measurement.valid === true,
+          complete: measurement.valid === true,
+          source: measurement.valid === true ? 'cluster-measurement' : '',
+        },
+    physicalGrowthBoundBytes: NIGHTLY_PHYSICAL_GROWTH_BOUND_BYTES,
+    tables: NIGHTLY_ADMISSION_TABLES,
+    reservations: deps.reservations,
+    payload: { estimatedPayloadBytes },
+  });
+  if (!admission.allowed) {
+    console.log(`[storage] Nightly writes denied: ${admission.reason}`);
+    return emptyPipeline({ storageDenied: true, admissionReason: admission.reason });
+  }
+  if (admission.alreadySettled) {
+    return emptyPipeline({ storageDenied: false, admissionReason: 'invocation already settled this reservation' });
+  }
+  try {
+    const noted = await deps.reservations.noteWriteIntent({
+      invocationId: deps.invocationId,
+      writerId: 'nightly-bdl-updater',
+      boundBytes: NIGHTLY_PHYSICAL_GROWTH_BOUND_BYTES,
+      intentAt: admissionNow,
+      inWrite: true,
+    });
+    if (!noted.ok) {
+      return emptyPipeline({ storageDenied: true, admissionReason: noted.reason });
+    }
+  } catch {
+    return emptyPipeline({ storageDenied: true, admissionReason: 'reservation service failed; refusing the write' });
+  }
+  activeNightlyAdmission = admission;
+  nightlyPreWriteObservedAt = measuredDirect?.databaseObservedAt ?? null;
+  return null;
+}
+
+let nightlyPreWriteObservedAt: string | null = null;
+
+async function finishNightly(result: PipelineResult): Promise<PipelineResult> {
+  const deps = nightlyAdmissionDeps;
+  if (deps?.measureCluster && activeNightlyAdmission?.allowed) {
+    let after: Awaited<ReturnType<NonNullable<NightlyAdmissionDeps['measureCluster']>>>;
+    try {
+      after = await deps.measureCluster();
+    } catch {
+      await clearNightlyIntent();
+      return emptyPipeline({ storageDenied: true, admissionReason: 'post-write cluster measurement failed' });
+    }
+    const beforeMs = Date.parse(nightlyPreWriteObservedAt ?? '');
+    const afterMs = Date.parse(after.databaseObservedAt ?? '');
+    if (
+      after.valid !== true ||
+      typeof after.clusterBytes !== 'number' ||
+      !Number.isFinite(beforeMs) ||
+      !Number.isFinite(afterMs) ||
+      afterMs <= beforeMs
+    ) {
+      await clearNightlyIntent();
+      return emptyPipeline({ storageDenied: true, admissionReason: 'post-write cluster measurement is missing or not fresh' });
+    }
+    const beforeBytes = activeNightlyAdmission.clusterBytes;
+    const verdict = observedGrowthVerdict(
+      typeof beforeBytes === 'number' ? beforeBytes : -1,
+      after.clusterBytes,
+      NIGHTLY_PHYSICAL_GROWTH_BOUND_BYTES
+    );
+    if (!verdict.ok) {
+      await clearNightlyIntent();
+      return emptyPipeline({ storageDenied: true, admissionReason: verdict.reason });
+    }
+    await activeNightlyAdmission.settle({ databaseObservedAt: after.databaseObservedAt });
+    return result;
+  }
+  const growth = deps?.observedDatabaseGrowth;
+  if (growth) {
+    const verdict = observedGrowthVerdict(growth.beforeBytes, growth.afterBytes, NIGHTLY_PHYSICAL_GROWTH_BOUND_BYTES);
+    if (!verdict.ok) {
+      return emptyPipeline({ storageDenied: true, admissionReason: verdict.reason });
+    }
+  }
+  if (activeNightlyAdmission?.allowed) await activeNightlyAdmission.settle();
+  return result;
 }
 
 async function runPipeline(): Promise<PipelineResult> {
@@ -786,14 +1034,34 @@ async function runPipeline(): Promise<PipelineResult> {
     return result;
   }
 
-  // Fail closed before any provider call. Does not read the product season pin.
+  // Fail closed before any provider call or database read. The kind is not taken from the event.
+  if (!scheduledNormalizedStorageEnabled(process.env)) {
+    console.log('[storage] Nightly writes denied: PGS_NORMALIZED_STORAGE must be 1.');
+    return emptyPipeline({
+      storageDenied: true,
+      admissionReason: 'normalized storage flag is required',
+    });
+  }
   const season = requireLiveIngestionSeasonStartYear(process.env);
   const forwardRaw = process.env.BDL_SCHEDULE_SYNC_DAYS_FORWARD;
   const parsedForward = parseInt(forwardRaw ?? '14', 10);
   const forwardDays = Number.isFinite(parsedForward)
     ? Math.min(120, Math.max(0, parsedForward))
     : 14;
+  activeNightlyAdmission = null;
+  const estimatedPayloadBytes = estimateNightlyWindowPayloadBytes(forwardDays);
+  const windowDenied = await admitScheduledWrite(estimatedPayloadBytes);
+  if (windowDenied) return windowDenied;
+  if (forwardDays > NIGHTLY_MAX_FORWARD_DAYS) {
+    return emptyPipeline({
+      storageDenied: true,
+      admissionReason: `nightly forward window exceeds the physical envelope of ${NIGHTLY_MAX_FORWARD_DAYS} days`,
+    });
+  }
+  const reserved = await reserveNightly(estimatedPayloadBytes);
+  if (reserved) return reserved;
 
+  try {
   const etRes = await pool.query<{
     yesterday_et: string;
     today_et: string;
@@ -806,9 +1074,24 @@ async function runPipeline(): Promise<PipelineResult> {
     [forwardDays],
   );
   const { yesterday_et, today_et, schedule_end_et } = etRes.rows[0];
+  const windowRefusal = scheduledNightlyWindowRefusal({
+    yesterdayEt: yesterday_et,
+    todayEt: today_et,
+    scheduleEndEt: schedule_end_et,
+    forwardDays,
+  });
+  if (windowRefusal) {
+    console.log(`[storage] Nightly writes denied: ${windowRefusal}`);
+    await clearNightlyIntent();
+    return emptyPipeline({ storageDenied: true, admissionReason: windowRefusal });
+  }
 
+  let scheduleGames: any[] = [];
   if (process.env.DISABLE_BDL_SCHEDULE_SYNC !== '1' && forwardDays > 0) {
-    result.scheduleGamesSynced = await syncUpcomingScheduleFromBdl(today_et, schedule_end_et, season);
+    console.log(`[0/9] Schedule sync (all statuses): BDL ${today_et} .. ${schedule_end_et}, season ${season}...`);
+    const loaded = await fetchServingGames(today_et, schedule_end_et, season);
+    if (loaded.fenced > 0) console.log(`  Fenced ${loaded.fenced} ineligible game rows (not written).`);
+    scheduleGames = loaded.eligible;
   } else {
     console.log('[0/9] Schedule sync skipped (DISABLE_BDL_SCHEDULE_SYNC=1 or BDL_SCHEDULE_SYNC_DAYS_FORWARD=0).');
   }
@@ -827,8 +1110,7 @@ async function runPipeline(): Promise<PipelineResult> {
   console.log(`  ${finalGames.length} games with status "Final".`);
 
   if (finalGames.length === 0) {
-    console.log('No Final games to process. Exiting early.');
-    return result;
+    console.log('No Final games to process.');
   }
 
   for (const g of finalGames) {
@@ -837,30 +1119,52 @@ async function runPipeline(): Promise<PipelineResult> {
     console.log(`  Game ${g.id}: ${away} @ ${home} (${g.home_team_score}-${g.visitor_team_score})`);
   }
 
-  assertCurrentSeasonStatBatch({
-    liveSeasonStartYear: season,
-    games: finalGames,
-    stats: [],
-  });
-
-  const gameIds = finalGames.map((g: any) => g.id);
-  console.log(`[3/9] Fetching box scores for ${gameIds.length} games...`);
   const allStats: any[] = [];
-  const BATCH_SIZE = 25;
-  for (let i = 0; i < gameIds.length; i += BATCH_SIZE) {
-    const batch = gameIds.slice(i, i + BATCH_SIZE);
-    const stats = await fetchStatsByGameIds(batch);
-    allStats.push(...stats);
-    console.log(`  Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${stats.length} stat lines.`);
-    if (i + BATCH_SIZE < gameIds.length) await sleep(REQUEST_DELAY_MS);
-  }
-  console.log(`  Total stat lines fetched: ${allStats.length}`);
+  if (finalGames.length > 0) {
+    assertCurrentSeasonStatBatch({
+      liveSeasonStartYear: season,
+      games: finalGames,
+      stats: [],
+    });
 
-  assertCurrentSeasonStatBatch({
-    liveSeasonStartYear: season,
-    games: finalGames,
+    const gameIds = finalGames.map((g: any) => g.id);
+    console.log(`[3/9] Fetching box scores for ${gameIds.length} games...`);
+    const BATCH_SIZE = 25;
+    for (let i = 0; i < gameIds.length; i += BATCH_SIZE) {
+      const batch = gameIds.slice(i, i + BATCH_SIZE);
+      const stats = await fetchStatsByGameIds(batch);
+      allStats.push(...stats);
+      console.log(`  Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${stats.length} stat lines.`);
+      if (i + BATCH_SIZE < gameIds.length) await sleep(REQUEST_DELAY_MS);
+    }
+    console.log(`  Total stat lines fetched: ${allStats.length}`);
+
+    assertCurrentSeasonStatBatch({
+      liveSeasonStartYear: season,
+      games: finalGames,
+      stats: allStats,
+    });
+  }
+
+  const batchRefusal = nightlyBatchRefusal({
+    scheduleGames,
+    finalGames,
     stats: allStats,
   });
+  if (batchRefusal) {
+    console.log(`[storage] Nightly writes denied: ${batchRefusal}`);
+    await clearNightlyIntent();
+    return emptyPipeline({ storageDenied: true, admissionReason: batchRefusal });
+  }
+
+  if (scheduleGames.length > 0) {
+    result.scheduleGamesSynced = await writeScheduleGames(scheduleGames);
+    console.log(`  Upserted ${scheduleGames.length} game rows (raw + analytics).`);
+  }
+
+  if (finalGames.length === 0) return finishNightly(result);
+
+  const gameIds = finalGames.map((g: any) => g.id);
 
   const client = await pool.connect();
   try {
@@ -1283,7 +1587,15 @@ async function runPipeline(): Promise<PipelineResult> {
 
   await syncPlayerPeriodScoring(finalGames, result);
 
-  return result;
+  return finishNightly(result);
+  } catch (err) {
+    if (err instanceof NightlyWindowRefusal) {
+      console.log(`[storage] Nightly writes denied: ${err.message}`);
+      await clearNightlyIntent();
+      return emptyPipeline({ storageDenied: true, admissionReason: err.message });
+    }
+    throw err;
+  }
 }
 
 async function runRecovery(event: unknown) {
@@ -1309,15 +1621,30 @@ async function runRecovery(event: unknown) {
 
 export async function handler(
   event?: any,
-  context?: { getRemainingTimeInMillis?: () => number }
+  context?: { awsRequestId?: string; getRemainingTimeInMillis?: () => number },
+  _callback?: unknown
 ): Promise<{ statusCode: number; body: string }> {
   const startTime = Date.now();
   const remainingMs = context?.getRemainingTimeInMillis?.();
   runDeadlineMs = remainingMs != null ? startTime + remainingMs - DEADLINE_MARGIN_MS : undefined;
   console.log('=== Nightly BDL Updater: START ===');
   console.log(`Timestamp: ${new Date().toISOString()}`);
+  const injectedAdmission = nightlyAdmissionDeps != null;
+  if (!injectedAdmission) nightlyAdmissionDeps = wireProductionNightly(process.env, context);
 
   try {
+    if (nightlyAdmissionDeps?.productionAdmission && isExplicitRecoveryEvent(event)) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          status: 'storage_denied',
+          storageDenied: true,
+          admissionReason: 'historical recovery is not admitted on the scheduled package',
+          writesCommitted: false,
+          skippedProviderCalls: true,
+        }),
+      };
+    }
     // Freeze wins for every event, including an explicit recovery payload.
     // RECOVERY_ONLY is read per call and cannot override that freeze.
     const recoveryOnlyBlock = SHOULD_CALL_LIVE_API && recoveryOnlyEnabled() && !isExplicitRecoveryEvent(event);
@@ -1339,9 +1666,11 @@ export async function handler(
       result != null && typeof result === 'object' && 'recoveryStatus' in result
         ? result.recoveryStatus
         : null;
+    const storageDenied =
+      result != null && typeof result === 'object' && 'storageDenied' in result && result.storageDenied === true;
 
     const summary = {
-      status: recoveryStatus === 'rejected' ? 'rejected' : 'success',
+      status: storageDenied ? 'storage_denied' : recoveryStatus === 'rejected' ? 'rejected' : 'success',
       elapsed_seconds: elapsed,
       ...result,
     };
@@ -1369,6 +1698,7 @@ export async function handler(
       }),
     };
   } finally {
+    if (!injectedAdmission) nightlyAdmissionDeps = null;
     // Do not pool.end() in Lambda: container reuse would then break on warm invocations.
     if (require.main === module) {
       await pool.end().catch(() => {});

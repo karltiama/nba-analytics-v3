@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryStorageReservationStore } from '@/lib/ops/storage-admission';
 
 type Call = { sql: string; values: unknown[] };
 
@@ -50,6 +51,7 @@ const ENV = {
   CRON_DRY_RUN: '0',
   INGESTION_SEASON_START_YEAR: '2026',
   DISABLE_BDL_SCHEDULE_SYNC: '1',
+  PGS_NORMALIZED_STORAGE: '1',
 };
 
 const game = (id: number, date: string, status = 'Final') => ({
@@ -70,6 +72,22 @@ const saved: Record<string, string | undefined> = {};
 async function runHandler() {
   vi.resetModules();
   const mod = await import('../index');
+  mod.setNightlyRunDepsForTests({
+    now: '2026-11-18T23:00:00.000Z',
+    invocationId: 'nightly-season-isolation',
+    reservations: new MemoryStorageReservationStore(),
+    measurementReader: {
+      async get() {
+        return {
+          schemaVersion: 1,
+          valid: true,
+          clusterBytes: 1_000_000,
+          measuredAt: '2026-11-18T22:30:00.000Z',
+          reason: null,
+        };
+      },
+    },
+  });
   return mod.handler();
 }
 

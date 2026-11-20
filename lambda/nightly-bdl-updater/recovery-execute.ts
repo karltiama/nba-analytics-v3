@@ -17,6 +17,7 @@ import {
 import { planRecovery, recoveryAttemptBudget, type RecoveryPlan } from './recovery-plan';
 import { expectedFinalMismatch, selectRecoveryGames, type GameRejection, type ProviderGame } from './recovery-select';
 import { assertCurrentSeasonRawStat } from './raw-stat-season-boundary';
+import { decideHistoricalRecovery } from '../../lib/ops/storage-budget';
 import { etDateOfProviderGame, regularSeasonOpenEt } from './season-eligibility';
 
 export class RecoveryWriteError extends Error {
@@ -554,6 +555,25 @@ export async function executeRecovery(deps: {
   }
   if (rejected.length > 0 || boxes.length !== plan.gameIds.length) {
     result.rejected = rejected;
+    applyAccounting(result);
+    return result;
+  }
+
+  // Historical recovery does not inherit the scheduled current-season reservation.
+  // An allowlist, a current-season label, and an approval flag do not grant a write.
+  const recoveryDecision = decideHistoricalRecovery(
+    { requestedCategory: 'current_season_box', approved: true, gameIds: plan.gameIds.map(String) },
+    { valid: true, clusterBytes: 0, measuredAt: '2026-01-01T00:00:00.000Z' },
+    '2026-01-01T00:00:00.000Z'
+  );
+  if (!recoveryDecision.allowed) {
+    result.recoveryStatus = 'rejected';
+    result.writesCommitted = false;
+    result.rejected = plan.gameIds.map((gameId) => ({
+      gameId,
+      reason: 'historical_recovery_unauthorized',
+      detail: recoveryDecision.reason,
+    }));
     applyAccounting(result);
     return result;
   }

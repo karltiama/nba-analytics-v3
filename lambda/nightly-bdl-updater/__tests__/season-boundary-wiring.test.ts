@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryStorageReservationStore } from '@/lib/ops/storage-admission';
 
 type Call = { sql: string; values: unknown[] };
 
@@ -45,6 +46,7 @@ const ENV = {
   INGESTION_SEASON_START_YEAR: '2026',
   DISABLE_BDL_SCHEDULE_SYNC: '1',
   DISABLE_PLAYER_PERIOD_SCORING: '1',
+  PGS_NORMALIZED_STORAGE: '1',
 };
 
 function currentGame(season: unknown = 2026) {
@@ -64,9 +66,31 @@ function currentGame(season: unknown = 2026) {
 
 const saved: Record<string, string | undefined> = {};
 
+function permitNightly(mod: {
+  setNightlyRunDepsForTests: (deps: {
+    now: string;
+    invocationId: string;
+    reservations: MemoryStorageReservationStore;
+    measurementReader: { get: () => Promise<{ schemaVersion: number; valid: boolean; clusterBytes: number; measuredAt: string; reason: null }> };
+  } | null) => void;
+}) {
+  const measuredAt = '2026-11-18T22:30:00.000Z';
+  mod.setNightlyRunDepsForTests({
+    now: '2026-11-18T23:00:00.000Z',
+    invocationId: 'nightly-season-boundary',
+    reservations: new MemoryStorageReservationStore(),
+    measurementReader: {
+      async get() {
+        return { schemaVersion: 1, valid: true, clusterBytes: 1_000_000, measuredAt, reason: null };
+      },
+    },
+  });
+}
+
 async function runHandler() {
   vi.resetModules();
   const mod = await import('../index');
+  permitNightly(mod);
   return mod.handler();
 }
 
@@ -86,7 +110,6 @@ describe('nightly season-boundary wiring', () => {
       saved[key] = process.env[key];
       process.env[key] = value;
     }
-    delete process.env.PGS_NORMALIZED_STORAGE;
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});

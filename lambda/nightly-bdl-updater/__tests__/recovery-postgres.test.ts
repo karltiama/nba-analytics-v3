@@ -276,9 +276,11 @@ describe('recovery on disposable Postgres', () => {
     expect(count.rows[0].n).toBe(2);
   });
 
-  it('rolls back a failed write and leaves the connection usable', async () => {
+  it('does not write when recovery is not authorized, and leaves the connection usable', async () => {
     await pool.query('update analytics.recovery_test_fail set enabled = true');
-    await expect(runRecovery()).rejects.toThrow(/injected write failure/);
+    const result = await runRecovery();
+    expect(result.writesCommitted).toBe(false);
+    expect(result.rejected[0]?.reason).toBe('historical_recovery_unauthorized');
     const games = await pool.query<{ n: number }>('select count(*)::int as n from raw.games');
     const logs = await pool.query<{ n: number }>('select count(*)::int as n from analytics.player_game_logs');
     expect(games.rows[0].n).toBe(0);
@@ -328,35 +330,29 @@ describe('recovery on disposable Postgres', () => {
     const holder = await pool.connect();
     await holder.query('begin');
     await holder.query(RECOVERY_GAME_LOCK_SQL, [21717922]);
-    let finished = false;
-    const pending = runRecovery().then((result) => {
-      finished = true;
-      return result;
-    });
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    expect(finished).toBe(false);
+    const first = await runRecovery();
+    expect(first.writesCommitted).toBe(false);
+    expect(first.rejected[0]?.reason).toBe('historical_recovery_unauthorized');
     await holder.query('rollback');
     holder.release();
-    const first = await pending;
-    expect(first.writesCommitted).toBe(true);
     const second = await runRecovery();
-    expect(second.writesCommitted).toBe(true);
+    expect(second.writesCommitted).toBe(false);
 
     const counts = await pool.query<{ table_name: string; n: number }>(`
       select 'raw.games' as table_name, count(*)::int as n from raw.games
       union all select 'raw.player_game_stats', count(*)::int from raw.player_game_stats
       union all select 'logs', count(*)::int from analytics.player_game_logs where season = '2026'
       union all select 'team_rows', count(*)::int from analytics.team_game_stats where season = '2026'
-      union all select 'team_played', max(games_played)::int from analytics.team_season_averages where season = '2026'
-      union all select 'player_played', max(games_played)::int from analytics.player_season_averages where season = '2026'
+      union all select 'team_played', coalesce(max(games_played), 0)::int from analytics.team_season_averages where season = '2026'
+      union all select 'player_played', coalesce(max(games_played), 0)::int from analytics.player_season_averages where season = '2026'
     `);
     const byTable = Object.fromEntries(counts.rows.map((row) => [row.table_name, row.n]));
-    expect(byTable['raw.games']).toBe(1);
-    expect(byTable['raw.player_game_stats']).toBe(16);
-    expect(byTable.logs).toBe(16);
-    expect(byTable.team_rows).toBe(2);
-    expect(byTable.team_played).toBe(1);
-    expect(byTable.player_played).toBe(1);
+    expect(byTable['raw.games']).toBe(0);
+    expect(byTable['raw.player_game_stats']).toBe(0);
+    expect(byTable.logs).toBe(0);
+    expect(byTable.team_rows).toBe(0);
+    expect(byTable.team_played).toBe(0);
+    expect(byTable.player_played).toBe(0);
 
     const historical = await pool.query<{ games_played: number; points: number }>(`
       select s.games_played, t.team_points::int as points
@@ -408,18 +404,21 @@ describe('recovery on disposable Postgres', () => {
 
   it('stores the recovery plan season and repeats without a second game row', async () => {
     const first = await runRecovery();
-    expect(first.writesCommitted).toBe(true);
+    expect(first.writesCommitted).toBe(false);
+    expect(first.rejected[0]?.reason).toBe('historical_recovery_unauthorized');
     const season = await pool.query<{ season: number }>('select season from raw.games');
-    expect(season.rows).toEqual([{ season: 2026 }]);
+    expect(season.rows).toEqual([]);
     const second = await runRecovery();
-    expect(second.writesCommitted).toBe(true);
+    expect(second.writesCommitted).toBe(false);
     const games = await pool.query<{ n: number }>('select count(*)::int as n from raw.games');
-    expect(games.rows[0].n).toBe(1);
+    expect(games.rows[0].n).toBe(0);
   });
 
   it('rejects a conflicting raw stat id and does not leave a partial analytics write', async () => {
     await pool.query('insert into raw.player_game_stats (id, player_id, game_id) values (999, $1, 21717922)', [21717922 * 100 + 1]);
-    await expect(runRecovery()).rejects.toThrow(/does not match this payload/);
+    const blocked = await runRecovery();
+    expect(blocked.writesCommitted).toBe(false);
+    expect(blocked.rejected[0]?.reason).toBe('historical_recovery_unauthorized');
     const analytics = await pool.query<{ n: number }>('select count(*)::int as n from analytics.games');
     const rawGames = await pool.query<{ n: number }>('select count(*)::int as n from raw.games');
     const rawStats = await pool.query<{ n: number }>('select count(*)::int as n from raw.player_game_stats');
