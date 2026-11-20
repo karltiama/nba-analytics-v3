@@ -107,12 +107,17 @@ describe('ingestion schedule fail-closed (frozen configuration)', () => {
 describe('ingestion schedule activation configuration', () => {
   it('schedule state locals cannot ENABLED from global live alone', () => {
     const src = read('infra/lambda.tf');
-    expect(src).toMatch(
-      /nightly_schedule_state\s*=\s*local\.family_schedule_enabled\.nightly \? "ENABLED" : "DISABLED"/
+    const allowlist = src.match(/essential_ingestion_schedule_allowlist = toset\(\[([\s\S]*?)\]\)/);
+    expect(allowlist?.[1].match(/"[a-z_]+"/g)?.sort()).toEqual(
+      ['"game_status_sync"', '"nightly"', '"scoreboard"'].sort()
     );
     expect(src).toMatch(
-      /player_props_schedule_state\s*=\s*local\.family_schedule_enabled\.player_props \? "ENABLED" : "DISABLED"/
+      /nightly_schedule_state\s*=\s*contains\(local\.essential_ingestion_schedule_allowlist, "nightly"\) \? "ENABLED" : \(local\.ingestion_schedule_lock \? "DISABLED" : \(local\.family_schedule_enabled\.nightly \? "ENABLED" : "DISABLED"\)\)/
     );
+    expect(src).toMatch(
+      /player_props_schedule_state\s*=\s*contains\(local\.essential_ingestion_schedule_allowlist, "player_props"\) \? "ENABLED" : \(local\.ingestion_schedule_lock \? "DISABLED" : \(local\.family_schedule_enabled\.player_props \? "ENABLED" : "DISABLED"\)\)/
+    );
+    expect(src).toMatch(/ingestion_schedule_lock\s*=\s*true/);
   });
 
   it('per-family enable flags cannot silently thaw state on an unrelated apply', () => {
@@ -153,6 +158,8 @@ describe('ingestion schedule activation configuration', () => {
   it('props worker ESM follows the same freeze model as props schedules', () => {
     const src = read('infra/lambda.tf');
     const block = resourceBlock(src, 'aws_lambda_event_source_mapping" "player_props_worker_queue');
-    expect(block).toMatch(/enabled\s*=\s*local\.family_schedule_enabled\.player_props/);
+    expect(block).toMatch(
+      /enabled\s*=\s*local\.ingestion_schedule_lock \? false : local\.family_schedule_enabled\.player_props/
+    );
   });
 });

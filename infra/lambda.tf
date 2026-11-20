@@ -8,10 +8,16 @@ locals {
   }
 
   # Per-family activation. Global live alone cannot ENABLED-thaw any family.
-  # Phase 7L.14: schedule resources and queue mappings stay disabled even when
-  # these flags are true. The flags still select Lambda mode values. A thaw
-  # requires this constant to change in a reviewed source edit.
+  # The lock still forces every schedule and queue mapping DISABLED.
+  # The allowlist is the only source that can mark a schedule ENABLED, and
+  # only the three named essential collectors are on it. A family flag in
+  # tfvars cannot add a name. Queue mappings stay on the lock.
   ingestion_schedule_lock = true
+  essential_ingestion_schedule_allowlist = toset([
+    "nightly",
+    "scoreboard",
+    "game_status_sync",
+  ])
   family_schedule_enabled = {
     nightly          = var.live_ingestion_enabled && var.nightly_execution_enabled
     odds             = var.live_ingestion_enabled && var.odds_execution_enabled
@@ -23,14 +29,14 @@ locals {
     shadow           = var.live_ingestion_enabled && var.shadow_execution_enabled
     scoreboard       = var.live_ingestion_enabled && var.scoreboard_execution_enabled
   }
-  nightly_schedule_state            = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED")
-  odds_schedule_state               = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED")
-  injuries_schedule_state           = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED")
-  player_props_schedule_state       = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED")
-  boxscore_schedule_state           = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED")
-  game_status_sync_schedule_state   = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED")
-  shadow_schedule_state             = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED")
-  scoreboard_schedule_state         = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED")
+  nightly_schedule_state            = contains(local.essential_ingestion_schedule_allowlist, "nightly") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED"))
+  odds_schedule_state               = contains(local.essential_ingestion_schedule_allowlist, "odds") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED"))
+  injuries_schedule_state           = contains(local.essential_ingestion_schedule_allowlist, "injuries") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED"))
+  player_props_schedule_state       = contains(local.essential_ingestion_schedule_allowlist, "player_props") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED"))
+  boxscore_schedule_state           = contains(local.essential_ingestion_schedule_allowlist, "boxscore") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED"))
+  game_status_sync_schedule_state   = contains(local.essential_ingestion_schedule_allowlist, "game_status_sync") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED"))
+  shadow_schedule_state             = contains(local.essential_ingestion_schedule_allowlist, "shadow") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED"))
+  scoreboard_schedule_state         = contains(local.essential_ingestion_schedule_allowlist, "scoreboard") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED"))
   nightly_bdl_certified_code_sha256 = "rDv88bhZggW9lNdPbVWVMZBSwdC/UbM6RKfDEK+STSI="
 
   player_props_bundle_hash = data.archive_file.player_props.output_base64sha256

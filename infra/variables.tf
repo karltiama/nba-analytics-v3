@@ -38,12 +38,13 @@ variable "lambda_env" {
 # -----------------------------------------------------------------------------
 # Master ingestion schedule switch (Step 13C.1)
 # Per-family enable_* flags / cron lists may still CREATE schedule resources.
-# This flag selects family Lambda mode values. It does not enable schedules
-# while local.ingestion_schedule_lock is true. Frozen apply must keep all
-# ingestion schedules DISABLED even if stale tfvars still say enable_schedule = true.
+# This flag selects family Lambda mode values. It does not choose schedule state.
+# essential_ingestion_schedule_allowlist enables only nightly, scoreboard, and
+# game-status. ingestion_schedule_lock keeps every other ingestion schedule and
+# every queue mapping DISABLED. A tfvars flag cannot add a schedule name.
 # -----------------------------------------------------------------------------
 variable "live_ingestion_enabled" {
-  description = "Selects family Lambda mode values. Schedule state and queue mappings stay disabled while ingestion_schedule_lock is true. Not a resource-creation flag."
+  description = "Selects family Lambda mode values. It does not enable schedules. The essential allowlist keeps nightly, scoreboard, and game-status ENABLED. Every other ingestion schedule and every queue mapping stays DISABLED while ingestion_schedule_lock is true. Not a resource-creation flag."
   type        = bool
   default     = false
 }
@@ -51,31 +52,31 @@ variable "live_ingestion_enabled" {
 # Family execution (activation). Independent of resource creation.
 # effective_family_execution = live_ingestion_enabled && family_execution_enabled
 variable "nightly_execution_enabled" {
-  description = "When true with live_ingestion_enabled, the nightly EventBridge rule is ENABLED. Default false so a global thaw cannot start nightly alone."
+  description = "Selects nightly Lambda mode when live_ingestion_enabled is true. The nightly schedule stays ENABLED through the essential allowlist, not through this flag. Default false so a global thaw cannot change nightly mode alone."
   type        = bool
   default     = false
 }
 
 variable "odds_execution_enabled" {
-  description = "When true with live_ingestion_enabled, odds EventBridge rules are ENABLED."
+  description = "Selects odds Lambda mode when live_ingestion_enabled is true. Odds schedules stay DISABLED because odds is not on the essential allowlist. This flag cannot enable them while the lock is true."
   type        = bool
   default     = false
 }
 
 variable "injuries_execution_enabled" {
-  description = "When true with live_ingestion_enabled, the injuries EventBridge rule is ENABLED."
+  description = "Selects injuries Lambda mode when live_ingestion_enabled is true. The injuries schedule stays DISABLED because injuries is not on the essential allowlist. This flag cannot enable it while the lock is true."
   type        = bool
   default     = false
 }
 
 variable "player_props_execution_enabled" {
-  description = "When true with live_ingestion_enabled, props Scheduler rules are ENABLED and the worker ESM is enabled. Messages already on the queue are preserved while ESM is disabled."
+  description = "Selects props Lambda mode when live_ingestion_enabled is true. Props schedules and the worker queue mapping stay DISABLED because props is not on the essential allowlist. This flag cannot enable them while the lock is true. Messages already on the queue are preserved while the mapping is disabled."
   type        = bool
   default     = false
 }
 
 variable "boxscore_execution_enabled" {
-  description = "When true with live_ingestion_enabled, the boxscore EventBridge rule is ENABLED."
+  description = "Selects boxscore Lambda mode when live_ingestion_enabled is true. The boxscore schedule stays DISABLED because boxscore is not on the essential allowlist. This flag cannot enable it while the lock is true."
   type        = bool
   default     = false
 }
@@ -87,7 +88,7 @@ variable "game_status_sync_create" {
 }
 
 variable "game_status_sync_execution_enabled" {
-  description = "When true with live_ingestion_enabled and a created schedule, the status-sync Scheduler is ENABLED."
+  description = "Selects game-status Lambda mode when live_ingestion_enabled is true. The game-status schedule stays ENABLED through the essential allowlist, not through this flag."
   type        = bool
   default     = false
 }
@@ -99,7 +100,7 @@ variable "scoreboard_create" {
 }
 
 variable "scoreboard_execution_enabled" {
-  description = "When true with live_ingestion_enabled, the scoreboard schedule is ENABLED and preseason collection is switched on in the Lambda env. Regular season, play-in and playoffs stay off in Terraform and are refused in code."
+  description = "Selects scoreboard Lambda mode when live_ingestion_enabled is true, including the preseason collection env. The scoreboard schedule stays ENABLED through the essential allowlist, not through this flag. Regular season, play-in and playoffs stay off in Terraform and are refused in code."
   type        = bool
   default     = false
 }
@@ -111,7 +112,7 @@ variable "postgame_create" {
 }
 
 variable "postgame_execution_enabled" {
-  description = "When true with live_ingestion_enabled and postgame_create, the postgame SQS ESM is enabled. Does not purge the queue."
+  description = "Selects postgame Lambda mode when live_ingestion_enabled and postgame_create are true. The postgame queue mapping stays DISABLED while the lock is true. This flag cannot enable it. Does not purge the queue."
   type        = bool
   default     = false
 }
@@ -123,7 +124,7 @@ variable "shadow_create" {
 }
 
 variable "shadow_execution_enabled" {
-  description = "When true with live_ingestion_enabled and a created schedule, the shadow EventBridge rule is ENABLED."
+  description = "Selects shadow Lambda mode when live_ingestion_enabled is true. The shadow schedule stays DISABLED because shadow is not on the essential allowlist. This flag cannot enable it while the lock is true."
   type        = bool
   default     = false
 }

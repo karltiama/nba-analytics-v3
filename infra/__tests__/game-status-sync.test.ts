@@ -208,7 +208,9 @@ describe('game-status-sync terraform (13I.2 creation boundary)', () => {
     expect(nightly).toContain('nightly_bdl_updater');
     expect(nightly).not.toMatch(/DATA_MODE\s*=\s*local\.family_schedule_enabled/);
     expect(lambdaTf).not.toMatch(/LIVE_INGESTION_ENABLED\s*=\s*var\.live_ingestion_enabled/);
-    expect(lambdaTf).toMatch(/enabled\s*=\s*local\.family_schedule_enabled\.player_props/);
+    expect(lambdaTf).toMatch(
+      /enabled\s*=\s*local\.ingestion_schedule_lock \? false : local\.family_schedule_enabled\.player_props/
+    );
   });
 
   it('ops catalog names match Terraform defaults', () => {
