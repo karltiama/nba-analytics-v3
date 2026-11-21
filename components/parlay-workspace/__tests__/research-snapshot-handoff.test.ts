@@ -5,8 +5,10 @@
  */
 import { act, createElement, StrictMode, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ParlayWorkspaceView } from '@/components/parlay-workspace/ParlayWorkspaceView';
+import { ResearchSnapshotFormPanel } from '@/components/parlay-workspace/ResearchSnapshotFormPanel';
 import type { SelectedParlayLeg } from '@/lib/parlay/selection';
 import { evaluateWorkspaceAnalysisEligibility } from '@/lib/parlay/workspace-analysis';
 import {
@@ -647,6 +649,15 @@ describe('quick builds handoff to historical player form', () => {
     expect(mixedText).toContain('View Context');
     expect(mixedText).toContain('Game start Dec 14, 7:30 PM EST');
     expect(mixedText).not.toContain(RESEARCH_SNAPSHOT_WORKSPACE_NOTE);
+  });
+
+  it('says historical form uses stored games and does not fill a missing date', () => {
+    const html = renderToStaticMarkup(createElement(ResearchSnapshotFormPanel, { legs: [] }));
+    expect(html).toContain(HISTORICAL_PLAYER_FORM_TITLE);
+    expect(html).toContain(HISTORICAL_PLAYER_FORM_BASIS);
+    expect(html).toContain('Games with no first-stored time are left out.');
+    expect(html).not.toContain('November 13');
+    expect(html).not.toContain('complete season');
   });
 });
 

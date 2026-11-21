@@ -382,12 +382,12 @@ describe('freshness and status', () => {
     expect(gamePhase('scheduled')).toBe('pregame');
   });
 
-  it('says the game is waiting for tip after the listed tip, without calling it live or final', () => {
+  it('says the result is unavailable after the listed tip, without calling it live or final', () => {
     const tip = '2026-10-20T19:00:00.000Z';
     const before = Date.parse('2026-10-20T18:59:59.000Z');
     const atTip = Date.parse(tip);
     expect(cardStatusLabel('scheduled', tip, { scheduledTip: tip, nowMs: before })).toBe('Scheduled');
-    expect(cardStatusLabel('scheduled', tip, { scheduledTip: tip, nowMs: atTip })).toBe('Live score unavailable');
+    expect(cardStatusLabel('scheduled', tip, { scheduledTip: tip, nowMs: atTip })).toBe('Result unavailable');
     expect(cardStatusLabel('live', '1st Qtr', { scheduledTip: tip, nowMs: atTip })).toBe('Live');
     expect(cardStatusLabel('final', 'Final', { scheduledTip: tip, nowMs: atTip + 3 * 60 * 60 * 1000 })).toBe('Final');
     expect(cardStatusLabel('postponed', null, { scheduledTip: tip, nowMs: atTip })).toBe('Postponed');
@@ -401,7 +401,7 @@ describe('freshness and status', () => {
     });
     const presented = presentScoreboardGame(scheduled, '2026-10-20T19:05:00.000Z');
     expect(presented).toMatchObject({
-      statusLabel: 'Live score unavailable',
+      statusLabel: 'Result unavailable',
       phase: 'pregame',
       showScores: false,
       homeScore: null,

@@ -7,7 +7,7 @@ import { scoreboardMatchupHref } from '@/lib/pregame-matchup/href';
 import { twoWayMarketDisplay } from '@/lib/betting/market-probability';
 import { TeamLogo } from '@/components/nba/TeamLogo';
 import { MarketProbability } from '@/components/betting/MarketProbability';
-import type { PresentedGame } from '@/lib/scoreboard/present';
+import { RESULT_UNAVAILABLE, type PresentedGame } from '@/lib/scoreboard/present';
 import type { StatLeader } from '@/lib/scoreboard/game-pulse';
 import type { CardInjuryLineStatus, CardInjuryTeam } from '@/lib/scoreboard/card-context/client';
 
@@ -478,7 +478,7 @@ export function GameCard({
               className="type-badge whitespace-nowrap px-2 py-0.5 bg-[#F3F8F8] text-cc-secondary rounded-full"
               data-lifecycle-label
             >
-              {schedulePreview.tipPassed ? 'Live score unavailable' : 'Schedule preview'}
+              {schedulePreview.tipPassed ? RESULT_UNAVAILABLE : 'Schedule preview'}
             </span>
           ) : phase === 'other' && board ? (
             <span
