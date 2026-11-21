@@ -145,7 +145,7 @@ describe('Pre-game card keeps the original market layout', () => {
       expectPregameShell(html);
       expect(html).toContain('data-phase="pregame"');
       expect(html).not.toContain('data-pregame-lines');
-      expect(html).toContain('7:00 PM EDT · Live score unavailable');
+      expect(html).toContain('7:00 PM EDT · Result unavailable');
       expect(html).toContain('>VS<');
       expect(textOf(html)).toContain('MEM —');
       expect(textOf(html)).toContain('CHI —');
@@ -658,5 +658,107 @@ describe('Market card and wiring regressions', () => {
     expect(read('app/dev/scoreboard/page.tsx')).toMatch(/NODE_ENV === 'production'/);
     expect(todaysGamesUnavailableCopy('disabled')).toBe('Scoreboard serving is turned off.');
     expect(todaysGamesUnavailableCopy('error')).toBe('The game schedule is temporarily unavailable.');
+  });
+});
+
+describe('GameCard lifecycle labels', () => {
+  const observedAt = '2026-11-21T17:00:00.000Z';
+
+  function rendered(game: ScoreboardGame) {
+    return boardHtml(game, observedAt);
+  }
+
+  it('shows a verified Final score and hides a future tip, a past missing result, and an unverified score', () => {
+    const finalHtml = rendered(scoreboardGame({
+      game_id: '21718147',
+      lifecycle: 'final',
+      season_type: 'regular',
+      et_date: '2026-11-20',
+      scheduled_tip: '2026-11-21T00:00:00.000Z',
+      provider_status: 'Final',
+      period: 4,
+      clock: 'Final',
+      home: { provider_team_id: '1', abbreviation: 'ATL', name: 'Atlanta Hawks', score: 111 },
+      visitor: { provider_team_id: '4', abbreviation: 'CHA', name: 'Charlotte Hornets', score: 97 },
+      box_score: { completeness: 'verified_final', acquired_at: '2026-11-21T08:01:00.000Z', players: [] },
+    }));
+    expect(finalHtml).toContain('>FINAL<');
+    expect(finalHtml).toContain('data-scoreline');
+    expect(finalHtml).toContain('aria-label="CHA 97, ATL 111"');
+    expect(finalHtml).not.toContain('Result unavailable');
+    expect(finalHtml).not.toContain('>VS<');
+
+    const explicitFinal = rendered(scoreboardGame({
+      game_id: '21718155',
+      lifecycle: 'final',
+      season_type: 'regular',
+      et_date: '2026-11-20',
+      scheduled_tip: '2026-11-21T03:00:00.000Z',
+      provider_status: 'Final',
+      clock: 'Final',
+      home: { provider_team_id: '14', abbreviation: 'LAL', name: 'Los Angeles Lakers', score: 106 },
+      visitor: { provider_team_id: '26', abbreviation: 'SAC', name: 'Sacramento Kings', score: 104 },
+      box_score: { completeness: 'verified_final', acquired_at: '2026-11-21T08:01:00.000Z', players: [] },
+    }));
+    expect(explicitFinal).toContain('>FINAL<');
+    expect(explicitFinal).toContain('aria-label="SAC 104, LAL 106"');
+
+    const futureHtml = rendered(scoreboardGame({
+      game_id: '21718156',
+      lifecycle: 'scheduled',
+      season_type: 'regular',
+      et_date: '2026-11-21',
+      scheduled_tip: '2026-11-21T18:00:00.000Z',
+      provider_status: '2026-11-21T18:00:00Z',
+      home: { score: 0 },
+      visitor: { score: 0 },
+      box_score: { completeness: 'none', acquired_at: null, players: [] },
+    }));
+    expect(futureHtml).toContain('Scheduled');
+    expect(futureHtml).toContain('>VS<');
+    expect(futureHtml).not.toContain('data-scoreline');
+    expect(futureHtml).not.toContain('>FINAL<');
+    expect(futureHtml).not.toContain('Result unavailable');
+
+    const missingHtml = rendered(scoreboardGame({
+      game_id: '21718095',
+      lifecycle: 'scheduled',
+      season_type: 'regular',
+      et_date: '2026-11-13',
+      scheduled_tip: '2026-11-14T00:00:00.000Z',
+      provider_status: '2026-11-14T00:00:00Z',
+      stale: true,
+      home: { score: 0 },
+      visitor: { score: 0 },
+      box_score: { completeness: 'none', acquired_at: null, players: [] },
+    }));
+    expect(missingHtml).toContain('Result unavailable');
+    expect(missingHtml).toContain('>VS<');
+    expect(missingHtml).not.toContain('data-scoreline');
+    expect(missingHtml).not.toContain('0 – 0');
+    expect(missingHtml).not.toContain('>FINAL<');
+    expect(missingHtml).not.toContain('>LIVE<');
+    expect(missingHtml).not.toContain('Live score unavailable');
+
+    const liveHtml = rendered(auditLiveGame());
+    expect(liveHtml).toContain('>LIVE<');
+    expect(liveHtml).toContain('data-scoreline');
+    expect(liveHtml).toContain('aria-label="LAC 10, TOR 17"');
+    expect(liveHtml).toContain('Q1 4:35');
+    expect(liveHtml).not.toContain('Result unavailable');
+    expect(liveHtml).not.toContain('>FINAL<');
+
+    const unverifiedHtml = rendered(scoreboardGame({
+      game_id: 'missing-score',
+      lifecycle: 'unknown',
+      provider_status: null,
+      home: { score: null },
+      visitor: { score: null },
+      box_score: { completeness: 'none', acquired_at: null, players: [] },
+    }));
+    expect(unverifiedHtml).toContain('Status unavailable');
+    expect(unverifiedHtml).not.toContain('data-scoreline');
+    expect(unverifiedHtml).not.toContain('>FINAL<');
+    expect(unverifiedHtml).not.toContain('>LIVE<');
   });
 });

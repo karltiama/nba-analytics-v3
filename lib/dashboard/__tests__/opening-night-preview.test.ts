@@ -220,7 +220,7 @@ describe('opening night card', () => {
     expect(before).toContain('Celtics');
     expect(before).toContain('Pistons');
     expect(before).toContain('3:00 PM ET');
-    expect(before).toContain('Live score unavailable');
+    expect(before).toContain('Result unavailable');
     expect(before).not.toContain('Scheduled');
     expect(before).not.toContain('data-phase="pregame"');
     expect(before).not.toContain('data-phase="live"');
@@ -235,7 +235,7 @@ describe('opening night card', () => {
     expect(after).toContain('Spurs');
     expect(after).toContain('9:30 PM ET');
     expect(after).toContain('Schedule preview');
-    expect(after).not.toContain('Live score unavailable');
+    expect(after).not.toContain('Result unavailable');
     expect(after).not.toContain('Scheduled');
 
     const quoted = applyStoredOdds(

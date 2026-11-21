@@ -201,13 +201,13 @@ export function lifecycleLabel(lifecycle: GameLifecycleState | null): string {
   return LIFECYCLE_LABEL[lifecycle];
 }
 
-/** Shown when tip has passed and the provider has not verified a live or final state. */
-export const LIVE_SCORE_UNAVAILABLE = 'Live score unavailable';
+/** Shown when tip has passed and the stored lifecycle is still scheduled. */
+export const RESULT_UNAVAILABLE = 'Result unavailable';
 
 /**
  * Card status. Same as lifecycleLabel, except an unknown lifecycle whose provider status says
  * delayed or suspended shows that word. A scheduled game whose tip instant has passed says the
- * live score is unavailable. It never promotes a game to Live or Final from the clock.
+ * result is unavailable. It never promotes a game to Live or Final from the clock.
  */
 export function cardStatusLabel(
   lifecycle: GameLifecycleState | null,
@@ -221,7 +221,7 @@ export function cardStatusLabel(
   }
   if (lifecycle === 'scheduled' && clock?.nowMs != null && clock.scheduledTip) {
     const tip = Date.parse(clock.scheduledTip);
-    if (Number.isFinite(tip) && clock.nowMs >= tip) return LIVE_SCORE_UNAVAILABLE;
+    if (Number.isFinite(tip) && clock.nowMs >= tip) return RESULT_UNAVAILABLE;
   }
   return lifecycleLabel(lifecycle);
 }
