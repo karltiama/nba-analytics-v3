@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryStorageReservationStore } from '@/lib/ops/storage-admission';
 import { validateGameBox, type StatLine } from '../box-completeness';
 import { PLAYER_SEASON_SQL, TEAM_SEASON_SQL } from '../recovery-execute';
 import {
@@ -575,6 +576,7 @@ describe('recovery handler', () => {
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;
     }
+    delete process.env.PGS_NORMALIZED_STORAGE;
     vi.restoreAllMocks();
   });
 
@@ -597,8 +599,25 @@ describe('recovery handler', () => {
 
   it('leaves an ordinary live invoke on the nightly path', async () => {
     h.games = [];
-    const { handler } = await loadHandler();
-    const response = await handler();
+    process.env.PGS_NORMALIZED_STORAGE = '1';
+    const mod = await loadHandler();
+    mod.setNightlyRunDepsForTests({
+      now: '2026-11-18T23:00:00.000Z',
+      invocationId: 'nightly-ordinary',
+      reservations: new MemoryStorageReservationStore(),
+      measurementReader: {
+        async get() {
+          return {
+            schemaVersion: 1,
+            valid: true,
+            clusterBytes: 1_000_000,
+            measuredAt: '2026-11-18T22:30:00.000Z',
+            reason: null,
+          };
+        },
+      },
+    });
+    const response = await mod.handler();
     const body = JSON.parse(response.body);
     expect(response.statusCode).toBe(200);
     expect(body.recovery).toBeUndefined();
@@ -611,37 +630,25 @@ describe('recovery handler', () => {
     const { handler } = await loadHandler({ ...LIVE, DISABLE_BDL_SCHEDULE_SYNC: '0' });
     const response = await handler(recoveryEvent([21717922, 21717922]));
     const body = JSON.parse(response.body);
-    expect(response.statusCode).toBe(200);
-    expect(body.writesCommitted).toBe(true);
+    expect(response.statusCode).toBe(500);
+    expect(body.writesCommitted).toBe(false);
+    expect(body.rejected[0].reason).toBe('historical_recovery_unauthorized');
     expect(body.scheduleGamesSynced).toBe(0);
-    expect(body.committedGameIds).toEqual([21717922]);
-    expect(body.ignoredGameIds).toEqual([21717923]);
-    expect(body.teamGameStats).toBe(2);
+    expect(body.committedGameIds).toEqual([]);
     expect(body.requestsAttempted).toBe(2);
     expect(body.logicalAttempts).toBe(2);
     expect(body.httpAttempts).toBe(2);
-    expect(body.httpAttemptUpperBound).toBe(128);
-    expect(body.seasonTypes).toEqual(['regular']);
     const gameUrls = h.urls.filter((url) => new URL(url).pathname.endsWith('/games'));
     const statUrls = h.urls.filter((url) => new URL(url).pathname.endsWith('/stats'));
     expect(gameUrls).toHaveLength(1);
     expect(new URL(gameUrls[0]).searchParams.get('end_date')).toBe('2026-10-21');
     expect(new URL(statUrls[0]).searchParams.getAll('game_ids[]')).toEqual(['21717922']);
-    expect(inserts('raw.games').map((call) => call.values[0])).toEqual([21717922]);
-    expect(inserts('analytics.games').map((call) => [call.values[0], call.values[1], call.values[3], call.values[6], call.values[7]])).toEqual([
-      ['21717922', '2026', 'Final', 86, 80],
-    ]);
-    expect(inserts('analytics.player_game_logs')).toHaveLength(16);
-    expect(inserts('analytics.team_game_stats')).toHaveLength(2);
-    expect(h.calls.some((call) => call.sql.includes('yesterday_et'))).toBe(false);
-    expect(JSON.stringify(h.calls)).not.toContain('2025');
-    expect(h.calls.some((call) => call.sql === TEAM_SEASON_SQL && call.values[0] === '2026')).toBe(true);
-    expect(h.calls.some((call) => call.sql === PLAYER_SEASON_SQL && call.values[0] === '2026')).toBe(true);
-    expect(inserts('analytics.team_season_averages').every((call) => call.values[1] === '2026' && call.values[2] === 1)).toBe(true);
-    expect(h.calls.some((call) => call.sql.includes('pg_advisory_xact_lock'))).toBe(true);
-    expect(inserts('raw.players').every((call) => call.sql.includes('do nothing'))).toBe(true);
-    expect(inserts('analytics.players').every((call) => call.sql.includes('do nothing'))).toBe(true);
-    expect(h.releases).toEqual([null]);
+    expect(h.connects).toBe(0);
+    expect(inserts('raw.games')).toHaveLength(0);
+    expect(inserts('analytics.games')).toHaveLength(0);
+    expect(inserts('analytics.player_game_logs')).toHaveLength(0);
+    expect(h.calls.some((call) => call.sql.includes('pg_advisory_xact_lock'))).toBe(false);
+    expect(h.releases).toEqual([]);
   });
 
   it('writes two allowlisted games and still does not write a third returned game', async () => {
@@ -650,11 +657,15 @@ describe('recovery handler', () => {
     const { handler } = await loadHandler();
     const response = await handler(recoveryEvent([21717922, 21717930], '2026-10-20', '2026-10-21'));
     const body = JSON.parse(response.body);
-    expect(response.statusCode).toBe(200);
-    expect(body.committedGameIds).toEqual([21717922, 21717930]);
+    expect(response.statusCode).toBe(500);
+    expect(body.writesCommitted).toBe(false);
+    expect(body.rejected.map((row: { reason: string }) => row.reason)).toEqual([
+      'historical_recovery_unauthorized',
+      'historical_recovery_unauthorized',
+    ]);
     expect(new URL(h.urls.find((url) => url.includes('/stats'))!).searchParams.getAll('game_ids[]')).toEqual(['21717922', '21717930']);
-    expect(inserts('raw.games').map((call) => call.values[0])).toEqual([21717922, 21717930]);
-    expect(body.teamGameStats).toBe(4);
+    expect(h.connects).toBe(0);
+    expect(inserts('raw.games')).toHaveLength(0);
   });
 
   it('does not fetch or write when the allowlisted game is not a final inside the window', async () => {
@@ -731,45 +742,44 @@ describe('recovery handler', () => {
     expect(h.urls.length).toBe(1);
   });
 
-  it('rolls back a failed write and retries the same game once', async () => {
+  it('does not open a transaction when recovery is not authorized', async () => {
     h.failOn = 'insert into analytics.player_game_logs';
     const { handler } = await loadHandler();
     const failed = await handler(recoveryEvent([21717922]));
     expect(failed.statusCode).toBe(500);
-    expect(h.calls.some((call) => call.sql === 'rollback')).toBe(true);
+    expect(JSON.parse(failed.body).rejected[0].reason).toBe('historical_recovery_unauthorized');
+    expect(h.connects).toBe(0);
+    expect(h.calls.some((call) => call.sql === 'begin')).toBe(false);
+    expect(h.calls.some((call) => call.sql === 'rollback')).toBe(false);
     expect(h.calls.some((call) => call.sql === 'commit')).toBe(false);
 
     h.failOn = '';
     h.calls.length = 0;
-    h.urls.length = 0;
+    h.connects = 0;
     const retried = await handler(recoveryEvent([21717922]));
-    const body = JSON.parse(retried.body);
-    expect(retried.statusCode).toBe(200);
-    expect(body.committedGameIds).toEqual([21717922]);
-    expect(h.calls.some((call) => call.sql === 'commit')).toBe(true);
-    expect(inserts('analytics.player_game_logs')).toHaveLength(16);
-    expect(inserts('analytics.team_game_stats')).toHaveLength(2);
-    expect(inserts('analytics.team_season_averages').every((call) => call.values[2] === 1)).toBe(true);
-    expect(inserts('analytics.player_season_averages').every((call) => call.values[1] === '2026' && call.values[2] === 1)).toBe(true);
+    expect(retried.statusCode).toBe(500);
+    expect(JSON.parse(retried.body).writesCommitted).toBe(false);
+    expect(h.connects).toBe(0);
+    expect(inserts('analytics.player_game_logs')).toHaveLength(0);
   });
 
-  it('does not count the same game twice when the recovery is repeated', async () => {
+  it('still writes nothing when the same unauthorized recovery is repeated', async () => {
     const { handler } = await loadHandler();
     await handler(recoveryEvent([21717922]));
     await handler(recoveryEvent([21717922]));
-    const played = inserts('analytics.team_season_averages').map((call) => call.values[2]);
-    expect(played.length).toBeGreaterThan(0);
-    expect(played.every((value) => value === 1)).toBe(true);
-    expect(new Set(inserts('raw.games').map((call) => call.values[0]))).toEqual(new Set([21717922]));
+    expect(h.connects).toBe(0);
+    expect(inserts('raw.games')).toHaveLength(0);
+    expect(inserts('analytics.team_season_averages')).toHaveLength(0);
   });
 
-  it('rolls back when an existing raw stat id would fork the same player', async () => {
+  it('does not reach a raw-stat conflict because recovery never connects', async () => {
     h.rawConflict = true;
     const { handler } = await loadHandler();
     const response = await handler(recoveryEvent([21717922]));
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.body).error).toMatch(/does not match this payload/);
-    expect(h.calls.some((call) => call.sql === 'rollback')).toBe(true);
+    expect(JSON.parse(response.body).rejected[0].reason).toBe('historical_recovery_unauthorized');
+    expect(h.connects).toBe(0);
+    expect(h.calls.some((call) => call.sql === 'rollback')).toBe(false);
     expect(h.calls.some((call) => call.sql === 'commit')).toBe(false);
   });
 
@@ -780,25 +790,19 @@ describe('recovery handler', () => {
     expect(PLAYER_SEASON_SQL).not.toContain('2025');
   });
 
-  it('rejects the second recovery of one game while the first transaction is still open', async () => {
-    let releaseLock: () => void = () => {};
-    h.lockHold = new Promise((resolve) => {
-      releaseLock = resolve;
-    });
+  it('does not take the advisory lock when recovery is not authorized', async () => {
     h.holdFirstLock = true;
     const { handler } = await loadHandler();
-    const first = handler(recoveryEvent([21717922]));
-    await vi.waitUntil(() => h.lockWaits >= 1);
+    const first = await handler(recoveryEvent([21717922]));
     const second = await handler(recoveryEvent([21717922]));
+    expect(first.statusCode).toBe(500);
     expect(second.statusCode).toBe(500);
-    expect(JSON.parse(second.body).error).toMatch(/advisory lock held/);
+    expect(JSON.parse(first.body).writesCommitted).toBe(false);
+    expect(JSON.parse(second.body).writesCommitted).toBe(false);
+    expect(h.lockWaits).toBe(0);
+    expect(h.connects).toBe(0);
     expect(inserts('raw.player_game_stats')).toHaveLength(0);
     expect(h.calls.some((call) => call.sql === 'commit')).toBe(false);
-    releaseLock();
-    const finished = await first;
-    expect(finished.statusCode).toBe(200);
-    expect(JSON.parse(finished.body).writesCommitted).toBe(true);
-    expect(inserts('raw.player_game_stats')).toHaveLength(16);
   });
 
   it('stops a 429 storm at the HTTP ceiling and writes nothing', async () => {
@@ -828,11 +832,12 @@ describe('recovery handler', () => {
     const { handler } = await loadHandler();
     const response = await handler(recoveryEvent([21717922], '2026-10-21', '2026-10-21', 2026, { strictHttpBudget: true }));
     const body = JSON.parse(response.body);
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(500);
     expect(body.httpAttempts).toBe(4);
     expect(body.logicalAttempts).toBe(2);
     expect(body.httpAttemptUpperBound).toBe(48);
-    expect(body.writesCommitted).toBe(true);
+    expect(body.writesCommitted).toBe(false);
+    expect(h.connects).toBe(0);
   });
 
   it('counts an extra stats page and still commits one box', async () => {
@@ -841,12 +846,13 @@ describe('recovery handler', () => {
     const { handler } = await loadHandler();
     const response = await handler(recoveryEvent([21717922], '2026-10-21', '2026-10-21', 2026, { strictHttpBudget: true }));
     const body = JSON.parse(response.body);
-    expect(response.statusCode).toBe(200);
-    expect(body.writesCommitted).toBe(true);
+    expect(response.statusCode).toBe(500);
+    expect(body.writesCommitted).toBe(false);
     expect(body.httpAttempts).toBe(3);
     expect(body.statsPages).toBe(2);
     expect(h.urls.filter((url) => url.includes('/stats'))).toHaveLength(2);
-    expect(inserts('analytics.player_game_logs')).toHaveLength(16);
+    expect(h.connects).toBe(0);
+    expect(inserts('analytics.player_game_logs')).toHaveLength(0);
   });
 
   it('stops before the next games page when the canary ceiling is already spent', async () => {
@@ -935,10 +941,12 @@ describe('recovery handler', () => {
       })
     );
     const body = JSON.parse(response.body);
-    expect(response.statusCode).toBe(200);
-    expect(body.writesCommitted).toBe(true);
+    expect(response.statusCode).toBe(500);
+    expect(body.writesCommitted).toBe(false);
+    expect(body.rejected[0].reason).toBe('historical_recovery_unauthorized');
     expect(body.httpAttemptUpperBound).toBe(48);
     expect(body.scheduleGamesSynced).toBe(0);
+    expect(h.connects).toBe(0);
     expect(h.urls.some((url) => url.includes('/stats'))).toBe(true);
   });
 
@@ -952,26 +960,26 @@ describe('recovery handler', () => {
     expect(h.connects).toBe(0);
   }, 30_000);
 
-  it('marks the connection unusable when rollback fails and still reports the write error', async () => {
+  it('does not open a connection when rollback would have failed', async () => {
     h.failOn = 'insert into analytics.player_game_logs';
     h.rollbackFails = true;
     const { handler } = await loadHandler();
     const response = await handler(recoveryEvent([21717922]));
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.body).error).toMatch(/injected write failure/);
-    expect(h.calls.filter((call) => call.sql === 'rollback')).toHaveLength(1);
-    expect(h.releases).toHaveLength(1);
-    expect(h.releases[0]).toBeInstanceOf(Error);
-    expect(h.releases[0]?.message).toBe('rollback failed');
+    expect(JSON.parse(response.body).rejected[0].reason).toBe('historical_recovery_unauthorized');
+    expect(h.connects).toBe(0);
+    expect(h.calls.filter((call) => call.sql === 'rollback')).toHaveLength(0);
+    expect(h.releases).toHaveLength(0);
     expect(h.calls.some((call) => call.sql === 'commit')).toBe(false);
   });
 
-  it('releases a successful rollback without an error', async () => {
+  it('does not release a connection when recovery is not authorized', async () => {
     h.failOn = 'insert into analytics.player_game_logs';
     const { handler } = await loadHandler();
     const response = await handler(recoveryEvent([21717922]));
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.body).error).toMatch(/injected write failure/);
-    expect(h.releases).toEqual([null]);
+    expect(JSON.parse(response.body).writesCommitted).toBe(false);
+    expect(h.connects).toBe(0);
+    expect(h.releases).toEqual([]);
   });
 });

@@ -20,6 +20,15 @@ import { normalizeOddsRows, oddsEligibleGames, SCOREBOARD_ODDS_POLICY } from './
 import { matchLiveBoxScores, mergeObservation, normalizeGameRow } from './normalize';
 import { needsLiveBox, nextPollingState, planScoreboardTick } from './planner';
 import type { ScoreboardStore } from './store';
+import {
+  SCOREBOARD_MAX_GAMES_PER_PAGE,
+  SCOREBOARD_MAX_GAMES_PER_SEASON_TYPE,
+  SCOREBOARD_MAX_ODDS_ROWS,
+  SCOREBOARD_MAX_PLAYERS_PER_GAME,
+  SCOREBOARD_MAX_SEASON_TYPES,
+  scoreboardGameFits,
+  scoreboardLineFits,
+} from '@/lib/ops/storage-growth-bounds';
 
 export const SCOREBOARD_COLLECTOR = { name: 'scoreboard-collector', version: 'scoreboard.v1' } as const;
 export const SCOREBOARD_GAMES_FAMILY = 'scoreboard_games';
@@ -144,6 +153,12 @@ export async function runScoreboardCycle(input: {
   const target = parseScoreboardTargetSeason(input.env);
   if (!target.ok) return done('failed', target.reason);
   if (!input.fetch) return done('failed', 'no acquiring fetch configured');
+  if (decision.seasonTypes.length > SCOREBOARD_MAX_SEASON_TYPES) {
+    return done(
+      'failed',
+      `scoreboard invocation enables ${decision.seasonTypes.length} season types; the envelope allows ${SCOREBOARD_MAX_SEASON_TYPES}`
+    );
+  }
   const fetchers = input.fetch;
 
   const today = etYmd(now);
@@ -238,39 +253,78 @@ export async function runScoreboardCycle(input: {
       const state = nextPollingState(g, now);
       if (state !== g.pollingState) touched.set(g.gameId, { ...g, pollingState: state });
     }
-    result.upserted = await input.store.upsertGames([...touched.values()]);
-    await input.store.recordGamesRequest(seasonType, observedAt, pages.at(-1)!.requestId);
-
-    // 3. Live box scores, only when a game is in progress or still needs final player lines.
-    // Regular season uses this same one /v1/box_scores/live request. Scores alone do not carry
-    // player lines, so skipping it leaves Points, Rebounds, and Assists empty.
+    const oversizedGames = [...touched.values()].filter((game) => !scoreboardGameFits(game));
+    if (oversizedGames.length > 0) {
+      for (const game of oversizedGames) {
+        result.rejected.push({ gameId: game.gameId, reason: 'field exceeds the physical growth envelope' });
+      }
+      gamesFailure = 'scoreboard batch contains a game that exceeds the physical envelope';
+      break games;
+    }
+    if (
+      pages.some((page) => page.rows.length > SCOREBOARD_MAX_GAMES_PER_PAGE) ||
+      touched.size > SCOREBOARD_MAX_GAMES_PER_SEASON_TYPE
+    ) {
+      gamesFailure = `scoreboard batch exceeds the physical envelope of ${SCOREBOARD_MAX_GAMES_PER_PAGE} rows per page and ${SCOREBOARD_MAX_GAMES_PER_SEASON_TYPE} games`;
+      break games;
+    }
+    // Validate the fetched box before the first related write. A line that does not fit
+    // refuses the season type with nothing stored. A failed box request still saves the
+    // games that already fit, then reports the incomplete cycle.
     const current = new Map(stored.map((g) => [g.gameId, g]));
     for (const g of touched.values()) current.set(g.gameId, g);
     const boxGames = [...current.values()].filter(needsLiveBox);
-    if (boxGames.length === 0) continue;
-    result.box.requested = true;
-    const boxPage = await fetchers.liveBox(scoreboardLiveBoxUrl(seasonType), {
-      plan: { targetSeason: target.season, seasonTypeRequested: seasonType, startDate: null, endDate: null },
-      pageIndex: 0,
-      cursor: null,
-      pullRunId: newId(),
-    });
-    bdlRequests += boxPage.acquisition?.requestIds.length ?? 1;
-    const boxRequestId = boxPage.acquisition?.requestIds.at(-1);
-    if (!boxPage.acquisition || boxPage.acquisition.blockedReason || !boxRequestId) {
-      gamesFailure = `live box acquisition blocked: ${boxPage.acquisition?.blockedReason ?? 'no evidence'}`;
-      break games;
+    const persistGames = async () => {
+      result.upserted = await input.store.upsertGames([...touched.values()]);
+      await input.store.recordGamesRequest(seasonType, observedAt, pages.at(-1)!.requestId);
+    };
+    let prepared: {
+      boxRequestId: string;
+      boxObservedAt: string;
+      match: ReturnType<typeof matchLiveBoxScores>;
+    } | null = null;
+    if (boxGames.length > 0) {
+      result.box.requested = true;
+      const boxPage = await fetchers.liveBox(scoreboardLiveBoxUrl(seasonType), {
+        plan: { targetSeason: target.season, seasonTypeRequested: seasonType, startDate: null, endDate: null },
+        pageIndex: 0,
+        cursor: null,
+        pullRunId: newId(),
+      });
+      bdlRequests += boxPage.acquisition?.requestIds.length ?? 1;
+      const boxRequestId = boxPage.acquisition?.requestIds.at(-1);
+      if (!boxPage.acquisition || boxPage.acquisition.blockedReason || !boxRequestId) {
+        await persistGames();
+        gamesFailure = `live box acquisition blocked: ${boxPage.acquisition?.blockedReason ?? 'no evidence'}`;
+        break games;
+      }
+      if (!boxPage.ok || boxPage.parseError || !boxPage.json) {
+        await persistGames();
+        gamesFailure = `live box request failed: ${boxPage.parseError ?? boxPage.error ?? `HTTP ${boxPage.status}`}`;
+        break games;
+      }
+      const boxObservedAt = clock().toISOString();
+      const match = matchLiveBoxScores(boxPage.json.data ?? [], [...current.values()]);
+      result.box.matched = match.byGame.size;
+      result.box.unmatched = match.unmatched;
+      result.box.ambiguous = match.ambiguous;
+      for (const g of boxGames) {
+        const box = match.byGame.get(g.gameId);
+        if (!box) continue;
+        if (box.lines.length > SCOREBOARD_MAX_PLAYERS_PER_GAME || box.lines.some((line) => !scoreboardLineFits(line))) {
+          result.rejected.push({
+            gameId: g.gameId,
+            reason: 'player line exceeds the physical growth envelope',
+          });
+          gamesFailure = 'scoreboard batch contains a player line that exceeds the physical envelope';
+        }
+      }
+      if (gamesFailure) break games;
+      prepared = { boxRequestId, boxObservedAt, match };
     }
-    if (!boxPage.ok || boxPage.parseError || !boxPage.json) {
-      gamesFailure = `live box request failed: ${boxPage.parseError ?? boxPage.error ?? `HTTP ${boxPage.status}`}`;
-      break games;
-    }
-    const boxObservedAt = clock().toISOString();
-    const match = matchLiveBoxScores(boxPage.json.data ?? [], [...current.values()]);
-    result.box.matched = match.byGame.size;
-    result.box.unmatched = match.unmatched;
-    result.box.ambiguous = match.ambiguous;
-
+    await persistGames();
+    if (!prepared) continue;
+    const { boxRequestId, boxObservedAt, match } = prepared;
     const priorLines = await input.store.loadPlayerLines(boxGames.map((g) => g.gameId));
     for (const g of boxGames) {
       const box = match.byGame.get(g.gameId);
@@ -436,6 +490,12 @@ async function collectOdds(args: {
   result.rejected = normalized.rejected.length;
   result.quarantinedFields = normalized.quarantinedFields;
   result.vendors = [...new Set(normalized.quotes.map((q) => q.vendor))].sort();
+  const existingOdds = await store.loadCurrentOdds(gameIds);
+  if (normalized.quotes.length > SCOREBOARD_MAX_ODDS_ROWS || existingOdds.length > SCOREBOARD_MAX_ODDS_ROWS) {
+    return fail(
+      `odds batch exceeds the physical envelope of ${SCOREBOARD_MAX_ODDS_ROWS} rows`
+    );
+  }
   const lastRequestId = pages.at(-1)!.requestId;
   const write = await store.applyOddsAcquisition({
     quotes: normalized.quotes,

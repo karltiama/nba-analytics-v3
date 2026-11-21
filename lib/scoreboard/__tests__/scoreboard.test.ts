@@ -489,6 +489,34 @@ describe('collector cycle (fake fetch, memory store)', () => {
     expect([...store.games.keys()]).toEqual(['5001']);
     expect(r.seasonTypes[0].rejected.map((x) => x.gameId)).toEqual(['5002', '5003']);
   });
+
+  it('fails the cycle and writes nothing when a required game exceeds the envelope', async () => {
+    const store = createMemoryScoreboardStore();
+    const f = fakeFetchers({
+      games: () => [bdlGame({ home_team: { id: 5, abbreviation: 'CHI', full_name: 'N'.repeat(81) } })],
+      box: () => [],
+    });
+    const r = await runScoreboardCycle({ env: LIVE_ENV, store, fetch: f.fetch, now: at(-60 * MIN) });
+    expect(r.status).toBe('failed');
+    expect(r.reason).toMatch(/physical envelope/);
+    expect(store.games.size).toBe(0);
+    expect(store.lines.size).toBe(0);
+  });
+
+  it('fails the cycle and does not store lines when a required line exceeds the envelope', async () => {
+    const store = createMemoryScoreboardStore();
+    const box = liveBox([20, 20, 20, 20, 20], [20, 20, 20, 20, 18], { status: '1st Qtr' });
+    box.home_team.players[0].player.last_name = 'N'.repeat(80);
+    const f = fakeFetchers({
+      games: () => [bdlGame({ status: '1st Qtr', home_team_score: 100, visitor_team_score: 98 })],
+      box: () => [box],
+    });
+    const r = await runScoreboardCycle({ env: LIVE_ENV, store, fetch: f.fetch, now: at(0) });
+    expect(r.status).toBe('failed');
+    expect(r.reason).toMatch(/player line/);
+    expect(store.games.size).toBe(0);
+    expect(store.lines.size).toBe(0);
+  });
 });
 
 describe('Postgres display store (recording fake db)', () => {

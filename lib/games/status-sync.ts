@@ -4,7 +4,8 @@
  */
 
 import { shouldPreserveCertifiedFinal } from '@/lib/betting/final-preserve';
-import { isFinalStatus, normalizeGameStatus } from '@/lib/betting/normalize-game-status';
+import { isFinalStatus } from '@/lib/betting/normalize-game-status';
+import { classifyAuthoritativeGameState } from '@/lib/games/finalization-clock';
 import { BdlRateLimitError, shouldSkipLiveBdlHttp } from '@/lib/balldontlie/live-rate-limit';
 import { shouldSkipLiveMutations } from '@/lib/runtime/ingestion-mode';
 import { randomUUID } from 'node:crypto';
@@ -24,6 +25,13 @@ import {
   type SeasonPhaseClassification,
 } from './season-phase';
 import { PINNED_ANALYTICS_SEASON } from '@/lib/season';
+import {
+  GAME_STATUS_MAX_GAMES,
+  GAME_STATUS_MAX_GAMES_PER_PAGE,
+  GAME_STATUS_MAX_PAGES,
+  GAME_STATUS_MAX_QUERIES,
+  gameStatusRowFits,
+} from '@/lib/ops/storage-growth-bounds';
 import {
   evaluateLoadedSeasonPhaseReadiness,
   operatingHorizon,
@@ -77,6 +85,13 @@ export type LocalGameRow = {
   homeScore: number | null;
   awayScore: number | null;
   venue: string | null;
+  /** Receipt time of this provider payload. Not a stored historical clock. */
+  observedAt?: string | null;
+  /** Loaded from analytics.games.status_observed_at when that column exists. */
+  statusObservedAt?: string | null;
+  finalizedAt?: string | null;
+  /** Present only after the finalization columns were read. */
+  finalizationClock?: 'recorded' | 'missing';
 };
 
 export type ProviderGame = {
@@ -299,10 +314,21 @@ export function planGameStatusWrite(input: {
     venue: input.incoming.venue ?? input.local.venue,
   };
 
-  if (shouldPreserveCertifiedFinal({
-    existingStatus: input.local.status,
-    incomingStatus: input.incoming.status,
-  })) {
+  const incomingObserved = Date.parse(input.incoming.observedAt ?? '');
+  const storedObserved = Date.parse(input.local.statusObservedAt ?? '');
+  const newerLeave =
+    Number.isFinite(storedObserved) &&
+    Number.isFinite(incomingObserved) &&
+    incomingObserved > storedObserved &&
+    classifyAuthoritativeGameState(input.incoming.status) !== 'final' &&
+    classifyAuthoritativeGameState(input.incoming.status) !== 'unknown';
+  if (
+    shouldPreserveCertifiedFinal({
+      existingStatus: input.local.status,
+      incomingStatus: input.incoming.status,
+    }) &&
+    !newerLeave
+  ) {
     return {
       action: 'final_preserved',
       gameId,
@@ -313,8 +339,29 @@ export function planGameStatusWrite(input: {
       row: input.local,
     };
   }
+  if (
+    Number.isFinite(storedObserved) &&
+    Number.isFinite(incomingObserved) &&
+    incomingObserved <= storedObserved
+  ) {
+    return {
+      action: 'reject',
+      gameId,
+      previousStatus: input.local.status,
+      newStatus: input.local.status,
+      becameFinal: false,
+      reason: 'older observation',
+    };
+  }
 
-  if (rowsEquivalent(input.local, incomingForWrite)) {
+  if (
+    rowsEquivalent(input.local, incomingForWrite) &&
+    !(
+      input.local.finalizationClock === 'missing' &&
+      classifyAuthoritativeGameState(input.incoming.status) === 'final' &&
+      Number.isFinite(incomingObserved)
+    )
+  ) {
     return {
       action: 'unchanged',
       gameId,
@@ -506,6 +553,13 @@ export async function runGameStatusSync(input: {
   if (plan.mode === 'frequent' && (!plan.startDate || !plan.endDate)) {
     return empty('failed', 'frequent mode refused to run without a date window');
   }
+  const willWrite = !dryRun && (!shouldSkipGameStatusSync(env) || manualCanary);
+  if (willWrite && plan.mode === 'full_season') {
+    return empty('failed', 'full_season game-status writes have no defended physical growth bound');
+  }
+  if (plans.length > GAME_STATUS_MAX_QUERIES || plans.some((query) => query.mode === 'frequent' && query.maxPages > GAME_STATUS_MAX_PAGES)) {
+    return empty('failed', 'game-status query plan exceeds the physical growth envelope');
+  }
 
   if (!input.fetchPage) {
     return empty('skipped', 'no provider adapter; fixture/dry-run required');
@@ -591,7 +645,13 @@ export async function runGameStatusSync(input: {
         emit({ event: 'game_status_sync_failed', reason, provider_status: page.status });
         return empty('failed', reason, { providerErrors: 1, providerStatus: page.status, bdlHttp });
       }
-      for (const raw of page.json?.data ?? []) {
+      const pageRows = page.json?.data ?? [];
+      if (pageRows.length > GAME_STATUS_MAX_GAMES_PER_PAGE) {
+        const reason = `game-status page has ${pageRows.length} rows; the envelope allows ${GAME_STATUS_MAX_GAMES_PER_PAGE}`;
+        emit({ event: 'game_status_sync_failed', reason, provider_status: page.status });
+        return empty('failed', reason, { providerStatus: page.status, bdlHttp, gamesFetched });
+      }
+      for (const raw of pageRows) {
         gamesFetched += 1;
         const phase = classifySeasonPhase({
           requestSeasonType: queryPlan.seasonTypeRequested,
@@ -634,7 +694,22 @@ export async function runGameStatusSync(input: {
   let becameFinal = 0;
   let finalPreserved = 0;
   const transitions: GameStatusSyncResult['transitions'] = [];
-  const wroteDb = !dryRun && (!shouldSkipGameStatusSync(env) || manualCanary);
+  const wroteDb = willWrite;
+  if (wroteDb) {
+    for (const { raw } of entries) {
+      const incoming = raw && typeof raw === 'object' ? mapProviderGame(raw, targetSeason) : null;
+      if (incoming && !gameStatusRowFits(incoming)) {
+        const reason = 'game-status row exceeds the physical envelope';
+        emit({ event: 'game_status_sync_failed', reason });
+        return empty('failed', reason, { gamesFetched, bdlHttp, providerStatus });
+      }
+    }
+  }
+  if (wroteDb && entries.length > GAME_STATUS_MAX_GAMES) {
+    const reason = `game-status batch of ${entries.length} games exceeds the ${GAME_STATUS_MAX_GAMES} row envelope`;
+    emit({ event: 'game_status_sync_failed', reason });
+    return empty('failed', reason, { gamesFetched, bdlHttp, providerStatus });
+  }
 
   const applyPhase = async (gameId: string, phase: SeasonPhaseClassification) => {
     if (!wroteDb || !phaseSupported || phase.phase === 'UNCLASSIFIED' || !input.store.applySeasonPhase) return;
@@ -647,6 +722,11 @@ export async function runGameStatusSync(input: {
     if (!incoming) {
       rejected += 1;
       continue;
+    }
+    if (wroteDb && !gameStatusRowFits(incoming)) {
+      const reason = 'game-status row exceeds the physical envelope';
+      emit({ event: 'game_status_sync_failed', reason });
+      return empty('failed', reason, { gamesFetched, bdlHttp, providerStatus, rejected: rejected + 1 });
     }
     // Preseason is display-only: never written to analytics.games, labeled or not, whatever the provider sent.
     if (phase.phase === 'PRESEASON' || providerRowDeclaresPreseason(raw)) {
@@ -665,6 +745,8 @@ export async function runGameStatusSync(input: {
       continue;
     }
     const local = await input.store.getById(incoming.gameId);
+    // Run start. Not the provider datetime, not HTTP receipt, and not updated_at.
+    incoming.observedAt = started.toISOString();
     const planned = planGameStatusWrite({ local, incoming, targetSeason });
     if (planned.action === 'reject') {
       rejected += 1;

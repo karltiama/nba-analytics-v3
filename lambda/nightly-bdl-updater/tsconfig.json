@@ -4,16 +4,20 @@
     "module": "commonjs",
     "lib": ["ES2024"],
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "../..",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["../../*"]
+    }
   },
   "include": [
     "index.ts",
+    "storage-admission.ts",
     "bdl-live-rate-limit.ts",
     "bdl-live-rate-limit-dynamo.ts",
     "ingestion-season.ts",

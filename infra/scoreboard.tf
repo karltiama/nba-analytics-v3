@@ -127,6 +127,28 @@ resource "aws_iam_role_policy_attachment" "lambda_scoreboard_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# GetItem + conditional UpdateItem on the one admission ledger. No Scan, Delete, or second table.
+resource "aws_iam_role_policy" "scoreboard_storage_admission" {
+  count = var.scoreboard_create ? 1 : 0
+  name  = "${var.scoreboard_lambda_function_name}-storage-admission"
+  role  = aws_iam_role.lambda_scoreboard_execution[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "ScoreboardReservationLedger"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem"
+        ]
+        Resource = aws_dynamodb_table.storage_admission.arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy" "scoreboard_bdl_rate_limit" {
   count  = var.scoreboard_create ? 1 : 0
   name   = "${var.scoreboard_lambda_function_name}-bdl-rate-limit"
@@ -201,6 +223,7 @@ resource "aws_lambda_function" "scoreboard" {
         BDL_RATE_LIMIT_BURST              = tostring(var.scoreboard_bdl_rate_limit_burst)
         BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS = "20000"
         BDL_RATE_LIMIT_MAX_RETRIES        = tostring(var.scoreboard_bdl_rate_limit_max_retries)
+        STORAGE_RESERVATION_TABLE         = aws_dynamodb_table.storage_admission.name
       }
     )
   }

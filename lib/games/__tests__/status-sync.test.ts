@@ -247,6 +247,24 @@ describe('runGameStatusSync', () => {
     expect(PINNED_ANALYTICS_SEASON).toBe('2026');
   });
 
+  it('fails before upsert when a required status exceeds the envelope', async () => {
+    const fetchPage = vi.fn(async (url: string) =>
+      createFixtureFetchPage([provider({ id: 21717860, status: 'S'.repeat(81) })])(url)
+    );
+    const store = createMemoryGameStore([]);
+    const upsert = vi.spyOn(store, 'upsert');
+    const result = await runGameStatusSync({
+      env: liveEnv,
+      now,
+      dryRun: false,
+      store,
+      fetchPage,
+    });
+    expect(result.status).toBe('failed');
+    expect(result.reason).toMatch(/physical envelope/);
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
   it('manual canary writes through freeze using the explicit date window', async () => {
     const fetchPage = vi.fn(async (url: string) => {
       expect(url).toContain('start_date=2026-10-22');
@@ -311,6 +329,38 @@ describe('runGameStatusSync', () => {
     expect(second.unchanged).toBe(1);
     expect(second.becameFinal).toBe(0);
     expect(second.inserted).toBe(0);
+  });
+
+  it('stamps the observation from the sync run clock', async () => {
+    const runClock = new Date('2026-10-22T03:15:00.000Z');
+    const tip = '2026-10-22T23:00:00.000Z';
+    const store = createMemoryGameStore([
+      local({ gameId: '21717860', status: 'In Progress', startTime: tip }),
+    ]);
+    const upsert = vi.spyOn(store, 'upsert');
+    const result = await runGameStatusSync({
+      env: liveEnv,
+      now: runClock,
+      dryRun: false,
+      store,
+      fetchPage: createFixtureFetchPage([
+        provider({
+          id: 21717860,
+          status: 'Final',
+          datetime: tip,
+          date: '2026-10-22',
+          home_team_score: 110,
+          visitor_team_score: 104,
+        }),
+      ]),
+    });
+    expect(result.status).toBe('success');
+    expect(result.becameFinal).toBe(1);
+    expect(upsert).toHaveBeenCalledTimes(1);
+    const written = upsert.mock.calls[0]?.[0];
+    expect(written?.observedAt).toBe(runClock.toISOString());
+    expect(written?.startTime).toBe(tip);
+    expect(written?.observedAt).not.toBe(written?.startTime);
   });
 
   it('preserves existing venue when the provider row has none', () => {

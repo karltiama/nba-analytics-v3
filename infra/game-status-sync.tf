@@ -152,11 +152,34 @@ resource "aws_lambda_function" "game_status_sync" {
         BDL_RATE_LIMIT_BURST              = tostring(var.game_status_sync_bdl_rate_limit_burst)
         BDL_RATE_LIMIT_ACQUIRE_TIMEOUT_MS = "20000"
         # HTTP budget only. The limiter starts it after the shared-bucket grant.
-        BDL_HTTP_TIMEOUT_MS               = "15000"
-        BDL_RATE_LIMIT_MAX_RETRIES        = tostring(var.game_status_sync_bdl_rate_limit_max_retries)
+        BDL_HTTP_TIMEOUT_MS        = "15000"
+        BDL_RATE_LIMIT_MAX_RETRIES = tostring(var.game_status_sync_bdl_rate_limit_max_retries)
+        STORAGE_RESERVATION_TABLE  = aws_dynamodb_table.storage_admission.name
       }
     )
   }
+}
+
+# GetItem + conditional UpdateItem on the one admission ledger. No Scan, Delete, or second table.
+resource "aws_iam_role_policy" "game_status_sync_storage_admission" {
+  count = var.game_status_sync_create ? 1 : 0
+  name  = "${var.game_status_sync_lambda_function_name}-storage-admission"
+  role  = aws_iam_role.lambda_game_status_sync_execution[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "GameStatusReservationLedger"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem"
+        ]
+        Resource = aws_dynamodb_table.storage_admission.arn
+      }
+    ]
+  })
 }
 
 # EventBridge Scheduler invokes asynchronously. Handled failures return a result and are never

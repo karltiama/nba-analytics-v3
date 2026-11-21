@@ -8,10 +8,16 @@ locals {
   }
 
   # Per-family activation. Global live alone cannot ENABLED-thaw any family.
-  # Phase 7L.14: schedule resources and queue mappings stay disabled even when
-  # these flags are true. The flags still select Lambda mode values. A thaw
-  # requires this constant to change in a reviewed source edit.
+  # The lock still forces every schedule and queue mapping DISABLED.
+  # The allowlist is the only source that can mark a schedule ENABLED, and
+  # only the three named essential collectors are on it. A family flag in
+  # tfvars cannot add a name. Queue mappings stay on the lock.
   ingestion_schedule_lock = true
+  essential_ingestion_schedule_allowlist = toset([
+    "nightly",
+    "scoreboard",
+    "game_status_sync",
+  ])
   family_schedule_enabled = {
     nightly          = var.live_ingestion_enabled && var.nightly_execution_enabled
     odds             = var.live_ingestion_enabled && var.odds_execution_enabled
@@ -23,16 +29,15 @@ locals {
     shadow           = var.live_ingestion_enabled && var.shadow_execution_enabled
     scoreboard       = var.live_ingestion_enabled && var.scoreboard_execution_enabled
   }
-
-  nightly_schedule_state            = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED")
-  odds_schedule_state               = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED")
-  injuries_schedule_state           = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED")
-  player_props_schedule_state       = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED")
-  boxscore_schedule_state           = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED")
-  game_status_sync_schedule_state   = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED")
-  shadow_schedule_state             = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED")
-  scoreboard_schedule_state         = local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED")
-  nightly_bdl_certified_code_sha256 = "mSJRZCHC0OmR4O7kx++30+gF7Y1GslxWcFABHSfmBBA="
+  nightly_schedule_state            = contains(local.essential_ingestion_schedule_allowlist, "nightly") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.nightly ? "ENABLED" : "DISABLED"))
+  odds_schedule_state               = contains(local.essential_ingestion_schedule_allowlist, "odds") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.odds ? "ENABLED" : "DISABLED"))
+  injuries_schedule_state           = contains(local.essential_ingestion_schedule_allowlist, "injuries") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.injuries ? "ENABLED" : "DISABLED"))
+  player_props_schedule_state       = contains(local.essential_ingestion_schedule_allowlist, "player_props") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.player_props ? "ENABLED" : "DISABLED"))
+  boxscore_schedule_state           = contains(local.essential_ingestion_schedule_allowlist, "boxscore") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.boxscore ? "ENABLED" : "DISABLED"))
+  game_status_sync_schedule_state   = contains(local.essential_ingestion_schedule_allowlist, "game_status_sync") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.game_status_sync ? "ENABLED" : "DISABLED"))
+  shadow_schedule_state             = contains(local.essential_ingestion_schedule_allowlist, "shadow") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.shadow ? "ENABLED" : "DISABLED"))
+  scoreboard_schedule_state         = contains(local.essential_ingestion_schedule_allowlist, "scoreboard") ? "ENABLED" : (local.ingestion_schedule_lock ? "DISABLED" : (local.family_schedule_enabled.scoreboard ? "ENABLED" : "DISABLED"))
+  nightly_bdl_certified_code_sha256 = "rDv88bhZggW9lNdPbVWVMZBSwdC/UbM6RKfDEK+STSI="
 
   player_props_bundle_hash = data.archive_file.player_props.output_base64sha256
 }
@@ -58,16 +63,17 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
   runtime          = "nodejs22.x"
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
-  source_code_hash = filebase64sha256("${path.module}/../lambda/nightly-bdl-updater/.package/dist/index.js")
+  source_code_hash = data.archive_file.nightly_bdl.output_base64sha256
 
-  # Code is published by the reviewed update-function-code release, not by
-  # this package directory. The live hash check below fails the plan when
-  # that release is no longer the certified writer.
+  # The plan may replace the deployed F7.3 package with this directory's archive.
+  # Any other live hash fails the plan.
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
     precondition {
-      condition     = data.aws_lambda_function.nightly_bdl_live.code_sha256 == local.nightly_bdl_certified_code_sha256
-      error_message = "nightly-bdl-updater CodeSha256 is not the certified normalized writer."
+      condition = contains([
+        local.nightly_bdl_certified_code_sha256,
+        data.archive_file.nightly_bdl.output_base64sha256,
+      ], data.aws_lambda_function.nightly_bdl_live.code_sha256)
+      error_message = "nightly-bdl-updater CodeSha256 is not the certified package or this prepared archive."
     }
   }
 
@@ -77,13 +83,35 @@ resource "aws_lambda_function" "nightly_bdl_updater" {
       local.bdl_rate_limit_env,
       var.lambda_env,
       {
-        BDL_RATE_LIMIT_TABLE   = aws_dynamodb_table.bdl_rate_limit.name
-        BDL_RATE_LIMIT_BACKEND = "dynamodb"
-        BDL_RATE_LIMIT_WORKER  = "nightly-bdl-updater"
-        PGS_NORMALIZED_STORAGE = "1"
+        BDL_RATE_LIMIT_TABLE      = aws_dynamodb_table.bdl_rate_limit.name
+        BDL_RATE_LIMIT_BACKEND    = "dynamodb"
+        BDL_RATE_LIMIT_WORKER     = "nightly-bdl-updater"
+        PGS_NORMALIZED_STORAGE    = "1"
+        STORAGE_RESERVATION_TABLE = aws_dynamodb_table.storage_admission.name
       }
     )
   }
+}
+
+# GetItem + conditional UpdateItem on the one admission ledger. No Scan, Delete, or second table.
+resource "aws_iam_role_policy" "nightly_bdl_storage_admission" {
+  name = "${var.lambda_function_name}-storage-admission"
+  role = aws_iam_role.lambda_nightly_bdl_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "NightlyReservationLedger"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem"
+        ]
+        Resource = aws_dynamodb_table.storage_admission.arn
+      }
+    ]
+  })
 }
 
 # -----------------------------------------------------------------------------
