@@ -27,6 +27,18 @@ const NOW = new Date('2026-10-10T00:06:00.000Z');
 const FRESH = '2026-10-10T00:00:00.000Z';
 const CLUSTER = 399_110_321;
 
+function iamPolicyBlock(source: string, name: string): string {
+  const marker = `resource "aws_iam_role_policy" "${name}"`;
+  const start = source.indexOf(marker);
+  expect(start).toBeGreaterThanOrEqual(0);
+  const next = source.indexOf('\nresource "', start + marker.length);
+  return source.slice(start, next === -1 ? source.length : next);
+}
+
+function dynamoActions(block: string): string[] {
+  return [...block.matchAll(/"dynamodb:([^"]+)"/g)].map((match) => match[1]).sort();
+}
+
 function measurement(over: Partial<AdmissionMeasurement> = {}): AdmissionMeasurement {
   return {
     clusterBytes: CLUSTER,
@@ -269,23 +281,56 @@ describe('scoreboard production admission', () => {
     expect(release).not.toHaveBeenCalled();
   });
 
-  it('does not hardcode an enabled scoreboard schedule in the collector module', () => {
+  it('scopes collector admission IAM to the reservation ledger and keeps the scoreboard schedule local', () => {
     const root = path.resolve(__dirname, '../../..');
-    const lambdaTf = fs.readFileSync(path.join(root, 'infra/lambda.tf'), 'utf8');
-    const scoreboardTf = fs.readFileSync(path.join(root, 'infra/scoreboard.tf'), 'utf8');
-    const admissionTf = fs.readFileSync(path.join(root, 'infra/storage-admission.tf'), 'utf8');
-    const measurementTf = fs.readFileSync(path.join(root, 'infra/storage-measurement.tf'), 'utf8');
+    const infra = path.join(root, 'infra');
+    const lambdaTf = fs.readFileSync(path.join(infra, 'lambda.tf'), 'utf8');
+    const scoreboardTf = fs.readFileSync(path.join(infra, 'scoreboard.tf'), 'utf8');
+    const gameStatusTf = fs.readFileSync(path.join(infra, 'game-status-sync.tf'), 'utf8');
+    const admissionTf = fs.readFileSync(path.join(infra, 'storage-admission.tf'), 'utf8');
+    const rateLimitTf = fs.readFileSync(path.join(infra, 'bdl-rate-limit.tf'), 'utf8');
+
     expect(lambdaTf).toMatch(/ingestion_schedule_lock\s*=\s*true/);
     expect(scoreboardTf).toMatch(/state\s*=\s*local\.scoreboard_schedule_state/);
     expect(scoreboardTf).not.toMatch(/state\s*=\s*"ENABLED"/);
     expect(admissionTf).toMatch(/name\s*=\s*var\.storage_reservation_table_name/);
     expect(admissionTf).toMatch(/default\s*=\s*"nba-storage-admission"/);
-    expect(admissionTf).not.toMatch(/aws_scheduler_schedule|aws_cloudwatch_event_rule/);
-    expect(measurementTf).toMatch(/storage_measurement_publisher_create/);
-    expect(measurementTf).toMatch(/default\s*=\s*false/);
-    expect(measurementTf).not.toMatch(/aws_scheduler_schedule|aws_cloudwatch_event_rule/);
+    expect(admissionTf).not.toMatch(/aws_scheduler_schedule|aws_cloudwatch_event_rule|dynamodb:/);
+
+    const policies = [
+      {
+        source: scoreboardTf,
+        name: 'scoreboard_storage_admission',
+        role: 'aws_iam_role.lambda_scoreboard_execution[0].id',
+      },
+      {
+        source: gameStatusTf,
+        name: 'game_status_sync_storage_admission',
+        role: 'aws_iam_role.lambda_game_status_sync_execution[0].id',
+      },
+      {
+        source: lambdaTf,
+        name: 'nightly_bdl_storage_admission',
+        role: 'aws_iam_role.lambda_nightly_bdl_execution.id',
+      },
+    ];
+    for (const policy of policies) {
+      const block = iamPolicyBlock(policy.source, policy.name);
+      expect(block).toMatch(new RegExp(`role\\s*=\\s*${policy.role.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+      expect(dynamoActions(block)).toEqual(['GetItem', 'UpdateItem']);
+      expect(block).toContain('Resource = aws_dynamodb_table.storage_admission.arn');
+      expect(block).not.toMatch(/dynamodb:(DeleteItem|PutItem|Query|Scan|\*)/);
+    }
     expect(scoreboardTf).toMatch(/STORAGE_RESERVATION_TABLE\s*=\s*aws_dynamodb_table\.storage_admission\.name/);
-    expect(scoreboardTf).toMatch(/"dynamodb:GetItem",\s*"dynamodb:UpdateItem"/);
-    expect(scoreboardTf).not.toMatch(/dynamodb:DeleteItem|dynamodb:Scan|dynamodb:PutItem/);
+    expect(gameStatusTf).toMatch(/STORAGE_RESERVATION_TABLE\s*=\s*aws_dynamodb_table\.storage_admission\.name/);
+    expect(lambdaTf).toMatch(/STORAGE_RESERVATION_TABLE\s*=\s*aws_dynamodb_table\.storage_admission\.name/);
+
+    const admissionWriters = fs.readdirSync(infra)
+      .filter((name) => name.endsWith('.tf'))
+      .filter((name) => fs.readFileSync(path.join(infra, name), 'utf8').includes('aws_dynamodb_table.storage_admission.arn'));
+    expect(admissionWriters.sort()).toEqual(['game-status-sync.tf', 'lambda.tf', 'scoreboard.tf']);
+    expect(rateLimitTf).toContain('Resource = aws_dynamodb_table.bdl_rate_limit.arn');
+    expect(rateLimitTf).not.toContain('storage_admission');
+    expect(rateLimitTf).not.toMatch(/"dynamodb:\*"/);
   });
 });
