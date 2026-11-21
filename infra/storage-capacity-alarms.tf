@@ -1,71 +1,102 @@
 # Storage pressure and nightly admission denials.
 #
-# The scoreboard review line is the only live cluster-size signal. It is emitted from the
-# existing scoreboard log group when the cluster, or the cluster plus the scoreboard envelope,
-# reaches the operator review line. These alarms do not change that line, the halt, or any
+# A CloudWatch metric filter sums every value it emits during a clock minute. Publishing
+# clusterBytes would turn two review lines in one minute into about twice the real size, and an
+# alarm statistic cannot undo that sum. These filters instead emit 1 only when a review line is
+# already at or above a monitoring threshold. A quiet minute emits nothing.
+#
+# Missing threshold counts are notBreaching. The review line stops when the cluster falls below
+# the operator review line, so a gap is not database pressure. A separate invocation alarm covers
+# a scoreboard collector that stops running. These resources do not change the halt or any
 # reservation envelope.
-#
-# Missing size observations are breaching. The scoreboard error and handled-failure alarms use
-# notBreaching and do not fire when the review line stops. Treating a gap as OK would report a
-# recovery that was never measured.
-#
-# CloudWatch sums extracted values that share a clock minute. Two overlapping scoreboard ticks
-# can therefore publish about twice the real size for that minute. Each capacity alarm requires
-# two of three one-minute periods so one doubled minute does not page, while a sustained reading
-# still pages within about two minutes.
 
 locals {
   storage_metric_namespace = "CourtContext/Storage"
 }
 
-resource "aws_cloudwatch_log_metric_filter" "postgres_cluster_bytes" {
+resource "aws_cloudwatch_log_metric_filter" "storage_capacity_warning" {
   count          = var.scoreboard_create ? 1 : 0
-  name           = "court-context-postgres-cluster-bytes"
+  name           = "court-context-storage-capacity-warning"
   log_group_name = aws_cloudwatch_log_group.scoreboard[0].name
-  pattern        = "{ $.event = \"scoreboard_storage_review\" && $.clusterBytes > 0 }"
+  pattern        = "{ $.event = \"scoreboard_storage_review\" && $.clusterBytes >= 405000000 }"
 
   metric_transformation {
-    name      = "PostgresClusterBytes"
+    name      = "StorageCapacityWarning"
     namespace = local.storage_metric_namespace
-    value     = "$.clusterBytes"
-    unit      = "Bytes"
+    value     = "1"
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "storage_capacity_warning" {
   count               = var.scoreboard_create ? 1 : 0
   alarm_name          = "court-context-storage-capacity-warning"
-  alarm_description   = "PostgreSQL cluster size reached 405000000 bytes, the maximum clusterBytes published by scoreboard_storage_review in a one-minute period. The three essential reservation envelopes stop fitting together under the 450000000 byte halt at 413676672 bytes. This is earlier warning of that refusal point. Missing data is breaching: the review line is the only size signal, and a gap is not evidence that capacity recovered. The scoreboard error alarms do not cover a missed review line."
+  alarm_description   = "At least one scoreboard_storage_review line reported clusterBytes at or above 405000000. The metric is a count of those lines, not the database size, so two lines in one minute cannot double the reading. The three essential reservation envelopes stop fitting together under the 450000000 byte halt at 413676672 bytes. Missing data is not breaching: a minute without a review line does not mean the database grew. A stopped scoreboard collector is a separate invocation alarm."
   namespace           = local.storage_metric_namespace
-  metric_name         = "PostgresClusterBytes"
-  statistic           = "Maximum"
+  metric_name         = "StorageCapacityWarning"
+  statistic           = "Sum"
   period              = 60
   evaluation_periods  = 3
   datapoints_to_alarm = 2
-  threshold           = 405000000
+  threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  treat_missing_data  = "breaching"
+  treat_missing_data  = "notBreaching"
   alarm_actions       = local.ingestion_alarm_actions
 
-  depends_on = [aws_cloudwatch_log_metric_filter.postgres_cluster_bytes]
+  depends_on = [aws_cloudwatch_log_metric_filter.storage_capacity_warning]
+}
+
+resource "aws_cloudwatch_log_metric_filter" "storage_capacity_critical" {
+  count          = var.scoreboard_create ? 1 : 0
+  name           = "court-context-storage-capacity-critical"
+  log_group_name = aws_cloudwatch_log_group.scoreboard[0].name
+  pattern        = "{ $.event = \"scoreboard_storage_review\" && $.clusterBytes >= 413676672 }"
+
+  metric_transformation {
+    name      = "StorageCapacityCritical"
+    namespace = local.storage_metric_namespace
+    value     = "1"
+  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "storage_capacity_critical" {
   count               = var.scoreboard_create ? 1 : 0
   alarm_name          = "court-context-storage-capacity-critical"
-  alarm_description   = "PostgreSQL cluster size reached 413676672 bytes. That is the 450000000 byte halt minus the scoreboard envelope of 29179904, the game-status envelope of 2424832, and the nightly envelope of 4718592. From here the three reservations no longer fit together, so an essential collector can be refused. The alarm uses the maximum clusterBytes in each one-minute period and requires two of three periods. Missing data is breaching because absence of scoreboard_storage_review does not mean the cluster shrank."
+  alarm_description   = "At least one scoreboard_storage_review line reported clusterBytes at or above 413676672. That monitoring line is the 450000000 byte halt minus the scoreboard envelope of 29179904, the game-status envelope of 2424832, and the nightly envelope of 4718592. From here the three reservations no longer fit together, so an essential collector can be refused. The metric counts matching lines and does not add the database size. Missing data is not breaching."
   namespace           = local.storage_metric_namespace
-  metric_name         = "PostgresClusterBytes"
-  statistic           = "Maximum"
+  metric_name         = "StorageCapacityCritical"
+  statistic           = "Sum"
   period              = 60
   evaluation_periods  = 3
   datapoints_to_alarm = 2
-  threshold           = 413676672
+  threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = local.ingestion_alarm_actions
+
+  depends_on = [aws_cloudwatch_log_metric_filter.storage_capacity_critical]
+}
+
+# The essential allowlist keeps this schedule ENABLED once per minute. Three of five empty
+# minutes tolerates the observed one-minute CloudWatch publication lag. This does not measure
+# database size.
+resource "aws_cloudwatch_metric_alarm" "scoreboard_missed_invocations" {
+  count               = var.scoreboard_create && var.scoreboard_enable_schedule && local.scoreboard_schedule_state == "ENABLED" ? 1 : 0
+  alarm_name          = "court-context-scoreboard-missed-invocations"
+  alarm_description   = "The scoreboard collector had fewer than one invocation in 3 of 5 one-minute periods. Its schedule is once per minute. This means the collector is not running. It does not mean the database is too large. Missing invocation data is breaching. Check the scoreboard schedule and function before treating stored scores as current."
+  namespace           = "AWS/Lambda"
+  metric_name         = "Invocations"
+  statistic           = "Sum"
+  period              = 60
+  evaluation_periods  = 5
+  datapoints_to_alarm = 3
+  threshold           = 1
+  comparison_operator = "LessThanThreshold"
   treat_missing_data  = "breaching"
   alarm_actions       = local.ingestion_alarm_actions
 
-  depends_on = [aws_cloudwatch_log_metric_filter.postgres_cluster_bytes]
+  dimensions = {
+    FunctionName = aws_lambda_function.scoreboard[0].function_name
+  }
 }
 
 resource "aws_cloudwatch_log_metric_filter" "nightly_storage_denied" {
