@@ -161,7 +161,7 @@ function logEvent(event: GameStatusSyncEvent): void {
 function failed(
   env: Record<string, string | undefined>,
   reason: string,
-  extra?: Partial<GameStatusSyncResult>
+  extra?: Partial<LambdaGameStatusSyncResult>
 ): LambdaGameStatusSyncResult {
   const target = (env.STATUS_SYNC_TARGET_SEASON ?? '').trim() || 'invalid';
   const status = extra?.status ?? 'failed';

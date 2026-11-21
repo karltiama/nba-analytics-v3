@@ -552,4 +552,60 @@ describe('game-status-sync Lambda freeze + env contract', () => {
     expect(held.snapshot().active['game-status-stale']?.boundBytes).toBe(GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES);
     expect(held.snapshot().settled['game-status-stale']).toBeUndefined();
   });
+
+  it('returns a skipped success when the invocation reservation is already settled', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    const invocationId = 'game-status-settled';
+    const measuredAt = '2026-11-20T15:59:00.000Z';
+    const reserved = await reservations.reserve({
+      invocationId,
+      writerId: 'game-status-sync',
+      operation: 'game_status',
+      boundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+      roomBytes: 450_000_000,
+      measurementAt: measuredAt,
+    });
+    expect(reserved.ok).toBe(true);
+    await reservations.settle({
+      invocationId,
+      writerId: 'game-status-sync',
+      boundBytes: GAME_STATUS_PHYSICAL_GROWTH_BOUND_BYTES,
+      settledAt: measuredAt,
+      measurementAt: measuredAt,
+    });
+    expect(reservations.snapshot().settled[invocationId]).toBeDefined();
+    const fetchPage = vi.fn(async () => {
+      throw new Error('provider must not be called');
+    });
+    const result = await runLambdaGameStatusSync({
+      env: {
+        DATA_MODE: 'live_api',
+        OFFSEASON_MODE: '0',
+        CRON_DRY_RUN: '0',
+        LIVE_INGESTION_ENABLED: '1',
+        STATUS_SYNC_TARGET_SEASON: '2026',
+        BDL_RATE_LIMIT_BACKEND: 'memory',
+        BDL_RATE_LIMIT_MAX_RETRIES: '0',
+      },
+      now: new Date('2026-11-20T16:00:00.000Z'),
+      store: createMemoryGameStore([]),
+      fetchPage,
+      invocationId,
+      reservations,
+      measureCluster: async () => ({
+        clusterBytes: 1_000_000,
+        measuredAt,
+        databaseObservedAt: measuredAt,
+        source: 'game-status-sync:pg_database',
+        valid: true,
+        complete: true,
+      }),
+    });
+    expect(result.status).toBe('success');
+    expect(result.skipped).toBe(true);
+    expect(result.reason).toBe('invocation already settled this reservation');
+    expect(result.wroteDb).toBe(false);
+    expect(result.bdlHttp).toBe(0);
+    expect(fetchPage).not.toHaveBeenCalled();
+  });
 });
