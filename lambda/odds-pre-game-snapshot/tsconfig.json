@@ -4,15 +4,18 @@
     "module": "commonjs",
     "lib": ["ES2022"],
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "../..",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["../../*"]
+    }
   },
-  "include": ["index.ts", "acquire.ts", "normal-path.ts", "pregame-market.ts", "season-eligibility.ts", "canary-limits.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "request-budget.ts", "overlap-claim.ts", "collection-planner.ts", "refresh-slot.ts", "safety-policy.ts"],
+  "include": ["index.ts", "acquire.ts", "normal-path.ts", "pregame-market.ts", "season-eligibility.ts", "canary-limits.ts", "bdl-live-rate-limit.ts", "bdl-live-rate-limit-dynamo.ts", "request-budget.ts", "overlap-claim.ts", "collection-planner.ts", "refresh-slot.ts", "safety-policy.ts", "storage-gate.ts"],
   "exclude": ["node_modules", "dist"]
 }
 
