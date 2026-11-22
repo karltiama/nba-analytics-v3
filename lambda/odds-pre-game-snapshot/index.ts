@@ -9,9 +9,10 @@
  *
  * Prerequisite: nightly-bdl-updater must have run so games exist in analytics.games (runs at 03:00 ET).
  *
- * Pipeline: BDL /v2/odds -> raw.odds_pull_runs + raw.odds_snapshots
- *           -> analytics.game_odds_current + analytics.game_odds_history
- *           -> analytics.game_line_movement_summary
+ * Pipeline: storage gate, then BDL /v2/odds.
+ *           Below 400 MB: pull run, raw snapshots, history, current, and movement.
+ *           From 400 MB to below 450 MB: DraftKings current and movement only.
+ *           At or above 450 MB, or without a fresh measurement and reservation: no provider call and no odds write.
  *
  * Environment Variables:
  * - SUPABASE_DB_URL (required)
@@ -36,6 +37,9 @@ try {
 }
 
 import { Pool, type PoolClient } from 'pg';
+import { collectClusterMeasurement } from '../../lib/ops/cluster-measurement';
+import { createClusterMeasurementPgLeasor } from '../../lib/ops/cluster-measurement-pg';
+import type { AdmissionMeasurement } from '../../lib/ops/storage-admission';
 import { z } from 'zod';
 import { acquireOdds, OddsPersistError, type OddsProviderRow } from './acquire';
 import { BdlRateLimitError, fetchBdlLive } from './bdl-live-rate-limit';
@@ -43,8 +47,9 @@ import { isOddsCanaryOnly, isOpeningNightCanaryEvent } from './canary-limits';
 import type { PlannedGame } from './collection-planner';
 import { createDynamoOddsClaim } from './overlap-claim';
 import { parseOddsNumber, providerThrowToPage } from './normal-path';
-import { promotePullOdds } from './pregame-market';
+import { promoteCurrentQuotes, promotePullOdds } from './pregame-market';
 import { createDynamoOddsBudget } from './request-budget';
+import { admitOddsInvocation, type OddsStorageDecision } from './storage-gate';
 
 // ============================================
 // CONFIGURATION
@@ -224,6 +229,39 @@ async function transformToAnalytics(pullRunId: number) {
   }
 }
 
+async function measureOddsCluster(): Promise<AdmissionMeasurement> {
+  const refused: AdmissionMeasurement = {
+    clusterBytes: null,
+    measuredAt: null,
+    source: '',
+    valid: false,
+    complete: false,
+  };
+  try {
+    const collected = await collectClusterMeasurement(await createClusterMeasurementPgLeasor(pool).acquire());
+    if (!collected.valid || collected.clusterBytes == null || !collected.databaseObservedAt) return refused;
+    return {
+      clusterBytes: collected.clusterBytes,
+      measuredAt: new Date().toISOString(),
+      databaseObservedAt: collected.databaseObservedAt,
+      source: 'odds-pre-game-snapshot:pg_database',
+      valid: true,
+      complete: true,
+    };
+  } catch {
+    return refused;
+  }
+}
+
+async function applyCurrentQuotes(rows: readonly OddsProviderRow[]) {
+  try {
+    return await withTransaction((client) => promoteCurrentQuotes(client, rows, PREFERRED_VENDOR));
+  } catch (err) {
+    if (err instanceof OddsPersistError) throw err;
+    throw new OddsPersistError(err instanceof Error ? err.message : 'current persistence failed', 'CURRENT_PERSISTENCE');
+  }
+}
+
 // ============================================
 // LAMBDA HANDLER
 // ============================================
@@ -325,6 +363,7 @@ export const handler = async (
 ) => {
   const remainingMs = context?.getRemainingTimeInMillis?.();
   runDeadlineMs = remainingMs != null ? Date.now() + remainingMs - DEADLINE_MARGIN_MS : undefined;
+  const admitted: { current: OddsStorageDecision | null } = { current: null };
   try {
     console.log('Starting pre-game odds snapshot (BallDontLie /v2/odds)...');
     console.log('Event:', JSON.stringify(event));
@@ -360,6 +399,7 @@ export const handler = async (
       insertRaw: insertRawSnapshot,
       loadGames,
       transformComplete: transformToAnalytics,
+      applyCurrentQuotes,
       requireSafety: true,
       slateForDate: loadPlannedGames,
       reserveAttempt: (input) => budget.reserve(input),
@@ -367,6 +407,15 @@ export const handler = async (
       claimDate: (input) => claim.claim(input),
       completeClaim: (input) => claim.complete(input),
       claimOwner: context?.awsRequestId ?? 'odds-pre-game-snapshot',
+      storageGate: async () => {
+        admitted.current = await admitOddsInvocation({
+          env: process.env,
+          now: new Date().toISOString(),
+          invocationId: context?.awsRequestId ?? '',
+          measureCluster: measureOddsCluster,
+        });
+        return admitted.current;
+      },
     });
     console.log('Summary:', JSON.stringify(outcome));
     return {
@@ -380,6 +429,8 @@ export const handler = async (
       statusCode: 500,
       body: JSON.stringify({ success: false, error: error.message || 'Unknown error', timestamp: new Date().toISOString() }),
     };
+  } finally {
+    await admitted.current?.settle().catch(() => undefined);
   }
 };
 

@@ -245,3 +245,158 @@ export async function promotePullOdds(
   }
   return counts;
 }
+
+export type CurrentOddsQuote = {
+  game_id: number | string;
+  vendor: string;
+  spread_home_value?: string | number | null;
+  spread_home_odds?: number | null;
+  spread_away_value?: string | number | null;
+  spread_away_odds?: number | null;
+  moneyline_home_odds?: number | null;
+  moneyline_away_odds?: number | null;
+  total_value?: string | number | null;
+  total_over_odds?: number | null;
+  total_under_odds?: number | null;
+  updated_at?: string | null;
+};
+
+function quoteRow(row: CurrentOddsQuote): RawOddsRow | null {
+  if (row.updated_at == null || row.updated_at === '') return null;
+  return {
+    game_id: String(row.game_id),
+    vendor: row.vendor,
+    spread_home_value: row.spread_home_value ?? null,
+    spread_home_odds: row.spread_home_odds ?? null,
+    spread_away_value: row.spread_away_value ?? null,
+    spread_away_odds: row.spread_away_odds ?? null,
+    moneyline_home_odds: row.moneyline_home_odds ?? null,
+    moneyline_away_odds: row.moneyline_away_odds ?? null,
+    total_value: row.total_value ?? null,
+    total_over_odds: row.total_over_odds ?? null,
+    total_under_odds: row.total_under_odds ?? null,
+    provider_updated_at: row.updated_at,
+    pull_run_id: 0,
+  };
+}
+
+async function upsertCurrentQuote(client: PoolClient, row: RawOddsRow): Promise<number> {
+  const updated = await client.query(
+    `INSERT INTO analytics.game_odds_current (
+       game_id, home_moneyline, away_moneyline,
+       home_spread, home_spread_odds, away_spread, away_spread_odds,
+       total, over_odds, under_odds,
+       vendor, snapshot_at, pull_run_id, updated_at
+     )
+     SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULL, now()
+     FROM analytics.games g
+     WHERE g.game_id = $1
+       AND ${pregameMarketEligibleSql('g')}
+     ON CONFLICT (game_id) DO UPDATE SET
+       home_moneyline = excluded.home_moneyline,
+       away_moneyline = excluded.away_moneyline,
+       home_spread = excluded.home_spread,
+       home_spread_odds = excluded.home_spread_odds,
+       away_spread = excluded.away_spread,
+       away_spread_odds = excluded.away_spread_odds,
+       total = excluded.total,
+       over_odds = excluded.over_odds,
+       under_odds = excluded.under_odds,
+       vendor = excluded.vendor,
+       snapshot_at = excluded.snapshot_at,
+       pull_run_id = COALESCE(excluded.pull_run_id, analytics.game_odds_current.pull_run_id),
+       updated_at = now()
+     WHERE analytics.game_odds_current.snapshot_at <= excluded.snapshot_at
+       AND EXISTS (
+         SELECT 1 FROM analytics.games g
+         WHERE g.game_id = analytics.game_odds_current.game_id
+           AND ${pregameMarketEligibleSql('g')}
+       )`,
+    [
+      row.game_id,
+      row.moneyline_home_odds, row.moneyline_away_odds,
+      row.spread_home_value, row.spread_home_odds,
+      row.spread_away_value, row.spread_away_odds,
+      row.total_value, row.total_over_odds, row.total_under_odds,
+      row.vendor, row.provider_updated_at,
+    ]
+  );
+  return updated.rowCount ?? 0;
+}
+
+async function upsertMovementQuote(client: PoolClient, row: RawOddsRow): Promise<number> {
+  const result = await client.query(
+    `INSERT INTO analytics.game_line_movement_summary (
+       game_id,
+       open_home_spread, open_total, open_home_ml,
+       current_home_spread, current_total, current_home_ml,
+       spread_movement, total_movement,
+       snapshots_count, first_seen_at, last_seen_at, updated_at
+     )
+     SELECT
+       $1, $2, $3, $4, $2, $3, $4, 0, 0, 1, $5, $5, now()
+     FROM analytics.games g
+     WHERE g.game_id = $1
+       AND ${pregameMarketEligibleSql('g')}
+     ON CONFLICT (game_id) DO UPDATE SET
+       open_home_spread = COALESCE(analytics.game_line_movement_summary.open_home_spread, excluded.open_home_spread),
+       open_total = COALESCE(analytics.game_line_movement_summary.open_total, excluded.open_total),
+       open_home_ml = COALESCE(analytics.game_line_movement_summary.open_home_ml, excluded.open_home_ml),
+       current_home_spread = excluded.current_home_spread,
+       current_total = excluded.current_total,
+       current_home_ml = excluded.current_home_ml,
+       spread_movement = excluded.current_home_spread - COALESCE(analytics.game_line_movement_summary.open_home_spread, excluded.open_home_spread),
+       total_movement = excluded.current_total - COALESCE(analytics.game_line_movement_summary.open_total, excluded.open_total),
+       snapshots_count = CASE
+         WHEN analytics.game_line_movement_summary.last_seen_at IS NOT DISTINCT FROM excluded.last_seen_at
+         THEN analytics.game_line_movement_summary.snapshots_count
+         ELSE analytics.game_line_movement_summary.snapshots_count + 1
+       END,
+       first_seen_at = COALESCE(analytics.game_line_movement_summary.first_seen_at, excluded.first_seen_at),
+       last_seen_at = excluded.last_seen_at,
+       updated_at = now()`,
+    [row.game_id, row.spread_home_value, row.total_value, row.moneyline_home_odds, row.provider_updated_at]
+  );
+  return result.rowCount ?? 0;
+}
+
+/**
+ * DraftKings current and movement only.
+ * Does not insert a pull run, a raw snapshot, or a history row.
+ */
+export async function promoteCurrentQuotes(
+  client: PoolClient,
+  rows: readonly CurrentOddsQuote[],
+  preferredVendor: string
+): Promise<PromotionCounts> {
+  const counts: PromotionCounts = {
+    current: 0,
+    history: 0,
+    movement: 0,
+    acquiredRows: 0,
+    pregameEligibleRows: 0,
+    postTipRowsSkipped: 0,
+    currentRowsUpdated: 0,
+    historyRowsInserted: 0,
+    movementRowsInserted: 0,
+  };
+  for (const source of rows) {
+    if (source.vendor !== preferredVendor) continue;
+    const row = quoteRow(source);
+    if (!row) continue;
+    counts.acquiredRows += 1;
+    const eligible = await gameIsEligible(client, row.game_id);
+    if (!eligible) {
+      counts.postTipRowsSkipped += 1;
+      continue;
+    }
+    counts.pregameEligibleRows += 1;
+    const currentUpdated = await upsertCurrentQuote(client, row);
+    counts.currentRowsUpdated += currentUpdated;
+    counts.current += currentUpdated;
+    const movementInserted = await upsertMovementQuote(client, row);
+    counts.movementRowsInserted += movementInserted;
+    counts.movement += movementInserted;
+  }
+  return counts;
+}

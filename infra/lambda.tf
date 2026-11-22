@@ -142,7 +142,10 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 }
 
 # -----------------------------------------------------------------------------
-# Lambda: odds-pre-game-snapshot (run "npm install && npm run build" in lambda/odds-pre-game-snapshot first)
+# Lambda: odds-pre-game-snapshot
+# Package from the repo root, then plan. Do not use this folder's tsc build.
+#   node scripts/ops/bundle-ingestion-lambda.mjs --lambda=odds-pre-game-snapshot
+# Terraform zips .package/dist. source_code_hash is that zip. A console upload drifts.
 # -----------------------------------------------------------------------------
 data "archive_file" "odds_pre_game" {
   type        = "zip"
@@ -174,9 +177,31 @@ resource "aws_lambda_function" "odds_pre_game_snapshot" {
         BDL_RATE_LIMIT_MAX_REQUESTS = tostring(var.odds_bdl_rate_limit_max_requests)
         BDL_RATE_LIMIT_BURST        = tostring(var.odds_bdl_rate_limit_burst)
         BDL_RATE_LIMIT_MAX_RETRIES  = tostring(var.odds_bdl_rate_limit_max_retries)
+        STORAGE_RESERVATION_TABLE   = aws_dynamodb_table.storage_admission.name
       }
     )
   }
+}
+
+# GetItem + conditional UpdateItem on the one admission ledger. No Scan, Delete, or second table.
+resource "aws_iam_role_policy" "odds_storage_admission" {
+  name = "${var.odds_lambda_function_name}-storage-admission"
+  role = aws_iam_role.lambda_odds_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "OddsReservationLedger"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem"
+        ]
+        Resource = aws_dynamodb_table.storage_admission.arn
+      }
+    ]
+  })
 }
 
 # -----------------------------------------------------------------------------

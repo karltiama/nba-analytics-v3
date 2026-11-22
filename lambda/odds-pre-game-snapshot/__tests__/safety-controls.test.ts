@@ -252,6 +252,7 @@ describe('overlap claims', () => {
       return { ok: true, rows: [row(21717855)], nextCursor: null };
     }, {
       requireSafety: true,
+      storageGate: async () => ({ mode: 'normal', reason: 'test measurement below 400 MB' }),
       slateForDate: async () => opening,
       reserveAttempt: async () => {
         reserves += 1;
@@ -458,6 +459,7 @@ describe('observability and canary', () => {
       return { ok: true, rows: [row(21717855)], nextCursor: null };
     }, {
       requireSafety: true,
+      storageGate: async () => ({ mode: 'normal', reason: 'test measurement below 400 MB' }),
       reserveAttempt: async () => ({ ok: false, reason: 'exhausted', ledger: { requested: 1, reserved: 60, attempted: 60, successful: 0, failed: 60, refused: 1 } }),
     }))).resolves.toMatchObject({ success: true, status: 'COMPLETE' });
     expect(calls).toBe(1);
@@ -574,6 +576,7 @@ describe('observability and canary', () => {
     const beforeCanary = reserved;
     await acquireOdds({ dates: ['2026-10-20'] }, deps(async () => ({ ok: true, rows: [row(21717855)], nextCursor: null }), {
       requireSafety: true,
+      storageGate: async () => ({ mode: 'normal', reason: 'test measurement below 400 MB' }),
       reserveAttempt: reserve,
     }));
     expect(reserved).toBe(beforeCanary);

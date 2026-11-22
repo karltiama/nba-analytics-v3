@@ -80,6 +80,23 @@ export type AcquireDeps = {
     historyRowsInserted?: number;
     movementRowsInserted?: number;
   }>;
+  /** Restricted band. DraftKings current and movement only. */
+  applyCurrentQuotes?: (rows: readonly OddsProviderRow[]) => Promise<{
+    current: number;
+    history: number;
+    movement: number;
+    acquiredRows?: number;
+    pregameEligibleRows?: number;
+    postTipRowsSkipped?: number;
+    currentRowsUpdated?: number;
+    historyRowsInserted?: number;
+    movementRowsInserted?: number;
+  }>;
+  /**
+   * Required when requireSafety is set.
+   * Halt returns before a provider call, a claim, and every odds table write.
+   */
+  storageGate?: () => Promise<{ mode: 'normal' | 'current_only' | 'halt'; reason: string }>;
   maxPagesPerDate?: number;
   maxPagesPerInvocation?: number;
   requireSafety?: boolean;
@@ -98,6 +115,7 @@ export type DateAcquisition = {
   pullRunId?: number;
   rowsFetched: number;
   rowsStored: number;
+  rawRows?: number;
   providerRequests: number;
   reason?: string;
   transform?: {
@@ -325,8 +343,88 @@ async function persistNormalPages(
   }
 }
 
+async function persistCurrentOnly(
+  deps: AcquireDeps,
+  date: string,
+  collected: Extract<Collected, { kind: 'pages' }>,
+  checkIdentity: boolean
+): Promise<DateAcquisition> {
+  if (!collected.complete && collected.rows.length === 0) {
+    return {
+      ...emptyDate(date, 'INCOMPLETE', collected.reason),
+      providerRequests: collected.requests,
+    };
+  }
+  if (!collected.complete) {
+    return {
+      date,
+      classification: 'INCOMPLETE',
+      rowsFetched: collected.rows.length,
+      rowsStored: 0,
+      providerRequests: collected.requests,
+      reason: collected.reason ?? 'per_date_cap',
+    };
+  }
+  if (collected.rows.length === 0) {
+    return {
+      date,
+      classification: 'PROVIDER_EMPTY',
+      rowsFetched: 0,
+      rowsStored: 0,
+      providerRequests: collected.requests,
+    };
+  }
+  if (checkIdentity) {
+    const gameIds = [...new Set(collected.rows.map((row) => String(row.game_id)))];
+    const games = await deps.loadGames(gameIds);
+    const assessment = assessOddsGames({ queriedDate: date, rows: collected.rows, games });
+    if (!assessment.ok) {
+      return {
+        date,
+        classification: 'IDENTITY',
+        rowsFetched: collected.rows.length,
+        rowsStored: 0,
+        providerRequests: collected.requests,
+        reason: assessment.reason,
+      };
+    }
+  }
+  if (!deps.applyCurrentQuotes) {
+    return {
+      date,
+      classification: 'CURRENT_PERSISTENCE',
+      rowsFetched: collected.rows.length,
+      rowsStored: 0,
+      providerRequests: collected.requests,
+      reason: 'current odds writer is not configured',
+    };
+  }
+  try {
+    const transform = await deps.applyCurrentQuotes(collected.rows);
+    return {
+      date,
+      classification: 'COMPLETE',
+      rowsFetched: collected.rows.length,
+      rowsStored: transform.currentRowsUpdated ?? transform.current,
+      rawRows: 0,
+      providerRequests: collected.requests,
+      transform,
+    };
+  } catch (err) {
+    const tagged = err instanceof OddsPersistError ? err : (err as Error & { oddsStep?: DateClassification });
+    return {
+      date,
+      classification: tagged.oddsStep ?? 'CURRENT_PERSISTENCE',
+      rowsFetched: collected.rows.length,
+      rowsStored: 0,
+      providerRequests: collected.requests,
+      reason: tagged.message || 'analytics persistence failed',
+    };
+  }
+}
+
 function refused(status: string, reason: string): AcquireResult {
-  return {
+  const result: AcquireResult = {
     success: false,
     status,
     httpStatus: 500,
@@ -337,6 +435,13 @@ function refused(status: string, reason: string): AcquireResult {
     totalStored: 0,
     reason,
   };
+  console.log(JSON.stringify(oddsAcquisitionEvent({
+    success: false,
+    status,
+    providerRequests: 0,
+    classifications: [status],
+  })));
+  return result;
 }
 
 function quiet(status: 'NO_DUE_WORK' | 'STALE', reason: string): AcquireResult {
@@ -360,12 +465,49 @@ function quiet(status: 'NO_DUE_WORK' | 'STALE', reason: string): AcquireResult {
   return result;
 }
 
+function storageHalt(reason: string): AcquireResult {
+  const result: AcquireResult = {
+    success: false,
+    status: 'STORAGE_HALT',
+    httpStatus: 200,
+    providerRequests: 0,
+    dates: [],
+    results: [],
+    totalFetched: 0,
+    totalStored: 0,
+    reason,
+  };
+  console.log(JSON.stringify(oddsAcquisitionEvent({
+    success: false,
+    status: 'STORAGE_HALT',
+    providerRequests: 0,
+    classifications: ['STORAGE_HALT'],
+  })));
+  return result;
+}
+
+async function resolveStorage(deps: AcquireDeps): Promise<
+  { ok: true; mode: 'normal' | 'current_only'; reason: string } | { ok: false; result: AcquireResult }
+> {
+  if (!deps.storageGate) {
+    if (deps.requireSafety) {
+      return { ok: false, result: refused('SAFETY_UNAVAILABLE', 'odds storage gate is not configured') };
+    }
+    return { ok: true, mode: 'normal', reason: 'storage gate is not required for this caller' };
+  }
+  const decision = await deps.storageGate();
+  if (decision.mode === 'halt') return { ok: false, result: storageHalt(decision.reason) };
+  return { ok: true, mode: decision.mode, reason: decision.reason };
+}
+
 export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Promise<AcquireResult> {
   const canaryOnly = isOddsCanaryOnly(deps.env);
   const canaryEvent = isOpeningNightCanaryEvent(event);
   if (canaryOnly && !canaryEvent) assertCanaryEvent(event);
   if (canaryEvent) {
     assertCanaryLimiter(deps.env);
+    const storage = await resolveStorage(deps);
+    if (!storage.ok) return storage.result;
     const dates = assertCanaryEvent(event);
     const results: DateAcquisition[] = [];
     let providerRequests = 0;
@@ -389,7 +531,9 @@ export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Pro
         throw Object.assign(new Error(reason), { classification, providerRequests });
       }
       assertCanaryGames(collected.rows.map((row) => row.game_id));
-      results.push(await persistNormalPages(deps, date, collected, false));
+      results.push(storage.mode === 'current_only'
+        ? await persistCurrentOnly(deps, date, collected, false)
+        : await persistNormalPages(deps, date, collected, false));
     }
     const failed = results.find((result) => result.classification !== 'COMPLETE' && result.classification !== 'PROVIDER_EMPTY');
     if (failed) throw new Error(failed.reason ?? failed.classification);
@@ -410,9 +554,12 @@ export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Pro
     return refused('REJECTED', selected.reason);
   }
 
-  if (deps.requireSafety && (!deps.reserveAttempt || !deps.claimDate || !deps.slateForDate)) {
+  if (deps.requireSafety && (!deps.reserveAttempt || !deps.claimDate || !deps.slateForDate || !deps.storageGate)) {
     return refused('SAFETY_UNAVAILABLE', 'odds safety controls are not configured');
   }
+
+  const storage = await resolveStorage(deps);
+  if (!storage.ok) return storage.result;
 
   const now = deps.now();
   const day = etCalendarDate(now);
@@ -507,6 +654,28 @@ export async function acquireOdds(event: OddsInvocation, deps: AcquireDeps): Pro
     }
     providerRequests += collected.requests;
     remaining -= collected.requests;
+    if (storage.mode === 'current_only') {
+      if (collected.kind !== 'pages') {
+        const classification = collected.kind === 'budget'
+          ? (collected.reason === 'exhausted' ? 'BUDGET_EXHAUSTED' : 'BUDGET_UNAVAILABLE')
+          : collected.kind === 'http'
+            ? httpFailure(collected.status)
+            : collected.timeout ? 'TIMEOUT' : 'PROVIDER_ERROR';
+        const reason = collected.kind === 'budget'
+          ? collected.reason
+          : collected.kind === 'http'
+            ? `BDL API error: ${collected.status}`
+            : collected.message;
+        await keep(date, item.windowId, {
+          ...emptyDate(date, classification, reason),
+          rowsFetched: collected.rows.length,
+          providerRequests: collected.requests,
+        });
+        continue;
+      }
+      await keep(date, item.windowId, await persistCurrentOnly(deps, date, collected, true));
+      continue;
+    }
     if (collected.kind === 'budget') {
       const classification = collected.reason === 'exhausted' ? 'BUDGET_EXHAUSTED' : 'BUDGET_UNAVAILABLE';
       if (collected.rows.length === 0) {
@@ -643,7 +812,7 @@ function summarize(
     classifications: results.map((item) => item.classification),
     budgetRemaining,
     acquiredRows: totalFetched,
-    rawRowsPersisted: totalStored,
+    rawRowsPersisted: results.reduce((sum, result) => sum + (result.rawRows ?? result.rowsStored), 0),
     pregameEligibleRows,
     postTipRowsSkipped,
     currentRowsUpdated,

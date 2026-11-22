@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { Pool, type PoolClient } from 'pg';
-import { pregameMarketEligibleSql, promotePullOdds } from '../pregame-market';
+import { pregameMarketEligibleSql, promoteCurrentQuotes, promotePullOdds } from '../pregame-market';
 
 /**
  * Isolated Postgres. Offsets are measured from clock_timestamp() at the write,
@@ -386,6 +386,114 @@ describe('pregame market persistence', () => {
     expect(counts.pregameEligibleRows).toBe(0);
     expect(counts.postTipRowsSkipped).toBe(0);
     expect(await currentTotal('blank')).toBeUndefined();
+  });
+
+  it('updates DraftKings current and movement without a pull run, raw snapshot, or history row', async () => {
+    await addGame('dk-only', "clock_timestamp() + interval '2 hours'", 'Scheduled');
+    const counts = await withWrite((client) => promoteCurrentQuotes(client, [
+      {
+        game_id: 'dk-only',
+        vendor: 'draftkings',
+        spread_home_value: '-1.5',
+        spread_home_odds: -113,
+        spread_away_value: '1.5',
+        spread_away_odds: -107,
+        moneyline_home_odds: 105,
+        moneyline_away_odds: -124,
+        total_value: '223.5',
+        total_over_odds: -111,
+        total_under_odds: -109,
+        updated_at: '2026-11-22T17:19:00.524Z',
+      },
+      {
+        game_id: 'dk-only',
+        vendor: 'fanduel',
+        total_value: '224.5',
+        moneyline_home_odds: -105,
+        updated_at: '2026-11-22T17:19:00.524Z',
+      },
+    ], 'draftkings'));
+    expect(counts).toMatchObject({
+      current: 1,
+      history: 0,
+      movement: 1,
+      historyRowsInserted: 0,
+      currentRowsUpdated: 1,
+      movementRowsInserted: 1,
+    });
+    const current = await pool.query<{
+      vendor: string;
+      total: string;
+      home_moneyline: number;
+      pull_run_id: number | null;
+      updated_at: Date;
+    }>(
+      `SELECT vendor, total::text AS total, home_moneyline, pull_run_id, updated_at
+       FROM analytics.game_odds_current WHERE game_id = 'dk-only'`
+    );
+    expect(current.rows[0]).toMatchObject({ vendor: 'draftkings', total: '223.5', home_moneyline: 105, pull_run_id: null });
+    expect(current.rows[0]?.updated_at.getTime()).toBeGreaterThan(Date.parse('2026-11-22T17:19:00.524Z'));
+    const movement = await pool.query<{ open_total: string; current_total: string }>(
+      `SELECT open_total::text AS open_total, current_total::text AS current_total
+       FROM analytics.game_line_movement_summary WHERE game_id = 'dk-only'`
+    );
+    expect(movement.rows[0]).toEqual({ open_total: '223.5', current_total: '223.5' });
+    const history = await pool.query<{ n: number }>('SELECT count(*)::int AS n FROM analytics.game_odds_history');
+    const raw = await pool.query<{ n: number }>('SELECT count(*)::int AS n FROM raw.odds_snapshots');
+    const pulls = await pool.query<{ n: number }>('SELECT count(*)::int AS n FROM raw.odds_pull_runs');
+    expect(history.rows[0]?.n).toBe(0);
+    expect(raw.rows[0]?.n).toBe(0);
+    expect(pulls.rows[0]?.n).toBe(0);
+  });
+
+  it('keeps the opening line and refreshes freshness when the same quote returns', async () => {
+    await addGame('repeat', "clock_timestamp() + interval '2 hours'", 'Scheduled');
+    await addQuote('repeat', 220.5, -110, '2026-11-22T16:00:00.000Z');
+    await pool.query(
+      `UPDATE analytics.game_line_movement_summary
+       SET open_total = 210, open_home_spread = -3.5, open_home_ml = -105
+       WHERE game_id = 'repeat'`
+    );
+    const before = await pool.query<{ updated_at: Date }>(
+      `SELECT updated_at FROM analytics.game_odds_current WHERE game_id = 'repeat'`
+    );
+    await withWrite((client) => promoteCurrentQuotes(client, [{
+      game_id: 'repeat',
+      vendor: 'draftkings',
+      spread_home_value: '-1.5',
+      moneyline_home_odds: -120,
+      total_value: '223.5',
+      updated_at: '2026-11-22T17:19:00.524Z',
+    }], 'draftkings'));
+    const current = await pool.query<{ total: string; updated_at: Date }>(
+      `SELECT total::text AS total, updated_at FROM analytics.game_odds_current WHERE game_id = 'repeat'`
+    );
+    const movement = await pool.query<{ open_total: string; current_total: string; snapshots_count: number }>(
+      `SELECT open_total::text AS open_total, current_total::text AS current_total, snapshots_count
+       FROM analytics.game_line_movement_summary WHERE game_id = 'repeat'`
+    );
+    expect(current.rows[0]?.total).toBe('223.5');
+    expect(current.rows[0]?.updated_at.getTime()).toBeGreaterThan(before.rows[0]!.updated_at.getTime());
+    expect(movement.rows[0]).toMatchObject({ open_total: '210', current_total: '223.5' });
+    expect(movement.rows[0]?.snapshots_count).toBe(2);
+    const history = await pool.query<{ n: number }>(
+      `SELECT count(*)::int AS n FROM analytics.game_odds_history WHERE game_id = 'repeat'`
+    );
+    expect(history.rows[0]?.n).toBe(1);
+  });
+
+  it('does not write a restricted quote after tip', async () => {
+    await addGame('tipped', "clock_timestamp() - interval '1 minute'", 'Scheduled');
+    const counts = await withWrite((client) => promoteCurrentQuotes(client, [{
+      game_id: 'tipped',
+      vendor: 'draftkings',
+      total_value: '223.5',
+      moneyline_home_odds: -110,
+      updated_at: '2026-11-22T17:19:00.524Z',
+    }], 'draftkings'));
+    expect(counts.postTipRowsSkipped).toBe(1);
+    expect(counts.current).toBe(0);
+    expect(await currentTotal('tipped')).toBeUndefined();
   });
 
   it('uses the same predicate the write uses', async () => {
