@@ -254,5 +254,19 @@ describe('court_context_ingest on disposable Postgres', () => {
     psqlFails(database, ['-f', sqlPath], /unexpected membership: ingest_extra_group/);
     const members = psql('postgres', ['-c', `select r.rolname from pg_auth_members m join pg_roles r on r.oid = m.roleid join pg_roles u on u.oid = m.member where u.rolname = 'court_context_ingest'`]);
     expect(members).toContain('ingest_extra_group');
+
+    psql(database, ['-c', 'revoke ingest_extra_group from court_context_ingest']);
+    psql(database, ['-c', 'alter role court_context_ingest set search_path to public']);
+    psqlFails(database, ['-f', sqlPath], /unexpected role settings/);
+    const settings = psql('postgres', ['-c', `select rolconfig::text from pg_roles where rolname = 'court_context_ingest'`]);
+    expect(settings).toContain('search_path=public');
+    expect(settings).not.toContain('extensions');
+
+    psql(database, ['-c', `alter role court_context_ingest set search_path to "$user", public, extensions`]);
+    psql(database, ['-c', 'create table raw.owned_by_ingest (id integer)']);
+    psql(database, ['-c', 'alter table raw.owned_by_ingest owner to court_context_ingest']);
+    psqlFails(database, ['-f', sqlPath], /owns database objects/);
+    const owner = psql(database, ['-c', `select r.rolname from pg_class c join pg_roles r on r.oid = c.relowner where c.relname = 'owned_by_ingest'`]);
+    expect(owner).toContain('court_context_ingest');
   });
 });
