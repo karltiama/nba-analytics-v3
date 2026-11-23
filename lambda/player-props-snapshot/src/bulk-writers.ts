@@ -105,6 +105,8 @@ export type GameRunEvidence = {
   archiveStatus: string | null;
   archiveKey: string | null;
   rowsStored: number | null;
+  rowsFetched: number | null;
+  providerAttempts: number | null;
 };
 
 export async function getGameRunEvidence(
@@ -117,8 +119,10 @@ export async function getGameRunEvidence(
     archive_status: string | null;
     archive_key: string | null;
     rows_stored: number | null;
+    rows_fetched: number | null;
+    provider_attempts: number | null;
   }>(
-    `SELECT status, archive_status, archive_key, rows_stored
+    `SELECT status, archive_status, archive_key, rows_stored, rows_fetched, provider_attempts
        FROM raw.player_prop_game_runs
       WHERE pull_run_id = $1 AND game_id = $2`,
     [pullRunId, gameId]
@@ -130,6 +134,8 @@ export async function getGameRunEvidence(
     archiveStatus: row.archive_status ?? null,
     archiveKey: row.archive_key ?? null,
     rowsStored: row.rows_stored == null ? null : Number(row.rows_stored),
+    rowsFetched: row.rows_fetched == null ? null : Number(row.rows_fetched),
+    providerAttempts: row.provider_attempts == null ? null : Number(row.provider_attempts),
   };
 }
 

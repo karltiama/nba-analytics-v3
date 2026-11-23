@@ -12,6 +12,7 @@ import {
   finalizePullRunIfComplete,
   getGameRunEvidence,
   getGameRunStartedAt,
+  type GameRunEvidence,
   lookupGameArchiveContext,
   promoteCurrentOnlyProps,
   readPregameGate,
@@ -40,6 +41,14 @@ import {
   PropsStorageRefusal,
   type PropsStorageDecision,
 } from './storage-gate';
+
+function isIntentionalPregameSkip(evidence: GameRunEvidence): boolean {
+  return evidence.rowsStored === 0
+    && evidence.rowsFetched === 0
+    && evidence.providerAttempts === 0
+    && evidence.archiveStatus === 'pending'
+    && !evidence.archiveKey;
+}
 
 function invocationId(record: SQSRecord): string {
   const messageId = typeof record.messageId === 'string' ? record.messageId : '';
@@ -104,18 +113,38 @@ export const handler = async (
     let durableArchive: { key: string; rowsArchived: number } | null = null;
     const evidence = await getGameRunEvidence(pool, msg.runId, msg.gameId);
     if (evidence?.status === 'success') {
-      const archived = evidence.archiveStatus === 'archived' && Boolean(evidence.archiveKey);
-      const noObservation = (evidence.rowsStored ?? 0) === 0 && evidence.archiveStatus !== 'failed';
-      if (archived || noObservation) {
+      if (isIntentionalPregameSkip(evidence)) {
         console.log(
           JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
         );
         successCount++;
         continue;
       }
-      // Partial batch responses are not enabled on the queue mapping. Returning
-      // normally would acknowledge this record, so a stored run with no archive throws.
-      throw new PropsArchiveRefusal('successful game run is missing durable archive evidence');
+      const recordedKey = evidence.archiveKey;
+      if (evidence.archiveStatus !== 'archived' || !recordedKey) {
+        throw new PropsArchiveRefusal('successful game run is missing durable archive evidence');
+      }
+      const recordedStart = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
+      const recordedStore = openCurrentOnlyArchiveStore(env, deps?.archiveStore);
+      if (!recordedStart || !recordedStore) {
+        throw new PropsArchiveRefusal('successful game run archive could not be read');
+      }
+      const recorded = await verifyStoredArchive({
+        store: recordedStore,
+        key: recordedKey,
+        expected: {
+          gameId: msg.gameId,
+          pullRunId: msg.runId,
+          gameDate: msg.date,
+          controllerEnqueuedAt: recordedStart,
+        },
+      });
+      if (!recorded.ok) throw new PropsArchiveRefusal(recorded.message);
+      console.log(
+        JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
+      );
+      successCount++;
+      continue;
     }
     try {
       assertPropsLiveLimiter(process.env);
@@ -167,7 +196,18 @@ export const handler = async (
         snapshotAt: controllerEnqueuedAt,
       });
       const store = openCurrentOnlyArchiveStore(env, deps?.archiveStore);
-      const existing = store ? await verifyStoredArchive({ store, key: archiveKey }) : null;
+      const existing = store
+        ? await verifyStoredArchive({
+            store,
+            key: archiveKey,
+            expected: {
+              gameId: msg.gameId,
+              pullRunId: msg.runId,
+              gameDate: msg.date,
+              controllerEnqueuedAt,
+            },
+          })
+        : null;
       if (existing && !existing.ok && existing.reason !== 'missing') {
         throw new PropsArchiveRefusal(existing.message);
       }

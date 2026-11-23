@@ -89,7 +89,7 @@ function workerPool(
       if (sql.includes('SELECT status, archive_status, archive_key, rows_stored')) {
         return {
           rows: gameRunStatus
-            ? [{ status: gameRunStatus, archive_status: 'pending', archive_key: null, rows_stored: 0 }]
+            ? [{ status: gameRunStatus, archive_status: 'pending', archive_key: null, rows_stored: 0, rows_fetched: 0, provider_attempts: 0 }]
             : [],
         };
       }

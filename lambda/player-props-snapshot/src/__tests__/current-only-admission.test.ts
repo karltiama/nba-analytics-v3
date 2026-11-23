@@ -16,7 +16,13 @@ import {
   PropsStorageRefusal,
 } from '../../storage-gate';
 import { completePreferredLines, promoteCurrentOnlyProps, type PreferredLine } from '../bulk-writers';
-import { InMemoryArchiveStore } from '../player-prop-snapshot-archive';
+import {
+  InMemoryArchiveStore,
+  buildArchiveEnvelope,
+  envelopeToObjectMeta,
+  gzipEnvelope,
+  s3UserMetadata,
+} from '../player-prop-snapshot-archive';
 import { resetObservationClockSchemaCacheForTests } from '../observation-clock';
 
 const NOW = '2026-11-23T17:00:00.000Z';
@@ -210,6 +216,8 @@ function handlerPool(status = 'started') {
           archive_status: gameStatus === 'success' ? 'archived' : 'pending',
           archive_key: gameStatus === 'success' ? 'raw/kept.json.gz' : null,
           rows_stored: gameStatus === 'success' ? 1 : 0,
+          rows_fetched: gameStatus === 'success' ? 1 : 0,
+          provider_attempts: gameStatus === 'success' ? 1 : 0,
         }],
       };
     }
@@ -309,8 +317,15 @@ describe('props worker current-only handler', () => {
     const db = handlerPool('success');
     handlerMocks.pool = db.pool;
     const admit = vi.fn();
+    const archiveStore = new InMemoryArchiveStore();
+    const envelope = buildArchiveEnvelope({
+      season: 2026, pullRunId: 7, gameId: '101', sourceGameId: 101, gameDate: '2026-11-23',
+      snapshotAt: new Date(NOW), gameStartTime: new Date('2026-11-23T23:00:00.000Z'), rows: [],
+      observation: { observedAt: new Date(NOW), controllerEnqueuedAt: new Date(NOW) },
+    });
+    await archiveStore.putIfAbsent('raw/kept.json.gz', gzipEnvelope(envelope), s3UserMetadata(envelopeToObjectMeta(envelope)));
     const { handler } = await import('../../worker');
-    const body = JSON.parse((await handler(event, undefined, { admit })).body);
+    const body = JSON.parse((await handler(event, undefined, { admit, archiveStore })).body);
     expect(body.ingested).toBe(false);
     expect(handlerMocks.fetchCalls).toBe(0);
     expect(admit).not.toHaveBeenCalled();

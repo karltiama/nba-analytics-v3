@@ -79,7 +79,7 @@ function scriptedPool(attemptsLeft = PLAYER_PROPS_MAX_HTTP_ATTEMPTS, initialStat
     if (sql.includes('SELECT status, archive_status, archive_key, rows_stored')) {
       return {
         rows: status
-          ? [{ status, archive_status: 'pending', archive_key: null, rows_stored: status === 'success' ? 0 : null }]
+          ? [{ status, archive_status: 'pending', archive_key: null, rows_stored: status === 'success' ? 0 : null, rows_fetched: 0, provider_attempts: 0 }]
           : [],
       };
     }
@@ -198,6 +198,6 @@ describe('player-props worker safety (mocked provider, no network)', () => {
     const body = JSON.parse((await handler(event)).body);
     expect(body.ingested).toBe(false);
     expect(mocks.fetchCalls).toBe(0);
-    expect(db.calls.some((sql) => sql.includes('provider_attempts'))).toBe(false);
+    expect(db.calls.some((sql) => sql.includes('provider_attempts = provider_attempts + 1'))).toBe(false);
   });
 });

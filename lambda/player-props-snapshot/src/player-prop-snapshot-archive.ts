@@ -317,6 +317,39 @@ export function decideIdempotentWrite(args: {
   };
 }
 
+export type ArchiveDeliveryIdentity = {
+  gameId: string;
+  pullRunId: number;
+  gameDate: string;
+  controllerEnqueuedAt: Date | string;
+};
+
+function sameInstant(left: string, right: Date | string): boolean {
+  const expected = typeof right === 'string' ? Date.parse(right) : right.getTime();
+  const actual = Date.parse(left);
+  return Number.isFinite(actual) && Number.isFinite(expected) && actual === expected;
+}
+
+/** A checksum-valid envelope still has to be this delivery's observation. */
+export function archiveIdentityProblem(
+  envelope: PlayerPropArchiveEnvelope,
+  expected: ArchiveDeliveryIdentity
+): string | null {
+  if (envelope.archiveVersion !== PLAYER_PROP_SNAPSHOT_ARCHIVE_VERSION) {
+    return `archive version ${envelope.archiveVersion} is not supported`;
+  }
+  if (envelope.source !== PLAYER_PROP_SNAPSHOT_SOURCE) {
+    return `archive source ${envelope.source} is not supported`;
+  }
+  if (envelope.game_id !== expected.gameId) return 'archive game_id does not match this delivery';
+  if (envelope.pull_run_id !== expected.pullRunId) return 'archive pull_run_id does not match this delivery';
+  if (envelope.game_date !== expected.gameDate) return 'archive game_date does not match this delivery';
+  if (!envelope.controller_enqueued_at || !sameInstant(envelope.controller_enqueued_at, expected.controllerEnqueuedAt)) {
+    return 'archive controller timestamp does not match this delivery';
+  }
+  return null;
+}
+
 /** Current-only evidence needs the response clock and the first-seen enqueue time. */
 export function observationDurabilityProblem(envelope: PlayerPropArchiveEnvelope): string | null {
   if (typeof envelope.observed_at !== 'string' || !Number.isFinite(Date.parse(envelope.observed_at))) {
@@ -342,6 +375,7 @@ export async function verifyStoredArchive(args: {
   store: ArchivePutStore;
   key: string;
   expectedChecksum?: string;
+  expected?: ArchiveDeliveryIdentity;
 }): Promise<
   | { ok: true; envelope: PlayerPropArchiveEnvelope }
   | { ok: false; reason: 'missing' | 'invalid' | 'conflict'; message: string }
@@ -379,6 +413,10 @@ export async function verifyStoredArchive(args: {
       reason: 'conflict',
       message: `archive object ${args.key} checksum conflicts with this attempt`,
     };
+  }
+  if (args.expected) {
+    const identity = archiveIdentityProblem(envelope, args.expected);
+    if (identity) return { ok: false, reason: 'conflict', message: identity };
   }
   return { ok: true, envelope };
 }

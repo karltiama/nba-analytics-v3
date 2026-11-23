@@ -195,7 +195,17 @@ export async function archiveGameSnapshot(args: {
     };
   }
   if (args.requireDurable) {
-    const verified = await verifyStoredArchive({ store, key, expectedChecksum: outcome.checksum });
+    const verified = await verifyStoredArchive({
+      store,
+      key,
+      expectedChecksum: outcome.checksum,
+      expected: {
+        gameId: args.gameId,
+        pullRunId: args.pullRunId,
+        gameDate: args.gameDate,
+        controllerEnqueuedAt: args.snapshotAt,
+      },
+    });
     if (!verified.ok) {
       return {
         outcome,

@@ -52,12 +52,24 @@ vi.mock('../fetch', () => ({
   },
 }));
 
-function poolFor(initial: { status?: string; archiveStatus?: string | null; archiveKey?: string | null; rowsStored?: number; failInserts?: number } = {}) {
+function poolFor(initial: {
+  status?: string;
+  archiveStatus?: string | null;
+  archiveKey?: string | null;
+  rowsStored?: number;
+  rowsFetched?: number;
+  providerAttempts?: number;
+  failInserts?: number;
+  eligible?: boolean;
+} = {}) {
   let status = initial.status ?? 'started';
-  let archiveStatus = initial.archiveStatus ?? null;
+  let archiveStatus = initial.archiveStatus ?? 'pending';
   let archiveKey = initial.archiveKey ?? null;
   let rowsStored = initial.rowsStored ?? 0;
+  let rowsFetched = initial.rowsFetched ?? 0;
+  let providerAttempts = initial.providerAttempts ?? 0;
   let insertFailures = initial.failInserts ?? 0;
+  const eligible = initial.eligible !== false;
   const calls: string[] = [];
   const query = vi.fn(async (sql: string, values: unknown[] = []) => {
     calls.push(sql);
@@ -71,11 +83,11 @@ function poolFor(initial: { status?: string; archiveStatus?: string | null; arch
       };
     }
     if (sql.includes('rows_stored') && sql.includes('raw.player_prop_game_runs') && sql.includes('SELECT')) {
-      return { rows: [{ status, archive_status: archiveStatus, archive_key: archiveKey, rows_stored: rowsStored }] };
+      return { rows: [{ status, archive_status: archiveStatus, archive_key: archiveKey, rows_stored: rowsStored, rows_fetched: rowsFetched, provider_attempts: providerAttempts }] };
     }
     if (sql.includes('player_prop_daily_attempts')) return { rows: [{ attempts: 1 }], rowCount: 1 };
     if (sql.includes('provider_attempts = provider_attempts + 1')) return { rows: [{ provider_attempts: 1 }], rowCount: 1 };
-    if (sql.includes('AS eligible')) return { rows: [{ eligible: true }] };
+    if (sql.includes('AS eligible')) return { rows: [{ eligible }] };
     if (sql.includes('SELECT started_at')) return { rows: [{ started_at: STARTED }] };
     if (sql.includes('INSERT INTO analytics.player_props_current') || sql.includes('INSERT INTO analytics.player_prop_current')) {
       if (insertFailures > 0) {
@@ -89,6 +101,7 @@ function poolFor(initial: { status?: string; archiveStatus?: string | null; arch
     }
     if (sql.includes('UPDATE raw.player_prop_game_runs') && sql.includes('status = $3')) {
       status = String(values[2]);
+      rowsFetched = Number(values[3]);
       rowsStored = Number(values[4]);
       archiveStatus = values[8] == null ? archiveStatus : String(values[8]);
       archiveKey = values[10] == null ? archiveKey : String(values[10]);
@@ -216,6 +229,82 @@ describe('current-only archive durability', () => {
 
   it('does not acknowledge a successful game run that is missing archive evidence', async () => {
     const db = poolFor({ status: 'success', rowsStored: 2, archiveStatus: 'failed', archiveKey: null });
+    mocks.pool = db.pool;
+    const { handler } = await import('../../worker');
+    await expect(handler(event, undefined, { archiveStore: new InMemoryArchiveStore() })).rejects.toThrow(/missing durable archive evidence/);
+    expect(mocks.fetchCalls).toBe(0);
+    expect(db.calls.some((sql) => sql.includes('UPDATE raw.player_prop_game_runs'))).toBe(false);
+  });
+
+  it('reuses a matching archive without fetching again', async () => {
+    const store = new InMemoryArchiveStore();
+    const envelope = buildArchiveEnvelope({
+      season: 2026, pullRunId: 7, gameId: '101', sourceGameId: 101, gameDate: '2026-11-23',
+      snapshotAt: STARTED, gameStartTime: new Date('2026-11-23T23:00:00.000Z'),
+      rows: [{
+        game_id: '101', source_game_id: 101, player_id: '77', source_player_id: 77, player_name: null,
+        team_id: null, opponent_id: null, sportsbook: 'draftkings', prop_type: 'points', market_type: 'over_under',
+        side: 'over', line_value: 10.5, odds_american: -110, odds_decimal: 1.91, implied_probability: 0.524,
+        snapshot_at: STARTED.toISOString(), game_start_time: '2026-11-23T23:00:00.000Z', source: 'balldontlie',
+        pull_run_id: 7, game_run_id: '7:101', provider_updated_at: null, raw_json: null,
+      }],
+      observation: { observedAt: STARTED, controllerEnqueuedAt: STARTED },
+    });
+    await store.putIfAbsent(archiveKey(), gzipEnvelope(envelope), s3UserMetadata(envelopeToObjectMeta(envelope)));
+    const db = poolFor();
+    mocks.pool = db.pool;
+    const { handler } = await import('../../worker');
+    const body = JSON.parse((await handler(event, undefined, { archiveStore: store })).body);
+    expect(body).toMatchObject({ success: true, ingested: true });
+    expect(mocks.fetchCalls).toBe(0);
+    expect(store.objects.size).toBe(1);
+  });
+
+  it('rejects a self-consistent archive for a different game and does not overwrite it', async () => {
+    const store = new InMemoryArchiveStore();
+    const envelope = buildArchiveEnvelope({
+      season: 2026, pullRunId: 8, gameId: '999', sourceGameId: 999, gameDate: '2026-11-22',
+      snapshotAt: STARTED, gameStartTime: new Date('2026-11-23T23:00:00.000Z'), rows: [],
+      observation: { observedAt: STARTED, controllerEnqueuedAt: STARTED },
+    });
+    const key = archiveKey();
+    await store.putIfAbsent(key, gzipEnvelope(envelope), s3UserMetadata(envelopeToObjectMeta(envelope)));
+    const before = Buffer.from(store.objects.get(key)!.body);
+    const db = poolFor();
+    mocks.pool = db.pool;
+    const { handler } = await import('../../worker');
+    await expect(handler(event, undefined, { archiveStore: store })).rejects.toThrow(/does not match this delivery/);
+    expect(mocks.fetchCalls).toBe(0);
+    expect(db.calls.some((sql) => sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
+    expect(Buffer.compare(store.objects.get(key)!.body, before)).toBe(0);
+  });
+
+  it('does not acknowledge a recorded success when the archived object is missing', async () => {
+    const db = poolFor({ status: 'success', archiveStatus: 'archived', archiveKey: archiveKey(), rowsStored: 1, rowsFetched: 1, providerAttempts: 1 });
+    mocks.pool = db.pool;
+    const { handler } = await import('../../worker');
+    await expect(handler(event, undefined, { archiveStore: new InMemoryArchiveStore() })).rejects.toThrow(/absent/);
+    expect(mocks.fetchCalls).toBe(0);
+    expect(db.calls.some((sql) => sql.includes('UPDATE raw.player_prop_game_runs'))).toBe(false);
+  });
+
+  it('acknowledges a pre-tip skip with no fetch and no archive', async () => {
+    const store = new InMemoryArchiveStore();
+    const db = poolFor({ eligible: false });
+    mocks.pool = db.pool;
+    const { handler } = await import('../../worker');
+    const first = JSON.parse((await handler(event, undefined, { archiveStore: store })).body);
+    expect(first).toMatchObject({ success: true, ingested: false });
+    expect(mocks.fetchCalls).toBe(0);
+    expect(store.objects.size).toBe(0);
+    expect(db.state().status).toBe('success');
+    const second = JSON.parse((await handler(event, undefined, { archiveStore: store })).body);
+    expect(second).toMatchObject({ success: true, ingested: false });
+    expect(mocks.fetchCalls).toBe(0);
+  });
+
+  it('does not acknowledge an unverified zero-row success', async () => {
+    const db = poolFor({ status: 'success', rowsStored: 0, rowsFetched: 0, providerAttempts: 1, archiveStatus: 'pending', archiveKey: null });
     mocks.pool = db.pool;
     const { handler } = await import('../../worker');
     await expect(handler(event, undefined, { archiveStore: new InMemoryArchiveStore() })).rejects.toThrow(/missing durable archive evidence/);
