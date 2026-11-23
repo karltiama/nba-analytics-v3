@@ -260,20 +260,7 @@ async function publishPointer(
   if (current && !observationPrecedes(current, { observedAt: manifest.observedAt, pullRunId: manifest.pullRunId })) {
     return { ok: false, published: false, reason: 'older_snapshot', idempotent: false };
   }
-  const next: CurrentPointer = {
-    schemaVersion: 1,
-    gameId: manifest.gameId,
-    archiveKey: manifest.archiveKey,
-    manifestKey: manifestKeyFor(manifest.archiveKey),
-    pullRunId: manifest.pullRunId,
-    observedAt: manifest.observedAt,
-    controllerEnqueuedAt: manifest.controllerEnqueuedAt,
-    gameStartTime,
-    envelopeChecksum: envelope.checksum,
-    manifestChecksum: manifest.manifestChecksum,
-    previousArchiveKey: current?.archiveKey ?? null,
-  };
-  const body = Buffer.from(`${JSON.stringify(next)}\n`, 'utf8');
+  const body = pointerBody(manifest, gameStartTime, envelope, current?.archiveKey ?? null);
   const condition = currentObject
     ? ({ kind: 'if-match', etag: currentObject.etag } as const)
     : ({ kind: 'if-none-match', etag: '*' } as const);
@@ -287,12 +274,36 @@ async function publishPointer(
   if (winner && winner.archiveKey === manifest.archiveKey && winner.envelopeChecksum === manifest.envelopeChecksum) {
     return { ok: true, published: true, reason: 'already_current', idempotent: true };
   }
-  if (!winner || !observationPrecedes(winner, { observedAt: manifest.observedAt, pullRunId: manifest.pullRunId })) {
+  const candidate = { observedAt: manifest.observedAt, pullRunId: manifest.pullRunId };
+  if (!again || !winner || !observationPrecedes(winner, candidate)) {
     return { ok: false, published: false, reason: 'older_snapshot', idempotent: false };
   }
-  const retry = await store.put(key, body, { 'pointer-game': manifest.gameId }, { kind: 'if-match', etag: again!.etag });
+  const retryBody = pointerBody(manifest, gameStartTime, envelope, winner.archiveKey);
+  const retry = await store.put(key, retryBody, { 'pointer-game': manifest.gameId }, { kind: 'if-match', etag: again.etag });
   if (!retry.ok) return { ok: false, published: false, reason: 'pointer_conflict', idempotent: false };
   return { ok: true, published: true, reason: 'published', idempotent: false };
+}
+
+function pointerBody(
+  manifest: PublicationManifest,
+  gameStartTime: string,
+  envelope: PlayerPropArchiveEnvelope,
+  previousArchiveKey: string | null
+): Buffer {
+  const next: CurrentPointer = {
+    schemaVersion: 1,
+    gameId: manifest.gameId,
+    archiveKey: manifest.archiveKey,
+    manifestKey: manifestKeyFor(manifest.archiveKey),
+    pullRunId: manifest.pullRunId,
+    observedAt: manifest.observedAt,
+    controllerEnqueuedAt: manifest.controllerEnqueuedAt,
+    gameStartTime,
+    envelopeChecksum: envelope.checksum,
+    manifestChecksum: manifest.manifestChecksum,
+    previousArchiveKey,
+  };
+  return Buffer.from(`${JSON.stringify(next)}\n`, 'utf8');
 }
 
 export async function readVerifiedEnvelope(

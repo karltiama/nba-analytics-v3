@@ -7,7 +7,7 @@ import { gunzipEnvelope } from '../../player-prop-snapshot-archive';
 import { manifestProblem, sealManifest, type PublicationManifest } from '../manifest';
 import { measurePublication } from '../measure';
 import { PROPS_PAGE_CAP, validateProviderPull, type ProviderPage } from '../pages';
-import { publishCurrentSnapshot, type PublishRequest } from '../publish';
+import { pointerKey, publishCurrentSnapshot, type CurrentPointer, type PublishRequest } from '../publish';
 import { evaluateCurrentQuickBuilds } from '../quick-builds';
 import { readCurrentBoard } from '../reader';
 import { IN_MEMORY_S3_DIFFERENCES, InMemoryPrototypeStore } from '../store';
@@ -177,6 +177,10 @@ describe('F39B current props board', () => {
     const [newerResult, olderResult] = await Promise.all([newer, older]);
     expect(newerResult.published).toBe(true);
     expect(olderResult.published).toBe(false);
+    expect(olderResult.reason).toBe('older_snapshot');
+    const pointer = JSON.parse((await store.get(pointerKey(GAME)))!.body.toString('utf8')) as CurrentPointer;
+    expect(pointer.pullRunId).toBe(8);
+    expect(pointer.archiveKey).toBe(newerResult.archiveKey);
     const board = await readCurrentBoard({ store, gameId: GAME, now: '2026-11-23T22:21:00.000Z' });
     expect(board.available && board.rows.map((item) => item.line)).toEqual([25.5, 25.5]);
   });
@@ -204,6 +208,43 @@ describe('F39B current props board', () => {
     expect(newerResult.published).toBe(true);
     const board = await readCurrentBoard({ store, gameId: GAME, now: '2026-11-23T22:21:00.000Z' });
     expect(board.available && board.snapshot.pullRunId).toBe(6);
+  });
+
+  it('links the retried pointer to the older archive that won the race', async () => {
+    const store = new InMemoryPrototypeStore();
+    store.holdPointerPuts = 2;
+    const older = publishCurrentSnapshot(request({
+      store,
+      pullRunId: 15,
+      observedAt: '2026-11-23T22:10:00.000Z',
+      controllerEnqueuedAt: '2026-11-23T22:09:00.000Z',
+    }));
+    const newer = publishCurrentSnapshot(request({
+      store,
+      pullRunId: 16,
+      observedAt: '2026-11-23T22:20:00.000Z',
+      controllerEnqueuedAt: '2026-11-23T22:19:00.000Z',
+      pages: [page([row(11, '19.5', -111, -109)])],
+    }));
+    await until(() => store.waitingPointerPuts() === 2);
+    expect(store.objects.has(pointerKey(GAME))).toBe(false);
+    const archives = [...store.objects.entries()]
+      .filter(([key]) => key.endsWith('.json.gz'))
+      .map(([key, object]) => [key, Buffer.from(object.body)] as const);
+    expect(archives).toHaveLength(2);
+    store.releasePointerPuts();
+    const [olderResult, newerResult] = await Promise.all([older, newer]);
+    expect(olderResult.published).toBe(true);
+    expect(newerResult.published).toBe(true);
+    const pointer = JSON.parse((await store.get(pointerKey(GAME)))!.body.toString('utf8')) as CurrentPointer;
+    expect(pointer.pullRunId).toBe(16);
+    expect(pointer.archiveKey).toBe(newerResult.archiveKey);
+    expect(pointer.previousArchiveKey).toBe(olderResult.archiveKey);
+    for (const [key, body] of archives) {
+      expect(Buffer.compare(store.objects.get(key)!.body, body)).toBe(0);
+    }
+    const board = await readCurrentBoard({ store, gameId: GAME, now: '2026-11-23T22:21:00.000Z' });
+    expect(board.available && board.snapshot.pullRunId).toBe(16);
   });
 
   it('drops a removed line instead of merging it into the next board', async () => {
