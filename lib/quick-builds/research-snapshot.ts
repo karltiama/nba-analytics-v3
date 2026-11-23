@@ -139,7 +139,7 @@ export type QuickBuildReader = (sql: string, params?: unknown[]) => Promise<read
 export type QuickBuildApiBody = Omit<QuickBuildResult, 'builds'> & {
   generatedAt: string;
   preset: ResearchPresetName;
-  snapshotClass: 'research_snapshot';
+  snapshotClass: 'research_snapshot' | 'current_stored_snapshot';
   limitations: readonly string[];
   builds: QuickBuildDisplayed[];
 };

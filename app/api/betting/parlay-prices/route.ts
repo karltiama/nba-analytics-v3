@@ -5,7 +5,9 @@ import { PARLAY_SELECTION_SOFT_CAP } from '@/lib/parlay/selection';
 import { resolveParlayQuoteFallback } from '@/lib/parlay/resolve-parlay-quotes';
 import { isBestBookViewEnabled, type TrueCostLegKey } from '@/lib/parlay/true-cost-quotes';
 import { loadCurrentLegQuotes } from '@/lib/parlay/true-cost-server';
+import { loadS3CurrentLegQuotes } from '@/lib/parlay/s3-current-quotes';
 import { historicalBoardSourceFromEnv } from '@/lib/props/historical-board-config';
+import { currentPropsSource } from '@/lib/props/s3-current-board/source';
 
 type LegBody = {
   gameId?: unknown;
@@ -62,6 +64,21 @@ export async function POST(request: NextRequest) {
 
   try {
     const bestBookEnabled = isBestBookViewEnabled(process.env.PARLAY_TRUE_COST_BEST_BOOK);
+    if (currentPropsSource() === 's3') {
+      const resolved = await loadS3CurrentLegQuotes({
+        legs,
+        vendors,
+        bestBookEnabled,
+        now: new Date(),
+      });
+      return gate.withAuthCookies(
+        NextResponse.json({
+          quotesPerLeg: resolved.quotesPerLeg,
+          bestBookEnabled,
+          source: resolved.quoteSource,
+        })
+      );
+    }
     const resolved = await resolveParlayQuoteFallback({
       legs,
       vendors,

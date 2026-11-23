@@ -18,8 +18,10 @@ import {
 } from './manifest';
 import { validateProviderPull, type ProviderPage } from './pages';
 import { InMemoryPrototypeStore } from './store';
+import { pointerKey, type CurrentPointer } from '@/lib/props/s3-current-board/pointer';
 
-export const BASE_SCHEDULE_FRESHNESS_MS = 30 * 60 * 1000;
+export { BASE_SCHEDULE_FRESHNESS_MS, pointerKey, type CurrentPointer } from '@/lib/props/s3-current-board/pointer';
+export { readVerifiedEnvelope } from '@/lib/props/s3-current-board/read';
 
 export type PublishRequest = {
   store: InMemoryPrototypeStore;
@@ -42,27 +44,9 @@ export type PublishResult = {
   idempotent: boolean;
 };
 
-export function pointerKey(gameId: string): string {
-  return `current/source=balldontlie/league=nba/entity=player_prop_current/game_id=${gameId}/pointer.json`;
-}
-
 export function manifestKeyFor(archiveKey: string): string {
   return `${archiveKey}.publication.json`;
 }
-
-export type CurrentPointer = {
-  schemaVersion: 1;
-  gameId: string;
-  archiveKey: string;
-  manifestKey: string;
-  pullRunId: number;
-  observedAt: string;
-  controllerEnqueuedAt: string;
-  gameStartTime: string;
-  envelopeChecksum: string;
-  manifestChecksum: string;
-  previousArchiveKey: string | null;
-};
 
 function parsePointer(body: Buffer): CurrentPointer | null {
   try {
@@ -95,16 +79,6 @@ async function putNewObject(
   if (!existing) return { ok: false, reason: 'conditional_conflict' };
   if (Buffer.compare(existing.body, body) === 0) return { ok: true, identical: true };
   return { ok: false, reason: 'archive_conflict' };
-}
-
-async function readManifest(store: InMemoryPrototypeStore, key: string): Promise<PublicationManifest | null> {
-  const object = await store.get(key);
-  if (!object) return null;
-  try {
-    return JSON.parse(object.body.toString('utf8')) as PublicationManifest;
-  } catch {
-    return null;
-  }
 }
 
 /**
@@ -306,26 +280,3 @@ function pointerBody(
   return Buffer.from(`${JSON.stringify(next)}\n`, 'utf8');
 }
 
-export async function readVerifiedEnvelope(
-  store: InMemoryPrototypeStore,
-  pointer: CurrentPointer
-): Promise<{ manifest: PublicationManifest; envelope: PlayerPropArchiveEnvelope } | null> {
-  const manifest = await readManifest(store, pointer.manifestKey);
-  if (!manifest) return null;
-  const stored = await verifyStoredArchive({
-    store,
-    key: pointer.archiveKey,
-    expectedChecksum: pointer.envelopeChecksum,
-    expected: {
-      gameId: pointer.gameId,
-      pullRunId: pointer.pullRunId,
-      gameDate: manifest.gameDate,
-      controllerEnqueuedAt: pointer.controllerEnqueuedAt,
-    },
-  });
-  if (!stored.ok) return null;
-  if (publicationEvidenceProblem(manifest, stored.envelope)) return null;
-  if (manifest.manifestChecksum !== pointer.manifestChecksum) return null;
-  if (manifest.archiveKey !== pointer.archiveKey) return null;
-  return { manifest, envelope: stored.envelope };
-}

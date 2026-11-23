@@ -4,6 +4,9 @@
  */
 
 import { query, queryOne } from '@/lib/db';
+import { serveLivePropsFromCurrentBoard } from '@/lib/betting/props-explorer-current-board';
+import { currentPropsSource } from '@/lib/props/s3-current-board/source';
+import type { CurrentBoardStore } from '@/lib/props/s3-current-board/read';
 import { getPlayerPropModelInputs, type PlayerPropModelInputs } from '@/lib/betting/player-prop-inputs';
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
@@ -640,6 +643,8 @@ export type GetPlayerPropsForExplorerInput = {
   arbOnly?: boolean;
   todayEt?: string;
   now?: Date;
+  /** Injected by tests. Production uses the unconfigured store, which cannot read S3. */
+  store?: CurrentBoardStore;
 };
 
 export type SelectedExplorerGame = {
@@ -723,6 +728,16 @@ export async function getPlayerPropsForExplorer(
   }
 
   const marketContext = resolvePropsMarketContext({ dateEt, todayEt });
+  if (marketContext === 'live' && currentPropsSource() === 's3') {
+    return serveLivePropsFromCurrentBoard({
+      ...input,
+      dateEt,
+      now,
+      gameId,
+      selectedGame,
+      gameStart,
+    });
+  }
   let readCurrent = marketContext === 'live';
   let lineLabel = propsLineLabel(marketContext);
   if (marketContext === 'historical' && gameId) {
