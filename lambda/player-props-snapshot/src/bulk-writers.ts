@@ -407,7 +407,7 @@ export async function bulkUpsertCurrent(
   return upserted;
 }
 
-type PreferredLine = {
+export type PreferredLine = {
   game_id: string;
   player_id: string;
   vendor: string;
@@ -543,6 +543,74 @@ export async function readPregameGate(pool: Queryable, gameId: string): Promise<
   return result.rows[0]?.eligible === true ? 'eligible' : 'ineligible';
 }
 
+/** Both sides are required. A one-sided quote is not a current market. */
+export function completePreferredLines(lines: PreferredLine[]): PreferredLine[] {
+  return lines.filter((line) => line.over_odds != null && line.under_odds != null);
+}
+
+/**
+ * Upsert complete preferred markets. Does not delete an existing row, so a
+ * market missing from this payload stays where it was and an incomplete quote
+ * is not written back.
+ */
+export async function upsertCompletePreferredCurrent(
+  pool: Queryable,
+  gameId: string,
+  preferredLines: PreferredLine[]
+): Promise<number> {
+  const complete = completePreferredLines(preferredLines).filter((line) => line.game_id === gameId);
+  if (complete.length === 0) return 0;
+  const eligible = pregamePropsMarketEligibleSql('g');
+  let upserted = 0;
+  for (const group of chunk(complete, CHUNK_SIZE)) {
+    const values: unknown[] = [];
+    const tuples = group.map((row, i) => {
+      const base = i * 9;
+      values.push(
+        row.game_id,
+        row.player_id,
+        row.vendor,
+        row.prop_type,
+        row.line_value,
+        row.market_type,
+        row.over_odds,
+        row.under_odds,
+        row.snapshot_at
+      );
+      return `($${base + 1}::text,$${base + 2}::text,$${base + 3}::text,$${base + 4}::text,$${base + 5}::numeric,$${base + 6}::text,$${base + 7}::integer,$${base + 8}::integer,$${base + 9}::timestamptz)`;
+    });
+    const result = await pool.query(
+      `INSERT INTO analytics.player_prop_current (
+         game_id, player_id, vendor, prop_type, line_value, market_type,
+         over_odds, under_odds, snapshot_at
+       )
+       SELECT
+         v.game_id, v.player_id, v.vendor, v.prop_type, v.line_value, v.market_type,
+         v.over_odds, v.under_odds, v.snapshot_at
+       FROM (VALUES ${tuples.join(',')}) AS v(
+         game_id, player_id, vendor, prop_type, line_value, market_type,
+         over_odds, under_odds, snapshot_at
+       )
+       JOIN analytics.games g ON g.game_id = v.game_id
+       WHERE ${eligible}
+       ON CONFLICT (game_id, player_id, vendor, prop_type, market_type, line_value)
+       DO UPDATE SET
+         over_odds = excluded.over_odds,
+         under_odds = excluded.under_odds,
+         snapshot_at = excluded.snapshot_at
+       WHERE excluded.snapshot_at >= analytics.player_prop_current.snapshot_at
+         AND EXISTS (
+           SELECT 1 FROM analytics.games g
+           WHERE g.game_id = analytics.player_prop_current.game_id
+             AND ${eligible}
+         )`,
+      values
+    );
+    upserted += result.rowCount ?? 0;
+  }
+  return upserted;
+}
+
 /**
  * Serving-table promotion. Raw v2 is written by the caller and stays append-only.
  * Both current tables change only while the locked game is still pregame.
@@ -584,6 +652,50 @@ export async function promoteServingProps(
       args.preferred,
       args.snapshotAt
     );
+    await client.query('COMMIT');
+    return { outcome: 'promoted', current, legacyCurrent };
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+/**
+ * Current-board promotion. No raw snapshot insert and no delete of an existing
+ * current or historical row. An incomplete preferred quote is not upserted.
+ */
+export async function promoteCurrentOnlyProps(
+  pool: Pool,
+  args: {
+    gameId: string;
+    rows: NormalizedPropRow[];
+    preferred: PreferredLine[];
+    snapshotAt: Date;
+    clocks: PropObservationClocks;
+  }
+): Promise<ServingPromotion> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const locked = await client.query<{ eligible: boolean }>(
+      `SELECT ${pregamePropsMarketEligibleSql('g')} AS eligible
+         FROM analytics.games g
+        WHERE g.game_id = $1
+        FOR UPDATE`,
+      [args.gameId]
+    );
+    if (locked.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return { outcome: 'missing_game', current: 0, legacyCurrent: 0 };
+    }
+    if (locked.rows[0]?.eligible !== true) {
+      await client.query('COMMIT');
+      return { outcome: 'post_tip', current: 0, legacyCurrent: 0 };
+    }
+    const current = await bulkUpsertCurrent(client, args.rows, args.snapshotAt, args.clocks);
+    const legacyCurrent = await upsertCompletePreferredCurrent(client, args.gameId, args.preferred);
     await client.query('COMMIT');
     return { outcome: 'promoted', current, legacyCurrent };
   } catch (error) {

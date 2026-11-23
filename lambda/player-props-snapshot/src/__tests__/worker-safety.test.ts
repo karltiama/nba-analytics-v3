@@ -10,6 +10,18 @@ const mocks = vi.hoisted(() => ({
   fetchError: null as Error | null,
 }));
 
+vi.mock('../../storage-gate', () => ({
+  admitPropsInvocation: async () => ({
+    mode: 'current_only',
+    reason: 'test admission',
+    pressure: 'ok',
+    boundBytes: 1,
+    settle: async () => undefined,
+  }),
+  assertCurrentOnlyRowCount: () => undefined,
+  measurePropsCluster: async () => ({ clusterBytes: 1, measuredAt: '2026-11-23T00:00:00.000Z', source: 'test', valid: true, complete: true }),
+  PropsStorageRefusal: class PropsStorageRefusal extends Error {},
+}));
 vi.mock('../db', () => ({ getDbPool: () => mocks.pool }));
 vi.mock('../metrics', () => ({ emitCoverageMetric: () => {} }));
 vi.mock('../prop-identity-boundary', () => ({

@@ -12,6 +12,18 @@ const mocks = vi.hoisted(() => ({
   metrics: [] as Array<{ dims: Record<string, string>; values: Record<string, number> }>,
 }));
 
+vi.mock('../../storage-gate', () => ({
+  admitPropsInvocation: async () => ({
+    mode: 'current_only',
+    reason: 'test admission',
+    pressure: 'ok',
+    boundBytes: 1,
+    settle: async () => undefined,
+  }),
+  assertCurrentOnlyRowCount: () => undefined,
+  measurePropsCluster: async () => ({ clusterBytes: 1, measuredAt: '2026-11-23T00:00:00.000Z', source: 'test', valid: true, complete: true }),
+  PropsStorageRefusal: class PropsStorageRefusal extends Error {},
+}));
 vi.mock('../db', () => ({ getDbPool: () => mocks.pool }));
 vi.mock('../metrics', () => ({
   emitCoverageMetric: (_ns: string, dims: Record<string, string>, values: Record<string, number>) =>
@@ -86,12 +98,12 @@ function poolFor(options: { failRaw?: boolean } = {}) {
       return { rows: [{ status }] };
     }
     if (sql.includes('SELECT started_at')) return { rows: [{ started_at: new Date('2026-10-21T19:51:47.684Z') }] };
+    if (sql.includes('INSERT INTO analytics.player_props_current')) {
+      if (options.failRaw) throw new Error('current insert failed');
+      return { rows: [], rowCount: 1 };
+    }
     if (sql.includes('FROM analytics.games')) {
       return { rows: [{ season: '2026', start_time: TIP, home_team_id: '1', away_team_id: '2' }] };
-    }
-    if (sql.includes('INSERT INTO raw.player_prop_snapshots_v2')) {
-      if (options.failRaw) throw new Error('raw insert failed');
-      return { rows: [], rowCount: 2 };
     }
     if (sql.includes('UPDATE raw.player_prop_game_runs') && sql.includes('status = $3')) {
       status = String(values[2]);
@@ -169,7 +181,7 @@ describe('optional archive does not invalidate a stored game', () => {
     const saved = completion(db.calls).at(-1);
     expect(saved?.values[2]).toBe('success');
     expect(saved?.values[3]).toBe(1);
-    expect(saved?.values[4]).toBe(2);
+    expect(saved?.values[4]).toBe(1);
     expect(saved?.values[8]).toBe('archived');
     expect(mocks.fetchCalls).toBe(1);
     const batch = mocks.metrics.find((metric) => metric.dims.Component === 'WorkerBatch');
@@ -197,7 +209,7 @@ describe('optional archive does not invalidate a stored game', () => {
     const saved = completion(db.calls).at(-1);
     expect(saved?.values[2]).toBe('success');
     expect(saved?.values[3]).toBe(1);
-    expect(saved?.values[4]).toBe(2);
+    expect(saved?.values[4]).toBe(1);
     expect(saved?.values[5]).toBeNull();
     expect(saved?.values[8]).toBe('failed');
     expect(saved?.values[9]).toMatch(/http=403/);
@@ -207,7 +219,7 @@ describe('optional archive does not invalidate a stored game', () => {
       pullRunId: 579,
       gameId: '21717922',
       rowsFetched: 1,
-      rowsStored: 2,
+      rowsStored: 1,
       archiveStatus: 'failed',
     });
     const batch = mocks.metrics.find((metric) => metric.dims.Component === 'WorkerBatch');
@@ -230,16 +242,16 @@ describe('optional archive does not invalidate a stored game', () => {
     const saved = completion(db.calls).at(-1);
     expect(saved?.values[2]).toBe('success');
     expect(saved?.values[3]).toBe(1);
-    expect(saved?.values[4]).toBe(2);
+    expect(saved?.values[4]).toBe(1);
     expect(saved?.values[8]).toBe('pending');
     expect(mocks.fetchCalls).toBe(1);
   });
 
-  it('a raw insert failure still fails the invocation for SQS retry', async () => {
+  it('a current insert failure still fails the invocation for SQS retry', async () => {
     const db = poolFor({ failRaw: true });
     mocks.pool = db.pool;
     const { handler } = await import('../../worker');
-    await expect(handler(event)).rejects.toThrow(/raw insert failed/);
+    await expect(handler(event)).rejects.toThrow(/current insert failed/);
     const saved = completion(db.calls).at(-1);
     expect(saved?.values[2]).toBe('error');
     expect(saved?.values[3]).toBe(0);

@@ -275,6 +275,20 @@ export const PROPS_PULL_CONTROL_PHYSICAL_GROWTH_BOUND_BYTES = conservativePhysic
   PROPS_PUBLICATION_MEASURED_RELATION_COUNT
 );
 
+/**
+ * Current-only worker: the measured 30,000-row current-board publication plus
+ * the pull-control write. Raw snapshot growth is not included because that
+ * insert is skipped. One safety multiplier and one page rounding, not a sum
+ * of two already-rounded bounds.
+ */
+export const PROPS_CURRENT_ONLY_MEASURED_WORST_BYTES =
+  PROPS_PUBLICATION_MEASURED_WORST_BYTES + PROPS_PULL_CONTROL_MEASURED_WORST_BYTES;
+export const PROPS_CURRENT_ONLY_RELATION_COUNT = PROPS_PUBLICATION_MEASURED_RELATION_COUNT;
+export const PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES = conservativePhysicalBound(
+  PROPS_CURRENT_ONLY_MEASURED_WORST_BYTES,
+  PROPS_CURRENT_ONLY_RELATION_COUNT
+);
+
 export function propPublicationBound(rowCount: number): number {
   if (!Number.isInteger(rowCount) || rowCount < 0 || rowCount > PROPS_MAX_ROWS_PER_GAME) {
     throw new Error('prop publication size is outside the enforced maximum');

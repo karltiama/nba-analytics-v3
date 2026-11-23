@@ -15,6 +15,18 @@ const mocks = vi.hoisted(() => ({
   fetchCalls: 0,
 }));
 
+vi.mock('../../storage-gate', () => ({
+  admitPropsInvocation: async () => ({
+    mode: 'current_only',
+    reason: 'test admission',
+    pressure: 'ok',
+    boundBytes: 1,
+    settle: async () => undefined,
+  }),
+  assertCurrentOnlyRowCount: () => undefined,
+  measurePropsCluster: async () => ({ clusterBytes: 1, measuredAt: '2026-11-23T00:00:00.000Z', source: 'test', valid: true, complete: true }),
+  PropsStorageRefusal: class PropsStorageRefusal extends Error {},
+}));
 vi.mock('../../src/db', () => ({ getDbPool: () => mocks.pool }));
 vi.mock('../../src/metrics', () => ({
   emitCoverageMetric: (_ns: string, dims: Record<string, string>, values: Record<string, number>) =>
@@ -123,7 +135,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
   });
   afterEach(() => vi.unstubAllEnvs());
 
-  it('queued T-10, observed T+2: raw keeps the post-tip clock and serving tables are not written', async () => {
+  it('queued T-10, observed T+2: current-only writes neither raw nor serving rows', async () => {
     const { pool, calls } = workerPool(true, null, 'race');
     mocks.pool = pool;
     mocks.fetchResult = {
@@ -136,13 +148,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     await handler(event);
     spy.mockRestore();
 
-    const raw = calls.find((c) => c.sql.includes('INSERT INTO raw.player_prop_snapshots_v2'));
-    expect(raw).toBeDefined();
-    expect(raw!.values[12]).toEqual(at(10));
-    expect(raw!.values[15]).toEqual(at(-2));
-    expect(raw!.values[16]).toEqual(at(10));
-    expect(raw!.values[17]).toEqual(at(120));
-    expect(raw!.values[18]).toBe('RESPONSE_RECEIVED');
+    expect(calls.some((c) => c.sql.includes('INSERT INTO raw.player_prop_snapshots_v2'))).toBe(false);
     expect(calls.some((c) => c.sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
     expect(calls.some((c) => c.sql.includes('DELETE FROM analytics.player_prop_current'))).toBe(false);
 

@@ -1,4 +1,4 @@
-import type { Context, SQSEvent } from 'aws-lambda';
+import type { Context, SQSEvent, SQSRecord } from 'aws-lambda';
 import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
@@ -7,14 +7,13 @@ import { assertObservationClockSchema, describeObservation } from './src/observa
 import { reserveProviderAttempt, AttemptBudgetError } from './src/attempt-budget';
 import { assertPropsLiveLimiter, PropsLimiterError } from './src/limiter-guard';
 import {
-  bulkInsertRawV2,
   buildPreferredVendorLines,
   completeGameRun,
   finalizePullRunIfComplete,
   getGameRunStartedAt,
   getGameRunStatus,
   lookupGameArchiveContext,
-  promoteServingProps,
+  promoteCurrentOnlyProps,
   readPregameGate,
 } from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
@@ -25,6 +24,19 @@ import {
 } from './src/prop-identity-boundary';
 import { archiveGameSnapshot } from './src/archive-game';
 import { logMarketOutcome, outcomeForProviderResult } from './src/market-outcome';
+import {
+  admitPropsInvocation,
+  assertCurrentOnlyRowCount,
+  measurePropsCluster,
+  PropsStorageRefusal,
+  type PropsStorageDecision,
+} from './storage-gate';
+
+function invocationId(record: SQSRecord): string {
+  const messageId = typeof record.messageId === 'string' ? record.messageId : '';
+  const receiveCount = record.attributes?.ApproximateReceiveCount ?? '1';
+  return messageId === '' ? '' : `${messageId}#${receiveCount}`;
+}
 
 function parseMessage(body: string): WorkerMessage {
   const payload = JSON.parse(body) as WorkerMessage;
@@ -37,7 +49,11 @@ function parseMessage(body: string): WorkerMessage {
 /** Left for the DB writes, archive and run bookkeeping after the last provider page. */
 const PROVIDER_DEADLINE_MARGIN_MS = 60_000;
 
-export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemainingTimeInMillis'>) => {
+export const handler = async (
+  event: SQSEvent,
+  context?: Pick<Context, 'getRemainingTimeInMillis'>,
+  deps?: { admit?: typeof admitPropsInvocation }
+) => {
   const remainingMs = context?.getRemainingTimeInMillis?.();
   const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
   const mode = getRuntimeMode();
@@ -75,6 +91,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
     const msg = parseMessage(record.body);
     let gameRunFinalized = false;
     let providerSettled = false;
+    let admitted: PropsStorageDecision | null = null;
     if ((await getGameRunStatus(pool, msg.runId, msg.gameId)) === 'success') {
       console.log(
         JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
@@ -106,6 +123,16 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         postTipSkipped++;
         successCount++;
         continue;
+      }
+      const admit = deps?.admit ?? admitPropsInvocation;
+      admitted = await admit({
+        env: process.env,
+        now: new Date().toISOString(),
+        invocationId: invocationId(record),
+        measureCluster: () => measurePropsCluster(pool),
+      });
+      if (admitted.mode !== 'current_only') {
+        throw new PropsStorageRefusal(admitted.reason);
       }
       const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
         limiter: { deadlineMs },
@@ -144,17 +171,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
           }),
         })
       );
-      const rawV2 = await bulkInsertRawV2(
-        pool,
-        normalized,
-        snapshotAt,
-        {
-          enabled: env.storePropRawJson,
-          sampleRate: env.propRawJsonSampleRate,
-        },
-        msg.runId,
-        clocks
-      );
+      assertCurrentOnlyRowCount(normalized.length);
       const identity = await classifyBdlPropPlayerIds(
         pool,
         normalized.map((row) => String(row.player_id)),
@@ -170,16 +187,15 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         env.preferredVendor,
         snapshotAt
       );
-      const promotion = await promoteServingProps(pool, {
+      const promotion = await promoteCurrentOnlyProps(pool, {
         gameId: msg.gameId,
-        pullRunId: msg.runId,
         rows: servingNormalized,
         preferred,
         snapshotAt,
         clocks,
       });
       if (promotion.outcome === 'missing_game') {
-        await completeGameRun(pool, msg.runId, msg.gameId, 'error', props.length, rawV2, 'game_metadata_missing');
+        await completeGameRun(pool, msg.runId, msg.gameId, 'error', props.length, 0, 'game_metadata_missing');
         await finalizePullRunIfComplete(pool, msg.runId);
         failCount++;
         continue;
@@ -201,10 +217,10 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         season: gameCtx.season,
         opponentId: null,
         normalized,
-        rowsStored: rawV2,
+        rowsStored: current,
       });
 
-      await completeGameRun(pool, msg.runId, msg.gameId, 'success', props.length, rawV2, undefined, {
+      await completeGameRun(pool, msg.runId, msg.gameId, 'success', props.length, current, undefined, {
         rowsArchived: archive.rowsArchived,
         archiveObjectCount: archive.archiveObjectCount,
         archiveStatus: archive.archiveStatus,
@@ -214,7 +230,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
       await finalizePullRunIfComplete(pool, msg.runId);
       gameRunFinalized = true;
 
-      const archiveGap = rawV2 > 0 && archive.rowsArchived === 0 && env.s3ArchiveEnabled;
+      const archiveGap = current > 0 && archive.rowsArchived === 0 && env.s3ArchiveEnabled;
       if (archiveGap) {
         archiveGapCount += 1;
         console.error(
@@ -222,7 +238,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
             event: 'player_prop_archive_gap',
             pullRunId: msg.runId,
             gameId: msg.gameId,
-            rowsStored: rawV2,
+            rowsStored: current,
             rowsArchived: archive.rowsArchived,
             archiveStatus: archive.archiveStatus,
             archiveError: archive.archiveError,
@@ -231,11 +247,9 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
       }
       if (archive.archiveStatus === 'failed') {
         archiveFailedCount += 1;
-        // The raw and serving writes above already committed. Archive is optional:
-        // record the failure, emit ArchiveFailed / ArchiveGap, and return success so
-        // SQS deletes this message instead of redelivering it for another provider fetch.
-        // A later archive-only recovery reads raw.player_prop_snapshots_v2 for this
-        // pull_run_id and game_id, rebuilds the envelope, and calls writeArchiveObject.
+        // Current-only does not keep a raw row. Archive failure still returns success,
+        // so SQS deletes the message. Recovery cannot rebuild this observation.
+        // That durability gap is a separate blocker; this path does not prune or retry it.
         // That recovery must not call the provider or reserve provider_attempts.
         // The put is conditional (IfNoneMatch "*"). HTTP 412 compares the existing
         // object once. HTTP 409 is one compare and no second put. HTTP 403 fails
@@ -246,7 +260,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
             pullRunId: msg.runId,
             gameId: msg.gameId,
             rowsFetched: props.length,
-            rowsStored: rawV2,
+            rowsStored: current,
             rowsArchived: archive.rowsArchived,
             archiveStatus: archive.archiveStatus,
             archiveError: archive.archiveError,
@@ -259,7 +273,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         { Component: 'Worker', GameId: msg.gameId },
         {
           RowsFetched: props.length,
-          RowsRawV2: rawV2,
+          RowsRawV2: 0,
           RowsCurrent: current,
           RowsLegacyCurrent: legacyCurrent,
           IdentitySkipped: identity.quarantined,
@@ -292,7 +306,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
           pullRunId: msg.runId,
         });
       }
-      if (!gameRunFinalized) {
+      if (!(error instanceof PropsStorageRefusal) && !gameRunFinalized) {
         await completeGameRun(
           pool,
           msg.runId,
@@ -324,6 +338,10 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         }
       );
       throw error;
+    } finally {
+      if (admitted?.mode === 'current_only') {
+        await admitted.settle().catch(() => undefined);
+      }
     }
   }
 
