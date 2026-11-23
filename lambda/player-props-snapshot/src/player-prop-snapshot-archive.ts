@@ -317,6 +317,72 @@ export function decideIdempotentWrite(args: {
   };
 }
 
+/** Current-only evidence needs the response clock and the first-seen enqueue time. */
+export function observationDurabilityProblem(envelope: PlayerPropArchiveEnvelope): string | null {
+  if (typeof envelope.observed_at !== 'string' || !Number.isFinite(Date.parse(envelope.observed_at))) {
+    return 'archive envelope is missing observed_at';
+  }
+  if (typeof envelope.controller_enqueued_at !== 'string' || !Number.isFinite(Date.parse(envelope.controller_enqueued_at))) {
+    return 'archive envelope is missing controller_enqueued_at';
+  }
+  if (envelope.observation_clock !== 'RESPONSE_RECEIVED') {
+    return 'archive envelope is missing the response observation clock';
+  }
+  if (envelope.row_count !== envelope.rows.length) return 'archive row_count does not match the rows';
+  const checksum = checksumCanonical({
+    pull_run_id: envelope.pull_run_id,
+    game_id: envelope.game_id,
+    rows: envelope.rows,
+  });
+  if (checksum !== envelope.checksum) return 'archive checksum does not match the envelope body';
+  return null;
+}
+
+export async function verifyStoredArchive(args: {
+  store: ArchivePutStore;
+  key: string;
+  expectedChecksum?: string;
+}): Promise<
+  | { ok: true; envelope: PlayerPropArchiveEnvelope }
+  | { ok: false; reason: 'missing' | 'invalid' | 'conflict'; message: string }
+> {
+  let body: InMemoryS3Object | null;
+  try {
+    body = await args.store.get(args.key);
+  } catch (err) {
+    return { ok: false, reason: 'invalid', message: describeArchiveStoreError('get', err) };
+  }
+  if (!body) return { ok: false, reason: 'missing', message: `archive object ${args.key} is absent` };
+  let envelope: PlayerPropArchiveEnvelope;
+  try {
+    envelope = gunzipEnvelope(body.body);
+  } catch {
+    return { ok: false, reason: 'invalid', message: `archive object ${args.key} is not a readable envelope` };
+  }
+  const problem = observationDurabilityProblem(envelope);
+  if (problem) return { ok: false, reason: 'invalid', message: problem };
+  const meta = parseS3UserMetadata(body.metadata);
+  if (!meta.checksum || meta.rowCount == null || meta.pullRunId == null || !meta.gameId || !meta.archiveVersion) {
+    return { ok: false, reason: 'invalid', message: `archive object ${args.key} is missing required metadata` };
+  }
+  if (
+    meta.checksum !== envelope.checksum ||
+    meta.rowCount !== envelope.row_count ||
+    meta.pullRunId !== envelope.pull_run_id ||
+    meta.gameId !== envelope.game_id
+  ) {
+    return { ok: false, reason: 'invalid', message: `archive metadata for ${args.key} does not match the envelope` };
+  }
+  if (args.expectedChecksum && envelope.checksum !== args.expectedChecksum) {
+    return {
+      ok: false,
+      reason: 'conflict',
+      message: `archive object ${args.key} checksum conflicts with this attempt`,
+    };
+  }
+  return { ok: true, envelope };
+}
+
 export function archiveSuccessInvariant(rowsStored: number, rowsArchived: number, archiveStatus: ArchiveStatus): boolean {
   if (rowsStored <= 0) return true;
   return archiveStatus === 'archived' && rowsArchived > 0;

@@ -76,8 +76,12 @@ function scriptedPool(attemptsLeft = PLAYER_PROPS_MAX_HTTP_ATTEMPTS, initialStat
         ],
       };
     }
-    if (sql.includes('SELECT status FROM raw.player_prop_game_runs')) {
-      return { rows: status ? [{ status }] : [] };
+    if (sql.includes('SELECT status, archive_status, archive_key, rows_stored')) {
+      return {
+        rows: status
+          ? [{ status, archive_status: 'pending', archive_key: null, rows_stored: status === 'success' ? 0 : null }]
+          : [],
+      };
     }
     if (sql.includes('player_prop_daily_attempts')) {
       return { rows: [{ attempts: 1 }], rowCount: 1 };

@@ -96,11 +96,41 @@ export async function markGameRunsEnqueueFailed(pool: Pool, pullRunId: number, g
 }
 
 export async function getGameRunStatus(pool: Pool, pullRunId: number, gameId: string): Promise<string | null> {
-  const result = await pool.query<{ status: string }>(
-    `SELECT status FROM raw.player_prop_game_runs WHERE pull_run_id = $1 AND game_id = $2`,
+  const evidence = await getGameRunEvidence(pool, pullRunId, gameId);
+  return evidence?.status ?? null;
+}
+
+export type GameRunEvidence = {
+  status: string | null;
+  archiveStatus: string | null;
+  archiveKey: string | null;
+  rowsStored: number | null;
+};
+
+export async function getGameRunEvidence(
+  pool: Pool,
+  pullRunId: number,
+  gameId: string
+): Promise<GameRunEvidence | null> {
+  const result = await pool.query<{
+    status: string | null;
+    archive_status: string | null;
+    archive_key: string | null;
+    rows_stored: number | null;
+  }>(
+    `SELECT status, archive_status, archive_key, rows_stored
+       FROM raw.player_prop_game_runs
+      WHERE pull_run_id = $1 AND game_id = $2`,
     [pullRunId, gameId]
   );
-  return result.rows[0]?.status ?? null;
+  const row = result.rows[0];
+  if (!row) return null;
+  return {
+    status: row.status ?? null,
+    archiveStatus: row.archive_status ?? null,
+    archiveKey: row.archive_key ?? null,
+    rowsStored: row.rows_stored == null ? null : Number(row.rows_stored),
+  };
 }
 
 export async function createPullRun(pool: Pool | PoolClient, gameIdsQueried: string[]): Promise<number> {

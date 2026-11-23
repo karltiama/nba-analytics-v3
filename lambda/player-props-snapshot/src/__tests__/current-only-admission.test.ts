@@ -16,6 +16,7 @@ import {
   PropsStorageRefusal,
 } from '../../storage-gate';
 import { completePreferredLines, promoteCurrentOnlyProps, type PreferredLine } from '../bulk-writers';
+import { InMemoryArchiveStore } from '../player-prop-snapshot-archive';
 import { resetObservationClockSchemaCacheForTests } from '../observation-clock';
 
 const NOW = '2026-11-23T17:00:00.000Z';
@@ -202,7 +203,16 @@ function handlerPool(status = 'started') {
         ]),
       };
     }
-    if (sql.includes('SELECT status FROM raw.player_prop_game_runs')) return { rows: [{ status: gameStatus }] };
+    if (sql.includes('SELECT status, archive_status, archive_key, rows_stored')) {
+      return {
+        rows: [{
+          status: gameStatus,
+          archive_status: gameStatus === 'success' ? 'archived' : 'pending',
+          archive_key: gameStatus === 'success' ? 'raw/kept.json.gz' : null,
+          rows_stored: gameStatus === 'success' ? 1 : 0,
+        }],
+      };
+    }
     if (sql.includes('player_prop_daily_attempts')) return { rows: [{ attempts: 1 }], rowCount: 1 };
     if (sql.includes('provider_attempts = provider_attempts + 1')) return { rows: [{ provider_attempts: 1 }], rowCount: 1 };
     if (sql.includes('AS eligible')) return { rows: [{ eligible: true }] };
@@ -236,7 +246,8 @@ describe('props worker current-only handler', () => {
     vi.stubEnv('CRON_DRY_RUN', '0');
     vi.stubEnv('SUPABASE_DB_URL', 'postgres://nobody@127.0.0.1:1/none');
     vi.stubEnv('BALLDONTLIE_API_KEY', 'test-key');
-    vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'false');
+    vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'true');
+    vi.stubEnv('NBA_DATA_BUCKET', 'test-bucket');
     vi.stubEnv('BDL_RATE_LIMIT_INTERVAL_MS', '13000');
     vi.stubEnv('BDL_RATE_LIMIT_MAX_REQUESTS', '1');
     vi.stubEnv('BDL_RATE_LIMIT_BURST', '1');
@@ -277,6 +288,7 @@ describe('props worker current-only handler', () => {
     const body = JSON.parse(
       (
         await handler(retried, undefined, {
+          archiveStore: new InMemoryArchiveStore(),
           admit: async (input) => {
             seen.push(input.invocationId);
             return { mode: 'current_only', reason: 'reserved', pressure: 'ok', boundBytes: 1, settle: settled };
@@ -304,20 +316,20 @@ describe('props worker current-only handler', () => {
     expect(admit).not.toHaveBeenCalled();
   });
 
-  it('still acknowledges the message when the archive fails', async () => {
+  it('does not acknowledge the message when the archive cannot be stored', async () => {
     const db = handlerPool();
     handlerMocks.pool = db.pool;
     vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'true');
     vi.stubEnv('NBA_DATA_BUCKET', '');
+    const settled = vi.fn(async () => undefined);
     const { handler } = await import('../../worker');
-    const body = JSON.parse(
-      (
-        await handler(event, undefined, {
-          admit: async () => ({ mode: 'current_only', reason: 'reserved', pressure: 'ok', boundBytes: 1, settle: async () => undefined }),
-        })
-      ).body
-    );
-    expect(body.success).toBe(true);
-    expect(db.status()).toBe('success');
+    await expect(
+      handler(event, undefined, {
+        admit: async () => ({ mode: 'current_only', reason: 'reserved', pressure: 'ok', boundBytes: 1, settle: settled }),
+      })
+    ).rejects.toThrow(/NBA_DATA_BUCKET/);
+    expect(db.calls.some((sql) => sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
+    expect(db.status()).toBe('error');
+    expect(settled).toHaveBeenCalledOnce();
   });
 });

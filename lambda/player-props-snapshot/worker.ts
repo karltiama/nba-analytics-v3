@@ -10,19 +10,28 @@ import {
   buildPreferredVendorLines,
   completeGameRun,
   finalizePullRunIfComplete,
+  getGameRunEvidence,
   getGameRunStartedAt,
-  getGameRunStatus,
   lookupGameArchiveContext,
   promoteCurrentOnlyProps,
   readPregameGate,
 } from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
-import type { WorkerMessage } from './src/types';
+import type { NormalizedPropRow, WorkerMessage } from './src/types';
 import {
   classifyBdlPropPlayerIds,
   filterRowsByServingProviderId,
 } from './src/prop-identity-boundary';
-import { archiveGameSnapshot } from './src/archive-game';
+import {
+  archiveGameSnapshot,
+  currentOnlyArchiveKey,
+  currentOnlySeason,
+  normalizedRowsFromArchive,
+  openCurrentOnlyArchiveStore,
+  PropsArchiveRefusal,
+  type ArchiveObjectStore,
+} from './src/archive-game';
+import { verifyStoredArchive } from './src/player-prop-snapshot-archive';
 import { logMarketOutcome, outcomeForProviderResult } from './src/market-outcome';
 import {
   admitPropsInvocation,
@@ -52,7 +61,7 @@ const PROVIDER_DEADLINE_MARGIN_MS = 60_000;
 export const handler = async (
   event: SQSEvent,
   context?: Pick<Context, 'getRemainingTimeInMillis'>,
-  deps?: { admit?: typeof admitPropsInvocation }
+  deps?: { admit?: typeof admitPropsInvocation; archiveStore?: ArchiveObjectStore }
 ) => {
   const remainingMs = context?.getRemainingTimeInMillis?.();
   const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
@@ -92,12 +101,21 @@ export const handler = async (
     let gameRunFinalized = false;
     let providerSettled = false;
     let admitted: PropsStorageDecision | null = null;
-    if ((await getGameRunStatus(pool, msg.runId, msg.gameId)) === 'success') {
-      console.log(
-        JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
-      );
-      successCount++;
-      continue;
+    let durableArchive: { key: string; rowsArchived: number } | null = null;
+    const evidence = await getGameRunEvidence(pool, msg.runId, msg.gameId);
+    if (evidence?.status === 'success') {
+      const archived = evidence.archiveStatus === 'archived' && Boolean(evidence.archiveKey);
+      const noObservation = (evidence.rowsStored ?? 0) === 0 && evidence.archiveStatus !== 'failed';
+      if (archived || noObservation) {
+        console.log(
+          JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
+        );
+        successCount++;
+        continue;
+      }
+      // Partial batch responses are not enabled on the queue mapping. Returning
+      // normally would acknowledge this record, so a stored run with no archive throws.
+      throw new PropsArchiveRefusal('successful game run is missing durable archive evidence');
     }
     try {
       assertPropsLiveLimiter(process.env);
@@ -134,44 +152,103 @@ export const handler = async (
       if (admitted.mode !== 'current_only') {
         throw new PropsStorageRefusal(admitted.reason);
       }
-      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
-        limiter: { deadlineMs },
-        onBeforeRequest: async () => {
-          await reserveProviderAttempt(pool, msg.runId, msg.gameId);
-        },
-      });
-      const props = fetched.rows;
-      providerSettled = true;
-      logMarketOutcome({
-        outcome: outcomeForProviderResult({ threw: false, rowCount: props.length }),
-        universe: msg.universe ?? null,
+      const controllerEnqueuedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
+      if (!controllerEnqueuedAt) {
+        throw new PropsArchiveRefusal('current-only archive is missing the first-seen timestamp');
+      }
+      const gameCtx = await lookupGameArchiveContext(pool, msg.gameId);
+      const archiveKey = currentOnlyArchiveKey({
+        rawPrefix: env.nbaRawPrefix,
+        season: currentOnlySeason(gameCtx.season, msg.date),
+        seasonText: gameCtx.season,
+        gameDate: msg.date,
         gameId: msg.gameId,
         pullRunId: msg.runId,
-        rowsFetched: props.length,
+        snapshotAt: controllerEnqueuedAt,
       });
-      const normalized = normalizePlayerPropRows(props);
-      const controllerEnqueuedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
-      const clocks = {
-        controllerEnqueuedAt,
-        observedAt: fetched.observation.responseReceivedAt,
-      };
-      // Legacy controller-time column value; unchanged so archive keys and retention stay stable.
-      const snapshotAt = controllerEnqueuedAt ?? clocks.observedAt;
-      const gameCtx = await lookupGameArchiveContext(pool, msg.gameId);
-      console.log(
-        JSON.stringify({
-          event: 'player_prop_observation',
-          pullRunId: msg.runId,
+      const store = openCurrentOnlyArchiveStore(env, deps?.archiveStore);
+      const existing = store ? await verifyStoredArchive({ store, key: archiveKey }) : null;
+      if (existing && !existing.ok && existing.reason !== 'missing') {
+        throw new PropsArchiveRefusal(existing.message);
+      }
+      let normalized: NormalizedPropRow[];
+      let propsLength: number;
+      let clocks: { controllerEnqueuedAt: Date; observedAt: Date };
+      if (existing?.ok) {
+        normalized = normalizedRowsFromArchive(existing.envelope.rows);
+        propsLength = normalized.length;
+        clocks = {
+          controllerEnqueuedAt,
+          observedAt: new Date(existing.envelope.observed_at as string),
+        };
+        providerSettled = true;
+      } else {
+        const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
+          limiter: { deadlineMs },
+          onBeforeRequest: async () => {
+            await reserveProviderAttempt(pool, msg.runId, msg.gameId);
+          },
+        });
+        propsLength = fetched.rows.length;
+        providerSettled = true;
+        logMarketOutcome({
+          outcome: outcomeForProviderResult({ threw: false, rowCount: propsLength }),
+          universe: msg.universe ?? null,
           gameId: msg.gameId,
-          ...describeObservation({
-            controllerEnqueuedAt,
-            observedAt: clocks.observedAt,
-            tip: gameCtx.startTime,
-            attempts: fetched.observation.attempts.length,
-          }),
-        })
-      );
+          pullRunId: msg.runId,
+          rowsFetched: propsLength,
+        });
+        normalized = normalizePlayerPropRows(fetched.rows);
+        clocks = {
+          controllerEnqueuedAt,
+          observedAt: fetched.observation.responseReceivedAt,
+        };
+        console.log(
+          JSON.stringify({
+            event: 'player_prop_observation',
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            ...describeObservation({
+              controllerEnqueuedAt,
+              observedAt: clocks.observedAt,
+              tip: gameCtx.startTime,
+              attempts: fetched.observation.attempts.length,
+            }),
+          })
+        );
+      }
+      const snapshotAt = controllerEnqueuedAt;
       assertCurrentOnlyRowCount(normalized.length);
+      const archive = existing?.ok
+        ? {
+            rowsArchived: existing.envelope.row_count,
+            archiveObjectCount: 1,
+            archiveStatus: 'archived' as const,
+            archiveError: null,
+            archiveKey,
+            verified: true,
+          }
+        : await archiveGameSnapshot({
+            env,
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            bdlGameId: msg.bdlGameId,
+            gameDate: msg.date,
+            snapshotAt,
+            observation: clocks,
+            gameStartTime: gameCtx.startTime,
+            season: gameCtx.season,
+            opponentId: null,
+            normalized,
+            rowsStored: normalized.length,
+            store: store ?? undefined,
+            requireDurable: true,
+          });
+      if (!archive.verified || archive.archiveStatus !== 'archived' || !archive.archiveKey) {
+        archiveFailedCount += 1;
+        throw new PropsArchiveRefusal(archive.archiveError ?? 'current-only archive was not verified');
+      }
+      durableArchive = { key: archive.archiveKey, rowsArchived: archive.rowsArchived };
       const identity = await classifyBdlPropPlayerIds(
         pool,
         normalized.map((row) => String(row.player_id)),
@@ -182,11 +259,7 @@ export const handler = async (
         (row) => row.player_id,
         identity.servingIds
       ).keep;
-      const preferred = buildPreferredVendorLines(
-        servingNormalized,
-        env.preferredVendor,
-        snapshotAt
-      );
+      const preferred = buildPreferredVendorLines(servingNormalized, env.preferredVendor, snapshotAt);
       const promotion = await promoteCurrentOnlyProps(pool, {
         gameId: msg.gameId,
         rows: servingNormalized,
@@ -195,98 +268,48 @@ export const handler = async (
         clocks,
       });
       if (promotion.outcome === 'missing_game') {
-        await completeGameRun(pool, msg.runId, msg.gameId, 'error', props.length, 0, 'game_metadata_missing');
+        await completeGameRun(pool, msg.runId, msg.gameId, 'error', propsLength, 0, 'game_metadata_missing', {
+          rowsArchived: archive.rowsArchived,
+          archiveObjectCount: archive.archiveObjectCount,
+          archiveStatus: 'archived',
+          archiveError: null,
+          archiveKey: archive.archiveKey,
+        });
         await finalizePullRunIfComplete(pool, msg.runId);
-        failCount++;
-        continue;
+        gameRunFinalized = true;
+        throw new PropsArchiveRefusal('game metadata missing after the archive was stored');
       }
       const current = promotion.current;
       const legacyCurrent = promotion.legacyCurrent;
       if (promotion.outcome === 'post_tip') postTipSkipped++;
       if (promotion.outcome === 'promoted') promotedCount++;
-
-      const archive = await archiveGameSnapshot({
-        env,
-        pullRunId: msg.runId,
-        gameId: msg.gameId,
-        bdlGameId: msg.bdlGameId,
-        gameDate: msg.date,
-        snapshotAt,
-        observation: clocks,
-        gameStartTime: gameCtx.startTime,
-        season: gameCtx.season,
-        opponentId: null,
-        normalized,
-        rowsStored: current,
-      });
-
-      await completeGameRun(pool, msg.runId, msg.gameId, 'success', props.length, current, undefined, {
+      await completeGameRun(pool, msg.runId, msg.gameId, 'success', propsLength, current, undefined, {
         rowsArchived: archive.rowsArchived,
         archiveObjectCount: archive.archiveObjectCount,
-        archiveStatus: archive.archiveStatus,
-        archiveError: archive.archiveError,
+        archiveStatus: 'archived',
+        archiveError: null,
         archiveKey: archive.archiveKey,
       });
       await finalizePullRunIfComplete(pool, msg.runId);
       gameRunFinalized = true;
-
-      const archiveGap = current > 0 && archive.rowsArchived === 0 && env.s3ArchiveEnabled;
-      if (archiveGap) {
-        archiveGapCount += 1;
-        console.error(
-          JSON.stringify({
-            event: 'player_prop_archive_gap',
-            pullRunId: msg.runId,
-            gameId: msg.gameId,
-            rowsStored: current,
-            rowsArchived: archive.rowsArchived,
-            archiveStatus: archive.archiveStatus,
-            archiveError: archive.archiveError,
-          })
-        );
-      }
-      if (archive.archiveStatus === 'failed') {
-        archiveFailedCount += 1;
-        // Current-only does not keep a raw row. Archive failure still returns success,
-        // so SQS deletes the message. Recovery cannot rebuild this observation.
-        // That durability gap is a separate blocker; this path does not prune or retry it.
-        // That recovery must not call the provider or reserve provider_attempts.
-        // The put is conditional (IfNoneMatch "*"). HTTP 412 compares the existing
-        // object once. HTTP 409 is one compare and no second put. HTTP 403 fails
-        // the archive and does not overwrite.
-        console.error(
-          JSON.stringify({
-            event: 'player_prop_archive_failed',
-            pullRunId: msg.runId,
-            gameId: msg.gameId,
-            rowsFetched: props.length,
-            rowsStored: current,
-            rowsArchived: archive.rowsArchived,
-            archiveStatus: archive.archiveStatus,
-            archiveError: archive.archiveError,
-            archiveKey: archive.archiveKey,
-          })
-        );
-      }
       emitCoverageMetric(
         'NBA/PlayerProps',
         { Component: 'Worker', GameId: msg.gameId },
         {
-          RowsFetched: props.length,
+          RowsFetched: propsLength,
           RowsRawV2: 0,
           RowsCurrent: current,
           RowsLegacyCurrent: legacyCurrent,
           IdentitySkipped: identity.quarantined,
           RowsArchived: archive.rowsArchived,
           ArchiveObjectsWritten: archive.archiveObjectCount,
-          ArchiveFailed: archive.archiveStatus === 'failed' ? 1 : 0,
-          ArchiveGap: archiveGap ? 1 : 0,
+          ArchiveFailed: 0,
+          ArchiveGap: 0,
         }
       );
-
       successCount++;
     } catch (error: unknown) {
-      if (!providerSettled) {
+      if (!providerSettled && !(error instanceof PropsArchiveRefusal)) {
         const message = error instanceof Error ? error.message : '';
         const http = message.match(/player_props (\d+)/);
         const reason = error instanceof PropsLimiterError
@@ -316,11 +339,11 @@ export const handler = async (
           0,
           error instanceof Error ? error.message : 'Unknown error',
           {
-            rowsArchived: 0,
-            archiveObjectCount: 0,
-            archiveStatus: 'failed',
+            rowsArchived: durableArchive?.rowsArchived ?? 0,
+            archiveObjectCount: durableArchive ? 1 : 0,
+            archiveStatus: durableArchive ? 'archived' : 'failed',
             archiveError: error instanceof Error ? error.message : 'Unknown error',
-            archiveKey: null,
+            archiveKey: durableArchive?.key ?? null,
           }
         );
         await finalizePullRunIfComplete(pool, msg.runId);
