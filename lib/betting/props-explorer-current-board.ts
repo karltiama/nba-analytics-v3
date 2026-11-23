@@ -1,7 +1,7 @@
 import { query } from '@/lib/db';
 import { noVigProbability } from '@/lib/betting/market-probability';
 import { isActivePaperBetAllowed, LATEST_OBSERVED_LINE_LABEL } from '@/lib/betting/props-market-context';
-import type { GetPlayerPropsForExplorerInput, PropsExplorerBestPrice, PropsExplorerRow, SelectedExplorerGame } from '@/lib/betting/props-explorer-serving';
+import { priceScopeForBooks, type GetPlayerPropsForExplorerInput, type PropsExplorerBestPrice, type PropsExplorerRow, type SelectedExplorerGame } from '@/lib/betting/props-explorer-serving';
 import {
   defaultCurrentBoardStore,
   readCurrentBoard,
@@ -53,6 +53,41 @@ function text(value: string | null | undefined): string | null {
 function decimalFromAmerican(american: number | null): number | null {
   if (american == null || american === 0) return null;
   return american < 0 ? 1 + 100 / Math.abs(american) : 1 + american / 100;
+}
+
+function selectedBooks(input: GetPlayerPropsForExplorerInput): string[] {
+  return (input.sportsbook ?? '').split(',').map((book) => book.trim().toLowerCase()).filter(Boolean);
+}
+
+function sameQuote(left: ListedRow, right: ListedRow): boolean {
+  return left.game.gameId === right.game.gameId
+    && left.row.playerId === right.row.playerId
+    && left.row.propType === right.row.propType
+    && left.row.marketType.toLowerCase() === right.row.marketType.toLowerCase()
+    && left.row.side.toLowerCase() === right.row.side.toLowerCase()
+    && left.row.line === right.row.line;
+}
+
+function comparisonRows(universe: readonly ListedRow[], entry: ListedRow, books: readonly string[]): ListedRow[] {
+  return universe.filter((other) =>
+    sameQuote(entry, other)
+    && other.row.oddsAmerican != null
+    && (books.length <= 1 || books.includes(other.row.sportsbook.trim().toLowerCase()))
+  );
+}
+
+function oppositeImplied(universe: readonly ListedRow[], entry: ListedRow): number | null {
+  const opposite = universe.find((other) =>
+    other.game.gameId === entry.game.gameId
+    && other.row.playerId === entry.row.playerId
+    && other.row.sportsbook.trim().toLowerCase() === entry.row.sportsbook.trim().toLowerCase()
+    && other.row.propType === entry.row.propType
+    && other.row.marketType.toLowerCase() === entry.row.marketType.toLowerCase()
+    && other.row.line === entry.row.line
+    && other.row.side.toLowerCase() !== entry.row.side.toLowerCase()
+  );
+  if (!opposite || opposite.row.impliedProbability == null) return null;
+  return opposite.row.impliedProbability;
 }
 
 function matches(input: GetPlayerPropsForExplorerInput, row: ListedRow): boolean {
@@ -124,13 +159,13 @@ export async function serveLivePropsFromCurrentBoard(input: GetPlayerPropsForExp
     for (const player of Array.isArray(players) ? players : []) names.set(String(player.player_id), player.full_name ?? null);
   }
 
-  const listed: ListedRow[] = [];
+  const universe: ListedRow[] = [];
   for (const item of boards) {
     for (const row of item.board.rows) {
-      const entry = { game: item.game, board: item.board, row, playerName: names.get(row.playerId) ?? null };
-      if (matches(input, entry)) listed.push(entry);
+      universe.push({ game: item.game, board: item.board, row, playerName: names.get(row.playerId) ?? null });
     }
   }
+  const listed = universe.filter((entry) => matches(input, entry));
 
   const sortRaw = (input.sort || 'snapshot_at').toLowerCase();
   const sort = sortRaw === 'edge' ? 'snapshot_at' : sortRaw;
@@ -140,19 +175,13 @@ export async function serveLivePropsFromCurrentBoard(input: GetPlayerPropsForExp
     return direction * (Date.parse(left.board.observedAt) - Date.parse(right.board.observedAt));
   });
 
-  const books = (input.sportsbook ?? '').split(',').map((book) => book.trim().toLowerCase()).filter(Boolean);
-  const priceScope = books.length === 1 ? 'market' : 'selected_books';
+  const books = selectedBooks(input);
+  const priceScope = priceScopeForBooks(books);
   const totalMatching = listed.length;
   const page = listed.slice(input.offset, input.offset + input.limit);
   const rows: PropsExplorerRow[] = page.map((entry) => {
-    const sameLine = listed.filter((other) =>
-      other.game.gameId === entry.game.gameId
-      && other.row.playerId === entry.row.playerId
-      && other.row.propType === entry.row.propType
-      && other.row.side.toLowerCase() === entry.row.side.toLowerCase()
-      && other.row.line === entry.row.line
-      && other.row.oddsAmerican != null
-    );
+    const sameLine = comparisonRows(universe, entry, books);
+    const distinctBooks = new Set(sameLine.map((other) => other.row.sportsbook.trim().toLowerCase()));
     const best = sameLine.slice().sort((a, b) => (decimalFromAmerican(b.row.oddsAmerican) ?? 0) - (decimalFromAmerican(a.row.oddsAmerican) ?? 0))[0];
     const decimals = sameLine.map((item) => decimalFromAmerican(item.row.oddsAmerican)).filter((value): value is number => value != null);
     const average = decimals.length > 0 ? decimals.reduce((sum, value) => sum + value, 0) / decimals.length : null;
@@ -164,20 +193,13 @@ export async function serveLivePropsFromCurrentBoard(input: GetPlayerPropsForExp
           oddsAmerican: best?.row.oddsAmerican ?? null,
           oddsDecimal: bestDecimal,
           sportsbook: best?.row.sportsbook ?? null,
-          bookCount: sameLine.length,
+          bookCount: distinctBooks.size,
           isBest: ownDecimal != null && ownDecimal >= bestDecimal - 1e-9,
-          vsAverage: sameLine.length >= 2 && ownDecimal != null && average != null && average > 0 ? ownDecimal / average - 1 : null,
+          vsAverage: distinctBooks.size >= 2 && ownDecimal != null && average != null && average > 0 ? ownDecimal / average - 1 : null,
           marketWide: priceScope === 'market',
         };
-    const opposite = listed.find((other) =>
-      other.game.gameId === entry.game.gameId
-      && other.row.playerId === entry.row.playerId
-      && other.row.sportsbook === entry.row.sportsbook
-      && other.row.propType === entry.row.propType
-      && other.row.line === entry.row.line
-      && other.row.side.toLowerCase() !== entry.row.side.toLowerCase()
-    );
     const offerP = entry.row.impliedProbability ?? null;
+    const oppositeP = oppositeImplied(universe, entry);
     return {
       gameId: entry.game.gameId,
       playerId: Number(entry.row.playerId),
@@ -191,7 +213,7 @@ export async function serveLivePropsFromCurrentBoard(input: GetPlayerPropsForExp
       oddsDecimal: ownDecimal,
       impliedProbability: offerP,
       fairProbability: entry.row.marketType.toLowerCase() === 'over_under'
-        ? noVigProbability(offerP, opposite?.row.impliedProbability ?? null)
+        ? noVigProbability(offerP, oppositeP)
         : null,
       bestPrice,
       arb: null,

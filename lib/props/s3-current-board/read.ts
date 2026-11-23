@@ -104,7 +104,12 @@ export async function readVerifiedEnvelope(
   const manifest = await readManifest(store, pointer.manifestKey);
   if (!manifest) return null;
   const stored = await verifyStoredArchive({
-    store,
+    store: {
+      get: (key) => store.get(key),
+      putIfAbsent() {
+        return Promise.reject(new Error('current board reader does not write'));
+      },
+    },
     key: pointer.archiveKey,
     expectedChecksum: pointer.envelopeChecksum,
     expected: {

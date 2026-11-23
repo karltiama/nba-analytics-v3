@@ -9,6 +9,7 @@ vi.mock('@/lib/db', () => ({
 }));
 
 import { query, queryOne } from '@/lib/db';
+import { noVigProbability } from '@/lib/betting/market-probability';
 import { getPlayerPropsForExplorer } from '@/lib/betting/props-explorer-serving';
 import { loadS3CurrentLegQuotes } from '@/lib/parlay/s3-current-quotes';
 import { loadCurrentQuickBuilds } from '@/lib/quick-builds/current-board';
@@ -126,6 +127,75 @@ describe('F39C current board adapter', () => {
       [11, 'Player Eleven', 'under', -110, expect.any(Number)],
     ]);
     expect(result.rows.some((item) => item.playerId === 10)).toBe(false);
+  });
+
+  it('compares one book with the whole snapshot and keeps the hidden opposite side for no-vig', async () => {
+    process.env.CURRENT_PROPS_SOURCE = 's3';
+    const store = new InMemoryPrototypeStore();
+    await publishGame(store, 501, 2, [row(501, 12, '10.5', -110, -110)]);
+    const milestone: BdlPlayerPropRow = {
+      id: 10,
+      game_id: 501,
+      player_id: 10,
+      vendor: 'DraftKings',
+      prop_type: 'points',
+      line_value: '25',
+      market: { type: 'milestone', odds: -150 },
+      updated_at: '2026-11-23T21:50:00.000Z',
+    };
+    await publishGame(store, 501, 4, [
+      row(501, 10, '22.5', -120, -110, 'DraftKings'),
+      row(501, 10, '22.5', -110, -120, 'FanDuel'),
+      row(501, 10, '22.5', -105, -130, 'BetMGM'),
+      row(501, 11, '22.5', -101, -101, 'BetMGM'),
+      row(501, 10, '30.5', -101, -101, 'BetMGM', 'rebounds'),
+      milestone,
+    ], '2026-11-23T22:04:00.000Z');
+    const verified = await readCurrentBoard({ store, gameId: '501', now: NOW.toISOString() });
+    if (!verified.available) throw new Error('board unavailable');
+    const quote = (playerId: string, book: string, side: string, prop = 'points', line = 22.5) =>
+      verified.rows.find((item) => item.playerId === playerId && item.sportsbook === book && item.side === side && item.propType === prop && item.line === line);
+    mockQueryOne.mockResolvedValue({ start_time: TIP, away_abbr: 'BOS', home_abbr: 'NYK' });
+    mockQuery.mockImplementation(async (sql: string) => {
+      if (/player_props_current|player_prop_snapshots|player_prop_game_runs/i.test(sql)) throw new Error('postgres props read');
+      return [];
+    });
+    const load = (partial: Parameters<typeof getPlayerPropsForExplorer>[0]) => getPlayerPropsForExplorer({
+      dateEt: GAME_DATE,
+      todayEt: GAME_DATE,
+      gameId: '501',
+      now: NOW,
+      limit: 100,
+      offset: 0,
+      store,
+      ...partial,
+    });
+
+    const oneBook = await load({ sportsbook: 'DraftKings', side: 'over', limit: 100, offset: 0, dateEt: GAME_DATE });
+    const dkPoints = oneBook.rows.find((item) => item.playerId === 10 && item.propType === 'points' && item.lineValue === 22.5);
+    expect(oneBook.priceScope).toBe('market');
+    expect(oneBook.rows.every((item) => item.sportsbook === 'draftkings' && item.side === 'over')).toBe(true);
+    expect(oneBook.rows.some((item) => item.playerId === 12)).toBe(false);
+    expect(dkPoints?.bestPrice).toMatchObject({ sportsbook: 'betmgm', oddsAmerican: -105, bookCount: 3, isBest: false, marketWide: true });
+    expect(dkPoints?.fairProbability).toBe(noVigProbability(quote('10', 'draftkings', 'over')?.impliedProbability, quote('10', 'draftkings', 'under')?.impliedProbability));
+
+    const underOnly = await load({ sportsbook: 'DraftKings', side: 'under', limit: 100, offset: 0, dateEt: GAME_DATE });
+    const dkUnder = underOnly.rows.find((item) => item.playerId === 10 && item.propType === 'points' && item.lineValue === 22.5);
+    expect(underOnly.rows.every((item) => item.side === 'under')).toBe(true);
+    expect(dkUnder?.fairProbability).toBe(noVigProbability(quote('10', 'draftkings', 'under')?.impliedProbability, quote('10', 'draftkings', 'over')?.impliedProbability));
+
+    const severalBooks = await load({ sportsbook: 'DraftKings,FanDuel', side: 'over', limit: 100, offset: 0, dateEt: GAME_DATE });
+    const scoped = severalBooks.rows.find((item) => item.playerId === 10 && item.propType === 'points' && item.lineValue === 22.5 && item.sportsbook === 'draftkings');
+    expect(severalBooks.priceScope).toBe('selected_books');
+    expect(scoped?.bestPrice).toMatchObject({ sportsbook: 'fanduel', oddsAmerican: -110, bookCount: 2, marketWide: false });
+
+    const openMarket = await load({ side: 'over', limit: 100, offset: 0, dateEt: GAME_DATE });
+    const openPoints = openMarket.rows.find((item) => item.playerId === 10 && item.propType === 'points' && item.lineValue === 22.5 && item.sportsbook === 'draftkings');
+    expect(openMarket.priceScope).toBe('selected_books');
+    expect(openPoints?.bestPrice).toMatchObject({ sportsbook: 'betmgm', oddsAmerican: -105, bookCount: 3, marketWide: false });
+    const withMilestone = await load({ side: 'all', marketType: 'all', limit: 100, offset: 0, dateEt: GAME_DATE });
+    expect(withMilestone.rows.find((item) => item.marketType === 'milestone')?.fairProbability).toBeNull();
+    expect(withMilestone.rows.some((item) => item.playerId === 12)).toBe(false);
   });
 
   it('keeps a historical date on the research source while S3 mode is selected', async () => {
