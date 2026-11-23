@@ -3,6 +3,8 @@ import { requireBettingAuth } from '@/lib/auth/require-betting-auth';
 import { query } from '@/lib/db';
 import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook';
 import { loadResearchQuickBuilds, parseSelectedGameIds } from '@/lib/quick-builds/research-snapshot';
+import { loadCurrentQuickBuildsFromSlate } from '@/lib/quick-builds/current-board';
+import { currentPropsSource } from '@/lib/props/s3-current-board/source';
 import {
   QUICK_BUILD_FIVE_LEG_PRESETS,
   QUICK_BUILD_FOUR_LEG_PRESETS,
@@ -129,14 +131,25 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await loadResearchQuickBuilds({
-      sportsbook,
-      preset,
-      legCount,
-      now: new Date(),
-      query,
-      ...(gameIds == null ? {} : { gameIds }),
-    });
+    const now = new Date();
+    const book = canonicalizeSportsbook(sportsbook);
+    const result = currentPropsSource() === 's3'
+      ? await loadCurrentQuickBuildsFromSlate({
+          sportsbook: book!.vendor,
+          preset,
+          legCount,
+          now,
+          query,
+          ...(gameIds == null ? {} : { gameIds }),
+        })
+      : await loadResearchQuickBuilds({
+          sportsbook,
+          preset,
+          legCount,
+          now,
+          query,
+          ...(gameIds == null ? {} : { gameIds }),
+        });
     return gate.withAuthCookies(noStore(result, 200));
   } catch (error: unknown) {
     if (error instanceof QuickBuildInputError && error.code === 'LIMIT_EXCEEDED') {
