@@ -117,6 +117,21 @@ describe('admitOddsWrites', () => {
     expect(reservations.snapshot().active['req-current']?.operation).toBe('current_board');
   });
 
+  it('reserves nothing when the supplied measurement is future-dated', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    const decision = await admitOddsWrites({
+      now,
+      invocationId: 'req-future-write',
+      measurement: measurement(350_000_000, futureAt),
+      reservations,
+    });
+    expect(decision.mode).toBe('halt');
+    expect(decision.reason).toContain('cluster size measurement is future-dated');
+    await decision.settle();
+    expect(reservations.snapshot().protectedBytes).toBe(0);
+    expect(reservations.snapshot().active['req-future-write']).toBeUndefined();
+  });
+
   it('does not reserve at the halt line or when the bound would reach it', async () => {
     const haltStore = new MemoryStorageReservationStore();
     const halted = await admitOddsWrites({
@@ -245,6 +260,41 @@ describe('admitOddsInvocation', () => {
     });
     expect(decision.mode).toBe('normal');
     expect(reservations.snapshot().protectedBytes).toBe(ODDS_PHYSICAL_GROWTH_BOUND_BYTES);
+  });
+
+  it('admits when the direct measurement is stamped after the pre-query clock', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    const measuredAt = '2026-11-22T17:00:00.050Z';
+    const decision = await admitOddsInvocation({
+      env: {},
+      now,
+      invocationId: 'req-clock-order',
+      reservations,
+      measureCluster: async () => measurement(401_900_000, measuredAt),
+    });
+    expect(decision.mode).toBe('current_only');
+    expect(decision.reason).not.toContain('future-dated');
+    expect(reservations.snapshot().active['req-clock-order']?.boundBytes).toBe(ODDS_PHYSICAL_GROWTH_BOUND_BYTES);
+    await decision.settle();
+    expect(reservations.snapshot().active['req-clock-order']).toBeUndefined();
+    expect(reservations.snapshot().settled['req-clock-order']?.boundBytes).toBe(ODDS_PHYSICAL_GROWTH_BOUND_BYTES);
+  });
+
+  it('still rejects a published measurement timestamped after the admission clock', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    const decision = await admitOddsInvocation({
+      env: {},
+      now,
+      invocationId: 'req-future-record',
+      reservations,
+      reader: { get: async () => record(350_000_000, futureAt) },
+    });
+    expect(decision.mode).toBe('halt');
+    expect(decision.reason).toContain('cluster size measurement is future-dated');
+    await decision.settle();
+    expect(reservations.snapshot().protectedBytes).toBe(0);
+    expect(reservations.snapshot().active['req-future-record']).toBeUndefined();
+    expect(reservations.snapshot().settled['req-future-record']).toBeUndefined();
   });
 });
 
@@ -443,6 +493,94 @@ describe('reservation failures', () => {
 });
 
 describe('acquireOdds storage gate', () => {
+  it('fetches after a direct measurement stamped later than the pre-query clock', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    let fetches = 0;
+    let pulls = 0;
+    let raw = 0;
+    const claim = createMemoryOddsClaim();
+    const result = await acquireOdds({ date: '2026-10-21' }, deps(async () => {
+      fetches += 1;
+      return { ok: true, rows: [row(21717922)], nextCursor: null };
+    }, {
+      storageGate: () => admitOddsInvocation({
+        env: {},
+        now,
+        invocationId: 'req-clock-order-acquire',
+        reservations,
+        measureCluster: async () => measurement(401_900_000, '2026-11-22T17:00:00.050Z'),
+      }),
+      createPullRun: async () => {
+        pulls += 1;
+        return 1;
+      },
+      insertRaw: async () => {
+        raw += 1;
+      },
+      reserveAttempt: async () => ({
+        ok: true,
+        reservationId: 'budget-clock',
+        remaining: 59,
+        ledger: { requested: 1, reserved: 1, attempted: 0, successful: 0, failed: 0, refused: 0 },
+      }),
+      recordAttempt: async () => undefined,
+      claimDate: (input) => claim.claim(input),
+      completeClaim: (input) => claim.complete(input),
+      applyCurrentQuotes: async () => ({
+        current: 1,
+        history: 0,
+        movement: 1,
+        currentRowsUpdated: 1,
+        historyRowsInserted: 0,
+        movementRowsInserted: 1,
+      }),
+    }));
+    expect(result.success).toBe(true);
+    expect(result.status).toBe('COMPLETE');
+    expect(result.providerRequests).toBe(1);
+    expect(fetches).toBe(1);
+    expect(pulls).toBe(0);
+    expect(raw).toBe(0);
+    const held = reservations.snapshot().active['req-clock-order-acquire'];
+    expect(held?.boundBytes).toBe(ODDS_PHYSICAL_GROWTH_BOUND_BYTES);
+  });
+
+  it('does not fetch, write, or reserve when the published measurement is future-dated', async () => {
+    const reservations = new MemoryStorageReservationStore();
+    let fetches = 0;
+    let pulls = 0;
+    let raw = 0;
+    const result = await acquireOdds({ date: '2026-10-21' }, deps(async () => {
+      fetches += 1;
+      return { ok: true, rows: [row(21717922)], nextCursor: null };
+    }, {
+      storageGate: () => admitOddsInvocation({
+        env: {},
+        now,
+        invocationId: 'req-future-acquire',
+        reservations,
+        reader: { get: async () => record(350_000_000, futureAt) },
+      }),
+      createPullRun: async () => {
+        pulls += 1;
+        return 1;
+      },
+      insertRaw: async () => {
+        raw += 1;
+      },
+    }));
+    expect(result.success).toBe(false);
+    expect(result.status).toBe('STORAGE_HALT');
+    expect(result.reason).toContain('cluster size measurement is future-dated');
+    expect(result.providerRequests).toBe(0);
+    expect(fetches).toBe(0);
+    expect(pulls).toBe(0);
+    expect(raw).toBe(0);
+    expect(reservations.snapshot().protectedBytes).toBe(0);
+    expect(reservations.snapshot().active['req-future-acquire']).toBeUndefined();
+    expect(reservations.snapshot().settled['req-future-acquire']).toBeUndefined();
+  });
+
   it('does not fetch or write when the gate halts', async () => {
     let fetches = 0;
     let pulls = 0;
