@@ -19,6 +19,22 @@ export type PutResult =
   | { ok: true; etag: string; created: boolean }
   | { ok: false; status: 409 | 412; etag: string | null };
 
+/** Methods the publisher and reader share. An S3 adapter can satisfy this without the in-memory map. */
+export type CurrentPropsObjectStore = {
+  get(key: string): Promise<StoredObject | null>;
+  put(
+    key: string,
+    body: Buffer,
+    metadata: Record<string, string>,
+    condition: ObjectCondition
+  ): Promise<PutResult>;
+  putIfAbsent(
+    key: string,
+    body: Buffer,
+    metadata: Record<string, string>
+  ): Promise<ConditionalPutResult>;
+};
+
 /**
  * PutObject / GetObject with If-Match and If-None-Match.
  * Archive creation uses If-None-Match *. Pointer publication uses If-Match.
