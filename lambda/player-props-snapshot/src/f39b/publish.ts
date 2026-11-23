@@ -17,14 +17,14 @@ import {
   type PublicationStatus,
 } from './manifest';
 import { validateProviderPull, type ProviderPage } from './pages';
-import { InMemoryPrototypeStore } from './store';
+import { type CurrentPropsObjectStore } from './store';
 import { pointerKey, type CurrentPointer } from '@/lib/props/s3-current-board/pointer';
 
 export { BASE_SCHEDULE_FRESHNESS_MS, pointerKey, type CurrentPointer } from '@/lib/props/s3-current-board/pointer';
 export { readVerifiedEnvelope } from '@/lib/props/s3-current-board/read';
 
 export type PublishRequest = {
-  store: InMemoryPrototypeStore;
+  store: CurrentPropsObjectStore;
   gameId: string;
   bdlGameId: number;
   gameDate: string;
@@ -67,7 +67,7 @@ export function observationPrecedes(left: { observedAt: string; pullRunId: numbe
 }
 
 async function putNewObject(
-  store: InMemoryPrototypeStore,
+  store: CurrentPropsObjectStore,
   key: string,
   body: Buffer,
   metadata: Record<string, string>
@@ -217,7 +217,7 @@ export async function publishCurrentSnapshot(request: PublishRequest): Promise<P
 }
 
 async function publishPointer(
-  store: InMemoryPrototypeStore,
+  store: CurrentPropsObjectStore,
   manifest: PublicationManifest,
   gameStartTime: string,
   envelope: PlayerPropArchiveEnvelope
