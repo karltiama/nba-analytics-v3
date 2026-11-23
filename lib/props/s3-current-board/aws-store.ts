@@ -125,6 +125,7 @@ function lowercaseMeta(meta: Record<string, string> | undefined): Record<string,
   return out;
 }
 
+/** 404 is a confirmed miss. 403 stays a failure: without ListBucket it can hide either absence or a real denial. */
 function isMissing(err: unknown): boolean {
   if (typeof err !== 'object' || err == null) return false;
   const value = err as { name?: string; $metadata?: { httpStatusCode?: number } };

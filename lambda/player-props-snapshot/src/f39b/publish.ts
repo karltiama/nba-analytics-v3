@@ -223,37 +223,40 @@ async function publishPointer(
   envelope: PlayerPropArchiveEnvelope
 ): Promise<{ ok: boolean; published: boolean; reason: string; idempotent: boolean }> {
   const key = pointerKey(manifest.gameId);
-  const currentObject = await store.get(key);
-  const current = currentObject ? parsePointer(currentObject.body) : null;
-  if (currentObject && !current) {
-    return { ok: false, published: false, reason: 'pointer_unreadable', idempotent: false };
-  }
-  if (current && current.archiveKey === manifest.archiveKey && current.envelopeChecksum === manifest.envelopeChecksum) {
-    return { ok: true, published: true, reason: 'already_current', idempotent: true };
-  }
-  if (current && !observationPrecedes(current, { observedAt: manifest.observedAt, pullRunId: manifest.pullRunId })) {
-    return { ok: false, published: false, reason: 'older_snapshot', idempotent: false };
-  }
-  const body = pointerBody(manifest, gameStartTime, envelope, current?.archiveKey ?? null);
-  const condition = currentObject
-    ? ({ kind: 'if-match', etag: currentObject.etag } as const)
-    : ({ kind: 'if-none-match', etag: '*' } as const);
-  const put = await store.put(key, body, { 'pointer-game': manifest.gameId }, condition);
-  if (put.ok) return { ok: true, published: true, reason: 'published', idempotent: false };
-  if (put.status !== 409 && put.status !== 412) {
+  const candidate = { observedAt: manifest.observedAt, pullRunId: manifest.pullRunId };
+  // Create first. A missing pointer is 403 without s3:ListBucket, so a prior GetObject cannot prove it is absent.
+  const created = await store.put(
+    key,
+    pointerBody(manifest, gameStartTime, envelope, null),
+    { 'pointer-game': manifest.gameId },
+    { kind: 'if-none-match', etag: '*' }
+  );
+  if (created.ok) return { ok: true, published: true, reason: 'published', idempotent: false };
+  if (created.status !== 409 && created.status !== 412) {
     return { ok: false, published: false, reason: 'pointer_conflict', idempotent: false };
   }
-  const again = await store.get(key);
+  let again: Awaited<ReturnType<CurrentPropsObjectStore['get']>>;
+  try {
+    again = await store.get(key);
+  } catch {
+    return { ok: false, published: false, reason: 'pointer_unreadable', idempotent: false };
+  }
   const winner = again ? parsePointer(again.body) : null;
-  if (winner && winner.archiveKey === manifest.archiveKey && winner.envelopeChecksum === manifest.envelopeChecksum) {
+  if (!again || !winner || winner.gameId !== manifest.gameId) {
+    return { ok: false, published: false, reason: 'pointer_unreadable', idempotent: false };
+  }
+  if (winner.archiveKey === manifest.archiveKey && winner.envelopeChecksum === manifest.envelopeChecksum) {
     return { ok: true, published: true, reason: 'already_current', idempotent: true };
   }
-  const candidate = { observedAt: manifest.observedAt, pullRunId: manifest.pullRunId };
-  if (!again || !winner || !observationPrecedes(winner, candidate)) {
+  if (!observationPrecedes(winner, candidate)) {
     return { ok: false, published: false, reason: 'older_snapshot', idempotent: false };
   }
-  const retryBody = pointerBody(manifest, gameStartTime, envelope, winner.archiveKey);
-  const retry = await store.put(key, retryBody, { 'pointer-game': manifest.gameId }, { kind: 'if-match', etag: again.etag });
+  const retry = await store.put(
+    key,
+    pointerBody(manifest, gameStartTime, envelope, winner.archiveKey),
+    { 'pointer-game': manifest.gameId },
+    { kind: 'if-match', etag: again.etag }
+  );
   if (!retry.ok) return { ok: false, published: false, reason: 'pointer_conflict', idempotent: false };
   return { ok: true, published: true, reason: 'published', idempotent: false };
 }
