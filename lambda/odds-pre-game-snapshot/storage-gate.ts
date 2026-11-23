@@ -148,6 +148,16 @@ export async function admitOddsWrites(input: {
   };
 }
 
+/** A measurement taken during this call is newer than the clock captured before it. That is fresh, not future-dated. */
+function admissionClock(requested: string, measuredAt: string | null): string {
+  const requestedMs = Date.parse(requested);
+  const measuredMs = measuredAt == null ? Number.NaN : Date.parse(measuredAt);
+  if (Number.isFinite(requestedMs) && Number.isFinite(measuredMs) && measuredMs > requestedMs) {
+    return new Date(measuredMs).toISOString();
+  }
+  return requested;
+}
+
 function measurementFromRecord(record: ClusterMeasurementRecord | null): AdmissionMeasurement {
   if (record == null || record.valid !== true || record.clusterBytes == null || record.measuredAt == null) {
     return {
@@ -197,7 +207,7 @@ export async function admitOddsInvocation(input: {
       return halt('cluster measurement failed; refusing the write');
     }
     return admitOddsWrites({
-      now: input.now,
+      now: admissionClock(input.now, measured.measuredAt),
       invocationId: input.invocationId,
       measurement: measured,
       reservations,
