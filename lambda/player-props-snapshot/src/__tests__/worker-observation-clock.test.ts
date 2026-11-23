@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Pool } from 'pg';
 import type { SQSEvent } from 'aws-lambda';
 import { resetObservationClockSchemaCacheForTests } from '../../src/observation-clock';
+import { InMemoryArchiveStore } from '../../src/player-prop-snapshot-archive';
 
 const TIP = new Date('2026-10-21T23:30:00.000Z');
 const at = (minutesBeforeTip: number) => new Date(TIP.getTime() - minutesBeforeTip * 60_000);
@@ -15,6 +16,18 @@ const mocks = vi.hoisted(() => ({
   fetchCalls: 0,
 }));
 
+vi.mock('../../storage-gate', () => ({
+  admitPropsInvocation: async () => ({
+    mode: 'current_only',
+    reason: 'test admission',
+    pressure: 'ok',
+    boundBytes: 1,
+    settle: async () => undefined,
+  }),
+  assertCurrentOnlyRowCount: () => undefined,
+  measurePropsCluster: async () => ({ clusterBytes: 1, measuredAt: '2026-11-23T00:00:00.000Z', source: 'test', valid: true, complete: true }),
+  PropsStorageRefusal: class PropsStorageRefusal extends Error {},
+}));
 vi.mock('../../src/db', () => ({ getDbPool: () => mocks.pool }));
 vi.mock('../../src/metrics', () => ({
   emitCoverageMetric: (_ns: string, dims: Record<string, string>, values: Record<string, number>) =>
@@ -73,8 +86,12 @@ function workerPool(
         if (gate === 'race') return { rows: [{ eligible: !sql.includes('FOR UPDATE') }] };
         return { rows: [{ eligible: true }] };
       }
-      if (sql.includes('SELECT status FROM raw.player_prop_game_runs')) {
-        return { rows: gameRunStatus ? [{ status: gameRunStatus }] : [] };
+      if (sql.includes('SELECT status, archive_status, archive_key, rows_stored')) {
+        return {
+          rows: gameRunStatus
+            ? [{ status: gameRunStatus, archive_status: 'pending', archive_key: null, rows_stored: 0, rows_fetched: 0, provider_attempts: 0 }]
+            : [],
+        };
       }
       if (sql.includes('information_schema.columns')) {
         return {
@@ -98,6 +115,7 @@ function workerPool(
 }
 
 describe('player-props worker observation clock (mocked I/O, no network)', () => {
+  let archiveStore: InMemoryArchiveStore;
   const event = {
     Records: [
       { body: JSON.stringify({ runId: 42, gameId: '1', bdlGameId: 12345, date: '2026-10-21', universe: 'near_tip' }) },
@@ -115,7 +133,9 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     vi.stubEnv('CRON_DRY_RUN', '0');
     vi.stubEnv('SUPABASE_DB_URL', 'postgres://nobody@127.0.0.1:1/none');
     vi.stubEnv('BALLDONTLIE_API_KEY', 'test-key');
-    vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'false');
+    archiveStore = new InMemoryArchiveStore();
+    vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'true');
+    vi.stubEnv('NBA_DATA_BUCKET', 'test-bucket');
     vi.stubEnv('BDL_RATE_LIMIT_INTERVAL_MS', '13000');
     vi.stubEnv('BDL_RATE_LIMIT_MAX_REQUESTS', '1');
     vi.stubEnv('BDL_RATE_LIMIT_BURST', '1');
@@ -123,7 +143,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
   });
   afterEach(() => vi.unstubAllEnvs());
 
-  it('queued T-10, observed T+2: raw keeps the post-tip clock and serving tables are not written', async () => {
+  it('queued T-10, observed T+2: current-only writes neither raw nor serving rows', async () => {
     const { pool, calls } = workerPool(true, null, 'race');
     mocks.pool = pool;
     mocks.fetchResult = {
@@ -133,16 +153,10 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     const logs: string[] = [];
     const spy = vi.spyOn(console, 'log').mockImplementation((m: unknown) => void logs.push(String(m)));
     const { handler } = await import('../../worker');
-    await handler(event);
+    await handler(event, undefined, { archiveStore });
     spy.mockRestore();
 
-    const raw = calls.find((c) => c.sql.includes('INSERT INTO raw.player_prop_snapshots_v2'));
-    expect(raw).toBeDefined();
-    expect(raw!.values[12]).toEqual(at(10));
-    expect(raw!.values[15]).toEqual(at(-2));
-    expect(raw!.values[16]).toEqual(at(10));
-    expect(raw!.values[17]).toEqual(at(120));
-    expect(raw!.values[18]).toBe('RESPONSE_RECEIVED');
+    expect(calls.some((c) => c.sql.includes('INSERT INTO raw.player_prop_snapshots_v2'))).toBe(false);
     expect(calls.some((c) => c.sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
     expect(calls.some((c) => c.sql.includes('DELETE FROM analytics.player_prop_current'))).toBe(false);
 
@@ -166,7 +180,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     mocks.pool = pool;
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const { handler } = await import('../../worker');
-    await handler(event);
+    await handler(event, undefined, { archiveStore });
     spy.mockRestore();
     expect(mocks.fetchCalls).toBe(0);
     expect(calls.some((c) => c.sql.includes('INSERT') || c.sql.includes('UPDATE'))).toBe(false);
@@ -181,7 +195,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     };
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const { handler } = await import('../../worker');
-    await handler(event);
+    await handler(event, undefined, { archiveStore });
     spy.mockRestore();
     expect(mocks.fetchCalls).toBe(1);
   });
@@ -192,7 +206,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     mocks.fetchError = new Error('BDL /odds/player_props 503 (page 2): upstream');
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const { handler } = await import('../../worker');
-    await expect(handler(event)).rejects.toThrow(/503/);
+    await expect(handler(event, undefined, { archiveStore })).rejects.toThrow(/503/);
     spy.mockRestore();
     expect(calls.some((c) => c.sql.includes('INSERT INTO raw.player_prop_snapshots_v2'))).toBe(false);
     expect(calls.some((c) => c.sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
@@ -210,7 +224,7 @@ describe('player-props worker observation clock (mocked I/O, no network)', () =>
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const { handler } = await import('../../worker');
     const before = Date.now();
-    await handler(event, { getRemainingTimeInMillis: () => 300_000 });
+    await handler(event, { getRemainingTimeInMillis: () => 300_000 }, { archiveStore });
     spy.mockRestore();
     const deadline = (mocks.fetchOptions[0] as { limiter: { deadlineMs: number } }).limiter.deadlineMs;
     expect(deadline).toBeGreaterThanOrEqual(before + 240_000);

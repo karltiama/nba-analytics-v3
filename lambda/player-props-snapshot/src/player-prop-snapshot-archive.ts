@@ -317,6 +317,110 @@ export function decideIdempotentWrite(args: {
   };
 }
 
+export type ArchiveDeliveryIdentity = {
+  gameId: string;
+  pullRunId: number;
+  gameDate: string;
+  controllerEnqueuedAt: Date | string;
+};
+
+function sameInstant(left: string, right: Date | string): boolean {
+  const expected = typeof right === 'string' ? Date.parse(right) : right.getTime();
+  const actual = Date.parse(left);
+  return Number.isFinite(actual) && Number.isFinite(expected) && actual === expected;
+}
+
+/** A checksum-valid envelope still has to be this delivery's observation. */
+export function archiveIdentityProblem(
+  envelope: PlayerPropArchiveEnvelope,
+  expected: ArchiveDeliveryIdentity
+): string | null {
+  if (envelope.archiveVersion !== PLAYER_PROP_SNAPSHOT_ARCHIVE_VERSION) {
+    return `archive version ${envelope.archiveVersion} is not supported`;
+  }
+  if (envelope.source !== PLAYER_PROP_SNAPSHOT_SOURCE) {
+    return `archive source ${envelope.source} is not supported`;
+  }
+  if (envelope.game_id !== expected.gameId) return 'archive game_id does not match this delivery';
+  if (envelope.pull_run_id !== expected.pullRunId) return 'archive pull_run_id does not match this delivery';
+  if (envelope.game_date !== expected.gameDate) return 'archive game_date does not match this delivery';
+  if (!envelope.controller_enqueued_at || !sameInstant(envelope.controller_enqueued_at, expected.controllerEnqueuedAt)) {
+    return 'archive controller timestamp does not match this delivery';
+  }
+  return null;
+}
+
+/** Current-only evidence needs the response clock and the first-seen enqueue time. */
+export function observationDurabilityProblem(envelope: PlayerPropArchiveEnvelope): string | null {
+  if (typeof envelope.observed_at !== 'string' || !Number.isFinite(Date.parse(envelope.observed_at))) {
+    return 'archive envelope is missing observed_at';
+  }
+  if (typeof envelope.controller_enqueued_at !== 'string' || !Number.isFinite(Date.parse(envelope.controller_enqueued_at))) {
+    return 'archive envelope is missing controller_enqueued_at';
+  }
+  if (envelope.observation_clock !== 'RESPONSE_RECEIVED') {
+    return 'archive envelope is missing the response observation clock';
+  }
+  if (envelope.row_count !== envelope.rows.length) return 'archive row_count does not match the rows';
+  const checksum = checksumCanonical({
+    pull_run_id: envelope.pull_run_id,
+    game_id: envelope.game_id,
+    rows: envelope.rows,
+  });
+  if (checksum !== envelope.checksum) return 'archive checksum does not match the envelope body';
+  return null;
+}
+
+export async function verifyStoredArchive(args: {
+  store: ArchivePutStore;
+  key: string;
+  expectedChecksum?: string;
+  expected?: ArchiveDeliveryIdentity;
+}): Promise<
+  | { ok: true; envelope: PlayerPropArchiveEnvelope }
+  | { ok: false; reason: 'missing' | 'invalid' | 'conflict'; message: string }
+> {
+  let body: InMemoryS3Object | null;
+  try {
+    body = await args.store.get(args.key);
+  } catch (err) {
+    return { ok: false, reason: 'invalid', message: describeArchiveStoreError('get', err) };
+  }
+  if (!body) return { ok: false, reason: 'missing', message: `archive object ${args.key} is absent` };
+  let envelope: PlayerPropArchiveEnvelope;
+  try {
+    envelope = gunzipEnvelope(body.body);
+  } catch {
+    return { ok: false, reason: 'invalid', message: `archive object ${args.key} is not a readable envelope` };
+  }
+  const problem = observationDurabilityProblem(envelope);
+  if (problem) return { ok: false, reason: 'invalid', message: problem };
+  const meta = parseS3UserMetadata(body.metadata);
+  if (!meta.checksum || meta.rowCount == null || meta.pullRunId == null || !meta.gameId || !meta.archiveVersion) {
+    return { ok: false, reason: 'invalid', message: `archive object ${args.key} is missing required metadata` };
+  }
+  if (
+    meta.checksum !== envelope.checksum ||
+    meta.rowCount !== envelope.row_count ||
+    meta.pullRunId !== envelope.pull_run_id ||
+    meta.gameId !== envelope.game_id
+  ) {
+    return { ok: false, reason: 'invalid', message: `archive metadata for ${args.key} does not match the envelope` };
+  }
+  if (args.expectedChecksum && envelope.checksum !== args.expectedChecksum) {
+    return {
+      ok: false,
+      reason: 'conflict',
+      message: `archive object ${args.key} checksum conflicts with this attempt`,
+    };
+  }
+  if (args.expected) {
+    const identity = archiveIdentityProblem(envelope, args.expected);
+    if (identity) return { ok: false, reason: 'conflict', message: identity };
+  }
+  return { ok: true, envelope };
+}
+
 export function archiveSuccessInvariant(rowsStored: number, rowsArchived: number, archiveStatus: ArchiveStatus): boolean {
   if (rowsStored <= 0) return true;
   return archiveStatus === 'archived' && rowsArchived > 0;

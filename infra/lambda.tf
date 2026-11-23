@@ -429,9 +429,32 @@ resource "aws_lambda_function" "player_props_worker" {
         PLAYER_PROP_S3_ARCHIVE_ENABLED = var.player_prop_s3_archive_enabled ? "true" : "false"
         NBA_DATA_BUCKET                = var.nba_data_bucket_name
         NBA_RAW_PREFIX                 = var.nba_raw_prefix
+        STORAGE_RESERVATION_TABLE      = aws_dynamodb_table.storage_admission.name
       }
     )
   }
+}
+
+# GetItem + conditional UpdateItem on the one admission ledger. No Scan, Delete, or second table.
+# The queue mapping stays disabled; this policy does not enable the worker.
+resource "aws_iam_role_policy" "player_props_storage_admission" {
+  name = "${var.player_props_lambda_function_name}-storage-admission"
+  role = aws_iam_role.lambda_player_props_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "PropsReservationLedger"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem"
+        ]
+        Resource = aws_dynamodb_table.storage_admission.arn
+      }
+    ]
+  })
 }
 
 resource "aws_lambda_event_source_mapping" "player_props_worker_queue" {

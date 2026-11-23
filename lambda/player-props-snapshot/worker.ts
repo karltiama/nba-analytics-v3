@@ -1,4 +1,4 @@
-import type { Context, SQSEvent } from 'aws-lambda';
+import type { Context, SQSEvent, SQSRecord } from 'aws-lambda';
 import { getLambdaEnv, getRuntimeMode } from './src/env';
 import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
@@ -7,24 +7,54 @@ import { assertObservationClockSchema, describeObservation } from './src/observa
 import { reserveProviderAttempt, AttemptBudgetError } from './src/attempt-budget';
 import { assertPropsLiveLimiter, PropsLimiterError } from './src/limiter-guard';
 import {
-  bulkInsertRawV2,
   buildPreferredVendorLines,
   completeGameRun,
   finalizePullRunIfComplete,
+  getGameRunEvidence,
   getGameRunStartedAt,
-  getGameRunStatus,
+  type GameRunEvidence,
   lookupGameArchiveContext,
-  promoteServingProps,
+  promoteCurrentOnlyProps,
   readPregameGate,
 } from './src/bulk-writers';
 import { emitCoverageMetric } from './src/metrics';
-import type { WorkerMessage } from './src/types';
+import type { NormalizedPropRow, WorkerMessage } from './src/types';
 import {
   classifyBdlPropPlayerIds,
   filterRowsByServingProviderId,
 } from './src/prop-identity-boundary';
-import { archiveGameSnapshot } from './src/archive-game';
+import {
+  archiveGameSnapshot,
+  currentOnlyArchiveKey,
+  currentOnlySeason,
+  normalizedRowsFromArchive,
+  openCurrentOnlyArchiveStore,
+  PropsArchiveRefusal,
+  type ArchiveObjectStore,
+} from './src/archive-game';
+import { verifyStoredArchive } from './src/player-prop-snapshot-archive';
 import { logMarketOutcome, outcomeForProviderResult } from './src/market-outcome';
+import {
+  admitPropsInvocation,
+  assertCurrentOnlyRowCount,
+  measurePropsCluster,
+  PropsStorageRefusal,
+  type PropsStorageDecision,
+} from './storage-gate';
+
+function isIntentionalPregameSkip(evidence: GameRunEvidence): boolean {
+  return evidence.rowsStored === 0
+    && evidence.rowsFetched === 0
+    && evidence.providerAttempts === 0
+    && evidence.archiveStatus === 'pending'
+    && !evidence.archiveKey;
+}
+
+function invocationId(record: SQSRecord): string {
+  const messageId = typeof record.messageId === 'string' ? record.messageId : '';
+  const receiveCount = record.attributes?.ApproximateReceiveCount ?? '1';
+  return messageId === '' ? '' : `${messageId}#${receiveCount}`;
+}
 
 function parseMessage(body: string): WorkerMessage {
   const payload = JSON.parse(body) as WorkerMessage;
@@ -37,7 +67,11 @@ function parseMessage(body: string): WorkerMessage {
 /** Left for the DB writes, archive and run bookkeeping after the last provider page. */
 const PROVIDER_DEADLINE_MARGIN_MS = 60_000;
 
-export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemainingTimeInMillis'>) => {
+export const handler = async (
+  event: SQSEvent,
+  context?: Pick<Context, 'getRemainingTimeInMillis'>,
+  deps?: { admit?: typeof admitPropsInvocation; archiveStore?: ArchiveObjectStore }
+) => {
   const remainingMs = context?.getRemainingTimeInMillis?.();
   const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
   const mode = getRuntimeMode();
@@ -75,7 +109,37 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
     const msg = parseMessage(record.body);
     let gameRunFinalized = false;
     let providerSettled = false;
-    if ((await getGameRunStatus(pool, msg.runId, msg.gameId)) === 'success') {
+    let admitted: PropsStorageDecision | null = null;
+    let durableArchive: { key: string; rowsArchived: number } | null = null;
+    const evidence = await getGameRunEvidence(pool, msg.runId, msg.gameId);
+    if (evidence?.status === 'success') {
+      if (isIntentionalPregameSkip(evidence)) {
+        console.log(
+          JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
+        );
+        successCount++;
+        continue;
+      }
+      const recordedKey = evidence.archiveKey;
+      if (evidence.archiveStatus !== 'archived' || !recordedKey) {
+        throw new PropsArchiveRefusal('successful game run is missing durable archive evidence');
+      }
+      const recordedStart = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
+      const recordedStore = openCurrentOnlyArchiveStore(env, deps?.archiveStore);
+      if (!recordedStart || !recordedStore) {
+        throw new PropsArchiveRefusal('successful game run archive could not be read');
+      }
+      const recorded = await verifyStoredArchive({
+        store: recordedStore,
+        key: recordedKey,
+        expected: {
+          gameId: msg.gameId,
+          pullRunId: msg.runId,
+          gameDate: msg.date,
+          controllerEnqueuedAt: recordedStart,
+        },
+      });
+      if (!recorded.ok) throw new PropsArchiveRefusal(recorded.message);
       console.log(
         JSON.stringify({ event: 'player_prop_duplicate_delivery_skipped', pullRunId: msg.runId, gameId: msg.gameId })
       );
@@ -107,54 +171,124 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         successCount++;
         continue;
       }
-      const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
-        limiter: { deadlineMs },
-        onBeforeRequest: async () => {
-          await reserveProviderAttempt(pool, msg.runId, msg.gameId);
-        },
+      const admit = deps?.admit ?? admitPropsInvocation;
+      admitted = await admit({
+        env: process.env,
+        now: new Date().toISOString(),
+        invocationId: invocationId(record),
+        measureCluster: () => measurePropsCluster(pool),
       });
-      const props = fetched.rows;
-      providerSettled = true;
-      logMarketOutcome({
-        outcome: outcomeForProviderResult({ threw: false, rowCount: props.length }),
-        universe: msg.universe ?? null,
+      if (admitted.mode !== 'current_only') {
+        throw new PropsStorageRefusal(admitted.reason);
+      }
+      const controllerEnqueuedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
+      if (!controllerEnqueuedAt) {
+        throw new PropsArchiveRefusal('current-only archive is missing the first-seen timestamp');
+      }
+      const gameCtx = await lookupGameArchiveContext(pool, msg.gameId);
+      const archiveKey = currentOnlyArchiveKey({
+        rawPrefix: env.nbaRawPrefix,
+        season: currentOnlySeason(gameCtx.season, msg.date),
+        seasonText: gameCtx.season,
+        gameDate: msg.date,
         gameId: msg.gameId,
         pullRunId: msg.runId,
-        rowsFetched: props.length,
+        snapshotAt: controllerEnqueuedAt,
       });
-      const normalized = normalizePlayerPropRows(props);
-      const controllerEnqueuedAt = await getGameRunStartedAt(pool, msg.runId, msg.gameId);
-      const clocks = {
-        controllerEnqueuedAt,
-        observedAt: fetched.observation.responseReceivedAt,
-      };
-      // Legacy controller-time column value; unchanged so archive keys and retention stay stable.
-      const snapshotAt = controllerEnqueuedAt ?? clocks.observedAt;
-      const gameCtx = await lookupGameArchiveContext(pool, msg.gameId);
-      console.log(
-        JSON.stringify({
-          event: 'player_prop_observation',
-          pullRunId: msg.runId,
+      const store = openCurrentOnlyArchiveStore(env, deps?.archiveStore);
+      const existing = store
+        ? await verifyStoredArchive({
+            store,
+            key: archiveKey,
+            expected: {
+              gameId: msg.gameId,
+              pullRunId: msg.runId,
+              gameDate: msg.date,
+              controllerEnqueuedAt,
+            },
+          })
+        : null;
+      if (existing && !existing.ok && existing.reason !== 'missing') {
+        throw new PropsArchiveRefusal(existing.message);
+      }
+      let normalized: NormalizedPropRow[];
+      let propsLength: number;
+      let clocks: { controllerEnqueuedAt: Date; observedAt: Date };
+      if (existing?.ok) {
+        normalized = normalizedRowsFromArchive(existing.envelope.rows);
+        propsLength = normalized.length;
+        clocks = {
+          controllerEnqueuedAt,
+          observedAt: new Date(existing.envelope.observed_at as string),
+        };
+        providerSettled = true;
+      } else {
+        const fetched = await fetchPlayerPropsForGame(env.apiKey, msg.bdlGameId, {
+          limiter: { deadlineMs },
+          onBeforeRequest: async () => {
+            await reserveProviderAttempt(pool, msg.runId, msg.gameId);
+          },
+        });
+        propsLength = fetched.rows.length;
+        providerSettled = true;
+        logMarketOutcome({
+          outcome: outcomeForProviderResult({ threw: false, rowCount: propsLength }),
+          universe: msg.universe ?? null,
           gameId: msg.gameId,
-          ...describeObservation({
-            controllerEnqueuedAt,
-            observedAt: clocks.observedAt,
-            tip: gameCtx.startTime,
-            attempts: fetched.observation.attempts.length,
-          }),
-        })
-      );
-      const rawV2 = await bulkInsertRawV2(
-        pool,
-        normalized,
-        snapshotAt,
-        {
-          enabled: env.storePropRawJson,
-          sampleRate: env.propRawJsonSampleRate,
-        },
-        msg.runId,
-        clocks
-      );
+          pullRunId: msg.runId,
+          rowsFetched: propsLength,
+        });
+        normalized = normalizePlayerPropRows(fetched.rows);
+        clocks = {
+          controllerEnqueuedAt,
+          observedAt: fetched.observation.responseReceivedAt,
+        };
+        console.log(
+          JSON.stringify({
+            event: 'player_prop_observation',
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            ...describeObservation({
+              controllerEnqueuedAt,
+              observedAt: clocks.observedAt,
+              tip: gameCtx.startTime,
+              attempts: fetched.observation.attempts.length,
+            }),
+          })
+        );
+      }
+      const snapshotAt = controllerEnqueuedAt;
+      assertCurrentOnlyRowCount(normalized.length);
+      const archive = existing?.ok
+        ? {
+            rowsArchived: existing.envelope.row_count,
+            archiveObjectCount: 1,
+            archiveStatus: 'archived' as const,
+            archiveError: null,
+            archiveKey,
+            verified: true,
+          }
+        : await archiveGameSnapshot({
+            env,
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            bdlGameId: msg.bdlGameId,
+            gameDate: msg.date,
+            snapshotAt,
+            observation: clocks,
+            gameStartTime: gameCtx.startTime,
+            season: gameCtx.season,
+            opponentId: null,
+            normalized,
+            rowsStored: normalized.length,
+            store: store ?? undefined,
+            requireDurable: true,
+          });
+      if (!archive.verified || archive.archiveStatus !== 'archived' || !archive.archiveKey) {
+        archiveFailedCount += 1;
+        throw new PropsArchiveRefusal(archive.archiveError ?? 'current-only archive was not verified');
+      }
+      durableArchive = { key: archive.archiveKey, rowsArchived: archive.rowsArchived };
       const identity = await classifyBdlPropPlayerIds(
         pool,
         normalized.map((row) => String(row.player_id)),
@@ -165,114 +299,57 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         (row) => row.player_id,
         identity.servingIds
       ).keep;
-      const preferred = buildPreferredVendorLines(
-        servingNormalized,
-        env.preferredVendor,
-        snapshotAt
-      );
-      const promotion = await promoteServingProps(pool, {
+      const preferred = buildPreferredVendorLines(servingNormalized, env.preferredVendor, snapshotAt);
+      const promotion = await promoteCurrentOnlyProps(pool, {
         gameId: msg.gameId,
-        pullRunId: msg.runId,
         rows: servingNormalized,
         preferred,
         snapshotAt,
         clocks,
       });
       if (promotion.outcome === 'missing_game') {
-        await completeGameRun(pool, msg.runId, msg.gameId, 'error', props.length, rawV2, 'game_metadata_missing');
+        await completeGameRun(pool, msg.runId, msg.gameId, 'error', propsLength, 0, 'game_metadata_missing', {
+          rowsArchived: archive.rowsArchived,
+          archiveObjectCount: archive.archiveObjectCount,
+          archiveStatus: 'archived',
+          archiveError: null,
+          archiveKey: archive.archiveKey,
+        });
         await finalizePullRunIfComplete(pool, msg.runId);
-        failCount++;
-        continue;
+        gameRunFinalized = true;
+        throw new PropsArchiveRefusal('game metadata missing after the archive was stored');
       }
       const current = promotion.current;
       const legacyCurrent = promotion.legacyCurrent;
       if (promotion.outcome === 'post_tip') postTipSkipped++;
       if (promotion.outcome === 'promoted') promotedCount++;
-
-      const archive = await archiveGameSnapshot({
-        env,
-        pullRunId: msg.runId,
-        gameId: msg.gameId,
-        bdlGameId: msg.bdlGameId,
-        gameDate: msg.date,
-        snapshotAt,
-        observation: clocks,
-        gameStartTime: gameCtx.startTime,
-        season: gameCtx.season,
-        opponentId: null,
-        normalized,
-        rowsStored: rawV2,
-      });
-
-      await completeGameRun(pool, msg.runId, msg.gameId, 'success', props.length, rawV2, undefined, {
+      await completeGameRun(pool, msg.runId, msg.gameId, 'success', propsLength, current, undefined, {
         rowsArchived: archive.rowsArchived,
         archiveObjectCount: archive.archiveObjectCount,
-        archiveStatus: archive.archiveStatus,
-        archiveError: archive.archiveError,
+        archiveStatus: 'archived',
+        archiveError: null,
         archiveKey: archive.archiveKey,
       });
       await finalizePullRunIfComplete(pool, msg.runId);
       gameRunFinalized = true;
-
-      const archiveGap = rawV2 > 0 && archive.rowsArchived === 0 && env.s3ArchiveEnabled;
-      if (archiveGap) {
-        archiveGapCount += 1;
-        console.error(
-          JSON.stringify({
-            event: 'player_prop_archive_gap',
-            pullRunId: msg.runId,
-            gameId: msg.gameId,
-            rowsStored: rawV2,
-            rowsArchived: archive.rowsArchived,
-            archiveStatus: archive.archiveStatus,
-            archiveError: archive.archiveError,
-          })
-        );
-      }
-      if (archive.archiveStatus === 'failed') {
-        archiveFailedCount += 1;
-        // The raw and serving writes above already committed. Archive is optional:
-        // record the failure, emit ArchiveFailed / ArchiveGap, and return success so
-        // SQS deletes this message instead of redelivering it for another provider fetch.
-        // A later archive-only recovery reads raw.player_prop_snapshots_v2 for this
-        // pull_run_id and game_id, rebuilds the envelope, and calls writeArchiveObject.
-        // That recovery must not call the provider or reserve provider_attempts.
-        // The put is conditional (IfNoneMatch "*"). HTTP 412 compares the existing
-        // object once. HTTP 409 is one compare and no second put. HTTP 403 fails
-        // the archive and does not overwrite.
-        console.error(
-          JSON.stringify({
-            event: 'player_prop_archive_failed',
-            pullRunId: msg.runId,
-            gameId: msg.gameId,
-            rowsFetched: props.length,
-            rowsStored: rawV2,
-            rowsArchived: archive.rowsArchived,
-            archiveStatus: archive.archiveStatus,
-            archiveError: archive.archiveError,
-            archiveKey: archive.archiveKey,
-          })
-        );
-      }
       emitCoverageMetric(
         'NBA/PlayerProps',
         { Component: 'Worker', GameId: msg.gameId },
         {
-          RowsFetched: props.length,
-          RowsRawV2: rawV2,
+          RowsFetched: propsLength,
+          RowsRawV2: 0,
           RowsCurrent: current,
           RowsLegacyCurrent: legacyCurrent,
           IdentitySkipped: identity.quarantined,
           RowsArchived: archive.rowsArchived,
           ArchiveObjectsWritten: archive.archiveObjectCount,
-          ArchiveFailed: archive.archiveStatus === 'failed' ? 1 : 0,
-          ArchiveGap: archiveGap ? 1 : 0,
+          ArchiveFailed: 0,
+          ArchiveGap: 0,
         }
       );
-
       successCount++;
     } catch (error: unknown) {
-      if (!providerSettled) {
+      if (!providerSettled && !(error instanceof PropsArchiveRefusal)) {
         const message = error instanceof Error ? error.message : '';
         const http = message.match(/player_props (\d+)/);
         const reason = error instanceof PropsLimiterError
@@ -292,7 +369,7 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
           pullRunId: msg.runId,
         });
       }
-      if (!gameRunFinalized) {
+      if (!(error instanceof PropsStorageRefusal) && !gameRunFinalized) {
         await completeGameRun(
           pool,
           msg.runId,
@@ -302,11 +379,11 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
           0,
           error instanceof Error ? error.message : 'Unknown error',
           {
-            rowsArchived: 0,
-            archiveObjectCount: 0,
-            archiveStatus: 'failed',
+            rowsArchived: durableArchive?.rowsArchived ?? 0,
+            archiveObjectCount: durableArchive ? 1 : 0,
+            archiveStatus: durableArchive ? 'archived' : 'failed',
             archiveError: error instanceof Error ? error.message : 'Unknown error',
-            archiveKey: null,
+            archiveKey: durableArchive?.key ?? null,
           }
         );
         await finalizePullRunIfComplete(pool, msg.runId);
@@ -324,6 +401,10 @@ export const handler = async (event: SQSEvent, context?: Pick<Context, 'getRemai
         }
       );
       throw error;
+    } finally {
+      if (admitted?.mode === 'current_only') {
+        await admitted.settle().catch(() => undefined);
+      }
     }
   }
 

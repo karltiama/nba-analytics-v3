@@ -10,6 +10,18 @@ const mocks = vi.hoisted(() => ({
   fetchError: null as Error | null,
 }));
 
+vi.mock('../../storage-gate', () => ({
+  admitPropsInvocation: async () => ({
+    mode: 'current_only',
+    reason: 'test admission',
+    pressure: 'ok',
+    boundBytes: 1,
+    settle: async () => undefined,
+  }),
+  assertCurrentOnlyRowCount: () => undefined,
+  measurePropsCluster: async () => ({ clusterBytes: 1, measuredAt: '2026-11-23T00:00:00.000Z', source: 'test', valid: true, complete: true }),
+  PropsStorageRefusal: class PropsStorageRefusal extends Error {},
+}));
 vi.mock('../db', () => ({ getDbPool: () => mocks.pool }));
 vi.mock('../metrics', () => ({ emitCoverageMetric: () => {} }));
 vi.mock('../prop-identity-boundary', () => ({
@@ -64,8 +76,12 @@ function scriptedPool(attemptsLeft = PLAYER_PROPS_MAX_HTTP_ATTEMPTS, initialStat
         ],
       };
     }
-    if (sql.includes('SELECT status FROM raw.player_prop_game_runs')) {
-      return { rows: status ? [{ status }] : [] };
+    if (sql.includes('SELECT status, archive_status, archive_key, rows_stored')) {
+      return {
+        rows: status
+          ? [{ status, archive_status: 'pending', archive_key: null, rows_stored: status === 'success' ? 0 : null, rows_fetched: 0, provider_attempts: 0 }]
+          : [],
+      };
     }
     if (sql.includes('player_prop_daily_attempts')) {
       return { rows: [{ attempts: 1 }], rowCount: 1 };
@@ -182,6 +198,6 @@ describe('player-props worker safety (mocked provider, no network)', () => {
     const body = JSON.parse((await handler(event)).body);
     expect(body.ingested).toBe(false);
     expect(mocks.fetchCalls).toBe(0);
-    expect(db.calls.some((sql) => sql.includes('provider_attempts'))).toBe(false);
+    expect(db.calls.some((sql) => sql.includes('provider_attempts = provider_attempts + 1'))).toBe(false);
   });
 });
