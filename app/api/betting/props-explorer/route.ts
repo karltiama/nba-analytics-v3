@@ -10,6 +10,13 @@ import { websiteCurrentBoardStore } from '@/lib/props/s3-current-board/website-s
 
 export const runtime = 'nodejs';
 
+function noStore(body: unknown, status = 200): NextResponse {
+  return NextResponse.json(body, {
+    status,
+    headers: { 'Cache-Control': 'no-store' },
+  });
+}
+
 /**
  * GET /api/betting/props-explorer
  *
@@ -17,10 +24,14 @@ export const runtime = 'nodejs';
  * Live/current dates read analytics.player_props_current.
  * Historical dates read research.prop_decision_lines (last pre-tip closing line).
  * Auth required — EV/model compute is expensive on the live path.
+ * The response is not a public cache. Freshness stays on the observation clock.
  */
 export async function GET(request: NextRequest) {
   const gate = await requireBettingAuth(request);
-  if (!gate.ok) return gate.response;
+  if (!gate.ok) {
+    gate.response.headers.set('Cache-Control', 'no-store');
+    return gate.response;
+  }
   try {
     const sp = request.nextUrl.searchParams;
     let limit = parseInt(sp.get('limit') || '100', 10);
@@ -55,7 +66,7 @@ export async function GET(request: NextRequest) {
       ...(store ? { store } : {}),
     });
 
-    return NextResponse.json({
+    return noStore({
       rows: result.rows,
       limit,
       offset,
@@ -79,12 +90,12 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error('props-explorer:', error);
-    return NextResponse.json(
+    return noStore(
       {
         error: 'Failed to fetch props explorer',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      500,
     );
   }
 }

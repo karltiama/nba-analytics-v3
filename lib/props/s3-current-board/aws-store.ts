@@ -7,6 +7,8 @@ import { isProtectedHistoricalKey } from '@/lambda/player-props-snapshot/src/pla
 import { classifyConditionalPutError } from '@/lambda/player-props-snapshot/src/s3-archive';
 import type { ConditionalPutResult } from '@/lambda/player-props-snapshot/src/player-prop-snapshot-archive';
 import type { ObjectCondition, PutResult, StoredObject } from '@/lambda/player-props-snapshot/src/f39b/store';
+import { CURRENT_BOARD_MAX_COMPRESSED_BYTES } from './bounds';
+import { collectBoundedBytes, CompressedObjectTooLargeError } from './bounded-body';
 
 if (typeof window !== 'undefined') throw new Error('s3 current board client rejected');
 
@@ -63,9 +65,12 @@ export class AwsCurrentBoardStore {
     try {
       const out = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
       if (!out.Body || !out.ETag) throw new S3ObjectError('s3 object is missing a body or etag', false);
-      const bytes = await out.Body.transformToByteArray();
-      return { body: Buffer.from(bytes), metadata: lowercaseMeta(out.Metadata), etag: out.ETag };
+      const bytes = await collectBoundedBytes(out.Body, out.ContentLength, CURRENT_BOARD_MAX_COMPRESSED_BYTES);
+      return { body: bytes, metadata: lowercaseMeta(out.Metadata), etag: out.ETag };
     } catch (err) {
+      if (err instanceof CompressedObjectTooLargeError) {
+        throw new S3ObjectError('s3 object exceeds the compressed byte limit', false);
+      }
       if (err instanceof S3ObjectError) throw err;
       if (isMissing(err) || isUnlistedObjectAbsence(err)) return null;
       throw classifyFailure(err);

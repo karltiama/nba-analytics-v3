@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { resetVerifiedSnapshotCacheForTests } from '@/lib/props/s3-current-board/snapshot-cache';
 
 import { combinedAmericanOdds } from '@/lib/parlay-xray/combined-odds';
 import { loadCurrentQuickBuilds } from '@/lib/quick-builds/current-board';
@@ -68,6 +69,10 @@ function fillers(gameId: number, count: number, vendor: string, startId: number)
 }
 
 describe('current-board quick builds apply the book before the observation cap', () => {
+  beforeEach(() => {
+    resetVerifiedSnapshotCacheForTests();
+  });
+
   it('evaluates the F69 two-game DraftKings slate instead of stopping at 4,000 raw rows', async () => {
     const store = new InMemoryPrototypeStore();
     const keys: string[] = [];

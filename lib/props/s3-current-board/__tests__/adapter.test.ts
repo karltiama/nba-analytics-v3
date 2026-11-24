@@ -14,6 +14,7 @@ import { getPlayerPropsForExplorer } from '@/lib/betting/props-explorer-serving'
 import { loadS3CurrentLegQuotes } from '@/lib/parlay/s3-current-quotes';
 import { loadCurrentQuickBuilds } from '@/lib/quick-builds/current-board';
 import { readCurrentBoard } from '@/lib/props/s3-current-board/read';
+import { resetVerifiedSnapshotCacheForTests } from '@/lib/props/s3-current-board/snapshot-cache';
 import { currentPropsSource } from '@/lib/props/s3-current-board/source';
 import { publishCurrentSnapshot, type PublishRequest } from '@/lambda/player-props-snapshot/src/f39b/publish';
 import type { ProviderPage } from '@/lambda/player-props-snapshot/src/f39b/pages';
@@ -65,6 +66,7 @@ function publishGame(store: InMemoryPrototypeStore, gameId: number, pullRunId: n
 describe('F39C current board adapter', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetVerifiedSnapshotCacheForTests();
     delete process.env.CURRENT_PROPS_SOURCE;
   });
 

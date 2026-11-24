@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { resetVerifiedSnapshotCacheForTests } from '@/lib/props/s3-current-board/snapshot-cache';
 
 import { gunzipEnvelope } from '../../player-prop-snapshot-archive';
 import { manifestProblem, sealManifest, type PublicationManifest } from '../manifest';
@@ -62,6 +63,10 @@ async function until(ready: () => boolean): Promise<void> {
 }
 
 describe('F39B current props board', () => {
+  beforeEach(() => {
+    resetVerifiedSnapshotCacheForTests();
+  });
+
   it('documents the in-memory difference from S3', () => {
     expect(IN_MEMORY_S3_DIFFERENCES).toEqual([
       'synchronous map instead of in-flight S3 requests',

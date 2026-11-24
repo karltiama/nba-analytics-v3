@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 
 import { GetObjectCommand, PutObjectCommand, type S3Client } from '@aws-sdk/client-s3';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { resetVerifiedSnapshotCacheForTests } from '@/lib/props/s3-current-board/snapshot-cache';
 
 import { gunzipEnvelope } from '@/lambda/player-props-snapshot/src/player-prop-snapshot-archive';
 import { pointerKey, publishCurrentSnapshot, type PublishRequest } from '@/lambda/player-props-snapshot/src/f39b/publish';
@@ -177,6 +178,10 @@ async function until(ready: () => boolean): Promise<void> {
 }
 
 describe('F42 AWS current-board store', () => {
+  beforeEach(() => {
+    resetVerifiedSnapshotCacheForTests();
+  });
+
   it('names the behaviors this suite emulates', () => {
     expect(EMULATED_S3_BEHAVIORS).toContain('one process-local map, with no AWS account, bucket, or network');
     expect(currentPropsSource({})).toBe('postgres');
