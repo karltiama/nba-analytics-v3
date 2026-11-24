@@ -9,7 +9,8 @@ export type PropsMarketContext = 'live' | 'historical';
 export type PropsServingSource =
   | 'analytics.player_props_current'
   | 'research.prop_decision_lines'
-  | 's3.player_prop_current';
+  | 's3.player_prop_current'
+  | 's3.player_prop_closing';
 
 export function etCalendarDate(d: Date = new Date()): string {
   return d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
