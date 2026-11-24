@@ -7,7 +7,7 @@ function read(rel: string): string {
 }
 
 describe('player-prop S3 archive IAM / flags', () => {
-  it('grants worker PutObject+GetObject on the snapshot prefix only, with no DeleteObject', () => {
+  it('grants worker PutObject+GetObject on snapshots and the current pointer only', () => {
     const iam = read('../iam.tf');
     const start = iam.indexOf('resource "aws_iam_role_policy" "lambda_player_props_worker_s3_archive"');
     expect(start).toBeGreaterThan(-1);
@@ -16,8 +16,11 @@ describe('player-prop S3 archive IAM / flags', () => {
     expect(block).toContain('s3:PutObject');
     expect(block).toContain('s3:GetObject');
     expect(block).toContain('entity=player_prop_snapshots');
+    expect(block).toContain('entity=player_prop_current/game_id=*/pointer.json');
     expect(block).toContain('source=balldontlie');
+    expect(block).not.toContain('entity=player_prop_closing');
     expect(block).not.toContain('s3:DeleteObject');
+    expect(block).not.toContain('s3:ListBucket');
     expect(block).not.toContain('s3:*');
     expect(block).toMatch(/count\s*=\s*var\.nba_data_bucket_name\s*!=\s*""\s*\?\s*1\s*:\s*0/);
   });
