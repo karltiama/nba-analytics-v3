@@ -54,6 +54,7 @@ export type CurrentBoardResponse =
       reason: 'missing' | 'stale' | 'expired' | 'unavailable';
     };
 
+/** Closed unless a server route passes the read-only website store. */
 export function defaultCurrentBoardStore(): CurrentBoardStore {
   return {
     async get(): Promise<CurrentBoardObject | null> {

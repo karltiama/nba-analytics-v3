@@ -8,6 +8,9 @@ import { loadCurrentLegQuotes } from '@/lib/parlay/true-cost-server';
 import { loadS3CurrentLegQuotes } from '@/lib/parlay/s3-current-quotes';
 import { historicalBoardSourceFromEnv } from '@/lib/props/historical-board-config';
 import { currentPropsSource } from '@/lib/props/s3-current-board/source';
+import { websiteCurrentBoardStore } from '@/lib/props/s3-current-board/website-store';
+
+export const runtime = 'nodejs';
 
 type LegBody = {
   gameId?: unknown;
@@ -70,6 +73,7 @@ export async function POST(request: NextRequest) {
         vendors,
         bestBookEnabled,
         now: new Date(),
+        store: websiteCurrentBoardStore(),
       });
       return gate.withAuthCookies(
         NextResponse.json({
