@@ -646,7 +646,7 @@ export type GetPlayerPropsForExplorerInput = {
   arbOnly?: boolean;
   todayEt?: string;
   now?: Date;
-  /** Injected by tests. Production uses the unconfigured store, which cannot read S3. */
+  /** Injected by tests. Production routes pass the read-only store only when the flag is s3. */
   store?: CurrentBoardStore;
   /** Injected closing-artifact store. Ignored unless HISTORICAL_PROPS_SOURCE=s3_closing. */
   closingStore?: CurrentPropsObjectStore | null;

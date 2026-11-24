@@ -6,6 +6,9 @@ import {
   PROPS_EXPLORER_MAX_LIMIT,
 } from '@/lib/betting/props-explorer-serving';
 import { etCalendarDate } from '@/lib/betting/props-market-context';
+import { websiteCurrentBoardStore } from '@/lib/props/s3-current-board/website-store';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/betting/props-explorer
@@ -34,6 +37,7 @@ export async function GET(request: NextRequest) {
         ? parseFloat(minEvParam)
         : null;
 
+    const store = websiteCurrentBoardStore();
     const result = await getPlayerPropsForExplorer({
       dateEt,
       gameId: sp.get('game_id')?.trim() ?? '',
@@ -48,6 +52,7 @@ export async function GET(request: NextRequest) {
       offset,
       minEv,
       arbOnly: sp.get('arb') === '1',
+      ...(store ? { store } : {}),
     });
 
     return NextResponse.json({

@@ -5,6 +5,7 @@ import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook'
 import { loadResearchQuickBuilds, parseSelectedGameIds } from '@/lib/quick-builds/research-snapshot';
 import { loadCurrentQuickBuildsFromSlate } from '@/lib/quick-builds/current-board';
 import { currentPropsSource } from '@/lib/props/s3-current-board/source';
+import { websiteCurrentBoardStore } from '@/lib/props/s3-current-board/website-store';
 import {
   QUICK_BUILD_FIVE_LEG_PRESETS,
   QUICK_BUILD_FOUR_LEG_PRESETS,
@@ -140,6 +141,7 @@ export async function GET(request: NextRequest) {
           legCount,
           now,
           query,
+          store: websiteCurrentBoardStore(),
           ...(gameIds == null ? {} : { gameIds }),
         })
       : await loadResearchQuickBuilds({

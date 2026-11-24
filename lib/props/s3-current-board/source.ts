@@ -5,6 +5,8 @@
  */
 export type CurrentPropsSource = 'postgres' | 's3';
 
-export function currentPropsSource(env: NodeJS.ProcessEnv = process.env): CurrentPropsSource {
+export function currentPropsSource(
+  env: { CURRENT_PROPS_SOURCE?: string; [name: string]: string | undefined } = process.env,
+): CurrentPropsSource {
   return env.CURRENT_PROPS_SOURCE === 's3' ? 's3' : 'postgres';
 }
