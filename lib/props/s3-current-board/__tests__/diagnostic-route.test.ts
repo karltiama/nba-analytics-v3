@@ -39,6 +39,7 @@ describe('GET /api/admin/current-board-diagnostic', () => {
     });
     const res = await GET(new NextRequest('http://localhost/api/admin/current-board-diagnostic?game_id=21718182'));
     expect(res.status).toBe(401);
+    expect(res.headers.get('cache-control')).toBe('private, no-store');
     expect(openWebsiteCurrentBoardStore).not.toHaveBeenCalled();
   });
 
@@ -47,15 +48,33 @@ describe('GET /api/admin/current-board-diagnostic', () => {
     requireBettingAuth.mockResolvedValue(authed('other@example.com'));
     const res = await GET(new NextRequest('http://localhost/api/admin/current-board-diagnostic?game_id=21718182'));
     expect(res.status).toBe(403);
+    expect(res.headers.get('cache-control')).toBe('private, no-store');
     expect(openWebsiteCurrentBoardStore).not.toHaveBeenCalled();
     await expect(res.json()).resolves.toEqual(ADMIN_FORBIDDEN_BODY);
   });
 
-  it('rejects a non-numeric game id before opening S3', async () => {
+  it('rejects every game except 21718182 before opening S3', async () => {
     vi.stubEnv('ADMIN_EMAILS', 'owner@example.com');
     requireBettingAuth.mockResolvedValue(authed('owner@example.com'));
-    const res = await GET(new NextRequest('http://localhost/api/admin/current-board-diagnostic?game_id=../pointer'));
-    expect(res.status).toBe(400);
+    for (const gameId of ['../pointer', '21718181']) {
+      const res = await GET(new NextRequest(`http://localhost/api/admin/current-board-diagnostic?game_id=${gameId}`));
+      expect(res.status).toBe(400);
+      expect(res.headers.get('cache-control')).toBe('private, no-store');
+    }
     expect(openWebsiteCurrentBoardStore).not.toHaveBeenCalled();
+  });
+
+  it('returns only a sanitized failure class when the production store cannot open', async () => {
+    vi.stubEnv('ADMIN_EMAILS', 'owner@example.com');
+    requireBettingAuth.mockResolvedValue(authed('owner@example.com'));
+    openWebsiteCurrentBoardStore.mockImplementation(() => {
+      throw Object.assign(new Error('eyJraw-token raw/source=balldontlie/secret'), { name: 'CredentialsProviderError' });
+    });
+    const res = await GET(new NextRequest('http://localhost/api/admin/current-board-diagnostic?game_id=21718182'));
+    expect(res.status).toBe(503);
+    expect(res.headers.get('cache-control')).toBe('private, no-store');
+    const body = await res.json();
+    expect(body).toEqual({ error: 'unavailable', failure: 'CredentialsProviderError' });
+    expect(JSON.stringify(body)).not.toMatch(/eyJ|raw\/source/);
   });
 });
