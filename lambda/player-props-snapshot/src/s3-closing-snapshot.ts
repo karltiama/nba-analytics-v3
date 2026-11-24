@@ -415,7 +415,7 @@ export async function publishClosingSnapshot(args: {
       recoveredUncommittedGameRun: item?.state === 'recovered_uncommitted',
     });
   }
-  const body = {
+  const body: Omit<ClosingSnapshot, 'contentChecksum'> = {
     schemaVersion: CLOSING_SNAPSHOT_VERSION,
     gameId: args.game.gameId,
     gameDate: args.game.gameDate,
@@ -427,7 +427,11 @@ export async function publishClosingSnapshot(args: {
     lines,
   };
   const checksum = checksumCanonical(body);
-  const artifact: ClosingSnapshot = { ...body, contentChecksum: checksum };
+  const artifact: ClosingSnapshot = {
+    ...body,
+    schemaVersion: CLOSING_SNAPSHOT_VERSION,
+    contentChecksum: checksum,
+  };
   const key = closingSnapshotKey(args.game);
   const bytes = snapshotBody(body, checksum);
   const created = await args.store.put(key, bytes, {
