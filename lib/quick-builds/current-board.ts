@@ -1,13 +1,18 @@
 import { generateQuickBuilds } from '@/lib/quick-builds';
 import { attachQuickBuildDisplay, QUICK_BUILD_PLAYERS_SQL, type PlayerNameRow, type QuickBuildDisplayed } from '@/lib/quick-builds/display';
+import { canonicalizeSportsbook } from '@/lib/parlay-xray/resolution/sportsbook';
 import { BASE_SCHEDULE_FRESHNESS_MS } from '@/lib/props/s3-current-board/pointer';
-import { defaultCurrentBoardStore, readCurrentBoard, type CurrentBoardStore } from '@/lib/props/s3-current-board/read';
+import { defaultCurrentBoardStore, readCurrentBoard, type CurrentBoardResponse, type CurrentBoardStore } from '@/lib/props/s3-current-board/read';
 import { QUICK_BUILD_GAMES_SQL, type QuickBuildApiBody, type QuickBuildReader } from '@/lib/quick-builds/research-snapshot';
 import {
   QUICK_BUILD_FIVE_LEG_PRESETS,
   QUICK_BUILD_FOUR_LEG_PRESETS,
+  QUICK_BUILD_MAX_OBSERVATIONS,
+  QUICK_BUILD_MAX_RAW_BOARD_ROWS,
+  QUICK_BUILD_MAX_RAW_ROWS_PER_BOARD,
   QUICK_BUILD_PRESETS,
   QUICK_BUILD_THREE_LEG_PRESETS,
+  QuickBuildInputError,
   type MarketObservationInput,
   type QuickBuildGameInput,
   type QuickBuildPresetName,
@@ -20,9 +25,21 @@ export const CURRENT_BOARD_QUICK_BUILD_LIMITATION =
 
 type SlateGame = QuickBuildGameInput & { status: string | null };
 
-function observationsFromBoard(board: Awaited<ReturnType<typeof readCurrentBoard>>): MarketObservationInput[] {
-  if (!board.available) return [];
+function limit(message: string): never {
+  throw new QuickBuildInputError('LIMIT_EXCEEDED', message);
+}
+
+/**
+ * Rows for the requested book on this game. Other books stay in the raw count
+ * and never enter the 4,000-observation allowance.
+ */
+function relevantObservations(
+  board: Extract<CurrentBoardResponse, { available: true }>,
+  sportsbook: QuickBuildRequest['sportsbook']
+): MarketObservationInput[] {
   return board.rows.flatMap((row) => {
+    const book = canonicalizeSportsbook(row.sportsbook);
+    if (!book || book.vendor !== sportsbook) return [];
     if (row.line == null || row.oddsAmerican == null) return [];
     return [{
       playerId: row.playerId,
@@ -30,7 +47,7 @@ function observationsFromBoard(board: Awaited<ReturnType<typeof readCurrentBoard
       market: row.propType,
       side: row.side,
       line: row.line,
-      sportsbook: row.sportsbook,
+      sportsbook: book.vendor,
       oddsAmerican: row.oddsAmerican,
       pullRunId: String(board.snapshot.pullRunId),
       observedAt: board.observedAt,
@@ -61,10 +78,22 @@ export async function buildCurrentQuickBuildRequest(args: {
   const asOf = args.now.toISOString();
   const attempts: QuickBuildRequest['attempts'] = [];
   const observations: MarketObservationInput[] = [];
+  let rawRows = 0;
   for (const game of args.games) {
     const board = await readCurrentBoard({ store, gameId: game.gameId, now: asOf });
-    const rows = observationsFromBoard(board);
-    if (!board.available || rows.length === 0) continue;
+    if (!board.available || board.gameId !== game.gameId) continue;
+    if (board.rows.length > QUICK_BUILD_MAX_RAW_ROWS_PER_BOARD) {
+      limit(`raw board rows exceed ${QUICK_BUILD_MAX_RAW_ROWS_PER_BOARD}`);
+    }
+    rawRows += board.rows.length;
+    if (rawRows > QUICK_BUILD_MAX_RAW_BOARD_ROWS) {
+      limit(`raw board rows exceed ${QUICK_BUILD_MAX_RAW_BOARD_ROWS}`);
+    }
+    const rows = relevantObservations(board, args.sportsbook);
+    if (observations.length + rows.length > QUICK_BUILD_MAX_OBSERVATIONS) {
+      limit(`observations exceed ${QUICK_BUILD_MAX_OBSERVATIONS}`);
+    }
+    if (rows.length === 0) continue;
     attempts.push({
       pullRunId: String(board.snapshot.pullRunId),
       gameId: game.gameId,
