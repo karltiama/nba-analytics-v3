@@ -18,6 +18,7 @@ import {
 } from './manifest';
 import { validateProviderPull, type ProviderPage } from './pages';
 import { type CurrentPropsObjectStore } from './store';
+import { CURRENT_BOARD_DECODE_LIMITS } from '@/lib/props/s3-current-board/bounds';
 import { pointerKey, type CurrentPointer } from '@/lib/props/s3-current-board/pointer';
 
 export { BASE_SCHEDULE_FRESHNESS_MS, pointerKey, type CurrentPointer } from '@/lib/props/s3-current-board/pointer';
@@ -153,6 +154,7 @@ export async function publishCurrentSnapshot(request: PublishRequest): Promise<P
         gameDate: request.gameDate,
         controllerEnqueuedAt: request.controllerEnqueuedAt,
       },
+      limits: CURRENT_BOARD_DECODE_LIMITS,
     });
   } catch {
     return { ok: false, published: false, reason: 'archive_read_failed', archiveKey, manifestKey: null, idempotent: false };

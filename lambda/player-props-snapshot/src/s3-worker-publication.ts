@@ -4,6 +4,7 @@
  */
 import type { SQSRecord } from 'aws-lambda';
 import { createAwsCurrentBoardStore } from '@/lib/props/s3-current-board/aws-store';
+import { CURRENT_BOARD_DECODE_LIMITS } from '@/lib/props/s3-current-board/bounds';
 import type { LambdaEnv } from './env';
 import { fetchPlayerPropsForGame } from './fetch';
 import { normalizePlayerPropRows } from './normalize';
@@ -119,6 +120,7 @@ export async function runS3CurrentPublication(input: {
         gameDate: msg.date,
         controllerEnqueuedAt: recordedStart,
       },
+      limits: CURRENT_BOARD_DECODE_LIMITS,
     });
     if (!recorded.ok) throw new PropsArchiveRefusal(recorded.message);
     const pointer = await readCurrentPointer(recordedStore, msg.gameId);
@@ -184,6 +186,7 @@ export async function runS3CurrentPublication(input: {
         gameDate: msg.date,
         controllerEnqueuedAt,
       },
+      limits: CURRENT_BOARD_DECODE_LIMITS,
     });
     if (!existing.ok && existing.reason !== 'missing') throw new PropsArchiveRefusal(existing.message);
 

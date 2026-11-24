@@ -241,9 +241,42 @@ export function gzipEnvelope(envelope: PlayerPropArchiveEnvelope): Buffer {
   return gzipSync(Buffer.from(`${JSON.stringify(envelope)}\n`, 'utf8'));
 }
 
-export function gunzipEnvelope(buf: Buffer): PlayerPropArchiveEnvelope {
-  const text = gunzipSync(buf).toString('utf8');
-  return JSON.parse(text) as PlayerPropArchiveEnvelope;
+export type EnvelopeDecodeLimits = {
+  maxCompressedBytes: number;
+  maxUncompressedBytes: number;
+};
+
+function outputTooLarge(error: unknown): boolean {
+  return typeof error === 'object' && error != null && 'code' in error
+    && (error as { code?: string }).code === 'ERR_BUFFER_TOO_LARGE';
+}
+
+/** Inflates one envelope. Limits are optional so publication keeps today's behavior. */
+export function openEnvelope(
+  buf: Buffer,
+  limits?: EnvelopeDecodeLimits,
+): { envelope: PlayerPropArchiveEnvelope; uncompressedBytes: number } {
+  if (limits && buf.length > limits.maxCompressedBytes) {
+    throw new Error('archive_too_large');
+  }
+  let raw: Buffer;
+  try {
+    raw = limits
+      ? gunzipSync(buf, { maxOutputLength: limits.maxUncompressedBytes })
+      : gunzipSync(buf);
+  } catch (error) {
+    if (limits && outputTooLarge(error)) throw new Error('archive_too_large');
+    throw error;
+  }
+  const text = raw.toString('utf8');
+  return {
+    envelope: JSON.parse(text) as PlayerPropArchiveEnvelope,
+    uncompressedBytes: raw.length,
+  };
+}
+
+export function gunzipEnvelope(buf: Buffer, limits?: EnvelopeDecodeLimits): PlayerPropArchiveEnvelope {
+  return openEnvelope(buf, limits).envelope;
 }
 
 export type ArchiveObjectMeta = {
@@ -371,33 +404,65 @@ export function observationDurabilityProblem(envelope: PlayerPropArchiveEnvelope
   return null;
 }
 
+export type ArchiveReadPhases = {
+  fetchMs: number;
+  decompressMs: number;
+  verifyMs: number;
+  compressedBytes: number;
+  uncompressedBytes: number;
+};
+
 export async function verifyStoredArchive(args: {
   store: ArchivePutStore;
   key: string;
   expectedChecksum?: string;
   expected?: ArchiveDeliveryIdentity;
+  /** Omitted by publication. The current-board reader passes its hard caps. */
+  limits?: EnvelopeDecodeLimits;
+  phases?: ArchiveReadPhases;
 }): Promise<
-  | { ok: true; envelope: PlayerPropArchiveEnvelope }
+  | { ok: true; envelope: PlayerPropArchiveEnvelope; uncompressedBytes: number }
   | { ok: false; reason: 'missing' | 'invalid' | 'conflict'; message: string }
 > {
+  const phases = args.phases;
   let body: InMemoryS3Object | null;
+  const fetchStarted = performance.now();
   try {
     body = await args.store.get(args.key);
   } catch (err) {
+    if (phases) phases.fetchMs += performance.now() - fetchStarted;
     return { ok: false, reason: 'invalid', message: describeArchiveStoreError('get', err) };
   }
+  if (phases) phases.fetchMs += performance.now() - fetchStarted;
   if (!body) return { ok: false, reason: 'missing', message: `archive object ${args.key} is absent` };
+  if (phases) phases.compressedBytes = body.body.length;
   let envelope: PlayerPropArchiveEnvelope;
+  let uncompressedBytes = 0;
+  const inflateStarted = performance.now();
   try {
-    envelope = gunzipEnvelope(body.body);
+    const opened = openEnvelope(body.body, args.limits);
+    envelope = opened.envelope;
+    uncompressedBytes = opened.uncompressedBytes;
   } catch {
+    if (phases) phases.decompressMs += performance.now() - inflateStarted;
     return { ok: false, reason: 'invalid', message: `archive object ${args.key} is not a readable envelope` };
   }
+  if (phases) phases.decompressMs += performance.now() - inflateStarted;
+  if (phases) phases.uncompressedBytes = uncompressedBytes;
+  const verifyStarted = performance.now();
+  const finish = (
+    result:
+      | { ok: true; envelope: PlayerPropArchiveEnvelope; uncompressedBytes: number }
+      | { ok: false; reason: 'missing' | 'invalid' | 'conflict'; message: string },
+  ) => {
+    if (phases) phases.verifyMs += performance.now() - verifyStarted;
+    return result;
+  };
   const problem = observationDurabilityProblem(envelope);
-  if (problem) return { ok: false, reason: 'invalid', message: problem };
+  if (problem) return finish({ ok: false, reason: 'invalid', message: problem });
   const meta = parseS3UserMetadata(body.metadata);
   if (!meta.checksum || meta.rowCount == null || meta.pullRunId == null || !meta.gameId || !meta.archiveVersion) {
-    return { ok: false, reason: 'invalid', message: `archive object ${args.key} is missing required metadata` };
+    return finish({ ok: false, reason: 'invalid', message: `archive object ${args.key} is missing required metadata` });
   }
   if (
     meta.checksum !== envelope.checksum ||
@@ -405,20 +470,20 @@ export async function verifyStoredArchive(args: {
     meta.pullRunId !== envelope.pull_run_id ||
     meta.gameId !== envelope.game_id
   ) {
-    return { ok: false, reason: 'invalid', message: `archive metadata for ${args.key} does not match the envelope` };
+    return finish({ ok: false, reason: 'invalid', message: `archive metadata for ${args.key} does not match the envelope` });
   }
   if (args.expectedChecksum && envelope.checksum !== args.expectedChecksum) {
-    return {
+    return finish({
       ok: false,
       reason: 'conflict',
       message: `archive object ${args.key} checksum conflicts with this attempt`,
-    };
+    });
   }
   if (args.expected) {
     const identity = archiveIdentityProblem(envelope, args.expected);
-    if (identity) return { ok: false, reason: 'conflict', message: identity };
+    if (identity) return finish({ ok: false, reason: 'conflict', message: identity });
   }
-  return { ok: true, envelope };
+  return finish({ ok: true, envelope, uncompressedBytes });
 }
 
 export function archiveSuccessInvariant(rowsStored: number, rowsArchived: number, archiveStatus: ArchiveStatus): boolean {

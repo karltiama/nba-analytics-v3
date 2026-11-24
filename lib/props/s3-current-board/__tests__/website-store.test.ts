@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { GetObjectCommand, type S3Client } from '@aws-sdk/client-s3';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/db', () => ({
   query: vi.fn(),
@@ -12,6 +12,7 @@ vi.mock('@/lib/db', () => ({
 import { query, queryOne } from '@/lib/db';
 import { getPlayerPropsForExplorer } from '@/lib/betting/props-explorer-serving';
 import { readCurrentBoard } from '@/lib/props/s3-current-board/read';
+import { resetVerifiedSnapshotCacheForTests } from '@/lib/props/s3-current-board/snapshot-cache';
 import type { CurrentPointer } from '@/lib/props/s3-current-board/pointer';
 import {
   CURRENT_BOARD_READ_ROLE_ARN,
@@ -72,6 +73,10 @@ function fixtureClient(objects: Map<string, { body: Buffer; metadata: Record<str
 }
 
 describe('production website current-board reader', () => {
+  beforeEach(() => {
+    resetVerifiedSnapshotCacheForTests();
+  });
+
   afterEach(() => {
     delete process.env.CURRENT_PROPS_SOURCE;
     mockQuery.mockReset();
