@@ -57,6 +57,11 @@ export type ReservationHold = {
   intentAt?: string;
   /** True while this invocation may still be inside a database call. */
   inWrite?: boolean;
+  /**
+   * The invocation ended before a post-write observation. The bytes were
+   * already removed from protectedBytes and must not be dropped again.
+   */
+  bytesReleased?: boolean;
 };
 
 export type ReservationLedger = {
@@ -83,6 +88,13 @@ export type ReservationAction =
       boundBytes: number;
       settledAt: string;
       observedThrough?: string;
+    }
+  | {
+      type: 'releaseUnobserved';
+      invocationId: string;
+      writerId: string;
+      boundBytes: number;
+      settledAt: string;
     }
   | { type: 'intent'; invocationId: string; writerId: string; boundBytes: number; intentAt: string; inWrite: boolean }
   | {
@@ -128,6 +140,7 @@ function finiteMs(value: string | null | undefined): number | null {
  * Callers that do not pass a database clock keep the previous admission-clock rule.
  */
 function settledHoldEnds(hold: ReservationHold, action: Extract<ReservationAction, { type: 'reconcile' }>): boolean {
+  if (hold.bytesReleased === true) return false;
   const databaseMs = finiteMs(action.databaseObservedAt);
   if (databaseMs != null) {
     const throughMs = finiteMs(hold.observedThrough);
@@ -242,6 +255,31 @@ export function transitionReservation(ledger: ReservationLedger, action: Reserva
     return { ok: true, ledger: next, changed: true, idempotent: false };
   }
 
+  if (action.type === 'releaseUnobserved') {
+    const settled = ledger.settled[action.invocationId];
+    if (settled?.bytesReleased === true && sameHold(settled, action.writerId, action.boundBytes)) {
+      return { ok: true, ledger, changed: false, idempotent: true };
+    }
+    if (settled) return { ok: false, reason: 'reservation is waiting for observation' };
+    const active = ledger.active[action.invocationId];
+    if (!active) return { ok: false, reason: 'reservation is not active for this invocation' };
+    if (!sameHold(active, action.writerId, action.boundBytes)) {
+      return { ok: false, reason: 'reservation identity does not match the active hold' };
+    }
+    if (active.boundBytes > ledger.protectedBytes) {
+      return { ok: false, reason: 'active reservation exceeds protected bytes' };
+    }
+    const next = cloneLedger(ledger);
+    delete next.active[action.invocationId];
+    next.protectedBytes -= active.boundBytes;
+    next.settled[action.invocationId] = {
+      ...active,
+      settledAt: action.settledAt,
+      bytesReleased: true,
+    };
+    return { ok: true, ledger: next, changed: true, idempotent: false };
+  }
+
   const active = ledger.active[action.invocationId];
   if (!active) {
     const settled = ledger.settled[action.invocationId];
@@ -286,6 +324,13 @@ export type StorageReservationStore = {
     settledAt: string;
     measurementAt: string;
     observedThrough?: string;
+  }): Promise<void>;
+  /** Free this invocation's bytes when it ends before any post-write observation. */
+  releaseUnobserved(input: {
+    invocationId: string;
+    writerId: string;
+    boundBytes: number;
+    settledAt: string;
   }): Promise<void>;
   noteWriteIntent(input: {
     invocationId: string;
@@ -438,6 +483,22 @@ export class MemoryStorageReservationStore implements StorageReservationStore {
     });
   }
 
+  releaseUnobserved(input: {
+    invocationId: string;
+    writerId: string;
+    boundBytes: number;
+    settledAt: string;
+  }): Promise<void> {
+    return this.exclusive(() => {
+      const released = transitionReservation(this.ledger, { type: 'releaseUnobserved', ...input });
+      if (!released.ok) throw new Error(released.reason);
+      if (released.changed) {
+        this.ledger = released.ledger;
+        this.version += 1;
+      }
+    });
+  }
+
   noteWriteIntent(input: {
     invocationId: string;
     writerId: string;
@@ -521,6 +582,8 @@ export type StorageAdmissionDecision = StorageWriteDecision & {
   /** Same invocation already finished its post-write measurement. Do not write again. */
   alreadySettled?: boolean;
   settle: (evidence?: { databaseObservedAt: string }) => Promise<void>;
+  /** Drop this invocation's protected bytes when it failed before an observation clock. */
+  releaseUnobserved: () => Promise<void>;
 };
 
 const RESTRICTED = new Set<StorageWriteCategory>(['historical_raw_props', 'historical_raw_odds', 'optional_backfill']);
@@ -561,6 +624,7 @@ function refusal(input: {
     ceilingBytes: input.ceilingBytes,
     tables: input.tables,
     settle: async () => undefined,
+    releaseUnobserved: async () => undefined,
   };
 }
 
@@ -756,6 +820,14 @@ export async function admitPersistentWrite(input: {
         settledAt: input.now,
         measurementAt: measuredAt,
         observedThrough: evidence?.databaseObservedAt,
+      });
+    },
+    releaseUnobserved: async () => {
+      await input.reservations.releaseUnobserved({
+        invocationId,
+        writerId,
+        boundBytes: bound,
+        settledAt: input.now,
       });
     },
   };

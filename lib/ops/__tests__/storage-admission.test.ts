@@ -364,6 +364,7 @@ describe('shared admission contract', () => {
       reserve: () => Promise.reject(new Error('dynamo unavailable')),
       settle: () => Promise.resolve(),
       noteWriteIntent: () => Promise.reject(new Error('dynamo unavailable')),
+      releaseUnobserved: () => Promise.reject(new Error('dynamo unavailable')),
       releaseStranded: () => Promise.reject(new Error('dynamo unavailable')),
     };
     const failed = await admit({ reservations: broken });
@@ -470,5 +471,91 @@ describe('dynamo conditional reservation', () => {
     expect(retry.allowed).toBe(true);
     expect(retry.reason).toContain('already holds');
     expect(JSON.parse(json).protectedBytes).toBe(1_000);
+  });
+});
+
+describe('unobserved terminal failure', () => {
+  it('releases one invocation without touching another hold or the ceiling', async () => {
+    const store = new MemoryStorageReservationStore();
+    const bound = 1_000;
+    const essentialBound = 2_000;
+    const cluster = CLUSTER_HALT_BYTES - 10_000;
+    const failed = await admit({
+      reservations: store,
+      invocationId: 'props-failed',
+      clusterBytes: cluster,
+      bound,
+      kind: 'scoreboard',
+      tables: ['raw.player_prop_game_runs'],
+    });
+    const essential = await admit({
+      reservations: store,
+      invocationId: 'scoreboard-live',
+      clusterBytes: cluster,
+      bound: essentialBound,
+      kind: 'scoreboard',
+    });
+    expect(failed.allowed).toBe(true);
+    expect(essential.allowed).toBe(true);
+    expect(store.snapshot().protectedBytes).toBe(bound + essentialBound);
+
+    await failed.releaseUnobserved();
+    await failed.releaseUnobserved();
+    expect(store.snapshot().protectedBytes).toBe(essentialBound);
+    expect(store.snapshot().active['props-failed']).toBeUndefined();
+    expect(store.snapshot().settled['props-failed']?.bytesReleased).toBe(true);
+    expect(store.snapshot().settled['props-failed']?.observedThrough).toBeUndefined();
+    expect(store.snapshot().active['scoreboard-live']?.boundBytes).toBe(essentialBound);
+
+    await essential.settle();
+    expect(store.snapshot().protectedBytes).toBe(essentialBound);
+    expect(store.snapshot().settled['scoreboard-live']?.bytesReleased).toBeUndefined();
+    expect(CLUSTER_HALT_BYTES).toBe(450_000_000);
+  });
+
+  it('does not release a different invocation or drive protected bytes negative', () => {
+    const ledger = {
+      protectedBytes: 100,
+      active: {
+        mine: { boundBytes: 40, writerId: 'player-props-worker', operation: 'current_board' },
+        other: { boundBytes: 60, writerId: 'scoreboard-collector', operation: 'scoreboard' },
+      },
+      settled: {},
+    };
+    const wrong = transitionReservation(ledger, {
+      type: 'releaseUnobserved',
+      invocationId: 'other',
+      writerId: 'player-props-worker',
+      boundBytes: 40,
+      settledAt: NOW,
+    });
+    expect(wrong.ok).toBe(false);
+    const released = transitionReservation(ledger, {
+      type: 'releaseUnobserved',
+      invocationId: 'mine',
+      writerId: 'player-props-worker',
+      boundBytes: 40,
+      settledAt: NOW,
+    });
+    expect(released.ok).toBe(true);
+    if (!released.ok) return;
+    expect(released.ledger.protectedBytes).toBe(60);
+    expect(released.ledger.active.other?.boundBytes).toBe(60);
+    const again = transitionReservation(released.ledger, {
+      type: 'releaseUnobserved',
+      invocationId: 'mine',
+      writerId: 'player-props-worker',
+      boundBytes: 40,
+      settledAt: NOW,
+    });
+    expect(again.ok).toBe(true);
+    if (!again.ok) return;
+    expect(again.idempotent).toBe(true);
+    expect(again.ledger.protectedBytes).toBe(60);
+    const short = transitionReservation(
+      { protectedBytes: 10, active: { mine: { boundBytes: 40, writerId: 'w', operation: 'current_board' } }, settled: {} },
+      { type: 'releaseUnobserved', invocationId: 'mine', writerId: 'w', boundBytes: 40, settledAt: NOW }
+    );
+    expect(short.ok).toBe(false);
   });
 });

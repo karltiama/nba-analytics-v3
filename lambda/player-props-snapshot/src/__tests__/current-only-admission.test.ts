@@ -299,7 +299,7 @@ describe('props worker current-only handler', () => {
           archiveStore: new InMemoryArchiveStore(),
           admit: async (input) => {
             seen.push(input.invocationId);
-            return { mode: 'current_only', reason: 'reserved', pressure: 'ok', boundBytes: 1, settle: settled };
+            return { mode: 'current_only', reason: 'reserved', pressure: 'ok', boundBytes: 1, settle: settled, releaseUnobserved: async () => undefined };
           },
         })
       ).body
@@ -337,14 +337,23 @@ describe('props worker current-only handler', () => {
     vi.stubEnv('PLAYER_PROP_S3_ARCHIVE_ENABLED', 'true');
     vi.stubEnv('NBA_DATA_BUCKET', '');
     const settled = vi.fn(async () => undefined);
+    const released = vi.fn(async () => undefined);
     const { handler } = await import('../../worker');
     await expect(
       handler(event, undefined, {
-        admit: async () => ({ mode: 'current_only', reason: 'reserved', pressure: 'ok', boundBytes: 1, settle: settled }),
+        admit: async () => ({
+          mode: 'current_only',
+          reason: 'reserved',
+          pressure: 'ok',
+          boundBytes: 1,
+          settle: settled,
+          releaseUnobserved: released,
+        }),
       })
     ).rejects.toThrow(/NBA_DATA_BUCKET/);
     expect(db.calls.some((sql) => sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
     expect(db.status()).toBe('error');
-    expect(settled).toHaveBeenCalledOnce();
+    expect(settled).not.toHaveBeenCalled();
+    expect(released).toHaveBeenCalledOnce();
   });
 });

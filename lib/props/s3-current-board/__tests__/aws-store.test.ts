@@ -23,8 +23,8 @@ export const EMULATED_S3_BEHAVIORS = [
   'one process-local map, with no AWS account, bucket, or network',
   'a quoted MD5 ETag, which is not the archive SHA-256 checksum',
   'pointer puts queued in call order instead of overlapping at AWS',
-  'absent GetObject is 403 without ListBucket and 404 with it',
-  'a 403 is never converted into a missing object',
+  'absent GetObject is a ListBucket 403 without ListBucket and 404 with it',
+  'only that ListBucket 403 is absence; a GetObject or PutObject 403 is not',
   'no ListObjects, versioning, replication delay, or object ACL',
 ] as const;
 
@@ -69,9 +69,15 @@ class EmulatedS3 {
         this.nextGetStatus = null;
         throw httpError(status);
       }
-      if (this.denyGets || (this.denyPointerGets && key.endsWith('/pointer.json'))) throw httpError(403, 'AccessDenied');
+      if (this.denyGets || (this.denyPointerGets && key.endsWith('/pointer.json'))) {
+        throw httpError(403, 'AccessDenied', 'not authorized to perform: s3:GetObject');
+      }
       const found = this.objects.get(key);
-      if (!found) throw httpError(this.listBucket ? 404 : 403, this.listBucket ? 'NoSuchKey' : 'AccessDenied');
+      if (!found) {
+        throw this.listBucket
+          ? httpError(404, 'NoSuchKey')
+          : httpError(403, 'AccessDenied', 'not authorized to perform: s3:ListBucket on resource: "arn:aws:s3:::isolated-bucket"');
+      }
       return {
         Body: { transformToByteArray: async () => Uint8Array.from(found.body) },
         ETag: found.etag,
@@ -79,7 +85,9 @@ class EmulatedS3 {
       };
     }
     this.commands.push(`PUT ${key}`);
-    if (this.denyPuts || (this.denyPointerPuts && key.endsWith('/pointer.json'))) throw httpError(403, 'AccessDenied');
+    if (this.denyPuts || (this.denyPointerPuts && key.endsWith('/pointer.json'))) {
+      throw httpError(403, 'AccessDenied', 'not authorized to perform: s3:PutObject');
+    }
     if (this.nextPutStatus != null) {
       const status = this.nextPutStatus;
       this.nextPutStatus = null;
@@ -111,8 +119,8 @@ class EmulatedS3 {
   }
 }
 
-function httpError(status: number, name?: string): Error {
-  const err = new Error(`emulated http ${status}`) as Error & { $metadata: { httpStatusCode: number } };
+function httpError(status: number, name?: string, message?: string): Error {
+  const err = new Error(message ?? `emulated http ${status}`) as Error & { $metadata: { httpStatusCode: number } };
   err.name = name ?? (status === 412 ? 'PreconditionFailed' : status === 409 ? 'ConditionalRequestConflict' : status === 403 ? 'AccessDenied' : 'InternalError');
   err.$metadata = { httpStatusCode: status };
   return err;
@@ -300,7 +308,7 @@ describe('F42 AWS current-board store', () => {
   it('publishes the first pointer without ListBucket when GetObject would return 403', async () => {
     const { s3, store } = harness();
     expect(s3.listBucket).toBe(false);
-    await expect(store.get(pointerKey(GAME))).rejects.toMatchObject({ name: 'S3ObjectError', retryable: false });
+    await expect(store.get(pointerKey(GAME))).resolves.toBeNull();
     const before = s3.commands.length;
     const published = await publishCurrentSnapshot(request(store));
     expect(published.published).toBe(true);
@@ -408,10 +416,42 @@ describe('F42 AWS current-board store', () => {
       gameId: GAME,
       now: OBSERVED,
     });
-    expect(missing).toMatchObject({ available: false, reason: 'unavailable' });
+    expect(missing).toMatchObject({ available: false, reason: 'missing' });
     absent.s3.listBucket = true;
     const confirmedMiss = await readCurrentBoard({ store: absent.store, gameId: GAME, now: OBSERVED });
     expect(confirmedMiss).toMatchObject({ available: false, reason: 'missing' });
     expect(absent.s3.commands.some((command) => command.startsWith('PUT'))).toBe(false);
+  });
+
+  it('publishes an absent archive with If-None-Match and keeps a bad object off the pointer', async () => {
+    const first = harness();
+    expect(first.s3.listBucket).toBe(false);
+    await expect(first.store.get(pointerKey(GAME))).resolves.toBeNull();
+    const published = await publishCurrentSnapshot(request(first.store));
+    expect(published.published).toBe(true);
+    const archiveCommands = first.s3.commands.filter((command) => command.includes(published.archiveKey!));
+    expect(archiveCommands[0]).toBe(`PUT ${published.archiveKey}`);
+    const retry = await publishCurrentSnapshot(request(first.store));
+    expect(retry.idempotent).toBe(true);
+    expect(retry.archiveKey).toBe(published.archiveKey);
+
+    const stored = Buffer.from((await first.store.get(published.archiveKey!))!.body);
+    first.s3.objects.get(published.archiveKey!)!.body = Buffer.from('conflicting-bytes');
+    const conflict = await publishCurrentSnapshot(request(first.store));
+    expect(conflict.published).toBe(false);
+    expect((await first.store.get(pointerKey(GAME)))!.body.includes(published.archiveKey!)).toBe(true);
+    first.s3.objects.get(published.archiveKey!)!.body = stored;
+
+    const denied = harness();
+    denied.s3.denyGets = true;
+    const blocked = await publishCurrentSnapshot(request(denied.store));
+    expect(blocked.published).toBe(false);
+    expect(denied.s3.objects.has(pointerKey(GAME))).toBe(false);
+
+    const unverified = harness();
+    unverified.s3.nextGetStatus = 500;
+    const failedCheck = await publishCurrentSnapshot(request(unverified.store));
+    expect(failedCheck.published).toBe(false);
+    expect(unverified.s3.objects.has(pointerKey(GAME))).toBe(false);
   });
 });

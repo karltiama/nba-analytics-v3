@@ -67,7 +67,7 @@ export class AwsCurrentBoardStore {
       return { body: Buffer.from(bytes), metadata: lowercaseMeta(out.Metadata), etag: out.ETag };
     } catch (err) {
       if (err instanceof S3ObjectError) throw err;
-      if (isMissing(err)) return null;
+      if (isMissing(err) || isUnlistedObjectAbsence(err)) return null;
       throw classifyFailure(err);
     }
   }
@@ -125,11 +125,25 @@ function lowercaseMeta(meta: Record<string, string> | undefined): Record<string,
   return out;
 }
 
-/** 404 is a confirmed miss. 403 stays a failure: without ListBucket it can hide either absence or a real denial. */
+/** 404 is a confirmed miss. A bare 403 stays a failure. */
 function isMissing(err: unknown): boolean {
   if (typeof err !== 'object' || err == null) return false;
   const value = err as { name?: string; $metadata?: { httpStatusCode?: number } };
   return value.name === 'NotFound' || value.name === 'NoSuchKey' || value.$metadata?.httpStatusCode === 404;
+}
+
+/**
+ * S3 hides a missing key as 403 when GetObject is allowed and ListBucket is not.
+ * That message names ListBucket. A GetObject or PutObject denial stays a failure.
+ */
+export function isUnlistedObjectAbsence(err: unknown): boolean {
+  if (typeof err !== 'object' || err == null) return false;
+  const value = err as { message?: string; $metadata?: { httpStatusCode?: number } };
+  if (value.$metadata?.httpStatusCode !== 403) return false;
+  const message = value.message ?? '';
+  if (!/s3:ListBucket/i.test(message)) return false;
+  if (/s3:GetObject/i.test(message) || /s3:PutObject/i.test(message)) return false;
+  return true;
 }
 
 function classifyFailure(err: unknown): S3ObjectError {

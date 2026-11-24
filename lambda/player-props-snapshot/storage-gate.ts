@@ -47,6 +47,8 @@ export type PropsStorageDecision = {
   pressure: StoragePressure;
   boundBytes: number;
   settle: () => Promise<void>;
+  /** Free the reserved bytes when this invocation fails before an observation clock. */
+  releaseUnobserved: () => Promise<void>;
 };
 
 export class PropsStorageRefusal extends Error {
@@ -69,6 +71,7 @@ function halt(
     pressure,
     boundBytes,
     settle: noopSettle,
+    releaseUnobserved: noopSettle,
   };
 }
 
@@ -92,9 +95,9 @@ function admissionClock(requested: string, measuredAt: string | null): string {
 
 async function releaseAdmission(admission: StorageAdmissionDecision): Promise<void> {
   try {
-    await admission.settle();
+    await admission.releaseUnobserved();
   } catch {
-    // A failed settle leaves the hold. The next measurement cannot drop an active hold.
+    // A failed release leaves the hold. The next measurement cannot drop an active hold.
   }
 }
 
@@ -147,6 +150,9 @@ async function admitPropsWrite(input: {
     boundBytes: input.boundBytes,
     settle: async () => {
       await admission.settle();
+    },
+    releaseUnobserved: async () => {
+      await admission.releaseUnobserved();
     },
   };
 }
