@@ -25,7 +25,7 @@ import { PropsExplorerDesktopActions } from '@/components/betting/PropsExplorerD
 import { PropsExplorerTableSkeleton } from '@/components/betting/PropsExplorerTableSkeleton';
 import { SelectedGameFilter } from '@/components/betting/SelectedGameFilter';
 import { Skeleton } from '@/components/ui/skeleton';
-import { propsExplorerEmptyCopy } from '@/lib/betting/props-explorer-empty';
+import { historicalAvailabilityView } from '@/lib/betting/props-explorer-empty';
 import { type PropsExplorerArb } from '@/lib/betting/props-explorer-arb';
 import {
   MOVEMENT_TITLE,
@@ -140,6 +140,7 @@ type ExplorerMeta = {
   lineLabel?: string;
   dateEt?: string;
   priceScope?: 'selected_books' | 'market';
+  unavailableGames?: Array<{ gameId: string; reason: string }>;
   selectedGame?: {
     gameId: string;
     awayAbbr: string | null;
@@ -273,6 +274,29 @@ export default function PropsExplorerPage(props: PageProps) {
     if (selected && selected.found === false) return 'Unknown game';
     return 'Selected game';
   }, [gameId, games, meta?.selectedGame]);
+
+  const filtersActive = Boolean(
+    playerName.trim() || propType.trim() || (side && side !== 'all') || sportsbook.trim() || minEv.trim()
+  );
+  const availability = historicalAvailabilityView({
+    marketContext,
+    rowCount: rows.length,
+    totalMatching: meta?.totalMatching ?? rows.length,
+    unavailableGames: meta?.unavailableGames,
+    filtersActive,
+    dateLabel: getDateLabel(date),
+    gameSelected: Boolean(gameId.trim()),
+    gameUnknown,
+    gameLabel: (id) => {
+      const listed = games.find((game) => game.id === id)?.label;
+      if (listed) return listed;
+      const selected = meta?.selectedGame;
+      if (selected?.gameId === id && selected.awayAbbr && selected.homeAbbr) {
+        return `${selected.awayAbbr} @ ${selected.homeAbbr}`;
+      }
+      return `Game ${id}`;
+    },
+  });
 
   const effectiveGameId = useMemo(() => {
     const fromFilter = gameId.trim();
@@ -777,9 +801,11 @@ export default function PropsExplorerPage(props: PageProps) {
             ? 'Loading props'
             : loading
               ? 'Refreshing…'
-              : meta != null
-                ? `${meta.totalMatching.toLocaleString()} props`
-                : `${rows.length} props`
+              : availability.kind === 'unavailable'
+                ? availability.countLabel
+                : meta != null
+                  ? `${meta.totalMatching.toLocaleString()} props`
+                  : `${rows.length} props`
         }
         canPrev={canPrev}
         canNext={canNext}
@@ -1032,7 +1058,7 @@ export default function PropsExplorerPage(props: PageProps) {
             </>
           ) : (
             <>
-              {loading ? 'Refreshing…' : meta != null ? `${meta.totalMatching.toLocaleString()} props` : `${rows.length} props`}
+              {loading ? 'Refreshing…' : availability.kind === 'unavailable' ? availability.countLabel : meta != null ? `${meta.totalMatching.toLocaleString()} props` : `${rows.length} props`}
             </>
           )}
         </span>
@@ -1064,6 +1090,19 @@ export default function PropsExplorerPage(props: PageProps) {
         </div>
       </div>
 
+      {availability.notice ? (
+        <div className="mb-3 rounded-2xl border border-[#DCE9EA] bg-white p-3" role="status">
+          <p className="type-body text-[#063f46]">{availability.notice.title}</p>
+          <ul className="mt-2 space-y-1">
+            {availability.notice.games.map((game) => (
+              <li key={game.gameId} className="type-metadata text-[#4a6366]">
+                {game.label}: {game.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {loading ? (
         <PropsExplorerTableSkeleton />
       ) : (
@@ -1071,30 +1110,20 @@ export default function PropsExplorerPage(props: PageProps) {
       <div className="lg:hidden min-w-0">
         {rows.length === 0 || gameUnknown ? (
           <div className="py-8 text-center">
-            {(() => {
-              const copy = propsExplorerEmptyCopy({
-                dateLabel: getDateLabel(date),
-                marketContext,
-                gameSelected: Boolean(gameId.trim()),
-                gameUnknown,
-              });
-              return (
-                <div className="space-y-2 px-2">
-                  <p className="type-body text-[#063f46]">{copy.title}</p>
-                  <p className="type-metadata">{copy.detail}</p>
-                  <p className="type-interactive flex flex-wrap justify-center gap-4">
-                    <Link href={dashboardReturnHref(date)} className="text-[#075B5C]">
-                      Dashboard
-                    </Link>
-                    {gameId.trim() ? (
-                      <Link href={gameDetailHref(gameId.trim())} className="text-[#075B5C]">
-                        Back to game
-                      </Link>
-                    ) : null}
-                  </p>
-                </div>
-              );
-            })()}
+            <div className="space-y-2 px-2">
+              <p className="type-body text-[#063f46]">{availability.kind === 'rows' ? '' : availability.title}</p>
+              <p className="type-metadata">{availability.kind === 'rows' ? '' : availability.detail}</p>
+              <p className="type-interactive flex flex-wrap justify-center gap-4">
+                <Link href={dashboardReturnHref(date)} className="text-[#075B5C]">
+                  Dashboard
+                </Link>
+                {gameId.trim() ? (
+                  <Link href={gameDetailHref(gameId.trim())} className="text-[#075B5C]">
+                    Back to game
+                  </Link>
+                ) : null}
+              </p>
+            </div>
           </div>
         ) : (
           <PropsExplorerPropList
@@ -1167,33 +1196,23 @@ export default function PropsExplorerPage(props: PageProps) {
               {rows.length === 0 || gameUnknown ? (
                 <tr>
                   <td colSpan={showAdvancedMetrics ? 17 : 12} className="py-8 text-center text-[#4a6366]">
-                    {(() => {
-                      const copy = propsExplorerEmptyCopy({
-                        dateLabel: getDateLabel(date),
-                        marketContext,
-                        gameSelected: Boolean(gameId.trim()),
-                        gameUnknown,
-                      });
-                      return (
-                        <div className="space-y-2 px-4">
-                          <p className="type-body text-[#063f46]">{copy.title}</p>
-                          <p className="type-secondary">{copy.detail}</p>
-                          <p className="type-interactive flex flex-wrap justify-center gap-4">
-                            <Link href={dashboardReturnHref(date)} className="text-[#075B5C] hover:underline">
-                              Dashboard
-                            </Link>
-                            {gameId.trim() ? (
-                              <Link
-                                href={gameDetailHref(gameId.trim())}
-                                className="text-[#075B5C] hover:underline"
-                              >
-                                Back to game
-                              </Link>
-                            ) : null}
-                          </p>
-                        </div>
-                      );
-                    })()}
+                    <div className="space-y-2 px-4">
+                      <p className="type-body text-[#063f46]">{availability.kind === 'rows' ? '' : availability.title}</p>
+                      <p className="type-secondary">{availability.kind === 'rows' ? '' : availability.detail}</p>
+                      <p className="type-interactive flex flex-wrap justify-center gap-4">
+                        <Link href={dashboardReturnHref(date)} className="text-[#075B5C] hover:underline">
+                          Dashboard
+                        </Link>
+                        {gameId.trim() ? (
+                          <Link
+                            href={gameDetailHref(gameId.trim())}
+                            className="text-[#075B5C] hover:underline"
+                          >
+                            Back to game
+                          </Link>
+                        ) : null}
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (

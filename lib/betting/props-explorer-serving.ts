@@ -7,6 +7,9 @@ import { query, queryOne } from '@/lib/db';
 import { serveLivePropsFromCurrentBoard } from '@/lib/betting/props-explorer-current-board';
 import { currentPropsSource } from '@/lib/props/s3-current-board/source';
 import type { CurrentBoardStore } from '@/lib/props/s3-current-board/read';
+import type { CurrentPropsObjectStore } from '@/lambda/player-props-snapshot/src/f39b/store';
+import { historicalPropsSource } from '@/lib/props/s3-closing/source';
+import type { HistoricalUnavailableGame } from '@/lib/betting/props-explorer-historical-closing';
 import { getPlayerPropModelInputs, type PlayerPropModelInputs } from '@/lib/betting/player-prop-inputs';
 import { getCalibrationVersion } from '@/lib/betting/ev-calibration';
 import { resolveEvTrack } from '@/lib/betting/ev-selection-policy';
@@ -645,6 +648,8 @@ export type GetPlayerPropsForExplorerInput = {
   now?: Date;
   /** Injected by tests. Production uses the unconfigured store, which cannot read S3. */
   store?: CurrentBoardStore;
+  /** Injected closing-artifact store. Ignored unless HISTORICAL_PROPS_SOURCE=s3_closing. */
+  closingStore?: CurrentPropsObjectStore | null;
 };
 
 export type SelectedExplorerGame = {
@@ -674,6 +679,7 @@ export async function getPlayerPropsForExplorer(
   sort: string;
   selectedGame: SelectedExplorerGame | null;
   priceScope: PriceScope;
+  unavailableGames?: HistoricalUnavailableGame[];
 }> {
   const now = input.now ?? new Date();
   const todayEt = input.todayEt ?? etCalendarDate(now);
@@ -737,6 +743,14 @@ export async function getPlayerPropsForExplorer(
       selectedGame,
       gameStart,
     });
+  }
+  if (marketContext === 'historical' && historicalPropsSource() === 's3_closing') {
+    const { serveHistoricalClosingIfNeeded } = await import('@/lib/betting/props-explorer-historical-closing');
+    const closed = await serveHistoricalClosingIfNeeded({
+      input: { ...input, dateEt, gameId },
+      selectedGame,
+    });
+    if (closed) return closed;
   }
   let readCurrent = marketContext === 'live';
   let lineLabel = propsLineLabel(marketContext);
