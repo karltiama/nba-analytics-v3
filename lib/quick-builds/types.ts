@@ -12,6 +12,21 @@ export const QUICK_BUILD_MAX_ATTEMPTS = 256;
 export const QUICK_BUILD_MAX_OBSERVATIONS = 4000;
 export const QUICK_BUILD_MAX_TWO_SIDED_MARKETS = 2000;
 
+/**
+ * One verified current-board archive, every sportsbook, before the requested
+ * book is kept. The largest F69 board was 3,424 rows. 8,192 admits that board
+ * twice over and still rejects a single archive that would dominate memory.
+ */
+export const QUICK_BUILD_MAX_RAW_ROWS_PER_BOARD = 8192;
+
+/**
+ * Raw rows the current-board reader may walk across the selected games.
+ * One board allowance per game slot. Two F69 boards (6,702 rows) fit.
+ * This ceiling does not raise the 4,000 relevant-observation cap.
+ */
+export const QUICK_BUILD_MAX_RAW_BOARD_ROWS =
+  QUICK_BUILD_MAX_GAMES * QUICK_BUILD_MAX_RAW_ROWS_PER_BOARD;
+
 /** Product of the two leg decimals, rounded with the shared American converter. Not a book quote. */
 export const QUICK_BUILD_PRICE_NOTICE =
   'Calculated combined odds are the product of the two leg prices. They are not a sportsbook parlay quote.';

@@ -4,6 +4,7 @@
  */
 
 import { formatTipoffEt } from '@/lib/betting/format-tipoff-et';
+import { CANONICAL_CURRENT_ODDS_SQL, canonicalCurrentOddsQuote, type StoredOddsSourceRow } from '@/lib/dashboard/stored-odds';
 import type { StoredScoreboardGame } from '@/lib/scoreboard/contract';
 import { loadCardContext } from '@/lib/scoreboard/card-context/load';
 import { isScoreboardCardContextEnabled, isScoreboardMarketServingEnabled } from '@/lib/scoreboard/flags';
@@ -14,7 +15,8 @@ import { buildPregameMatchup, type CurrentSeasonInput, type MatchupGameContext, 
 import { playerRow, teamRow } from './rows';
 import { dashboardReturnHref, parseSlateDate, scoreboardMatchupHref } from './href';
 import { currentSeasonTeamQuery, historicalPlayerQuery, historicalTeamQuery, teamIdentityQuery } from './queries';
-import { resolveMatchupQuote } from './quote';
+import { resolveMatchupQuote, type MatchupQuoteResult } from './quote';
+import type { StoredOddsQuote } from '@/lib/scoreboard/contract';
 import { presentRoster } from './roster';
 import { loadRosterContinuity } from './roster-load';
 import { currentSeasonWindow, historicalWindow } from './window';
@@ -344,6 +346,31 @@ async function loadInjuryReport(
   }
 }
 
+async function canonicalMatchupQuote(
+  run: Sql,
+  game: StoredScoreboardGame,
+  now: Date,
+  env: Record<string, string | undefined>,
+  awayAbbr: string,
+  homeAbbr: string,
+  fallback: MatchupQuoteResult
+): Promise<MatchupQuoteResult> {
+  let rows: Record<string, unknown>[] = [];
+  try {
+    rows = await run(CANONICAL_CURRENT_ODDS_SQL, [[game.gameId]]);
+  } catch {
+    return fallback;
+  }
+  const quotes: StoredOddsQuote[] = [];
+  for (const row of rows) {
+    const quote = canonicalCurrentOddsQuote(row as StoredOddsSourceRow, now);
+    if (quote && quote.gameId === game.gameId) quotes.push(quote);
+  }
+  const next = resolveMatchupQuote({ game, quotes, now, env, awayAbbr, homeAbbr });
+  if (next.quote || next.reason !== 'unavailable') return next;
+  return fallback;
+}
+
 function sameAbbr(scoreboard: string | null, analytics: string | null | undefined): boolean {
   if (!scoreboard || !analytics) return false;
   return scoreboard.trim().toUpperCase() === analytics.trim().toUpperCase();
@@ -378,6 +405,9 @@ export async function loadPregameMatchup(input: {
     }
   }
   let quote = resolveMatchupQuote({ game, quotes, now, env, awayAbbr, homeAbbr });
+  if (!quote.quote && quote.reason === 'unavailable' && isScoreboardMarketServingEnabled(env)) {
+    quote = await canonicalMatchupQuote(run, game, now, env, awayAbbr, homeAbbr, quote);
+  }
   if (!quote.quote && quote.reason === 'unavailable') {
     const consensus = consensusQuote({ rows: await loadBookOdds(run, game.gameId), tipAt: game.scheduledTip, now, awayAbbr, homeAbbr });
     if (consensus) quote = { quote: consensus, note: null, reason: null };

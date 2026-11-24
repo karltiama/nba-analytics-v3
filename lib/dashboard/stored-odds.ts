@@ -26,6 +26,31 @@ export const STORED_ODDS_CACHE_CONTROL = 'no-store';
 
 export const STORED_ODDS_FRESH_MARK = 'Recently saved';
 
+/**
+ * Same columns as the dashboard read, without the upcoming-game join.
+ * The game page still applies the 35-minute selector and the pregame gate.
+ * A tipped or final game must see the row so it can be refused, not hidden as a missing price.
+ */
+export const CANONICAL_CURRENT_ODDS_SQL = `
+SELECT
+  c.game_id::text AS game_id,
+  c.vendor,
+  c.snapshot_at,
+  c.updated_at,
+  c.home_moneyline,
+  c.away_moneyline,
+  c.home_spread,
+  c.home_spread_odds,
+  c.away_spread,
+  c.away_spread_odds,
+  c.total,
+  c.over_odds,
+  c.under_odds
+FROM analytics.game_odds_current c
+WHERE lower(c.vendor) = 'draftkings'
+  AND c.game_id::text = ANY($1::text[])
+`;
+
 export const STORED_ODDS_SQL = `
 SELECT
   c.game_id::text AS game_id,
@@ -209,7 +234,14 @@ export function acceptsStoredOdds(game: Pick<Game, 'schedulePreview' | 'scoreboa
   return phase !== 'live' && phase !== 'final';
 }
 
-export function classifyStoredOddsRow(row: StoredOddsSourceRow, now: Date): StoredOddsClassification {
+type ValidatedStoredOdds = {
+  status: StoredOddsStatus;
+  storedAt: string;
+  snapshotAt: string;
+  quote: StoredOddsQuote;
+};
+
+function validatedStoredOdds(row: StoredOddsSourceRow, now: Date): ValidatedStoredOdds | StoredOddsClassification {
   if ((row.vendor ?? '').trim().toLowerCase() !== 'draftkings') return { outcome: 'unavailable' };
   const gameId = String(row.game_id ?? '').trim();
   if (!gameId) return { outcome: 'unavailable' };
@@ -222,28 +254,53 @@ export function classifyStoredOddsRow(row: StoredOddsSourceRow, now: Date): Stor
   const snapshotAt = new Date(snapshotMs).toISOString();
   const caption = storedOddsCaption(status, storedAt, now);
   if (!isStoredOddsCaption(caption, status)) return { outcome: 'withheld' };
-  const quote: StoredOddsQuote = {
-    gameId,
-    vendor: 'draftkings',
-    quoteKind: 'current',
-    moneylineHome: num(row.home_moneyline),
-    moneylineAway: num(row.away_moneyline),
-    spreadHome: num(row.home_spread),
-    spreadHomeOdds: num(row.home_spread_odds),
-    spreadAway: num(row.away_spread),
-    spreadAwayOdds: num(row.away_spread_odds),
-    total: num(row.total),
-    totalOverOdds: num(row.over_odds),
-    totalUnderOdds: num(row.under_odds),
-    providerUpdatedAt: null,
-    vendorSyncedAt: null,
-    openedAt: null,
-    firstObservedAt: storedAt,
-    observedAt: storedAt,
-    requestId: '',
-    withdrawnAt: null,
-    withdrawnRequestId: null,
+  return {
+    status,
+    storedAt,
+    snapshotAt,
+    quote: {
+      gameId,
+      vendor: 'draftkings',
+      quoteKind: 'current',
+      moneylineHome: num(row.home_moneyline),
+      moneylineAway: num(row.away_moneyline),
+      spreadHome: num(row.home_spread),
+      spreadHomeOdds: num(row.home_spread_odds),
+      spreadAway: num(row.away_spread),
+      spreadAwayOdds: num(row.away_spread_odds),
+      total: num(row.total),
+      totalOverOdds: num(row.over_odds),
+      totalUnderOdds: num(row.under_odds),
+      providerUpdatedAt: null,
+      vendorSyncedAt: null,
+      openedAt: null,
+      firstObservedAt: storedAt,
+      observedAt: storedAt,
+      requestId: '',
+      withdrawnAt: null,
+      withdrawnRequestId: null,
+    },
   };
+}
+
+function isQuote(value: ValidatedStoredOdds | StoredOddsClassification): value is ValidatedStoredOdds {
+  return 'quote' in value;
+}
+
+/** The quote the dashboard classifier accepts. Withheld and empty rows return null. */
+export function canonicalCurrentOddsQuote(row: StoredOddsSourceRow, now: Date): StoredOddsQuote | null {
+  const validated = validatedStoredOdds(row, now);
+  if (!isQuote(validated)) return null;
+  const checked = checkMarkets(validated.quote);
+  if (!checked.moneyline && !checked.spread && !checked.total) return null;
+  return validated.quote;
+}
+
+export function classifyStoredOddsRow(row: StoredOddsSourceRow, now: Date): StoredOddsClassification {
+  const validated = validatedStoredOdds(row, now);
+  if (!isQuote(validated)) return validated;
+  const { status, storedAt, snapshotAt, quote } = validated;
+  const caption = storedOddsCaption(status, storedAt, now);
   const checked = checkMarkets(quote);
   if (!checked.moneyline && !checked.spread && !checked.total) return { outcome: 'unavailable' };
   const display = checked.moneyline ? twoWayMarketDisplay(checked.moneyline.away, checked.moneyline.home) : null;
