@@ -203,7 +203,6 @@ function admitted() {
     pressure: 'ok' as const,
     boundBytes: PROPS_PULL_CONTROL_PHYSICAL_GROWTH_BOUND_BYTES,
     settle: async () => undefined,
-    releaseUnobserved: async () => undefined,
   };
 }
 
@@ -370,7 +369,7 @@ describe('s3 current-board worker publication', () => {
       currentBoardStore: store,
       admit: async () => {
         admitCalls.n += 1;
-        return { mode: 'halt' as const, reason: 'no room', pressure: 'halt' as const, boundBytes: 1, settle: async () => undefined, releaseUnobserved: async () => undefined };
+        return { mode: 'halt' as const, reason: 'no room', pressure: 'halt' as const, boundBytes: 1, settle: async () => undefined };
       },
     })).rejects.toThrow(/no room/);
     expect(admitCalls.n).toBe(1);
@@ -447,12 +446,13 @@ describe('s3 current-board worker publication', () => {
     expect(await store.get(pointerKey('101'))).toBeNull();
   });
 
-  it('releases the reservation when a real GetObject denial happens before the provider fetch', async () => {
+  it('settles the reservation after a real GetObject denial has committed the failed game run', async () => {
     vi.stubEnv('PROPS_PUBLICATION_MODE', 's3_current_board');
     const db = poolFor();
     mocks.pool = db.pool;
-    const settled = vi.fn(async () => undefined);
-    const released = vi.fn(async () => undefined);
+    const settled = vi.fn(async () => {
+      expect(db.calls.some((sql) => sql.includes('UPDATE raw.player_prop_game_runs'))).toBe(true);
+    });
     const store = {
       async get(): Promise<null> {
         const error = new Error('not authorized to perform: s3:GetObject') as Error & {
@@ -470,12 +470,12 @@ describe('s3 current-board worker publication', () => {
       },
     };
     await expect(handler(message(12), undefined, {
-      admit: async () => ({ ...admitted(), settle: settled, releaseUnobserved: released }),
+      admit: async () => ({ ...admitted(), settle: settled }),
       currentBoardStore: store,
     })).rejects.toThrow(/s3 get failed/);
     expect(mocks.fetchCalls).toBe(0);
-    expect(settled).not.toHaveBeenCalled();
-    expect(released).toHaveBeenCalledOnce();
+    expect(settled).toHaveBeenCalledOnce();
+    expect(db.runs.get('12:101')?.status).toBe('error');
     expect(db.calls.some((sql) => sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
     expect(db.calls.some((sql) => sql.includes('INSERT INTO raw.player_prop_snapshots_v2'))).toBe(false);
   });

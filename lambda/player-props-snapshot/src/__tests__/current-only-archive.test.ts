@@ -27,7 +27,6 @@ vi.mock('../../storage-gate', () => ({
     pressure: 'ok',
     boundBytes: 74_137_600,
     settle: async () => undefined,
-    releaseUnobserved: async () => undefined,
   }),
   assertCurrentOnlyRowCount: () => undefined,
   measurePropsCluster: async () => ({ clusterBytes: 1, measuredAt: NOW, source: 'test', valid: true, complete: true }),

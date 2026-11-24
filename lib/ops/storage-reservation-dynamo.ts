@@ -158,18 +158,6 @@ export function createDynamoStorageReservationStore(
       throw new Error('reservation service could not settle a conditional update');
     },
 
-    async releaseUnobserved(input) {
-      for (let attempt = 0; attempt < 8; attempt += 1) {
-        const current = await read();
-        const released = transitionReservation(current.ledger, { type: 'releaseUnobserved', ...input });
-        if (!released.ok) throw new Error(released.reason);
-        if (!released.changed) return;
-        const wrote = await compareAndSwap(current.version, released.ledger);
-        if (wrote) return;
-      }
-      throw new Error('reservation service could not release a conditional update');
-    },
-
     async noteWriteIntent(input) {
       for (let attempt = 0; attempt < 8; attempt += 1) {
         const current = await read();

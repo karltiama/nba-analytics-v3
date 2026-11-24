@@ -335,9 +335,6 @@ export async function runS3CurrentPublication(input: {
     }
     throw error;
   } finally {
-    if (admitted?.mode === 'current_only') {
-      const finish = gameRunFinalized ? admitted.settle() : admitted.releaseUnobserved();
-      await finish.catch(() => undefined);
-    }
+    if (admitted?.mode === 'current_only') await admitted.settle().catch(() => undefined);
   }
 }

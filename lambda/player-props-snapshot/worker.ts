@@ -437,8 +437,7 @@ export const handler = async (
       throw error;
     } finally {
       if (admitted?.mode === 'current_only') {
-        const finish = gameRunFinalized ? admitted.settle() : admitted.releaseUnobserved();
-        await finish.catch(() => undefined);
+        await admitted.settle().catch(() => undefined);
       }
     }
   }
