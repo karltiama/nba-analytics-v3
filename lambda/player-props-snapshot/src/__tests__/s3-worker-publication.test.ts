@@ -445,4 +445,38 @@ describe('s3 current-board worker publication', () => {
     expect((await store.get(key))!.body.toString('utf8')).toBe('not-an-archive');
     expect(await store.get(pointerKey('101'))).toBeNull();
   });
+
+  it('settles the reservation after a real GetObject denial has committed the failed game run', async () => {
+    vi.stubEnv('PROPS_PUBLICATION_MODE', 's3_current_board');
+    const db = poolFor();
+    mocks.pool = db.pool;
+    const settled = vi.fn(async () => {
+      expect(db.calls.some((sql) => sql.includes('UPDATE raw.player_prop_game_runs'))).toBe(true);
+    });
+    const store = {
+      async get(): Promise<null> {
+        const error = new Error('not authorized to perform: s3:GetObject') as Error & {
+          $metadata: { httpStatusCode: number };
+        };
+        error.name = 'AccessDenied';
+        error.$metadata = { httpStatusCode: 403 };
+        throw error;
+      },
+      async put(): Promise<never> {
+        throw new Error('unused');
+      },
+      async putIfAbsent(): Promise<never> {
+        throw new Error('unused');
+      },
+    };
+    await expect(handler(message(12), undefined, {
+      admit: async () => ({ ...admitted(), settle: settled }),
+      currentBoardStore: store,
+    })).rejects.toThrow(/s3 get failed/);
+    expect(mocks.fetchCalls).toBe(0);
+    expect(settled).toHaveBeenCalledOnce();
+    expect(db.runs.get('12:101')?.status).toBe('error');
+    expect(db.calls.some((sql) => sql.includes('INSERT INTO analytics.player_props_current'))).toBe(false);
+    expect(db.calls.some((sql) => sql.includes('INSERT INTO raw.player_prop_snapshots_v2'))).toBe(false);
+  });
 });

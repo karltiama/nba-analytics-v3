@@ -472,3 +472,58 @@ describe('dynamo conditional reservation', () => {
     expect(JSON.parse(json).protectedBytes).toBe(1_000);
   });
 });
+
+describe('failed invocation settlement', () => {
+  it('keeps the reserved bytes until a later database observation and leaves the essential hold', async () => {
+    const store = new MemoryStorageReservationStore();
+    const bound = 1_000;
+    const essentialBound = 2_000;
+    const cluster = CLUSTER_HALT_BYTES - 10_000;
+    const failed = await admit({
+      reservations: store,
+      invocationId: 'props-failed',
+      clusterBytes: cluster,
+      bound,
+      tables: ['raw.player_prop_game_runs'],
+    });
+    const essential = await admit({
+      reservations: store,
+      invocationId: 'scoreboard-live',
+      clusterBytes: cluster,
+      bound: essentialBound,
+      kind: 'scoreboard',
+    });
+    expect(failed.allowed).toBe(true);
+    expect(essential.allowed).toBe(true);
+
+    await failed.settle();
+    await failed.settle();
+    expect(store.snapshot().protectedBytes).toBe(bound + essentialBound);
+    expect(store.snapshot().settled['props-failed']?.observedThrough).toBeUndefined();
+    expect(store.snapshot().active['scoreboard-live']?.boundBytes).toBe(essentialBound);
+
+    const duringGrace = new Date(Date.parse(NOW) + LEGACY_SETTLED_RECONCILE_GRACE_MS - 1).toISOString();
+    const held = transitionReservation(store.snapshot(), {
+      type: 'reconcile',
+      measurementAt: duringGrace,
+      databaseObservedAt: duringGrace,
+    });
+    expect(held.ok).toBe(true);
+    if (!held.ok) return;
+    expect(held.ledger.protectedBytes).toBe(bound + essentialBound);
+    expect(held.ledger.settled['props-failed']).toBeDefined();
+
+    const afterGrace = new Date(Date.parse(NOW) + LEGACY_SETTLED_RECONCILE_GRACE_MS + 1).toISOString();
+    const reconciled = transitionReservation(held.ledger, {
+      type: 'reconcile',
+      measurementAt: afterGrace,
+      databaseObservedAt: afterGrace,
+    });
+    expect(reconciled.ok).toBe(true);
+    if (!reconciled.ok) return;
+    expect(reconciled.ledger.protectedBytes).toBe(essentialBound);
+    expect(reconciled.ledger.settled['props-failed']).toBeUndefined();
+    expect(reconciled.ledger.active['scoreboard-live']?.boundBytes).toBe(essentialBound);
+    expect(CLUSTER_HALT_BYTES).toBe(450_000_000);
+  });
+});
