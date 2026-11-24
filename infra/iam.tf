@@ -132,7 +132,17 @@ resource "aws_iam_role_policy" "lambda_player_props_worker_s3_archive" {
           "s3:PutObject",
           "s3:GetObject"
         ]
+        # The manifest key is the archive key plus ".publication.json", so it stays inside this prefix.
         Resource = "arn:aws:s3:::${var.nba_data_bucket_name}/${var.nba_raw_prefix}/source=balldontlie/league=nba/season=*/entity=player_prop_snapshots/*"
+      },
+      {
+        Sid    = "PlayerPropCurrentPointerObjects"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ]
+        Resource = "arn:aws:s3:::${var.nba_data_bucket_name}/current/source=balldontlie/league=nba/entity=player_prop_current/game_id=*/pointer.json"
       }
     ]
   })
