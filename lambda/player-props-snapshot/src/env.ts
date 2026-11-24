@@ -38,6 +38,20 @@ export function getRuntimeMode(): RuntimeMode {
   return { dataMode, offseason, cronDryRun, shouldSkipMutations };
 }
 
+export type PropsPublicationMode = 'postgres' | 's3_current_board';
+
+/**
+ * Server-side publication opt-in. Unset and `postgres` keep the current-table worker.
+ * `s3_current_board` is the only S3 mode. Any other value throws.
+ * This is not the website `CURRENT_PROPS_SOURCE` flag.
+ */
+export function propsPublicationMode(env: NodeJS.ProcessEnv = process.env): PropsPublicationMode {
+  const value = (env.PROPS_PUBLICATION_MODE ?? '').trim();
+  if (value === '' || value === 'postgres') return 'postgres';
+  if (value === 's3_current_board') return 's3_current_board';
+  throw new Error('invalid PROPS_PUBLICATION_MODE');
+}
+
 export function getLambdaEnv(): LambdaEnv {
   const dbUrl = process.env.SUPABASE_DB_URL;
   const apiKey = process.env.BALLDONTLIE_API_KEY || process.env.BALDONTLIE_API_KEY;

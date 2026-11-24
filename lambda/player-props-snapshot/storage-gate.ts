@@ -20,14 +20,23 @@ import {
 import {
   PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES,
   PROPS_MAX_ROWS_PER_GAME,
+  PROPS_PULL_CONTROL_PHYSICAL_GROWTH_BOUND_BYTES,
 } from '../../lib/ops/storage-growth-bounds';
 import type { StoragePressure } from '../../lib/ops/storage-budget';
+import { propsPublicationMode } from './src/env';
 
 export const PROPS_STORAGE_WRITER = 'player-props-worker';
 
 export const PROPS_CURRENT_TABLES = [
   'analytics.player_props_current',
   'analytics.player_prop_current',
+] as const;
+
+/** Game-run, pull-run, and provider-attempt updates. No current-market tables. */
+export const PROPS_S3_CONTROL_TABLES = [
+  'raw.player_prop_game_runs',
+  'raw.player_prop_pull_runs',
+  'raw.player_prop_daily_attempts',
 ] as const;
 
 export type PropsStorageMode = 'current_only' | 'halt';
@@ -49,12 +58,16 @@ export class PropsStorageRefusal extends Error {
 
 const noopSettle = async (): Promise<void> => undefined;
 
-function halt(reason: string, pressure: StoragePressure = 'unmeasured'): PropsStorageDecision {
+function halt(
+  reason: string,
+  pressure: StoragePressure = 'unmeasured',
+  boundBytes = PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES
+): PropsStorageDecision {
   return {
     mode: 'halt',
     reason,
     pressure,
-    boundBytes: PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES,
+    boundBytes,
     settle: noopSettle,
   };
 }
@@ -85,14 +98,16 @@ async function releaseAdmission(admission: StorageAdmissionDecision): Promise<vo
   }
 }
 
-export async function admitPropsCurrentOnly(input: {
+async function admitPropsWrite(input: {
   now: string;
   invocationId: string;
   measurement: AdmissionMeasurement;
   reservations: StorageReservationStore;
+  boundBytes: number;
+  tables: readonly string[];
 }): Promise<PropsStorageDecision> {
   const invocationId = input.invocationId.trim();
-  if (invocationId === '') return halt('props storage admission has no invocation id');
+  if (invocationId === '') return halt('props storage admission has no invocation id', 'unmeasured', input.boundBytes);
 
   const admission = await admitPersistentWrite({
     writerId: PROPS_STORAGE_WRITER,
@@ -100,40 +115,67 @@ export async function admitPropsCurrentOnly(input: {
     invocationId,
     now: input.now,
     measurement: input.measurement,
-    physicalGrowthBoundBytes: PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES,
-    tables: PROPS_CURRENT_TABLES,
+    physicalGrowthBoundBytes: input.boundBytes,
+    tables: input.tables,
     reservations: input.reservations,
   });
   if (!admission.allowed || admission.alreadySettled) {
-    return halt(admission.reason, admission.pressure);
+    return halt(admission.reason, admission.pressure, input.boundBytes);
   }
 
   try {
     const noted = await input.reservations.noteWriteIntent({
       invocationId,
       writerId: PROPS_STORAGE_WRITER,
-      boundBytes: PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES,
+      boundBytes: input.boundBytes,
       intentAt: input.now,
       inWrite: true,
     });
     if (!noted.ok) {
       await releaseAdmission(admission);
-      return halt(noted.reason, admission.pressure);
+      return halt(noted.reason, admission.pressure, input.boundBytes);
     }
   } catch {
     await releaseAdmission(admission);
-    return halt('reservation service failed; refusing the write', 'unmeasured');
+    return halt('reservation service failed; refusing the write', 'unmeasured', input.boundBytes);
   }
 
   return {
     mode: 'current_only',
     reason: admission.reason,
     pressure: admission.pressure,
-    boundBytes: PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES,
+    boundBytes: input.boundBytes,
     settle: async () => {
       await admission.settle();
     },
   };
+}
+
+export async function admitPropsCurrentOnly(input: {
+  now: string;
+  invocationId: string;
+  measurement: AdmissionMeasurement;
+  reservations: StorageReservationStore;
+}): Promise<PropsStorageDecision> {
+  return admitPropsWrite({
+    ...input,
+    boundBytes: PROPS_CURRENT_ONLY_PHYSICAL_GROWTH_BOUND_BYTES,
+    tables: PROPS_CURRENT_TABLES,
+  });
+}
+
+/** S3 publication still updates game-run bookkeeping. It does not reserve the market-table bound. */
+export async function admitPropsS3Control(input: {
+  now: string;
+  invocationId: string;
+  measurement: AdmissionMeasurement;
+  reservations: StorageReservationStore;
+}): Promise<PropsStorageDecision> {
+  return admitPropsWrite({
+    ...input,
+    boundBytes: PROPS_PULL_CONTROL_PHYSICAL_GROWTH_BOUND_BYTES,
+    tables: PROPS_S3_CONTROL_TABLES,
+  });
 }
 
 type Queryable = {
@@ -207,7 +249,8 @@ export async function admitPropsInvocation(input: {
   } catch {
     return halt('cluster measurement failed; refusing the write');
   }
-  return admitPropsCurrentOnly({
+  const admit = propsPublicationMode(input.env) === 's3_current_board' ? admitPropsS3Control : admitPropsCurrentOnly;
+  return admit({
     now: admissionClock(input.now, measured.measuredAt),
     invocationId: input.invocationId,
     measurement: measured,

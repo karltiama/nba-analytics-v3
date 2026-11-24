@@ -1,5 +1,5 @@
 import type { Context, SQSEvent, SQSRecord } from 'aws-lambda';
-import { getLambdaEnv, getRuntimeMode } from './src/env';
+import { getLambdaEnv, getRuntimeMode, propsPublicationMode } from './src/env';
 import { getDbPool } from './src/db';
 import { fetchPlayerPropsForGame } from './src/fetch';
 import { normalizePlayerPropRows } from './src/normalize';
@@ -41,6 +41,7 @@ import {
   PropsStorageRefusal,
   type PropsStorageDecision,
 } from './storage-gate';
+import { runS3CurrentPublication, type S3PublicationDeps } from './src/s3-worker-publication';
 
 function isIntentionalPregameSkip(evidence: GameRunEvidence): boolean {
   return evidence.rowsStored === 0
@@ -70,8 +71,9 @@ const PROVIDER_DEADLINE_MARGIN_MS = 60_000;
 export const handler = async (
   event: SQSEvent,
   context?: Pick<Context, 'getRemainingTimeInMillis'>,
-  deps?: { admit?: typeof admitPropsInvocation; archiveStore?: ArchiveObjectStore }
+  deps?: { admit?: typeof admitPropsInvocation; archiveStore?: ArchiveObjectStore } & S3PublicationDeps
 ) => {
+  const publicationMode = propsPublicationMode(process.env);
   const remainingMs = context?.getRemainingTimeInMillis?.();
   const deadlineMs = remainingMs != null ? Date.now() + remainingMs - PROVIDER_DEADLINE_MARGIN_MS : undefined;
   const mode = getRuntimeMode();
@@ -107,6 +109,38 @@ export const handler = async (
 
   for (const record of event.Records) {
     const msg = parseMessage(record.body);
+    if (publicationMode === 's3_current_board') {
+      try {
+        const outcome = await runS3CurrentPublication({
+          pool,
+          env,
+          record,
+          msg,
+          deadlineMs,
+          deps,
+        });
+        if (outcome.kind === 'missing') failCount++;
+        else {
+          if (outcome.kind === 'post_tip') postTipSkipped++;
+          successCount++;
+        }
+      } catch (error) {
+        failCount++;
+        emitCoverageMetric(
+          'NBA/PlayerProps',
+          { Component: 'WorkerBatch' },
+          {
+            GamesSucceeded: successCount,
+            GamesFailed: failCount,
+            PostTipSkipped: postTipSkipped,
+            ArchiveGap: archiveGapCount,
+            ArchiveFailed: archiveFailedCount,
+          }
+        );
+        throw error;
+      }
+      continue;
+    }
     let gameRunFinalized = false;
     let providerSettled = false;
     let admitted: PropsStorageDecision | null = null;

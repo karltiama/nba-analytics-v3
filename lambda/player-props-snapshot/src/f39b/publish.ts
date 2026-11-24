@@ -261,6 +261,64 @@ async function publishPointer(
   return { ok: true, published: true, reason: 'published', idempotent: false };
 }
 
+/** Move the pointer for an archive that was already verified. Does not write the archive. */
+export async function advancePointerFromStoredManifest(args: {
+  store: CurrentPropsObjectStore;
+  archiveKey: string;
+  envelope: PlayerPropArchiveEnvelope;
+  gameStartTime: string;
+}): Promise<PublishResult> {
+  const manifestKey = manifestKeyFor(args.archiveKey);
+  let object: Awaited<ReturnType<CurrentPropsObjectStore['get']>>;
+  try {
+    object = await args.store.get(manifestKey);
+  } catch {
+    return { ok: false, published: false, reason: 'manifest_read_failed', archiveKey: args.archiveKey, manifestKey, idempotent: false };
+  }
+  if (!object) {
+    return { ok: false, published: false, reason: 'manifest_missing', archiveKey: args.archiveKey, manifestKey, idempotent: false };
+  }
+  let manifest: PublicationManifest;
+  try {
+    manifest = JSON.parse(object.body.toString('utf8')) as PublicationManifest;
+  } catch {
+    return { ok: false, published: false, reason: 'manifest_rejected', archiveKey: args.archiveKey, manifestKey, idempotent: false };
+  }
+  let evidence: string | null;
+  try {
+    evidence = !manifest || typeof manifest !== 'object' || manifest.archiveKey !== args.archiveKey
+      ? 'manifest identity is incomplete'
+      : publicationEvidenceProblem(manifest, args.envelope);
+  } catch {
+    evidence = 'manifest identity is incomplete';
+  }
+  if (evidence) {
+    return { ok: false, published: false, reason: 'manifest_rejected', archiveKey: args.archiveKey, manifestKey, idempotent: false };
+  }
+  try {
+    const pointed = await publishPointer(args.store, manifest, args.gameStartTime, args.envelope);
+    return { ...pointed, archiveKey: args.archiveKey, manifestKey };
+  } catch {
+    return { ok: false, published: false, reason: 'pointer_write_failed', archiveKey: args.archiveKey, manifestKey, idempotent: false };
+  }
+}
+
+export async function readCurrentPointer(
+  store: CurrentPropsObjectStore,
+  gameId: string
+): Promise<{ ok: true; pointer: CurrentPointer } | { ok: false; reason: 'pointer_missing' | 'pointer_unreadable' }> {
+  let object: Awaited<ReturnType<CurrentPropsObjectStore['get']>>;
+  try {
+    object = await store.get(pointerKey(gameId));
+  } catch {
+    return { ok: false, reason: 'pointer_unreadable' };
+  }
+  if (!object) return { ok: false, reason: 'pointer_missing' };
+  const pointer = parsePointer(object.body);
+  if (!pointer || pointer.gameId !== gameId) return { ok: false, reason: 'pointer_unreadable' };
+  return { ok: true, pointer };
+}
+
 function pointerBody(
   manifest: PublicationManifest,
   gameStartTime: string,

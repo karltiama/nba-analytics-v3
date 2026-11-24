@@ -3,6 +3,7 @@ import { BDL_BASE } from './env';
 import type { BdlPlayerPropRow } from './types';
 import { fetchBdlLive, type FetchBdlLiveOptions } from './bdl-live-rate-limit';
 import { createAttemptRecorder, type ProviderObservation } from './observation-clock';
+import type { ProviderPage } from './f39b/pages';
 
 const BdlMarketSchema = z.discriminatedUnion('type', [
   z.object({
@@ -42,6 +43,7 @@ export const PLAYER_PROPS_MAX_PAGES = 10;
 export type PlayerPropsFetchResult = {
   rows: BdlPlayerPropRow[];
   observation: ProviderObservation;
+  pages: ProviderPage[];
 };
 
 /**
@@ -63,6 +65,7 @@ export async function fetchPlayerPropsForGame(
 ): Promise<PlayerPropsFetchResult> {
   const recorder = createAttemptRecorder(options.baseFetch ?? globalThis.fetch, options.now);
   const rows: BdlPlayerPropRow[] = [];
+  const pages: ProviderPage[] = [];
   const seenCursors = new Set<number>();
   let firstRequestStartedAt: Date | null = null;
   let cursor: number | null = null;
@@ -99,11 +102,13 @@ export async function fetchPlayerPropsForGame(
       );
     }
     rows.push(...parsed.data.data);
+    pages.push({ httpStatus: res.status, payload: parsed.data });
 
     const next = parsed.data.meta?.next_cursor ?? null;
     if (next == null) {
       return {
         rows,
+        pages,
         observation: { ...pageObservation, requestStartedAt: firstRequestStartedAt },
       };
     }
