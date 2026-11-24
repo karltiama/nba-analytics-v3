@@ -77,7 +77,7 @@ function boardRow(row: PlayerPropArchiveRow): CurrentBoardRow {
   };
 }
 
-function parsePointer(body: Buffer): CurrentPointer | null {
+export function parsePointer(body: Buffer): CurrentPointer | null {
   try {
     const value = JSON.parse(body.toString('utf8')) as CurrentPointer;
     if (value.schemaVersion !== 1 || !value.archiveKey || !value.manifestKey) return null;
