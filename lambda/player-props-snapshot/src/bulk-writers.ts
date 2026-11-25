@@ -1,6 +1,6 @@
 import type { Pool, PoolClient } from 'pg';
 import type { NormalizedPropRow } from './types';
-import type { PropUniverse } from './game-discovery';
+import { PREGAME_REFRESH_INTERVAL_SECONDS, type PropUniverse } from './game-discovery';
 import { OBSERVATION_CLOCK_RESPONSE_RECEIVED, type PropObservationClocks } from './observation-clock';
 import { pregamePropsMarketEligibleSql } from './pregame-market';
 
@@ -45,6 +45,48 @@ export function selectUnclaimedTargets<T extends { gameId: string }>(
   return { claim, skipped };
 }
 
+const RECENT_UNIVERSE_CLAIM_SQL = `
+SELECT DISTINCT game_id
+  FROM raw.player_prop_game_runs
+ WHERE universe = $1
+   AND game_id = ANY($2::text[])
+   AND started_at > now() - ($3::int * interval '1 second')
+   AND NOT (status = 'error' AND error_message IS NOT DISTINCT FROM $4)`;
+
+const ACTIVE_OBSERVATION_SQL = `
+SELECT DISTINCT game_id
+  FROM raw.player_prop_game_runs
+ WHERE game_id = ANY($1::text[])
+   AND status = 'started'
+   AND universe = ANY($2::text[])`;
+
+const INTERVAL_OBSERVATION_SQL = `
+SELECT DISTINCT game_id
+  FROM raw.player_prop_game_runs
+ WHERE game_id = ANY($1::text[])
+   AND universe = ANY($2::text[])
+   AND started_at > now() - ($3::int * interval '1 second')
+   AND NOT (status = 'error' AND error_message IS NOT DISTINCT FROM $4)`;
+
+/**
+ * An in-flight run in any of these blocks another provider fetch for that game.
+ * There is no age cutoff. A row left `started` by a dead worker, a lost ack,
+ * a disabled event-source mapping, a delayed message, or a timed-out invocation
+ * stays claimed. Reclaiming it while that message can still run would fetch twice.
+ * An operator clears a genuinely abandoned row only after the schedules and the
+ * queue mapping are disabled and the worker invocation for that pull is gone:
+ * set status to `error` with error_message `operator_abandoned`. Do not delete the row.
+ */
+const ACTIVE_OBSERVATION_UNIVERSES = ['broad', 'near_tip', 'pregame_refresh', 'closing'] as const;
+
+function sharesObservationLock(universe: PropUniverse): boolean {
+  return universe === 'broad' || universe === 'near_tip' || universe === 'pregame_refresh' || universe === 'closing';
+}
+
+function isUniqueViolation(err: unknown): boolean {
+  return typeof err === 'object' && err != null && (err as { code?: string }).code === '23505';
+}
+
 /**
  * Creates the pull run and game runs for games not claimed in the dedupe window, under a
  * per-universe advisory lock so concurrent controller invocations cannot both claim a game.
@@ -58,25 +100,95 @@ export async function claimGameRunsForWave<T extends { gameId: string }>(
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+    if (sharesObservationLock(universe)) {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', ['player-props-controller:observation']);
+    }
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`player-props-controller:${universe}`]);
-    const recent = await client.query<{ game_id: string }>(
-      `SELECT DISTINCT game_id
-         FROM raw.player_prop_game_runs
-        WHERE universe = $1
-          AND game_id = ANY($2::text[])
-          AND started_at > now() - ($3::int * interval '1 second')
-          AND NOT (status = 'error' AND error_message IS NOT DISTINCT FROM $4)`,
-      [universe, targets.map((t) => t.gameId), windowSeconds, ENQUEUE_FAILED]
-    );
-    const { claim, skipped } = selectUnclaimedTargets(targets, new Set(recent.rows.map((r) => String(r.game_id))));
+    const gameIds = targets.map((t) => t.gameId);
+    const recent = await client.query<{ game_id: string }>(RECENT_UNIVERSE_CLAIM_SQL, [
+      universe,
+      gameIds,
+      windowSeconds,
+      ENQUEUE_FAILED,
+    ]);
+    const blocked = new Set(recent.rows.map((r) => String(r.game_id)));
+    if (universe === 'pregame_refresh') {
+      const active = await client.query<{ game_id: string }>(
+        `SELECT DISTINCT game_id
+           FROM raw.player_prop_game_runs
+          WHERE game_id = ANY($1::text[])
+            AND status = 'started'`,
+        [gameIds]
+      );
+      for (const row of active.rows) blocked.add(String(row.game_id));
+      for (const other of ['broad', 'near_tip', 'closing'] as const) {
+        const extra = await client.query<{ game_id: string }>(RECENT_UNIVERSE_CLAIM_SQL, [
+          other,
+          gameIds,
+          PREGAME_REFRESH_INTERVAL_SECONDS,
+          ENQUEUE_FAILED,
+        ]);
+        for (const row of extra.rows) blocked.add(String(row.game_id));
+      }
+    } else if (universe === 'near_tip' || universe === 'closing') {
+      const active = await client.query<{ game_id: string }>(ACTIVE_OBSERVATION_SQL, [
+        gameIds,
+        [...ACTIVE_OBSERVATION_UNIVERSES],
+      ]);
+      for (const row of active.rows) blocked.add(String(row.game_id));
+      if (universe === 'near_tip') {
+        const interval = await client.query<{ game_id: string }>(INTERVAL_OBSERVATION_SQL, [
+          gameIds,
+          ['pregame_refresh'],
+          PREGAME_REFRESH_INTERVAL_SECONDS,
+          ENQUEUE_FAILED,
+        ]);
+        for (const row of interval.rows) blocked.add(String(row.game_id));
+      }
+    } else if (universe === 'broad') {
+      const active = await client.query<{ game_id: string }>(ACTIVE_OBSERVATION_SQL, [
+        gameIds,
+        [...ACTIVE_OBSERVATION_UNIVERSES],
+      ]);
+      for (const row of active.rows) blocked.add(String(row.game_id));
+      const interval = await client.query<{ game_id: string }>(INTERVAL_OBSERVATION_SQL, [
+        gameIds,
+        ['pregame_refresh'],
+        PREGAME_REFRESH_INTERVAL_SECONDS,
+        ENQUEUE_FAILED,
+      ]);
+      for (const row of interval.rows) blocked.add(String(row.game_id));
+    }
+    const { claim, skipped } = selectUnclaimedTargets(targets, blocked);
     if (claim.length === 0) {
       await client.query('COMMIT');
       return { pullRunId: null, claimed: [], skipped };
     }
     const pullRunId = await createPullRun(client, claim.map((t) => t.gameId));
-    for (const t of claim) await createGameRun(client, pullRunId, t.gameId, universe);
+    const claimed: T[] = [];
+    for (const target of claim) {
+      if (!sharesObservationLock(universe)) {
+        await createGameRun(client, pullRunId, target.gameId, universe);
+        claimed.push(target);
+        continue;
+      }
+      await client.query('SAVEPOINT observation_claim');
+      try {
+        await createGameRun(client, pullRunId, target.gameId, universe);
+        await client.query('RELEASE SAVEPOINT observation_claim');
+        claimed.push(target);
+      } catch (err) {
+        await client.query('ROLLBACK TO SAVEPOINT observation_claim');
+        if (!isUniqueViolation(err)) throw err;
+        skipped.push(target);
+      }
+    }
+    if (claimed.length === 0) {
+      await client.query('ROLLBACK');
+      return { pullRunId: null, claimed: [], skipped };
+    }
     await client.query('COMMIT');
-    return { pullRunId, claimed: claim, skipped };
+    return { pullRunId, claimed, skipped };
   } catch (err) {
     await client.query('ROLLBACK').catch(() => undefined);
     throw err;
@@ -287,6 +399,11 @@ export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): 
   };
   if (!row || row.total_games === 0 || row.open_games > 0) return;
 
+  const prior = await pool.query<{ metadata: unknown }>(
+    `SELECT metadata FROM raw.player_prop_pull_runs WHERE pull_run_id = $1`,
+    [pullRunId]
+  );
+  const baselines = baselinesFromMetadata(prior.rows[0]?.metadata);
   await completePullRun(
     pool,
     pullRunId,
@@ -297,9 +414,43 @@ export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): 
       totalGames: row.total_games,
       successGames: row.success_games,
       errorGames: row.error_games,
+      ...(baselines ? { baselines } : {}),
     },
     row.error_games > 0 ? 'One or more game workers failed' : undefined
   );
+}
+
+export async function recordBaselineStamp(
+  pool: Pool,
+  pullRunId: number,
+  gameId: string,
+  stamp: { books: number; dkMarkets: number; dkTwoSided: number }
+): Promise<void> {
+  await pool.query(
+    `UPDATE raw.player_prop_pull_runs
+        SET metadata = jsonb_set(
+          coalesce(metadata, '{}'::jsonb),
+          '{baselines}',
+          coalesce(metadata -> 'baselines', '{}'::jsonb) || jsonb_build_object($2::text, $3::jsonb),
+          true
+        )
+      WHERE pull_run_id = $1`,
+    [pullRunId, gameId, JSON.stringify(stamp)]
+  );
+}
+
+function baselinesFromMetadata(metadata: unknown): unknown {
+  const value = typeof metadata === 'string' ? safeMetadata(metadata) : metadata;
+  if (!value || typeof value !== 'object' || !('baselines' in value)) return undefined;
+  return (value as { baselines: unknown }).baselines;
+}
+
+function safeMetadata(metadata: string): unknown {
+  try {
+    return JSON.parse(metadata);
+  } catch {
+    return null;
+  }
 }
 
 /** `fetchedAt` keeps its legacy controller-time meaning; true observation lives in `clocks.observedAt`. */

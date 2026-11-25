@@ -518,6 +518,11 @@ resource "aws_scheduler_schedule" "player_props_crons" {
     arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
     input    = jsonencode({ universe = "broad" })
+
+    # A failed tick must not schedule another provider wave. Unset plans the provider default of 185.
+    retry_policy {
+      maximum_retry_attempts = 0
+    }
   }
 }
 
@@ -543,6 +548,10 @@ resource "aws_scheduler_schedule" "player_props_near_tip" {
     arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
     input    = jsonencode({ universe = "near_tip" })
+
+    retry_policy {
+      maximum_retry_attempts = 0
+    }
   }
 }
 
@@ -569,6 +578,10 @@ resource "aws_scheduler_schedule" "player_props_closing" {
     arn      = aws_lambda_function.player_props_controller.arn
     role_arn = aws_iam_role.scheduler_player_props_invoke.arn
     input    = jsonencode({ universe = "closing" })
+
+    retry_policy {
+      maximum_retry_attempts = 0
+    }
   }
 }
 
