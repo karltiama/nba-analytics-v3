@@ -304,6 +304,8 @@ export function simulatePregameSlate(args: {
   actualPages: number;
   protectionPages?: number;
   consumed?: number;
+  /** Earlier broad runs. Their attempts are already included in `consumed`. */
+  initialRuns?: readonly PregameRunSnapshot[];
   workerDelayMs?: number;
   failures?: readonly { gameId: string; tickMs: number; attempts?: number }[];
   extraReceives?: number;
@@ -315,7 +317,7 @@ export function simulatePregameSlate(args: {
   const cap = args.dailyCap ?? PROPS_DAILY_HTTP_ATTEMPT_CAP;
   let consumed = args.consumed ?? 0;
   const delay = args.workerDelayMs ?? 0;
-  const runs: PregameRunSnapshot[] = [];
+  const runs: PregameRunSnapshot[] = [...(args.initialRuns ?? [])];
   const completions = new Map<string, number>();
   const collections: SimulatedCollection[] = [];
   const skipped: SlateSimulation['skipped'] = [];

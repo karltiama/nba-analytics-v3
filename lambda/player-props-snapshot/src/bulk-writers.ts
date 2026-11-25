@@ -399,6 +399,11 @@ export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): 
   };
   if (!row || row.total_games === 0 || row.open_games > 0) return;
 
+  const prior = await pool.query<{ metadata: unknown }>(
+    `SELECT metadata FROM raw.player_prop_pull_runs WHERE pull_run_id = $1`,
+    [pullRunId]
+  );
+  const baselines = baselinesFromMetadata(prior.rows[0]?.metadata);
   await completePullRun(
     pool,
     pullRunId,
@@ -409,9 +414,43 @@ export async function finalizePullRunIfComplete(pool: Pool, pullRunId: number): 
       totalGames: row.total_games,
       successGames: row.success_games,
       errorGames: row.error_games,
+      ...(baselines ? { baselines } : {}),
     },
     row.error_games > 0 ? 'One or more game workers failed' : undefined
   );
+}
+
+export async function recordBaselineStamp(
+  pool: Pool,
+  pullRunId: number,
+  gameId: string,
+  stamp: { books: number; dkMarkets: number; dkTwoSided: number }
+): Promise<void> {
+  await pool.query(
+    `UPDATE raw.player_prop_pull_runs
+        SET metadata = jsonb_set(
+          coalesce(metadata, '{}'::jsonb),
+          '{baselines}',
+          coalesce(metadata -> 'baselines', '{}'::jsonb) || jsonb_build_object($2::text, $3::jsonb),
+          true
+        )
+      WHERE pull_run_id = $1`,
+    [pullRunId, gameId, JSON.stringify(stamp)]
+  );
+}
+
+function baselinesFromMetadata(metadata: unknown): unknown {
+  const value = typeof metadata === 'string' ? safeMetadata(metadata) : metadata;
+  if (!value || typeof value !== 'object' || !('baselines' in value)) return undefined;
+  return (value as { baselines: unknown }).baselines;
+}
+
+function safeMetadata(metadata: string): unknown {
+  try {
+    return JSON.parse(metadata);
+  } catch {
+    return null;
+  }
 }
 
 /** `fetchedAt` keeps its legacy controller-time meaning; true observation lives in `clocks.observedAt`. */

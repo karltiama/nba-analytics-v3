@@ -10,6 +10,7 @@ import {
   buildPreferredVendorLines,
   completeGameRun,
   finalizePullRunIfComplete,
+  recordBaselineStamp,
   getGameRunEvidence,
   getGameRunStartedAt,
   type GameRunEvidence,
@@ -17,6 +18,7 @@ import {
   promoteCurrentOnlyProps,
   readPregameGate,
 } from './src/bulk-writers';
+import { stampFromRows } from './src/early-baseline';
 import { emitCoverageMetric } from './src/metrics';
 import type { NormalizedPropRow, WorkerMessage } from './src/types';
 import {
@@ -102,7 +104,7 @@ export const handler = async (
   let failCount = 0;
   let promotedCount = 0;
   let postTipSkipped = 0;
-  let archiveGapCount = 0;
+  const archiveGapCount = 0;
   let archiveFailedCount = 0;
 
   await assertObservationClockSchema(pool);
@@ -355,6 +357,21 @@ export const handler = async (
       }
       const current = promotion.current;
       const legacyCurrent = promotion.legacyCurrent;
+      try {
+        const stamp = archive.rowsArchived === 0
+          ? { books: 0, dkMarkets: 0, dkTwoSided: 0 }
+          : stampFromRows(normalized);
+        await recordBaselineStamp(pool, msg.runId, msg.gameId, stamp);
+      } catch (stampError: unknown) {
+        console.log(
+          JSON.stringify({
+            event: 'player_props_baseline_stamp_failed',
+            pullRunId: msg.runId,
+            gameId: msg.gameId,
+            message: stampError instanceof Error ? stampError.message : 'baseline stamp failed',
+          })
+        );
+      }
       if (promotion.outcome === 'post_tip') postTipSkipped++;
       if (promotion.outcome === 'promoted') promotedCount++;
       await completeGameRun(pool, msg.runId, msg.gameId, 'success', propsLength, current, undefined, {

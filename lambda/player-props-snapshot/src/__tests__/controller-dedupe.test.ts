@@ -107,6 +107,8 @@ function fakePool() {
       return { rows: [], rowCount: 1 };
     }
     if (sql.includes('UPDATE raw.player_prop_pull_runs')) return { rows: [], rowCount: 1 };
+    if (sql.includes('player_prop_daily_attempts')) return { rows: [{ attempts: 0 }] };
+    if (sql.includes("interval '18 hours'") || sql.includes('broad_baseline_evidence')) return { rows: [] };
     throw new Error(`unexpected SQL: ${sql.slice(0, 80)}`);
   };
   const pool = { query, connect: async () => ({ query, release: () => {} }) };

@@ -9,6 +9,7 @@ import {
   type PropUniverse,
 } from './src/game-discovery';
 import { propsRequestBudget } from './src/acquisition-budget';
+import { loadBroadBaselineEvidence, planBroadWave } from './src/early-baseline';
 import { clusterBytesFromEnv, loadPregamePlanningInputs, pregameRefreshSchemaReady } from './src/pregame-refresh-load';
 import {
   planPregameRefresh,
@@ -179,6 +180,64 @@ export const handler = async (event: ControllerEvent) => {
           skipped: plan.skipped,
         })
       );
+    }
+    const admitted = new Set(plan.admit);
+    picked.games = picked.games.filter((game) => admitted.has(game.gameId));
+    if (picked.games.length === 0) {
+      return skip(plan.skipped[0]?.reason ?? 'no_eligible_games', {
+        universe,
+        date,
+        eligibleGames: targets.length,
+        skipReasons: plan.skipped,
+      });
+    }
+  }
+  // All three broad schedules share this evidence rule. A delayed 8:00 AM
+  // invocation does not become a second wave; the clock only moves the T-120 handoff.
+  if (universe === 'broad') {
+    let broadPlanning: PlanningPages;
+    let protectionPages: number;
+    try {
+      broadPlanning = resolvePlanningPages(process.env.PLAYER_PROPS_PLANNING_PAGES);
+      protectionPages = resolveProtectionPages(process.env.PLAYER_PROPS_PROTECTION_PAGES);
+    } catch (error: unknown) {
+      return skip('planning_pages', {
+        universe,
+        message: error instanceof Error ? error.message : 'invalid planning pages',
+      });
+    }
+    const inputs = await loadPregamePlanningInputs(
+      pool,
+      picked.games.map((game) => ({
+        gameId: game.gameId,
+        tipMs: game.startTime == null ? now.getTime() : Date.parse(game.startTime),
+        status: 'scheduled',
+        lastSuccessAtMs: null,
+      })),
+      now
+    );
+    const evidence = await loadBroadBaselineEvidence(
+      pool,
+      picked.games.map((game) => game.gameId)
+    );
+    const plan = planBroadWave({
+      nowMs: now.getTime(),
+      games: picked.games.map((game) => ({
+        gameId: game.gameId,
+        tipMs: game.startTime == null ? now.getTime() : Date.parse(game.startTime),
+      })),
+      evidence,
+      runs: inputs.runs,
+      consumedAttempts: inputs.consumedAttempts,
+      planningPages: broadPlanning,
+      protectionPages,
+      inFlight: inputs.inFlight,
+      closingGames: inputs.closingGames,
+      nearTipGames: inputs.nearTipGames,
+      storage: storageAdmissionDecision(clusterBytesFromEnv(process.env.PROPS_CLUSTER_BYTES)),
+    });
+    if (plan.skipped.length > 0) {
+      console.log(JSON.stringify({ event: 'player_props_broad_baseline_skip', universe, skipped: plan.skipped }));
     }
     const admitted = new Set(plan.admit);
     picked.games = picked.games.filter((game) => admitted.has(game.gameId));

@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => {
     sent: [] as Array<{ input: { Entries: Array<{ MessageBody: string }> } }>,
     pool: null as unknown,
     schemaReady: true,
+    evidence: [] as Array<Record<string, unknown>>,
   };
 });
 
@@ -72,6 +73,7 @@ function fakePool() {
       return { rows: [] };
     }
     if (sql.includes('UPDATE raw.player_prop_pull_runs')) return { rows: [] };
+    if (sql.includes('broad_baseline_evidence')) return { rows: mocks.evidence };
     throw new Error(`unexpected SQL: ${sql.slice(0, 100)}`);
   };
   return { query, connect: async () => ({ query, release: () => undefined }) };
@@ -93,6 +95,7 @@ describe('pregame refresh controller', () => {
     mocks.schemaReady = true;
     mocks.pool = fakePool();
     mocks.inputs = { runs: [], consumedAttempts: 0, inFlight: [], closingGames: 0, nearTipGames: 0 };
+    mocks.evidence = [];
     mocks.targets = [{
       gameId: '101',
       bdlGameId: 101,
@@ -112,6 +115,41 @@ describe('pregame refresh controller', () => {
     const refused = JSON.parse((await handler({ universe: 'pregame_refresh' })).body);
     expect(refused.skipped).toBe(true);
     expect(refused.reason).toBe('storage_admission');
+    expect(mocks.sent).toEqual([]);
+  });
+
+  it('skips a broad fallback that already has a usable baseline and does not insert a control row', async () => {
+    mocks.targets = [{
+      gameId: '101',
+      bdlGameId: 101,
+      startTime: new Date(Date.now() + 8 * 60 * 60_000).toISOString(),
+    }];
+    mocks.evidence = [{
+      game_id: '101',
+      status: 'success',
+      archive_status: 'archived',
+      rows_fetched: 10,
+      rows_archived: 10,
+      rows_stored: 0,
+      stamp: { books: 1, dkMarkets: 2, dkTwoSided: 1 },
+    }];
+    const { handler } = await import('../../controller');
+    const skipped = JSON.parse((await handler({ universe: 'broad' })).body);
+    expect(skipped.skipped).toBe(true);
+    expect(skipped.reason).toBe('usable_baseline');
+    expect(mocks.sent).toEqual([]);
+  });
+
+  it('leaves a game inside the pregame window to refresh', async () => {
+    mocks.targets = [{
+      gameId: '101',
+      bdlGameId: 101,
+      startTime: new Date(Date.now() + 90 * 60_000).toISOString(),
+    }];
+    const { handler } = await import('../../controller');
+    const skipped = JSON.parse((await handler({ universe: 'broad' })).body);
+    expect(skipped.skipped).toBe(true);
+    expect(skipped.reason).toBe('pregame_window');
     expect(mocks.sent).toEqual([]);
   });
 
