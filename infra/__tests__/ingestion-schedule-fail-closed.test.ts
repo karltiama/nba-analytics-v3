@@ -26,6 +26,21 @@ function resourceBlock(src: string, marker: string): string {
   return src.slice(start, next === -1 ? undefined : next);
 }
 
+describe('player props scheduler retries', () => {
+  it('sets zero retries on the five props schedules without changing their expressions', () => {
+    const src = read('infra/lambda.tf');
+    for (const name of ['player_props_crons', 'player_props_near_tip', 'player_props_closing']) {
+      const block = resourceBlock(src, `aws_scheduler_schedule" "${name}`);
+      expect(block, name).toContain('maximum_retry_attempts = 0');
+      expect(block, name).toContain('state       = local.player_props_schedule_state');
+    }
+    expect(resourceBlock(src, 'aws_scheduler_schedule" "player_props_crons')).toContain('universe = "broad"');
+    expect(resourceBlock(src, 'aws_scheduler_schedule" "player_props_near_tip')).toContain('cron(0/15 8-23 ? * * *)');
+    expect(resourceBlock(src, 'aws_scheduler_schedule" "player_props_closing')).toContain('cron(0/5 8-23 ? * * *)');
+    expect(src).not.toContain('universe = "pregame_refresh"');
+  });
+});
+
 describe('ingestion schedule fail-closed (frozen configuration)', () => {
   it('live_ingestion_enabled defaults to false', () => {
     const src = read('infra/variables.tf');

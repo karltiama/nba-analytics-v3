@@ -22,7 +22,7 @@ create table if not exists raw.player_prop_game_runs (
   primary key (pull_run_id, game_id),
   constraint player_prop_game_runs_status_check check (status in ('started', 'success', 'error')),
   constraint player_prop_game_runs_archive_status_check check (archive_status in ('pending', 'archived', 'failed')),
-  constraint player_prop_game_runs_universe_check check (universe is null or universe in ('broad', 'near_tip', 'closing')),
+  constraint player_prop_game_runs_universe_check check (universe is null or universe in ('broad', 'near_tip', 'closing', 'pregame_refresh')),
   constraint player_prop_game_runs_provider_attempts_check check (provider_attempts >= 0)
 );
 
@@ -34,3 +34,8 @@ create index if not exists raw_player_prop_game_runs_status_idx
 
 create index if not exists raw_player_prop_game_runs_archive_status_idx
   on raw.player_prop_game_runs (archive_status, started_at desc);
+
+create unique index if not exists raw_player_prop_game_runs_one_active_observation
+  on raw.player_prop_game_runs (game_id)
+  where status = 'started'
+    and universe in ('broad', 'near_tip', 'pregame_refresh', 'closing');

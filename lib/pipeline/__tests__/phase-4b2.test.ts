@@ -125,6 +125,7 @@ describe('phase 4b2 prop universes', () => {
     expect(parsePropUniverse('broad')).toBe('broad');
     expect(parsePropUniverse('near_tip')).toBe('near_tip');
     expect(parsePropUniverse('closing')).toBe('closing');
+    expect(parsePropUniverse('pregame_refresh')).toBe('pregame_refresh');
   });
 });
 
